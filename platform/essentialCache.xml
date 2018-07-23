@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewercache xmlns="http://www.enterprise-architecture.org/essential/viewercache"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.enterprise-architecture.org/essential/viewercache viewercache.xsd">
+    
+    <!-- Define the cache variables to clear and when - either pre or post receiving the repository
+        snapshot -->
+    <cachevariables>
+        <variable when="post">imageMap</variable>
+        <variable when="pre">theXSLTransformFactory</variable>
+        <variable when="pre">theViewSecurityConfigXML</variable>
+    </cachevariables>
+    
+    <!-- Define the cache directories to clear and when - either pre or post receiving the repository
+        snapshot -->
+    <cachedirectories>
+        <directory when="pre">/graph_images</directory>
+        <directory when="post">/graph_images/uml</directory>
+        <directory when="post">/graph_images/pageCache/application</directory>
+    </cachedirectories>
+</viewercache>

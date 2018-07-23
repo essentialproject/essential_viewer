@@ -1,0 +1,51 @@
+### Credits ###
+
+Essential Viewer makes use of some great third party scripts and libraries including...
+
+Twitter Bootstrap
+http://getbootstrap.com
+
+Font Awesome
+http://fontawesome.io
+
+Adobe Source Sans Pro
+https://github.com/adobe-fonts/source-code-pro
+
+JQuery
+www.jquery.com
+
+JQueryUI
+www.jqueryui.com
+
+DataTables
+www.datatables.net
+
+Simile Widgets
+http://www.simile-widgets.org/
+
+CSS3PIE
+http://css3pie.com/
+
+Javascript InfoVis Toolkit
+http://thejit.org/
+
+Jquery Context Menu
+Web: http://medialize.github.com/jQuery-contextMenu/
+
+Jquery Columnizer
+http://welcome.totheinter.net/columnizer-jquery-plugin/
+
+Jquery Equal Heights Plugin
+www.cssnewbie.com
+
+jVector Map
+http://jvectormap.owl-hollow.net/
+
+Sitemap Styler
+http://cssglobe.com/post/903/sitemap-styler-style-your-sitemaps-with-css-and-javascript
+
+jqPlot
+http://www.jqplot.com
+
+and more
+

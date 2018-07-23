@@ -1,0 +1,1112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:include href="../common/core_doctype.xsl"/>
+	<xsl:include href="../common/core_common_head_content.xsl"/>
+	<xsl:include href="../common/core_header.xsl"/>
+	<xsl:include href="../common/core_footer.xsl"/>
+	<xsl:include href="../common/core_external_doc_ref.xsl"/>
+	<xsl:include href="../common/datatables_includes.xsl"/>
+	<!--<xsl:include href="../common/core_arch_image.xsl"/>-->
+
+	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
+
+	<xsl:param name="param1"/>
+
+	<!-- START GENERIC PARAMETERS -->
+	<xsl:param name="viewScopeTermIds"/>
+
+	<!-- END GENERIC PARAMETERS -->
+
+	<!-- START GENERIC LINK VARIABLES -->
+	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'"/>
+	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
+	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="linkClasses" select="('Individual_Actor', 'Technology_Function', 'Technology_Capability', 'Technology_Product', 'Supplier', 'Technology_Strategic_Plan', 'Technology_Component', 'Application_Provider', 'Application_Deployment', 'Application_Software_Instance', 'Infrastructure_Software_Instance', 'Information_Store_Instance', 'Technology_Node')"/>
+	<!-- END GENERIC LINK VARIABLES -->
+
+	<xsl:variable name="currentNode" select="/node()/simple_instance[name = $param1]"/>
+	<xsl:variable name="serverName" select="$currentNode/own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:variable name="aRoleList" select="/node()/simple_instance[own_slot_value[slot_reference = 'role_for_technology_provider']/value = $param1]"/>
+
+	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[supertype = 'Technology_Provider_Role']"/>
+	<xsl:variable name="allTechProdRoleUsages" select="/node()/simple_instance[type = 'Technology_Provider_Usage']"/>
+	<xsl:variable name="allTechProducts" select="/node()/simple_instance[supertype = 'Technology_Provider']"/>
+	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component' or supertype = 'Technology_Component']"/>
+	<xsl:variable name="allTechBuilds" select="/node()/simple_instance[type = 'Technology_Build_Architecture']"/>
+	<xsl:variable name="allTechProductFamilies" select="/node()/simple_instance[type = 'Technology_Product_Family']"/>
+
+	<!--
+		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+	 	* This file is part of Essential Architecture Manager, 
+	 	* the Essential Architecture Meta Model and The Essential Project.
+		*
+		* Essential Architecture Manager is free software: you can redistribute it and/or modify
+		* it under the terms of the GNU General Public License as published by
+		* the Free Software Foundation, either version 3 of the License, or
+		* (at your option) any later version.
+		*
+		* Essential Architecture Manager is distributed in the hope that it will be useful,
+		* but WITHOUT ANY WARRANTY; without even the implied warranty of
+		* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		* GNU General Public License for more details.
+		*
+		* You should have received a copy of the GNU General Public License
+		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+		* 
+	-->
+	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
+	<!-- 06.11.2008 JWC	Migrated to XSL v2 -->
+	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
+	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
+	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
+	<!-- 08.03.2013 JWC	Resolved some issues rendering impacted Applcations -->
+	<!-- 14.05.2013	JWC Sorted out the rendering of Strategic Plans - to include usage of the product -->
+
+
+	<xsl:template match="knowledge_base">
+		<xsl:call-template name="docType"/>
+		<html>
+			<head>
+				<xsl:call-template name="commonHeadContent"/>
+				<title>
+					<xsl:value-of select="eas:i18n('Technology Product Summary')"/>
+				</title>
+				<xsl:for-each select="$linkClasses">
+					<xsl:call-template name="RenderInstanceLinkJavascript">
+						<xsl:with-param name="instanceClassName" select="current()"/>
+						<xsl:with-param name="targetMenu" select="()"/>
+					</xsl:call-template>
+				</xsl:for-each>
+				<xsl:call-template name="dataTablesLibrary"/>
+			</head>
+			<body>
+				<!-- ADD THE PAGE HEADING -->
+				<xsl:call-template name="Heading"/>
+
+				<!--ADD THE CONTENT-->
+
+				<!-- PAGE BODY STARTS HERE -->
+				<xsl:apply-templates select="$currentNode" mode="Page_Body"/>
+
+				<!-- ADD THE PAGE FOOTER -->
+				<xsl:call-template name="Footer"/>
+			</body>
+		</html>
+	</xsl:template>
+
+
+	<!--Start the Page Body Template-->
+	<xsl:template match="node()" mode="Page_Body">
+
+		<!-- Get the name of the application provider -->
+		<xsl:variable name="productName">
+			<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
+		</xsl:variable>
+		<xsl:variable name="tech_prod_role_list" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
+		<!-- Get all the usages of the Technology Product Roles for this product -->
+		<xsl:variable name="tech_prod_usage_list" select="/node()/simple_instance[own_slot_value[slot_reference = 'provider_as_role']/value = $tech_prod_role_list/name]"/>
+		<!-- Get all the technology product builds where these usages are used -->
+		<xsl:variable name="techProdBuildList" select="/node()/simple_instance[name = $tech_prod_usage_list/own_slot_value[slot_reference = 'used_in_technology_provider_architecture']/value]"/>
+
+
+
+
+		<div class="container-fluid">
+			<div class="row">
+				<div>
+					<div class="col-xs-12">
+						<div class="page-header">
+							<h1>
+								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>:&#160;</span>
+								<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Technology Product Summary for')"/>&#160; </span>
+								<span class="text-primary">
+									<xsl:value-of select="$serverName"/>
+								</span>
+							</h1>
+						</div>
+					</div>
+				</div>
+
+				<!--Setup Description Section-->
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-list-ul icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Description')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:call-template name="RenderMultiLangInstanceDescription">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+						</xsl:call-template>
+					</div>
+
+					<hr/>
+				</div>
+
+
+				<!--Setup Product Family Section-->
+
+				<div class="col-xs-12 col-md-6">
+					<div class="sectionIcon">
+						<i class="fa fa-sitemap icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Member of Product Family')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:variable name="productFamilyInstances" select="$allTechProductFamilies[name = $currentNode/own_slot_value[slot_reference = 'member_of_technology_product_families']/value]"/>
+						<xsl:choose>
+							<xsl:when test="count($productFamilyInstances) &gt; 0">
+								<xsl:for-each select="$productFamilyInstances">
+									<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/><xsl:if test="position() != last()">,</xsl:if>
+								</xsl:for-each>
+							</xsl:when>
+							<xsl:otherwise> - </xsl:otherwise>
+						</xsl:choose>
+					</div>
+					<hr/>
+				</div>
+
+
+
+
+				<!--Setup the Supplier section-->
+
+				<div class="col-xs-12 col-md-6">
+					<div class="sectionIcon">
+						<i class="fa fa-truck icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Supplier')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:if test="count(own_slot_value[slot_reference = 'supplier_technology_product']/value) = 0">
+							<span>-</span>
+						</xsl:if>
+						<xsl:apply-templates select="own_slot_value[slot_reference = 'supplier_technology_product']/value" mode="RenderInstanceName"/>
+					</div>
+					<hr/>
+				</div>
+
+
+				<!--Setup Misc Section-->
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-info-circle icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Maintenance Cost')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:variable name="maintenanceCost" select="own_slot_value[slot_reference = 'maintenance_cost']/value"/>
+						<xsl:choose>
+							<xsl:when test="not(count($maintenanceCost) > 0)">
+								<p> - </p>
+							</xsl:when>
+							<xsl:otherwise>
+								<p> £<xsl:value-of select="own_slot_value[slot_reference = 'maintenance_cost']/value"/>
+								</p>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					<hr/>
+				</div>
+
+
+				<!--Setup the Strategic Plans section-->
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-calendar icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Strategic Plans')"/>
+					</h2>
+					<div class="content-section">
+						<h3>
+							<xsl:value-of select="eas:i18n('Plans for Product')"/>
+						</h3>
+						<xsl:apply-templates select="name" mode="StrategicPlansForElement"/>
+
+						<div class="verticalSpacer_20px"/>
+						<h3>
+							<xsl:value-of select="eas:i18n('Plans for use of Product')"/>
+						</h3>
+						<xsl:apply-templates select="$aRoleList/name" mode="StrategicPlansForElement"/>
+
+					</div>
+					<hr/>
+				</div>
+
+
+
+				<!--Setup Technology Functions Offered Section-->
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa essicon-blocks icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">Technology Functions Offered</h2>
+					<div class="content-section">
+						<xsl:apply-templates select="$currentNode" mode="TechnologyFunctions"/>
+					</div>
+
+					<hr/>
+				</div>
+
+
+				<!--Setup Used to Implement Technology Components Section-->
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa essicon-radialdots icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Used to Implement Technology Components')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:choose>
+							<xsl:when test="not(count($tech_prod_role_list) > 0)">
+								<p>
+									<em>
+										<xsl:value-of select="eas:i18n('No Technology Components implemented')"/>
+									</em>
+								</p>
+							</xsl:when>
+							<xsl:otherwise>
+
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th class="cellWidth-30pc">
+												<xsl:value-of select="eas:i18n('Technology Component')"/>
+											</th>
+											<th class="cellWidth-50pc">
+												<xsl:value-of select="eas:i18n('Strategic Usage Policy (e.g. Production, Prototype, Off Strategy)')"/>
+											</th>
+											<th class="cellWidth-20pc">
+												<xsl:value-of select="eas:i18n('Status')"/>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<xsl:apply-templates select="$tech_prod_role_list" mode="TechnologyProductRole"/>
+									</tbody>
+								</table>
+
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+
+
+					<hr/>
+				</div>
+
+
+				<!--Setup Supports Applications Section-->
+
+				<xsl:variable name="techProvsInScope" select="$techProdBuildList/own_slot_value[slot_reference = 'describes_technology_provider']/value"/>
+				<xsl:variable name="app_deployment_list" select="/node()/simple_instance[(own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $techProvsInScope) or (own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $param1)]"/>
+
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-tablet icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Supports Applications')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:choose>
+							<xsl:when test="not(count($app_deployment_list))">
+								<p>
+									<em>
+										<xsl:value-of select="eas:i18n('No Supported Applications Defined for this Product')"/>
+									</em>
+								</p>
+							</xsl:when>
+							<xsl:otherwise>
+
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th class="cellWidth-20pc">
+												<xsl:value-of select="eas:i18n('Application Supported')"/>
+											</th>
+											<th class="cellWidth-35pc">
+												<xsl:value-of select="eas:i18n('Application Deployment Instances Supported')"/>
+											</th>
+											<th class="cellWidth-30pc">
+												<xsl:value-of select="eas:i18n('Application Deployment Description')"/>
+											</th>
+											<th class="cellWidth-15pc">
+												<xsl:value-of select="eas:i18n('Runtime Status')"/>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<xsl:apply-templates select="$app_deployment_list" mode="ApplicationDeployment"/>
+									</tbody>
+
+								</table>
+
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+
+					<hr/>
+				</div>
+
+
+				<!--Setup Information Stores Section-->
+				<xsl:variable name="thisProduct" select="name"/>
+				<xsl:variable name="techInstances" select="/node()/simple_instance[own_slot_value[slot_reference = 'technology_instance_of']/value = $thisProduct]"/>
+				<xsl:variable name="infoStoreInstances" select="/node()/simple_instance[type = 'Information_Store_Instance' and own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value = $techInstances/name]"/>
+
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-database icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Supports Information Stores')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:apply-templates select="$currentNode" mode="FindInformationStores"/>
+					</div>
+
+					<hr/>
+				</div>
+
+
+				<!--Setup Deployed Instances Section-->
+
+				<xsl:variable name="thisProduct" select="current()/name"/>
+				<xsl:variable name="techProdInstances" select="/node()/simple_instance[own_slot_value[slot_reference = 'technology_instance_of']/value = $thisProduct]"/>
+
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa essicon-server icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Deployed Instances')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:choose>
+							<xsl:when test="count($techProdInstances) = 0">
+								<p>
+									<em>
+										<xsl:value-of select="eas:i18n('No Deployed Instances for this Product')"/>
+									</em>
+								</p>
+							</xsl:when>
+							<xsl:otherwise>
+
+								<table class="table table-bordered table-striped">
+									<thead>
+										<th class="cellWidth-20pc">
+											<xsl:value-of select="eas:i18n('Technology Instance Name')"/>
+										</th>
+										<th class="cellWidth-30pc">
+											<xsl:value-of select="eas:i18n('Technology Instance Description')"/>
+										</th>
+										<th class="cellWidth-15pc">
+											<xsl:value-of select="eas:i18n('Runtime Status')"/>
+										</th>
+										<th class="cellWidth-20pc">
+											<xsl:value-of select="eas:i18n('Technology Product')"/>
+										</th>
+										<th class="cellWidth-15pc">
+											<xsl:value-of select="eas:i18n('Used As')"/>
+										</th>
+									</thead>
+									<tbody>
+										<xsl:apply-templates select="$techProdInstances" mode="Technology_Instance"/>
+									</tbody>
+								</table>
+
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					<hr/>
+				</div>
+
+
+				<!--Setup Tech Architectures Section-->
+
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Used In Technology Architectures')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:choose>
+							<xsl:when test="count($techProdBuildList) = 0">
+								<em>-</em>
+							</xsl:when>
+							<xsl:otherwise>
+								<script>
+								$(document).ready(function(){
+									// Setup - add a text input to each footer cell
+								    $('#dt_techarchs tfoot th').each( function () {
+								        var title = $(this).text();
+								        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+								    } );
+									
+									var table = $('#dt_techarchs').DataTable({
+									scrollY: "350px",
+									scrollCollapse: true,
+									paging: false,
+									info: false,
+									sort: true,
+									responsive: true,
+									columns: [
+									    { "width": "20%" },
+									    { "width": "20%" },
+									    { "width": "30%" },
+									    { "width": "30%" }
+									  ],
+									dom: 'Bfrtip',
+								    buttons: [
+							            'copyHtml5', 
+							            'excelHtml5',
+							            'csvHtml5',
+							            'pdfHtml5',
+							            'print'
+							        ]
+									});
+									
+									
+									// Apply the search
+								    table.columns().every( function () {
+								        var that = this;
+								 
+								        $( 'input', this.footer() ).on( 'keyup change', function () {
+								            if ( that.search() !== this.value ) {
+								                that
+								                    .search( this.value )
+								                    .draw();
+								            }
+								        } );
+								    } );
+								    
+								    table.columns.adjust();
+								    
+								    $(window).resize( function () {
+								        table.columns.adjust();
+								    });
+								});
+							</script>
+								<table class="table table-striped table-bordered" id="dt_techarchs">
+									<thead>
+										<tr>
+											<th>
+												<xsl:value-of select="eas:i18n('Architecture')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Technology Component')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Component Description')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Technology Products')"/>
+											</th>
+										</tr>
+									</thead>
+									<tfoot>
+										<tr>
+											<th>
+												<xsl:value-of select="eas:i18n('Architecture')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Technology Component')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Component Description')"/>
+											</th>
+											<th>
+												<xsl:value-of select="eas:i18n('Technology Products')"/>
+											</th>
+										</tr>
+									</tfoot>
+									<tbody>
+										<xsl:for-each-group select="$techProdBuildList" group-by="name">
+											<xsl:variable name="aUsageList" select="$allTechProdRoleUsages[name = current()/own_slot_value[slot_reference = 'contained_architecture_components']/value]"/>
+
+											<xsl:for-each select="$aUsageList">
+												<xsl:variable name="aRole" select="$allTechProdRoles[name = current()/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+												<xsl:variable name="aComp" select="$allTechComps[name = $aRole/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
+												<xsl:variable name="aProd" select="$allTechProducts[name = $aRole/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+												<tr>
+													<td>
+														<xsl:value-of select="translate(current-group()[1]/own_slot_value[slot_reference = 'name']/value, '::', ' ')"/>
+													</td>
+													<td>
+														<xsl:call-template name="RenderInstanceLink">
+															<xsl:with-param name="theSubjectInstance" select="$aComp"/>
+															<xsl:with-param name="theXML" select="$reposXML"/>
+															<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+														</xsl:call-template>
+													</td>
+													<td>
+														<xsl:value-of select="$aComp/own_slot_value[slot_reference = 'description']/value"/>
+													</td>
+													<td>
+														<xsl:call-template name="RenderInstanceLink">
+															<xsl:with-param name="theSubjectInstance" select="$aProd"/>
+															<xsl:with-param name="theXML" select="$reposXML"/>
+															<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+														</xsl:call-template>
+													</td>
+												</tr>
+											</xsl:for-each>
+										</xsl:for-each-group>
+									</tbody>
+								</table>
+
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					<hr/>
+				</div>
+
+
+
+				<!--Setup the Supporting Documentation section-->
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-file-text-o icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>
+					</div>
+					<hr/>
+				</div>
+
+
+				<!--Setup Closing Divs-->
+			</div>
+		</div>
+
+		<div class="clear"/>
+	</xsl:template>
+
+
+
+	<!-- 19.11.2008	JWC Render the list of offered Technology Functions. Takes the node of a Technology
+		Product/Provider -->
+	<xsl:template match="node()" mode="TechnologyFunctions">
+		<xsl:variable name="functionList" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'technology_product_functions_offered']/value]"/>
+		<xsl:choose>
+			<xsl:when test="count($functionList) > 0">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>
+								<xsl:value-of select="eas:i18n('Technology Function')"/>
+							</th>
+							<th>
+								<xsl:value-of select="eas:i18n('Description')"/>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<xsl:apply-templates select="$functionList" mode="RenderTechnologyFunctions"/>
+					</tbody>
+				</table>
+			</xsl:when>
+			<xsl:otherwise>
+				<em>
+					<xsl:value-of select="eas:i18n('No Technology Functions defined for this product')"/>. </em>
+			</xsl:otherwise>
+		</xsl:choose>
+
+	</xsl:template>
+
+	<!-- 19.11.2008	JWC
+	Render the Technology Functions give a set of Technology Function nodes -->
+	<xsl:template match="node()" mode="RenderTechnologyFunctions">
+		<tr>
+			<td>
+				<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+	</xsl:template>
+
+	<!-- TEMPLATE TO CREATE THE DETAILS FOR Technology Product Roles -->
+	<xsl:template match="node()" mode="TechnologyProductRole">
+		<xsl:variable name="techCompInstID" select="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
+		<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
+		<xsl:variable name="relevantTechComps" select="$allTechComps[name = $techCompInstID]"/>
+		<tr>
+			<td>
+				<!--<xsl:apply-templates select="$techCompInstID" mode="RenderInstanceName" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$relevantTechComps"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				</xsl:call-template>
+			</td>
+			<xsl:variable name="lifecycle_status" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+			<xsl:variable name="prodLifecyle" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value = 'ProductionStrategic']/name"/>
+			<!-- 21.02.11 JWC Fixed the names of Lifecycle values -->
+			<xsl:variable name="offStratLifecycle" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value = 'OffStrategy']/name"/>
+			<td>
+				<xsl:if test="not(count($lifecycle_status))">
+					<em>
+						<xsl:value-of select="eas:i18n('not defined')"/>
+					</em>
+				</xsl:if>
+				<xsl:value-of select="$lifecycle_status/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</td>
+
+			<xsl:choose>
+				<xsl:when test="compare($lifecycle_status/name, $prodLifecyle) = 0">
+					<td class="cellRAG_Green">
+						<xsl:value-of select="eas:i18n('OK')"/>
+					</td>
+				</xsl:when>
+				<xsl:when test="compare($lifecycle_status/name, $offStratLifecycle) = 0">
+					<td class="cellRAG_Red">
+						<em>
+							<xsl:value-of select="eas:i18n('Attention')"/>
+						</em>
+					</td>
+				</xsl:when>
+				<xsl:otherwise>
+					<td class="cellRAG_Yellow">
+						<em>
+							<xsl:value-of select="eas:i18n('Waiver Required')"/>
+						</em>
+					</td>
+				</xsl:otherwise>
+			</xsl:choose>
+		</tr>
+
+	</xsl:template>
+	<!-- Render information about each Application Deployment that is supported by a Product 
+		Takes instances of Application Deployment-->
+	<xsl:template match="node()" mode="ApplicationDeployment">
+		<tr>
+			<xsl:variable name="appProviderID" select="own_slot_value[slot_reference = 'application_provider_deployed']/value"/>
+			<xsl:variable name="application_provider_instance" select="/node()/simple_instance[name = $appProviderID]"/>
+			<xsl:variable name="application_provider_name" select="$application_provider_instance/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:variable name="swComps" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'deployment_of_software_components']/value]"/>
+			<xsl:variable name="swArchs" select="/node()/simple_instance[name = $swComps/own_slot_value[slot_reference = 'contained_in_logical_software_arch']/value]"/>
+			<xsl:variable name="appProvider" select="/node()/simple_instance[name = $swArchs/own_slot_value[slot_reference = 'software_architecture_of_app_provider']/value]"/>
+			<xsl:variable name="appProviderName" select="$appProvider/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:variable name="app_instance_id" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'application_deployment_technology_instance']/value]"/>
+			<xsl:variable name="app_runtme_status" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'application_deployment_role']/value]"/>
+			<xsl:choose>
+				<xsl:when test="count($application_provider_name) > 0">
+					<td>
+						<!--<a>
+							<xsl:attribute name="href">
+								<xsl:text>report?XML=reportXML.xml&amp;XSL=application/core_app_def.xsl&amp;PMA=</xsl:text>
+								<xsl:value-of select="$application_provider_instance/name" />
+								<xsl:text>&amp;LABEL=Application Module Definition - </xsl:text>
+								<xsl:value-of select="$application_provider_name" />
+							</xsl:attribute>
+							<xsl:value-of select="$application_provider_name" />
+						</a>-->
+						<xsl:call-template name="RenderInstanceLink">
+							<xsl:with-param name="theSubjectInstance" select="$application_provider_instance"/>
+							<xsl:with-param name="theXML" select="$reposXML"/>
+							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+						</xsl:call-template>
+					</td>
+				</xsl:when>
+				<xsl:otherwise>
+					<!-- Find Application Provider via software components -->
+					<td>
+						<xsl:choose>
+							<xsl:when test="count($appProviderName) > 0">
+								<!--<a>
+									<xsl:attribute name="href">
+										<xsl:text>report?XML=reportXML.xml&amp;XSL=application/core_app_def.xsl&amp;PMA=</xsl:text>
+										<xsl:value-of select="$application_provider_instance/name" />
+										<xsl:text>&amp;LABEL=Application Module Definition - </xsl:text>
+										<xsl:value-of select="$appProviderName" />
+									</xsl:attribute>
+									<xsl:value-of select="$appProviderName" />
+								</a>-->
+								<xsl:call-template name="RenderInstanceLink">
+									<xsl:with-param name="theSubjectInstance" select="$application_provider_instance"/>
+									<xsl:with-param name="theXML" select="$reposXML"/>
+									<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="eas:i18n('No information')"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+				</xsl:otherwise>
+			</xsl:choose>
+			<td>
+				<ul>
+					<xsl:apply-templates select="$app_instance_id" mode="ApplicationSoftwareInstances"/>
+				</ul>
+			</td>
+			<td>
+				<xsl:if test="count(own_slot_value[slot_reference = 'description']/value) = 0">-</xsl:if>
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="not(count($app_runtme_status))">-</xsl:if>
+				<xsl:value-of select="$app_runtme_status/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</td>
+		</tr>
+	</xsl:template>
+
+	<!-- Render information about an Application Software Instance -->
+	<xsl:template match="node()" mode="ApplicationSoftwareInstances">
+		<xsl:variable name="app_instance_name" select="own_slot_value[slot_reference = 'name']/value"/>
+		<xsl:variable name="instance_name" select="translate($app_instance_name, '::', ' ')"/>
+		<li>
+			<!--<a>
+				<xsl:attribute name="href">
+					<xsl:text>report?XML=reportXML.xml&amp;XSL=technology/core_tech_instance_def.xsl&amp;PMA=</xsl:text>
+					<xsl:value-of select="name" />
+					<xsl:text>&amp;LABEL=Technology Instance - </xsl:text>
+					<xsl:value-of select="$instance_name" />
+				</xsl:attribute>
+				<xsl:value-of select="$instance_name" />
+			</a>-->
+			<xsl:call-template name="RenderInstanceLink">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="theXML" select="$reposXML"/>
+				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+			</xsl:call-template>
+		</li>
+
+	</xsl:template>
+
+	<!-- Find the set of Information Stores that are dependent on this Technology Product 
+		and send them to be rendered. Expects the node for the current product -->
+	<xsl:template match="node()" mode="FindInformationStores">
+		<xsl:variable name="thisProduct" select="name"/>
+		<xsl:variable name="techInstances" select="/node()/simple_instance[own_slot_value[slot_reference = 'technology_instance_of']/value = $thisProduct]"/>
+		<!-- Find all Information Store Instances dependent on these product instances -->
+		<xsl:variable name="infoStoreInstances" select="/node()/simple_instance[type = 'Information_Store_Instance' and own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value = $techInstances/name]"/>
+		<xsl:choose>
+			<xsl:when test="count($infoStoreInstances) > 0">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<th class="cellWidth-15pc">
+							<xsl:value-of select="eas:i18n('DB Schema Name')"/>
+						</th>
+						<th class="cellWidth-25pc">
+							<xsl:value-of select="eas:i18n('DB Schema Description')"/>
+						</th>
+						<th class="cellWidth-15pc">
+							<xsl:value-of select="eas:i18n('Deployment Status')"/>
+						</th>
+						<th class="cellWidth-15pc">
+							<xsl:value-of select="eas:i18n('Supporting DB Installation')"/>
+						</th>
+						<th class="cellWidth-15pc">
+							<xsl:value-of select="eas:i18n('DB Installation Technology')"/>
+						</th>
+						<th class="cellWidth-15pc">
+							<xsl:value-of select="eas:i18n('IT Contact')"/>
+						</th>
+					</thead>
+					<tbody>
+						<xsl:apply-templates select="$infoStoreInstances" mode="Info_Store_Instance"/>
+					</tbody>
+				</table>
+			</xsl:when>
+			<xsl:otherwise>
+				<em><xsl:value-of select="eas:i18n('No Information Store dependencies defined for this product')"/>.</em>
+			</xsl:otherwise>
+
+		</xsl:choose>
+
+	</xsl:template>
+
+	<!-- TEMPLATE TO CREATE THE DETAILS FOR DEPLOYED INFORMATION STORE INSTANCES -->
+	<xsl:template match="node()" mode="Info_Store_Instance">
+		<!-- 18.04.2008 JWC - Link to information representation report -->
+		<xsl:variable name="anInformationStoreID" select="own_slot_value[slot_reference = 'instance_of_information_store']/value"/>
+		<xsl:variable name="anInformationStore" select="/node()/simple_instance[name = $anInformationStoreID]"/>
+		<xsl:variable name="anInformationRep" select="$anInformationStore/own_slot_value[slot_reference = 'deployment_of_information_representation']/value"/>
+		<xsl:variable name="anInformationRepInst" select="/node()/simple_instance[name = $anInformationRep]"/>
+		<xsl:variable name="info_deployment_status" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'technology_instance_deployment_status']/value]"/>
+		<xsl:variable name="info_db_instance" select="/node()/simple_instance[(name = current()/own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value) and (type = 'Infrastructure_Software_Instance')]"/>
+		<xsl:variable name="info_db_tech_product" select="/node()/simple_instance[name = $info_db_instance/own_slot_value[slot_reference = 'technology_instance_of']/value]"/>
+		<xsl:variable name="info_rep" select="/node()/simple_instance[own_slot_value[slot_reference = 'implemented_with_information_stores']/value = current()/own_slot_value[slot_reference = 'instance_of_information_store']/value]"/>
+		<xsl:variable name="info_it_contact" select="/node()/simple_instance[name = $info_rep/own_slot_value[slot_reference = 'representation_it_contact']/value]"/>
+
+		<tr>
+			<td>
+				<!--<a>
+					<xsl:attribute name="href">
+						<xsl:text>report?XML=reportXML.xml&amp;XSL=information/infoRep.xsl&amp;PMA=</xsl:text>
+						<xsl:value-of select="$anInformationRep" />
+						<xsl:text>&amp;LABEL=Information Representation - </xsl:text>
+						<xsl:value-of select="$anInformationRepInst/own_slot_value[slot_reference='name']/value" />
+					</xsl:attribute>
+					<xsl:value-of select="own_slot_value[slot_reference='technology_instance_given_name']/value" />
+				</a>-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="displaySlot" select="'technology_instance_given_name'"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="count(own_slot_value[slot_reference = 'description']/value) = 0">-</xsl:if>
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="not(count($info_deployment_status))">-</xsl:if>
+				<xsl:value-of select="$info_deployment_status/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="not(count($info_db_instance))">-</xsl:when>
+					<xsl:otherwise>
+						<!--<a>
+							<xsl:variable name="db_given_name" select="$info_db_instance/own_slot_value[slot_reference='technology_instance_given_name']/value" />
+							<xsl:attribute name="href">
+								<xsl:text>report?XML=reportXML.xml&amp;XSL=technology/core_tech_instance_def.xsl&amp;PMA=</xsl:text>
+								<xsl:value-of select="$info_db_instance/name" />
+								<xsl:text>&amp;LABEL=Technology Instance - </xsl:text>
+								<xsl:value-of select="$db_given_name" />
+							</xsl:attribute>
+							<xsl:value-of select="$db_given_name" />
+						</a>-->
+						<xsl:call-template name="RenderInstanceLink">
+							<xsl:with-param name="theSubjectInstance" select="$info_db_instance"/>
+							<xsl:with-param name="theXML" select="$reposXML"/>
+							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+							<xsl:with-param name="displaySlot" select="'technology_instance_given_name'"/>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td>
+				<xsl:if test="not(count($info_db_tech_product))">-</xsl:if>
+				<!--<xsl:value-of select="translate($info_db_tech_product/own_slot_value[slot_reference='product_label']/value, '::', '  ')" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$info_db_tech_product"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="displayString" select="translate($info_db_tech_product/own_slot_value[slot_reference = 'product_label']/value, '::', '  ')"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="not(count($info_it_contact))">-</xsl:if>
+				<!--<xsl:value-of select="$info_it_contact/own_slot_value[slot_reference='name']/value" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$info_it_contact"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+	</xsl:template>
+
+	<!-- TEMPLATE TO CREATE THE DETAILS FOR DEPLOYED TECHNOLOGY INSTANCES -->
+	<xsl:template match="node()" mode="Technology_Instance">
+		<xsl:variable name="instance_given_name" select="own_slot_value[slot_reference = 'technology_instance_given_name']/value"/>
+		<xsl:variable name="instance_basic_name" select="own_slot_value[slot_reference = 'name']/value"/>
+		<xsl:variable name="tech_runtme_status" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'technology_instance_deployment_status']/value]"/>
+		<xsl:variable name="tech_instance_usage" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'instance_of_logical_tech_provider']/value]"/>
+		<xsl:variable name="instance_prod_role" select="/node()/simple_instance[name = $tech_instance_usage[name = current()/own_slot_value[slot_reference = 'instance_of_logical_tech_provider']/value]/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+		<xsl:variable name="tech_product" select="/node()/simple_instance[name = $instance_prod_role/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+		<xsl:variable name="tech_component" select="/node()/simple_instance[name = $instance_prod_role/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
+
+		<tr>
+			<td>
+				<!--<a>
+					<xsl:attribute name="href">
+						<xsl:text>report?XML=reportXML.xml&amp;XSL=technology/core_tech_instance_def.xsl&amp;PMA=</xsl:text>
+						<xsl:value-of select="name" />
+						<xsl:text>&amp;LABEL=Technology Instance - </xsl:text>
+						<xsl:choose>
+							<xsl:when test="not(string($instance_given_name))">
+								<xsl:value-of select="$instance_basic_name" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$instance_given_name" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<xsl:choose>
+						<xsl:when test="not(string($instance_given_name))">
+							<xsl:value-of select="$instance_basic_name" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$instance_given_name" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</a>-->
+
+				<xsl:variable name="techInstanceName">
+					<xsl:choose>
+						<xsl:when test="not(string($instance_given_name))">
+							<xsl:value-of select="$instance_basic_name"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$instance_given_name"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="displayString" select="$techInstanceName"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="count(own_slot_value[slot_reference = 'description']/value) = 0">-</xsl:if>
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="not(count($tech_runtme_status))">-</xsl:if>
+				<xsl:value-of select="$tech_runtme_status/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</td>
+			<td>
+				<xsl:if test="not(count($tech_product))">-</xsl:if>
+				<!--<xsl:value-of select="translate($tech_product/own_slot_value[slot_reference='product_label']/value, '::', '  ')" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$tech_product"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="displayString" select="translate($tech_product/own_slot_value[slot_reference = 'product_label']/value, '::', '  ')"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:if test="not(count($tech_component))">-</xsl:if>
+				<!--<xsl:value-of select="$tech_component/own_slot_value[slot_reference='name']/value" />-->
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$tech_component"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+
+	</xsl:template>
+
+	<!-- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -->
+	<!-- Given a reference (instance ID) to an element, find all its plans and render each -->
+	<xsl:template match="node()" mode="StrategicPlansForElement">
+		<xsl:variable name="anElement">
+			<xsl:value-of select="node()"/>
+		</xsl:variable>
+		<xsl:variable name="anActivePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Active_Plan')]"/>
+		<xsl:variable name="aFuturePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Future_Plan')]"/>
+		<xsl:variable name="anOldPlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Old_Plan')]"/>
+		<xsl:variable name="aStrategicPlanSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $anElement]"/>
+		<!-- Test to see if any plans are defined yet -->
+		<xsl:choose>
+			<xsl:when test="count($aStrategicPlanSet) > 0">
+				<!-- Show active plans first -->
+				<!--<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference='strategic_plan_status']/value=$anActivePlan/name]" mode="StrategicPlanDetailsTable">
+					<xsl:with-param name="theStatus">
+						<xsl:value-of select="$anActivePlan/name" />
+					</xsl:with-param>
+				</xsl:apply-templates>
+				<!-\- Then the future -\->
+				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference='strategic_plan_status']/value=$aFuturePlan/name]" mode="StrategicPlanDetailsTable">
+					<xsl:with-param name="theStatus">
+						<xsl:value-of select="$aFuturePlan/name" />
+					</xsl:with-param>
+				</xsl:apply-templates>
+				<!-\- Then the old -\->
+				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference='strategic_plan_status']/value=$anOldPlan/name]" mode="StrategicPlanDetailsTable">
+					<xsl:with-param name="theStatus">
+						<xsl:value-of select="$anOldPlan/name" />
+					</xsl:with-param>
+				</xsl:apply-templates>-->
+
+				<!-- Then all other plans -->
+				<xsl:apply-templates select="$aStrategicPlanSet" mode="StrategicPlanDetailsTable">
+					<xsl:sort select="own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<em>
+					<xsl:value-of select="eas:i18n('No strategic plans defined for this element')"/>
+				</em>
+			</xsl:otherwise>
+		</xsl:choose>
+
+	</xsl:template>
+	<!-- Render the details of a particular strategic plan in a small table -->
+	<!-- No details of plan inter-dependencies is presented here. However, a link 
+        to the plan definition page is provided where those details will be shown -->
+	<xsl:template match="node()" mode="StrategicPlanDetailsTable">
+		<xsl:param name="theStatus"/>
+		<xsl:variable name="aStatusID" select="current()/own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
+
+		<!--	<xsl:if test="$aStatusID = $theStatus">-->
+		<table>
+
+			<thead>
+				<tr>
+					<th>
+						<xsl:value-of select="eas:i18n('Plan')"/>
+					</th>
+					<th>
+						<xsl:value-of select="eas:i18n('Description')"/>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<strong>
+							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+								<xsl:with-param name="theXML" select="$reposXML"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+								<xsl:with-param name="displayString" select="translate(own_slot_value[slot_reference = 'name']/value, '::', ' ')"/>
+							</xsl:call-template>
+						</strong>
+					</td>
+					<td>
+						<xsl:call-template name="RenderMultiLangInstanceDescription">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<!--		</xsl:if>-->
+	</xsl:template>
+
+
+
+</xsl:stylesheet>

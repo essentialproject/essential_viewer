@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.enterprise-architecture.org/essential/viewerclassification"
+    targetNamespace="http://www.enterprise-architecture.org/essential/viewerclassification"
+    elementFormDefault="qualified">
+
+    <!-- 
+        * Copyright (c)2015-2018 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Schema for the XML document that maintains the classification of all views in a repository
+    -->
+    <!-- 22.01.2015    JWC    1st coding-->
+    <!-- 26.03.2018    JWC    Added support for default classification -->
+    
+    <xs:element name="viewclassification">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="defaultClassification" type="defaultClassificationType" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="classificationGroups" type="classificationGroupType"/>
+                <xs:element name="views" type="viewListType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="defaultClassificationType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element name="readClassification" type="classificationType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="editClassification" type="classificationType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="classificationGroupType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="classification" type="classificationType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="classificationType">
+        <xs:sequence>
+            <xs:element name="group" type="xs:string"/>
+            <xs:element name="level" type="xs:string"/>
+            <xs:element name="index" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="classificationTypeValues"></xs:attribute>        
+    </xs:complexType>
+      
+    <xs:complexType name="viewListType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="view" type="viewType"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="viewType">
+        <xs:sequence>
+            <xs:element name="template" type="xs:string"></xs:element>
+            <xs:element name="viewClassification" type="classificationGroupType"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="classificationTypeValues">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="read"></xs:enumeration>
+            <xs:enumeration value="edit"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

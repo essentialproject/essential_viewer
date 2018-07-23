@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewclassification xmlns="http://www.enterprise-architecture.org/essential/viewerclassification"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.enterprise-architecture.org/essential/viewerclassification viewerclassification.xsd">
+    <classificationGroups>
+        <classification type="read">
+            <group>InfoGroup</group>
+            <level>Secret</level>
+            <index>1</index>
+        </classification>
+        <classification type="read">
+            <group>InfoGroup</group>
+            <level>Top Secret</level>
+            <index>2</index>
+        </classification>
+        <classification type="read">
+            <group>InfoGroup</group>
+            <level>Clear</level>
+            <index>0</index>
+        </classification>
+        <classification type="read">
+            <group>RoleGroup</group>
+            <level>Normal</level>
+            <index>1</index>
+        </classification>
+        <classification type="read">
+            <group>RoleGroup</group>
+            <level>Elevated</level>
+            <index>2</index>
+        </classification>
+    </classificationGroups>
+    
+    <views>
+        <view>
+            <template>home.xsl</template>
+            <viewClassification>
+                <classification type="read">
+                    <group>RoleGroup</group>
+                    <level>Elevated</level>
+                    <index>2</index>
+                </classification>
+                <classification type="read">
+                    <group>InfoGroup</group>
+                    <level>Secret</level>
+                    <index>1</index>
+                </classification>  
+                <classification type="read">
+                    <group>InfoGroup</group>
+                    <level>Clear</level>
+                    <index>0</index>
+                </classification>  
+            </viewClassification>
+        </view>
+        <view>
+            <template>application/core_app_service_list_by_alpha.xsl</template>
+            <viewClassification>
+                <classification type="read">
+                    <group>InfoGroup</group>
+                    <level>Top Secret</level>
+                    <index>2</index>
+                </classification>
+            </viewClassification>
+        </view>
+    </views>
+</viewclassification>

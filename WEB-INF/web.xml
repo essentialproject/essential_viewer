@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<!--
+        * Copyright (c)2006-2017 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        
+        Web.xml for the Essential Viewer application
+        30.01.2013	JWC	Added context param to control page history tracking
+        31.01.2013  JWC Added the VisitHistoryService servlet.
+        05.03.2013 	JWC & NW Fixed AJAX History Functionality
+        05.06.2013	JWC Added the viewer home page parameter to control portal page, replacing the Home Page Report Constant
+        31.07.2013	JWC Added language servlet mapping for the language select page.
+        19.01.2015	JWC Updates to apply Security to Essential Viewer
+        03.03.2016	JWC Added Expires filters and configuration parameter for ReportServiceImages servlet
+        25.08.2016	JWC Revised apprach for caching setup with a relative path
+    -->
+	
+	<display-name>Essential Viewer</display-name>
+
+	<!-- Context parameters, including those required by the Essential Viewer Engine -->
+	<context-param>
+		<param-name>homeXSLFile</param-name>
+		<param-value>portal_redirect.xsl</param-value>		
+	</context-param>
+	<context-param>
+		<param-name>homeLabel</param-name>
+		<param-value>Home</param-value>
+	</context-param>
+	<context-param>
+		<param-name>defaultReportFile</param-name>
+		<param-value>reportXML.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>theErrorXML</param-name>
+		<param-value>platform/errorXML.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>theErrorView</param-name>
+		<param-value>platform/errorView.xsl</param-value>
+	</context-param>
+	<context-param>
+		<param-name>transfomerAttributeName</param-name>
+		<param-value>theXSLTransformFactory</param-value>
+	</context-param>
+	<context-param>
+		<param-name>defaultCharacterEncoding</param-name>
+		<param-value>UTF-8</param-value>
+	</context-param>
+	<context-param>
+		<param-name>i18nCookieName</param-name>
+		<param-value>essential_viewer.i18n</param-value>
+	</context-param>
+	<context-param>
+		<param-name>i18nCookieDomain</param-name>
+		<param-value/>
+	</context-param>
+	<context-param>
+		<param-name>i18nDefault</param-name>
+		<param-value>en-gb</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cookieTimeout</param-name>
+		<param-value>31535000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>pageHistoryTracking</param-name>
+		<!-- Set to 'off' to switch off page history tracking and 'on' to enable tracking -->  		
+  		<param-value>on</param-value>
+	</context-param>
+	<context-param>
+		<param-name>ajaxPageHistoryTracking</param-name>
+		<!-- Set to 'off' to switch off AJAX-based page history tracking and 'on' to enable tracking -->  		
+  		<param-value>on</param-value>
+	</context-param>
+	
+	<context-param>
+  		<param-name>ajaxVisitVariable</param-name>
+  		<!-- Control which page history is being used by the AJAX service. To share with 
+  			 the viewer engine, use 'visitedPages' as the variable name. -->  		
+  		<param-value>ajaxVisitedPages</param-value>
+  	</context-param>
+  	<context-param>
+  		<param-name>ajaxDefaultVisitLabel</param-name>
+  	 	<param-value>No View Label</param-value>
+  	</context-param>
+	
+	<!-- Viewer Home Page. Specifies the XSL file that portal redirect will use. -->
+	<context-param>
+		<param-name>viewerHomePage</param-name>
+		<param-value>home.xsl</param-value>
+	</context-param>
+	
+	<!-- XSL to perform query to get view classifications -->
+	<context-param>
+		<param-name>viewSecurityConfigQuery</param-name>
+		<param-value>/WEB-INF/security/getSecurityConfig.xsl</param-value>
+	</context-param>
+	
+	<!-- XSL to perform query to authorize user against classified views -->
+	<context-param>
+		<param-name>userAuthZQuery</param-name>
+		<param-value>/WEB-INF/security/userAuthZ.xsl</param-value>
+	</context-param>
+	
+	<!-- XSL to get user clearance levels from EA User instances instead of Stormpath -->
+	<context-param>
+		<param-name>eaUserInfoQuery</param-name>
+		<param-value>/WEB-INF/security/ea_user_info.xsl</param-value>
+	</context-param>
+	
+	<!-- XSL to perform query to authorise user against classified instances -->
+	<context-param>
+		<param-name>userAuthZInstanceQuery</param-name>
+		<param-value>/WEB-INF/security/userAuthZInstance.xsl</param-value>
+	</context-param>
+	
+	<!-- XSL to perform query to get the security ID of the current repository -->
+	<context-param>
+		<param-name>viewerRepositoryIDQuery</param-name>
+		<param-value>/WEB-INF/security/getRepositoryID.xsl</param-value>
+	</context-param>
+	
+	<servlet>
+		<description>Servlet for receiving the Essential repository snapshots</description>
+		<display-name>EssentialReportService</display-name>
+		<servlet-name>reportService</servlet-name>
+		<!--<servlet-class>com.enterprise_architecture.essential.report.security.SecureReportService</servlet-class>-->
+		<servlet-class>com.enterprise_architecture.essential.report.EasReportService</servlet-class>
+		<init-param>
+			<param-name>outputReportFile</param-name>
+			<param-value>/reportXML.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cacheConfig</param-name>
+			<param-value>/platform/essentialCache.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>uploadTempStore</param-name>
+			<param-value>/platform/tmp</param-value>
+		</init-param>
+
+	</servlet>
+
+	<servlet>
+		<description>
+		The servlet responsible for generating the reports</description>
+		<display-name>ReportServlet</display-name>
+		<servlet-name>ReportServlet</servlet-name>
+ 		<servlet-class>com.enterprise_architecture.essential.report.ReportServlet</servlet-class>		 
+		<!--<servlet-class>com.enterprise_architecture.essential.report.security.SecureReportServlet</servlet-class>-->
+		<init-param>
+			<param-name>homeXSLFile</param-name>
+			<param-value>home.xsl</param-value>
+		</init-param>
+		<init-param>
+			<param-name>homeLabel</param-name>
+			<param-value>Home</param-value>
+		</init-param>
+		<init-param>
+			<param-name>defaultReportFile</param-name>
+			<param-value>reportXML.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>theErrorXML</param-name>
+			<param-value>platform/errorXML.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>theErrorView</param-name>
+			<param-value>platform/errorView.xsl</param-value>
+		</init-param>
+		<init-param>
+			<param-name>transfomerAttributeName</param-name>
+			<param-value>theXSLTransformFactory</param-value>
+		</init-param>
+
+	</servlet>
+
+	<!--  Deprecated Servlet for managing page history -->
+	<servlet>
+		<description>
+		The servlet to handle the page history functionality</description>
+		<display-name> PageHistoryServlet</display-name>
+		<servlet-name>PageHistoryServlet</servlet-name>
+		<servlet-class> com.enterprise_architecture.essential.report.PageHistoryServlet</servlet-class>
+		<init-param>
+			<param-name>homeXSLFile</param-name>
+			<param-value>home.xsl</param-value>
+		</init-param>
+		<init-param>
+			<param-name>homeLabel</param-name>
+			<param-value>Home</param-value>
+		</init-param>
+		<init-param>
+			<param-name>defaultReportFile</param-name>
+			<param-value>reportXML.xml</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet>
+		<description>Servlet for receiving GraphWidget images from Essential Repository</description>
+		<display-name>ReportServiceImages</display-name>
+		<servlet-name>reportServiceImages</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.ReportServiceImages</servlet-class>
+		<init-param>
+			<param-name>outputDirectory</param-name>
+			<param-value>graph_images</param-value>
+		</init-param>		
+		<init-param>
+			<description>Set the maximum size of the image post request, in bytes</description>
+			<param-name>maxRequestSize</param-name>
+			<param-value>52428000</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet>
+		<description/>
+		<display-name>Essential Viewer Maintenance Service</display-name>
+		<servlet-name>essentialMaintenanceService</servlet-name>
+		  <servlet-class>com.enterprise_architecture.essential.report.EssentialMaintenanceService</servlet-class> 
+		<!--<servlet-class>com.enterprise_architecture.essential.report.security.SecureMaintenanceService</servlet-class>-->
+		<init-param>
+			<param-name>defaultCacheConfig</param-name>
+			<param-value>/platform/essentialCache.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>responseXSL</param-name>
+			<param-value>/platform/maintenanceResponse.xsl</param-value>
+		</init-param>
+		<init-param>
+			<param-name>responseXML</param-name>
+			<param-value>/platform/errorXML.xml</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet>
+		<description>Servlet to manage the choice of i18n language to use in Viewer</description>
+		<display-name>Essential Language Selection Service</display-name>
+		<servlet-name>essentialLanguageService</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.EssentialLanguageService</servlet-class>
+	</servlet>
+
+	<servlet>
+		<description>AJAX servlet to return the set of page/view visits in the current session</description>
+		<display-name>Essential View History Service</display-name>
+		<servlet-name>viewHistoryService</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.VisitHistoryService</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		Servlet to manage the login process, receving the username, password and tenant ID from login clients</description>
+		<display-name>ViewerLogin</display-name>
+		<servlet-name>ViewerLogin</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.security.ViewerLogin</servlet-class>
+		<init-param>
+			<description>
+			Specifies the EIP tenant that owns the Viewer</description>
+			<param-name>viewerTenant</param-name>
+			<param-value>none</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<description>
+		Servlet to log user out of their account</description>
+		<display-name>ViewerLogout</display-name>
+		<servlet-name>ViewerLogout</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.security.ViewerLogout</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		Service to manage the user folder content in Essential Viewer</description>
+		<display-name>ViewerUserFileService</display-name>
+		<servlet-name>ViewerUserFileService</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.security.ViewerUserFileService</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>reportService</servlet-name>
+		<url-pattern>/reportService</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReportServlet</servlet-name>
+		<url-pattern>/report</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReportServlet</servlet-name>
+		<url-pattern>/reportXML.xml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReportServlet</servlet-name>
+		<url-pattern>/language</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>PageHistoryServlet</servlet-name>
+		<url-pattern>/page_history</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>reportServiceImages</servlet-name>
+		<url-pattern>/reportServiceImages</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>essentialMaintenanceService</servlet-name>
+		<url-pattern>/essentialMaintenance</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>essentialLanguageService</servlet-name>
+		<url-pattern>/essentialLanguage</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>viewHistoryService</servlet-name>
+		<url-pattern>/viewHistory</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewerLogin</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewerLogout</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewerUserFileService</servlet-name>
+		<url-pattern>/userfiles</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>report</welcome-file>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+			<taglib-location>/WEB-INF/c.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+			<taglib-location>/WEB-INF/fmt.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/functions</taglib-uri>
+			<taglib-location>/WEB-INF/fn.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+	
+	<!--<filter>
+		<filter-name>ExpiresFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.ExpiresFilter</filter-class>
+		<init-param>
+			<param-name>ExpiresByType image</param-name>
+			<param-value>access plus 1 month</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ExpiresByType text/css</param-name>
+			<param-value>access plus 1 month</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>ExpiresFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>-->
+	
+
+	<!-- Settings for Caching filter -->
+	<!--<filter>
+		<filter-name>CacheFilter</filter-name>
+		<filter-class>com.opensymphony.oscache.web.filter.CacheFilter</filter-class>
+		<init-param>
+			<param-name>time</param-name>
+			<param-value>-1</param-value>
+		</init-param>
+		<init-param>
+			<param-name>scope</param-name>
+			<param-value>application</param-value>
+		</init-param>
+		<init-param>
+			<param-name>expires</param-name>
+			<param-value>off</param-value>
+		</init-param>
+		<init-param>
+			<param-name>oscache-properties-file</param-name>
+			<param-value>../../graph_images/pageCache/oscache.properties</param-value>
+		</init-param>
+	</filter>	
+	<filter-mapping>
+		<filter-name>CacheFilter</filter-name>
+		<url-pattern>/report</url-pattern>
+	</filter-mapping>-->
+
+<!-- Un-comment the following definitions to enable access control to the Viewer and
+		Report Servlet -->
+	<!-- Define a security constraint on this application -->
+	<!--<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>View Application</web-resource-name>
+			<url-pattern>/report</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>report_viewer</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Publish to Application</web-resource-name>
+			<url-pattern>/reportService</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>report_publish</role-name>
+		</auth-constraint>
+	</security-constraint>-->
+
+	<!-- Define the login configuration for this application -->
+	<!--<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Tomcat Manager Application</realm-name>
+	</login-config>-->
+
+	<!-- Define the login configuration for this application FORM BASED -->
+	<!--<login-config>
+		<auth-method>FORM</auth-method>
+		<realm-name>Essential Viewer</realm-name>
+		<form-login-config>
+			<form-login-page>/protected/login.jsp</form-login-page>
+			<form-error-page>/protected/error.jsp</form-error-page>
+		</form-login-config>
+	</login-config>-->
+
+	<!-- Security roles referenced by this web application -->
+	<security-role>
+		<description>
+			The role that is required to log in to the Essential Viewer Application
+		</description>
+		<role-name>report_viewer</role-name>
+	</security-role>
+	<security-role>
+		<description>A role that nobody should be assigned. Used for preventing direct access to XSL templates.</description>
+		<role-name>NobodyHasThisRole</role-name>
+	</security-role>
+
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>ViewTemplates</web-resource-name>
+            <description>No direct access to view template files.</description>
+            <url-pattern>*.xsl</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>No direct browser access to view template files.</description>
+            <role-name>NobodyHasThisRole</role-name>
+        </auth-constraint>
+    </security-constraint>
+	
+</web-app>

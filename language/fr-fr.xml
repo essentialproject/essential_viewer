@@ -1,0 +1,4631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language xmlns="http://www.enterprise-architecture.org/essential/language"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="en-gb"
+	xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
+
+	<!--
+	  
+	  WARNING, WARNING, WARNING
+	  DO NOT EDIT - THIS FILE IS GENERATED -..
+	  You should modify its source gettext file (WEB-INF/tools/fr.po instead
+		See the file WEB-INF/tools/README.txt
+	-->
+
+	<!--
+        * Copyright (c)2012 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Default Language internationalisation (i18n) specification for Essential Viewer - en-gb.xml
+    -->
+	<!-- 28.06.2012    JWC    1st coding-->
+        <!-- 01.2016    JMK    fr-fr-->
+	<!-- 15.05.2017		JWC	Removed python code in document prolog -->
+
+	<dateformat>[D1o] [MNn], [Y]</dateformat>
+		<numberformat>#</numberformat>
+		<strings>
+		<message>
+			<name>A</name>
+			<value>A</value>
+		</message>
+		<message>
+			<name>About Essential</name>
+			<value>À propos d'Essential</value>
+		</message>
+		<message>
+			<name>About This View</name>
+			<value>À propos de cette vue</value>
+		</message>
+		<message>
+			<name>A breakdown of the Business Processes by Business Domain, the Business Capabilities that are in each and the Business Processes that implement the Business Capabilities</name>
+			<value>Décomposition des processus métiers par  domaines / capacités / processus </value>
+		</message>
+		<message>
+			<name>Absorb</name>
+			<value>Absorbe</value>
+		</message>
+		<message>
+			<name>Access Right</name>
+			<value>Droits d'accès</value>
+		</message>
+		<message>
+			<name>Acquisition Method</name>
+			<value>Mécanisme d'acquisition</value>
+		</message>
+		<message>
+			<name>Actor</name>
+			<value>Acteur</value>
+		</message>
+		<message>
+			<name>Actor (Consumer)</name>
+			<value>Acteur (consommateur)</value>
+		</message>
+		<message>
+			<name>Actor (Provider)</name>
+			<value>Acteur (fournisseur)</value>
+		</message>
+		<message>
+			<name>Actor as Role</name>
+			<value>Acteur dans le rôle</value>
+		</message>
+		<message>
+			<name>Actual Retirement Date</name>
+			<value>Date effective de retrait</value>
+		</message>
+		<message>
+			<name>All</name>
+			<value>Tous</value>
+		</message>
+		<message>
+			<name>All Objectives</name>
+			<value>Tous les objectifs</value>
+		</message>
+		<message>
+			<name>Application</name>
+			<value>Application</value>
+		</message>
+		<message>
+			<name>application</name>
+			<value>application</value>
+		</message>
+		<message>
+			<name>Application Capability</name>
+			<value>Capacité de l'application</value>
+		</message>
+		<message>
+			<name>Application Capability Catalogue</name>
+			<value>Catalogue des capacités applicatives</value>
+		</message>
+		<message>
+			<name>Application Capability Catalogue by Name</name>
+			<value>Catalogue alphabétique des capacités applicatives</value>
+		</message>
+		<message>
+			<name>Application Capability Summary</name>
+			<value>Résumé de la capacité applicative</value>
+		</message>
+		<message>
+			<name>Application Catalogue</name>
+			<value>Catalogue applicatif</value>
+		</message>
+		<message>
+			<name>Application Catalogue as Table</name>
+			<value>Présentation tabulaire du catalogue applicatif</value>
+		</message>
+		<message>
+			<name>Application Catalogue by Application Family</name>
+			<value>Présentation par famille du catalogue applicatif</value>
+		</message>
+		<message>
+			<name>Application Catalogue by Name</name>
+			<value>Présentation alphabétique du catalogue applicatif</value>
+		</message>
+		<message>
+			<name>Application Change Analysis</name>
+			<value>Analyse des évolutions applicatives</value>
+		</message>
+		<message>
+			<name>Application Change Analysis - Application Deficiency/Redundancy</name>
+			<value>Analyse des évolutions applicatives : défaut/redondance d'application</value>
+		</message>
+		<message>
+			<name>Application Change Analysis - Application Distribution</name>
+			<value>Analyse des evolutions applicatives : distribution des applications</value>
+		</message>
+		<message>
+			<name>Application Change Analysis - Application Interface</name>
+			<value>Analyse des evolutions applicatives : interfaces applicatives</value>
+		</message>
+		<message>
+			<name>Application Data Dependencies</name>
+			<value>Dépendance des applications sur les données</value>
+		</message>
+		<message>
+			<name>Application Data Dependency Model</name>
+			<value>Cartographie des dépendances Application -- données</value>
+		</message>
+		<message>
+			<name>Application Deficiency/Redundancy Change Analysis</name>
+			<value>Analyse des evolutions applicatives : défaut/redondance d'application</value>
+		</message>
+		<message>
+			<name>Application Dependencies</name>
+			<value>Dépendance des applications</value>
+		</message>
+		<message>
+			<name>Application Dependencies Model</name>
+			<value>Cartographie des dépendances applicatives</value>
+		</message>
+		<message>
+			<name>Application Dependency Model</name>
+			<value>Cartographie des dépendances applicatives</value>
+		</message>
+		<message>
+			<name>Application Deployment Description</name>
+			<value>Description du déploiement de l'application</value>
+		</message>
+		<message>
+			<name>Application Deployment Instances Supported</name>
+			<value>Déploiements d'Instances applicatives supportés</value>
+		</message>
+		<message>
+			<name>Application Deployment Role</name>
+			<value>Rôle du déploiement applicatif</value>
+		</message>
+		<message>
+			<name>Application Description</name>
+			<value>Description de l'application</value>
+		</message>
+		<message>
+			<name>Application Distribution Change Analysis</name>
+			<value>Analyse d'impact des évolutions sur  la distribution des données</value>
+		</message>
+		<message>
+			<name>Application Distribution Change Analysis Catalogue</name>
+			<value>Catalogue d'analyse de la distribution des applications</value>
+		</message>
+		<message>
+			<name>Application Distribution Model</name>
+			<value>Cartographie de la distribution applicative</value>
+		</message>
+		<message>
+			<name>Application Diversity Analysis</name>
+			<value>Analyse de la diversité des applications</value>
+		</message>
+		<message>
+			<name>Application Diversity and Duplication Analysis</name>
+			<value>Analyse de la diversité/redondance des applications</value>
+		</message>
+		<message>
+			<name>Application Family</name>
+			<value>Famille d'application</value>
+		</message>
+		<message>
+			<name>Application Function Name</name>
+			<value>Nom de la fonction applicative</value>
+		</message>
+		<message>
+			<name>Application Impact Analysis</name>
+			<value>Analyse des impacts applicatifs</value>
+		</message>
+		<message>
+			<name>Application Info/Data Summary</name>
+			<value>Résumé des informations/données pour l'application</value>
+		</message>
+		<message>
+			<name>Application Information Dependency Model</name>
+			<value>Cartographie des dépendances applicatives sur les informations</value>
+		</message>
+		<message>
+			<name>Application Instance Name</name>
+			<value>Nom de l'instance applicative</value>
+		</message>
+		<message>
+			<name>Application Interface</name>
+			<value>Interface applicative</value>
+		</message>
+		<message>
+			<name>Application Interface Change Analysis</name>
+			<value>Analyse d'impact -- évolution des interfaces applicatives</value>
+		</message>
+		<message>
+			<name>Application Interface Change Analysis Catalogue</name>
+			<value>Catalogue des analyse d'impact -- évolution des interface applicative</value>
+		</message>
+		<message>
+			<name>Application Lifecycle Model</name>
+			<value>Cartographie du cycle de vie applicatif</value>
+		</message>
+		<message>
+			<name>Application List Extract - CSV</name>
+			<value>Extraire la liste d'application -- CSV</value>
+		</message>
+		<message>
+			<name>Application List Extract - XML</name>
+			<value>Extraire la liste d'application -- XML</value>
+		</message>
+		<message>
+			<name>Application Milestone Summary</name>
+			<value>Résumé de l'étape applicative</value>
+		</message>
+		<message>
+			<name>Application Name</name>
+			<value>Nom de lm'application</value>
+		</message>
+		<message>
+			<name>Application Principles</name>
+			<value>Principes guidant l'architecture applicative</value>
+		</message>
+		<message>
+			<name>Application Provider Summary</name>
+			<value>Fournisseur applicatif : résumé</value>
+		</message>
+		<message>
+			<name>Application Provider Summary for</name>
+			<value>Résumé sur le fournisseur applicatif</value>
+		</message>
+		<message>
+			<name>Application Reference Model</name>
+			<value>Modèle applicatif de référence</value>
+		</message>
+		<message>
+			<name>Application Roadmap</name>
+			<value>Feuille de route applicative</value>
+		</message>
+		<message>
+			<name>Applications</name>
+			<value>Applications</value>
+		</message>
+		<message>
+			<name>Application Service</name>
+			<value>Services applicatiffs</value>
+		</message>
+		<message>
+			<name>application service</name>
+			<value>service applicatif</value>
+		</message>
+		<message>
+			<name>Application Service Catalogue</name>
+			<value>Catalogue des services applicatifs</value>
+		</message>
+		<message>
+			<name>Application Service Catalogue by Name</name>
+			<value>Catalogue alphabétique des services applicatifs</value>
+		</message>
+		<message>
+			<name>Application Services</name>
+			<value>Services applicatifs</value>
+		</message>
+		<message>
+			<name>Application Services Supporting Business Capability Analysis</name>
+			<value>Analyse du support des capacités applicatives aux  capacités métiers</value>
+		</message>
+		<message>
+			<name>Application Service Stakeholder Model</name>
+			<value>Cartographie  parties intéressées / service applicatif</value>
+		</message>
+		<message>
+			<name>Application Service Stakeholder Model for</name>
+			<value>Cartographie  parties intéressées/service applicatif pour</value>
+		</message>
+		<message>
+			<name>Application Service Summary</name>
+			<value>Résumé du service applicatif</value>
+		</message>
+		<message>
+			<name>Application Software</name>
+			<value>Logiciel de l'application</value>
+		</message>
+		<message>
+			<name>Application Summary</name>
+			<value>Résumé de l'application</value>
+		</message>
+		<message>
+			<name>Application Supported</name>
+			<value>Application supportée</value>
+		</message>
+		<message>
+			<name>Application Technology Platform Model</name>
+			<value>Cartographie des plate-formes technologique par application</value>
+		</message>
+		<message>
+			<name>Application Technology Strategy Alignment</name>
+			<value>Alignement  stratégique des technologies applicatives</value>
+		</message>
+		<message>
+			<name>Application Type</name>
+			<value>Type d'application</value>
+		</message>
+		<message>
+			<name>Application Views</name>
+			<value>Vues de la couche applicative</value>
+		</message>
+		<message>
+			<name>Approved Technology Evaluation</name>
+			<value>Évaluation technologies approuvée</value>
+		</message>
+		<message>
+			<name>as the root organisation</name>
+			<value>avec pour organisation racine</value>
+		</message>
+		<message>
+			<name>A summary of the data managed by</name>
+			<value>Résumé des données gérées par</value>
+		</message>
+		<message>
+			<name>A summary of the information interactions for the</name>
+			<value>Un résumé des relations entre informations pour le</value>
+		</message>
+		<message>
+			<name>Architecture Layer</name>
+			<value>Couche architecturale</value>
+		</message>
+		<message>
+			<name>as well as the applications from where this data is sourced.</name>
+			<value>ainsi que les applications qui fournissent ces données</value>
+		</message>
+		<message>
+			<name>Attention</name>
+			<value>Attention</value>
+		</message>
+		<message>
+			<name>Attributes</name>
+			<value>Attributs</value>
+		</message>
+		<message>
+			<name>Author</name>
+			<value>Auteur</value>
+		</message>
+		<message>
+			<name>Author not defined</name>
+			<value>Auteur non renseigné</value>
+		</message>
+		<message>
+			<name>Automated</name>
+			<value>Automatisé</value>
+		</message>
+		<message>
+			<name>Automated Process</name>
+			<value>Processus automatisé</value>
+		</message>
+		<message>
+			<name>Available Maturity</name>
+			<value>Maturité disponible</value>
+		</message>
+		<message>
+			<name>B</name>
+			<value>B</value>
+		</message>
+		<message>
+			<name>Back to Top</name>
+			<value>Retour en haut</value>
+		</message>
+		<message>
+			<name>Baseline</name>
+			<value>Ligne de base</value>
+		</message>
+		<message>
+			<name>Below is a list of the most recent pages viewed in Essential Viewer</name>
+			<value>Liste des pages récemment consultées</value>
+		</message>
+		<message>
+			<name>Build Description</name>
+			<value>Description de l'assemblage</value>
+		</message>
+		<message>
+			<name>Business</name>
+			<value>Métiers</value>
+		</message>
+		<message>
+			<name>Business Activity</name>
+			<value>Activité métier</value>
+		</message>
+		<message>
+			<name>Business Capability</name>
+			<value>Capacité métier</value>
+		</message>
+		<message>
+			<name>Business Capability Catalogue</name>
+			<value>Catalogue  des capacités d'affaire</value>
+		</message>
+		<message>
+			<name>Business Capability Catalogue by Name</name>
+			<value>Catalogue  alphabétique des capacités métiers</value>
+		</message>
+		<message>
+			<name>Business Capability Change Footprint</name>
+			<value>Trace des évolutions des capacités d'affaire</value>
+		</message>
+		<message>
+			<name>Business Capability Issues</name>
+			<value>Problème rencontré avec les capacité d'affaire</value>
+		</message>
+		<message>
+			<name>Business Capability Model</name>
+			<value>Cartographie des capacités métiers</value>
+		</message>
+		<message>
+			<name>Business Capability Summary</name>
+			<value>Description de la capacité métier</value>
+		</message>
+		<message>
+			<name>Business Capability to Business Process Analysis</name>
+			<value>Analyse des relations entre capacités  et processus métiers</value>
+		</message>
+		<message>
+			<name>Business Contact</name>
+			<value>Contact métier</value>
+		</message>
+		<message>
+			<name>Business Continuity Plan in Place</name>
+			<value>Plan de continuité métier existant</value>
+		</message>
+		<message>
+			<name>Business Domain</name>
+			<value>Domaine Métier</value>
+		</message>
+		<message>
+			<name>Business Domain Catalogue</name>
+			<value>Catalogue des domaines métiers</value>
+		</message>
+		<message>
+			<name>Business Domain Catalogue by Name</name>
+			<value>Catalogue  alphabétique des domaines métiers</value>
+		</message>
+		<message>
+			<name>Business Domain IT Analysis</name>
+			<value>Analyse des relations domaines métiers -- système d'information</value>
+		</message>
+		<message>
+			<name>Business Domain Process Analysis</name>
+			<value>Analyse des processus métiers pour le domaine</value>
+		</message>
+		<message>
+			<name>Business Driver</name>
+			<value>Catalyseur mériers</value>
+		</message>
+		<message>
+			<name>Business Drivers</name>
+			<value>Catalyseurs métiers</value>
+		</message>
+		<message>
+			<name>Business Footprint</name>
+			<value>Empreinte métier</value>
+		</message>
+		<message>
+			<name>Business Function/Service</name>
+			<value>Service/fonction métier</value>
+		</message>
+		<message>
+			<name>Business Function / Service Change Analysis</name>
+			<value>Analyse d'impact -- évolution des services/fonctions métiers</value>
+		</message>
+		<message>
+			<name>Business Function/Service Model</name>
+			<value>Cartographie des fonctions/services métiers</value>
+		</message>
+		<message>
+			<name>Business Impact</name>
+			<value>Impact métier</value>
+		</message>
+		<message>
+			<name>Business Information Change Analysis</name>
+			<value>Analyse des évolutions des informations d'affaire</value>
+		</message>
+		<message>
+			<name>Business Information Model</name>
+			<value>Cartographie des informations métiers</value>
+		</message>
+		<message>
+			<name>Business Milestone Summary</name>
+			<value>Résumé des étapes métiers</value>
+		</message>
+		<message>
+			<name>Business Objective</name>
+			<value>Objectif métier</value>
+		</message>
+		<message>
+			<name>business objective</name>
+			<value>objectif métier</value>
+		</message>
+		<message>
+			<name>Business Objective Footprint</name>
+			<value>Trace de l'objectif métier</value>
+		</message>
+		<message>
+			<name>Business Objectives Catalogue</name>
+			<value>Catalogue des objectifs métiers</value>
+		</message>
+		<message>
+			<name>Business Objective Summary</name>
+			<value>Résumé de l'objectif métier</value>
+		</message>
+		<message>
+			<name>Business Objective Summary for</name>
+			<value>Résumé de l'objectif métier pour</value>
+		</message>
+		<message>
+			<name>Business Owner</name>
+			<value>Responsable métier</value>
+		</message>
+		<message>
+			<name>Business Performance Change Analysis</name>
+			<value>Analyse d'impact -- évolution des performances métiers</value>
+		</message>
+		<message>
+			<name>Business Performance Model</name>
+			<value>Cartographie des performances métiers</value>
+		</message>
+		<message>
+			<name>Business Principles</name>
+			<value>Principes métiers</value>
+		</message>
+		<message>
+			<name>Business Process</name>
+			<value>Processus métiers</value>
+		</message>
+		<message>
+			<name>Business Process Analysis</name>
+			<value>Analyse des processus métiers</value>
+		</message>
+		<message>
+			<name>Business Process Analysis for Business Domain</name>
+			<value>Analyse des processus métiers pour le domaine</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue</name>
+			<value>Catalogue des processus d'affaire</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue by Business Domain</name>
+			<value>Catalogue des processus métiers par domaine</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue by Business Service</name>
+			<value>Catalogue des procesus métiers par service</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue by Domain</name>
+			<value>Catalogue des processus métiers par domaine</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue by Name</name>
+			<value>Catalogue des processus métiers par Nom</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue - Table View</name>
+			<value>Vatalogue des processus métiers -- vue tabulaire</value>
+		</message>
+		<message>
+			<name>Business Process Change Analysis</name>
+			<value>Analyse des évolution de processus métier</value>
+		</message>
+		<message>
+			<name>Business Process Description</name>
+			<value>Description des processus métiers</value>
+		</message>
+		<message>
+			<name>Business Processes</name>
+			<value>Processus métiers</value>
+		</message>
+		<message>
+			<name>Business Processes Impacted</name>
+			<value>Processus métiers impactés</value>
+		</message>
+		<message>
+			<name>Business Processes Using</name>
+			<value>Processus métiers utilisant</value>
+		</message>
+		<message>
+			<name>Business Processes Using Information Object</name>
+			<value>Processus métiers utilisant l'objet informationnel</value>
+		</message>
+		<message>
+			<name>Business Process IT Support Change Analysis</name>
+			<value>Analyse des évolutions de processus d'affaire sur les systèmes d'information</value>
+		</message>
+		<message>
+			<name>Business Process Model</name>
+			<value>Cartographie des processus d'affaire</value>
+		</message>
+		<message>
+			<name>Business Process Name</name>
+			<value>Nom du processus métier</value>
+		</message>
+		<message>
+			<name>Business Process Summary</name>
+			<value>Résumé du processus métier</value>
+		</message>
+		<message>
+			<name>Business Process Summary for</name>
+			<value>Résumé du processus métier pour</value>
+		</message>
+		<message>
+			<name>Business Reference Model</name>
+			<value>Modèle de référence métier</value>
+		</message>
+		<message>
+			<name>Business Roadmap</name>
+			<value>Feuille de route métier</value>
+		</message>
+		<message>
+			<name>Business Role</name>
+			<value>Tôle métier</value>
+		</message>
+		<message>
+			<name>Business Roles and Organisations</name>
+			<value>Organisation et rôles organisationnel</value>
+		</message>
+		<message>
+			<name>Business Rule</name>
+			<value>Règle métier</value>
+		</message>
+		<message>
+			<name>Business Service</name>
+			<value>Service métier</value>
+		</message>
+		<message>
+			<name>business service</name>
+			<value>service métier</value>
+		</message>
+		<message>
+			<name>Business Service Catalogue</name>
+			<value>Catalogue des Services d'affaire</value>
+		</message>
+		<message>
+			<name>Business Service Catalogue by Name</name>
+			<value>Catalogue alphabétique des Services métiers</value>
+		</message>
+		<message>
+			<name>Business Service Interaction Model</name>
+			<value>Cartographie des interactions entre services métiers</value>
+		</message>
+		<message>
+			<name>Business Services</name>
+			<value>Services métiers</value>
+		</message>
+		<message>
+			<name>Business Service Summary</name>
+			<value>Résumé du service métier</value>
+		</message>
+		<message>
+			<name>Business Stakeholders</name>
+			<value>Partie métiers intéréssées</value>
+		</message>
+		<message>
+			<name>Business Task</name>
+			<value>Tâche métier</value>
+		</message>
+		<message>
+			<name>Business Team</name>
+			<value>Équipe métier</value>
+		</message>
+		<message>
+			<name>Business Views</name>
+			<value>Vues métier</value>
+		</message>
+		<message>
+			<name>business workflow</name>
+			<value>Flux opérationnel métier</value>
+		</message>
+		<message>
+			<name>by indicating what needs to change across</name>
+			<value>en indiquant ce qui doit changer</value>
+		</message>
+		<message>
+			<name>C</name>
+			<value>C</value>
+		</message>
+		<message>
+			<name>Cancel</name>
+			<value>Annuler</value>
+		</message>
+		<message>
+			<name>Capability</name>
+			<value>Capacité</value>
+		</message>
+		<message>
+			<name>Catalogue</name>
+			<value>Catalogue</value>
+		</message>
+		<message>
+			<name>Catalogues</name>
+			<value>Catalogues</value>
+		</message>
+		<message>
+			<name>Change (Strategic Plan)</name>
+			<value>Plan stratégique d'évolution</value>
+		</message>
+		<message>
+			<name>Change Analysis</name>
+			<value>Analyse des évolutions</value>
+		</message>
+		<message>
+			<name>Choose a Business Area</name>
+			<value>Choisir un périmètre  métier</value>
+		</message>
+		<message>
+			<name>Choose a Domain</name>
+			<value>Choisir un domaine</value>
+		</message>
+		<message>
+			<name>Choose an Objective</name>
+			<value>Choisir un objectif</value>
+		</message>
+		<message>
+			<name>Choose your language</name>
+			<value>Choisir la langue</value>
+		</message>
+		<message>
+			<name>Clear Filter</name>
+			<value>Réinitialiser le filtre</value>
+		</message>
+		<message>
+			<name>Click on one of the Data Objects below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'une des donnés objet ci dessous pour naviguer vers la vue correspondante</value>
+		</message>
+		<message>
+			<name>Click on one of the Data Subjects below to navigate to the required view</name>
+			<value>Cliquer sur l'une des données sujet ci dessous pour naviguer vers la vue correspondante</value>
+		</message>
+		<message>
+			<name>Click on one of the Physical Nodes below to navigate to the required view</name>
+			<value>Cliquer sur l'un des nœuds physique ci dessous pour naviguer vers la vue correspondante</value>
+		</message>
+		<message>
+			<name>Click on one of the Physical Nodes below to view its detailed specification</name>
+			<value>Cliquer sur l'un des nœuds physique ci dessous pour voir ses spécifications détaillées</value>
+		</message>
+		<message>
+			<name>Click on one of the Technology Components below to view the relevant Interoperability Change Analysis</name>
+			<value>Cliquer sur l'un des composants techniques ci dessous pour voir les impacts relatifs à l'évolution des inter-opérabilités</value>
+		</message>
+		<message>
+			<name>Click on one of the Technology Components or Technology Products below to navigate to the required view</name>
+			<value>Cliquer sur l'un des composants ou produit techniques ci dessous pour naviguer vers la vue correspondante</value>
+		</message>
+		<message>
+			<name>Click on one of the Technology Products below to analyse which nodes are of the given computer type</name>
+			<value>Cliquer sur l'un des composants techniques ci dessous pour voir les équipements de type correspondant</value>
+		</message>
+		<message>
+			<name>Click on one of the Technology Products below to navigate to the required view</name>
+			<value>Cliquer sur l'un des produits techniques ci dessous pour naviguer vers la vue requise</value>
+		</message>
+		<message>
+			<name>Click to view Business Domains</name>
+			<value>Cliquer pour voir le domaine métier</value>
+		</message>
+		<message>
+			<name>Comment on Site</name>
+			<value>Commentaire sur le site</value>
+		</message>
+		<message>
+			<name>Comments</name>
+			<value>Commentaires</value>
+		</message>
+		<message>
+			<name>Completeness</name>
+			<value>Complétude</value>
+		</message>
+		<message>
+			<name>Component</name>
+			<value>Composant</value>
+		</message>
+		<message>
+			<name>Concept</name>
+			<value>Concept</value>
+		</message>
+		<message>
+			<name>Conditional Master Data</name>
+			<value>Donnée maître conditionnelle</value>
+		</message>
+		<message>
+			<name>consumed and sourced?</name>
+			<value>consommé et produit</value>
+		</message>
+		<message>
+			<name>Contact Details</name>
+			<value>Détail du contact</value>
+		</message>
+		<message>
+			<name>Contained Sub-Organisations</name>
+			<value>Sous-organisations internes</value>
+		</message>
+		<message>
+			<name>Contract Owner</name>
+			<value>Responsable du contrat</value>
+		</message>
+		<message>
+			<name>CREATE</name>
+			<value>CRÉATION</value>
+		</message>
+		<message>
+			<name>Creates</name>
+			<value>Crée</value>
+		</message>
+		<message>
+			<name>Criticality to Process</name>
+			<value>Criticité pour le processus</value>
+		</message>
+		<message>
+			<name>CRUD</name>
+			<value>CRUD</value>
+		</message>
+		<message>
+			<name>Currency</name>
+			<value>Unité monétaire</value>
+		</message>
+		<message>
+			<name>D</name>
+			<value>D</value>
+		</message>
+		<message>
+			<name>Dashboards</name>
+			<value>Tableau de bord</value>
+		</message>
+		<message>
+			<name>Data Attributes</name>
+			<value>Attributs des données</value>
+		</message>
+		<message>
+			<name>Data Availability Change Analysis</name>
+			<value>Analyse d'impact -- disponibilité des donnéés</value>
+		</message>
+		<message>
+			<name>Database Installation Technology</name>
+			<value>Technologie  bases de données</value>
+		</message>
+		<message>
+			<name>Database Schema</name>
+			<value>Schéma de base de donnée</value>
+		</message>
+		<message>
+			<name>Database Schema Description</name>
+			<value>Description du schéma de la base de donnée</value>
+		</message>
+		<message>
+			<name>Database Schema Name</name>
+			<value>Nom du schéma de la base de donnée</value>
+		</message>
+		<message>
+			<name>Data Catalogue</name>
+			<value>Catalogue des données</value>
+		</message>
+		<message>
+			<name>Data Catalogue by Category</name>
+			<value>Catalogue des données par categorie</value>
+		</message>
+		<message>
+			<name>Data Catalogue by Name</name>
+			<value>Catalogue alphabétique des données</value>
+		</message>
+		<message>
+			<name>Data Category</name>
+			<value>Catégorie de donnée</value>
+		</message>
+		<message>
+			<name>Data Integrity Change Analysis</name>
+			<value>Analyse d'impact -- intégrité des données</value>
+		</message>
+		<message>
+			<name>data is</name>
+			<value>la donnée est</value>
+		</message>
+		<message>
+			<name>Data Managed</name>
+			<value>Donnée gérée</value>
+		</message>
+		<message>
+			<name>Data Milestone Summary</name>
+			<value>Résumé de l'étape donnée</value>
+		</message>
+		<message>
+			<name>Data Object</name>
+			<value>Objet de donnée</value>
+		</message>
+		<message>
+			<name>Data Object Name</name>
+			<value>Nom de l'objet de donnée</value>
+		</message>
+		<message>
+			<name>Data Object Provider Model</name>
+			<value>Cartographie  des fournisseurs de donnée objet</value>
+		</message>
+		<message>
+			<name>Data Objects</name>
+			<value>Données objets</value>
+		</message>
+		<message>
+			<name>Data Object Summary</name>
+			<value>Résumé de la donnée objet</value>
+		</message>
+		<message>
+			<name>Data Object Summary for</name>
+			<value>Résumé de la donnée objet pour</value>
+		</message>
+		<message>
+			<name>Data Provider Model</name>
+			<value>Cartographie  des fournisseur de donnée</value>
+		</message>
+		<message>
+			<name>Data Provider Model for</name>
+			<value>Cartographie des fournisseurs de donnée pour</value>
+		</message>
+		<message>
+			<name>Data Representation</name>
+			<value>Représentation de donnée</value>
+		</message>
+		<message>
+			<name>Data Roadmap</name>
+			<value>Feuille de route  --  données</value>
+		</message>
+		<message>
+			<name>Data Scarcity/Redundancy Change Analysis</name>
+			<value>Analyse d'impact des évolutions sur  la redondance/densité des données</value>
+		</message>
+		<message>
+			<name>Data Scarcity / Redundancy Change Analysis</name>
+			<value>Analyse d'impact sur la disponibilité des données</value>
+		</message>
+		<message>
+			<name>Data Scarcity / Redundancy Change Analysis for</name>
+			<value>Analyse d'impact sur la disponibilité des données pour</value>
+		</message>
+		<message>
+			<name>Data Security Change Analysis</name>
+			<value>Analyse d'impact -- sécurité des données</value>
+		</message>
+		<message>
+			<name>Data Security Model</name>
+			<value>Modèle de sécurité des données</value>
+		</message>
+		<message>
+			<name>Data Security Model for</name>
+			<value>Modèle de sécurité des données pour</value>
+		</message>
+		<message>
+			<name>Data Subject</name>
+			<value> Donnée sujet</value>
+		</message>
+		<message>
+			<name> Data Subject</name>
+			<value> Donnée sujet</value>
+		</message>
+		<message>
+			<name>Data Subject Catalogue</name>
+			<value>Catalogue des données sujets</value>
+		</message>
+		<message>
+			<name>Data Subject Catalogue by Name</name>
+			<value>Catalogue alphabétique des données sujets</value>
+		</message>
+		<message>
+			<name>Data Subject Scarcity/Redundancy Change Analysis</name>
+			<value>Analyse d'impact des évolutions sur la redondance/densité des données sujets</value>
+		</message>
+		<message>
+			<name>Data Subject Security Model</name>
+			<value>Cartographie de sécurité des données sujets</value>
+		</message>
+		<message>
+			<name>Data Subject Summary</name>
+			<value>Résumé de la donnée sujet</value>
+		</message>
+		<message>
+			<name>Data Subject Summary for</name>
+			<value>Résumé de la donnée sujet pour</value>
+		</message>
+		<message>
+			<name>Data Subject to Application Service Model</name>
+			<value>Cartographie des relations entre données sujet et applications</value>
+		</message>
+		<message>
+			<name>Data Subject-to-Application Service Model for</name>
+			<value>Cartographie des relations entre données sujet et application pour</value>
+		</message>
+		<message>
+			<name>Data-to-Application Service Matrix</name>
+			<value>Matrice de relation donnée -- application</value>
+		</message>
+		<message>
+			<name>Data to Application Service Model</name>
+			<value>Cartographie des relations donnée -- application service</value>
+		</message>
+		<message>
+			<name>Data-to-Application Service Model</name>
+			<value>Matrice de relation donnée -- application</value>
+		</message>
+		<message>
+			<name>Data-to-Role Matrix</name>
+			<value>Matrice de relation données -- rôle</value>
+		</message>
+		<message>
+			<name>DB Installation Technology</name>
+			<value>Technologie de base de donnée installée</value>
+		</message>
+		<message>
+			<name>DB Schema Description</name>
+			<value>Description du schéma de base de donnée</value>
+		</message>
+		<message>
+			<name>DB Schema Name</name>
+			<value>Nom du schéma de base de donnée</value>
+		</message>
+		<message>
+			<name>Decommission</name>
+			<value>Déclassement</value>
+		</message>
+		<message>
+			<name>Defining Process Flow</name>
+			<value>Flux du processus</value>
+		</message>
+		<message>
+			<name>Definition</name>
+			<value>Définition</value>
+		</message>
+		<message>
+			<name>DELETE</name>
+			<value>EFFACEMENT</value>
+		</message>
+		<message>
+			<name>Deletes</name>
+			<value>Efface</value>
+		</message>
+		<message>
+			<name>Delivery Method</name>
+			<value>Moyen de fourniture</value>
+		</message>
+		<message>
+			<name>Delivery Projects</name>
+			<value>Projets de livraison</value>
+		</message>
+		<message>
+			<name>Dependant Application Instances</name>
+			<value>Instances applicatives dépendantes</value>
+		</message>
+		<message>
+			<name>Dependant Technology Instances</name>
+			<value>Instances technologiques dépendantes</value>
+		</message>
+		<message>
+			<name>Dependencies</name>
+			<value>Dépendances</value>
+		</message>
+		<message>
+			<name>Dependency Model</name>
+			<value>Cartographie des dépendances</value>
+		</message>
+		<message>
+			<name>Depends on Plans</name>
+			<value>Dépend du plan</value>
+		</message>
+		<message>
+			<name>Deployed Application Instances</name>
+			<value>Instances applicatives déployées</value>
+		</message>
+		<message>
+			<name>Deployed Database Schema</name>
+			<value>Instances applicatives déployées</value>
+		</message>
+		<message>
+			<name>Deployed Instances</name>
+			<value>Instances déployées</value>
+		</message>
+		<message>
+			<name>Deployed on Node</name>
+			<value>Déployées sur le noeud</value>
+		</message>
+		<message>
+			<name>Deployed on Physical Node</name>
+			<value>Déployées sur le nœud physique</value>
+		</message>
+		<message>
+			<name>Deployed Technology Instances</name>
+			<value>Instances technologiques déployées</value>
+		</message>
+		<message>
+			<name>Deployed to</name>
+			<value>Déployées sur</value>
+		</message>
+		<message>
+			<name>Deployment of Application</name>
+			<value>Déploiement apllicatif</value>
+		</message>
+		<message>
+			<name>Deployment Status</name>
+			<value>Statut du déploiement</value>
+		</message>
+		<message>
+			<name>Deployment Technology Format</name>
+			<value>Format de déploiement de la technologie</value>
+		</message>
+		<message>
+			<name>Description</name>
+			<value>Description</value>
+		</message>
+		<message>
+			<name>Designated System of Record</name>
+			<value>Système de référence désigné</value>
+		</message>
+		<message>
+			<name>Destination</name>
+			<value>Destination</value>
+		</message>
+		<message>
+			<name>Details of this element are integrated with other repositories as follows</name>
+			<value>Des détails sur cet élément sont intégrés avec d'autres sources comme indiqués ci dessous</value>
+		</message>
+		<message>
+			<name>Document</name>
+			<value>Document</value>
+		</message>
+		<message>
+			<name>Document List</name>
+			<value>Liste de documents</value>
+		</message>
+		<message>
+			<name>Document Name</name>
+			<value>Nom du document</value>
+		</message>
+		<message>
+			<name>documents</name>
+			<value>documents</value>
+		</message>
+		<message>
+			<name>documents have been published</name>
+			<value>les documents ont été publiés</value>
+		</message>
+		<message>
+			<name>Download</name>
+			<value>Télécharger</value>
+		</message>
+		<message>
+			<name>Downstream Systems</name>
+			<value>Systèmes aval</value>
+		</message>
+		<message>
+			<name>Driver</name>
+			<value>Catalyseur</value>
+		</message>
+		<message>
+			<name>Duplication/Gap Analysis</name>
+			<value>Analyse d'écart ou de duplication</value>
+		</message>
+		<message>
+			<name>E</name>
+			<value>E</value>
+		</message>
+		<message>
+			<name>EA Principles</name>
+			<value>Principes de l'architecture</value>
+		</message>
+		<message>
+			<name>Element</name>
+			<value>Élement</value>
+		</message>
+		<message>
+			<name>Email</name>
+			<value>Email</value>
+		</message>
+		<message>
+			<name>Empty</name>
+			<value>Vide</value>
+		</message>
+		<message>
+			<name>End Date</name>
+			<value>Date de fin</value>
+		</message>
+		<message>
+			<name>Enhance</name>
+			<value>Améliorer</value>
+		</message>
+		<message>
+			<name>Enterprise</name>
+			<value>Éntreprise</value>
+		</message>
+		<message>
+			<name>Enterprise Views</name>
+			<value>Vues de l'entreprise</value>
+		</message>
+		<message>
+			<name>environment:</name>
+			<value>environnement</value>
+		</message>
+		<message>
+			<name>Essential Architecture Manager - Application Services Supporting Business Capability Analysis</name>
+			<value>Essential Architecture Manager - Analyse des services applicatifs support pour les capacités métiers</value>
+		</message>
+		<message>
+			<name>Essential Architecture Manager - Strategic Plan Specification</name>
+			<value>Essential Architecture Manager -  Spécification du plan stratégique</value>
+		</message>
+		<message>
+			<name>Essential Utilities</name>
+			<value>Utilitaires essential</value>
+		</message>
+		<message>
+			<name>Essential Viewer History</name>
+			<value>Visualisation de l'historique de navigation</value>
+		</message>
+		<message>
+			<name>Essential Viewer last updated</name>
+			<value>Dernière mise à jour des données</value>
+		</message>
+		<message>
+			<name>Existing Solutions</name>
+			<value>Solutions existantes</value>
+		</message>
+		<message>
+			<name>Expand</name>
+			<value>Développer</value>
+		</message>
+		<message>
+			<name>External</name>
+			<value>Externe</value>
+		</message>
+		<message>
+			<name>External Document References</name>
+			<value>Références de documents externes</value>
+		</message>
+		<message>
+			<name>External Facing</name>
+			<value>Vue extérieures</value>
+		</message>
+		<message>
+			<name>External References</name>
+			<value>Références externes</value>
+		</message>
+		<message>
+			<name>External Repository</name>
+			<value>Dépôt externe</value>
+		</message>
+		<message>
+			<name>External Repository ID</name>
+			<value>Identifiant du dépôt externe</value>
+		</message>
+		<message>
+			<name>F</name>
+			<value>F</value>
+		</message>
+		<message>
+			<name>false</name>
+			<value>faux</value>
+		</message>
+		<message>
+			<name>Feedback</name>
+			<value>Retour</value>
+		</message>
+		<message>
+			<name>Feedback Type</name>
+			<value>Type de retour</value>
+		</message>
+		<message>
+			<name>Filter</name>
+			<value>Filtre</value>
+		</message>
+		<message>
+			<name>Fixed Price Deal in Place</name>
+			<value>Accord sur un peux fixe en cours</value>
+		</message>
+		<message>
+			<name>Forecast End Date</name>
+			<value>Date de fin prévue</value>
+		</message>
+		<message>
+			<name>Frequency</name>
+			<value>Fréquence</value>
+		</message>
+		<message>
+			<name>from the baseline state to the target state</name>
+			<value>de l'état de départ à l'état cible</value>
+		</message>
+		<message>
+			<name>Function/Service Change Analysis</name>
+			<value>Analyse d'impact -- évolution des services/fonctions</value>
+		</message>
+		<message>
+			<name>Functions/Services</name>
+			<value>Fonctions/Services</value>
+		</message>
+		<message>
+			<name>Functions Name</name>
+			<value>Nom des fonctions</value>
+		</message>
+		<message>
+			<name>Functions Provided</name>
+			<value>Fonctions forunies</value>
+		</message>
+		<message>
+			<name>Further Information</name>
+			<value>Informations supplémentaires</value>
+		</message>
+		<message>
+			<name>G</name>
+			<value>G</value>
+		</message>
+		<message>
+			<name>Get In Touch</name>
+			<value>Rentrer en contact</value>
+		</message>
+		<message>
+			<name>Go to</name>
+			<value>Aller à</value>
+		</message>
+		<message>
+			<name>Granularity</name>
+			<value>Granularité</value>
+		</message>
+		<message>
+			<name>Group Actor Summary</name>
+			<value>Résumé de l'acteur organisationnel</value>
+		</message>
+		<message>
+			<name>Group Actor Summary for</name>
+			<value>Résumé de l'acteur organisationnel</value>
+		</message>
+		<message>
+			<name>H</name>
+			<value>H</value>
+		</message>
+		<message>
+			<name>Hardware Instance</name>
+			<value>Instance matérielle</value>
+		</message>
+		<message>
+			<name>he purpose of the Strategic Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key enterprise elements that will exist at this stage of the Strategic Roadmap</name>
+			<value>La vue résumant une étape stratégique vise à décrire les lignes de forces ou objectifs concernés par l’évolution et à énoncer les principaux éléments de l'établissement qui devraient exister à cette étape de la feuille de route stratégique</value>
+		</message>
+		<message>
+			<name>High</name>
+			<value>Élevé</value>
+		</message>
+		<message>
+			<name>Highlight Objective</name>
+			<value>Objectif mis en évidence</value>
+		</message>
+		<message>
+			<name>History</name>
+			<value>Historique</value>
+		</message>
+		<message>
+			<name>Home</name>
+			<value>Accueil</value>
+		</message>
+		<message>
+			<name>I</name>
+			<value>I</value>
+		</message>
+		<message>
+			<name>Impacted Applications</name>
+			<value>Applications impactées</value>
+		</message>
+		<message>
+			<name>Impacted Application Services</name>
+			<value>Services applicatifs impactés</value>
+		</message>
+		<message>
+			<name>Impacted Business Drivers</name>
+			<value>Forces impactées</value>
+		</message>
+		<message>
+			<name>Impacted Business Objectives</name>
+			<value>Objectifs métiers impactés</value>
+		</message>
+		<message>
+			<name>Impacted Business Processes</name>
+			<value>Processus métiers impactés</value>
+		</message>
+		<message>
+			<name>Impacted Business Roles</name>
+			<value>Tôles métiers impactés</value>
+		</message>
+		<message>
+			<name>Impacted Business Services</name>
+			<value>Services métiers impactés</value>
+		</message>
+		<message>
+			<name>Impacted Data Objects</name>
+			<value>Données objets impactées</value>
+		</message>
+		<message>
+			<name>Impacted Drivers</name>
+			<value>Forces directrices impactées</value>
+		</message>
+		<message>
+			<name>Impacted Elements</name>
+			<value>Éléments impactés</value>
+		</message>
+		<message>
+			<name>Impacted Information Views</name>
+			<value>Vues informationnelles impactées</value>
+		</message>
+		<message>
+			<name>Impacted Locations</name>
+			<value>Localisations impactées</value>
+		</message>
+		<message>
+			<name>Impacted Objectives</name>
+			<value>Objectifs impactés</value>
+		</message>
+		<message>
+			<name>Impacted Organisations</name>
+			<value>Organisation impactées</value>
+		</message>
+		<message>
+			<name>Impacted Organisation Units</name>
+			<value>Unités organisationnelle impactées</value>
+		</message>
+		<message>
+			<name>Impacted Processes</name>
+			<value>Processus impactés</value>
+		</message>
+		<message>
+			<name>Impacted Roles</name>
+			<value>Rôles impactés</value>
+		</message>
+		<message>
+			<name>Impacted Teams</name>
+			<value>Équipes impactées</value>
+		</message>
+		<message>
+			<name>Impacted Technology Components</name>
+			<value>Composants techniques impactés</value>
+		</message>
+		<message>
+			<name>Impacted Technology Products</name>
+			<value>Produits technologiqus impactés</value>
+		</message>
+		<message>
+			<name>Impacted Technology Products/Builds</name>
+			<value>Solutions/produits impactés</value>
+		</message>
+		<message>
+			<name>Implemented</name>
+			<value>Mis en oeuvre</value>
+		</message>
+		<message>
+			<name>Implemented Applications</name>
+			<value>Applications mises en oeuvre</value>
+		</message>
+		<message>
+			<name>Implemented Components</name>
+			<value>Composants mis en oeuvre</value>
+		</message>
+		<message>
+			<name>Implementing Applications</name>
+			<value>Mise en oeuvre par les applications</value>
+		</message>
+		<message>
+			<name>Implementing Processes</name>
+			<value>Processus  mis en oeuvre</value>
+		</message>
+		<message>
+			<name>Implements Tech Components</name>
+			<value>Compoants techniques mis en oeuvre</value>
+		</message>
+		<message>
+			<name>Implications for Applications</name>
+			<value>Implications pour les applications</value>
+		</message>
+		<message>
+			<name>Implications for Information</name>
+			<value>Implications pour les informations</value>
+		</message>
+		<message>
+			<name>Implications for Technology</name>
+			<value>Implications pour les technologies</value>
+		</message>
+		<message>
+			<name>Implications for the Business</name>
+			<value>Implications pour les métiers</value>
+		</message>
+		<message>
+			<name>Import Spreadsheet Templates</name>
+			<value>Importer un modèle de feuille de calcul</value>
+		</message>
+		<message>
+			<name>Inbound</name>
+			<value>Entrant</value>
+		</message>
+		<message>
+			<name>Infomation Concept of View</name>
+			<value>Concept informationnel de la vue</value>
+		</message>
+		<message>
+			<name>Info Representation Deployments</name>
+			<value>Déploiement des représentation informationnelles</value>
+		</message>
+		<message>
+			<name>Information</name>
+			<value>Informations</value>
+		</message>
+		<message>
+			<name>Information/Data Roadmap</name>
+			<value>Feuille de route  --  informations/données</value>
+		</message>
+		<message>
+			<name>Information/Data Summary</name>
+			<value>Résumé des informations/données</value>
+		</message>
+		<message>
+			<name>Information/Data Summary for Application</name>
+			<value>Résumé des informations/données pour l'application</value>
+		</message>
+		<message>
+			<name>Information and Data Views</name>
+			<value>Vue informationnelle / vue des données</value>
+		</message>
+		<message>
+			<name>Information Catalogue</name>
+			<value>Catalogue des informations</value>
+		</message>
+		<message>
+			<name>Information Catalogue by Business Domain</name>
+			<value>Catalogue des informations par domaine métier</value>
+		</message>
+		<message>
+			<name>Information Catalogue by Concept</name>
+			<value>Catalogue des informations par concept</value>
+		</message>
+		<message>
+			<name>Information Change Analysis</name>
+			<value>Analyse de l'évolution informationnelle</value>
+		</message>
+		<message>
+			<name>Information Concept</name>
+			<value>Concept informationnel</value>
+		</message>
+		<message>
+			<name>Information Concept Summary</name>
+			<value>Résumé de u concept informationnele</value>
+		</message>
+		<message>
+			<name>Information Created</name>
+			<value>Inforramtion créée</value>
+		</message>
+		<message>
+			<name>Information Deleted</name>
+			<value>Information détruite</value>
+		</message>
+		<message>
+			<name>Information Name</name>
+			<value>Nom de l'information</value>
+		</message>
+		<message>
+			<name>Information Object</name>
+			<value>Ibjet infromationnel</value>
+		</message>
+		<message>
+			<name>Information Object </name>
+			<value>Objet informationnel</value>
+		</message>
+		<message>
+			<name>Information Object Summary</name>
+			<value>Résumé de l'objet informationnel</value>
+		</message>
+		<message>
+			<name>Information Object Summary for</name>
+			<value>Résumé de l'objet informationnel pour</value>
+		</message>
+		<message>
+			<name>Information Principles</name>
+			<value>Prinipes informationnels</value>
+		</message>
+		<message>
+			<name>Information Provided</name>
+			<value>Informations fournies</value>
+		</message>
+		<message>
+			<name>Information Reference Model</name>
+			<value>Modèle informationnel de référence</value>
+		</message>
+		<message>
+			<name>Information Representation</name>
+			<value>Représentation informationnelle</value>
+		</message>
+		<message>
+			<name>Information Representation Deployments</name>
+			<value>Déploiement de représentation infromationnelle</value>
+		</message>
+		<message>
+			<name>Information Representations</name>
+			<value>Représentations informationnelles</value>
+		</message>
+		<message>
+			<name>Information Representation Summary</name>
+			<value>Résumé de la représentation d'information</value>
+		</message>
+		<message>
+			<name>Information Representation Summary for </name>
+			<value>Résumé de la représentation d'information pour</value>
+		</message>
+		<message>
+			<name>Information Store</name>
+			<value>Dépôt d'information</value>
+		</message>
+		<message>
+			<name>Information System</name>
+			<value>Système d'information</value>
+		</message>
+		<message>
+			<name>Information System Change Analysis</name>
+			<value>Analyse des évolution du système d'information</value>
+		</message>
+		<message>
+			<name>Information Type (View)</name>
+			<value>Type d'information (vues)</value>
+		</message>
+		<message>
+			<name>Information Updated</name>
+			<value>Information mise à jour</value>
+		</message>
+		<message>
+			<name>Information Used</name>
+			<value>Information utilisée</value>
+		</message>
+		<message>
+			<name>Information View</name>
+			<value>Vue informationnelle</value>
+		</message>
+		<message>
+			<name>Information View Name</name>
+			<value>Nom de la vue informationnelle</value>
+		</message>
+		<message>
+			<name>Information Views</name>
+			<value>Vues informationnelles</value>
+		</message>
+		<message>
+			<name>Information Views &amp; Concepts</name>
+			<value>Vues et concepts informationnels</value>
+		</message>
+		<message>
+			<name>Information Views Represented</name>
+			<value>Vues informationnels rprésentées</value>
+		</message>
+		<message>
+			<name>Information View Summary</name>
+			<value>Résumé de la vue informationnelle</value>
+		</message>
+		<message>
+			<name>Information View Summary for</name>
+			<value>Résumé de vue informationnelle pour</value>
+		</message>
+		<message>
+			<name>Infrastructure Software</name>
+			<value>Logiciel d'infrastructure</value>
+		</message>
+		<message>
+			<name>Input Method</name>
+			<value>Méthode d'entrée</value>
+		</message>
+		<message>
+			<name>Instance Configuration</name>
+			<value>Configuration de l'instance</value>
+		</message>
+		<message>
+			<name>Internal</name>
+			<value>Interne</value>
+		</message>
+		<message>
+			<name>Internal Facing</name>
+			<value>visibilité externe</value>
+		</message>
+		<message>
+			<name>is created based on teh following schedules:</name>
+			<value>est créée suivant la périodicité suivante</value>
+		</message>
+		<message>
+			<name>is created based on the following schedules:</name>
+			<value>est créée suivant l'échéancier suivant</value>
+		</message>
+		<message>
+			<name>is delivered using the following methods:</name>
+			<value>est foruni avec les méthodes suivantes</value>
+		</message>
+		<message>
+			<name>is provided in the following formats:</name>
+			<value>est forunie dans les formats suivants</value>
+		</message>
+		<message>
+			<name>is to inform stakeholders regarding the extent of change that is required to move</name>
+			<value>devrait informer les parties intéressées sur les modifications requises afin d'évoluer</value>
+		</message>
+		<message>
+			<name>IT Contact</name>
+			<value>Contact IT</value>
+		</message>
+		<message>
+			<name>It is a model that defines a portfolio of applications and its service/function decomposition</name>
+			<value>C'est une cartographie  qui présente le portefeuille d'application ainsi que leur décomposition fonctionnelle ou par service</value>
+		</message>
+		<message>
+			<name>It is a model that defines the applications, their locations and the interfaces between applications</name>
+			<value>C'est une cartographie qui présente les applications, leur localisation ainsi que les interfaces entre ces applications</value>
+		</message>
+		<message>
+			<name>It is a model that defines the business processes of the enterprise, in the form of events, activities, rules and responsibilities</name>
+			<value>C'est un cartographie qui présente les processus métiers de l'établissement sous forme d’événements, d'activités de rôles ou de responsabilités</value>
+		</message>
+		<message>
+			<name>It is a model that defines the Core and Support Functions/Services of the Enterprise, the Information Systems that enable the function/service, and the roles of the actors that participate</name>
+			<value>C'est une cartographie qui défini les fonctions ou services métiers ou support de l’entreprise, les systèmes d'information qui sous-tendent ces fonction ou services et les rôles des acteurs qui y participent</value>
+		</message>
+		<message>
+			<name>It is a model that defines the defines the technologies in different locations/environments</name>
+			<value>C'est un cartographie qui présente les technologies selon leur localisation ou leur envirponnement</value>
+		</message>
+		<message>
+			<name>It is a model that defines the information assets that are consumed and produced by each Business Function/Service, including information exchange requirements with external business functions/services</name>
+			<value>C'est un cartographie qui défini les avoirs informationnels que sont consommés ou produits par chaque service ou fonction métier, en incluant les besoins d’échanges avec des fonctions ou services extérieurs</value>
+		</message>
+		<message>
+			<name>It is a model that defines the interaction (e.g. create, read, update, delete) between applications and data</name>
+			<value>Cette cartographie présente les interactions (création, lecture, mise à jour, effacement) entre  applications et données</value>
+		</message>
+		<message>
+			<name>It is a model that defines the organisational structure (hierarchical decomposition), the functions/service performed by each organisational unit, the geographic location where these organisation unit reside, and the responsible authority (owner) of these organisation units</name>
+			<value>Cette cartographie présente la structure organisationnelle (décomposition hiérarchique), les fonctions/services réalisés ou offert par chaque unité organisationnelle; leurs localisations géographiques ainsi que leur autorité responsable.</value>
+		</message>
+		<message>
+			<name>It is a model that defines the relationships between objectives / imperatives as derived from Policy, Act, Regulation and requirements, and the responsible organisation to achieve the objectives, and the measures or key performance indicators (KPI) by which to measure achievements of such objectives</name>
+			<value>Cette cartographie présente les relations entre d'une part les obligations ou objectifs ou  dérivés des politiques organisationnelles, des lois/règlements et des exigences et d'autre part l'organisation chargée de la réalisation des objectifs, les mesures ou indicateurs de performance permettant de situer la progression vers les objectifs.</value>
+		</message>
+		<message>
+			<name>It is a model that defines the security classification of Data Objects and the roles in the organisation that need access thereto</name>
+			<value>Cette cartographie présente les classifications de sécurité des données objet ainsi que les rôles organisationnels susceptibles d’accéder à ces données</value>
+		</message>
+		<message>
+			<name>It is a model that defines the security classification of Data Subjects and the roles in the organisation that need access thereto</name>
+			<value>Cette cartographie présente les classifications de sécurité des données sujets ainsi que les rôles organisationnels susceptibles d’accéder à ces données</value>
+		</message>
+		<message>
+			<name>It is a model that defines the Technologies in relation to the different subsystems in a distributed computing or client-server configuration (Note: Also known as the “technology stack” of a specific system)</name>
+			<value>Cette cartographie présente les relations entre technologies  et les différents sous-systèmes d'une configuration distribuée (ou client-serveur). </value>
+		</message>
+		<message>
+			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline</name>
+			<value>Cette cartographie présente les déficiences ou opportunités d’amélioration à partir d'une comparaison entre lignes de base</value>
+		</message>
+		<message>
+			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Business Architecture models and the Target Business Architecture models</name>
+			<value>Cette cartographie présente les éventuelles déficiences ou opportunités d’amélioration obtenue pâr comparaison entre les cartographies métiers de base et celles prises pour cibles.</value>
+		</message>
+		<message>
+			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Data Architecture models and the Target Business Architecture models</name>
+			<value>Cette cartographie présente les déficiences ou opportunités d’amélioration obtenue à partir d'une comparaison entre la cartographie architecturale de données  initiale et celle qui est envisagée (cible)</value>
+		</message>
+		<message>
+			<name>It outlines a list of individual increments of change over a timeline to show progression from a baseline to a target architecture state</name>
+			<value>Mise en évidence la chronologie des incréments élémentaires  de changement permettant de progresser d'un état initial de l'architecture vers un état envisagé (cible)</value>
+		</message>
+		<message>
+			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Application Architecture to the Target Application Architecture</name>
+			<value>Mise en évidence la chronologie des incréments élémentaires  de changement permettant de progresser d'un état initial de l'architecture applicative vers un état envisagé (cible)</value>
+		</message>
+		<message>
+			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Data Architecture to the Target Data Architecture</name>
+			<value>Mise en évidence la chronologie des incréments élémentaires  de changement permettant de progresser d'un état initial de l'architecture des Données vers un état envisagé (cible)</value>
+		</message>
+		<message>
+			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Technology Architecture to the Target Technology Architecture</name>
+			<value>Mise en évidence la chronologie des incréments élémentaires  de changement permettant de progresser d'un état initial de l'architecture Technologique vers un état envisagé (cible)</value>
+		</message>
+		<message>
+			<name>It provides a model that defines the major classes of technology components/services (infrastructure software, hardware, and network) and the interoperability standards associated thereto</name>
+			<value>Cette cartographie présente les principales classes de composants ou services technologiques (matériels ou logiciels d'infrastructure, réseau) et les standard interopérabilité applicable.</value>
+		</message>
+		<message>
+			<name>IT System Analysis</name>
+			<value>Analyse des systèmes d'information</value>
+		</message>
+		<message>
+			<name>J</name>
+			<value>J</value>
+		</message>
+		<message>
+			<name>Jump to</name>
+			<value>Aller à</value>
+		</message>
+		<message>
+			<name>K</name>
+			<value>K</value>
+		</message>
+		<message>
+			<name>Keep</name>
+			<value>Conserver</value>
+		</message>
+		<message>
+			<name>Key</name>
+			<value>Clef</value>
+		</message>
+		<message>
+			<name>KPI Measures</name>
+			<value>Mesures KPI</value>
+		</message>
+		<message>
+			<name>KPIs</name>
+			<value>KPIs</value>
+		</message>
+		<message>
+			<name>L</name>
+			<value>L</value>
+		</message>
+		<message>
+			<name>Language Selection</name>
+			<value>Choix de la langue</value>
+		</message>
+		<message>
+			<name>Last Updated</name>
+			<value>Dernière mise à jour</value>
+		</message>
+		<message>
+			<name>Legend</name>
+			<value>Légende</value>
+		</message>
+		<message>
+			<name>Level of Project Activity</name>
+			<value>Niveau d'activité du projet</value>
+		</message>
+		<message>
+			<name>Loading</name>
+			<value>Charger</value>
+		</message>
+		<message>
+			<name>Local Name</name>
+			<value>Dénomination locale</value>
+		</message>
+		<message>
+			<name>Location</name>
+			<value>Localisation</value>
+		</message>
+		<message>
+			<name>Location Change Analysis</name>
+			<value>Analyse des évolutions de localisation</value>
+		</message>
+		<message>
+			<name>Locations</name>
+			<value>Localisations</value>
+		</message>
+		<message>
+			<name>Low</name>
+			<value>Inférieur</value>
+		</message>
+		<message>
+			<name>M</name>
+			<value>M</value>
+		</message>
+		<message>
+			<name>Maintenance Cost</name>
+			<value>Coût de maintenance</value>
+		</message>
+		<message>
+			<name>Manual</name>
+			<value>Manuel</value>
+		</message>
+		<message>
+			<name>Manual Process</name>
+			<value>Processus manuel</value>
+		</message>
+		<message>
+			<name>Master Data</name>
+			<value>Données maîtres</value>
+		</message>
+		<message>
+			<name>Matrix</name>
+			<value>Matrice</value>
+		</message>
+		<message>
+			<name>Measure/KPI</name>
+			<value>Mesure/KPI</value>
+		</message>
+		<message>
+			<name>Measures</name>
+			<value>Mesures</value>
+		</message>
+		<message>
+			<name>Medium</name>
+			<value>Moyen</value>
+		</message>
+		<message>
+			<name>Member of Organisations</name>
+			<value>Membre 'organisations</value>
+		</message>
+		<message>
+			<name>Member of Product Family</name>
+			<value>Membre de la famille de produit</value>
+		</message>
+		<message>
+			<name>Method</name>
+			<value>Méthode</value>
+		</message>
+		<message>
+			<name>Milestone Summary</name>
+			<value>Résumé de l'étape</value>
+		</message>
+		<message>
+			<name>Model</name>
+			<value>Cartographie</value>
+		</message>
+		<message>
+			<name>models</name>
+			<value>Cartographies</value>
+		</message>
+		<message>
+			<name>models and the Target</name>
+			<value>cartographies et la cible</value>
+		</message>
+		<message>
+			<name>Motivating Drivers</name>
+			<value>Lignes de forces motivantes</value>
+		</message>
+		<message>
+			<name>N</name>
+			<value>N</value>
+		</message>
+		<message>
+			<name>Name</name>
+			<value>Nom</value>
+		</message>
+		<message>
+			<name>Network Diagram</name>
+			<value>Diagramme réseau</value>
+		</message>
+		<message>
+			<name>New</name>
+			<value>Nouveau</value>
+		</message>
+		<message>
+			<name>No</name>
+			<value>Non</value>
+		</message>
+		<message>
+			<name>No actors captured for this workflow</name>
+			<value>Aucun acteur n'est renseigné pour ce flux opérationnel</value>
+		</message>
+		<message>
+			<name>No Additional Technology Nodes defined for this Node</name>
+			<value>Aucun noeud technique n'est associé à ce noeud</value>
+		</message>
+		<message>
+			<name>No Application Instances dependant on this Technology Instance</name>
+			<value>Aucune instance applicative n dépend de cette instance tecnnique</value>
+		</message>
+		<message>
+			<name>No Applications captured</name>
+			<value>Aucune application associée</value>
+		</message>
+		<message>
+			<name>No Applications Defined</name>
+			<value>Aucune application définie</value>
+		</message>
+		<message>
+			<name>No Applications defined for this milestone</name>
+			<value>Aucune application n'est concernée par cette étape</value>
+		</message>
+		<message>
+			<name>No Application Services defined for this Capability</name>
+			<value>Aucun service applicatif n'est associé à cette capacité</value>
+		</message>
+		<message>
+			<name>No Application Services defined for this milestone</name>
+			<value>Aucun service applicatif n'est associé à cette étape</value>
+		</message>
+		<message>
+			<name>No Application Services have been captured for this Application Capability</name>
+			<value>Aucun service applicatif n'a été modélisé pour cette capacité applicative</value>
+		</message>
+		<message>
+			<name>No Applications Mapped</name>
+			<value>Pas d'application associée</value>
+		</message>
+		<message>
+			<name>No business capabilities defined for this process</name>
+			<value>Aucune capacité métier n'a été définir pour ce processus</value>
+		</message>
+		<message>
+			<name>No business domain captured</name>
+			<value>Aucun domaine métier n'est modélisé</value>
+		</message>
+		<message>
+			<name>No Business Domain captured for this Application Capability</name>
+			<value>Aucun domaine métier n'est modélisé pour cette capacité applicative</value>
+		</message>
+		<message>
+			<name>No business drivers captured</name>
+			<value>Aucune ligne de directrice n'est modélisé</value>
+		</message>
+		<message>
+			<name>No business owner captured</name>
+			<value>Aucun responsable métier n'est associé</value>
+		</message>
+		<message>
+			<name>No business owner has been captured for the</name>
+			<value>Aucun responsable métier n'a été défini pour le</value>
+		</message>
+		<message>
+			<name>No business processes captured for this business service</name>
+			<value>Aucun processus métier n'a été défini pour ce service métier</value>
+		</message>
+		<message>
+			<name>No Business Processes defined for this Capability</name>
+			<value>Aucun processus métier n'a été défini pour cette capacité</value>
+		</message>
+		<message>
+			<name>No Business Processes defined for this milestone</name>
+			<value>Aucun processus métier n'a été défini pour cette étape</value>
+		</message>
+		<message>
+			<name>No Business Processes Mapped</name>
+			<value>Aucun processus métier n'a été défini</value>
+		</message>
+		<message>
+			<name>No Business Processes mapped</name>
+			<value>Aucun processus métier n'est associé</value>
+		</message>
+		<message>
+			<name>No business roles defined for</name>
+			<value>Aucun rôle métier n'est défini</value>
+		</message>
+		<message>
+			<name>No Business Services defined for this milestone</name>
+			<value>Aucun service métier n'est défini pour cette étape</value>
+		</message>
+		<message>
+			<name>No business stakeholders have been captured for the</name>
+			<value>Aucune partie intéressée n'a été renseignée pour le</value>
+		</message>
+		<message>
+			<name>No Components Defined</name>
+			<value>Aucun composant n'est défini</value>
+		</message>
+		<message>
+			<name>No configuration details captured for this Technology Instance</name>
+			<value>Aucun détail de configuration n'est défini pour cet instance technique</value>
+		</message>
+		<message>
+			<name>No consumers captured for this Business Service</name>
+			<value>Aucun consommateur n'est défini pour ce service métier</value>
+		</message>
+		<message>
+			<name>No Data Attributes Defined</name>
+			<value>Aucun attribut de donnée n'est défini</value>
+		</message>
+		<message>
+			<name>No Database Scheme Defined for this object</name>
+			<value>Aucun schéma de donnée n’est resneignée pour cet objet</value>
+		</message>
+		<message>
+			<name>No data integrations defined for</name>
+			<value>Aucune intégration de donnée n'est renseignée pour</value>
+		</message>
+		<message>
+			<name>No Data Managed captured for this Application</name>
+			<value>Aucune gestion de donnée n'est resneignée pour cette application</value>
+		</message>
+		<message>
+			<name>No Data Objects defined for this milestone</name>
+			<value>Aucune donnée objet n'est définir pour cette étape</value>
+		</message>
+		<message>
+			<name>No Data Subjects have been captured for this Information Concept</name>
+			<value>Aucune donnée sujet n'a été définie pour ce concept informationnel</value>
+		</message>
+		<message>
+			<name>No defined deployments for this Information Representation</name>
+			<value>Aucun déploiement n'a été défini pour cette représentation d'information</value>
+		</message>
+		<message>
+			<name>No definition captured for this Business Capability</name>
+			<value>Aucune définition n'est resneignée pour cette capacité métier</value>
+		</message>
+		<message>
+			<name>No definition captured for this Information Concept</name>
+			<value>Aucune définition n'est définie pour ce concept informationnel</value>
+		</message>
+		<message>
+			<name>No definition captured for this Technology Component</name>
+			<value>Aucune définition n'est définie pour ce composant technique</value>
+		</message>
+		<message>
+			<name>No delivery methods have been captured for the</name>
+			<value>Aucune méthode de fourniture n'a été renseignée pour le</value>
+		</message>
+		<message>
+			<name>Node Name</name>
+			<value>Nom du noeud</value>
+		</message>
+		<message>
+			<name>No dependant applications captured</name>
+			<value>Aucune application dépendante n'a été modélisée></value>
+		</message>
+		<message>
+			<name>No dependant business processes/teams captured</name>
+			<value>Aucun processus ou équipe métier n'a été défini</value>
+		</message>
+		<message>
+			<name>No dependent plans defined for this Strategic Plan</name>
+			<value>Aucun plan dépendant du plan courant n'a été défini</value>
+		</message>
+		<message>
+			<name>No Deployed Application Instances Defined for this object</name>
+			<value>Aucune déploiement d’instance applicative n'a été défini pour cet objet</value>
+		</message>
+		<message>
+			<name>No Deployed Instances for this Product</name>
+			<value>Aucune instance n'est déployée pour ce produit</value>
+		</message>
+		<message>
+			<name>No description captured for this Application Capability</name>
+			<value>La description de cette capacité applicative n'est pas renseignée</value>
+		</message>
+		<message>
+			<name>No description captured for this Business Service</name>
+			<value>Aucune description n'a été saisie pour ce service métier</value>
+		</message>
+		<message>
+			<name>No description captured for this type of document</name>
+			<value>Aucune description saisie pour ce type de document</value>
+		</message>
+		<message>
+			<name>Node Technology</name>
+			<value>Noeud technique</value>
+		</message>
+		<message>
+			<name>No directly impacted applications captured</name>
+			<value>Aucune application directement impactée</value>
+		</message>
+		<message>
+			<name>No directly impacted business processes captured</name>
+			<value>Aucun processus métier directement impacté</value>
+		</message>
+		<message>
+			<name>No directly impacted organisations captured</name>
+			<value>Aucune organisation directement impactée</value>
+		</message>
+		<message>
+			<name>No downstream systems identified for this workflow</name>
+			<value>Aucun système aval n'a été identifié pour ce flux opérationnel</value>
+		</message>
+		<message>
+			<name>No Drivers defined for this milestone</name>
+			<value>Aucune ligne directrice pour cette étape</value>
+		</message>
+		<message>
+			<name>No email address provided</name>
+			<value>Aucune adresse de messagerie n'a été forunie</value>
+		</message>
+		<message>
+			<name>No external references for this object</name>
+			<value>Aucune référence externe pour cet objet</value>
+		</message>
+		<message>
+			<name>No Functions Defined</name>
+			<value>Aucune fonction n'est définie</value>
+		</message>
+		<message>
+			<name>No further details provided</name>
+			<value>Aucun détail supplémentaire n'a été fourni</value>
+		</message>
+		<message>
+			<name>No Impacted Elements defined for this Strategic Plan</name>
+			<value>Aucun éléments impactés par ce plan stratégique</value>
+		</message>
+		<message>
+			<name>No Inbound Business Services Mapped for</name>
+			<value>Aucun service métier amont n'a été défini pour</value>
+		</message>
+		<message>
+			<name>No Inbound Information Dependencies Mapped for</name>
+			<value>Aucune dépendance informationnelle amont n'a été définie pour</value>
+		</message>
+		<message>
+			<name>No information</name>
+			<value>Pas d'informations</value>
+		</message>
+		<message>
+			<name>No Information Concepts captured</name>
+			<value>Aucun concept informationnel na été saisi</value>
+		</message>
+		<message>
+			<name>No Information Concepts defined for this Domain</name>
+			<value>Aucun concept informationnel n'est défini pour ce domaine</value>
+		</message>
+		<message>
+			<name>No Information Dependencies Mapped for</name>
+			<value>Aucune dépendance informationnelle n'est définie pour</value>
+		</message>
+		<message>
+			<name>No Information Provided captured for this Application</name>
+			<value>Il n'y a pas de renseignement sur les informations fournies par cette application </value>
+		</message>
+		<message>
+			<name>No Information Store dependencies defined for this product</name>
+			<value>Il n'y a pas de renseignement sur les entrepôt de donnée nécessaire à ce produit</value>
+		</message>
+		<message>
+			<name>No Information Views defined for This Information Concept</name>
+			<value>Absence de renseignement sur les vues  associées à ce concept informationnel</value>
+		</message>
+		<message>
+			<name>No Information Views defined for this representation</name>
+			<value>Absence de renseignement pour les vues informationnelles associées à cette représentation</value>
+		</message>
+		<message>
+			<name>No KPI measures captured</name>
+			<value>Aucun indicateur clef de performance n'est défini</value>
+		</message>
+		<message>
+			<name>No Locations defined for this object</name>
+			<value>Aucune localisation n'est définie pour cet objet</value>
+		</message>
+		<message>
+			<name>No logical Information Objects defined for this milestone</name>
+			<value>Aucun objet informationnel n'est défini pour cette étape</value>
+		</message>
+		<message>
+			<name>No logical Information Views have been captured for this Information Concept</name>
+			<value>Aucun type d'information n'a été défini pour ce concept</value>
+		</message>
+		<message>
+			<name>None</name>
+			<value>Aucun</value>
+		</message>
+		<message>
+			<name>No Objectives defined for this milestone</name>
+			<value>Aucun objectif n'est associé à cette étape</value>
+		</message>
+		<message>
+			<name>No Organisastion Units defined for this milestone</name>
+			<value>Aucune unité organisationnelle n'est définie pour cette étape</value>
+		</message>
+		<message>
+			<name>No Organisations Captured</name>
+			<value>Aucune organisation n'est définie</value>
+		</message>
+		<message>
+			<name>No Organisations Mapped</name>
+			<value>Aucune organisation n'est associée</value>
+		</message>
+		<message>
+			<name>No Organisations mapped for this objects</name>
+			<value>Aucune organisation n'est associée à cet objet</value>
+		</message>
+		<message>
+			<name>No Organisation Units defined for this milestone</name>
+			<value>Aucune unité organisationnelle n'est définie pour cette étape</value>
+		</message>
+		<message>
+			<name>No other Technology Instances dependant on this Technology Instance</name>
+			<value>Aucune autre instance technique ne dépend de l'instance courante</value>
+		</message>
+		<message>
+			<name>No other Technology Instances supporting this Technology Instance</name>
+			<value>Aucune instance technique  ne soutien l'instance courante</value>
+		</message>
+		<message>
+			<name>No Outbound Business Services Mapped for</name>
+			<value>Aucun service aval n'est défini pour</value>
+		</message>
+		<message>
+			<name>No Parent Application</name>
+			<value>Pas d'application parente</value>
+		</message>
+		<message>
+			<name>No parent capability captured</name>
+			<value>Aucune capacité parente n'est définie</value>
+		</message>
+		<message>
+			<name>No Physical Information Schema dependant on this Technology Instance</name>
+			<value>Aucun schéma physique ne dépend de l'instance technologique</value>
+		</message>
+		<message>
+			<name>No physical processes captured for this business domain</name>
+			<value>Aucun processus physique n'est associée à ce domaine métier</value>
+		</message>
+		<message>
+			<name>No Physical Processes Defined</name>
+			<value>Aucun processus physique n'est décrit</value>
+		</message>
+		<message>
+			<name>No Processes Defined</name>
+			<value>Aucun processus n'est défini</value>
+		</message>
+		<message>
+			<name>No process flow defined for the</name>
+			<value>Aucun flux  n'est défini pour le</value>
+		</message>
+		<message>
+			<name>No process steps defined for the</name>
+			<value>Aucune étape  n'est définie pour le</value>
+		</message>
+		<message>
+			<name>No Product Vendor Defined</name>
+			<value>Aucun fournisseur n'est défini pour le produit</value>
+		</message>
+		<message>
+			<name>No related Projects defined</name>
+			<value>Aucun projet n'a été associé</value>
+		</message>
+		<message>
+			<name>No report data objects have been captured for the</name>
+			<value>Absence de renseignement sur les données nécessaire au rapport</value>
+		</message>
+		<message>
+			<name>No reports have been captured for this workflow</name>
+			<value>Aucun rapport n'est associé à ce flux opérationnel</value>
+		</message>
+		<message>
+			<name>No Roles defined for this milestone</name>
+			<value>Aucun rôle n'a été défini pour cette étape</value>
+		</message>
+		<message>
+			<name>No roles defined for this process</name>
+			<value>Aucun rôle n'est défini pour ce processus</value>
+		</message>
+		<message>
+			<name>No Root Environment Architecture Defined</name>
+			<value>Aux élément racine n'est défini pour l'architecture</value>
+		</message>
+		<message>
+			<name>No security information has been captured for the</name>
+			<value>Aucune information de sécurité n'a été resneignée pour</value>
+		</message>
+		<message>
+			<name>No Solutions Captured</name>
+			<value>Aucune solution n'a été définie</value>
+		</message>
+		<message>
+			<name>No Source Applications Captured</name>
+			<value>Aucune application source n'est définie</value>
+		</message>
+		<message>
+			<name>No spreadsheets classified for this layer</name>
+			<value>Aucune feuille de calcul ne correspond à cette couche</value>
+		</message>
+		<message>
+			<name>No stakeholders defined for the</name>
+			<value>Aucune partie intéressée n'est définie pour</value>
+		</message>
+		<message>
+			<name>No stakeholders defined for this programme</name>
+			<value>Aucune partie intéressée n'est définie pour ce programme</value>
+		</message>
+		<message>
+			<name>No stakeholders defined for this project</name>
+			<value>Aucune partie intéressée n'est définie pour ce projet</value>
+		</message>
+		<message>
+			<name>No strategic plans defined for this element</name>
+			<value>Aucun plan stratégique n'est défini pour cet élément</value>
+		</message>
+		<message>
+			<name>No supported applications defined for this Information Representation</name>
+			<value>Aucune application support n'est définie pour cette représentation</value>
+		</message>
+		<message>
+			<name>No Supported Applications Defined for this Product</name>
+			<value>Aucune application support n'est définie pour ce produit</value>
+		</message>
+		<message>
+			<name>No supported processes defined for this Information Representation</name>
+			<value>Aucun processus n'est supporté par cette représentation</value>
+		</message>
+		<message>
+			<name>No supported strategic goals captured</name>
+			<value>Aucun objectif stratégique n'est défini</value>
+		</message>
+		<message>
+			<name>No supporting applications captured for this Business Service</name>
+			<value>Aucune application ne soutient ce service métier</value>
+		</message>
+		<message>
+			<name>No Supporting Data Objects Defined</name>
+			<value>Aucune donnée objet n'est définie</value>
+		</message>
+		<message>
+			<name>No supporting Objectives defined for this Strategic Plan</name>
+			<value>Aucun objectif n'est associé à ce plan stratégique</value>
+		</message>
+		<message>
+			<name>No supporting plans defined for this Strategic Plan</name>
+			<value>Aucun plan support n'est associé à ce plan stratégique</value>
+		</message>
+		<message>
+			<name>No supporting Projects defined for this Strategic Plan</name>
+			<value>Aucun projet support n'est défini pour ce plan stratégique</value>
+		</message>
+		<message>
+			<name>No supporting systems identified for this workflow</name>
+			<value>Aucun système support n'est identifié pour ce flux</value>
+		</message>
+		<message>
+			<name>No supporting technology components defined for the</name>
+			<value>Aucun composant technique de soutien n'est défini pour</value>
+		</message>
+		<message>
+			<name>No Systems Defined</name>
+			<value>Aucun système n'est renseigné</value>
+		</message>
+		<message>
+			<name>No target date captured</name>
+			<value>Aucune cible n'est associé</value>
+		</message>
+		<message>
+			<name>not defined</name>
+			<value>Non défini(e)</value>
+		</message>
+		<message>
+			<name>No Technology Architectures Defined for this Product</name>
+			<value>Aucune architecture technique n'est définie pour ce produit</value>
+		</message>
+		<message>
+			<name>No Technology Capabilities have been mapped to this Technology Component</name>
+			<value>Aucune capacité technologique n'a été associée à ce composant technique</value>
+		</message>
+		<message>
+			<name>No Technology Capability Defined</name>
+			<value>Aucune capacité technologique n'est définie</value>
+		</message>
+		<message>
+			<name>No Technology Component Defined</name>
+			<value>Aucun composant technique n'est défini</value>
+		</message>
+		<message>
+			<name>No Technology Component defined</name>
+			<value>Aucun composant technique n'est défini</value>
+		</message>
+		<message>
+			<name>No Technology Components defined for this milestone</name>
+			<value>Aucun composant technique associé à cette étape</value>
+		</message>
+		<message>
+			<name>No Technology Components implemented</name>
+			<value>Aucun composant technique n'est mis en oeuvre</value>
+		</message>
+		<message>
+			<name>No Technology Functions defined for this product</name>
+			<value>Aucune fonction technique n'est définie pour ce produit</value>
+		</message>
+		<message>
+			<name>No Technology Functions have been defined for this Technology Component</name>
+			<value>>Aucune fonction technique n'est définie pour ce composant technique</value>
+		</message>
+		<message>
+			<name>No Technology Instances Defined for this object</name>
+			<value>Aucune instance technique n'est définie pour cet objet</value>
+		</message>
+		<message>
+			<name>No Technology Platform Defined</name>
+			<value>Aucune plate forme technique n'est définie</value>
+		</message>
+		<message>
+			<name>No Technology Products/Builds defined for this milestone</name>
+			<value>Aucun produit ou construction technique n'est associé à cette étape</value>
+		</message>
+		<message>
+			<name>No Technology Products have been mapped to this Technology Component</name>
+			<value>Aucun produit technique n'est associé à ce composant</value>
+		</message>
+		<message>
+			<name>Notes</name>
+			<value>Notes</value>
+		</message>
+		<message>
+			<name>No timing/frequency information has been captured for the</name>
+			<value>Aucune information sur la périodicité n'a été saisie</value>
+		</message>
+		<message>
+			<name>No triggers captured for this workflow</name>
+			<value>Aucun déclencheur n'est défini pour ce flot opérationnel</value>
+		</message>
+		<message>
+			<name>Not System of Record</name>
+			<value>N'est pas un système de vérité</value>
+		</message>
+		<message>
+			<name>No unclassified spreadsheets available</name>
+			<value>Aucune feuille de calcul publique n'est disponible</value>
+		</message>
+		<message>
+			<name>No Views Defined</name>
+			<value>Aucune vue n'est définie</value>
+		</message>
+		<message>
+			<name>No workflow steps defined for the</name>
+			<value>Aucune étape n'est définie</value>
+		</message>
+		<message>
+			<name>O</name>
+			<value>O</value>
+		</message>
+		<message>
+			<name>Objective</name>
+			<value>Objectifs</value>
+		</message>
+		<message>
+			<name>Off Strategy</name>
+			<value>Hors stratégie</value>
+		</message>
+		<message>
+			<name>OK</name>
+			<value>OK</value>
+		</message>
+		<message>
+			<name>On Strategy</name>
+			<value>Dans le champs de la stratégie</value>
+		</message>
+		<message>
+			<name>Organisation</name>
+			<value>Organisation</value>
+		</message>
+		<message>
+			<name>organisation</name>
+			<value>organisation</value>
+		</message>
+		<message>
+			<name>Organisation Roles</name>
+			<value>Rôles organisationnels</value>
+		</message>
+		<message>
+			<name>Organisational Scope</name>
+			<value>Périmètre organisationnel</value>
+		</message>
+		<message>
+			<name>Organisation Hierarchy</name>
+			<value>Diagramme hiérarchique de l'organisation</value>
+		</message>
+		<message>
+			<name>Organisation Performance Change Analysis</name>
+			<value>Analyse d'impact -- évolution des opérations organisationnelle</value>
+		</message>
+		<message>
+			<name>Organisation Role</name>
+			<value>Rôle organisationnel</value>
+		</message>
+		<message>
+			<name>Organisation Service Catalogue</name>
+			<value>Catalogue des services organisationnels</value>
+		</message>
+		<message>
+			<name>Organisations Impacted</name>
+			<value>Organisation impactée</value>
+		</message>
+		<message>
+			<name>Organisation Structure Change Analysis</name>
+			<value>Analyse des évolutions de structure organisationnelle</value>
+		</message>
+		<message>
+			<name>Organisation Structure Model</name>
+			<value>Cartographie structurelle de l'organisation</value>
+		</message>
+		<message>
+			<name>Organisations Using</name>
+			<value>Organisation utilisatrice</value>
+		</message>
+		<message>
+			<name>Organisations Using Information Object</name>
+			<value>Organisation utilisatrice de l'objet informationnel</value>
+		</message>
+		<message>
+			<name>Organisation Unit</name>
+			<value>Unité organisationnelle</value>
+		</message>
+		<message>
+			<name>Org Unit</name>
+			<value>Unit. organ.</value>
+		</message>
+		<message>
+			<name>Other</name>
+			<value>Autre</value>
+		</message>
+		<message>
+			<name>Others</name>
+			<value>Autres</value>
+		</message>
+		<message>
+			<name>Others (No Parent Application)</name>
+			<value>Autres (pas d'application parente)</value>
+		</message>
+		<message>
+			<name>Outbound</name>
+			<value>Sortante</value>
+		</message>
+		<message>
+			<name>Output Format</name>
+			<value>Format de sortie</value>
+		</message>
+		<message>
+			<name>Overall Demand</name>
+			<value>Demande générale</value>
+		</message>
+		<message>
+			<name>Owner(s)</name>
+			<value>Responsable(s)</value>
+		</message>
+		<message>
+			<name>P</name>
+			<value>P</value>
+		</message>
+		<message>
+			<name>Page Loading - Please Wait</name>
+			<value>Chargement de la page veuillez attendre</value>
+		</message>
+		<message>
+			<name>Parent Business Capability</name>
+			<value>Capacité métier parente</value>
+		</message>
+		<message>
+			<name>Parent Capability</name>
+			<value>Capacité parente</value>
+		</message>
+		<message>
+			<name>Parent Data Subject</name>
+			<value>Donnée sujet parente</value>
+		</message>
+		<message>
+			<name>Parent Information Concept</name>
+			<value>Concept informationnel parent</value>
+		</message>
+		<message>
+			<name>Parent Organisation</name>
+			<value>Organisation parente</value>
+		</message>
+		<message>
+			<name>Parent Programme</name>
+			<value>Programme parent</value>
+		</message>
+		<message>
+			<name>People</name>
+			<value>Personnes</value>
+		</message>
+		<message>
+			<name>Performed at Sites</name>
+			<value>Exécuté sur les sites</value>
+		</message>
+		<message>
+			<name>Performed By</name>
+			<value>Exécuté par</value>
+		</message>
+		<message>
+			<name>Performed by Roles</name>
+			<value>Exécuté par les rôles</value>
+		</message>
+		<message>
+			<name>Performing Roles</name>
+			<value>Rôles exécutant</value>
+		</message>
+		<message>
+			<name>Performing Roles/Automating System</name>
+			<value>Rôles ou système automatisé exécutant</value>
+		</message>
+		<message>
+			<name>Person</name>
+			<value>Personne</value>
+		</message>
+		<message>
+			<name>Physical Node</name>
+			<value>Noeud physique</value>
+		</message>
+		<message>
+			<name>Physical Node Name</name>
+			<value>Nom du noeud physique</value>
+		</message>
+		<message>
+			<name>Physical Node Specification for</name>
+			<value>Spécification du noeud physique pour</value>
+		</message>
+		<message>
+			<name>Physical Node Technology</name>
+			<value>Noeud technologique physique</value>
+		</message>
+		<message>
+			<name>Physical Process Catalogue</name>
+			<value>Catalogue des processus physiques</value>
+		</message>
+		<message>
+			<name>Physical Process Catalogue by Business Domain</name>
+			<value>Catalogue des processus physiques par domaine métier</value>
+		</message>
+		<message>
+			<name>Physical Process Description</name>
+			<value>Description du processus physique</value>
+		</message>
+		<message>
+			<name>Physical Processes</name>
+			<value>Processus physique</value>
+		</message>
+		<message>
+			<name>Physical Process Workflow</name>
+			<value>Flux opérationnel (workflow)</value>
+		</message>
+		<message>
+			<name>Plan</name>
+			<value>Plan</value>
+		</message>
+		<message>
+			<name>Plan Action</name>
+			<value>Plan d'action</value>
+		</message>
+		<message>
+			<name>Planned Changes</name>
+			<value>Évolutions prévues</value>
+		</message>
+		<message>
+			<name>Planned End Date</name>
+			<value>Date de fin envisagée</value>
+		</message>
+		<message>
+			<name>Planned Retirement Date</name>
+			<value>Date de retrait envisagée</value>
+		</message>
+		<message>
+			<name>Planned Start Date</name>
+			<value>Date de départ envisagée</value>
+		</message>
+		<message>
+			<name>Planned Target Date</name>
+			<value>Date cible envisagée</value>
+		</message>
+		<message>
+			<name>Planning Comments</name>
+			<value>Commentaire sur le planning</value>
+		</message>
+		<message>
+			<name>Plans</name>
+			<value>Plans</value>
+		</message>
+		<message>
+			<name>Plans for Product</name>
+			<value>Plans pour le produit</value>
+		</message>
+		<message>
+			<name>Plans for use of Product</name>
+			<value>Plans pour l'utilisation du produit</value>
+		</message>
+		<message>
+			<name>Plan Status</name>
+			<value>Statut du plan</value>
+		</message>
+		<message>
+			<name>Please click on an Information Concept, View or Representation below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'une des informations ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on an Information Concept or Information View below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'une des informations ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on a Physical Process below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'un des processus physique ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on one of the Application Capabilities below to navigate to the required view.</name>
+			<value>Veuillez cliquer sur l'une des capacités applicative ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on one of the Applications below</name>
+			<value>Veuillez cliquer sur l'une des applications ci dessous</value>
+		</message>
+		<message>
+			<name>Please click on one of the Application Services below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'un des services applicatif ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on one of the Business Capabilities below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'une des capacités métier ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on one of the Business Domains below to navigate to the required view</name>
+			<value>Veuillez cliquer sur l'un des domaines métier ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please click on one of the Business Services below to view its detailed specification</name>
+			<value>Veuillez cliquer sur l'un des service métier ci dessous pour consulter ses spécifications détaillées</value>
+		</message>
+		<message>
+			<name>Please select a Business Capability or Business Process to navigate to the required view</name>
+			<value>Veuillez sélectionner l'un des processus ou l'une des capacités métier ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a Business Process to navigate to the required view</name>
+			<value>Veuillez sélectionner l'un des processus métier pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a Data Subject to navigate to the required view</name>
+			<value>Veuillez sélectionner l'une des donnée sujet pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a Roadmap Model to navigate to the required view</name>
+			<value>Veuillez sélectionner l'une des feuilles de route pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a stakeholder to navigate to the required view</name>
+			<value>Veuillez sélectionner l'une des parties intéressée ci dessous pour  consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a Technology Component to navigate to the required view</name>
+			<value>Veuillez sélectionner l'une des composants technologique ci dessous pour  consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Please select a Technology Node to navigate to the required view</name>
+			<value>Veuillez sélectionner l'une des plate forme technologique ci dessous pour  consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Populated</name>
+			<value>Peuplé</value>
+		</message>
+		<message>
+			<name>Portals</name>
+			<value>Portails</value>
+		</message>
+		<message>
+			<name>Powered by</name>
+			<value>Propulsé par</value>
+		</message>
+		<message>
+			<name>Presentation of the conceptual Data Subjects in scope for the enterprise, organised by category</name>
+			<value>Présentation des données conceptuelles du périmètre de l'entreprise, classées par catégories</value>
+		</message>
+		<message>
+			<name>Primary Base Sites</name>
+			<value>Sites primaires</value>
+		</message>
+		<message>
+			<name>Primary Business Actors</name>
+			<value>Acteurs métiers primaires</value>
+		</message>
+		<message>
+			<name>Print This Page</name>
+			<value>Imprimer cette page</value>
+		</message>
+		<message>
+			<name>Process</name>
+			<value>Processus</value>
+		</message>
+		<message>
+			<name>process</name>
+			<value>processus</value>
+		</message>
+		<message>
+			<name> process</name>
+			<value> processus</value>
+		</message>
+		<message>
+			<name>Processes</name>
+			<value>Processus</value>
+		</message>
+		<message>
+			<name>Process Flow</name>
+			<value>Flot du processus</value>
+		</message>
+		<message>
+			<name>Process Manager</name>
+			<value>Gestionnaire de processus</value>
+		</message>
+		<message>
+			<name>Process Name</name>
+			<value>Nom du processus</value>
+		</message>
+		<message>
+			<name>Process Performed by</name>
+			<value>Processus exécuté par</value>
+		</message>
+		<message>
+			<name>Process Step</name>
+			<value>Étape du processus</value>
+		</message>
+		<message>
+			<name>Process Steps</name>
+			<value>Étapes du processus</value>
+		</message>
+		<message>
+			<name>Producing Business Processes</name>
+			<value>Processus métiers fournisseur</value>
+		</message>
+		<message>
+			<name>Product</name>
+			<value>Produit</value>
+		</message>
+		<message>
+			<name>Product Name</name>
+			<value>Nom du produit</value>
+		</message>
+		<message>
+			<name>Product Vendor</name>
+			<value>Forunisseur du produit</value>
+		</message>
+		<message>
+			<name>Programme</name>
+			<value>Programmes</value>
+		</message>
+		<message>
+			<name>Programme Catalogue</name>
+			<value>Catalogue des programmes</value>
+		</message>
+		<message>
+			<name>Programme Catalogue by Name</name>
+			<value>Catalogue alphabétique des programmes</value>
+		</message>
+		<message>
+			<name>Programme Overview for</name>
+			<value>Présentation synthétique du programme</value>
+		</message>
+		<message>
+			<name>Programme Plan</name>
+			<value>Planification du programme</value>
+		</message>
+		<message>
+			<name>Programme Summary</name>
+			<value>Résumé du programme</value>
+		</message>
+		<message>
+			<name>Programme Summary for</name>
+			<value>Résumé du programme pour</value>
+		</message>
+		<message>
+			<name>Project</name>
+			<value>Projet</value>
+		</message>
+		<message>
+			<name>Project Catalogue</name>
+			<value>Catalogue des projets</value>
+		</message>
+		<message>
+			<name>Project Catalogue by Name</name>
+			<value>Catalogue alphabétique des projets</value>
+		</message>
+		<message>
+			<name>Project Colleagues</name>
+			<value>Équipe projet</value>
+		</message>
+		<message>
+			<name>Project Manager</name>
+			<value>Gestionnaire de projet</value>
+		</message>
+		<message>
+			<name>Project Members</name>
+			<value>Membres du projet</value>
+		</message>
+		<message>
+			<name>Project Network</name>
+			<value>Réseau projet</value>
+		</message>
+		<message>
+			<name>Project People Network</name>
+			<value>Réseau projet</value>
+		</message>
+		<message>
+			<name>Projects</name>
+			<value>Projets</value>
+		</message>
+		<message>
+			<name>Projects to Business Objective Mapping</name>
+			<value>Associations entre les projets et les objectifs métiers</value>
+		</message>
+		<message>
+			<name>Project Summary</name>
+			<value>Résumé des projets</value>
+		</message>
+		<message>
+			<name>Project Summary for</name>
+			<value>Résumé du projets pour</value>
+		</message>
+		<message>
+			<name>Provider Model</name>
+			<value>Cartographie des fournisseurs</value>
+		</message>
+		<message>
+			<name>Published Date</name>
+			<value>Date de publication</value>
+		</message>
+		<message>
+			<name>Published date not defined</name>
+			<value>Date de publication indéfinie</value>
+		</message>
+		<message>
+			<name>Q</name>
+			<value>Q</value>
+		</message>
+		<message>
+			<name>Question About Content</name>
+			<value>Renseignement sur le contenu</value>
+		</message>
+		<message>
+			<name>R</name>
+			<value>R</value>
+		</message>
+		<message>
+			<name>Rationale</name>
+			<value>Justifications</value>
+		</message>
+		<message>
+			<name>READ</name>
+			<value>LECTURE</value>
+		</message>
+		<message>
+			<name>Reads</name>
+			<value>lit</value>
+		</message>
+		<message>
+			<name>Realised Business Capabilities</name>
+			<value>Capacités métiers réalisées</value>
+		</message>
+		<message>
+			<name>Realised Capabilities</name>
+			<value>Capacités réalisées</value>
+		</message>
+		<message>
+			<name>Realised Technology Capabilities</name>
+			<value>Capacités technologique réalisée</value>
+		</message>
+		<message>
+			<name>Realises Business Capabilities</name>
+			<value>Réalise les capacités métiers</value>
+		</message>
+		<message>
+			<name>Reference Data</name>
+			<value>Donnée de référence</value>
+		</message>
+		<message>
+			<name>Related Business Objectives</name>
+			<value>Objectifs métiers associés</value>
+		</message>
+		<message>
+			<name>Related Documents</name>
+			<value>Documents associés</value>
+		</message>
+		<message>
+			<name>Related Objectives</name>
+			<value>Objectifs associés</value>
+		</message>
+		<message>
+			<name>Related Projects</name>
+			<value>Projets associés</value>
+		</message>
+		<message>
+			<name>relation</name>
+			<value>relation</value>
+		</message>
+		<message>
+			<name>Removed</name>
+			<value>Enlevé</value>
+		</message>
+		<message>
+			<name>Replace</name>
+			<value>Remplacer</value>
+		</message>
+		<message>
+			<name>Report an Error</name>
+			<value>Signaler une erreur</value>
+		</message>
+		<message>
+			<name>Report Name</name>
+			<value>Nom du rapport</value>
+		</message>
+		<message>
+			<name>Reports Produced</name>
+			<value>Rapport produit</value>
+		</message>
+		<message>
+			<name>Representation Attributes</name>
+			<value>Attribut de la représentation</value>
+		</message>
+		<message>
+			<name>Responsibilities</name>
+			<value>Responsabilités</value>
+		</message>
+		<message>
+			<name>Responsibility</name>
+			<value>Responsabilité</value>
+		</message>
+		<message>
+			<name>RMG Plan</name>
+			<value>Plan de gestion des risques</value>
+		</message>
+		<message>
+			<name>Roadmap</name>
+			<value>Feuille de route</value>
+		</message>
+		<message>
+			<name>Roadmap Catalogue by Layer</name>
+			<value>Catalogue par couche des feuilles de route</value>
+		</message>
+		<message>
+			<name>Roadmap Catalogue by Name</name>
+			<value>Catalogue alphabétique des feuilles de route</value>
+		</message>
+		<message>
+			<name>Roadmap Model Catalogue</name>
+			<value>Catalogue des feuilles de route</value>
+		</message>
+		<message>
+			<name>Roadmap Model Catalogue by Layer</name>
+			<value>Catalogue des feuilles de route par couche </value>
+		</message>
+		<message>
+			<name>Role</name>
+			<value>Rôle</value>
+		</message>
+		<message>
+			<name>Roles</name>
+			<value>Rôles</value>
+		</message>
+		<message>
+			<name>Roles &amp; People</name>
+			<value>Rôles &amp; personnes</value>
+		</message>
+		<message>
+			<name>Runtime Status</name>
+			<value>Statut d'exécution</value>
+		</message>
+		<message>
+			<name>Runtime Status (e.g. Live, Failover)</name>
+			<value>Statut d'exécution (production, secours, ...) </value>
+		</message>
+		<message>
+			<name>S</name>
+			<value>S</value>
+		</message>
+		<message>
+			<name>Save Setting</name>
+			<value>Sauver les paramètres</value>
+		</message>
+		<message>
+			<name>Search all columns</name>
+			<value>Rechercher dans toute les colonnes</value>
+		</message>
+		<message>
+			<name>Security</name>
+			<value>Sécurité</value>
+		</message>
+		<message>
+			<name>Select a Business Process or Business Capability to navigate to the required view</name>
+			<value>Veuillez sélectionner l'un des processus ou l'une des capacités métier ci dessous pour consulter la vue associée</value>
+		</message>
+		<message>
+			<name>Select a Language</name>
+			<value>Sélectionner une langue</value>
+		</message>
+		<message>
+			<name>Select an Option</name>
+			<value>Sélectionner une option</value>
+		</message>
+		<message>
+			<name>Select Application</name>
+			<value>Sélectionner une application</value>
+		</message>
+		<message>
+			<name>Select Application for Distribution Change Analysis</name>
+			<value>Sélectionner une application pour obtenir les évolutions de distribution prévues</value>
+		</message>
+		<message>
+			<name>Select Application for Interface Change Analysis</name>
+			<value>Sélectionner une application pour obtenir ses évolutions d'interface</value>
+		</message>
+		<message>
+			<name>Select a Programme or Project to navigate to the required view</name>
+			<value>Sélectionner un programme ou un projet pour naviguer vers sa présentation</value>
+		</message>
+		<message>
+			<name>Select a Project or Person to navigate to the required view</name>
+			<value>Sélectionner un projet ou un acteur pour modifier la vue</value>
+		</message>
+		<message>
+			<name>Select a view or click the View Filter button to get started</name>
+			<value>Pour débuter: sélectionner une vue ci dessous ou activer les filtres de vue selon votre rôle ou votre activité</value>
+		</message>
+		<message>
+			<name>Selected Technology Platforms</name>
+			<value>Plate forme technologique sélectionnée</value>
+		</message>
+		<message>
+			<name>Service Consumers</name>
+			<value>Consommateurs du service</value>
+		</message>
+		<message>
+			<name>Service Criticality to Process</name>
+			<value>Criticité du service pour le processus</value>
+		</message>
+		<message>
+			<name>Service Definition Document</name>
+			<value>Document définissant le service</value>
+		</message>
+		<message>
+			<name>Service Delivery Managers</name>
+			<value>Responsable des prestations de service</value>
+		</message>
+		<message>
+			<name>Service Functions</name>
+			<value>Fonctions du service</value>
+		</message>
+		<message>
+			<name>Service Owner</name>
+			<value>Responsable du service</value>
+		</message>
+		<message>
+			<name>Services Provided</name>
+			<value>Service fourni</value>
+		</message>
+		<message>
+			<name>Show</name>
+			<value>Montrer</value>
+		</message>
+		<message>
+			<name>Show/Hide Business Process and Systems Overview</name>
+			<value>Montrer/masquer les processus métiers et la présentation des systèmes</value>
+		</message>
+		<message>
+			<name>Show/Hide Information Objects</name>
+			<value>Montrer/masquer  les objets informationnels</value>
+		</message>
+		<message>
+			<name>Show/Hide Information Views &amp; Representations</name>
+			<value>Montrer/masquer les types d'informations &amp; leur représentations</value>
+		</message>
+		<message>
+			<name>Show/Hide Physical Processes</name>
+			<value>Montrer/masquer les processus physiques</value>
+		</message>
+		<message>
+			<name>Show/Hide Strategic Technology Platforms</name>
+			<value>Montrer/masquer les plates formes technologiques</value>
+		</message>
+		<message>
+			<name>Show by</name>
+			<value>Présenter par</value>
+		</message>
+		<message>
+			<name>Source</name>
+			<value>Source</value>
+		</message>
+		<message>
+			<name>Sourced from Applications</name>
+			<value>Acquis à partir de l'application</value>
+		</message>
+		<message>
+			<name>Source of Truth</name>
+			<value>Point de vérité</value>
+		</message>
+		<message>
+			<name>Spreadsheet Template Catalogue</name>
+			<value>Catalogue des modèles de feuille de calcul</value>
+		</message>
+		<message>
+			<name>Spreadsheet Template Download</name>
+			<value>Télécharger les modèles de feuille de calcul</value>
+		</message>
+		<message>
+			<name>Stakeholder Catalogue by Name</name>
+			<value>Catalogue alphabétique des parties intéressées</value>
+		</message>
+		<message>
+			<name>Stakeholder Model</name>
+			<value>Cartographie des parties intéressées</value>
+		</message>
+		<message>
+			<name>Stakeholders</name>
+			<value>Parties intéressées</value>
+		</message>
+		<message>
+			<name>Stakeholders for the</name>
+			<value>Parties intéressées pour le/la</value>
+		</message>
+		<message>
+			<name>Stakeholders for the </name>
+			<value>Parties intéressées pour le/la </value>
+		</message>
+		<message>
+			<name>Stakeholder Summary</name>
+			<value>Synthèse de la partie intéressée</value>
+		</message>
+		<message>
+			<name>Stakeholder Summary for</name>
+			<value>Synthèse des parties intéressées pour</value>
+		</message>
+		<message>
+			<name>Standardisation Level</name>
+			<value>Degré de normalisation</value>
+		</message>
+		<message>
+			<name>Standardisation level not defined for this process</name>
+			<value>Aucun degré  de normalisation n'est défini pour ce processus</value>
+		</message>
+		<message>
+			<name>Start Date</name>
+			<value>Date de départ</value>
+		</message>
+		<message>
+			<name>Status</name>
+			<value>Statut</value>
+		</message>
+		<message>
+			<name>Strategic Alignment</name>
+			<value>Alignement stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Goal</name>
+			<value>Objectif stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Goal Catalogue</name>
+			<value>Catalogue des objectifs stratégiques</value>
+		</message>
+		<message>
+			<name>Strategic Goals Model</name>
+			<value>Cartographie des objectifs stratégiques</value>
+		</message>
+		<message>
+			<name>Strategic Milestone Summary</name>
+			<value>Présentation de l'étape stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Plan</name>
+			<value>Plan stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Planning</name>
+			<value>Planification stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Plans</name>
+			<value>Plans stratégiques</value>
+		</message>
+		<message>
+			<name>Strategic Plan Specification</name>
+			<value>Spécification du plan stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Plan Summary</name>
+			<value>Présentation du plan stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Roadmap</name>
+			<value>Feuille de route stratégique</value>
+		</message>
+		<message>
+			<name>Strategic Technology Platforms</name>
+			<value>Plate-formes technologiques stratégiques</value>
+		</message>
+		<message>
+			<name>Strategic Usage Policy (e.g. Production, Prototype, Off Strategy)</name>
+			<value>Politique stratégique d'utilisation (p. ex. Production, Prototype, hors stratégie)</value>
+		</message>
+		<message>
+			<name>Strategy Alignment</name>
+			<value>Alignement stratégique</value>
+		</message>
+		<message>
+			<name>Supplier</name>
+			<value>Fournisseur</value>
+		</message>
+		<message>
+			<name>Support</name>
+			<value>Soutien</value>
+		</message>
+		<message>
+			<name>Supported Applications</name>
+			<value>Applications supportées</value>
+		</message>
+		<message>
+			<name>Supported Business Processes</name>
+			<value>Processus métiers supportés</value>
+		</message>
+		<message>
+			<name>Supported Drivers</name>
+			<value>Ligne de force supportées</value>
+		</message>
+		<message>
+			<name>Supported Objectives</name>
+			<value>Objectifs supportées</value>
+		</message>
+		<message>
+			<name>Supported Processes</name>
+			<value>Processus supportés</value>
+		</message>
+		<message>
+			<name>Supporting Application Analysis for Business Domain</name>
+			<value>Analyse des applications associées le domaine méteir</value>
+		</message>
+		<message>
+			<name>Supporting Application Runtime Instance</name>
+			<value>Instance d'exécution supportant l'application</value>
+		</message>
+		<message>
+			<name>Supporting Application Runtime Technology</name>
+			<value>Technologie d'exécution supportant l'application</value>
+		</message>
+		<message>
+			<name>Supporting Applications</name>
+			<value>Applications supports</value>
+		</message>
+		<message>
+			<name>Supporting Application Services</name>
+			<value>Services applicatifs supports</value>
+		</message>
+		<message>
+			<name>Supporting Capabilities</name>
+			<value>Capacités support</value>
+		</message>
+		<message>
+			<name>Supporting Data</name>
+			<value>Données support</value>
+		</message>
+		<message>
+			<name>Supporting Database Installation</name>
+			<value>Installation de base de données support</value>
+		</message>
+		<message>
+			<name>Supporting Data Objects</name>
+			<value>Donnée objet support</value>
+		</message>
+		<message>
+			<name>Supporting DB Installation</name>
+			<value>BD installée support</value>
+		</message>
+		<message>
+			<name>Supporting Information</name>
+			<value>Information support</value>
+		</message>
+		<message>
+			<name>Supporting Documentation</name>
+			<value>Documentation support</value>
+		</message>
+		<message>
+			<name>Supporting Processes</name>
+			<value>Processus supports</value>
+		</message>
+		<message>
+			<name>Supporting Projects</name>
+			<value>Projets supports</value>
+		</message>
+		<message>
+			<name>Supporting Systems</name>
+			<value>Systèmes supports</value>
+		</message>
+		<message>
+			<name>Supporting Technology</name>
+			<value>Technologies supports</value>
+		</message>
+		<message>
+			<name>Supporting Technology Components</name>
+			<value>Composant techniques supports</value>
+		</message>
+		<message>
+			<name>Supporting Technology Instances</name>
+			<value>Instances techniques supports</value>
+		</message>
+		<message>
+			<name>Supports Applications</name>
+			<value>Applications supports</value>
+		</message>
+		<message>
+			<name>Supports Information Stores</name>
+			<value>Stocks d'information supports</value>
+		</message>
+		<message>
+			<name>Supports Plans</name>
+			<value>Pians supports</value>
+		</message>
+		<message>
+			<name>Support Views</name>
+			<value>Vues supports</value>
+		</message>
+		<message>
+			<name>Switch Off</name>
+			<value>Arrêter</value>
+		</message>
+		<message>
+			<name>system</name>
+			<value>système</value>
+		</message>
+		<message>
+			<name>System Managers</name>
+			<value>Gestionnaires systèmes</value>
+		</message>
+		<message>
+			<name>System Name</name>
+			<value>Nom du système</value>
+		</message>
+		<message>
+			<name>System of Record Undefined</name>
+			<value>Point de vérité non défini</value>
+		</message>
+		<message>
+			<name>Systems Impacted</name>
+			<value>Système impacté</value>
+		</message>
+		<message>
+			<name>Systems Using</name>
+			<value>Système utilisant</value>
+		</message>
+		<message>
+			<name>Systems Using Information Object</name>
+			<value>Système utilisant l'objet informationnel</value>
+		</message>
+		<message>
+			<name>T</name>
+			<value>T</value>
+		</message>
+		<message>
+			<name>Table</name>
+			<value>Tableau</value>
+		</message>
+		<message>
+			<name>Target</name>
+			<value>Cible</value>
+		</message>
+		<message>
+			<name>Target and Baseline</name>
+			<value>Cible et point de départ</value>
+		</message>
+		<message>
+			<name>Target Date</name>
+			<value>Date d'échéance pour la cible</value>
+		</message>
+		<message>
+			<name>Technology</name>
+			<value>Technologie</value>
+		</message>
+		<message>
+			<name>Technology Capabilities</name>
+			<value>Capacités technologiques</value>
+		</message>
+		<message>
+			<name>Technology Capability</name>
+			<value>Capacité technologique</value>
+		</message>
+		<message>
+			<name>Technology Catalogue</name>
+			<value>Catalogue technologique</value>
+		</message>
+		<message>
+			<name>Technology Change Analysis - Technology Component</name>
+			<value>Analyse des évolutions technologiques -- Composants techniques</value>
+		</message>
+		<message>
+			<name>Technology Change Analysis - Technology Distribution</name>
+			<value>Analyse des évolutions technologiques -- distribution de la technologie</value>
+		</message>
+		<message>
+			<name>Technology Change Analysis - Technology Interoperability</name>
+			<value>Analyse des évolutions technologiques -- interopérabilité technologique</value>
+		</message>
+		<message>
+			<name>Technology Component</name>
+			<value>Composant technologique</value>
+		</message>
+		<message>
+			<name> Technology Component</name>
+			<value> Composant technologique</value>
+		</message>
+		<message>
+			<name> Technology Component </name>
+			<value> Composant technologique </value>
+		</message>
+		<message>
+			<name>Technology Component Catalogue</name>
+			<value>Catalogue des composantes technologiques</value>
+		</message>
+		<message>
+			<name>Technology Component Catalogue by Name</name>
+			<value>Catalogue alphabétique des Composants technologiques</value>
+		</message>
+		<message>
+			<name>Technology Component Change Analysis</name>
+			<value>Analyse d'impact des évolutions  sur les composants technologiques</value>
+		</message>
+		<message>
+			<name>Technology Component Interoperability Catalogue</name>
+			<value>Catalogue d'intéropérabilité des Composants technologiques</value>
+		</message>
+		<message>
+			<name>Technology Component Interoperability Change Analysis Catalogue</name>
+			<value>Catalogues des analyse d'impact pour l’interopérabilité des composante technologiques</value>
+		</message>
+		<message>
+			<name>Technology Components</name>
+			<value>Composants technologiques</value>
+		</message>
+		<message>
+			<name>Technology Component Summary</name>
+			<value>Présentation du Composant technologique</value>
+		</message>
+		<message>
+			<name>Technology Composite</name>
+			<value>Technologies composée</value>
+		</message>
+		<message>
+			<name>Technology Dependency</name>
+			<value>Dépendances technologiques</value>
+		</message>
+		<message>
+			<name>Technology Deployment</name>
+			<value>Déploiement technologique</value>
+		</message>
+		<message>
+			<name>Technology Distribution Change Analysis</name>
+			<value>Analyse d'impact des évolutions  sur la distribution des technologies</value>
+		</message>
+		<message>
+			<name>Technology Distribution Model</name>
+			<value>Cartographie de distribution des technologies</value>
+		</message>
+		<message>
+			<name>Technology Function</name>
+			<value>Fonction technique</value>
+		</message>
+		<message>
+			<name>Technology Functions</name>
+			<value>>Fonctions techniques</value>
+		</message>
+		<message>
+			<name>Technology Functions Offered</name>
+			<value>Fonctions techniques offertes</value>
+		</message>
+		<message>
+			<name>Technology Instance Description</name>
+			<value>Description de l'instance technique</value>
+		</message>
+		<message>
+			<name>Technology Instance Name</name>
+			<value>Nom de l'instance technique</value>
+		</message>
+		<message>
+			<name>Technology Instance Specification for</name>
+			<value>Spécification de l'instance technique pour</value>
+		</message>
+		<message>
+			<name>Technology Instance Summary</name>
+			<value>Résumé de l'instance technique</value>
+		</message>
+		<message>
+			<name>Technology Interoperability Change Analysis</name>
+			<value>Analyse d'impact des évolutions  sur l’interopérabilité  technologiques </value>
+		</message>
+		<message>
+			<name>Technology Interoperability Change Analysis Catalogue</name>
+			<value>Catalogue des analyse d'impact sur l’interopérabilité technique</value>
+		</message>
+		<message>
+			<name>Technology Milestone Summary</name>
+			<value>Résumé de l'étape d'évolution technique</value>
+		</message>
+		<message>
+			<name>Technology Node</name>
+			<value>Noeud technique</value>
+		</message>
+		<message>
+			<name>Technology Node Catalogue</name>
+			<value>Catalogue des Nœuds technologiques</value>
+		</message>
+		<message>
+			<name>Technology Node Catalogue by Name</name>
+			<value>Catalogue alphabétique des noeuds</value>
+		</message>
+		<message>
+			<name>Technology Node Catalogue by Product</name>
+			<value>Catalogue  des nœuds par produit</value>
+		</message>
+		<message>
+			<name>Technology Node Catalogue by Vendor</name>
+			<value>Catalogue  des nœuds par vendeur</value>
+		</message>
+		<message>
+			<name>Technology Node Products by Vendor</name>
+			<value>Produits techniques par vendeur</value>
+		</message>
+		<message>
+			<name>Technology Node Summary</name>
+			<value>Résumé du noeud technique</value>
+		</message>
+		<message>
+			<name>Technology Platform Model </name>
+			<value>Cartographie des plate-formes technologique</value>
+		</message>
+		<message>
+			<name>Technology Principles</name>
+			<value>Principes pour la couche technologique</value>
+		</message>
+		<message>
+			<name>Technology Product</name>
+			<value>Produits techniques</value>
+		</message>
+		<message>
+			<name>Technology Product/Build</name>
+			<value>Produits/intégration techniques</value>
+		</message>
+		<message>
+			<name>Technology Product Build</name>
+			<value>Intégration technique</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue</name>
+			<value>Catalogue des produits technologiques</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue as Table</name>
+			<value>Catalogue alphabétique des produits technique</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Capability</name>
+			<value>Catalogue des produits techniques par capacités</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Component</name>
+			<value>Catalogue des produits techniques par composants</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Vendor</name>
+			<value>Catalogue des produits techniques par  Vendeur</value>
+		</message>
+		<message>
+			<name>Technology Product Name</name>
+			<value>Nom du produit technique</value>
+		</message>
+		<message>
+			<name>Technology Products</name>
+			<value>Produits techniques</value>
+		</message>
+		<message>
+			<name>Technology Product Summary</name>
+			<value>Résumé du produit technique</value>
+		</message>
+		<message>
+			<name>Technology Product Summary for</name>
+			<value>Résumé du produit technique pour</value>
+		</message>
+		<message>
+			<name>Technology Reference and Standards Model</name>
+			<value>Modèle technologique de référence et des normes</value>
+		</message>
+		<message>
+			<name>Technology Reference Model</name>
+			<value>Modèle de référence technologique</value>
+		</message>
+		<message>
+			<name>Technology Roadmap</name>
+			<value>Feuille de route technologique</value>
+		</message>
+		<message>
+			<name>Technology Strategy Alignment</name>
+			<value>Alignement technologique stratégique</value>
+		</message>
+		<message>
+			<name>Technology Views</name>
+			<value>Vues sur la couche technologique</value>
+		</message>
+		<message>
+			<name>Technoogyg Node Products by Vendor</name>
+			<value>Équipements Nœuds technologiques pas vendeurs</value>
+		</message>
+		<message>
+			<name>Template Name</name>
+			<value>Nom du modèle</value>
+		</message>
+		<message>
+			<name>The</name>
+			<value>Le</value>
+		</message>
+		<message>
+			<name>The Application Services supporting this capability</name>
+			<value>Les services applicatifs supports de cette capacité</value>
+		</message>
+		<message>
+			<name>The Business Capability Model informs stakeholders of the conceptual functional capabilities of the enterprise</name>
+			<value>La cartographie des capacités métiers les capacités fonctionnelles conceptuelles de l'établissements</value>
+		</message>
+		<message>
+			<name>The Business Driver/Change Footprint view compares the footprint of current change activities (i.e. programmes/projects against the business objectives that have been defined</name>
+			<value>Cette vue présente la traces des initiatives (programmes, projets) par rapport au objectifs métiers qui ont été définis</value>
+		</message>
+		<message>
+			<name>The conceptual data subjects that support the</name>
+			<value>La donnée sujet conceptuelle qui soutient le</value>
+		</message>
+		<message>
+			<name>the enterprise</name>
+			<value>l'établissement</value>
+		</message>
+		<message>
+			<name>The Essential Project</name>
+			<value>The Essential Project</value>
+		</message>
+		<message>
+			<name>The following access control policies are in place for the</name>
+			<value>Politiques de contrôle d'accès mises en place pour</value>
+		</message>
+		<message>
+			<name>The following Application Principles guide and govern changes to the application architecture</name>
+			<value>Les principes applicatifs suivants doivent être utilisés pour guider les évolutions de l'architecture applicative</value>
+		</message>
+		<message>
+			<name>The following Applications are directly impacted by this Project</name>
+			<value>Les application suivantes sont directement impactés par ce projet</value>
+		</message>
+		<message>
+			<name>The following applications are supported by this Information Representation</name>
+			<value>Les applications suivantes sont supportées par cette représentation d'information</value>
+		</message>
+		<message>
+			<name>The following Applications support the</name>
+			<value>Les applications suivantes supportent le</value>
+		</message>
+		<message>
+			<name>The following applications would be impacted by the removal of or changes to the</name>
+			<value>Les applications suivantes seraient impactées par le retrait ou la modification de</value>
+		</message>
+		<message>
+			<name>The following Business Capabilities and Process support the</name>
+			<value>Les capacités ou processus métiers suivants supportent le</value>
+		</message>
+		<message>
+			<name>The following Business Principles guide and govern changes to the business architecture</name>
+			<value>Les principes métiers suivants doivent être utilisés pour guider les évolutions de l'architecture métier</value>
+		</message>
+		<message>
+			<name>The following business processes and teams would be impacted by the removal of or changes to the</name>
+			<value>Les processus  ou les équipes métiers seraient  impactées par le retrait ou la modification de</value>
+		</message>
+		<message>
+			<name>The following Business Processes are directly impacted by this Project</name>
+			<value>Ce projet impacte directement les processus métiers suivants</value>
+		</message>
+		<message>
+			<name>The following diagram describes the conceptual business capabilities in scope for</name>
+			<value>Le diagramme suivant décrit les capacités métiers dans le périmètre de</value>
+		</message>
+		<message>
+			<name>The following diagram describes the conceptual business capablities in scope for</name>
+			<value>Le diagramme suivant décrit les capacités métiers dans le périmètre de</value>
+		</message>
+		<message>
+			<name>The following diagram describes the different types of applications that are in use across</name>
+			<value>Le diagramme suivant décrit les types d'application utilisées au travers de</value>
+		</message>
+		<message>
+			<name>The following diagram describes the different types of information that are in use across</name>
+			<value>Le diagramme suivant décrit les types d'information utilisées au travers de</value>
+		</message>
+		<message>
+			<name>The following diagram describes the different types of technology components that are in use across</name>
+			<value>Le diagramme suivant décrit les types de composant technologique utilisés au travers de</value>
+		</message>
+		<message>
+			<name>The following diagram describes the information assets that are consumed and produced by the</name>
+			<value>Le diagramme suivant décrit les avoirs informationnels qui sont consommés ou produits par le</value>
+		</message>
+		<message>
+			<name>The following diagram highlights the conceptual business capabilities directly or indirectly impacted by the</name>
+			<value>Le diagramme suivant met en lumière les capacités métiers directement ou indirectement impactées par le</value>
+		</message>
+		<message>
+			<name>The following diagram highlights the conceptual business capablities impacted by this programme</name>
+			<value>Le diagramme suivant met en lumière les capacités métiers  impactées par ce programme</value>
+		</message>
+		<message>
+			<name>The following diagram lists the different logical business roles that interact with the</name>
+			<value>Le diagramme suivant expose les différents rôles métiers qui interagissent avec le</value>
+		</message>
+		<message>
+			<name>The following diagram shows the organisational hierarchy for the</name>
+			<value>Le diagramme suivant présente l'organisation hiérarchique de</value>
+		</message>
+		<message>
+			<name>The following diagram shows the process flow that describes the design of the</name>
+			<value>Le diagramme suivant présente le flot opérationnel qui décrit la conception de</value>
+		</message>
+		<message>
+			<name>The following documents are available to view</name>
+			<value>Les documents suivants peuvent être consultés</value>
+		</message>
+		<message>
+			<name>The following Information Concepts support the</name>
+			<value>Les concepts informationnels suivants supportent le</value>
+		</message>
+		<message>
+			<name>The following Information Principles guide and govern changes to the information and data architecture</name>
+			<value>Les principes informationnels suivants doivent être utilisés pour guider les évolutions de l'architecture informationnelle</value>
+		</message>
+		<message>
+			<name>The following items provide details for the</name>
+			<value>Présentation détaillée de</value>
+		</message>
+		<message>
+			<name>The following matrix maps conceptual Data Subjects to the Business Roles in use across</name>
+			<value>La matrice suivante présente les relations entre les données et les rôles au travers de</value>
+		</message>
+		<message>
+			<name>The following matrix maps logical Data Objects for</name>
+			<value>La matrice suivante présente les données objets pour</value>
+		</message>
+		<message>
+			<name>The following matrix maps logical Data Objects of</name>
+			<value>la matrice suivante associe les données objets de</value>
+		</message>
+		<message>
+			<name>The following matrix maps logical Data Objects to the Application Services in use across</name>
+			<value>La matrice suivante présente les relations entre les objets et les services applicatifs utilisées au travers de</value>
+		</message>
+		<message>
+			<name>The following Organisations are directly impacted by this Project</name>
+			<value>Les unités organisationnelle suivantes sont directement impactées par ce projet</value>
+		</message>
+		<message>
+			<name>The following physical processes are performed within the domain of</name>
+			<value>Les processus suivants sont exécutés dans le périmètre du domaine de</value>
+		</message>
+		<message>
+			<name>The following provides a graphical view of the sub-capabilities of</name>
+			<value>Vue graphique des sous-capacités de</value>
+		</message>
+		<message>
+			<name>The following processes are supported by this Information Representation</name>
+			<value>Les processus suivants sont supportés par cette représentation d'information</value>
+		</message>
+		<message>
+			<name>The following process steps are defined for the</name>
+			<value>Les étapes suivantes sont définies pour le </value>
+		</message>
+		<message>
+			<name>The following report data objects are contained within the</name>
+			<value>Les données objets de rapport sont contenues au sein de</value>
+		</message>
+		<message>
+			<name>The following roles are defined for</name>
+			<value>Les rôles suivants sont définis pour</value>
+		</message>
+		<message>
+			<name>The following table describes the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name>
+			<value>La table ci-dessous décrit les services applicatifs définis pour cette capacité ainsi que les applications utilisées pour la mise en œuvre de chacun de ces services ainsi et les technologies utilisées pour livrer ces applications</value>
+		</message>
+		<message>
+			<name>The following table describes the Business Capabilities that are mapped to this business area, the Business Processes that realise each capability and the applications that are being used to implement the each process. Information about the supplier and the technology products used is also shown</name>
+			<value>Le tableau ci dessous décrit les capacités métiers associées à ce périmètre métier, les processus métiers qui réalisent chacune des capacités ainsi que les applications utilisées pour mettre en œuvre les processus. Ce tableau présente aussi les technologies et les fournisseurs associées.</value>
+		</message>
+		<message>
+			<name>The following table lists the Business Functions/Services for</name>
+			<value>Le tableau ci dessous liste les fonctions/services métiers pour</value>
+		</message>
+		<message>
+			<name>The following table lists the Business Objectives for</name>
+			<value>Le tableau ci dessous liste  les objectifs métiers pour</value>
+		</message>
+		<message>
+			<name>The following table lists the business processes supporting the</name>
+			<value>Le tableau ci dessous liste  les processus métiers supportant la</value>
+		</message>
+		<message>
+			<name>The following table lists the Business Services that are produced by the organisation units within the</name>
+			<value>Le tableau ci dessous liste les services métiers produits par l'unité organisationnelle au sein de</value>
+		</message>
+		<message>
+			<name>The following table lists the spreadsheets that are available for download</name>
+			<value>Le tableau ci dessous liste les feuilles de calculs pouvant être téléchargées </value>
+		</message>
+		<message>
+			<name>The following table lists the Strategic Business Goals for</name>
+			<value>Le tableau ci dessous liste les objectifs métiers stratégiques pour</value>
+		</message>
+		<message>
+			<name>The following tables describe other Technology Instances that are dependant on this Technology Instance</name>
+			<value>Le tableau suivant décrit les instances techniques qui dépendent de cette instance technique</value>
+		</message>
+		<message>
+			<name>The following tables describe other Technology Instances that are supporting on this Technology Instance</name>
+			<value>Le tableau suivant présente les instances techniques qui supportent cette instance technique</value>
+		</message>
+		<message>
+			<name>The following tables describe the Application Instances that are dependant on this Technology Instance </name>
+			<value>Le tableau suivant décrit les instances applicatives qui dépendent de cette instance technique</value>
+		</message>
+		<message>
+			<name>The following tables describe the applications that are being used to implement the functions of this service</name>
+			<value>Le tableau suivant présente les application utilisées pour mettre en œuvre les fonctions de ce services</value>
+		</message>
+		<message>
+			<name>The following tables describe the Business Capabilities that are mapped to this business area, the Application Services that support each capability and the applications that are being used to implement the each service. Information about the supplier and the technology products used is also shown</name>
+			<value>Les tables ci dessous présentent les capités  qui sont associés à ce domaine d'affaires, les services applicatif qui supportent chaque capacité ainsi que les applications qui sont utilisées pour ces services. Les informations à propos des fournisseurs et des produits technologiques utilisés sont aussi présentés.</value>
+		</message>
+		<message>
+			<name>The following tables describe the physical information schema that are dependant on this technology instance</name>
+			<value>Le tableau suivant présente le schémas physiques d'information qui dépendent de l'instance technique courante</value>
+		</message>
+		<message>
+			<name>The following tables provides details of the data elements managed by</name>
+			<value>Le tableau suivant détaille les différents données gérées par</value>
+		</message>
+		<message>
+			<name>The following technology components are used to support the</name>
+			<value>Les composantes techniques suivants sont utilisés pour soutenir le</value>
+		</message>
+		<message>
+			<name>The following Technology Principles guide and govern changes to the technology architecture</name>
+			<value>Les principes suivants doivent être utilisés pour guider les évolutions de architecture technique</value>
+		</message>
+		<message>
+			<name>The following workflow steps are defined for the</name>
+			<value>Les étapes suivantes sont définies pour le</value>
+		</message>
+		<message>
+			<name>the free open-source Enterprise Architecture Management Platform</name>
+			<value>La plate forme open-source et libre de gestion des architectures d'entreprise</value>
+		</message>
+		<message>
+			<name>The logical Information Views that are refinements of this Information Concept </name>
+			<value>Les vues informationnelles qui raffinent ce concept informationnels</value>
+		</message>
+		<message>
+			<name>The output format has not been captured for the</name>
+			<value>Le format de sortie n'a pas été défini pour le</value>
+		</message>
+		<message>
+			<name>The Principles catalogue captures principles of the business and architecture principles that describe what a "good" solution or architecture should look like. Principles are used to evaluate and agree an outcome for architecture decision points. Principles are also used as a tool to assist in architectural governance of change initiatives</name>
+			<value>Le catalogue des principes présente les principes sur lesquels reposent les activités de l'organisation ainsi que les principes architecturaux qui décrivent ce que doit être une "bonne" solution architecturale. Les principes sont utilisés pour évaluer ou valider les choix effectués. Les principes constituent de plus une aide pour la gouvernance architecturale des 'initiatives de changement.</value>
+		</message>
+		<message>
+			<name>The Programme Plan shows the timelines for the individual projects contained within the overall Programme</name>
+			<value>Le plan de programme présente la chronologie des différents projets qui composent le programme</value>
+		</message>
+		<message>
+			<name>The purpose of a Strategic Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to deliver the business and IT strategy of an enterprise</name>
+			<value>La feuille de route stratégique doit permettre d'informer les parties intéressées sur les evolutions incrémentales qui doivent être réalisées pour accompagner les stratégies d'affaires ou S.I. de l'organisation.</value>
+		</message>
+		<message>
+			<name>The purpose of the</name>
+			<value>Le propos de</value>
+		</message>
+		<message>
+			<name>The purpose of the Application Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Application elements that will exist at this stage of the Application Roadmap</name>
+			<value>La vue "étape applicative' présente les catalyseur ou objectifs supportés à cette étape de la feuille de route applicative, elle liste aussi les éléments applicatifs qui existeront à ce moment là.</value>
+		</message>
+		<message>
+			<name>The purpose of the Application Reference Model is to inform stakeholders regarding the major classes of applications that are needed to automate or enable the functions/services of</name>
+			<value>L'objet du modèle applicatif de référence  est d'informer de manière consistante les parties intéressés sur les principales application nécessaire à l'automatisation ou permettant de faciliter la réalisation de fonctions/services pour</value>
+		</message>
+		<message>
+			<name>The purpose of the Application Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
+			<value>La feuille de route applicative doit permettre d'informer les parties intéressées sur les evolutions incrémentales qui doivent être réalisées pour traiter les insuffisances ou redondances identifiées lors des analyses d'écart</value>
+		</message>
+		<message>
+			<name>The purpose of the Application Service Stakeholder Model is to inform stakeholders of the different roles (internal and external) that will interact with a given application service</name>
+			<value>L'objet du modèle informationnel de référence  est d'informer de manière consistante les parties intéressés sur les biens informationnels de l'organisation  afin de faciliter le partage ou la réutilisation de ces informations</value>
+		</message>
+		<message>
+			<name>The purpose of the Business Function/Service Model is to inform stakeholders regarding the Service Catalogue of an enterprise, the degree of automation of each function/service, and the roles (people) required to perform the function/service</name>
+			<value>L'objet de  la cartographie des services/fonctions d'affaire est d'informer les parties intéressés sur le catalogue des services de l'organisation, le degré d'automatisation de chacun de ces éléments ainsi que les rôles (responsabilités) requises pour leurs réalisations</value>
+		</message>
+		<message>
+			<name>The purpose of the Business Information Model is to inform stakeholders regarding the Data Subject classes that the enterprise must manage through its life-cycle</name>
+			<value>L'objet de  la cartographie des informations d'affaire est d'informer les parties intéressés sur les classes de données sujets  que l'organisation doit gérer au long de son cycle de vie.</value>
+		</message>
+		<message>
+			<name>The purpose of the Business Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key business elements that will exist at this stage of the Business Roadmap</name>
+			<value>La vue "étape d'affaire' présente les catalyseurs ou objectifs supportés à cette étape de la feuille de route applicative, elle liste aussi les éléments d'affaire qui existeront à ce moment là.</value>
+		</message>
+		<message>
+			<name>The purpose of the Business Performance Model is to inform stakeholders regarding the performance accountability in an enterprise and the line of sight of an enterprise towards government strategic outcomes</name>
+			<value>L'objet de  la cartographie des services/fonctions d'affaire est d'informer les parties intéressés sur l'état  des activités réalisées de l'organisation (performance)  ainsi que sur sa progression vers les résultats de sa stratégie organisationnelle.</value>
+		</message>
+		<message>
+			<name>The purpose of the Business Roadmap is to inform stakeholders regarding the incremental changes to business ekements of the enterprise that are to be undertaken to deliver the business strategy</name>
+			<value>La feuille de route métiers doit informer les parties intéressées sur les evolutions incrémentales qui doivent être appliquées aux éléments d'affaire pour accompagner la stratégie d'affaire de l'organisation.</value>
+		</message>
+		<message>
+			<name>The purpose of the Data Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Information/Data elements that will exist at this stage of the Data Roadmap</name>
+			<value>La vue "étape données' présente les catalyseurs ou objectifs supportés à cette étape de la feuille de route informationnelle, elle liste aussi les éléments informations/données qui existeront à ce moment là.</value>
+		</message>
+		<message>
+			<name>The purpose of the Data Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
+			<value>La feuille de route informationnelle doit informer les parties intéressées sur les evolutions incrémentales qui doivent être réalisées pour traiter les insuffisances ou redondances identifiées lors des analyses d'écart</value>
+		</message>
+		<message>
+			<name>The purpose of the Data Security Model is to inform stakeholders regarding the security and responsibilities of the data assets in a department in order to improve data accountability</name>
+			<value>L'objet de  la cartographie de sécurité des données  est d'informer les parties intéressés sur les responsabilité et la sécurité, par unité organisationnelle, des ses biens informationnels.</value>
+		</message>
+		<message>
+			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between Data Subjects and applications in an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
+			<value>L'objet de  la cartographie Donnée - Application est d'informer les parties intéressés sur les relations (ou affinités) entre  Données Sujet et  applications de l'organisation, permettant ainsi de fournir des renseignements sur l'état des développements, des actions d'intégrations ou de déploiements logiciels en cours.</value>
+		</message>
+		<message>
+			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between logical Data Objects and application services in use across an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
+			<value>L'objet de  la cartographie Donnée - Application est d'informer les parties intéressés sur les relations (ou affinités) entre  Données Objet logiques et  services applicatifs de l'organisation, permettant ainsi de fournir des renseignements sur l'état courant des développements, des actions d'intégrations ou de déploiements logiciels</value>
+		</message>
+		<message>
+			<name>The purpose of the Information Reference Model is to inform stakeholders regarding the information assets of an enterprise in a consistent manner that will enable re-use and information sharing</name>
+			<value>L'objet du modèle informationnel de référence  est d'informer de manière consistante les parties intéressés sur les biens informationnels de l'organisation  afin de faciliter le partage ou la réutilisation de ces informations</value>
+		</message>
+		<message>
+			<name>The purpose of the Organisation Structure Model is to inform stakeholders regarding the accountability and responsibility towards the services that are routinely rendered by an enterprise – be it an internal service or external service; and the business footprint to inform capacity and network design</name>
+			<value>L'objet de la cartographie structurelle de l'organisation  est d'informer  les parties intéressés sur les responsabilités associées aux services qui sont rendus habituellement par l'organisation (qu'il soient internes ou externes).</value>
+		</message>
+		<message>
+			<name>The purpose of the Strategic Goals Model is to provide stakeholders with a line of sight from high level strategic business goals, through objectives and the drivers that motivate them</name>
+			<value>L'objet de la cartographie des objectifs stratégiques  est d'informer les parties intéressées sur les objectifs stratégiques de l'organisation en y associant leur motivations (catalyseurs, objectifs).</value>
+		</message>
+		<message>
+			<name>The purpose of the Technology Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Technology elements that will exist at this stage of the Technology Roadmap</name>
+			<value>La vue "étape technologique' présente les catalyseur ou objectifs supportés à cette étape de la feuille de route technologique, elle liste aussi les éléments technologiques qui existeront à ce moment là.</value>
+		</message>
+		<message>
+			<name>The purpose of the Technology Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
+			<value>La feuille de route technologique doit informer les parties intéressées sur les evolutions incrémentales qui doivent être réalisées pour traiter les insuffisances ou redondances identifiées lors des analyses d'écart</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to define the distribution of technology components for a distributed operating environment that will reduce duplication and optimise the re-use of shared infrastructure whilst providing optimal access channels to information intensive services to the intended users</name>
+			<value>Cette vue présente la distribution des composants technologiques en vue d'en réduire la redondance et de faciliter la réutilisation d'infrastructure commune tout en fournissant des canaux de communication optimaux pour les services utilisant intensivement des informations et leurs utilisateurs.</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to describe the direct data related dependencies that exist for the</name>
+			<value>Cette vue présente les dépendances directes relatives aux données pour le</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to describe the flow of steps and participants (users and systems) in the</name>
+			<value>Cette vue présente les flot d'étapes et les participants (utilisateurs ou automatismes) pour le</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to inform stakeholders on how applications or application components are distributed across the footprint of the organisation and how they interface or integrate with each other and the environment</name>
+			<value>L'objet de cette vue est d'informer les parties intéressées sur 1) la façon dont les applications ou leurs composants sont distribués au sein de l'organisation et 2) les mécanismes d'intégration ou d'interface entre ces applications et leur environnement</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to inform stakeholders regarding the redundancies and deficiencies of technology in an enterprise</name>
+			<value>L'objet de cette vue est d'informer les parties intéressées sur les redondances ou déficiences technologiques de l'organisation</value>
+		</message>
+		<message>
+			<name>The purpose of this view is to inform stakeholders regarding the workflow (and information flow) that is needed to produce a product or render a service.</name>
+			<value>L'objet de cette vue est d'informer les parties intéressées sur les flux de travaux ou d'informations nécessaire pour la création d'un produit ou service</value>
+		</message>
+		<message>
+			<name>There are no Business Roles captured for the</name>
+			<value>Il n'y a pas de role métier associé à</value>
+		</message>
+		<message>
+			<name>The source of truth for</name>
+			<value>Point de vérité pour</value>
+		</message>
+		<message>
+			<name>The table below provides a comparative analysis between</name>
+			<value>La table ci dessous présente une analyse comparative entre</value>
+		</message>
+		<message>
+			<name>The table belows lists the relevant Data Objects for the</name>
+			<value>La table ci dessous liste les données objets pertinentes pour </value>
+		</message>
+		<message>
+			<name>The Technology Capabilities that realise the</name>
+			<value>Capacités technologique qui réalisent le</value>
+		</message>
+		<message>
+			<name>The Technology Functions provided by the</name>
+			<value>Fonctions technologues fournies par le</value>
+		</message>
+		<message>
+			<name>The Technology Products that implement the</name>
+			<value>Produits technologiques qui mettent en œuvre</value>
+		</message>
+		<message>
+			<name>The Technology Reference Model informs stakeholders regarding the major kinds of technologies and standards that are needed as a common infrastructure to enable the integration, execution, distribution and management of Information Management systems (data and applications) of an enterprise</name>
+			<value>L'objet du modèle technologique de référence  est d'informer les parties intéressés sur les technologies ou standard principaux nécessaire à la mise en place d'une infrastructure commune permettant l'intégration, l'exécution la distribution ou la gestion des système d''information (données, applications). de l'organisation.</value>
+		</message>
+		<message>
+			<name>This page describes the inbound and outbound information flows for the selected Application</name>
+			<value>Cette page décrit le flux d'information pour l’application sélectionnée</value>
+		</message>
+		<message>
+			<name>This page is highly complex and may take a few minutes to load</name>
+			<value>Cette page est compliquée à générer, elle peut mettre quelques minutes à se charger</value>
+		</message>
+		<message>
+			<name>This provides an overview of the selected Data Object</name>
+			<value>Cette vue fournit une vue d’ensemble de la donnée objet sélectionnée</value>
+		</message>
+		<message>
+			<name>This table lists all the Applications in use and allows search as well as copy to spreadsheet</name>
+			<value>Ce tableau décrit les application utilisées dans l'établissement, il est possible  d'y réaliser des recherches ou de copier sont contenus dans une feuille de calcul</value>
+		</message>
+		<message>
+			<name>This table lists all the Technology Products in use and allows download as CSV</name>
+			<value>Ce tableau décrit es produits utilisés et en permet le chargement sous forme de fichier CSV </value>
+		</message>
+		<message>
+			<name>This view contains links to download Excel spreadsheet templates in Excel 2003 XML format (either empty or populated), specifically structured for importing into Essential</name>
+			<value>Cette vue contient des liens vers différentes feuilles de calcul excel spécifiquement structurés afin d'en faciliter l'import dans essential</value>
+		</message>
+		<message>
+			<name>This view describes duplication and gaps that exist for the Application Services required by an enterprise</name>
+			<value>Cette vue présente les redondances ou  déficiences dans les services applicatifs nécessaire au fonctionnement de l'établissement</value>
+		</message>
+		<message>
+			<name>This view displays all programmes in scope for the enterprise, as well as their constituent projects</name>
+			<value>Cette vue présente les programmes envisagés pour l'établissement aisni que les projets associés</value>
+		</message>
+		<message>
+			<name>This view displays all projects in scope for the enterprise, as well as the individuals involved in them</name>
+			<value>Cette vue décrit les projets en rapport avec l'établissement ainsi que les acteurs engagés</value>
+		</message>
+		<message>
+			<name>This view is summary of the</name>
+			<value>Cette vue forunit une présentation synthétique de</value>
+		</message>
+		<message>
+			<name>This view outlines the use of approved technology platforms in the selected application by showing the degree of technology strategy alignment for the technology platforms used to support the Application</name>
+			<value>Cette vue met en évidence la conformité des plates-formes technologiques pour les applications sélectionnées, pour cela elle forunit le degrés d'alignement technologique des différentes plates formes technologiques utilisées pour mettre en oeuvre l'application</value>
+		</message>
+		<message>
+			<name>This view provide analysis of the applications that support the Business Capabilities for the selected Business Domain</name>
+			<value>Cette vue fournit une analyse des applications qui soutiennent les capacités métiers pour les domaines métiers sélectionnés</value>
+		</message>
+		<message>
+			<name>This view provides a catalogue of the Applications in use across the enterprise</name>
+			<value>Cette vue présente le catalogue des applications utilisées au sein de l'établissement</value>
+		</message>
+		<message>
+			<name>This view provides a catalogue of the Technology Products available across the enterprise</name>
+			<value>Cette vue présente le catalogue des produits technologiques disponibles au sein de l'entrprise</value>
+		</message>
+		<message>
+			<name>This view provides a detailed summary of the selected Technology Instance</name>
+			<value>Cette vue forunit un présentation suynthétioque des instances technologiques sélectionnées</value>
+		</message>
+		<message>
+			<name>This view provides an analysis of the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name>
+			<value>Cette vue présente une analyse des services applicatifs définis pour cette capacité ainsi que les applications qui sont utilisées pour mettre en œuvre chaque service et les produits technologiques qui sont mis en œuvre au travers de cette application</value>
+		</message>
+		<message>
+			<name>This view provides an analysis of the Application Services that support the Business Capabilities for the selected Business Domain</name>
+			<value>Cette vue présente les différents services applicatifs qui soutiennent les capacités métiers d'un domaine donné</value>
+		</message>
+		<message>
+			<name>This view provides an overview of the</name>
+			<value>Cette vue survole la/le(s)</value>
+		</message>
+		<message>
+			<name>This view provides an overview of the key elements of the</name>
+			<value>Cette vue présente les principaux éléments de</value>
+		</message>
+		<message>
+			<name>This view provides a summary of a set of related changes to elements of the enterprise</name>
+			<value>Cette vue présente un résumé des evolutions conjointes pour les éléments de l'architecture</value>
+		</message>
+		<message>
+			<name>This view provides a summary of details related to an individual actor</name>
+			<value>Cette vue présente un résumé des renseignements relatifs à un acteur individuel</value>
+		</message>
+		<message>
+			<name>This view provides a summary of the</name>
+			<value>Cette vue présente une synthèse de</value>
+		</message>
+		<message>
+			<name>This view provides a summary of the Information and Data that the selected Application provides and uses</name>
+			<value>Cette vue synthétise les informations ou les données qu'une application donnée fournit ou utilise</value>
+		</message>
+		<message>
+			<name>This view provides a summary of the key attributes and relationships of an Information Object</name>
+			<value>Cette vue présente les principaux attributs ou relations d'un objet informationnel</value>
+		</message>
+		<message>
+			<name>This view provides a summary of the key elements of the</name>
+			<value>Cette vue présente un résumé des principaux éléments de</value>
+		</message>
+		<message>
+			<name>This view provides links to published</name>
+			<value>Cette vue présente les liens vers les publications</value>
+		</message>
+		<message>
+			<name>This view shows actual physical processes performed by the business, organised by business domain</name>
+			<value>Cette vue présente, classés par domaines, les processus physiques actuellement réalisés par les métiers</value>
+		</message>
+		<message>
+			<name>This view shows a list of Business Processes as a searchable table</name>
+			<value>Cette vue fournit, sous forme de table de recherche, la liste des processus métiers</value>
+		</message>
+		<message>
+			<name>This view shows all individual actors in scope for</name>
+			<value>Cette vue présente tout les acteurs individuels associés à</value>
+		</message>
+		<message>
+			<name>This view shows all the application capabilities for the enterprise</name>
+			<value>Cette vue présente toute les capacités applicatives de l'entrprise</value>
+		</message>
+		<message>
+			<name>This view shows all the Applications contained in the repository. Select the Application from this list to view its Application Distribution Change Analysis.</name>
+			<value>Cette vue présente les applications contenues dans le modèle. Sélectionner une application de la liste afin de voir les évolutions de sa distribution</value>
+		</message>
+		<message>
+			<name>This view shows all the Applications contained in the repository. Select the Application from this list to view its Application Interface Change Analysis</name>
+			<value>Cette vue présente les applications contenues dans le modèle. Sélectionner une application de la liste afin voir l'analyse d'impact associées en cas d'évolution</value>
+		</message>
+		<message>
+			<name>This view shows all the Application Services in scope for</name>
+			<value>Cette vue présente les services applicatifs  associées à</value>
+		</message>
+		<message>
+			<name>This view shows all the Applications in scope for</name>
+			<value>Cette vue présente les applications associées à</value>
+		</message>
+		<message>
+			<name>This view shows all the Applications in scope for the enterprise</name>
+			<value>Cette vue présente les applications associées à l'entreprise</value>
+		</message>
+		<message>
+			<name>This view shows all the business capabilities for the enterprise</name>
+			<value>Cette vue présente les capacités métiers de l'entreprise</value>
+		</message>
+		<message>
+			<name>This view shows all the Business Domains for the enterprise</name>
+			<value>Cette vue présente les domaines métiers de l'entreprise</value>
+		</message>
+		<message>
+			<name>This view shows all the Business Processes in scope for</name>
+			<value>Cette vue présente les processus métiers associés à</value>
+		</message>
+		<message>
+			<name>This view shows all the Business Services in scope for</name>
+			<value>Cette vue présente les services métiers dans la portée de</value>
+		</message>
+		<message>
+			<name>This view shows all the Data Objects in scope for the enterprise</name>
+			<value>Cette vue présente l'ensemble des données sujets de l'entreprise</value>
+		</message>
+		<message>
+			<name>This view shows all the Data Subjects in scope for</name>
+			<value>Cette vue présente les "données sujets" dans la portée de</value>
+		</message>
+		<message>
+			<name>This view shows all the physical technology node products in the enterprise, organised by manufacturer</name>
+			<value>Cette vue présente les différents équipements technologiques de l'organisation classés par constructeur</value>
+		</message>
+		<message>
+			<name>This view shows all the Roadmap Models in scope for</name>
+			<value>Cette vue présente les feuilles de route dans la portée de</value>
+		</message>
+		<message>
+			<name>This view shows all the Technology Components in scope for</name>
+			<value>Cette vue présente les composants techniques dans la portée de</value>
+		</message>
+		<message>
+			<name>This view shows all the technology components in use across the enterprise. Select a Technology Component to view the Technology Interoperability Change Analysis for that component</name>
+			<value>Cette vue présente les composants techniques utilisés. Sélectionner un composant afin de voir l'analyse d'impact associé à une évolution de ce compôsant</value>
+		</message>
+		<message>
+			<name>This view shows all the technology nodes contained in the repository, organised by hardware model</name>
+			<value>Cette vue présente les nœuds techniques contenus dans le modèle classé par type de hardware</value>
+		</message>
+		<message>
+			<name>This view shows all the technology nodes contained in the repository, organised by manufacturer</name>
+			<value>Cette vue présente les nœuds techniques contenus dans le modèle classé par constructeur</value>
+		</message>
+		<message>
+			<name>This view shows all the technology nodes contained in the repository, organised in alphabetical order by name</name>
+			<value>Cette vue présente les nœuds techniques contenus dans le modèle classé par ordre alphabétique</value>
+		</message>
+		<message>
+			<name>This view shows all the technology products contained in the repository, organised by Vendor</name>
+			<value>Cette vue présente les produits techniques classés par fournisseur</value>
+		</message>
+		<message>
+			<name>This view shows all the technology products in use across the enterprise, organised by Technology Capability/Component</name>
+			<value>Cette vue présente les produits techniques classés par capacité/composant technique</value>
+		</message>
+		<message>
+			<name>This view shows all the technology products in use across the enterprise, organised by Technology Component</name>
+			<value>Cette vue présente les produits techniques classés par composant technique</value>
+		</message>
+		<message>
+			<name>This view shows a summary of the</name>
+			<value>Cette vue présente un résumé de</value>
+		</message>
+		<message>
+			<name>This view shows relationships between people and currently active projects</name>
+			<value>Cette vue présente les relation entre les personnes et les projets en cours</value>
+		</message>
+		<message>
+			<name>This view shows relationships between people and currently active projects. Click on a node to refocus the diagram</name>
+			<value>Cette vue présente les relations entre les personnes et les projets en cours</value>
+		</message>
+		<message>
+			<name>This view shows the information concepts, views and logical representations in scope for the enterprise</name>
+			<value>Cette vue présente les concepts informationnels, les types d'information correspondant ainsi que ler représentations logiques</value>
+		</message>
+		<message>
+			<name>This view shows the IT and Business impact of removing or changing a given Application</name>
+			<value>Cette vue présente les impacts métiers ou IT en cas d'évolution (ajout, retrait d'une application)</value>
+		</message>
+		<message>
+			<name>This view shows the main information concepts and views for the enterprise, organised by business domain</name>
+			<value>Cette vue présente les concepts informationnels ainsi que les types d'informations selon les domaines métiers</value>
+		</message>
+		<message>
+			<name>This view shows which systems are the source and which are consumers of a specified Data Object</name>
+			<value>Cette vue présente les systèmes producteurs ou consommateur d'un objet donnée</value>
+		</message>
+		<message>
+			<name>Timeline</name>
+			<value>Chronologie</value>
+		</message>
+		<message>
+			<name>Timing/Frequency</name>
+			<value>Timing / fréquence</value>
+		</message>
+		<message>
+			<name>Timing / Frequency</name>
+			<value>Timing / fréquence</value>
+		</message>
+		<message>
+			<name>TO BE DEFINED</name>
+			<value>À DÉFINIR</value>
+		</message>
+		<message>
+			<name>to see the inbound and outbound information flows for</name>
+			<value>pour voir les flux d'informations entrant ou sortants pour</value>
+		</message>
+		<message>
+			<name> to the Application Services in use across</name>
+			<value> vers les services applicatifs en usage</value>
+		</message>
+		<message>
+			<name>to the Business Roles in use across</name>
+			<value>vers les rôles métiers en usages</value>
+		</message>
+		<message>
+			<name>Triggers</name>
+			<value>Déclenche</value>
+		</message>
+		<message>
+			<name>U</name>
+			<value>U</value>
+		</message>
+		<message>
+			<name>Unclassified</name>
+			<value>Non classifié</value>
+		</message>
+		<message>
+			<name>Undefined</name>
+			<value>Non défini</value>
+		</message>
+		<message>
+			<name>undefined</name>
+			<value>non défini</value>
+		</message>
+		<message>
+			<name>Unknown</name>
+			<value>Inconnu</value>
+		</message>
+		<message>
+			<name>Unknown (Waiver Required)</name>
+			<value>Inconnu (dérogation exigée)</value>
+		</message>
+		<message>
+			<name>Unknown Supplier</name>
+			<value>Fournisseur non renseigné</value>
+		</message>
+		<message>
+			<name>Unknown Vendor</name>
+			<value>Vendeur non renseigné</value>
+		</message>
+		<message>
+			<name>UPDATE</name>
+			<value>MISE À JOUR</value>
+		</message>
+		<message>
+			<name>Updates</name>
+			<value>Mises à jour</value>
+		</message>
+		<message>
+			<name>Upstream Systems</name>
+			<value>Systèmes amonts</value>
+		</message>
+		<message>
+			<name>Usage</name>
+			<value>Utilisation</value>
+		</message>
+		<message>
+			<name>Used As</name>
+			<value>Utilisé comme</value>
+		</message>
+		<message>
+			<name>Used By</name>
+			<value>Utilisé par</value>
+		</message>
+		<message>
+			<name>Used In Technology Architectures</name>
+			<value>Utilisé dans les architectures techniques</value>
+		</message>
+		<message>
+			<name>Used in Technology Architectures</name>
+			<value>Utilisé dans les architectures techniques</value>
+		</message>
+		<message>
+			<name>Used to Implement Technology Components</name>
+			<value>Utilisé pour mettre en oeuvre les composants techniques</value>
+		</message>
+		<message>
+			<name>V</name>
+			<value>V</value>
+		</message>
+		<message>
+			<name>Vendor</name>
+			<value>Vendeur</value>
+		</message>
+		<message>
+			<name>View</name>
+			<value>Vue</value>
+		</message>
+		<message>
+			<name>View Filter</name>
+			<value>Filtre de vue</value>
+		</message>
+		<message>
+			<name>View Library</name>
+			<value>Bibliothèque des vues</value>
+		</message>
+		<message>
+			<name>View Manuals</name>
+			<value>Documentation des vues</value>
+		</message>
+		<message>
+			<name>View of Information Concept</name>
+			<value>Vue du concept informationnel</value>
+		</message>
+		<message>
+			<name>W</name>
+			<value>W</value>
+		</message>
+		<message>
+			<name>Waiver Required</name>
+			<value>Dérogation requise</value>
+		</message>
+		<message>
+			<name>Welcome to the Essential Viewer Home Page. Here you can access all the available views or filter them to see just the ones you want.</name>
+			<value>Bienvenue sur la page d'accueil d'"Essential Viewer". Vous pouvez choisir d'afficher à l'ensemble des  vues disponibles ou bien d'appliquer un filtre qui restreindra l'affichage</value>
+		</message>
+		<message>
+			<name>Where is the Data Object</name>
+			<value>Où est situé la donnée objet</value>
+		</message>
+		<message>
+			<name>workflow</name>
+			<value>Flux opérationnel</value>
+		</message>
+		<message>
+			<name>Workflow Step</name>
+			<value>Étape opératoire</value>
+		</message>
+		<message>
+			<name>Workflow Steps</name>
+			<value>Étapes opératoires</value>
+		</message>
+		<message>
+			<name>X</name>
+			<value>X</value>
+		</message>
+		<message>
+			<name>Y</name>
+			<value>Y</value>
+		</message>
+		<message>
+			<name>Your Comment</name>
+			<value>Votre commentaire</value>
+		</message>
+		<message>
+			<name>Z</name>
+			<value>Z</value>
+		</message>
+
+	</strings>
+</language>

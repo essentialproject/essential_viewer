@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+	<!--
+		* Copyright © 2008-2016 Enterprise Architecture Solutions Limited.
+	 	* This file is part of Essential Architecture Manager, 
+	 	* the Essential Architecture Meta Model and The Essential Project.
+		*
+		* Essential Architecture Manager is free software: you can redistribute it and/or modify
+		* it under the terms of the GNU General Public License as published by
+		* the Free Software Foundation, either version 3 of the License, or
+		* (at your option) any later version.
+		*
+		* Essential Architecture Manager is distributed in the hope that it will be useful,
+		* but WITHOUT ANY WARRANTY; without even the implied warranty of
+		* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		* GNU General Public License for more details.
+		*
+		* You should have received a copy of the GNU General Public License
+		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+		* 
+	-->
+	<!-- HTML form to test posting of ZIP / plain XML repository snapshots -->
+	<!-- 25.06.2013 JWC 1st coding -->
+<html>
+   <head>
+      <!--Setup common content for html head tag	-->
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <!--<meta http-equiv="expires" content="-1" />-->
+      <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+      <meta http-equiv="x-ua-compatible" content="IE=edge" />
+      <!--<meta http-equiv="X-UA-Compatible" content="chrome=1" />-->
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="icon" href="favicon.ico" type="image/x-icon" />
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+      <link rel="apple-touch-icon" href="images/essential_icon_57.png" />
+      <link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" />
+      <link rel="stylesheet" href="../css/essential_layouts.css" type="text/css" />
+      <link rel="stylesheet" href="../css/font-awesome.css" type="text/css" />
+      <link rel="stylesheet" href="../css/essential_icons.css" type="text/css" />
+      <link rel="stylesheet" href="../css/essential_colours.css" type="text/css" />
+      <link rel="stylesheet" href="../css/essential-core.css" type="text/css" />
+      <link href="../fonts/source-sans/source-sans-pro.css" rel="stylesheet" type="text/css" />
+      <title>Post XML Form</title>
+   </head>
+   <body>
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-xs-12">
+               <h1 onclick="location.href='../report?XML=reportXML.xml&amp;XSL=home.xsl&amp;LABEL=Home';"><i class="fa fa-home icon-section icon-color"></i></h1>
+               <div class="page-header">
+                  <h1>
+                     <span class="text-darkgrey">Essential Viewer </span>
+                     <span class="text-primary"> Upload Repository Snapshot</span>
+                  </h1>
+               </div>
+            </div>
+            <div class="col-xs-12">
+               <div class="sectionIcon">
+                  <i class="fa fa-arrow-circle-up icon-section icon-color"></i>
+               </div>
+               <h2 class="text-primary">Upload Repository Snapshot XML</h2>
+               <div class="content-section">
+                  <p>Use this form to upload your repository snapshot in the Essential XML format. This XML can be Zipped or uncompressed XML.</p>
+                  <p><strong>Select Essential Repository Snapshot:</strong></p>
+                  <form action="../reportService" method="post" enctype="multipart/form-data" name="submit">
+                     <input type="file" name="kbXML" />
+                     <br />
+                     <input type="submit" name="submit" value="Upload" />
+                  </form>
+               </div>
+            </div>
+            <hr />
+         </div>
+      </div>
+   </body>
+</html>

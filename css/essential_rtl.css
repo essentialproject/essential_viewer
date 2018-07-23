@@ -1,0 +1,1016 @@
+html{
+    direction: rtl;
+}
+
+svg{
+    direction: ltr;
+}
+/*essential_typography.css overides*/
+
+ul{
+    margin: 0 0.25em 0.75em 1.5em;
+}
+
+ol{
+    margin: 1.5em 0 1.5em;
+}
+
+ul li{
+    background-position: right 6px;
+    padding-left: 0em;
+    padding-right: 1.25em;
+}
+
+ul li .starBullet{
+    padding-left: 0em;
+    padding-right: 1.5em;
+}
+
+dl dd{
+    margin-left: 0em;
+    margin-right: 1.5em;
+}
+
+.form_searchbox input{
+    padding-left: 0px;
+    padding-right: 25px;
+}
+
+div.componentFilterElement input{
+    float: right;
+}
+
+.AlphabetQuickJumpLabel{
+    float: right;
+}
+
+.AlphabetLinks{
+    padding-right: 0px;
+    padding-left: 18px;
+}
+
+.jumpToTopLink a{
+    text-align: right;
+}
+/*ends*/
+/*essential_layout.css overides*/
+
+form{
+    float: right;
+}
+
+.radioMarginLeft{
+    margin-left: 0px;
+    margin-right: 10px;
+}
+
+.radioMarginRight{
+    margin-right: 0px;
+    margin-left: 5px;
+}
+
+.selectMarginRight{
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.floatLeft,
+.pull-left{
+    float: right !important;
+}
+
+.floatRight,
+.pull-right{
+    float: left !important;
+}
+
+#mainContentContainer{
+    float: right;
+}
+
+#mainContentContainerLeft{
+    padding-right: 0px;
+    padding-left: 10px;
+    border-right: 0px solid #ccc;
+    border-left: 1px solid #ccc;
+    float: right;
+}
+
+#mainContentContainerRight{
+    padding-left: 0px;
+    padding-right: 10px;
+    float: right;
+}
+
+#siteHeaderCompanyLogo{
+    background-position: right bottom;
+    margin-left: 0px;
+    margin-right: 20px;
+    float: right;
+}
+
+#siteHeaderRightLinksContainer{
+    float: left;
+    margin-right: 0px;
+    margin-left: 15px;
+}
+
+.siteHeaderRightLink{
+    float: right;
+}
+
+.siteHeaderRightLinkDivider{
+    float: right;
+}
+
+#siteHeaderSearch{
+    float: right;
+    margin-left: 0px;
+    margin-right: 15px;
+}
+
+#siteTitleCurve{
+    float: right;
+}
+
+#siteTitleMainContainerContent{
+    float: right;
+    margin-left: 0px;
+    margin-right: 20px;
+    background-position: right bottom;
+}
+
+#siteTitleRightLinksContainer{
+    float: left;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+
+.siteTitleRightLink{
+    float: left;
+}
+
+.siteTitleRightLinkDivider{
+    float: left;
+}
+
+#subFilterContainer{
+    margin-left: 0px;
+    margin-right: 60px;
+}
+
+#componentFilterKey,
+#subcomponentFilterKey{
+    float: right;
+}
+
+#componentFilterElementsContainer,
+#subcomponentFilterElementsContainer{
+    float: right;
+}
+
+.componentFilterElement{
+    float: right;
+    margin-right: 0px;
+    margin-left: 5px;
+}
+
+.checkbox a{
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
+div.componentFilterElement input{
+    float: right;
+}
+
+.sectionDividerHorizontal{
+    float: right;
+}
+
+.sectionDividerVertical-50,
+.sectionDividerVertical-75,
+.sectionDividerVertical-100,
+.sectionDividerVertical-125,
+.sectionDividerVertical-150,
+.sectionDividerVertical-175,
+.sectionDividerVertical-200,
+.sectionDividerVertical-225,
+.sectionDividerVertical-250{
+    float: right;
+    border-left: 0px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+.sectionContainerFullWidth{
+    float: right;
+}
+
+.sectionContainerHalfWidth{
+    float: right;
+}
+
+.sectionIcon{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.sectionOffsetHelper{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.sectionContent{
+    float: right;
+}
+
+.sectionHeader{
+    float: right;
+}
+
+.sectionBasicTextFullWidth{
+    float: right;
+}
+
+.sectionBasicTextHalfWidth{
+    float: right;
+}
+
+.sectionScrollable{
+    margin-left: 0px;
+    margin-right: 58px;
+}
+
+.sectionScrollable2{
+    float: right;
+    margin-left: 0px;
+    margin-right: 58px;
+}
+
+.sectionScrollableInner{
+    float: right;
+    margin-right: 0px;
+    margin-left: -32767px; /*Be safe with Opera's limited neg margin of -32767px*/
+}
+
+.sectionDependencyModel{
+    float: right;
+    margin-left: 0px;
+    margin-right: 60px;
+}
+
+#historyAlign{
+    padding-left: 0px;
+    padding-right: 435px;
+}
+
+#feedbackAlign{
+    padding-left: 0px;
+    padding-right: 518px;
+}
+
+.LRC_Header{
+    padding-left: 0px;
+    padding-right: 10px;
+}
+
+.largeThinRoundedBox{
+    margin-left: 0px;
+    margin-right: 50px;
+}
+
+.dottedBoxContainer{
+    float: right;
+}
+
+.formContainer{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.portalThumbnail{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+
+.swatch{
+    margin-right: 0px;
+    margin-left: 20px;
+    float: right;
+}
+
+.keyLabel{
+    margin-right: 0px;
+    margin-left: 15px;
+    float: right;
+}
+
+.keySample{
+    margin-right: 0px;
+    margin-left: 5px;
+    float: right;
+}
+
+.keySampleLabel{
+    margin-right: 0px;
+    margin-left: 15px;
+    float: right;
+}
+
+.expandCircleSectionClosed{
+    padding-left: 0px;
+    padding-right: 30px;
+    background: url('../images/expand_circle_closed.png') no-repeat right top;
+}
+
+.expandCircleSectionOpen{
+    padding-left: 0px;
+    padding-right: 30px;
+    background: url('../images/expand_circle_open.png') no-repeat right top;
+}
+
+.expandCircle2SectionClosed{
+    background: url('../images/expand_circle_closed.png') no-repeat right top;
+    padding-right: 0px;
+    padding-left: 3px;
+}
+
+.expandCircle2SectionOpen{
+    background: url('../images/expand_circle_open.png') no-repeat right top;
+    padding-right: 0px;
+    padding-left: 3px;
+}
+
+.inset60{
+    margin-left: 0px;
+    margin-right: 60px;
+}
+
+.ProgrammeDescriptionTitle{
+    float: right;
+}
+
+.ProgrammeDescription{
+    margin-left: 0px;
+    margin-right: 150px;
+}
+/*ends*/
+/*essential_tables.css overides*/
+
+th{
+    text-align: right;
+}
+
+.leftAlignTableHelper{
+    left: 0px;
+    right: -1px;
+}
+
+td.alignLeft,
+th.alignLeft,
+.alignLeft{
+    text-align: right;
+}
+
+td.alignRight,
+th.alignRight,
+.alignRight{
+    text-align: left;
+}
+
+.xAxisLabelBar{
+    margin-left: 0px;
+    margin-right: 80px;
+    float: right;
+}
+
+.yAxisLabelBar{
+    float: right;
+}
+
+.matrixContainer{
+    float: right;
+}
+
+.matrixContainerLarge{
+    float: right;
+}
+
+.matrixEnumIcon{
+    -moz-box-shadow: -2px 2px 1px #ccc;
+    -webkit-box-shadow: -2px 2px 1px #ccc;
+    box-shadow: -2px 2px 1px #ccc;
+}
+/*ends*/
+/*essential_models.css overides*/
+
+.GridModelHeader{
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+}
+
+.gridModel_layerContentContainer{
+    float: right;
+}
+
+.gridModel_object,
+.gridModel_objectInactive{
+    float: right;
+    ;
+    margin-right: 0px;
+    margin-left: 10px;
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+}
+
+#techRefModel_leftContainer{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+    border-radius: 0 20px 0 0;
+}
+
+#techRefModel_centreContainer{
+    float: right;
+}
+
+#techRefModel_rightContainer{
+    float: right;
+    margin-left: 0px;
+    margin-right: 10px;
+    border-radius: 20px 0 0 0;
+}
+
+#techRefModel_bottomContainer{
+    float: right;
+}
+
+.techRefModel_LeftColTitle{
+    border-radius: 0 20px 0 0;
+}
+
+.techRefModel_RightColTitle{
+    border-radius: 20px 0 0 0;
+}
+
+.techRefModel_LeftColContentContainer,
+.techRefModel_RightColContentContainer{
+    float: right;
+}
+
+.techRefModel_CentreColContentContainer{
+    float: right;
+}
+
+.techRefModel_BottomColContentContainer{
+    float: right;
+}
+
+.modelContainer{
+    float: right;
+}
+
+#dependencyModel_LeftContainer,
+#dependencyModel_RightContainer,
+#dependencyModel_CentreContainer{
+    float: right;
+}
+
+.dependencyModel_Inbound,
+.dependencyModel_Outbound,
+.dependencyModel_Hub{
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+}
+
+td.dependencyModel_InboundArrow,
+td.dependencyModel_OutboundArrow,
+td.dependencyModel_EmptyArrow{
+    padding-left: 25px;
+    padding-right: 15px;
+}
+
+td.dependencyModel_InboundArrow,
+td.dependencyModel_OutboundArrow{
+    background: url(../images/arrow_left_270px.png) no-repeat left center;
+}
+
+#dependencyModel_KeyContainer{
+    float: right;
+}
+
+.dependencyModel_KeySample{
+    float: right;
+    margin-right: 0px;
+    margin-left: 5px;
+}
+
+.dependencyModel_KeyLabel{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+
+.providerModelArrowL2R{
+    background: url(../images/doubleendedthinarrow.png) no-repeat left center;
+}
+
+.providerModelArrowR2L{
+    background: url(../images/doubleendedthinarrow.png) no-repeat right center;
+}
+
+.providerModelKeyContainer{
+    float: right;
+}
+
+.providerModelKeyLabel{
+    margin-right: 0px;
+    margin-left: 10px;
+    float: right;
+}
+
+.providerModelKeyContent{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.providerModelKeySample{
+    float: right;
+    margin-right: 0px;
+    margin-left: 5px;
+}
+
+.providerModelBadge{
+    margin-left: 0px;
+    margin-right: 3px;
+}
+
+.blobModel_Header{
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+}
+
+.blobModel_Object,
+.blobModel_ObjectInactive,
+.blobModel_ObjectSmall,
+.blobModel_ObjectInactiveSmall{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+}
+
+.valueChainCapabilitySpacer{
+    float: right;
+}
+
+.valueChainCapabilityMap{
+    float: right;
+    border-right: 0px solid #fff;
+    border-left: 2px solid #fff;
+}
+
+.valueChainHeader{
+    float: right;
+    border-right: 0px solid #fff;
+    border-left: 2px solid #fff;
+}
+
+.valueChainContent{
+    float: right;
+}
+
+.valueChainArrow{
+    float: right;
+    background-image: url(../images/value_chain_arrow_rtl.png);
+}
+
+.valueChainArrowEnd{
+    float: right;
+    background-image: url(../images/value_chain_arrow_end_rtl.png);
+}
+
+.valueChainArrowDisabled{
+    float: right;
+    background-image: url(../images/value_chain_arrow_disabled_rtl.png);
+}
+
+.valueChainArrowEndDisabled{
+    float: right;
+    background-image: url(../images/value_chain_arrow_end_disabled_rtl.png);
+}
+
+.valueChainArrowMidDisabled{
+    float: right;
+    background-image: url(../images/value_chain_arrow_mid_disabled_rtl.png);
+}
+
+.valueChainMapHeader{
+    border-right: 0px solid #fff;
+    border-left: 2px solid #fff;
+}
+
+.valueChainMapRowTitle{
+    border-right: 0px solid #fff;
+    border-left: 2px solid #fff;
+    float: right;
+    margin: 5px 0px 5px 2px;
+}
+
+.valueChainMapRowHighlightStart{
+    float: right;
+}
+
+.valueChainMapRowHighlight{
+    float: right;
+}
+
+#gradientKeyContainer{
+    float: left;
+}
+
+.gradientKeyLabel{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+.gradientKeySample{
+    float: right;
+}
+
+.uml_key_container{
+    float: right;
+}
+
+.umlKeyTitle{
+    margin-right: 0px;
+    margin-left: 10px;
+    float: right;
+}
+
+.umlCircleBadge{
+    float: right;
+    margin-right: 0px;
+    margin-left: 10px;
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+    padding-left: 0px;
+    padding-right: 2px;
+}
+
+.umlCircleBadgeDescription{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+
+.umlZoomContainer{
+    float: left;
+    width: auto;
+}
+
+.componentColumnContainer{
+    float: right;
+}
+
+.componentContent{
+    border-right: 0px solid #fff;
+    border-left: 3px solid #fff;
+}
+
+.smallButton,
+.smallBadge{
+    -webkit-box-shadow: #666 -2px 2px 0px 0px;
+    -moz-box-shadow: #666 -2px 2px 0px 0px;
+    box-shadow: #aaa -2px 2px 0px 0px;
+    left: 0px;
+    right: -5px;
+}
+
+.tapeDeckIndicatorLabelStart{
+    margin-right: 0px;
+    margin-left: 10px;
+    float: right;
+}
+
+.tapeDeckIndicatorLabelEnd{
+    margin-left: 0px;
+    margin-right: 5px;
+    float: right;
+}
+
+.tapeDeckIndicator{
+    float: right;
+    margin-right: 0px;
+    margin-left: 3px;
+}
+
+.compModelColumn{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+/*ends*/
+/*essential_datatables.css overides*/
+
+.dataTables_processing{
+    margin-left: 0px;
+    margin-right: -125px;
+}
+
+.dataTables_length{
+    width: 40%;
+    float: right;
+}
+
+.dataTables_filter{
+    float: right;
+    text-align: right;
+}
+
+.dataTables_info{
+    float: right;
+}
+
+.dataTables_paginate{
+    float: left;
+    text-align: left;
+}
+
+.paginate_disabled_previous,
+.paginate_enabled_previous,
+.paginate_disabled_next,
+.paginate_enabled_next{
+    margin-left: 0px;
+    margin-right: 3px;
+    float: right;
+}
+
+.paginate_disabled_previous{
+    background-image: url('../images/back_disabled_rtl.jpg');
+}
+
+.paginate_enabled_previous{
+    background-image: url('../images/back_enabled_rtl.jpg');
+}
+
+.paginate_disabled_next{
+    background-image: url('../images/forward_disabled_rtl.jpg');
+}
+
+.paginate_enabled_next{
+    background-image: url('../images/forward_enabled_rtl.jpg');
+}
+
+table.display thead th{
+    padding: 3px 10px 3px 18px;
+}
+
+table.display tfoot th{
+    padding: 3px 10px 3px 18px;
+}
+
+.sorting_asc{
+    background: url('../images/sort_asc.png') no-repeat center left;
+}
+
+.sorting_desc{
+    background: url('../images/sort_desc.png') no-repeat center left;
+}
+
+.sorting{
+    background: url('../images/sort_both.png') no-repeat center left;
+}
+
+.sorting_asc_disabled{
+    background: url('../images/sort_asc_disabled.png') no-repeat center left;
+}
+
+.sorting_desc_disabled{
+    background: url('../images/sort_desc_disabled.png') no-repeat center left;
+}
+/*ends*/
+/*essential_tabletools.css overides*/
+
+div.DTTT_container{
+    float: left;
+}
+
+button.DTTT_button{
+    float: right;
+    margin-right: 0px;
+    margin-left: 3px;
+}
+
+button.DTTT_button_collection{
+    padding-right: 0px;
+    padding-left: 17px;
+    background: url(../images/collection.png) no-repeat center left;
+}
+
+button.DTTT_button_collection_hover{
+    padding-right: 0px;
+    padding-left: 17px;
+    background: #f0f0f0 url(../images/collection_hover.png) no-repeat center left;
+}
+
+div.DTTT_collection_background{
+    background: transparent url(../images/background.png) repeat top right;
+}
+
+.DTTT_print_info{
+    margin-left: 0px;
+    margin-right: -200px;
+    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.dt-buttons{
+    top: 0px;
+    float: left;
+}
+/*ends*/
+/*essential_contextmenu.css overides*/
+
+.context-menu-item{
+    padding: 2px 24px 2px 5px;
+}
+
+.context-menu-input > label > input[type = "checkbox"],
+.context-menu-input > label > input[type = "radio"]{
+    margin-left: 0px;
+    margin-right: -17px;
+}
+
+.context-menu-input > label > span{
+    margin-left: 0px;
+    margin-right: 5px;
+}
+
+.context-menu-item > .context-menu-list{
+    right: 0px;
+    left: -5px;
+}
+
+.context-menu-item.icon{
+    background-position: 98% 2px;
+}
+/*ends*/
+/*essential_viewhub.css overides*/
+
+.jumpBoxElement,
+.jumpBoxKey,
+.rightColTab{
+    border-right: 0px solid #fff;
+    border-left: 1px solid #fff;
+    float: right;
+}
+
+#jumpBoxElementContainer{
+    float: right;
+}
+
+.filterElement,
+.filterKey{
+    border-right: 0px solid #fff;
+    border-left: 1px solid #fff;
+    float: right;
+}
+
+.filterElementContainer{
+    float: right;
+}
+
+.viewElement{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+
+.tooltip{
+    text-align: right;
+}
+/*View Library Overrides*/
+
+.report-element-preview{
+    position: absolute;
+    right: 85%;
+    top: 5px;
+}
+
+.viewElementContainer{
+    float: right;
+}
+/*ends*/
+
+.col-lg-1,
+.col-lg-10,
+.col-lg-11,
+.col-lg-12,
+.col-lg-2,
+.col-lg-3,
+.col-lg-4,
+.col-lg-5,
+.col-lg-6,
+.col-lg-7,
+.col-lg-8,
+.col-lg-9{
+    float: right;
+}
+
+.col-md-1,
+.col-md-10,
+.col-md-11,
+.col-md-12,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-md-8,
+.col-md-9{
+    float: right;
+}
+
+.col-sm-1,
+.col-sm-10,
+.col-sm-11,
+.col-sm-12,
+.col-sm-2,
+.col-sm-3,
+.col-sm-4,
+.col-sm-5,
+.col-sm-6,
+.col-sm-7,
+.col-sm-8,
+.col-sm-9{
+    float: right;
+}
+
+.col-xs-1,
+.col-xs-10,
+.col-xs-11,
+.col-xs-12,
+.col-xs-2,
+.col-xs-3,
+.col-xs-4,
+.col-xs-5,
+.col-xs-6,
+.col-xs-7,
+.col-xs-8,
+.col-xs-9{
+    float: right;
+}
+
+.nav-tabs > li{
+    float: right;
+}
+/*######### Media Queries to Support Different Screens Sizes #########*/
+
+@media (max-width : 767px){
+    .navbar-brand{
+        right: -15px;
+        position: relative;
+        float: right;
+    }
+
+    .navbar-right{
+        left: 30px;
+        position: relative;
+    }
+}
+
+@media (min-width : 992px){
+}
+
+@media (max-width : 992px){
+}
+
+@media (min-width : 767px){
+    .navbar-header{
+        right: -30px;
+        position: relative;
+        float: right !important;
+    }
+
+    .navbar-right{
+        left: -15px;
+        position: relative;
+        float: left !important;
+    }
+}

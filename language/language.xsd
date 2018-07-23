@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  elementFormDefault="qualified" 
+  targetNamespace="http://www.enterprise-architecture.org/essential/language" 
+  xmlns="http://www.enterprise-architecture.org/essential/language">
+
+  <!-- 
+        * Copyright (c)2012 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Schema for the language internationalisation (i18n) XML files for Essential Viewer
+    -->
+  <!-- 28.06.2012    JWC    1st coding-->
+  
+  <xs:element name="language">
+    <xs:annotation>
+      <xs:documentation>The root element of the internationalisation specification</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="dateformat" maxOccurs="1" minOccurs="0"/>
+        <xs:element ref="numberformat" maxOccurs="1" minOccurs="0"/>
+        <xs:element ref="strings" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName">
+        <xs:annotation>
+          <xs:documentation>The name of this language i18n file. Use the two-part ISO/IETF language identifier, e.g. en-gb, en-us</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="dateformat" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Use the XSD date format pattern strings to define the date format</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  
+  <xs:element name="numberformat" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Use the XSD number format pattern strings to define the number format</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  
+  <xs:element name="strings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="message"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="message">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name" maxOccurs="1" minOccurs="1"/>
+        <xs:element ref="value" maxOccurs="1" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="name" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The English value of the static string - the key for the language map</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  
+  <xs:element name="value" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The translated value of the static string defined by the name element in the language map        
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  
+</xs:schema>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.enterprise-architecture.org/essential/viewercache"
+    targetNamespace="http://www.enterprise-architecture.org/essential/viewercache"           
+    elementFormDefault="qualified">
+
+    <!-- 
+        * Copyright (c)2011 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Schema for the error XML document that is used as the transform source for the Essential Error View
+    -->
+    <!-- 14.11.2011    JWC    1st coding-->
+    
+    <xs:element name="viewercache">
+	    <xs:complexType>
+	        <xs:sequence>
+	            <xs:element name="cachevariables" type="variables"></xs:element>
+	            <xs:element name="cachedirectories" type="directories"></xs:element>
+	        </xs:sequence>
+	    </xs:complexType>
+    </xs:element>  
+    
+    <xs:complexType name="variables">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="variable" type="cacheDefinition"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="directories">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="directory" type="cacheDefinition">               
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>    
+    
+    <xs:complexType name="cacheDefinition">
+        <xs:simpleContent> 
+            <xs:extension base="xs:string">
+                <xs:attribute name="when" type="whenToClear" use="required"></xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:simpleType name="whenToClear">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="pre"></xs:enumeration>
+            <xs:enumeration value="post"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+        
+</xs:schema>

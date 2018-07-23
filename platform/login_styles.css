@@ -1,0 +1,124 @@
+html{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: table;
+    font-size: 14px;
+}
+
+h2{
+    margin: 0 0 20px 0;
+}
+
+#left{
+    vertical-align: top;
+    background-color: #ffffff;
+    width: 60%;
+    max-width: 60%;
+    overflow: hidden;
+    min-height: 100%;
+    height: 100%;
+    display: table-cell;
+    background: url(../images/239H.jpg) no-repeat top left;
+    background-size: auto 100%;
+}
+
+#right{
+    height: 100%;
+    min-height: 100%;
+    background-color: #F4F6F9;
+    display: table-cell;
+}
+
+#wrapper{
+    height: 100%;
+    min-height: 100%;
+    margin-bottom: -60px; /* the bottom margin is the negative value of the footer's height */
+}
+
+.content{
+    padding-top: 40px;
+}
+
+#logoContainer{
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#logoContainer img{
+    height: 60px;
+}
+
+#loginContainer{
+    width: 380px;
+    padding: 20px;
+    margin: 40px auto 0 auto;
+    background: #fff;
+    border: 1px solid #666;
+    border-radius: 4px;
+}
+
+.loginInput{
+    width: 200px;
+    padding: 12px;
+}
+
+.push{
+    height: 60px; /* .push must be the same height as #footer */
+    clear: both;
+}
+
+#notCustomerGroup{
+    width: 380px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#notCustomerGroup .btn{
+    margin-left: 20px;
+}
+
+#footer{
+    text-align: center;
+    height: 60px;
+    clear: both;
+}
+
+#loginContainer label{
+    cursor: default;
+}
+
+#loginContainer .glyphicon-question-sign{
+    cursor: help;
+}
+
+@media (max-width : 992px){
+    #left{
+        width: 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width : 1200px){
+    #left{
+        width: 66%;
+        max-width: 66%;
+    }
+}
+
+@media (max-width : 767px){
+    #loginContainer,
+    #notCustomerGroup{
+        width: 280px;
+    }
+
+    #notCustomerGroup .btn{
+        margin-left: 0px;
+        margin-top: 10px;
+    }
+}

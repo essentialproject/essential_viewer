@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.enterprise-architecture.org/essential/vieweruserdata"
+    targetNamespace="http://www.enterprise-architecture.org/essential/vieweruserdata"
+    elementFormDefault="qualified">
+
+    <!-- 
+        * Copyright (c)2015 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Schema for the XML document that maintains the user data for a user of Essential Viewer
+    -->
+    <!-- 22.01.2015    JWC    1st coding-->
+    <!-- 25.03.2015    JWC    Extended to add repository identifiers -->
+    <!-- 26.03.2015    JWC    Extended to add URI tag -->
+    <!-- 17.04.2015    JWC    Refactored and simplified to work better with JAXB -->
+
+
+
+    <xs:element name="user">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="uri" type="xs:string"/>
+                <xs:element name="firstname" type="xs:string"/>
+                <xs:element name="lastname" type="xs:string"/>
+                <xs:element name="email" type="xs:string"/>
+                <xs:element name="viewers" type="viewerURLList" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="clearanceList" type="clearanceList"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="clearanceType">
+        <xs:sequence>
+            <xs:element name="repository" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="group" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="level" type="xs:string" minOccurs="0" maxOccurs="1"/>            
+        </xs:sequence>
+        <xs:attribute name="type" type="classificationTypeValues"/>
+    </xs:complexType>
+
+    <xs:simpleType name="classificationTypeValues">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="read"/>
+            <xs:enumeration value="edit"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="clearanceList">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="clearance" type="clearanceType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="viewerURLList">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="viewer" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user xmlns="http://www.enterprise-architecture.org/essential/vieweruserdata"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.enterprise-architecture.org/essential/vieweruserdata vieweruserdata.xsd">
+    <uri>5fTS2HRECieZnaENy7hVTT</uri>
+    <firstname>Jonathan </firstname>
+    <lastname>Carter </lastname>
+    <email>jonathan@essentialproject.org </email>
+    <viewers>
+        <viewer>/essential_viewer_3</viewer>
+        <viewer>/essential_viewer1</viewer>
+    </viewers>
+    <clearanceList>
+        <clearance type="read">
+            <repository>12345jhhhkhj</repository>
+            <group>InfoGroup</group>
+            <level>Secret</level>
+        </clearance>
+        <clearance type="read">
+            <repository>12345jhhhkhj</repository>
+            <group>RoleGroup</group>
+            <level>Elevated</level>
+        </clearance>
+        <clearance type="edit">
+            <repository>12345jhhhkhj</repository>
+            <group>RoleGroup</group>
+            <level>Elevated</level>
+        </clearance>
+    </clearanceList>
+</user>
