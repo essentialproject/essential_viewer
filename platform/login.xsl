@@ -80,24 +80,9 @@
 								</xsl:if>
 								<form method="post" action="login" name="login" id="login" onsubmit="return setCookie(this);" autocomplete="off">
 									<div class="form-group">
-										<div class="pull-right">
-											<span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-content="Enter the Tenant ID provided to you when you signed up. The is typically something like 'mycompanyname'"/>
-										</div>
-										<label for="tenantName">Tenant ID</label>
-										<input class="form-control" id="tenantName" name="tenantName" path="tenantName" placeholder="Tenant Name" title="Enter the Tenant ID provided to you when you signed up. This is typically something like 'mycompanyname'" required="required" pattern="[a-zA-Z0-9\s]+" onchange="this.setCustomValidity(this.validity.patternMismatch ? this.title : '');"/>
+										<input type="hidden" id="preLoginURL" name="preLoginURL" value="{$preLoginURL}"/>
 									</div>
-									<div class="form-group">
-										<label for="username">Email</label>
-										<input class="form-control" id="username" name="username" path="username" placeholder="Email address" required="required" type="email"/>
-									</div>
-									<div class="form-group">
-										<label for="password">Password</label>
-										<input type="password" class="form-control" id="password" name="password" path="password" placeholder="Password" required="required" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" onchange="this.setCustomValidity(this.validity.patternMismatch ? this.title : '');" title="This password must contain at least one uppercase, one lowercase and one numerical characters"/>
-									</div>
-									<div class="form-group">
-										<input type="hidden" name="preLoginURL" value="{$preLoginURL}"/>
-									</div>
-									<button class="btn btn-primary" style="width: 100%;" type="submit" value="Login">Login</button>
+									<button class="btn btn-primary" style="width: 100%;" type="submit" value="Login">Redirect to Authentication service</button>
 								</form>
 								<style>
 									input:focus:invalid {
@@ -112,23 +97,7 @@
 									}
 								</style>
 								<hr/>
-
-								<!-- Include link for SAML login -->
-								<a class="btn btn-primary" style="width: 100%;" role="button" href="javascript:void()" id="callbackURL">Sign in with your company account</a>
-								<!-- end of SAML login link -->
-								<hr/>
-								<div class="pull-left">
-									<a href="app/forgottenPassword">Forgot password?</a>
-								</div>
-								<div class="pull-right">
-									<a href="app/forgottenPassword?firstTime">First Time User?</a>
-								</div>
 								<div class="clearfix"/>
-							</div>
-							<div id="notCustomerGroup">
-								<span>Not a customer?</span>
-								<br class="visible-xs"/>
-								<a class="btn btn-default" role="button" href="http://www.enterprise-architecture.org">Find Out More</a>
 							</div>
 							<div class="push"/>
 						</div>
@@ -136,22 +105,9 @@
 				</div>
 
 				<script type="text/javascript">
-					function getCookie(key) {
-						var re = new RegExp(key + "=([^;]+)");
-						var value = re.exec(document.cookie);
-						return (value != null) ? unescape(value[1]) : null;
+					window.onload = function() {
+						document.getElementById("login").submit();
 					}
-					function setCookie(form) {
-						var key = "tenant";
-						var value = form.tenantName.value;
-						document.cookie = key + "=" + escape(value) + "; path=/;";
-						return true;
-					}
-				
-					if (tenant = getCookie("tenant")) {
-						document.getElementById("login").tenantName.value = tenant;
-					}
-					
 				</script>
 				<script type="text/javascript">
 		            $(document).ready(function(){
@@ -161,9 +117,6 @@
 		                });
 		            });
 		        </script>
-				<script type="text/javascript">					
-						document.getElementById("callbackURL").href = window.location.protocol + "//" + window.location.host + "/app/samlLogin?appRedirectUrl=" + window.location.href;					
-				</script>
 			</body>
 		</html>
 	</xsl:template>

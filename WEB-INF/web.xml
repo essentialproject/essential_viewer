@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	<!--
-        * Copyright (c)2006-2017 Enterprise Architecture Solutions ltd.
+        * Copyright (c)2006-2018 Enterprise Architecture Solutions ltd.
         * This file is part of Essential Architecture Manager, 
         * the Essential Architecture Meta Model and The Essential Project.
         *
@@ -287,6 +287,13 @@
 		<servlet-name>ViewerUserFileService</servlet-name>
 		<servlet-class>com.enterprise_architecture.essential.report.security.ViewerUserFileService</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		Servlet to manage the callback from the AuthN Server</description>
+		<display-name>AuthnServerCallback</display-name>
+		<servlet-name>AuthnServerCallback</servlet-name>
+		<servlet-class>com.enterprise_architecture.essential.report.security.AuthnServerCallback</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>reportService</servlet-name>
@@ -337,6 +344,10 @@
 		<servlet-name>ViewerUserFileService</servlet-name>
 		<url-pattern>/userfiles</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AuthnServerCallback</servlet-name>
+		<url-pattern>/authnServerCallback</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>report</welcome-file>
@@ -358,7 +369,8 @@
 		</taglib>
 	</jsp-config>
 	
-	<!--<filter>
+	<!-- 
+	<filter>
 		<filter-name>ExpiresFilter</filter-name>
 		<filter-class>org.apache.catalina.filters.ExpiresFilter</filter-class>
 		<init-param>
@@ -374,7 +386,8 @@
 		<filter-name>ExpiresFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>-->
+	</filter-mapping> 
+	-->
 	
 
 	<!-- Settings for Caching filter -->

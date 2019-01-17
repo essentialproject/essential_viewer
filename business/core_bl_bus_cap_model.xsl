@@ -656,14 +656,14 @@
 			<div class="threeColModel_wideColumnContainerCaps pull-left">
 				<div class="clear"/>
 				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelManageBusCapRelss">
-					<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 				</xsl:apply-templates>
 				<div class="threeColModel_wideRowCapsDivider"/>
 				<xsl:apply-templates mode="PrintTopLevelFrontCap" select="$topLevelFrontBusCapRelss">
-					<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 				</xsl:apply-templates>
 				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelBackBusCapRelss">
-					<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -684,7 +684,7 @@
 			</xsl:call-template>
 			<xsl:variable name="childCaps" select="$allBusinessCaps[name = $thisManageBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 			<xsl:apply-templates mode="PrintGrandChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
 		<xsl:if test="not(position() = last())">
@@ -723,7 +723,7 @@
         
 			<xsl:variable name="childCaps" select="$allBusinessCaps[name = $thisFrontBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 			<xsl:apply-templates mode="PrintChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
 		<div class="threeColModel_wideRowCapsDivider"/>
@@ -755,7 +755,7 @@
 			</xsl:call-template>
          
 			<xsl:apply-templates mode="PrintGrandChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 
 		</div>

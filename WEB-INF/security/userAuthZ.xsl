@@ -7,7 +7,7 @@
     version="2.0">
     
     <!--
-		* Copyright ©2015-2016 Enterprise Architecture Solutions Limited.
+		* Copyright ©2015-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -27,6 +27,9 @@
 	-->
     <!-- View to evaulate user clearance to access the specified View template -->
     <!-- 22.01.2015	JWC First implementation	 -->
+    <!-- 27.03.2018 JWC Updated to include test with default classification -->
+    <!-- 13.04.2018 JWC Tweaked the parameters to testAuthZ() for default classification as union -->
+    <!-- 16.04.2018 JWC Revised query to ensure 18 security scenarios are handled correctly -->
     
     <xsl:output method="text"/>
     
@@ -43,27 +46,41 @@
         
         <!-- get the classifications for the selected View template of the selected type-->
         <xsl:variable name="viewClassifications" select="//view[template=$viewTemplate]/viewClassification/classification[@type=$classificationType]"></xsl:variable>
-       
+        
         <!-- get the set of classifications that are defined and are relevant to the selected View template -->
         <xsl:variable name="classificationDefs" select="classificationGroups/classification[group=$viewClassifications/group]"></xsl:variable>
         
-        <!-- get the user clearance levels -->
-       <!-- <xsl:variable name="userDoc" select="parse-xml($userData)"></xsl:variable>-->
-        <xsl:variable name="userDoc" select="$userData"/>
+        <!-- Get the default classification for all elements, if defined -->
+        <xsl:variable name="defaultClassification" select="defaultClassification/readClassification"></xsl:variable>
+        <xsl:variable name="defaultClassificationGroup" select="$defaultClassification/classification/group"></xsl:variable>        
+        <xsl:variable name="allClassificationsInGroup" select="classificationGroups/classification[group=$defaultClassification/group] union $classificationDefs"></xsl:variable>
+        
+        <!-- get the user clearance levels -->        
+        <!--<xsl:variable name="userDoc" select="parse-xml($userData)"></xsl:variable>-->
+        <xsl:variable name="userDoc" select="$userData"/>        
         <xsl:variable name="userGroupClearance" select="$userDoc//user:clearance[@type=$classificationType and user:repository=$repositoryID]"></xsl:variable>
         
         <xsl:choose>
-            <xsl:when test="count($viewClassifications) > 0">
+            <xsl:when test="(count($viewClassifications) > 0) or (count($defaultClassification) > 0)">
                 
                 <xsl:variable name="authResult">
                     <xsl:apply-templates mode="testAuthZ" select="$viewClassifications">
                         <xsl:with-param name="classificationDefs" select="$classificationDefs"></xsl:with-param>
-                        <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
+                        <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param> 
+                        <xsl:with-param name="allClassificationsForGroup" select="$allClassificationsInGroup"></xsl:with-param>
                     </xsl:apply-templates>
                 </xsl:variable>
+                                                
+                <xsl:variable name="defaultAuthResult">
+                    <xsl:apply-templates mode="testAuthZ" select="$defaultClassification">
+                        <xsl:with-param name="classificationDefs" select="$viewClassifications union $defaultClassification"></xsl:with-param>                        
+                        <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
+                        <xsl:with-param name="allClassificationsForGroup" select="$allClassificationsInGroup"></xsl:with-param>                        
+                    </xsl:apply-templates>
+                </xsl:variable>                
                 
                 <xsl:choose>
-                    <xsl:when test="contains($authResult, 'ACCESS DENIED')">
+                    <xsl:when test="contains($authResult, 'ACCESS DENIED') or contains($defaultAuthResult, 'ACCESS DENIED')">
                         <xsl:text>ACCESS DENIED</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -84,18 +101,20 @@
     <xsl:template mode="testAuthZ" match="node()">
         <xsl:param name="classificationDefs"></xsl:param>
         <xsl:param name="userGroupClearance"></xsl:param>
+        <xsl:param name="allClassificationsForGroup"></xsl:param>
         
         <xsl:variable name="currentGroup" select="group"></xsl:variable>
         <xsl:variable name="userSelectedGroup" select="$userGroupClearance[user:group=$currentGroup]"/>
-        <xsl:variable name="userLevelIndex" select="$classificationDefs[level=$userSelectedGroup/user:level]/index"></xsl:variable>
+        <xsl:variable name="userLevelIndex" select="$allClassificationsForGroup[level=$userSelectedGroup/user:level]/index"></xsl:variable>
         <xsl:variable name="viewClassIndex" select="index"></xsl:variable>
-        
-        <xsl:choose>
-            <xsl:when test="number($userLevelIndex) >= number($viewClassIndex)">
-                <xsl:text>AUTHORISED </xsl:text>
+
+        <xsl:choose>            
+            <xsl:when test="number(max($userLevelIndex)) >= number(max($viewClassIndex))">
+                <xsl:text>AUTHORISED </xsl:text>                
             </xsl:when>
+            
             <xsl:otherwise>
-                <xsl:text>ACCESS DENIED </xsl:text>
+                <xsl:text>ACCESS DENIED </xsl:text>                
             </xsl:otherwise>
         </xsl:choose>
         

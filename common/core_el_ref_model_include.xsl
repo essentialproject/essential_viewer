@@ -403,6 +403,8 @@
 	</xsl:template>
 	
 	
+	
+	<!-- RENDERS TRM WITH POPUP DETAIL INCLUDING TECHNOLOGY CAPABILITY DESCRIPTION AND PRODUC COUNTS FOR EACH TECH COMPONENT -->
 	<xsl:template name="techRefModelInclude">
 		<!--Top-->
 		<script id="trm-template" type="text/x-handlebars-template">
@@ -639,6 +641,203 @@
 					<td class="alignCentre">{{count}}</td>
 				</tr>
 			{{/techCapProds}}
+		</script>
+	</xsl:template>
+	
+	
+	<!-- RENDERS TRM WITH POPUP DETAIL INCLUDING ONLY TECHNOLOGY CAPABILITY DESCRIPTION -->
+	<xsl:template name="techRefModelBasicInclude">
+		<!--Top-->
+		<script id="trm-template" type="text/x-handlebars-template">
+			<div class="col-xs-12">
+				{{#each top}}
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="refModel-l0-outer matchHeight2">
+								<div class="refModel-l0-title fontBlack large">
+									{{{link}}}
+								</div>
+								{{#childTechCaps}}
+									<div class="techRefModel-blob bg-midgrey">
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+										<div class="refModel-blob-title">
+											{{{link}}}
+										</div>
+										<div class="refModel-blob-refArch">
+											{{#if isRelevant}}
+												<i class="fa fa-sitemap text-white"/>
+											{{/if}}
+										</div>
+										<div class="refModel-blob-info">
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
+											<i class="fa fa-info-circle text-white"/>
+											<div class="hiddenDiv">
+												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
+												<p>{{description}}</p>					
+											</div>
+										</div>
+									</div>								
+								{{/childTechCaps}}
+								<div class="clearfix"/>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix bottom-10"/>
+				{{/each}}
+			</div>
+			<!--Ends-->
+			<!--Left-->
+			<div class="col-xs-4 col-md-3 col-lg-2">
+				{{#each left}}
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="refModel-l0-outer matchHeightTRM">
+								<div class="refModel-l0-title fontBlack large">
+									{{{link}}}
+								</div>
+								{{#childTechCaps}}
+									<div class="techRefModel-blob bg-midgrey">
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+										<div class="refModel-blob-title">
+											{{{link}}}
+										</div>
+										<div class="refModel-blob-refArch">
+											{{#if isRelevant}}
+												<i class="fa fa-sitemap text-white"/>
+											{{/if}}
+										</div>
+										<div class="refModel-blob-info">
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
+											<i class="fa fa-info-circle text-white"/>
+											<div class="hiddenDiv">
+												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
+												<p>{{description}}</p>											
+											</div>
+										</div>
+									</div>				
+								{{/childTechCaps}}
+								<div class="clearfix"/>
+							</div>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<!--ends-->
+			<!--Center-->
+			<div class="col-xs-4 col-md-6 col-lg-8 matchHeightTRM">
+				{{#each middle}}
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="refModel-l0-outer">
+								<div class="refModel-l0-title fontBlack large">
+									{{{link}}}
+								</div>
+								{{#childTechCaps}}
+									<div class="techRefModel-blob bg-midgrey">
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+										<div class="refModel-blob-title">
+											{{{link}}}
+										</div>
+										<div class="refModel-blob-refArch">
+											{{#if isRelevant}}
+												<i class="fa fa-sitemap text-white"/>
+											{{/if}}
+										</div>
+										<div class="refModel-blob-info">
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
+											<i class="fa fa-info-circle text-white"/>
+											<div class="hiddenDiv">
+												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
+												<p>{{description}}</p>											
+											</div>
+										</div>
+									</div>
+								{{/childTechCaps}}
+								<div class="clearfix"/>
+							</div>
+							{{#unless @last}}
+								<div class="clearfix bottom-10"/>
+							{{/unless}}
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<!--ends-->
+			<!--Right-->
+			<div class="col-xs-4 col-md-3 col-lg-2">
+				{{#each right}}
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="refModel-l0-outer matchHeightTRM">
+								<div class="refModel-l0-title fontBlack large">
+									{{{link}}}
+								</div>
+								{{#childTechCaps}}
+									<div class="techRefModel-blob bg-midgrey">
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+										<div class="refModel-blob-title">
+											{{{link}}}
+										</div>
+										<div class="refModel-blob-refArch">
+											{{#if isRelevant}}
+												<i class="fa fa-sitemap text-white"/>
+											{{/if}}
+										</div>
+										<div class="refModel-blob-info">
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
+											<i class="fa fa-info-circle text-white"/>
+											<div class="hiddenDiv">
+												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
+												<p>{{description}}</p>											
+											</div>
+										</div>
+									</div>				
+								{{/childTechCaps}}
+								<div class="clearfix"/>
+							</div>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<!--ends-->
+			<!--Bottom-->
+			<div class="col-xs-12">
+				<div class="clearfix bottom-10"/>
+				{{#each bottom}}
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="refModel-l0-outer matchHeight2">
+								<div class="refModel-l0-title fontBlack large">
+									{{{link}}}
+								</div>
+								{{#childTechCaps}}
+									<div class="techRefModel-blob bg-midgrey">
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+										<div class="refModel-blob-title">
+											{{{link}}}
+										</div>
+										<div class="refModel-blob-refArch">
+											{{#if isRelevant}}
+												<i class="fa fa-sitemap text-white"/>
+											{{/if}}
+										</div>
+										<div class="refModel-blob-info">
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
+											<i class="fa fa-info-circle text-white"/>
+											<div class="hiddenDiv">
+												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
+												<p>{{description}}</p>
+											</div>
+										</div>
+									</div>							
+								{{/childTechCaps}}
+								<div class="clearfix"/>
+							</div>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<!--Ends-->
 		</script>
 	</xsl:template>
 	
@@ -1117,6 +1316,12 @@
 						bottom: 0px;
 						right: 2px;
 					}
+					.refModel-blob-refArch {
+						position: absolute;
+						bottom: 0px;
+						left: 2px;
+					}
+					
 				</style>
 		<!--Ends-->
 	</xsl:template>

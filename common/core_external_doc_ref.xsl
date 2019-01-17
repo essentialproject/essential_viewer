@@ -24,10 +24,11 @@
     that are defined against it in a table -->
 	<!-- 04.11.2008	JWC	Added to new report servlet -->
 
-	<xsl:variable name="imageSuffixes" select="('png', 'jpg', 'jpeg', 'bmp', 'gif')"/>
+	<xsl:variable name="imageSuffixes" select="('png', 'jpg', 'jpeg','jpg, jpeg', 'bmp', 'gif')"/>
+	<xsl:variable name="videoSuffixes" select="('mp4', 'mov')"/>
 	<xsl:variable name="extRefLinkTypes" select="/node()/simple_instance[type='Document_File_Type']"/>
 	<xsl:variable name="imageExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $imageSuffixes)]"/>
-	
+	<xsl:variable name="videoExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $videoSuffixes)]"/>
 
 	<xsl:template match="node()" mode="ReportExternalDocRef">
 		<xsl:param name="emptyMessage">
@@ -77,7 +78,8 @@
 			<xsl:when test="count($extDocRefs) > 0">
 				<!-- Create an image slider for image-based external documents -->
 				<xsl:variable name="imageDocRefs" select="$extDocRefs[own_slot_value[slot_reference = 'external_link_type']/value = $imageExtRefLinkTypes/name]"/>
-				<xsl:variable name="docRefList" select="($extDocRefs except $imageDocRefs)"/>
+				<xsl:variable name="videoDocRefs" select="$extDocRefs[own_slot_value[slot_reference = 'external_link_type']/value = $videoExtRefLinkTypes/name]"/>
+				<xsl:variable name="docRefList" select="($extDocRefs except ($imageDocRefs union $videoDocRefs))"/>
 				<xsl:if test="count($imageDocRefs) > 0">
 					<script src="js/flux/flux.min.js" type="text/javascript" charset="utf-8"/>
 					<script type="text/javascript" charset="utf-8">
@@ -110,6 +112,23 @@
 							</xsl:if>
 						</xsl:for-each>
 					</div>
+				</xsl:if>
+				
+				<xsl:if test="count($videoDocRefs) > 0">		
+					<h2>External Videos</h2>
+					<div id="videos">
+						<xsl:for-each select="$videoDocRefs">
+							<xsl:variable name="currentVideoLink" select="current()"/>
+							<xsl:variable name="videoURL" select="$currentVideoLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
+							<xsl:variable name="videoCaption" select="$currentVideoLink/own_slot_value[slot_reference = 'name']/value"/>
+							<xsl:variable name="videoDescription" select="$currentVideoLink/own_slot_value[slot_reference = 'description']/value"/>
+							<p><strong><xsl:value-of select="$videoCaption"/></strong> - <xsl:value-of select="$videoDescription"/></p>
+							<iframe width="560" height="315" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen="allowfullscreen">
+								<xsl:attribute name="src" select="$videoURL"></xsl:attribute>
+							</iframe>
+						</xsl:for-each>
+					</div>
+					<div class="verticalSpacer_10px"/>
 				</xsl:if>
 
 				<xsl:if test="(count($docRefList) > 0) and (count($imageDocRefs) > 0)">

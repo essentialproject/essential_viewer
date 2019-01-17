@@ -34,7 +34,7 @@
 	<xsl:variable name="middleRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Middle']"/>
 	<xsl:variable name="bottomRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Bottom']"/>
 
-	<xsl:variable name="allApps" select="/node()/simple_instance[type = 'Composite_Application_Provider']"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>
 	<xsl:variable name="allAppCodebases" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
 	<xsl:variable name="allAppDeliveryModels" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>

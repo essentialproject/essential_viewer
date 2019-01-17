@@ -322,7 +322,7 @@
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="qualifyingReportId" select="$aReport/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
-		<xsl:variable name="qualifyingReport" select="$allReports[name=$qualifyingReportId]"/>		
+		<xsl:variable name="qualifyingReport" select="$anyReports[name=$qualifyingReportId]"/>		
 		<xsl:variable name="reportConstant" select="$allReportConstants[name = $aReport/own_slot_value[slot_reference = 'rp_report_constants']/value]"/>
 		<xsl:variable name="reportHistoryLabelName" select="$aReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 		<xsl:variable name="reportFilename" select="$aReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
@@ -339,7 +339,7 @@
 		<xsl:choose>
 			<!-- Go straight to the report if the report constant value is set -->
 			<!-- But only if the user is authorised -->
-			<xsl:when test="eas:isUserAuthZ($aReport) and string-length($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
+			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
 				<xsl:variable name="reportHistoryLabelName" select="$aReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 				<xsl:variable name="reportFilename" select="$aReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 

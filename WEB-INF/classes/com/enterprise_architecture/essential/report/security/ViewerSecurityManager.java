@@ -32,10 +32,9 @@ package com.enterprise_architecture.essential.report.security;
 import static org.neo4j.driver.v1.Values.parameters;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -48,12 +47,12 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -66,7 +65,9 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 
-import com.enterprise_architecture.easdatamanagement.model.IdentityProviderAccount;
+import com.enterprise_architecture.easdatamanagement.model.AuthenticatedUser;
+import com.enterprise_architecture.easdatamanagement.model.UserCredentials;
+import com.enterprise_architecture.easdatamanagement.model.UserProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -77,6 +78,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ViewerSecurityManager 
 {
+	
+	public static final String AUTHN_STATE_TOKEN_SUBJECT = "state";
+	public static final String AUTHN_STATE_TOKEN_LOCATION_HASH = "locationHash";
 	
 	/** 
 	 * Request parameter for the user account token
@@ -125,11 +129,18 @@ public class ViewerSecurityManager
 
 	private static final String GRAPH_DB_PWD_PROPERTY = "graphDB.password.property";
 	
-	private static final String OKTA_API_KEY_PROPERTIES = "/WEB-INF/security/.okta/apiKey.properties";
-
-	private static final String OKTA_CLIENT_ORG_URL = "okta.client.orgUrl";
-
-	private static final String OKTA_CLIENT_TOKEN = "okta.client.token";
+	private static final String AUTHN_SERVER_PROPERTIES_FILE = "/WEB-INF/security/.authn-server/authn-server.properties";
+	
+	private static final String AUTHN_STATE_TOKEN_SIGNING_KEY = "loginService.stateToken.signingKey";
+	
+	private static final String AUTHN_SERVER_LOGIN_URL = "loginService.login.url";
+	
+	private static final String AUTHN_SERVER_USER_PROFILE_URL = "loginService.user-profile.url";
+	
+	private static final String AUTHN_SERVER_REST_LOGIN_URL = "loginService.rest-login.url";
+	
+	private static final String AUTHN_SERVER_API_KEY = "loginService.apiKey";
+	
 	
 	
 	/**
@@ -138,34 +149,39 @@ public class ViewerSecurityManager
 	protected ServletContext itsServletContext = null;
 	 
 	
-	protected Properties itsProperties = null;
-	
-	/**
-	 * Connection to the Neo4J
-	 */
 	protected Properties itsAuthZProperties = null;
+	private Properties itsAuthnServerProperties = null;
 	
-	
+
+	/*
+	 * TODO move to Utils package
+	 */
+	private static String addPathParameterToUrl(String theUrl, String theKey, String theValue) {
+		if (!theUrl.contains(theKey)) {
+			throw new IllegalArgumentException("unknown URL path parameter: "+theKey);
+		}
+		return theUrl.replace(theKey, theValue);
+	}
+
+	/*
+	 * TODO move to Utils package
+	 */
+	private static void validateUrl(String theUrl) {
+		if (theUrl.contains("{") || theUrl.contains("}")) {
+			throw new IllegalArgumentException("URL still contains unsubstituted path parameters: "+theUrl);
+		}
+	}
+
 	/**
 	 * Default constructor
 	 */
 	public ViewerSecurityManager() 
 	{
-		itsProperties = new Properties();		
 	}
 	
 	public ViewerSecurityManager(ServletContext theServletContext) 
 	{
 		itsServletContext = theServletContext;
-		itsProperties = new Properties();
-		try
-		{
-			itsProperties.load(itsServletContext.getResourceAsStream(OKTA_API_KEY_PROPERTIES));
-		}
-		catch(IOException anIOex)
-		{
-			System.err.println("ViewerSecurityManager Constructor failed. Could not load Okta API Key Properties");
-		}
 		
 		// 03.07.2017 JWC Load the Neo4J connection details
 		itsAuthZProperties = new Properties();
@@ -178,8 +194,58 @@ public class ViewerSecurityManager
 			System.err.println("ViewerSecurityManager Constructor failed. Could not load AuthZ Properties");
 		}
 		
+		itsAuthnServerProperties = new Properties();
+		try
+		{
+			itsAuthnServerProperties.load(itsServletContext.getResourceAsStream(AUTHN_SERVER_PROPERTIES_FILE));
+		}
+		catch(IOException anAuthZIOEx)
+		{
+			System.err.println("ViewerSecurityManager Constructor failed. Could not load AuthN Server Properties");
+		}
+		
 	}
 	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server Login URL
+	 */
+	public String getPropsAuthnServerLoginUrl() {
+		return itsAuthnServerProperties.getProperty(AUTHN_SERVER_LOGIN_URL);
+	}
+	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server User Profile URL
+	 */
+	public String getPropsAuthnServerUserProfileUrl() {
+		return itsAuthnServerProperties.getProperty(AUTHN_SERVER_USER_PROFILE_URL);
+	}
+	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server User Profile URL
+	 */
+	public String getPropsAuthnServerRestLoginUrl() {
+		return itsAuthnServerProperties.getProperty(AUTHN_SERVER_REST_LOGIN_URL);
+	}
+	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server State Token signing key
+	 */
+	public String getPropsAuthnStateSigningKey() {
+		return itsAuthnServerProperties.getProperty(AUTHN_STATE_TOKEN_SIGNING_KEY);
+	}
+	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server API Key
+	 */
+	public String getPropsAuthnApiKey() {
+		return itsAuthnServerProperties.getProperty(AUTHN_SERVER_API_KEY);
+	}
+
 	/**
 	 * Test whether the specified account is authorised to perform the specified role
 	 * @param theAccount
@@ -197,7 +263,51 @@ public class ViewerSecurityManager
 			return false;
 		//return false;
 	}*/
-	
+
+	public AuthenticatedUser authenticateUserByLogin(HttpServletRequest theRequest, String theTenant, String theUsername, String thePassword) {
+		CloseableHttpClient client = null;
+		try {
+			String restLoginUrl = getPropsAuthnServerRestLoginUrl();
+			validateUrl(restLoginUrl);
+			URIBuilder builder = new URIBuilder(restLoginUrl);
+			client = HttpClients.createDefault();
+			HttpPost httpPost = new HttpPost(builder.build());
+			UserCredentials userCredentials = new UserCredentials(theTenant, theUsername, thePassword);
+			ObjectMapper mapper = new ObjectMapper();
+			String json = mapper.writeValueAsString(userCredentials);
+			httpPost.setEntity(new StringEntity(json));
+			httpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+			CloseableHttpResponse httpResponse = client.execute(httpPost);
+			
+			HttpEntity entity = httpResponse.getEntity();
+			StatusLine status = httpResponse.getStatusLine();
+			String responseStr = EntityUtils.toString(entity, StandardCharsets.UTF_8.name());
+			if (status.getStatusCode() != 200) {
+				System.err.println("SecureViewer: Error authN user");
+				return null;
+			}
+			EntityUtils.consume(entity);
+			return new ObjectMapper().readValue(responseStr, AuthenticatedUser.class);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (client != null) {
+				try {
+					client.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Authenticate the user. Check for user information in the session.
 	 * If nothing found, returns NULL, in which case the login authentication
@@ -216,25 +326,7 @@ public class ViewerSecurityManager
 	}
 	
 	/**
-	 * Authenticate the user, looking for a user token in the request
-	 * @param theRequest the user request received by the Secure Viewer
-	 * @return an XML document representing the user's custom data, including
-	 * all their clearance levels. Or <tt>null</tt> if no token exists  
-	 */
-	public String authenticateUserByToken(HttpServletRequest theRequest)
-	{
-		String anAccount = null;
-		
-		anAccount = getAccountFromToken(theRequest);
-		if(anAccount != null)
-		{
-			setUserSession(theRequest, anAccount);
-		}
-		return anAccount;
-	}
-	
-	/**
-	looking for a user token in the request
+	 * Server-to-server token validation
 	 * @param theRequest the user request received by the Secure Viewer
 	 * @param theUserToken as retrieved from the user request via the #USER_ACCOUNT_URL parameter
 	 * @return an XML document representing the user's custom data, including
@@ -243,7 +335,7 @@ public class ViewerSecurityManager
 	public String authenticateUserByToken(HttpServletRequest theRequest, String theUserToken)
 	{
 		String anAccount = null;
-		anAccount = getAccountFromToken(theUserToken);
+		anAccount = getAccountFromUserManager(theUserToken); //we don't have a user profile but don't need it for server-to-server API calls
 		if(anAccount != null)
 		{
 			setUserSession(theRequest, anAccount);
@@ -251,21 +343,12 @@ public class ViewerSecurityManager
 		return anAccount;
 	}
 	
-	/**
-	 * Authenticate the user based on their login credentials
-	 * @param theTenant the tenant to which the user account belongs
-	 * @param theUsername the username (e.g. email address)
-	 * @param thePassword the user's password
-	 * @return an XML document representing the user's custom data, including
-	 * all their clearance levels. Or <tt>null</tt> if credentials are not accepted
-	 */
-	public String authenticateUserByLogin(HttpServletRequest theRequest, String theTenantName, String theUsername, String thePassword)
+	public String setUserSecurityContext(HttpServletRequest theRequest, String theAccessToken, String theTenantId)
 	{
 		String anAccount = null;
-		// Connect to Identity Provider
-		// Test login credentials
-		// If success, get user data as the XML
-		anAccount = getAccountFromUserManager(theTenantName, theUsername, thePassword);
+		String aUserId = theAccessToken; //TODO review, access token is currently the user id
+		UserProfile aUserProfile = getUserProfile(theRequest, theTenantId, aUserId);
+		anAccount = getAccountFromUserManager(aUserId, aUserProfile);
 		if (anAccount != null)
 		{
 			// Keep the session
@@ -368,7 +451,7 @@ public class ViewerSecurityManager
 			isAuthZ = true;
 			
 			// DEbug test code
-			System.out.println("Found user has permission to access repository: " + theRepositoryURI);
+			//System.out.println("Found user has permission to access repository: " + theRepositoryURI);
 			// We only need one valid record for success			
 		}
 		
@@ -541,7 +624,7 @@ public class ViewerSecurityManager
 			String anAccountID = aCookie.getAccountID(theRequest);
 			if(anAccountID != null)
 			{
-				anAccount = getAccountFromToken(anAccountID);
+				anAccount = getAccountFromToken(theRequest, anAccountID);
 				setUserSession(theRequest, anAccount);
 			}
 		}
@@ -550,76 +633,46 @@ public class ViewerSecurityManager
 	}
 	
 	/**
-	 * Get the user information from a token passed in the request.
-	 * @return an XML document representing the user's custom data, including
-	 * all their clearance levels
-	 */
-	protected String getAccountFromToken(HttpServletRequest theRequest)
-	{
-		// Look for the accountUrl parameter containing the user token from EIP
-		String anAccount = null;
-		String aUserID = theRequest.getParameter(USER_ACCOUNT_URL);
-		//System.out.println("Got user token: " + aUserID);
-		
-		if(aUserID != null)
-		{	
-			anAccount = getAccountFromToken(aUserID);
-
-			// Save the account in the user session
-			setUserSession(theRequest, anAccount);			
-		}
-		return anAccount;
-	}
-	
-	/**
 	 * Find the user account using the specified user account ID token
 	 * @param theToken the ID of the Account
 	 * @return the XML representation of the User Account
 	 */
-	protected String getAccountFromToken(String theToken)
+	protected String getAccountFromToken(HttpServletRequest theRequest, String theToken)
 	{
 		String anAccount = null;
-		if(theToken != null)
+		String aUserId = theToken; //TODO review, access token is currently the user id
+		String aTenantId = null;
+		Driver aGraphDBDriver = null;
+		Session aGraphDBSession = null;
+		try
 		{
-			Driver aGraphDBDriver = null;
-			Session aGraphDBSession = null;
-			try
+		    // Open a connection to the GraphDB		    
+			aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
+														 AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
+																	 	  itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
+			aGraphDBSession = aGraphDBDriver.session();
+			aTenantId = getTenantIdForGraphUser(aUserId, aGraphDBSession);
+		}
+		catch(Exception anEx)
+		{
+			System.err.println("SecureViewer: Error siging in user with token");
+			System.err.println("Message: " + anEx.getLocalizedMessage());
+			anEx.printStackTrace();
+		}
+		finally
+		{
+			// Close the connections to the database
+			if(aGraphDBSession != null)
 			{
-				String aGraphUserId = theToken; //the SSO token is the Graph User UUID
-			    String anIdpAccountId = getIdpAccountId(aGraphUserId);
-			    IdentityProviderAccount anIdpAccount = getIdpAccountById(anIdpAccountId);
-			    
-			    if(anIdpAccount != null)
-			    {
-				    // Open a connection to the GraphDB		    
-					aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
-																 AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
-																			 	  itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
-					aGraphDBSession = aGraphDBDriver.session();
-					
-				    UserDataManager aUserData = new UserDataManager(anIdpAccount, aGraphDBSession, aGraphUserId);
-					anAccount = aUserData.getUserXML();
-			    }
+				aGraphDBSession.close();
 			}
-			catch(Exception anEx)
+			if(aGraphDBDriver != null)
 			{
-				System.err.println("SecureViewer: Error siging in user with token");
-				System.err.println("Message: " + anEx.getLocalizedMessage());
-				anEx.printStackTrace();
-			}
-			finally
-			{
-				// Close the connections to the database
-				if(aGraphDBSession != null)
-				{
-					aGraphDBSession.close();
-				}
-				if(aGraphDBDriver != null)
-				{
-					aGraphDBDriver.close();
-				}
+				aGraphDBDriver.close();
 			}
 		}
+		UserProfile aUserProfile = getUserProfile(theRequest, aTenantId, aUserId);
+		anAccount = getAccountFromUserManager(aUserId, aUserProfile);
 		return anAccount;
 	}
 
@@ -628,7 +681,7 @@ public class ViewerSecurityManager
 	 * @return an XML document representing the user's custom data, including
 	 * all their clearance levels
 	 */
-	protected String getAccountFromUserManager(String theTenantName, String theUsername, String thePassword)
+	protected String getAccountFromUserManager(String theUserId, UserProfile theUserProfile)
 	{		
 		// Get the account from the Identity Provder
 		//Account anADAccount = null;
@@ -638,32 +691,64 @@ public class ViewerSecurityManager
 		
 		try
 		{
-			IdentityProviderAccount anIdpAccount = authenticate(theUsername, thePassword);
-			
-			// Get the Account ID from the Idp
-			String anIdpAccountId = anIdpAccount.getId();
-			
 			// Connect to the Graph Database and check user AuthZ
 			aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
 												  AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
 																   itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
 			aGraphDBSession = aGraphDBDriver.session();
-			
-			// Get the ID of the specified tenant
-			String aGraphTenantId = getGraphTenantId(theTenantName, aGraphDBSession);
-			if (null == aGraphTenantId) {
-				throw new IllegalStateException("No active tenant found with name: "+theTenantName);
-			}
-
-			// Find the user in that tenant
-			String aGraphUserId = getGraphUserId(aGraphTenantId, anIdpAccountId, aGraphDBSession);
-			if (null == aGraphUserId) {
-				throw new IllegalStateException("No user found for tenant "+theTenantName+", linked to IdP account id: "+anIdpAccountId);
-			}
 
 			// Process the user account data
-			UserDataManager aUserData = new UserDataManager(anIdpAccount, aGraphDBSession, aGraphUserId);
+			UserDataManager aUserData = new UserDataManager(aGraphDBSession, theUserId, theUserProfile);
 			anAccountXML = aUserData.getUserXML();
+			//System.out.println(anAccountXML);
+		}
+		catch(Exception anEx)
+		{
+			System.err.println("SecureViewer: Error authN user");
+			System.err.println("Message: " + anEx.getLocalizedMessage());
+			anEx.printStackTrace();
+		}
+		finally
+		{
+			// Close the connections to the database
+			if(aGraphDBSession != null)
+			{
+				aGraphDBSession.close();
+			}
+			if(aGraphDBDriver != null)
+			{
+				aGraphDBDriver.close();
+			}
+		}
+		
+		return anAccountXML;
+	}
+
+	/**
+	 * Get the user information from the user management platform
+	 * @return an XML document representing the user's custom data, including
+	 * all their clearance levels
+	 */
+	private String getAccountFromUserManager(String theUserId)
+	{		
+		// Get the account from the Identity Provder
+		//Account anADAccount = null;
+		String anAccountXML = null;		
+		Driver aGraphDBDriver = null;
+		Session aGraphDBSession = null;
+		
+		try
+		{
+			// Connect to the Graph Database and check user AuthZ
+			aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
+												  AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
+																   itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
+			aGraphDBSession = aGraphDBDriver.session();
+
+			// Process the user account data
+			UserDataManager aUserData = new UserDataManager(aGraphDBSession, theUserId);
+			anAccountXML = aUserData.getUserXML();
+			//System.out.println(anAccountXML);
 		}
 		catch(Exception anEx)
 		{
@@ -790,7 +875,7 @@ public class ViewerSecurityManager
 		int aViewerURLStart = theViewerName.indexOf(URL_COMPARISON_START_STRING);		
 		String aViewerURL = theViewerName.substring(aViewerURLStart);
 		
-		System.out.println("Requested Viewer URL is: " + aViewerURL);
+		//System.out.println("Requested Viewer URL is: " + aViewerURL);
 		
 		String aGroupURL = theGroupURL;
 		// If the Group URL starts with https://... trim that off, as per aViewerURL
@@ -800,7 +885,7 @@ public class ViewerSecurityManager
 			aGroupURL = theGroupURL.substring(aGroupURLStart);		
 		}
 		
-		System.out.println("Requested Group URL is: " + aGroupURL);
+		//System.out.println("Requested Group URL is: " + aGroupURL);
 		
 		//if(aViewerURL.equalsIgnoreCase(aGroupURL))
 		String aLowerCaseViewerURL = aViewerURL.toLowerCase();
@@ -808,7 +893,7 @@ public class ViewerSecurityManager
 		{
 			isGroup = true;
 		}
-		System.out.println("ViewerSecurityManager.isGroupForViewer, user is authZ to see Viewer is:" + isGroup);
+		//System.out.println("ViewerSecurityManager.isGroupForViewer, user is authZ to see Viewer is:" + isGroup);
 		
 		return isGroup;
 	}
@@ -864,44 +949,6 @@ public class ViewerSecurityManager
 //	}
 	
 	/**
-	 * Query the database to find the Id by which this user is known in the Identity Provider (IdP)
-	 * @param theGraphUserId
-	 * @return the ID of this user in the IdP
-	 */
-	protected String getIdpAccountId(String theGraphUserId)
-	{
-		String anIdpAccountId = "";
-		
-		// Connect to the Graph Database and check user AuthZ
-		Driver aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
-													 AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
-																 	  itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
-		Session aGraphDBSession = aGraphDBDriver.session();
-					
-		// Query the GraphDB, using theGraphDBSession
-		StatementResult aResult = aGraphDBSession.run("MATCH (a:Account)-[:HAS_USER]->(u:User) WHERE u.uuid={userUuid} RETURN a.idpUuid as idpAccountId", 
-													  parameters("userUuid", theGraphUserId));
-		
-		// Read the result set to validate user has permission to access the repository
-		// If there is content in the result, then user has permission. If empty set, then no permission. 
-		if (aResult.hasNext()) 
-		{
-			Record aRecord = aResult.next();
-			anIdpAccountId = aRecord.get("idpAccountId").asString();
-			
-			// DEbug test code
-			//System.out.println("Found user IdP Account ID: " + anIdpAccountId);
-			// We only need one valid record for success			
-		}
-		
-		// Release the connection to the Graph Database
-		aGraphDBSession.close();
-		aGraphDBDriver.close();
-		
-		return anIdpAccountId;
-	}
-	
-	/**
 	 * Get the ID of the specified tenant in the Graph DB 
 	 * @param theTenantName the name of the tenant
 	 * @param theGraphDBSession the session on the Graph DB
@@ -955,80 +1002,65 @@ public class ViewerSecurityManager
 		return aUserID;
 	}
 	
-	private IdentityProviderAccount authenticate(String theUsername, String thePassword) throws ClientProtocolException, IOException {
-		IdentityProviderAccount account = null;
+	private String getTenantIdForGraphUser(String theGraphUserId, Session theGraphDBSession)
+	{
+		//This is a Cypher query to find the user uuid in the graph.
+		String aTenantId = null;
+		StatementResult aResult = theGraphDBSession.run("MATCH (u:User)<-[:HAS_USER]-(t:Tenant) WHERE u.uuid={userUuid} RETURN t.uuid as tenantId",
+														parameters("userUuid", theGraphUserId));
 		
-		//create JSON for user credentials
-		Map<String, String> credentialsMap = new HashMap<>();
-		credentialsMap.put("username", theUsername);
-		credentialsMap.put("password", thePassword);
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = mapper.writeValueAsString(credentialsMap);
-		
-		//do POST to Okta authN end-point
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(itsProperties.getProperty(OKTA_CLIENT_ORG_URL)+"/api/v1/authn");
-		StringEntity requestEntity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
-		httpPost.setEntity(requestEntity);
-		httpPost.addHeader("accept", "application/json");
-		httpPost.addHeader("authorization", "SSWS "+itsProperties.getProperty(OKTA_CLIENT_TOKEN));
-		CloseableHttpResponse response = httpclient.execute(httpPost);
-		try {
-			HttpEntity entity = response.getEntity();
-			StatusLine status = response.getStatusLine();
-			String responseJsonStr = EntityUtils.toString(entity, StandardCharsets.UTF_8.name());
-			if (status.getStatusCode() != 200) {
-				throw new IllegalStateException(status+":"+responseJsonStr);
-			}
-			//success, unpack response to get user account info
-			
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aResponseMap = mapper.readValue(responseJsonStr, Map.class);
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aEmbeddedMap = (Map<String, Object>) aResponseMap.get("_embedded");
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aUserMap = (Map<String, Object>) aEmbeddedMap.get("user");
-			String idpAccountId = (String) aUserMap.get("id");
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aProfileMap = (Map<String, Object>) aUserMap.get("profile");
-			String email = (String) aProfileMap.get("login");
-			account = new IdentityProviderAccount(idpAccountId, email);
-			
-			EntityUtils.consume(entity);
-		} finally {
-			response.close();
+		// Read the result set to find the Graph User Id in the Graph
+		if(aResult.hasNext())
+		{
+			Record aRecord = aResult.next();
+			aTenantId = aRecord.get("tenantId").asString();
 		}
-		return account;
+		
+		return aTenantId;
 	}
-	
-	private IdentityProviderAccount getIdpAccountById(String theIdpAccountId) throws ClientProtocolException, IOException {
-		IdentityProviderAccount account = null;
-		
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(itsProperties.getProperty(OKTA_CLIENT_ORG_URL)+"/api/v1/users/"+theIdpAccountId);
-		httpGet.addHeader("authorization", "SSWS "+itsProperties.getProperty(OKTA_CLIENT_TOKEN));
-		CloseableHttpResponse response = httpclient.execute(httpGet);
+
+	private UserProfile getUserProfile(HttpServletRequest theRequest, String tenantId, String userId) {
+		CloseableHttpClient client = null;
 		try {
-			HttpEntity entity = response.getEntity();
-			StatusLine status = response.getStatusLine();
-			String responseJsonStr = EntityUtils.toString(entity, StandardCharsets.UTF_8.name());
-			if (status.getStatusCode() != 200) {
-				throw new IllegalStateException(status+":"+responseJsonStr);
-			}
-			//success, unpack response to get user account info
-			ObjectMapper mapper = new ObjectMapper();
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aResponseMap = mapper.readValue(responseJsonStr, Map.class);
-			@SuppressWarnings("unchecked")
-			Map<String, Object> aProfileMap = (Map<String, Object>) aResponseMap.get("profile");
-			String email = (String) aProfileMap.get("login");
-			account = new IdentityProviderAccount(theIdpAccountId, email);
+			String apiKey = getPropsAuthnApiKey();
+			String baseUrl = "https://"+theRequest.getHeader("host");
+			String userProfileUrl = baseUrl+getPropsAuthnServerUserProfileUrl();
+			userProfileUrl = addPathParameterToUrl(userProfileUrl, "{tenantId}", tenantId);
+			userProfileUrl = addPathParameterToUrl(userProfileUrl, "{userId}", userId);
+			validateUrl(userProfileUrl);
+			URIBuilder builder = new URIBuilder(userProfileUrl);
+			client = HttpClients.createDefault();
+			HttpGet httpGet = new HttpGet(builder.build());
+			httpGet.addHeader("x-api-key", apiKey);
+
+			CloseableHttpResponse httpResponse = client.execute(httpGet);
 			
+			HttpEntity entity = httpResponse.getEntity();
+			StatusLine status = httpResponse.getStatusLine();
+			String responseStr = EntityUtils.toString(entity, StandardCharsets.UTF_8.name());
+			if (status.getStatusCode() != 200) {
+				throw new IllegalStateException(status+":"+responseStr);
+			}
 			EntityUtils.consume(entity);
+			return new ObjectMapper().readValue(responseStr, UserProfile.class);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
 		} finally {
-			response.close();
+			if (client != null) {
+				try {
+					client.close();
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
 		}
-		return account;
+		
+		return null;
 	}
 	
 }

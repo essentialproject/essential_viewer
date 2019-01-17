@@ -58,7 +58,7 @@
 	<!--	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'" />
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')" />-->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Group_Actor', 'Individual_Actor', 'Individual_Business_Role', 'Group_Business_Role', 'Site')"/>
+	<xsl:variable name="linkClasses" select="('Group_Actor', 'Individual_Actor', 'Individual_Business_Role', 'Group_Business_Role', 'Site', 'Business_Process', 'Business_Activity', 'Business_Task')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 
@@ -82,7 +82,11 @@
 	<xsl:variable name="parentActor" select="$allActors[name = $rootOrgID]"/>
 	<xsl:variable name="inScopeActors" select="eas:get_org_descendants($parentActor, $allActors, 0)"/>
 	<xsl:variable name="parentActorName" select="$parentActor/own_slot_value[slot_reference = 'name']/value"/>
-
+    
+    <xsl:variable name="actor2role" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][own_slot_value[slot_reference='act_to_role_from_actor']/value=$param1]"/>
+ <!-- <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][(own_slot_value[slot_reference='process_performed_by_actor_role']/value=$param1)  or (own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name)]"/> -->
+    <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name]"/>
+    <xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -308,7 +312,7 @@
 				</xsl:for-each>
 			</head>
 			<body onload="tree();">
-
+                
 				<!-- ADD SCRIPTS FOR CONTEXT POP-UP MENUS -->
 				<!--<xsl:call-template name="RenderProductTypePopUpScript" />-->
 
@@ -399,7 +403,27 @@
 							</div>
 							<hr/>
 						</div>
-
+                        <div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-user icon-section icon-color"/>
+							</div>
+							<h2 class="text-primary">Processes Performed</h2>
+							<div class="content-section">
+								<table class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>Process</th>
+											<th>Description</th>
+										</tr>
+									</thead>
+									<tbody>
+										<xsl:apply-templates select="$physicalProcess" mode="addProcesses"/>
+									</tbody>
+                                     
+                                </table>
+							</div>
+							<hr/>
+                        </div>
 						<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-user icon-section icon-color"/>
@@ -620,6 +644,26 @@
 		</table>
 	</xsl:template>
 
+    <xsl:template match="node()" mode="addProcesses">
+        <xsl:variable name="this" select="current()"/>
+        <xsl:variable name="thisBusProc" select="$businessProcess[name=$this/own_slot_value[slot_reference='implements_business_process']/value]"/>
+       <tr>
+       		<td>
+           		<!--<xsl:value-of select="$thisBusProc/own_slot_value[slot_reference='name']/value"/>-->
+       			<xsl:call-template name="RenderInstanceLink">
+       				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
+       				<xsl:with-param name="theXML" select="$reposXML"/>
+       				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+       			</xsl:call-template>
+       		</td>
+       	<td>
+       		<xsl:call-template name="RenderMultiLangInstanceDescription">
+       			<xsl:with-param name="theSubjectInstance" select="$thisBusProc"></xsl:with-param>
+       		</xsl:call-template>
+       	</td>
+       </tr> 
+    
+    </xsl:template>
 
 
 

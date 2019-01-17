@@ -101,8 +101,10 @@
 	<xsl:variable name="stratPlanSummary" select="$anyReports[own_slot_value[slot_reference = 'name']/value = 'Core: Strategic Plan Summary']"/>
 
 	<xsl:variable name="appNoOfUsers" select="$currentApp/own_slot_value[slot_reference = 'ap_max_number_of_users']/value"/>
-
-
+    <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $currentApp/name]"/>
+	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
+    <xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
+	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
 
 	<xsl:variable name="objectWidth" select="240"/>
 	<xsl:variable name="objectHeight" select="100"/>
@@ -397,7 +399,7 @@
 
 						<!--Setup the Application Services section-->
 
-						<div class="col-xs-12">
+						<div class="col-xs-6">
 							<div class="sectionIcon">
 								<i class="fa essicon-radialdots icon-section icon-color"/>
 							</div>
@@ -422,7 +424,24 @@
 							</div>
 							<hr/>
 						</div>
-
+                        <!-- Application Costs  -->
+       
+                                
+                                <xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
+                                
+                        <div class="col-xs-6">
+							<div class="sectionIcon">
+								<i class="fa fa-pie-chart icon-section icon-color"/>
+							</div>
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('Application Cost')"/>
+							</h2>
+							<div class="content-section">
+                                <xsl:choose><xsl:when test="$costTypeTotal=0"> -</xsl:when><xsl:otherwise><xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/></xsl:otherwise></xsl:choose>
+                             
+							</div>
+							<hr/>
+						</div>      
 						<!--Setup the Contained Application Providers section-->
 						<xsl:if test="count($allContainedApps) &gt; 0">
 							<div class="col-xs-12">
@@ -884,6 +903,9 @@
 													<th>
 														<xsl:value-of select="eas:i18n('Supported Processes')"/>
 													</th>
+                                                    <th>
+														<xsl:value-of select="eas:i18n('Application Service Used')"/>
+													</th>
 													<th>
 														<xsl:value-of select="eas:i18n('Business Units Supported')"/>
 													</th>
@@ -899,6 +921,9 @@
 												<xsl:for-each select="$allPhysicalProcRels">
 													<xsl:variable name="aPhysProc" select="$supportedProcs[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"/>
 													<xsl:variable name="aLogProc" select="$supportedLogProcs[name = $aPhysProc/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
+                                                    <xsl:variable name="aServiceRel" select="$allAppProRoles[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+                                                    <xsl:variable name="aService" select="$allAppSvcs[name = $aServiceRel/own_slot_value[slot_reference = 'implementing_application_service']/value]"/>
+                                                   
 													<xsl:variable name="aUnitRole" select="$supportedBus[name = $aPhysProc/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 													<xsl:variable name="aUnit" select="$supoprtedProcActors[name = $aUnitRole/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 													<xsl:variable name="aLocationList" select="$allSites[name = $aPhysProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
@@ -907,6 +932,13 @@
 														<td>
 															<xsl:call-template name="RenderInstanceLink">
 																<xsl:with-param name="theSubjectInstance" select="$aLogProc"/>
+																<xsl:with-param name="theXML" select="$reposXML"/>
+																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+															</xsl:call-template>
+														</td>
+                                                        <td>
+															<xsl:call-template name="RenderInstanceLink">
+																<xsl:with-param name="theSubjectInstance" select="$aService"/>
 																<xsl:with-param name="theXML" select="$reposXML"/>
 																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 															</xsl:call-template>
@@ -1972,5 +2004,25 @@
 		<xsl:value-of select="$noCloseBrackets"/>
 
 	</xsl:function>
-
+  <xsl:function as="xs:float" name="eas:get_cost_components_total">
+        <xsl:param name="costComponents"/>
+        <xsl:param name="total"/>
+        
+        <xsl:choose>
+            <xsl:when test="count($costComponents) > 0">
+                <xsl:variable name="nextCost" select="$costComponents[1]"/>
+                <xsl:variable name="newCostComponents" select="remove($costComponents, 1)"/>
+                <xsl:variable name="costAmount" select="$nextCost/own_slot_value[slot_reference='cc_cost_amount']/value"/>
+                <xsl:choose>
+                    <xsl:when test="$costAmount > 0">
+                        <xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total + number($costAmount))"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="$total"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
 </xsl:stylesheet>

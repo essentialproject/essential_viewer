@@ -40,6 +40,7 @@
 		* 
 	-->
 	<!-- 27.08.2016 JP  Created	 -->
+	<!-- 27.08.2016 JMK protect text in javascript rendering using the isRenderAsJSString parameter	 -->
 
 	<xsl:variable name="dateTypes" select="('Year', 'Quarter', 'Gregorian')"/>
 	<xsl:variable name="allDates" select="/node()/simple_instance[type = $dateTypes]"/>
@@ -225,7 +226,7 @@
         type: { start: 'ISODate', end: 'ISODate' }
     });
     var groups = new vis.DataSet([
-   		{id: 'PROGRAMME', content:'<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentProgramme"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>', className: 'entLayer'}
+   		{id: 'PROGRAMME', content:'<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentProgramme"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>', className: 'entLayer'}
     ]);
     
     // add items to the Project DataSet
@@ -411,7 +412,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="projectStatus" select="$allProjectStatii[name = $project/own_slot_value[slot_reference = 'project_lifecycle_status']/value]"/>
-		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/> {id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="$projectName"/></span>'<xsl:choose><xsl:when test="(count($projectPlannedStartDate) + count($projectActualStartDate) > 0) and (count($projectTargetEndDate) + count($projectForecastEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentProgrammeId"/>', <!--subgroup: '<xsl:value-of select="$parentProgrammeId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$projectPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$projectActualStartDate"/><xsl:with-param name="targetEndDate" select="$projectTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$projectForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/> {id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span>'<xsl:choose><xsl:when test="(count($projectPlannedStartDate) + count($projectActualStartDate) > 0) and (count($projectTargetEndDate) + count($projectForecastEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentProgrammeId"/>', <!--subgroup: '<xsl:value-of select="$parentProgrammeId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$projectPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$projectActualStartDate"/><xsl:with-param name="targetEndDate" select="$projectTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$projectForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="RenderMilestones" match="node()">
@@ -420,7 +421,7 @@
 		<xsl:variable name="milestoneId" select="concat($parentProgrammeId, '-', $milestone/name)"/>
 		<xsl:variable name="milestoneName" select="$milestone/own_slot_value[slot_reference = 'name']/value"/>
 		<xsl:variable name="milestoneStartDate" select="$allDates[name = $milestone/own_slot_value[slot_reference = 'cm_date']/value]"/>
-		<xsl:variable name="jsStartDate" select="eas:get_start_date_for_essential_time($milestoneStartDate)"/> {id: '<xsl:value-of select="$milestoneId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $milestoneId)"/><xsl:value-of select="$milestoneName"/></span>', start: <xsl:choose><xsl:when test="count($milestoneStartDate) > 0">'<xsl:value-of select="$jsStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentProgrammeId"/>', className: 'milestone', type: 'point', popupContent:'<xsl:call-template name="milestonePopupDiv"><xsl:with-param name="milestone" select="$milestone"/><xsl:with-param name="milestoneId" select="$milestoneId"/><xsl:with-param name="startDate" select="$jsStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="jsStartDate" select="eas:get_start_date_for_essential_time($milestoneStartDate)"/> {id: '<xsl:value-of select="$milestoneId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $milestoneId)"/><xsl:value-of select="eas:renderJSText($milestoneName)"/></span>', start: <xsl:choose><xsl:when test="count($milestoneStartDate) > 0">'<xsl:value-of select="$jsStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentProgrammeId"/>', className: 'milestone', type: 'point', popupContent:'<xsl:call-template name="milestonePopupDiv"><xsl:with-param name="milestone" select="$milestone"/><xsl:with-param name="milestoneId" select="$milestoneId"/><xsl:with-param name="startDate" select="$jsStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -528,12 +529,14 @@
 			<xsl:attribute name="id" select="concat('popup', $strategicPlanId)"/>
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+				  <xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+				  <xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+				  <xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+				  <xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<div class="small">
@@ -605,12 +608,12 @@
 			<xsl:attribute name="id" select="concat('popup', $projectId)"/>
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$project"/>
+					<xsl:with-param name="theSubjectInstance" select="$project"/><xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$project"/>
+					<xsl:with-param name="theSubjectInstance" select="$project"/><xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
@@ -656,12 +659,12 @@
 			<xsl:attribute name="id" select="concat('popup', $milestoneId)"/>
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$milestone"/>
+					<xsl:with-param name="theSubjectInstance" select="$milestone"/><xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$milestone"/>
+					<xsl:with-param name="theSubjectInstance" select="$milestone"/><xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">

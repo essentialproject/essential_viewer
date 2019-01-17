@@ -8,7 +8,7 @@
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes" encoding="UTF-8" include-content-type="no"/>
 
 	<!--
-		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -31,6 +31,7 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
+	<!-- 02.08.2018 JWC Added security AuthZ check for the rendering of the View Library -->
 
 
 	<!-- START GENERIC PARAMETERS -->
@@ -179,7 +180,7 @@
 		<xsl:variable name="viewLibraryDesc" select="$viewLibraryReport/own_slot_value[slot_reference = 'description']/value"/>
 		<xsl:variable name="viewLibraryXSL" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 		<xsl:variable name="viewLibraryHistoryLabel" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-		<xsl:if test="$viewLibraryReport/own_slot_value[slot_reference = 'report_is_enabled']/value = 'true'">
+		<xsl:if test="eas:isUserAuthZ($viewLibraryReport) and $viewLibraryReport/own_slot_value[slot_reference = 'report_is_enabled']/value = 'true'">
 			<div class="col-xs-12">
 				<div class="thumbnail">
 					<div style="height: 100px; max-height:100px; overflow: hidden;">

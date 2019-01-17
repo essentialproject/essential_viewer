@@ -223,31 +223,44 @@
 		
 		//function to set the current list of Apps
 		function setCurrentApps() {
-			var appArrays = [];
-			var currentBU;
-			for (i = 0; selectedBusUnits.length > i; i += 1) {
-			currentBU = selectedBusUnits[i];
-			appArrays.push(currentBU.apps);
+		
+			if(selectedBusUnits.length > 0) {
+				var appArrays = [];
+				var currentBU;
+				for (i = 0; selectedBusUnits.length > i; i += 1) {
+				currentBU = selectedBusUnits[i];
+				appArrays.push(currentBU.apps);
+				}
+				
+				selectedAppIDs = getUniqueArrayVals(appArrays);
+				selectedApps = getObjectsByIds(applications.applications, "id", selectedAppIDs);
+				// console.log("Selected App Count: " + selectedApps.length);
+			} else {
+				selectedApps = applications.applications;
+				selectedAppIDs = getObjectListPropertyVals(selectedApps, "id");
+				//console.log('Setting all apps: ' + selectedAppIDs.length);
 			}
-			
-			selectedAppIDs = getUniqueArrayVals(appArrays);
-			selectedApps = getObjectsByIds(applications.applications, "id", selectedAppIDs);
-			// console.log("Selected App Count: " + selectedApps.length);
 		}
 		
 		
 		//function to set the current list of Technology Products
 		function setCurrentTechProds() {
-			var techProdArrays = [];
-			var currentBU;
-			for (i = 0; selectedBusUnits.length > i; i += 1) {
-				currentBU = selectedBusUnits[i];
-				techProdArrays.push(currentBU.techProds);
+		
+			if(selectedBusUnits.length > 0) {
+				var techProdArrays = [];
+				var currentBU;
+				for (i = 0; selectedBusUnits.length > i; i += 1) {
+					currentBU = selectedBusUnits[i];
+					techProdArrays.push(currentBU.techProds);
+				}
+				
+				selectedTechProdIDs = getUniqueArrayVals(techProdArrays);
+				selectedTechProds = getObjectsByIds(techProducts.techProducts, "id", selectedTechProdIDs);
+				// console.log("Selected Tech Prod Count: " + selectedTechProds.length);
+			} else {
+				selectedTechProds = techProducts.techProducts;
+				selectedTechProdIDs = getObjectListPropertyVals(selectedTechProds, "id");
 			}
-			
-			selectedTechProdIDs = getUniqueArrayVals(techProdArrays);
-			selectedTechProds = getObjectsByIds(techProducts.techProducts, "id", selectedTechProdIDs);
-			// console.log("Selected Tech Prod Count: " + selectedTechProds.length);
 		}
 		
 		
@@ -668,15 +681,22 @@
 		<!-- START GEOGRAPHIC MAP FUNCTIONS -->
 		//funtion to set the Geographic Scope of the currently selected business units
 		function setGeographicMap(mapObject, countryProperty, countryColour) {
-			var busUnitList = selectedBusUnits.slice(0);
-			var collatedCountryList = getCountries(busUnitList, countryProperty);
+			
+			var collatedCountryList;
+			if(selectedBusUnits.length > 0) {
+				var busUnitList = selectedBusUnits.slice(0);
+				collatedCountryList = getCountries(busUnitList, countryProperty);
+			} else {
+				collatedCountryList = getCountries(businessUnits.businessUnits, countryProperty);
+			}
+			
 			var countrySet = {};
 			
 			for (i = 0; collatedCountryList.length > i; i += 1) {
 				countrySet[collatedCountryList[i]] = countryColour;
 			};
 
-			console.log("Select Countries: " + collatedCountryList);
+			//console.log("Select Countries: " + collatedCountryList);
 			mapObject.reset();
 			mapObject.series.regions[0].setValues(countrySet);
 		
@@ -714,17 +734,22 @@
 	
 	
 	<xsl:template mode="RenderElementIDListForJs" match="node()">
-		"<xsl:value-of select="current()/name"/>"<xsl:if test="not(position() = last())">, </xsl:if>
+		"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 	
 	
 	<xsl:template mode="RenderEnumerationJSONList" match="node()">
 		
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="colour" select="eas:get_element_style_colour(current())"/>
 		
 		{
-		id: "<xsl:value-of select="current()/name"/>",
-		name: "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>",
+		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		name: "<xsl:value-of select="$thisName"/>",
 		colour: "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>",
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -759,12 +784,100 @@
 	
 	
 	<xsl:template match="node()" mode="getSimpleJSONList">
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
 		{
-		id: "<xsl:value-of select="name"/>",
-		name: "<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>",
+		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		name: "<xsl:value-of select="$thisName"/>",
+		description: "<xsl:value-of select="$thisDesc"/>",
 		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
+	</xsl:template>
+	
+	
+	<xsl:function name="eas:getSafeJSString">
+		<xsl:param name="theString"/>
+		
+		<xsl:value-of select="translate($theString, '.', '_')"/>
+	</xsl:function>
+	
+	<!-- Template to render a JSON Object representing the styling details for an EA element -->
+	<xsl:function name="eas:getElementContextMenuName">
+		<xsl:param name="element" as="node()"/>
+		
+		<xsl:variable name="elementMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $element/type) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
+		
+		<xsl:choose>
+			<xsl:when test="count($elementMenu) > 0">context-menu-<xsl:value-of select="$elementMenu/own_slot_value[slot_reference = 'report_menu_short_name']/value"/></xsl:when>
+			<xsl:otherwise></xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:function>
+	
+	
+	<!-- Template to render a JSON Object representing the styling details for an EA element -->
+	<xsl:template name="RenderElementStyleJSON">
+		<xsl:param name="element" as="node()"/>
+		
+		<xsl:variable name="elementStyle" select="eas:get_element_style_instance($element)"/>
+
+		{
+			'elementId': '<xsl:value-of select="eas:getSafeJSString($element/name)"/>',
+			'styleClass': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>',
+			'styleBgColour': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>',
+			'styleIcon': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
+			'styleTextColour': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>'
+		}
+	</xsl:template>
+	
+	
+	<!-- Template to render a JSON Object representing the styling details for an EA element -->
+	<xsl:template name="RenderClassStyleJSON">
+		<xsl:param name="class" as="node()"/>
+		
+		<xsl:variable name="specificClassStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $class/name]"/>
+		
+		<xsl:variable name="classStyleLabel">
+			<xsl:choose>
+				<xsl:when test="count($specificClassStyle) > 0">
+					<xsl:value-of select="eas:getMultiLangCommentarySlot($specificClassStyle, 'element_style_label')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="translate($class/name, '_', ' ')"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		{
+		'classId': '<xsl:value-of select="eas:getSafeJSString($class/name)"/>',
+		'styleLabel': '<xsl:value-of select="$classStyleLabel"/>',
+		<xsl:choose>
+			<xsl:when test="count($specificClassStyle) > 0">
+				'styleClass': '<xsl:value-of select="$specificClassStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>',
+				'styleBgColour': '<xsl:value-of select="$specificClassStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>',
+				'styleIcon': '<xsl:value-of select="$specificClassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
+				'styleTextColour': '<xsl:value-of select="$specificClassStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>'
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="defaultCkassStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = 'EA_Class']"/>
+				'styleClass': '<xsl:value-of select="$defaultCkassStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>',
+				'styleBgColour': '<xsl:value-of select="$defaultCkassStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>',
+				'styleIcon': '<xsl:value-of select="$defaultCkassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
+				'styleTextColour': '<xsl:value-of select="$defaultCkassStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>'
+			</xsl:otherwise>
+		</xsl:choose>
+		}
 	</xsl:template>
 	
 	

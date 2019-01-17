@@ -36,6 +36,12 @@
 	<xsl:variable name="allTechBuilds" select="/node()/simple_instance[type = 'Technology_Build_Architecture']"/>
 	<xsl:variable name="allTechProductFamilies" select="/node()/simple_instance[type = 'Technology_Product_Family']"/>
 
+	<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[name = $allTechProdRoles/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+	
+	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -281,14 +287,14 @@
 								<table class="table table-bordered table-striped">
 									<thead>
 										<tr>
-											<th class="cellWidth-30pc">
+											<th class="cellWidth-40pc">
 												<xsl:value-of select="eas:i18n('Technology Component')"/>
 											</th>
-											<th class="cellWidth-50pc">
-												<xsl:value-of select="eas:i18n('Strategic Usage Policy (e.g. Production, Prototype, Off Strategy)')"/>
-											</th>
-											<th class="cellWidth-20pc">
+											<th class="cellWidth-30pc">
 												<xsl:value-of select="eas:i18n('Status')"/>
+											</th>
+											<th class="cellWidth-30pc alignCentre">
+												<xsl:value-of select="eas:i18n('Standards Compliance')"/>
 											</th>
 										</tr>
 									</thead>
@@ -588,7 +594,7 @@
 						<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
 					</h2>
 					<div class="content-section">
-						<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>
+						<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
 					</div>
 					<hr/>
 				</div>
@@ -656,7 +662,6 @@
 	<!-- TEMPLATE TO CREATE THE DETAILS FOR Technology Product Roles -->
 	<xsl:template match="node()" mode="TechnologyProductRole">
 		<xsl:variable name="techCompInstID" select="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
-		<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 		<xsl:variable name="relevantTechComps" select="$allTechComps[name = $techCompInstID]"/>
 		<tr>
 			<td>
@@ -667,37 +672,38 @@
 					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				</xsl:call-template>
 			</td>
-			<xsl:variable name="lifecycle_status" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
-			<xsl:variable name="prodLifecyle" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value = 'ProductionStrategic']/name"/>
-			<!-- 21.02.11 JWC Fixed the names of Lifecycle values -->
-			<xsl:variable name="offStratLifecycle" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value = 'OffStrategy']/name"/>
+			<xsl:variable name="lifecycle_status" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+			
+			<xsl:variable name="allRelevantTPRs" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = $relevantTechComps/name]"/>
+			<xsl:variable name="allRelevantTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allRelevantTPRs/name]"/>
+			
+			<xsl:variable name="thisTechProdStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>
+			<xsl:variable name="thisStandardStrength" select="$allStandardStrengths[name = $thisTechProdStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+			<xsl:variable name="thisStandardStyleClass" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]/own_slot_value[slot_reference = 'element_style_class']/value"/>
+			
+			<!-- 25.08.18 JP Updated to include Standards Compliance -->
 			<td>
 				<xsl:if test="not(count($lifecycle_status))">
 					<em>
 						<xsl:value-of select="eas:i18n('not defined')"/>
 					</em>
 				</xsl:if>
-				<xsl:value-of select="$lifecycle_status/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+				<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$lifecycle_status"/></xsl:call-template>
 			</td>
-
 			<xsl:choose>
-				<xsl:when test="compare($lifecycle_status/name, $prodLifecyle) = 0">
-					<td class="cellRAG_Green">
-						<xsl:value-of select="eas:i18n('OK')"/>
+				<xsl:when test="count($allRelevantTechProdStandards) = 0">
+					<td class="alignCentre">
+						<em><xsl:value-of select="eas:i18n('no standards defined')"/></em>
 					</td>
 				</xsl:when>
-				<xsl:when test="compare($lifecycle_status/name, $offStratLifecycle) = 0">
-					<td class="cellRAG_Red">
-						<em>
-							<xsl:value-of select="eas:i18n('Attention')"/>
-						</em>
+				<xsl:when test="count($thisTechProdStandard) >0">
+					<td class="alignCentre {$thisStandardStyleClass}">
+						<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"/></xsl:call-template>
 					</td>
 				</xsl:when>
 				<xsl:otherwise>
-					<td class="cellRAG_Yellow">
-						<em>
-							<xsl:value-of select="eas:i18n('Waiver Required')"/>
-						</em>
+					<td class="alignCentre {$offStrategyStyle}">
+						<xsl:value-of select="eas:i18n('Off Strategy')"/>
 					</td>
 				</xsl:otherwise>
 			</xsl:choose>

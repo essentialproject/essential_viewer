@@ -55,6 +55,9 @@
 
 	<!-- Get all of the Application Services in the repository -->
 	<xsl:variable name="allBusCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
+	
+	<xsl:variable name="busCapListAsTable" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Capability Catalogue as Table')]"/>
+	
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
@@ -132,6 +135,23 @@
 										<xsl:value-of select="$pageLabel"/>
 									</span>
 								</h1>
+								<div class="altViewName">
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Show by')"/>:&#160;</span>
+									<span class="text-primary">
+										<xsl:value-of select="eas:i18n('Name')"/>
+									</span>
+									<span class="text-darkgrey"> | </span>
+									<span class="text-darkgrey">
+										<xsl:call-template name="RenderCatalogueLink">
+											<xsl:with-param name="theCatalogue" select="$busCapListAsTable"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											<xsl:with-param name="targetReport" select="$targetReport"/>
+											<xsl:with-param name="targetMenu" select="$targetMenu"/>
+											<xsl:with-param name="displayString" select="eas:i18n('Table')"/>
+										</xsl:call-template>
+									</span>
+								</div>
 							</div>
 						</div>
 						<!--Setup Catalogue Section-->

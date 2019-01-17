@@ -19,6 +19,8 @@
  * 19.01.2015	JWC	First coding
  * 24.03.2016	JWC Instrumented for SSL debugging
  * 08.02.2017	JWC	Removed trace code
+ * 13.04.2018	JWC Implemented support for the default security classification
+ * 17.04.2018	JWC Fixed implementation of default security classification
  */
 package com.enterprise_architecture.essential.report.security;
 
@@ -202,7 +204,7 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		
 		// Get user account URL from session
 		String anAccount = itsSecurityMgr.authenticateUserBySession(theRequest);		
-		System.out.println("SecureViewer: authenticate attempt via session, got account object.");
+		//System.out.println("SecureViewer: authenticate attempt via session, got account object.");
 		
 		// Have URL - test authorisation
 		// Get the selected View from the request			
@@ -227,7 +229,7 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		String aReposID = getRepositoryID(theRequest, theResponse, aSourceDocPath, itsContextPath);
 		
 		// Get full path to this application - removing the servlet path to drop '/report' if it's included
-		System.out.println("SecureViewer: Checking for authorisation for Viewer: " + theRequest.getRequestURL().toString());
+		//System.out.println("SecureViewer: Checking for authorisation for Viewer: " + theRequest.getRequestURL().toString());
 		String aRequestURL = theRequest.getRequestURL().toString();
 		if(aRequestURL.endsWith("/report"))
 		{
@@ -240,11 +242,11 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 			aRequestURL = aRequestURL.substring(0, aRequestURL.length()-1);
 		}
 
-		System.out.println("SecureViewer: Authorising for URL: " + aRequestURL);
+		//System.out.println("SecureViewer: Authorising for URL: " + aRequestURL);
 		
 		if(itsSecurityMgr.isUserAuthorisedForViewer(anAccount, aReposID, aRequestURL))
 		{
-			System.out.println("SecureViewer: TRACE == User authorised to access viewer for specified repository");
+			//System.out.println("SecureViewer: TRACE == User authorised to access viewer for specified repository");
 			// If access allowed, continue
 			
 			// Check user is allowed to View the selected view.			
@@ -323,13 +325,23 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		
 		try
 		{
+			// DEBUG TRACE
+			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View: " + aTemplateFile);
+			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: UserData XML: \n" + aUserData);
+			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View Classifications: \n" + aViewClassification);
+			
+			// AuthZ user for access to the requested view
 			aUserAuthZResult = queryUserAuthZ(aTemplateFile, aUserData, aViewClassification, itsContextPath);
+			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE = queryUserAuthZ(): " + aUserAuthZResult);
 			
 			// If an instance has been requested, PMA query parameter, test authorisation for that instance
+			// but only if user has authZ to access the view
 			String aRequestedInstanceID = theRequest.getParameter(REQUESTED_INSTANCE_ID_PARAM);
-			if(aRequestedInstanceID != null && !aRequestedInstanceID.isEmpty())
-			{
-				aUserAuthZResult = queryUserAuthZInstance(theRequest, theResponse, xmlFile, aRequestedInstanceID, itsContextPath);				
+			if(!aUserAuthZResult.contains(NO_AUTH_QUERY_RESULT) && aRequestedInstanceID != null && !aRequestedInstanceID.isEmpty())
+			{				
+				aUserAuthZResult = queryUserAuthZInstance(theRequest, theResponse, xmlFile, aRequestedInstanceID, itsContextPath);
+				// DEBUG TRACE
+				//System.out.println("SecureViewer.isUserAuthZForView(): TRACE == queryUserAuthZInstance(XSL): " + aUserAuthZResult);
 			}
 		}
 		catch (Exception ex)
@@ -510,6 +522,10 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		
 		// Set transformer parameter for the clearance / classification type
 		aTransformer.setParameter(CLASSIFICATION_TYPE_PARAM, "read");
+		
+		// Set the repository ID for the current repository
+		String aRepositoryID = (String)itsServletContext.getAttribute(VIEWER_REPOSITORY_ID);
+		aTransformer.setParameter(REPOS_ID_PARAM, aRepositoryID);
 		
 		StringWriter aResultString = new StringWriter();
 		aTransformer.transform(new StreamSource(new StringReader(theViewClassification)), new StreamResult(aResultString));

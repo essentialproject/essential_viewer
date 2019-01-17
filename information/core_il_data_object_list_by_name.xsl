@@ -54,6 +54,8 @@
 
 	<xsl:variable name="allDataSubjects" select="/node()/simple_instance[type = 'Data_Subject']"/>
 	<xsl:variable name="allDataObjects" select="/node()/simple_instance[type = 'Data_Object']"/>
+    <xsl:variable name="allOrphanDataObjects" select="$allDataObjects[not(own_slot_value[slot_reference='defined_by_data_subject']/value=$allDataSubjects/name)]"/>
+    
 	<xsl:variable name="pageLabel">
 		<xsl:value-of select="eas:i18n('Data Catalogue by Name')"/>
 	</xsl:variable>
@@ -131,7 +133,8 @@
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
 							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Catalogue')"/>
+                                
+                                <xsl:value-of select="eas:i18n('Catalogue')"/>
 							</h2>
 							<p><xsl:value-of select="eas:i18n('Click on one of the Data Objects below to navigate to the required view')"/>.</p>
 							<div class="AlphabetQuickJumpLabel hidden-xs"><xsl:value-of select="eas:i18n('Go to')"/>:&#160;</div>
@@ -365,17 +368,34 @@
 		<!-- DATA SUBJECTS START HERE -->
 		<xsl:choose>
 			<xsl:when test="string-length($viewScopeTermIds) > 0">
-				<xsl:apply-templates mode="DataSubject" select="$allDataSubjects[(starts-with(own_slot_value[slot_reference = 'name']/value, $letter)) and (own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name)]">
+				<xsl:apply-templates mode="DataSubject" select="$allDataSubjects[(starts-with(upper-case(own_slot_value[slot_reference = 'name']/value), $letter)) and (own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name)]">
 					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:apply-templates mode="DataSubject" select="$allDataSubjects[(starts-with(own_slot_value[slot_reference = 'name']/value, $letter))]">
+				<xsl:apply-templates mode="DataSubject" select="$allDataSubjects[(starts-with(upper-case(own_slot_value[slot_reference = 'name']/value), $letter))]">
 					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
 			</xsl:otherwise>
 		</xsl:choose>
-
+        <br/>
+        <xsl:if test="$allOrphanDataObjects[(starts-with(upper-case(own_slot_value[slot_reference = 'name']/value), $letter))]">
+        <h3>Data Objects with No Associated Data Subject</h3>
+      
+                <table class="table table-bordered table-striped">
+							<tbody>
+								<tr>
+									<th class="cellWidth-25pc impact">Orphaned Data Object</th>
+									<th class="cellWidth-75pc impact">
+										<xsl:value-of select="eas:i18n('Description')"/>
+									</th>
+								</tr>
+								<xsl:apply-templates mode="DataObject" select="$allOrphanDataObjects[(starts-with(upper-case(own_slot_value[slot_reference = 'name']/value), $letter))]">
+									<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
+                                </xsl:apply-templates>
+							</tbody>
+						</table>
+        </xsl:if>
 		<!--<xsl:apply-templates select="$allDataSubjects[(starts-with(own_slot_value[slot_reference='name']/value, $letter))]" mode="DataSubject">
 			<xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value" />
 		</xsl:apply-templates>-->

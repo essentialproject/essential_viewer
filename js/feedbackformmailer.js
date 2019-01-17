@@ -11,6 +11,6 @@ var body_message = "Thank you "+name+" for your contribution to the Essential Vi
 
 var mailto_link = 'mailto:'+email+'?subject='+subject+'&body='+body_message;
 
-win = window.open(mailto_link,'emailWindow');
-if (win && win.open &&!win.closed) win.close();
+window.open(mailto_link,'emailWindow');
+
 }

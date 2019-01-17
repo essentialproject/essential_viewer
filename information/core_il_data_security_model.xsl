@@ -42,7 +42,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Data_Subject', 'Business_Role', 'Info_Data_Management_Policy')"/>
+	<xsl:variable name="linkClasses" select="('Data_Subject', 'Business_Role', 'Info_Data_Management_Policy', 'Individual_Business_Role', 'Group_Business_Role')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Get all of the required types of instances in the repository -->

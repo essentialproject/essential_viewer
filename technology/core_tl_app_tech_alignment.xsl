@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:functx="http://www.functx.com">
+	<xsl:import href="../common/core_utilities.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
+	
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
@@ -43,7 +45,6 @@
 	<!-- END GENERIC LINK VARIABLES -->
 
 
-
 	<!--
 		* Copyright (c)2008-2017 Enterprise Architecture Solutions ltd.
 	 	* This file is part of Essential Architecture Manager, 
@@ -80,6 +81,7 @@
 
 	<xsl:variable name="alllifecycleStyles" select="/node()/simple_instance[name = $allLifecycleStatii/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 
+
 	<!-- Get the Technology Product Roles defined for the production deployment of the application -->
 	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type = 'Technology_Product_Role']"/>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
@@ -108,7 +110,15 @@
 	<xsl:variable name="techProdArchRelations" select="/node()/simple_instance[(type = ':TPU-TO-TPU-RELATION') and (name = $techProvArch/own_slot_value[slot_reference = 'contained_provider_architecture_relations']/value)]"/>
 
 	<xsl:variable name="sourceTechProdRoleUsages" select="$techProdRoleUsages[name = $techProdArchRelations/own_slot_value[slot_reference = ':FROM']/value]"/>
+	<xsl:variable name="targetTechProdRoleUsages" select="$techProdRoleUsages[name = $techProdArchRelations/own_slot_value[slot_reference = ':TO']/value]"/>
 
+	<xsl:variable name="nonDependentTechProdRoleUsages" select="$techProdRoleUsages[not(name = $targetTechProdRoleUsages/name)]"/>
+	<xsl:variable name="nonDependentTechProdRoles" select="$techProdRoles[name = $nonDependentTechProdRoleUsages/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+
+	<!-- Get variables for Technology Product Standards -->
+	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 
 	<xsl:variable name="DEBUG" select="''"/>
 
@@ -124,22 +134,38 @@
 		</xsl:call-template>
 	</xsl:variable>
 
+	<xsl:variable name="appObjectHeight" select="50"/>
+
 	<xsl:variable name="objectWidth" select="240"/>
-	<xsl:variable name="objectHeight" select="100"/>
+	<xsl:variable name="objectHeight" select="115"/>
 	<xsl:variable name="objectTextWidth" select="160"/>
 	<xsl:variable name="objectTextHeight" select="100"/>
-	<xsl:variable name="objectSubBlockWidth" select="35"/>
+	<xsl:variable name="objectStrokeWidth" select="1"/>
+	<xsl:variable name="objectFont">'font-weight': 'bold'</xsl:variable>
+
+	<xsl:variable name="objectSubBlockTitleHeight" select="15"/>
+	<xsl:variable name="objectSubBlockTitleXPos" select="0"/>
+	<xsl:variable name="objectSubBlockTitleYPos" select="77"/>
+	<xsl:variable name="objectSubBlockTitleFont">'font-weight': 'bold', 'font-size': '0.8em', 'font-variant': 'small-caps'</xsl:variable>
+	
 	<xsl:variable name="objectSubBlockHeight" select="23"/>
 	<xsl:variable name="objectSubBlockXPos" select="0"/>
-	<xsl:variable name="objectSubBlockYPos" select="77"/>
-	<xsl:variable name="objectStrokeWidth" select="1"/>
-
+	<xsl:variable name="objectSubBlockYPos" select="92"/>
+	<xsl:variable name="objectSubBlockFont">'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize'</xsl:variable>
+	
 
 	<xsl:variable name="noStatusColour">Grey</xsl:variable>
+	<xsl:variable name="noStandardColour">hsla(0, 75%, 35%, 1)</xsl:variable>
 	<xsl:variable name="noStatusStyle">backColourGrey</xsl:variable>
 	<xsl:variable name="objectColour">hsla(220, 70%, 95%, 1)</xsl:variable>
 	<xsl:variable name="objectTextColour">Black</xsl:variable>
 	<xsl:variable name="objectOutlineColour">Black</xsl:variable>
+	
+	<xsl:variable name="appObjectColour">hsla(220, 70%, 15%, 1)</xsl:variable>
+	<xsl:variable name="appObjectTextColour">White</xsl:variable>
+	<xsl:variable name="appObjectOutlineColour">hsla(220, 70%, 85%, 1)</xsl:variable>
+	<xsl:variable name="appObjectStrokeWidth" select="6"/>
+	<xsl:variable name="appObjectFont">'font-weight': 'bold', 'font-size': '1.2em'</xsl:variable>
 
 
 	<xsl:variable name="pageTitle" select="'Application Technology Strategy Alignment for '"/>
@@ -173,6 +199,7 @@
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
 				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>
+				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
 				<script src="js/jquery.tools.min.js" type="text/javascript"/>
 				<style type="text/css">
 					.Rect{
@@ -243,7 +270,7 @@
 							<div class="sectionIcon">
 								<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Logical Technology Architecture</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Logical Technology Architecture')"/></h2>
 							<div class="verticalSpacer_5px"/>
 							<xsl:call-template name="legend"/>
 							<div class="verticalSpacer_10px"/>
@@ -271,15 +298,17 @@
 							<div class="sectionIcon">
 								<i class="fa fa-check-circle icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Strategy Alignment</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Strategy Alignment')"/></h2>
 							<div class="verticalSpacer_5px"/>
 							<xsl:choose>
 								<xsl:when test="count($techProdRoles) > 0">
 									<table class="table table-bordered table-striped ">
 										<thead>
 											<tr>
-												<th class="cellWidth-40pc">Required Component</th>
-												<th class="cellWidth-60pc">Products Used</th>
+												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Required Component')"/></th>
+												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Products Used')"/></th>
+												<th class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></th>
+												<th class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Standard Level')"/></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -320,6 +349,11 @@
 			<script>
 					
 					var graph = new joint.dia.Graph;
+					var pannedGraph;
+					
+					function resetZoom() {
+						pannedGraph.reset();
+					}
 					
 					var windowWidth = $(window).width()*2;
 					var windowHeight = $(window).height()*2;
@@ -331,6 +365,9 @@
 				        gridSize: 1,
 				        model: graph
 				    });
+				    
+				    var modelSVG = paper.svg;
+				    
 				    
 				    
 				    paper.setOrigin(30,30);
@@ -368,16 +405,22 @@
 						});
 					}
 					
+					<xsl:call-template name="RenderAppNameVariable"/>
 					<xsl:apply-templates mode="RenderTPRNameVariable" select="$techProdRoles"/>
 					
 					var clusters = {
 						<xsl:apply-templates mode="RenderTPRDefinition" select="$techProdRoles"/>			
 					};
 					
+					<xsl:call-template name="RenderAppDefinition"/>
+					
+					graph.addCell(app);
 					_.each(clusters, function(c) { graph.addCell(c); });
+					
 		
 		
 					var relations = [
+					<xsl:apply-templates mode="RenderAppRelation" select="$nonDependentTechProdRoleUsages"/>
 					<xsl:apply-templates mode="RenderTechProdRelation" select="$sourceTechProdRoleUsages"/>
 					];
 					
@@ -388,7 +431,9 @@
 					
 					
 					<xsl:apply-templates mode="RenderTPRLifecycleStatus" select="$techProdRoles"/>
+					<xsl:apply-templates mode="RenderTPRStandardComplianceStatus" select="$techProdRoles"/>
 					
+					pannedGraph = svgPanZoom(modelSVG, {controlIconsEnabled: true, panEnabled: false, mouseWheelZoomEnabled: false, minZoom: 0.1});
 					
 					// paper.scale(0.9, 0.9);
 					// paper.scaleContentToFit();
@@ -408,6 +453,19 @@
 		<xsl:variable name="nodeNameString" select="eas:get_techprodrole_name(current())"/> var <xsl:value-of select="$nameVariable"/> = <xsl:value-of select="$nodeNamingFunction"/>('<xsl:value-of select="$nodeNameString"/><xsl:text>');
 		</xsl:text>
 	</xsl:template>
+	
+	<xsl:template name="RenderAppNameVariable">
+		<xsl:variable name="nodeType" select="'Cluster'"/>
+		<xsl:variable name="nameVariable" select="'appName'"/>
+		<xsl:variable name="nodeNamingFunction" select="concat('wrap', $nodeType, 'Name')"/>
+		<xsl:variable name="nodeNameString">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
+			</xsl:call-template>
+		</xsl:variable>
+		var <xsl:value-of select="$nameVariable"/> = <xsl:value-of select="$nodeNamingFunction"/>('<xsl:value-of select="$nodeNameString"/><xsl:text>');
+		</xsl:text>
+	</xsl:template>
 
 
 
@@ -423,8 +481,14 @@
 				<xsl:with-param name="theXSL" select="$techProdSummaryReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:value-of select="$nodeListName"/>: new joint.shapes.custom.Cluster({ position: { x: 100, y: 20 }, size: { width: <xsl:value-of select="$objectWidth"/>, height: <xsl:value-of select="$objectHeight"/> }, attrs: { rect: { 'stroke-width': <xsl:value-of select="$objectStrokeWidth"/>, fill: '<xsl:value-of select="$objectColour"/>', stroke: '<xsl:value-of select="$objectOutlineColour"/>'<!--, rx: 5, ry: 5--> }, a: { 'xlink:href': '<xsl:value-of select="$techProdSummaryLinkHref"/>', cursor: 'pointer' }, text: { text: <xsl:value-of select="$nameVariable"/>, fill: '<xsl:value-of select="$objectTextColour"/>', 'font-weight': 'bold' }} })<xsl:if test="not(position() = last())"><xsl:text>,
+		<xsl:value-of select="$nodeListName"/>: new joint.shapes.custom.Cluster({ position: { x: 100, y: 20 }, size: { width: <xsl:value-of select="$objectWidth"/>, height: <xsl:value-of select="$objectHeight"/> }, attrs: { rect: { 'stroke-width': <xsl:value-of select="$objectStrokeWidth"/>, fill: '<xsl:value-of select="$objectColour"/>', stroke: '<xsl:value-of select="$objectOutlineColour"/>'<!--, rx: 5, ry: 5--> }, a: { 'xlink:href': '<xsl:value-of select="$techProdSummaryLinkHref"/>', cursor: 'pointer' }, text: { text: <xsl:value-of select="$nameVariable"/>, fill: '<xsl:value-of select="$objectTextColour"/>', <xsl:value-of select="$objectFont"/> }} })<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
+	</xsl:template>
+	
+	
+	<xsl:template name="RenderAppDefinition">
+		<xsl:variable name="nameVariable" select="'appName'"/>
+		var app = new joint.shapes.custom.Cluster({ position: { x: 100, y: 20 }, size: { width: <xsl:value-of select="$objectWidth"/>, height: <xsl:value-of select="$appObjectHeight"/> }, attrs: { rect: { 'stroke-width': <xsl:value-of select="$appObjectStrokeWidth"/>, fill: '<xsl:value-of select="$appObjectColour"/>', stroke: '<xsl:value-of select="$appObjectOutlineColour"/>', rx: 5, ry: 5 }, a: { 'xlink:href': '#', cursor: 'pointer' }, text: { text: <xsl:value-of select="$nameVariable"/>, fill: '<xsl:value-of select="$appObjectTextColour"/>', <xsl:value-of select="$appObjectFont"/> }} });
 	</xsl:template>
 
 
@@ -443,7 +507,8 @@
 		<xsl:for-each select="$targetTechProdRoleUsages">
 			<xsl:variable name="targetTechProdRole" select="$techProdRoles[name = current()/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
 			<xsl:variable name="targetIndex" select="index-of($techProdRoles, $targetTechProdRole)"/>
-			<xsl:variable name="targetListName" select="concat('cluster', $targetIndex)"/> new joint.dia.Link({ source: { id: clusters.<xsl:value-of select="$sourceListName"/>.id }, target: { id: clusters.<xsl:value-of select="$targetListName"/>.id }, attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' }, '.connection': {'stroke-width': 2 }, '.link-tools': { display : 'none'}, '.marker-arrowheads': { display: 'none' },'.connection-wrap': { display: 'none' }, }})<xsl:if test="not(position() = last())"><xsl:text>,
+			<xsl:variable name="targetListName" select="concat('cluster', $targetIndex)"/>
+			new joint.dia.Link({ source: { id: clusters.<xsl:value-of select="$sourceListName"/>.id }, target: { id: clusters.<xsl:value-of select="$targetListName"/>.id }, attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' }, '.connection': {'stroke-width': 2 }, '.link-tools': { display : 'none'}, '.marker-arrowheads': { display: 'none' },'.connection-wrap': { display: 'none' }, }})<xsl:if test="not(position() = last())"><xsl:text>,
 			</xsl:text></xsl:if>
 		</xsl:for-each>
 		<xsl:if test="(not(position() = last())) and (count($targetTechProdRoleUsages) > 0)">
@@ -452,14 +517,39 @@
 		</xsl:if>
 
 	</xsl:template>
+	
+	<xsl:template mode="RenderAppRelation" match="node()">
+		<xsl:variable name="targetTechProdRoleUsage" select="current()"/>
+		<xsl:variable name="targetTechProdRole" select="$techProdRoles[name = $targetTechProdRoleUsage/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+		<xsl:variable name="targetIndex" select="index-of($techProdRoles, $targetTechProdRole)"/>
+		<xsl:variable name="targetListName" select="concat('cluster', $targetIndex)"/>
+		new joint.dia.Link({ source: { id: app.id }, target: { id: clusters.<xsl:value-of select="$targetListName"/>.id }, attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' }, '.connection': {'stroke-width': 2 }, '.link-tools': { display : 'none'}, '.marker-arrowheads': { display: 'none' },'.connection-wrap': { display: 'none' }, }})<xsl:if test="not(position() = last())"><xsl:text>,
+			</xsl:text></xsl:if>
+		<xsl:if test="(position() = last()) and (count($targetTechProdRoleUsages) > 0)">
+			<xsl:text>,
+		</xsl:text>
+		</xsl:if>
+		
+	</xsl:template>
 
 
 
 	<xsl:template mode="RenderTPRLifecycleStatus" match="node()">
 		<xsl:variable name="index" select="index-of($techProdRoles, current())"/>
 		<xsl:variable name="containingTPRName" select="concat('cluster', $index)"/>
-		<xsl:variable name="thisCrudXPos" select="$objectSubBlockXPos"/>
-		<xsl:variable name="thisCrudYPos" select="$objectSubBlockYPos"/> var <xsl:value-of select="$containingTPRName"/>Xpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisCrudXPos"/>; var <xsl:value-of select="$containingTPRName"/>Ypos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisCrudYPos"/>; <xsl:variable name="nodeColour" select="eas:get_node_colour(current())"/>
+		
+		<xsl:variable name="thisLifecycleXPos" select="$objectSubBlockXPos"/>
+		<xsl:variable name="thisLifecycleYPos" select="$objectSubBlockYPos"/>
+		<xsl:variable name="thisLifecycleTitleXPos" select="$objectSubBlockTitleXPos"/>
+		<xsl:variable name="thisLifecycleTitleYPos" select="$objectSubBlockTitleYPos"/>
+		
+		var <xsl:value-of select="$containingTPRName"/>LCTitleXpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisLifecycleTitleXPos"/>;
+		var <xsl:value-of select="$containingTPRName"/>LCTitleYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisLifecycleTitleYPos"/>;
+		
+		var <xsl:value-of select="$containingTPRName"/>LCXpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisLifecycleXPos"/>;
+		var <xsl:value-of select="$containingTPRName"/>LCYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisLifecycleYPos"/>;
+		
+		<xsl:variable name="nodeColour" select="eas:get_node_colour(current())"/>
 		<xsl:variable name="strokeColour" select="$objectOutlineColour"/>
 		<xsl:variable name="techProdRoleLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
 		<xsl:variable name="techProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
@@ -472,12 +562,54 @@
 				<xsl:when test="count($techProdLifecycleStatus) > 0">
 					<xsl:value-of select="$techProdLifecycleStatus[1]/own_slot_value[slot_reference = 'enumeration_value']/value"/>
 				</xsl:when>
-				<xsl:otherwise>UNDEFINED</xsl:otherwise>
+				<xsl:otherwise><xsl:value-of select="eas:i18n('Undefined')"/></xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<xsl:variable name="elementVarName" select="concat($containingTPRName, 'LifecycleStatus')"/> var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>Xpos, y: <xsl:value-of select="$containingTPRName"/>Ypos }, size: { width: <xsl:value-of select="$objectWidth"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: 'white', text: '<xsl:value-of select="$tprLifecycleStatusName"/>', 'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize' } } }); clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>); graph.addCells([<xsl:value-of select="$elementVarName"/>]); <xsl:text>
-			
-			
+		<xsl:variable name="elementVarName" select="concat($containingTPRName, 'LifecycleStatus')"/>
+		var <xsl:value-of select="$elementVarName"/>Title = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>LCTitleXpos, y: <xsl:value-of select="$containingTPRName"/>LCTitleYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockTitleHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: 'white' }, text: { fill: 'black', text: '<xsl:value-of select="eas:i18n('Lifecycle Status')"/>', <xsl:value-of select="$objectSubBlockTitleFont"/>} } });
+		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>Title);
+		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>LCXpos, y: <xsl:value-of select="$containingTPRName"/>LCYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: 'white', text: '<xsl:value-of select="$tprLifecycleStatusName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
+		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>);
+		graph.addCells([<xsl:value-of select="$elementVarName"/>, <xsl:value-of select="$elementVarName"/>Title]); <xsl:text>
+						
+		</xsl:text>
+	</xsl:template>
+	
+	
+	<xsl:template mode="RenderTPRStandardComplianceStatus" match="node()">
+		<xsl:variable name="index" select="index-of($techProdRoles, current())"/>
+		<xsl:variable name="containingTPRName" select="concat('cluster', $index)"/>
+		
+		<xsl:variable name="thisStandardXPos" select="$objectSubBlockTitleXPos + ($objectWidth div 2)"/>
+		<xsl:variable name="thisStandardYPos" select="$objectSubBlockYPos"/>
+		<xsl:variable name="thisStandardTitleXPos" select="$objectSubBlockTitleXPos + ($objectWidth div 2)"/>
+		<xsl:variable name="thisStandardTitleYPos" select="$objectSubBlockTitleYPos"/>
+		
+		var <xsl:value-of select="$containingTPRName"/>StdTitleXpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisStandardTitleXPos"/>;
+		var <xsl:value-of select="$containingTPRName"/>StdTitleYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisStandardTitleYPos"/>;
+		
+		var <xsl:value-of select="$containingTPRName"/>StdXpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisStandardXPos"/>;
+		var <xsl:value-of select="$containingTPRName"/>StdYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisStandardYPos"/>;
+		
+		<xsl:variable name="nodeColour" select="eas:get_node_standard_colour(current())"/>
+		<xsl:variable name="strokeColour" select="$objectOutlineColour"/>
+		<xsl:variable name="techProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>
+		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $techProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+		<xsl:variable name="tprStandardName">
+			<xsl:choose>
+				<xsl:when test="count($techProdRoleStandardStrength) > 0">
+					<xsl:value-of select="$techProdRoleStandardStrength[1]/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+				</xsl:when>
+				<xsl:otherwise><xsl:value-of select="eas:i18n('Off Strategy')"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="elementVarName" select="concat($containingTPRName, 'Standard')"/>
+		var <xsl:value-of select="$elementVarName"/>Title = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>StdTitleXpos, y: <xsl:value-of select="$containingTPRName"/>StdTitleYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockTitleHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: 'white' }, text: { fill: 'black', text: '<xsl:value-of select="eas:i18n('Standard Level')"/>', <xsl:value-of select="$objectSubBlockTitleFont"/>} } });
+		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>Title);
+		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>StdXpos, y: <xsl:value-of select="$containingTPRName"/>StdYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: 'white', text: '<xsl:value-of select="$tprStandardName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
+		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>);
+		graph.addCells([<xsl:value-of select="$elementVarName"/>, <xsl:value-of select="$elementVarName"/>Title]); <xsl:text>
+						
 		</xsl:text>
 	</xsl:template>
 
@@ -535,6 +667,62 @@
 		</xsl:choose>
 
 	</xsl:function>
+	
+	
+	<xsl:function as="xs:string" name="eas:get_node_standard_colour">
+		<xsl:param name="node"/>
+		
+		
+		<xsl:variable name="techProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $node/name]"/>
+		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $techProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+		
+		<xsl:choose>
+			<xsl:when test="count($techProdRoleStandard) > 0">
+				<xsl:variable name="standardStyle" select="$allStandardStyles[name = $techProdRoleStandardStrength[1]/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+				<xsl:choose>
+					<xsl:when test="count($standardStyle) = 0">
+						<xsl:value-of select="$noStandardColour"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:variable name="styleColour" select="$standardStyle[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>
+						<xsl:choose>
+							<xsl:when test="string-length($styleColour) = 0">
+								<xsl:value-of select="$noStandardColour"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$styleColour"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$noStandardColour"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:function>
+	
+	
+	<xsl:function as="xs:string" name="eas:get_node_standard_label">
+		<xsl:param name="node"/>
+		
+		
+		<xsl:variable name="techProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $node/name]"/>
+		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $techProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+		
+		<xsl:choose>
+			<xsl:when test="count($techProdRoleStandardStrength) > 0">
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$techProdRoleStandardStrength"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="eas:i18n('Off Strategy')"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:function>
 
 
 
@@ -550,6 +738,27 @@
 				<xsl:variable name="techProd" select="$allTechProds[name = $node/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 				<xsl:variable name="techProdLifecycleStatus" select="$allLifecycleStatii[name = $techProd/own_slot_value[slot_reference = 'technology_provider_lifecycle_status']/value]"/>
 				<xsl:value-of select="eas:get_element_style_class($techProdLifecycleStatus)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:function>
+	
+	
+	<xsl:function as="xs:string" name="eas:get_node_lifecycle_label">
+		<xsl:param name="node"/>
+		
+		<xsl:variable name="techProdRoleLifecycleStatus" select="$allLifecycleStatii[name = $node/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+		<xsl:choose>
+			<xsl:when test="count($techProdRoleLifecycleStatus) > 0">
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$techProdRoleLifecycleStatus[1]"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="techProd" select="$allTechProds[name = $node/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+				<xsl:variable name="techProdLifecycleStatus" select="$allLifecycleStatii[name = $techProd/own_slot_value[slot_reference = 'technology_provider_lifecycle_status']/value]"/>
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$techProdLifecycleStatus[1]"/>
+				</xsl:call-template>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:function>
@@ -595,10 +804,6 @@
 		<xsl:value-of select="concat($techLProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $techProd/own_slot_value[slot_reference = 'name']/value, ' as ', $techComp/own_slot_value[slot_reference = 'name']/value)"/>
 
 	</xsl:function>
-
-
-
-
 
 
 	<xsl:template name="legend">
@@ -662,19 +867,26 @@
 		<xsl:value-of select="$noCloseBrackets"/>
 
 	</xsl:function>
-
+	
+	
 	<xsl:template mode="RenderTechProdRoleTableRows" match="node()">
 		<xsl:variable name="thisTechComp" select="current()"/>
 		<xsl:variable name="thisTechProdRoles" select="$techProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-
+		
 		<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
 		<td>
 			<xsl:attribute name="rowspan" select="count($thisTechProdRoles)"/>
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="$thisTechComp"/>
 			</xsl:call-template>
+			<div class="keySampleWide">
+				<xsl:attribute name="class" select="'keySampleWide techProdCell bg-darkblue-120'"/>
+			</div>
+			<xsl:call-template name="RenderStandardProductsForCompPopup">
+				<xsl:with-param name="techComp" select="$thisTechComp"/>
+			</xsl:call-template>
 		</td>
-
+		
 		<xsl:for-each select="$thisTechProdRoles">
 			<xsl:if test="not(position() = 1)">
 				<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
@@ -682,38 +894,55 @@
 			<xsl:variable name="thisTechProd" select="$techProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 			<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
 			<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
-			<xsl:variable name="thisTPRStyle" select="eas:get_node_style(current())"/>
+			
+			<xsl:variable name="lifecycleLabel" select="eas:get_node_lifecycle_label(current())"/>
+			<xsl:variable name="lifecycleStyle" select="eas:get_node_style(current())"/>
+			
+			<xsl:variable name="standardLabel" select="eas:get_node_standard_label(current())"/>
+			<xsl:variable name="standardStyle" select="eas:get_node_standard_colour(current())"/>
+			
 			<td>
 				<div>
-					<div class="keySampleWide">
-						<xsl:attribute name="class" select="concat('keySampleWide techProdCell ', $thisTPRStyle)"/>
-					</div>
-					<xsl:call-template name="RenderProductsForCompPopup">
-						<xsl:with-param name="techComp" select="$thisTechComp"/>
-					</xsl:call-template>
 					<xsl:call-template name="RenderInstanceLink">
 						<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
 						<xsl:with-param name="displayString" select="$thisTechProdName"/>
 					</xsl:call-template>
 				</div>
 			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="string-length($lifecycleLabel) > 0">
+						<button class="btn btn-block impact {$lifecycleStyle}">
+							<xsl:value-of select="$lifecycleLabel"/>
+						</button>
+					</xsl:when>
+				</xsl:choose>
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="string-length($standardLabel) > 0">
+						<button style="background-color: {$standardStyle};color: white" class="btn btn-block impact">
+							<xsl:value-of select="$standardLabel"/>
+						</button>
+					</xsl:when>
+				</xsl:choose>
+			</td>
 			<xsl:text disable-output-escaping="yes">&lt;/tr&gt;</xsl:text>
 		</xsl:for-each>
 	</xsl:template>
-
-
-	<xsl:template name="RenderProductsForCompPopup">
+	
+	
+	
+	<xsl:template name="RenderStandardProductsForCompPopup">
 		<xsl:param name="techComp" select="()"/>
-
+		
 		<!-- Get the TPRs that have either strategic, pilot, under planning or prototype lifecycle status -->
-		<xsl:variable name="strategicTRPs" select="$allTechProdRoles[(own_slot_value[slot_reference = 'implementing_technology_component']/value = $techComp/name) and (own_slot_value[slot_reference = 'strategic_lifecycle_status']/value = $strategicLifecycleStatus/name)]"/>
-		<xsl:variable name="pilotTPRs" select="$allTechProdRoles[(own_slot_value[slot_reference = 'implementing_technology_component']/value = $techComp/name) and (own_slot_value[slot_reference = 'strategic_lifecycle_status']/value = $pilotLifecycleStatus/name)]"/>
-		<xsl:variable name="underPlanningTPRs" select="$allTechProdRoles[(own_slot_value[slot_reference = 'implementing_technology_component']/value = $techComp/name) and (own_slot_value[slot_reference = 'strategic_lifecycle_status']/value = $underPlanningLifecycleStatus/name)]"/>
-		<xsl:variable name="prototypeTPRs" select="$allTechProdRoles[(own_slot_value[slot_reference = 'implementing_technology_component']/value = $techComp/name) and (own_slot_value[slot_reference = 'strategic_lifecycle_status']/value = $prototypeLifecycleStatus/name)]"/>
-
-
+		<xsl:variable name="techCompTPRs" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = $techComp/name]"/>
+		<xsl:variable name="techCompStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $techCompTPRs/name]"/>
+		
+		
 		<div class="ess-tooltip">
-			<p class="fontBlack text-primary large">Avalable Technology Products</p>
+			<p class="fontBlack text-primary large"><xsl:value-of select="eas:i18n('Standard Technology Products')"/></p>
 			<style>
 				.ulTight{
 					margin-bottom: 0px;
@@ -721,129 +950,53 @@
 			<table class="table table-bordered table-striped ">
 				<thead>
 					<tr>
-						<th>
-							<xsl:attribute name="class" select="concat('cellWidth-25pc', ' ', $strategicLifecycleStyle)"/>
-							<xsl:value-of select="$strategicLifecycleStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-						</th>
-						<th>
-							<xsl:attribute name="class" select="concat('cellWidth-25pc', ' ', $pilotLifecycleStyle)"/>
-							<xsl:value-of select="$pilotLifecycleStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-						</th>
-						<th>
-							<xsl:attribute name="class" select="concat('cellWidth-25pc', ' ', $underPlanningLifecycleStyle)"/>
-							<xsl:value-of select="$underPlanningLifecycleStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-						</th>
-						<th>
-							<xsl:attribute name="class" select="concat('cellWidth-25pc', ' ', $prototypeLifecycleStyle)"/>
-							<xsl:value-of select="$prototypeLifecycleStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-						</th>
+						<xsl:for-each select="$allStandardStrengths">
+							<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
+							<xsl:variable name="standardStyleClass" select="eas:get_element_style_class(current())"/>
+							<th>
+								<xsl:attribute name="class" select="concat('cellWidth-25pc', ' ', $standardStyleClass)"/>
+								<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+							</th>
+						</xsl:for-each>
 					</tr>
 				</thead>
 				<tbody>
-					<td>
-						<xsl:choose>
-							<xsl:when test="count($strategicTRPs) > 0">
-								<ul>
-									<xsl:for-each select="$strategicTRPs">
-										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-										<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-										<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
-												<xsl:with-param name="displayString" select="$thisTechProdName"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</xsl:when>
-							<xsl:otherwise>
-								<em>
-									<xsl:value-of select="eas:i18n('None')"/>
-								</em>
-							</xsl:otherwise>
-						</xsl:choose>
-					</td>
-					<td>
-						<xsl:choose>
-							<xsl:when test="count($pilotTPRs) > 0">
-								<ul>
-									<xsl:for-each select="$pilotTPRs">
-										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-										<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-										<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
-												<xsl:with-param name="displayString" select="$thisTechProdName"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</xsl:when>
-							<xsl:otherwise>
-								<em>
-									<xsl:value-of select="eas:i18n('None')"/>
-								</em>
-							</xsl:otherwise>
-						</xsl:choose>
-					</td>
-					<td>
-						<xsl:choose>
-							<xsl:when test="count($underPlanningTPRs) > 0">
-								<ul>
-									<xsl:for-each select="$underPlanningTPRs">
-										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-										<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-										<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
-												<xsl:with-param name="displayString" select="$thisTechProdName"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</xsl:when>
-							<xsl:otherwise>
-								<em>
-									<xsl:value-of select="eas:i18n('None')"/>
-								</em>
-							</xsl:otherwise>
-						</xsl:choose>
-					</td>
-					<td>
-						<xsl:choose>
-							<xsl:when test="count($prototypeTPRs) > 0">
-								<ul>
-									<xsl:for-each select="$prototypeTPRs">
-										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-										<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-										<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
-												<xsl:with-param name="displayString" select="$thisTechProdName"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</xsl:when>
-							<xsl:otherwise>
-								<em>
-									<xsl:value-of select="eas:i18n('None')"/>
-								</em>
-							</xsl:otherwise>
-						</xsl:choose>
-					</td>
+					<tr>
+						<xsl:for-each select="$allStandardStrengths">
+							<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
+							<xsl:variable name="standardsForStrength" select="$techCompStandards[own_slot_value[slot_reference = 'sm_standard_strength']/value = current()/name]"/>
+							<xsl:variable name="standardTPRs" select="$techCompTPRs[name = $standardsForStrength/own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value]"/>
+							<td>
+								<xsl:choose>
+									<xsl:when test="count($standardTPRs) > 0">
+										<ul>
+											<xsl:for-each select="$standardTPRs">
+												<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+												<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+												<xsl:variable name="thisTechProdSupplier" select="$techLProdSuppliers[name = $thisTechProd/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
+												<xsl:variable name="thisTechProdName" select="concat($thisTechProdSupplier/own_slot_value[slot_reference = 'name']/value, ' ', $thisTechProd/own_slot_value[slot_reference = 'name']/value)"/>
+												<li>
+													<xsl:call-template name="RenderInstanceLink">
+														<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
+														<xsl:with-param name="displayString" select="$thisTechProdName"/>
+													</xsl:call-template>
+												</li>
+											</xsl:for-each>
+										</ul>
+									</xsl:when>
+									<xsl:otherwise>
+										<em>
+											<xsl:value-of select="eas:i18n('None')"/>
+										</em>
+									</xsl:otherwise>
+								</xsl:choose>
+							</td>
+						</xsl:for-each>
+					</tr>
 				</tbody>
 			</table>
 		</div>
-
+		
 	</xsl:template>
 
 

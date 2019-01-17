@@ -642,8 +642,7 @@
                         if (objectives[i].id === thisObj) {
                              
                             for (j = 0; j &lt; objectives[i].caps.length; j++) {
-                                var box = objectives[i].caps[j].capability
-                               console.log(box);
+                                var box = objectives[i].caps[j].capability;
                             var div = document.getElementById(box);
 
                                 $("." + box).css({"background-color":"#e29bd0","transition":"all 2s ease-out"});
@@ -656,7 +655,7 @@
              <!--             for (i = 0; i &lt; thisObj.caps.length; i++) {
                                           
                         var id = objectives[i]['id'];
-                            console.log(id);
+                          
                                                    };
                                                        });//end 
                                          
@@ -692,10 +691,16 @@
 			<div class="clear"/>
 			<div class="threeColModel_wideColumnContainerCaps pull-left">
 				<div class="clear"/>
-				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelManageBusCapRelss"/>
+				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelManageBusCapRelss">
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
+				</xsl:apply-templates>
 				<div class="threeColModel_wideRowCapsDivider"/>
-				<xsl:apply-templates mode="PrintTopLevelFrontCap" select="$topLevelFrontBusCapRelss"/>
-				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelBackBusCapRelss"/>
+				<xsl:apply-templates mode="PrintTopLevelFrontCap" select="$topLevelFrontBusCapRelss">
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
+				</xsl:apply-templates>
+				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelBackBusCapRelss">
+					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
+				</xsl:apply-templates>
 			</div>
 		</div>
 		<div class="verticalSpacer_10px"/>
@@ -715,7 +720,7 @@
 			</xsl:call-template>
 			<xsl:variable name="childCaps" select="$allBusinessCaps[name = $thisManageBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 			<xsl:apply-templates mode="PrintGrandChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
 		<xsl:if test="not(position() = last())">
@@ -752,7 +757,7 @@
 			</div>
 			<xsl:variable name="childCaps" select="$allBusinessCaps[name = $thisFrontBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 			<xsl:apply-templates mode="PrintChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
 		<div class="threeColModel_wideRowCapsDivider"/>
@@ -782,7 +787,7 @@
 				<xsl:with-param name="anchorClass">text-black  <xsl:value-of select="name"/></xsl:with-param>
 			</xsl:call-template>
 			<xsl:apply-templates mode="PrintGrandChildFrontCap" select="$childCaps">
-				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
+				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
     

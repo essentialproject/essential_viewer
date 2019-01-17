@@ -2,6 +2,13 @@
 <viewclassification xmlns="http://www.enterprise-architecture.org/essential/viewerclassification"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.enterprise-architecture.org/essential/viewerclassification viewerclassification.xsd">
+    <defaultClassification>
+        <readClassification type="read">
+            <group>RoleGroup</group>
+            <level>Super</level>
+            <index>3</index>
+        </readClassification>
+    </defaultClassification>
     <classificationGroups>
         <classification type="read">
             <group>InfoGroup</group>

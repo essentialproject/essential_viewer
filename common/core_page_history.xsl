@@ -27,6 +27,7 @@
 	 10.11.2011	JWC Re-worked the page history breadcrumb list. 
 	 11.11.2011	JWC	Revised structure of breadcrumb object - no longer HTML code but structured String.
 	 17.06.2014	JWC Fixed a bug in translating / i18n the label for the history entry
+	 15.06.2018	JMK protect text rendering in javascript
 -->
 	<!-- theCurrentXSL = relative path of current report XSL file passed in by the reporting engine  -->
 	<xsl:param name="theCurrentXSL"/>
@@ -78,7 +79,7 @@
                         url: 'viewHistory',
                         data:
                         {
-                            label: '<xsl:value-of select="$reportHistoryLabel"/>', url: '<xsl:value-of select="$theCurrentURL"/>'
+                            label: '<xsl:value-of select="eas:renderJSText($reportHistoryLabel)"/>', url: '<xsl:value-of select="$theCurrentURL"/>'
                         },
                         success: function (data)
                         {

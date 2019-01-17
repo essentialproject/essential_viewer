@@ -273,24 +273,24 @@
 				</div>
 
 
-				<!--Setup Dependant Applications Section-->
+				<!--Setup Dependent Applications Section-->
 
 				<div class="col-xs-12">
 					<div class="sectionIcon">
 						<i class="fa fa-tablet icon-section icon-color"/>
 					</div>
 					<h2 class="text-primary">
-						<xsl:value-of select="eas:i18n('Dependant Application Instances')"/>
+						<xsl:value-of select="eas:i18n('Dependent Application Instances')"/>
 					</h2>
 					<div class="content-section">
 						<xsl:variable name="app_instance_list" select="/node()/simple_instance[(own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value = current()/name) and (type = 'Application_Software_Instance')]"/>
 						<xsl:if test="not(count($app_instance_list) > 0)">
 							<em>
-								<xsl:value-of select="eas:i18n('No Application Instances dependant on this Technology Instance')"/>
+								<xsl:value-of select="eas:i18n('No Application Instances dependent on this Technology Instance')"/>
 							</em>
 						</xsl:if>
 						<xsl:if test="(count($app_instance_list) > 0)">
-							<xsl:value-of select="eas:i18n('The following tables describe the Application Instances that are dependant on this Technology Instance ')"/>
+							<xsl:value-of select="eas:i18n('The following tables describe the Application Instances that are dependent on this Technology Instance ')"/>
 							<br/>
 							<br/>
 							<xsl:apply-templates select="$app_instance_list" mode="App_Instance"/>
@@ -313,11 +313,11 @@
 						<xsl:variable name="info_store_instance_list" select="/node()/simple_instance[(own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value = current()/name) and (type = 'Information_Store_Instance')]"/>
 						<xsl:if test="not(count($info_store_instance_list) > 0)">
 							<em>
-								<xsl:value-of select="eas:i18n('No Physical Information Schema dependant on this Technology Instance')"/>
+								<xsl:value-of select="eas:i18n('No Physical Information Schema dependent on this Technology Instance')"/>
 							</em>
 						</xsl:if>
 						<xsl:if test="(count($info_store_instance_list) > 0)">
-							<xsl:value-of select="eas:i18n('The following tables describe the physical information schema that are dependant on this technology instance')"/>
+							<xsl:value-of select="eas:i18n('The following tables describe the physical information schema that are dependent on this technology instance')"/>
 							<br/>
 							<br/>
 							<xsl:apply-templates select="$info_store_instance_list" mode="Info_Store_Instance"/>
@@ -327,24 +327,24 @@
 				</div>
 
 
-				<!--Setup Dependant Technology Instances Section-->
+				<!--Setup Dependent Technology Instances Section-->
 
 				<div class="col-xs-12">
 					<div class="sectionIcon">
 						<i class="fa essicon-radialdots icon-section icon-color"/>
 					</div>
 					<h2 class="text-primary">
-						<xsl:value-of select="eas:i18n('Dependant Technology Instances')"/>
+						<xsl:value-of select="eas:i18n('Dependent Technology Instances')"/>
 					</h2>
 					<div class="content-section">
 						<xsl:variable name="tech_instance_list" select="/node()/simple_instance[(type != 'Information_Store_Instance') and (type != 'Application_Software_Instance') and (own_slot_value[slot_reference = 'contained_technology_instance_dependencies']/value = current()/name)]"/>
 						<xsl:if test="not(count($tech_instance_list) > 0)">
 							<em>
-								<xsl:value-of select="eas:i18n('No other Technology Instances dependant on this Technology Instance')"/>
+								<xsl:value-of select="eas:i18n('No other Technology Instances dependent on this Technology Instance')"/>
 							</em>
 						</xsl:if>
 						<xsl:if test="(count($tech_instance_list) > 0)">
-							<xsl:value-of select="eas:i18n('The following tables describe other Technology Instances that are dependant on this Technology Instance')"/>
+							<xsl:value-of select="eas:i18n('The following tables describe other Technology Instances that are dependent on this Technology Instance')"/>
 							<br/>
 							<br/>
 							<xsl:apply-templates select="$tech_instance_list" mode="Technology_Instance"/>

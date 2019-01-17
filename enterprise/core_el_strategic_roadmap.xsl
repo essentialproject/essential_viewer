@@ -40,6 +40,7 @@
 		* 
 	-->
 	<!-- 15.08.2016 JP  Created	 -->
+	<!-- 15.06.2018 JMK  Protect texts in javascript	 -->
 
 	<xsl:variable name="dateTypes" select="('Year', 'Quarter', 'Gregorian')"/>
 	<xsl:variable name="allDates" select="/node()/simple_instance[type = $dateTypes]"/>
@@ -104,6 +105,7 @@
 								<span class="text-darkgrey">Roadmap Timeline for </span>
 								<xsl:call-template name="RenderInstanceLink">
 									<xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/>
+									<xsl:with-param name="isRenderAsJSString" select="true()"/>
 									<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
 								</xsl:call-template>
 								<xsl:value-of select="$DEBUG"/>
@@ -119,7 +121,7 @@
 								</div>
 								<h2>Roadmap</h2>
 								<div class="content-section">
-									<p><xsl:value-of select="eas:i18n('This view illustrates the timeline for the strategic plans/projects  of the roadmap')"/><xsl:text> </xsl:text><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/></xsl:call-template>.</p>
+									<p><xsl:value-of select="eas:i18n('This view illustrates the timeline for the strategic plans/projects  of the roadmap')"/><xsl:text> </xsl:text><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>.</p>
 									<!--<button id="filterToggle" class="pull-right" style="width: 130px;"><span>Show</span> Filters</button>-->
 								</div>
 								<!--<script>
@@ -245,7 +247,7 @@
         type: { start: 'ISODate', end: 'ISODate' }
     });
     var groups = new vis.DataSet([
-   		{id: 'ROADMAP', content:'<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>', className: 'entLayer'}
+   		{id: 'ROADMAP', content:'<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>', className: 'entLayer'}
     ]);
     // add items to the Strategic Plan DataSet
     stratPlanItems.add([
@@ -273,7 +275,6 @@
 
     var container = document.getElementById('visualization');
     var options = {
-        start: '2015-01-10',
         editable: false,
         selectable: false,
         stack: true,
@@ -436,7 +437,7 @@
 		<xsl:variable name="strategicPlanEndDate" select="$allDates[name = $strategicPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value]"/>
 		<xsl:variable name="jsEndDate" select="eas:get_end_date_for_essential_time($strategicPlanEndDate)"/>
 		<xsl:variable name="strategicPlanningAction" select="$allPlanningActions[name = $strategicPlan/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
-		<xsl:variable name="planningActionClass" select="lower-case($strategicPlanningAction/own_slot_value[slot_reference = 'enumeration_value']/value)"/> {id: '<xsl:value-of select="$strategicPlanId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $strategicPlanId)"/><xsl:value-of select="$strategicPlanName"/></span>'<xsl:choose><xsl:when test="(count($strategicPlanStartDate) > 0) and (count($strategicPlanEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose> ,group:'<xsl:value-of select="$parentRoadmapId"/>', <!--subgroup: '<xsl:value-of select="$parentRoadmapId"/>',--> className: '<xsl:value-of select="$planningActionClass"/>', planAction: '<xsl:value-of select="$strategicPlanningAction/name"/>', popupContent:'<xsl:call-template name="strategicPlanPopupDiv"><xsl:with-param name="strategicPlan" select="$strategicPlan"/><xsl:with-param name="strategicPlanId" select="$strategicPlanId"/><xsl:with-param name="startDate" select="$jsStartDate"/><xsl:with-param name="endDate" select="$jsEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="planningActionClass" select="lower-case($strategicPlanningAction/own_slot_value[slot_reference = 'enumeration_value']/value)"/> {id: '<xsl:value-of select="$strategicPlanId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $strategicPlanId)"/><xsl:value-of select="eas:renderJSText($strategicPlanName)"/></span>'<xsl:choose><xsl:when test="(count($strategicPlanStartDate) > 0) and (count($strategicPlanEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose> ,group:'<xsl:value-of select="$parentRoadmapId"/>', <!--subgroup: '<xsl:value-of select="$parentRoadmapId"/>',--> className: '<xsl:value-of select="$planningActionClass"/>', planAction: '<xsl:value-of select="$strategicPlanningAction/name"/>', popupContent:'<xsl:call-template name="strategicPlanPopupDiv"><xsl:with-param name="strategicPlan" select="$strategicPlan"/><xsl:with-param name="strategicPlanId" select="$strategicPlanId"/><xsl:with-param name="startDate" select="$jsStartDate"/><xsl:with-param name="endDate" select="$jsEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -466,7 +467,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="projectStatus" select="$allProjectStatii[name = $project/own_slot_value[slot_reference = 'project_lifecycle_status']/value]"/>
-		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/> {id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="$projectName"/></span>'<xsl:choose><xsl:when test="(count($projectPlannedStartDate) + count($projectActualStartDate) > 0) and (count($projectTargetEndDate) + count($projectForecastEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentRoadmapId"/>', <!--subgroup: '<xsl:value-of select="$parentRoadmapId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$projectPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$projectActualStartDate"/><xsl:with-param name="targetEndDate" select="$projectTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$projectForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/> {id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span>'<xsl:choose><xsl:when test="(count($projectPlannedStartDate) + count($projectActualStartDate) > 0) and (count($projectTargetEndDate) + count($projectForecastEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentRoadmapId"/>', <!--subgroup: '<xsl:value-of select="$parentRoadmapId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$projectPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$projectActualStartDate"/><xsl:with-param name="targetEndDate" select="$projectTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$projectForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="RenderArchStates" match="node()">
@@ -475,7 +476,7 @@
 		<xsl:variable name="archStateId" select="concat($parentRoadmapId, '-', $archState/name)"/>
 		<xsl:variable name="archStateName" select="$archState/own_slot_value[slot_reference = 'name']/value"/>
 		<xsl:variable name="archStateStartDate" select="$allDates[name = $archState/own_slot_value[slot_reference = 'start_date']/value]"/>
-		<xsl:variable name="jsStartDate" select="eas:get_start_date_for_essential_time($archStateStartDate)"/> {id: '<xsl:value-of select="$archStateId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $archStateId)"/><xsl:value-of select="$archStateName"/></span>', start: <xsl:choose><xsl:when test="count($archStateStartDate) > 0">'<xsl:value-of select="$jsStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentRoadmapId"/>', className: 'archState', type: 'point', popupContent:'<xsl:call-template name="archStatePopupDiv"><xsl:with-param name="archState" select="$archState"/><xsl:with-param name="archStateId" select="$archStateId"/><xsl:with-param name="startDate" select="$jsStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="jsStartDate" select="eas:get_start_date_for_essential_time($archStateStartDate)"/> {id: '<xsl:value-of select="$archStateId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $archStateId)"/><xsl:value-of select="eas:renderJSText($archStateName)"/></span>', start: <xsl:choose><xsl:when test="count($archStateStartDate) > 0">'<xsl:value-of select="$jsStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentRoadmapId"/>', className: 'archState', type: 'point', popupContent:'<xsl:call-template name="archStatePopupDiv"><xsl:with-param name="archState" select="$archState"/><xsl:with-param name="archStateId" select="$archStateId"/><xsl:with-param name="startDate" select="$jsStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -597,11 +598,13 @@
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
 					<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<div class="small">
@@ -674,11 +677,13 @@
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
 					<xsl:with-param name="theSubjectInstance" select="$project"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="$project"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
@@ -725,11 +730,13 @@
 			<p class="fontBlack">
 				<xsl:call-template name="RenderInstanceLink">
 					<xsl:with-param name="theSubjectInstance" select="$archState"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="$archState"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>
 			</p>
 			<p class="small">

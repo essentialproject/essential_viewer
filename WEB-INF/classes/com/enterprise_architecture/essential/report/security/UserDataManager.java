@@ -42,7 +42,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 
-import com.enterprise_architecture.easdatamanagement.model.IdentityProviderAccount;
+import com.enterprise_architecture.easdatamanagement.model.UserProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -71,29 +71,51 @@ public class UserDataManager
 	 * @param theGraphDBSession a session open to the GraphDB
 	 * @param theGraphUserId the user ID within the GraphDB
 	 */
-	public UserDataManager(IdentityProviderAccount theIdpAccount, Session theGraphDBSession, String theGraphUserId)
+	public UserDataManager(Session theGraphDBSession, String theGraphUserId)
 	{
-		if(theIdpAccount != null)
-		{
-			itsXMLData = new User();
-			itsXMLData.setEmail(theIdpAccount.getEmail());
+		itsXMLData = new User();
+		itsXMLData.setEmail("");
+		itsXMLData.setFirstname("");
+		itsXMLData.setLastname("");
+		// Get the user's unique ID
+		// Get the IdP account 
+		itsXMLData.setUri(theGraphUserId);
+		
+		// Get the tenant ID to which this Account belongs	
+		// Using aTenantName and the aURI find the user UUID in our Graph
+		
+		// Get the allowed viewers
+		getViewersForUser(theGraphUserId, theGraphDBSession);
+		
+		// Get the user clearance levels
+		getClearanceForUser(theGraphUserId, theGraphDBSession);
+	}
 
-			// Now we get 1st name / last name from the Graph DB Change next 2 lines
-			getUserFirstNameAndLastName(theGraphUserId, theGraphDBSession);
-			
-			// Get the user's unique ID
-			// Get the IdP account 
-			itsXMLData.setUri(theGraphUserId);
-			
-			// Get the tenant ID to which this Account belongs	
-			// Using aTenantName and the aURI find the user UUID in our Graph
-			
-			// Get the allowed viewers
-			getViewersForUser(theGraphUserId, theGraphDBSession);
-			
-			// Get the user clearance levels
-			getClearanceForUser(theGraphUserId, theGraphDBSession);
-		}
+	/**
+	 * Constructor that takes a Stormpath Account and reads it into this object, from where it can be marshalled into
+	 * XML
+	 * @param theIdpAccount the Identity provider (Stormpath) user account
+	 * @param theGraphDBSession a session open to the GraphDB
+	 * @param theGraphUserId the user ID within the GraphDB
+	 */
+	public UserDataManager(Session theGraphDBSession, String theGraphUserId, UserProfile theUserProfile)
+	{
+		itsXMLData = new User();
+		itsXMLData.setEmail(theUserProfile.getEmail());
+		itsXMLData.setFirstname(theUserProfile.getFirstName());
+		itsXMLData.setLastname(theUserProfile.getLastName());
+		// Get the user's unique ID
+		// Get the IdP account 
+		itsXMLData.setUri(theGraphUserId);
+		
+		// Get the tenant ID to which this Account belongs	
+		// Using aTenantName and the aURI find the user UUID in our Graph
+		
+		// Get the allowed viewers
+		getViewersForUser(theGraphUserId, theGraphDBSession);
+		
+		// Get the user clearance levels
+		getClearanceForUser(theGraphUserId, theGraphDBSession);
 	}
 	
 	/**

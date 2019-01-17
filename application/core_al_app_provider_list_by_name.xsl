@@ -550,7 +550,7 @@
 		<div class="catalogItems">
 			<ul>
 				<xsl:apply-templates select="$appProviders[((starts-with(own_slot_value[slot_reference = 'name']/value, $letter)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]" mode="Application_Providers">
-					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
+					<xsl:sort order="ascending" select="upper-case(own_slot_value[slot_reference = 'name']/value)"/>
 				</xsl:apply-templates>
 			</ul>
 		</div>

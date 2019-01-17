@@ -79,12 +79,12 @@
 	<xsl:variable name="busDomain" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'belongs_to_business_domain']/value]"/>
 	<xsl:variable name="parentCap" select="$allBusinessCaps[name = $currentBusCap/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
 	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'business_capability_requires_information']/value]"/>
-	<xsl:variable name="subBusCaps" select="$allBusinessCaps[name = $currentBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
+	<xsl:variable name="subBusCaps" select="eas:get_object_descendants($currentBusCap, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
 
 
 	<xsl:variable name="relevantBusCaps" select="$currentBusCap union $subBusCaps"/>
 	<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
-	<xsl:variable name="currentBusProcs" select="$relevantBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $currentBusCap/name]"/>
+	<xsl:variable name="currentBusProcs" select="$relevantBusProcs"/>
 	<xsl:variable name="relevantBusProc2AppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $relevantBusProcs/name]"/>
 	<xsl:variable name="relevantAppSvcs" select="/node()/simple_instance[name = $relevantBusProc2AppSvcs/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
 	<xsl:variable name="relevantAppRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_application_service']/value = $relevantAppSvcs/name]"/>
@@ -560,7 +560,7 @@
 							</h2>
 
 							<div class="content-section">
-								<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>
+								<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
 							</div>
 							<hr/>
 						</div>

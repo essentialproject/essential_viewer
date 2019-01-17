@@ -555,7 +555,7 @@
 		<div class="catalogItems">
 			<ul>
 				<xsl:apply-templates mode="RenderInstance" select="$theInstances[((starts-with(own_slot_value[slot_reference = 'name']/value, $letter)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]">
-					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
+					<xsl:sort order="ascending" select="upper-case(own_slot_value[slot_reference = 'name']/value)"/>
 				</xsl:apply-templates>
 			</ul>
 		</div>

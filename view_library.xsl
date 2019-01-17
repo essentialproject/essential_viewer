@@ -134,6 +134,11 @@
 											<xsl:value-of select="eas:i18n('Support')"/>
 										</a>
 									</li>
+									<!--<li role="presentation">
+										<a href="#unclassified" aria-controls="unclassified" role="tab" data-toggle="tab">
+											<xsl:value-of select="eas:i18n('Unclassified')"/>
+										</a>
+									</li>-->
 								</ul>
 								<div class="verticalSpacer_10px hidden-xs"/>
 								<!-- Tab panes -->
@@ -184,7 +189,7 @@
 											</xsl:apply-templates>
 										</div>
                                         <div class="clear"/>
-										<h1 class="hubElementColor5">
+										<h1 class="hubElementColor6">
 											<xsl:value-of select="eas:i18n('Support')"/>
 										</h1>
                                         <div class="row">
@@ -192,6 +197,23 @@
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
+										<!--<div class="clear"/>
+										<h1 class="hubElementColor7">
+											<xsl:value-of select="eas:i18n('Unclassified')"/>
+										</h1>
+                                        <div class="row">
+											<xsl:apply-templates mode="Unclassified" select="
+												$allReports[
+													not(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name)
+													and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+													<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+											</xsl:apply-templates>
+										</div>-->
 									</div>
 									<div role="tabpanel" class="tab-pane" id="enterprise">
 										<xsl:apply-templates mode="Enterprise" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
@@ -222,9 +244,20 @@
 										<xsl:apply-templates mode="Support" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
-									</div>                                    
-                                    
-                                    
+									</div>
+									<!--<div role="tabpanel" class="tab-pane" id="unclassified">
+										<xsl:apply-templates mode="Unclassified" select="
+											$allReports[
+												not(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name)
+												and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+										</xsl:apply-templates>
+									</div>-->                                  
 								</div>
 							</div>
 							<!--Close Left Container-->
@@ -308,6 +341,13 @@
 			<xsl:with-param name="nameStyleSetting" select="' hubElementColor6'"/>
 		</xsl:call-template>
 	</xsl:template>
+	
+	<xsl:template mode="Unclassified" match="node()">
+		<xsl:call-template name="PrintReportBox">
+			<xsl:with-param name="aReport" select="current()"/>
+			<xsl:with-param name="nameStyleSetting" select="' hubElementColor7'"/>
+		</xsl:call-template>
+	</xsl:template>
 
 
 	<xsl:template name="PrintReportBox">
@@ -343,7 +383,7 @@
 		<xsl:choose>
 			<!-- Go straight to the report if the report constant value is set -->
 			<!-- But only if the user is authorised -->
-			<xsl:when test="eas:isUserAuthZ($aReport) and string-length($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
+			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
 				<xsl:variable name="reportHistoryLabelName" select="$aReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 				<xsl:variable name="reportFilename" select="$aReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 

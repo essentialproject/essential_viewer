@@ -236,7 +236,7 @@
 							</h2>
 							<div class="content-section">
 								<!--<xsl:call-template name="extDocRef"></xsl:call-template>-->
-								<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>
+								<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
 							</div>
 							<hr/>
 						</div>

@@ -21,8 +21,6 @@
 
 package com.enterprise_architecture.essential.report.security;
 
-import com.enterprise_architecture.essential.report.EssentialMaintenanceService;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,6 +29,7 @@ import java.io.StringWriter;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
@@ -40,7 +39,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.enterprise_architecture.essential.vieweruserdata.User;
 
-import net.sf.saxon.trans.XPathException;
+import com.enterprise_architecture.essential.report.EssentialMaintenanceService;
 
 /**
  * Servlet implementation class SecureMaintenanceService

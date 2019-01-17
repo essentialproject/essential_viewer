@@ -33,6 +33,7 @@
 	<xsl:variable name="techProdListByCapCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Technology Capability')"/>
 	<xsl:variable name="techProdListByNameCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Technology Component')"/>
 
+
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -62,7 +63,12 @@
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
 	<xsl:variable name="allSuppliers" select="/node()/simple_instance[type = 'Supplier']"/>
+	
+	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 
+	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
@@ -79,6 +85,24 @@
 					<xsl:value-of select="eas:i18n('Technology Catalogue')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
+				<style type="text/css">
+					.standardBadge{ 	
+						width: 90px; 
+						height: 15px;
+						font-size: x-small; 
+						border: 1px solid #eee; 
+						text-align: center; 
+						border-radius: 10px; 
+						-webkit-box-shadow: #666 2px 2px 0px 0px; 
+						-moz-box-shadow: #666 2px 2px 0px 0px; 
+						box-shadow: #aaa 2px 2px 0px 0px; 
+						padding: 2px 5px;
+					 }
+					
+					.legendIcon{
+						font-size: 1.2em;
+					}
+				</style>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -201,6 +225,7 @@
 								    });
 								});
 							</script>
+								<!--<xsl:call-template name="legend"/>-->
 								<table id="dt_techProd" class="table table-striped table-bordered">
 									<thead>
 										<tr>
@@ -257,6 +282,7 @@
 		<xsl:variable name="supplier" select="$allSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
 		<xsl:variable name="techCaps" select="$allTechCaps[name = $techComps/own_slot_value[slot_reference = 'realisation_of_technology_capability']/value]"/>
 
+	
 		<tr>
 			<td>
 				<xsl:call-template name="RenderInstanceLink">
@@ -280,12 +306,35 @@
 					<xsl:otherwise>
 						<ul>
 							<xsl:for-each select="$techComps">
+								<xsl:variable name="allThisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
+								<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allThisTechProdRoles/name]"/>
+								<xsl:variable name="thisTechProdRole" select="$tech_prod_role_list[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
+								<xsl:variable name="thisTechProdStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRole/name]"/>
 								<li>
-									<xsl:call-template name="RenderInstanceLink">
-										<xsl:with-param name="theSubjectInstance" select="current()"/>
-										<xsl:with-param name="theXML" select="$reposXML"/>
-										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-									</xsl:call-template>
+									<xsl:choose>
+										<xsl:when test="count($thisTechProdStandard) > 0">
+											<xsl:variable name="thisStandardStrength" select="$allStandardStrengths[name = $thisTechProdStandard[1]/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+											<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+											<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
+											<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>
+											<xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											</xsl:call-template>
+											<div class="standardBadge left-5 {$thisStandardStyleClass}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></div>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											</xsl:call-template>
+											<xsl:if test="count($allThisTechProdStandards) > 0">
+												<div class="standardBadge left-5 {$offStrategyStyle}"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
+											</xsl:if>
+										</xsl:otherwise>
+									</xsl:choose>
 								</li>
 							</xsl:for-each>
 						</ul>
@@ -314,6 +363,28 @@
 			</td>
 		</tr>
 	</xsl:template>
+	
+	
+	<!--<xsl:template name="legend">
+		<xsl:if test="count($allTechProdStandards) > 0">
+			<div class="keyContainer">
+				<div class="float-left keySampleLabel"><xsl:value-of select="eas:i18n('Standards Compliance Legend')"/>:</div>
+				<xsl:for-each select="$allStandardStrengths">
+					<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
+					<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = current()/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+					<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
+					<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>
+					
+					<div class="float-left keySampleLabel {$thisStandardStyleClass}">
+						<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+					</div>
+					<div class="float-left"><i class="legendIcon {$thisStandardStyleClass} {$thisStandardStyleIcon}"/></div>
+				</xsl:for-each>
+				<div class="float-left keySampleLabel textColourRed"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
+				<div class="float-left"><i class="legendIcon {$offStrategyStyle}"/></div>
+			</div>
+		</xsl:if>
+	</xsl:template>-->
 
 
 </xsl:stylesheet>

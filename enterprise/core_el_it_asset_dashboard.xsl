@@ -34,7 +34,7 @@
 	<xsl:variable name="middleRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Middle']"/>
 	<xsl:variable name="bottomRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Bottom']"/>
 
-	<xsl:variable name="allApps" select="/node()/simple_instance[type = 'Composite_Application_Provider']"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>
 	<xsl:variable name="allAppCodebases" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
 	<xsl:variable name="allAppDeliveryModels" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>
@@ -304,8 +304,8 @@
 						
 						//INITIALISE THE PAGE WIDE SCOPING VARIABLES					
 						allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
-						selectedBusUnitIDs = allBusUnitIDs;
-						selectedBusUnits = businessUnits.businessUnits;
+						selectedBusUnitIDs = [];
+						selectedBusUnits = [];
 						setCurrentApps();
 						setCurrentTechProds();
 						
@@ -319,11 +319,13 @@
 						
 						$('#busUnitList').on('change', function (evt) {
 						  var thisBusUnitIDs = $(this).select2("val");
+						  console.log("Select BUs: " + selectedBusUnitIDs);
+						  
 						  if(thisBusUnitIDs != null) {
 						  	setCurrentBusUnits(thisBusUnitIDs);
 						  } else {
-						  	selectedBusUnitIDs = allBusUnitIDs;
-						  	selectedBusUnits = businessUnits.businessUnits;
+						  	selectedBusUnitIDs = [];
+						  	selectedBusUnits = [];
 						  	setCurrentApps();
 						  	setCurrentTechProds();
 						  }
@@ -1258,13 +1260,23 @@
 		
 		<xsl:variable name="thisTechProdOrgUser2Roles" select="$techOrgUser2Roles[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
 		<xsl:variable name="thisTechProdss" select="$allTechProds[own_slot_value[slot_reference = 'stakeholders']/value = $thisTechProdOrgUser2Roles/name]"/>
-		
+		<xsl:variable name="thisBusinessUnitName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="thisBusinessUnitDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>	
 		
 		
 		{
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
-			description: "<xsl:value-of select="own_slot_value[slot_reference='description']/value"/>",
+			name: "<xsl:value-of select="$thisBusinessUnitName"/>",
+			description: "<xsl:value-of select="$thisBusinessUnitDescription"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 			country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",
 			apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
@@ -1278,14 +1290,26 @@
 		<xsl:variable name="thisAppDeliveryModel" select="$allAppDeliveryModels[name = current()/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 		<xsl:variable name="thisAppOrgUser2Roles" select="$appOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
 		<xsl:variable name="thsAppUsers" select="$allBusinessUnits[name = $thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="thisAppName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="thisAppDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>	
+		
 		
 		{
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
-			description: "<xsl:value-of select="eas:renderJSText(own_slot_value[slot_reference='description']/value)"/>",
+			name: "<xsl:value-of select="$thisAppName"/>",
+			description: "<xsl:value-of select="$thisAppDescription"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			codebase: "<xsl:value-of select="$thisAppCodebase/name"/>",
-			delivery: "<xsl:value-of select="$thisAppDeliveryModel/name"/>",
+			codebase: "<xsl:value-of select="translate($thisAppCodebase/name, '.', '_')"/>",
+			delivery: "<xsl:value-of select="translate($thisAppDeliveryModel/name, '.', '_')"/>",
 			appOrgUsers: [<xsl:for-each select="$thsAppUsers">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -1296,18 +1320,28 @@
 		<xsl:variable name="thsTechUsers" select="$allBusinessUnits[name = $thisTechOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 		<xsl:variable name="theLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'vendor_product_lifecycle_status']/value]"/>
 		<xsl:variable name="theDeliveryModel" select="$allTechProdDeliveryTypes[name = current()/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
-		<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value">
-			
+		<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value"/>
+		<xsl:variable name="thisTechProdName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="thisTechProdDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>	
+		
 
 		{
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
-			description: "<xsl:value-of select="eas:renderJSText(own_slot_value[slot_reference='description']/value)"/>",
+			name: "<xsl:value-of select="$thisTechProdName"/>",
+			description: "<xsl:value-of select="$thisTechProdDescription"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			status: "<xsl:value-of select="$theLifecycleStatus/name"/>",
+			status: "<xsl:value-of select="translate($theLifecycleStatus/name, '.', '_')"/>",
 			statusScore: <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
-			delivery: "<xsl:value-of select="$theDeliveryModel/name"/>",
+			delivery: "<xsl:value-of select="translate($theDeliveryModel/name, '.', '_')"/>",
 			techOrgUsers: [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -1316,8 +1350,17 @@
 	
 	<!-- BUSINESS CAPABILITY MODEL DATA TEMPLATES -->
 	<xsl:template name="RenderBCMData">
-		<xsl:variable name="rootBusCapName" select="$rootBusCap/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="rootBusCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="rootBusCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$rootBusCap"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="rootBusCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="$rootBusCap"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="rootBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$rootBusCap"/>
@@ -1340,8 +1383,17 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="l0_caps">
-		<xsl:variable name="currentBusCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="currentBusCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="currentBusCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="currentBusCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="currentBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1352,7 +1404,7 @@
 		{
 		busCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		busCapName: "<xsl:value-of select="$currentBusCapName"/>",
-		busCapDescription: "<xsl:value-of select="eas:renderJSText($currentBusCapDescription)"/>",
+		busCapDescription: "<xsl:value-of select="$currentBusCapDescription"/>",
 		busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
 		l2BusCaps: [	
 		<xsl:apply-templates select="$L1Caps" mode="l1_caps">
@@ -1364,8 +1416,17 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="l1_caps">
-		<xsl:variable name="currentBusCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="currentBusCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="currentBusCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="currentBusCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="currentBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1379,7 +1440,7 @@
 			busCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 			busCapName: "<xsl:value-of select="$currentBusCapName"/>",
 			busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
-			busCapDescription: "<xsl:value-of select="eas:renderJSText($currentBusCapDescription)"/>"
+			busCapDescription: "<xsl:value-of select="$currentBusCapDescription"/>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1403,8 +1464,17 @@
 	
 	<!-- APPLICATION REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderAppCaps" match="node()">
-		<xsl:variable name="appCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="appCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="appCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="appCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="appCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1415,7 +1485,7 @@
 		{
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$appCapName"/>",
-		description: "<xsl:value-of select="eas:renderJSText($appCapDescription)"/>",
+		description: "<xsl:value-of select="$appCapDescription"/>",
 		link: "<xsl:value-of select="$appCapLink"/>",
 		childAppCaps: [
 			<xsl:apply-templates select="$childAppCaps" mode="RenderChildAppCaps"/>		
@@ -1426,8 +1496,17 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="RenderChildAppCaps">
-		<xsl:variable name="appCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="appCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="appCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="appCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="appCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1439,7 +1518,7 @@
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$appCapName"/>",
 		link: "<xsl:value-of select="$appCapLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($appCapDescription)"/>"
+		description: "<xsl:value-of select="$appCapDescription"/>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1460,8 +1539,17 @@
 	
 	
 	<xsl:template match="node()" mode="RenderAppServices">
-		<xsl:variable name="appServiceName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="appSvcDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="appServiceName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="appSvcDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="appServiceLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1474,7 +1562,7 @@
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$appServiceName"/>",
 		link: "<xsl:value-of select="$appServiceLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($appSvcDescription)"/>",
+		description: "<xsl:value-of select="$appSvcDescription"/>",
 		apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -1483,8 +1571,17 @@
 	
 	<!-- TECHNOLOGY REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderTechDomains" match="node()">
-		<xsl:variable name="techDomainName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techDomainDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="techDomainName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="techDomainDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="techDomainLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1495,7 +1592,7 @@
 		{
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$techDomainName"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
+		description: "<xsl:value-of select="$techDomainDescription"/>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
 		childTechCaps: [
 		<xsl:apply-templates select="$childTechCaps" mode="RenderChildTechCaps"/>		
@@ -1506,8 +1603,17 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="RenderChildTechCaps">
-		<xsl:variable name="techCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="techCapName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="techCapDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="techCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1520,7 +1626,7 @@
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 			name: "<xsl:value-of select="$techCapName"/>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>"
+			description: "<xsl:value-of select="$techCapDescription"/>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1540,8 +1646,17 @@
 	
 	
 	<xsl:template match="node()" mode="RenderTechComponents">
-		<xsl:variable name="techCompName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techCompDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+		<xsl:variable name="techCompName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="techCompDescription">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="techCompLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -1554,7 +1669,7 @@
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$techCompName"/>",
 		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
+		description: "<xsl:value-of select="$techCompDescription"/>",
 		techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>

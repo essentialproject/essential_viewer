@@ -286,7 +286,7 @@ table thead{
 	font-weight: 900;
 }
 
-.fontBold{
+.fontBold,.strong{
 	font-weight: 700;
 }
 
@@ -403,6 +403,14 @@ table thead{
 
 .hubElementColor5{
 	color: #63157A !important;
+}
+
+.hubElementColor6{
+	color: #DE289F !important;
+}
+
+.hubElementColor7{
+	color: #852E3D !important;
 }
 
 .nav-tabs > li > a{
@@ -1146,6 +1154,27 @@ tfoot input{
 .textColourGreen{
 	color: #4f8956;
 }
+
+.textColourYellow{
+	color: #edd827;
+}
+
+.textColourLightGreen{
+	color: #C8DE39;
+}
+
+.textColourGrey{
+	color: #aaa;
+}
+
+.textColourBlue{
+	color: #1B51A5;
+}
+
+.textColourLightBlue{
+	color: #29A7E6;
+}
+
 /*Text Highlights for RAG statuses*/
 
 .backColourRed{
@@ -1193,6 +1222,10 @@ tfoot input{
 	background-color: #29A7E6;
 	color: white;
 }
+
+
+
+
 /*Setup background colours*/
 
 .bg-primary{

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_doctype.xsl"/>
+    	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>
+    <xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
@@ -8,6 +9,7 @@
 	<xsl:include href="../common/core_external_repos_ref.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+
 
 
 	<xsl:output method="html"/>
@@ -20,7 +22,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Role', 'Business_Capability', 'Group_Actor', 'Individual_Actor', 'Site', 'Application_Provider', 'Information_Concept', 'Information_View', 'Business_Strategic_Plan')"/>
+	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Role', 'Business_Capability', 'Group_Actor', 'Individual_Actor', 'Site', 'Composite_Application_Provider', 'Application_Provider', 'Information_Concept', 'Information_View', 'Business_Strategic_Plan')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Required View-specific instance -->
@@ -33,13 +35,25 @@
 	<xsl:variable name="standardisation_level" select="/node()/simple_instance[name = $currentProcess/own_slot_value[slot_reference = 'standardisation_level']/value]"/>
 	<xsl:variable name="phys_process_list" select="/node()/simple_instance[name = $currentProcess/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
 	<xsl:variable name="allPhysProcessActorRelations" select="/node()/simple_instance[name = $phys_process_list/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-	<xsl:variable name="allPhysProcessActors" select="/node()/simple_instance[name = $allPhysProcessActorRelations/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:variable name="allPhysProcessDirecActors" select="$allPhysProcessActorRelations[type = 'Group_Actor']"/>
+	<xsl:variable name="allPhysProcessActorsViaRoles" select="/node()/simple_instance[name = $allPhysProcessActorRelations/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:variable name="allPhysProcessActors" select="$allPhysProcessDirecActors union $allPhysProcessActorsViaRoles"/>
+	
 	<xsl:variable name="allPhysProcessSites" select="$allSites[name = $phys_process_list/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
 	<xsl:variable name="allPhysProcActorSites" select="$allSites[name = $allPhysProcessActors/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
 	<xsl:variable name="allPhysProcAppRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $phys_process_list/name]"/>
 	<xsl:variable name="allPhysProcAppProRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $phys_process_list/name]"/>
 	<xsl:variable name="allPhysProcApp2Roles" select="/node()/simple_instance[name = $allPhysProcAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+	<xsl:variable name="allPhysProcSupportingApps" select="$allApps[name = $allPhysProcApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+	
 
+	<xsl:variable name="allPhysProcApp2InfoRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value = $phys_process_list/name]"/>
+	<xsl:variable name="allPhysProcApp2Infos" select="/node()/simple_instance[name = $allPhysProcApp2InfoRelations/own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value]"/>
+	<xsl:variable name="allPhysProcSupportingInfoApps" select="$allApps[name = $allPhysProcApp2Infos/own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value]"/>
+    <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $currentProcess/name]"/>
+	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
+    <xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
+	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -145,7 +159,7 @@
 
 				<!--Setup the Standardisation section-->
 
-				<div class="col-xs-12">
+				<div class="col-xs-6">
 					<div class="sectionIcon">
 						<i class="fa fa-check icon-section icon-color"/>
 					</div>
@@ -166,7 +180,24 @@
 					</div>
 					<hr/>
 				</div>
-
+                    <!-- Process Costs  -->
+       
+                                
+                                <xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
+                                
+                        <div class="col-xs-6">
+							<div class="sectionIcon">
+								<i class="fa fa-pie-chart icon-section icon-color"/>
+							</div>
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('Process Cost')"/>
+							</h2>
+							<div class="content-section">
+                                <xsl:choose><xsl:when test="$costTypeTotal=0"> -</xsl:when><xsl:otherwise><xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/></xsl:otherwise></xsl:choose>
+                             
+							</div>
+							<hr/>
+						</div> 
 
 				<!--Setup the Performed by Roles section-->
 				<xsl:variable name="rolesPerformed" select="/node()/simple_instance[name = $currentProcess/own_slot_value[slot_reference = 'business_process_performed_by_business_role']/value]"/>
@@ -292,13 +323,16 @@
 											<th class="cellWidth-25pc">
 												<xsl:value-of select="eas:i18n('Process Performed by')"/>
 											</th>
+                                            <th class="cellWidth-15pc">
+												<xsl:value-of select="eas:i18n('Application Service Utilising')"/>
+											</th>
 											<th class="cellWidth-20pc">
 												<xsl:value-of select="eas:i18n('Performed at Sites')"/>
 											</th>
 											<th class="cellWidth-20pc">
 												<xsl:value-of select="eas:i18n('Process Manager')"/>
 											</th>
-											<th class="cellWidth-35pc">
+											<th class="cellWidth-20pc">
 												<xsl:value-of select="eas:i18n('Supporting Applications')"/>
 											</th>
 										</tr>
@@ -542,7 +576,7 @@
 						<xsl:call-template name="RenderExternalDocRefList">
 							<xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/>
 						</xsl:call-template>
-						<!--<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>-->
+						<!--<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>-->
 					</div>
 
 					<hr/>
@@ -555,7 +589,10 @@
 	<!-- TEMPLATE TO CREATE THE DETAILS FOR PHYSICAL PROCESSES THAT IMPLEMENT THE LOGICAL PROCESS -->
 	<xsl:template match="node()" mode="Physical_Process">
 		<xsl:variable name="processActorRelation" select="$allPhysProcessActorRelations[name = current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-		<xsl:variable name="processActor" select="$allPhysProcessActors[name = $processActorRelation/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="processActorsViaRole" select="$allPhysProcessActors[name = $processActorRelation/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="processDirectActors" select="$processActorRelation[type = 'Group_Actor']"/>
+		<xsl:variable name="processActor" select="$processActorsViaRole union $processDirectActors"/>
+		
 		<xsl:variable name="processSites" select="$allSites[name = current()/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
 		<xsl:variable name="actorSites" select="$allSites[name = $processActor/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
 		<xsl:variable name="processManagerActor2Role" select="$allActor2Roles[(name = current()/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $processManagerRole/name)]"/>
@@ -566,6 +603,12 @@
 		<xsl:variable name="supportingApp2Roles" select="$allPhysProcApp2Roles[name = $supportingAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
 		<xsl:variable name="supportingAppRoleApps" select="$allApps[name = $supportingApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 
+		<xsl:variable name="supportingApp2InfoRelations" select="$allPhysProcApp2InfoRelations[own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value = current()/name]"/>
+		<xsl:variable name="supportingApp2Infos" select="$allPhysProcApp2Infos[name = $supportingApp2InfoRelations/own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value]"/>
+		<xsl:variable name="supportingInfoApps" select="$allPhysProcSupportingInfoApps[name = $supportingApp2Infos/own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value]"/>
+
+		<xsl:variable name="allSupportingApps" select="$supportingApps union $supportingAppRoleApps union $supportingInfoApps"/>
+		
 		<tr>
 			<td>
 				<xsl:call-template name="RenderInstanceLink">
@@ -574,6 +617,9 @@
 					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				</xsl:call-template>
 			</td>
+            <td>
+            <xsl:value-of select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$supportingApp2Roles/name]/own_slot_value[slot_reference='name']/value"/>
+            </td>
 			<td>
 				<xsl:choose>
 					<xsl:when test="count($processSites) > 0">
@@ -629,9 +675,9 @@
 							</xsl:for-each>
 						</ul>
 					</xsl:when>
-					<xsl:when test="count($supportingApps) > 0">
+					<xsl:when test="count($allSupportingApps) > 0">
 						<ul class="noMarginBottom">
-							<xsl:for-each select="$supportingApps">
+							<xsl:for-each select="$allSupportingApps">
 								<li>
 									<xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -769,4 +815,25 @@
 			</table>
 		</xsl:if>
 	</xsl:template>
+     <xsl:function as="xs:float" name="eas:get_cost_components_total">
+        <xsl:param name="costComponents"/>
+        <xsl:param name="total"/>
+        
+        <xsl:choose>
+            <xsl:when test="count($costComponents) > 0">
+                <xsl:variable name="nextCost" select="$costComponents[1]"/>
+                <xsl:variable name="newCostComponents" select="remove($costComponents, 1)"/>
+                <xsl:variable name="costAmount" select="$nextCost/own_slot_value[slot_reference='cc_cost_amount']/value"/>
+                <xsl:choose>
+                    <xsl:when test="$costAmount > 0">
+                        <xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total + number($costAmount))"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="$total"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
 </xsl:stylesheet>

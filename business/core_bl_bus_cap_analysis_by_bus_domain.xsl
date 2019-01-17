@@ -23,6 +23,13 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Business_Process', 'Application_Service', 'Application_Provider', 'Supplier', 'Technology_Component', 'Technology_Product')"/>
 	<!-- END GENERIC LINK VARIABLES -->
+	
+	
+	<xsl:variable name="currentDomainInst" select="$param1"/>
+	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
+	<xsl:variable name="mappedCapabilities" select="$allBusinessCaps[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomainInst]"/>
+	<xsl:variable name="allMappedCapabilities" select="eas:get_object_descendants($mappedCapabilities, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
+	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allMappedCapabilities/name]"/>
 
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="allPhysProc2AppProRoles" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"/>
@@ -54,6 +61,8 @@
 
     
     <xsl:variable name="inScopeTechProds" select="($platformTechProds union $swTechProds)"/>
+	
+	<xsl:variable name="DEBUG" select="''"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -110,7 +119,7 @@
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Process Analysis for Business Domain')"/>: <span class="text-primary"><xsl:value-of select="$domainName"/></span></span>
 								</h1>
-							</div>
+							</div><xsl:value-of select="$DEBUG"/>
 						</div>
 
 						<div class="col-xs-12">
@@ -144,8 +153,7 @@
 		</xsl:variable>
 
 
-		<xsl:variable name="currentDomainInst" select="name"/>
-		<xsl:variable name="mappedCapabilities" select="/node()/simple_instance[type = 'Business_Capability' and own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomainInst]"/>
+		
 		<xsl:if test="count($mappedCapabilities) > 0">
 
 			<h3><xsl:value-of select="eas:i18n('Business Domain')"/>: <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/></h3>
@@ -172,7 +180,8 @@
 			<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
 		</xsl:variable>
 
-		<xsl:variable name="capability" select="name"/>
+		<xsl:variable name="capability" select="current()"/>
+		<xsl:variable name="currentBusCapDescendants" select="eas:get_object_descendants($capability, $allMappedCapabilities, 0, 6, 'supports_business_capabilities')"/>
 
 		<xsl:variable name="capCount" select="position()"/>
 		<xsl:if test="position() = 1">
@@ -194,7 +203,7 @@
 				</th>
 			</tr>
 		</xsl:if>
-		<xsl:variable name="impl_busproc_list" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $capability]"/>
+		<xsl:variable name="impl_busproc_list" select="$inScopeBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $currentBusCapDescendants/name]"/>
 
 		<xsl:if test="count($impl_busproc_list) > 0">
 			<tr>

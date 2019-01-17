@@ -23,18 +23,17 @@ package com.enterprise_architecture.essential.report.security;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.io.IOUtils;
-import org.enterprise_architecture.essential.vieweruserdata.User;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.TextCodec;
 
 /**
  * Servlet implementation class ViewerLogin.
@@ -50,6 +49,9 @@ public class ViewerLogin extends HttpServlet
 	private static final String PASSWORD_PARAM = "password";
 	
 	private static final String TENANT_NAME_PARAM = "tenantName";
+
+	private static final String AUTHN_SERVER_CALLBACK_URI = "/authnServerCallback";
+
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -77,87 +79,39 @@ public class ViewerLogin extends HttpServlet
 		//System.out.println("Requested URL: " + aRequestedURL);
 		// END TRACE
 		
-		// Ensure that values for tenant, user and password have been supplied
-		if(aTenantName.length() > 0 && aUser.length() > 0 && aPassword.length() > 0)
-		{
-			// Sufficient details have been supplied
-		
-			// Got the parameters get the Account details and save in Application params:
-			ViewerSecurityManager aSecurityMgr = new ViewerSecurityManager(getServletContext());
-			String anAccount = aSecurityMgr.authenticateUserByLogin(request, aTenantName, aUser, aPassword);
-			
-			if(anAccount != null)
-			{
-				// TRACE 
-				//System.out.println("Logged in - got account");
-				
-				// Set the SSO Token for single-sign on
-				String anAccountID = getAccountID(anAccount);
-				String aDomain = request.getServerName();
-				EipSSOCookie aCookie = new EipSSOCookie(getServletContext());
-				aCookie.setAccountID(request, response, anAccountID, aDomain);
-				
-				// Remove any error flag from session
-				request.getSession().removeAttribute(ViewerSecurityManager.LOGIN_STATUS_VAR);
-				
-				// Authenticated, so redirect to the requested URL			
-				response.sendRedirect(aRequestedURL);
-			}
-			else
-			{
-				// Continue on to the error report step
-				
-				// TRACE 
-				//System.out.println("Details supplied but login failed - account is null");				
-			}
-		}
-		else
-		{
-			// Catch that details were missing on the form from user
-			// TRACE 
-			//System.out.println("Login failed - missing details from user");
-						
-			// Not Authenticated, so redirect to login page
-			HttpSession aSession = request.getSession(true);
-			aSession.setAttribute(ViewerSecurityManager.LOGIN_STATUS_VAR, ViewerSecurityManager.LOGIN_FAILED_FLAG);
-			response.sendRedirect(aRequestedURL);
-		}
-		
+		ViewerSecurityManager aSecurityMgr = new ViewerSecurityManager(getServletContext());
+		String baseUrl = "https://"+request.getHeader("host");
+		String callbackUri = baseUrl+request.getContextPath()+AUTHN_SERVER_CALLBACK_URI;
+		String redirectUrl = getAuthnServerRedirectUrl(aSecurityMgr, aRequestedURL, callbackUri);
+		response.sendRedirect(redirectUrl);
 	}
 	
-	/**
-	 * Find the ID of the Account from the XML representation of the account details
-	 * @param theAccountXML the user data in XML format
-	 * @return the ID of the Account
-	 */
-	protected String getAccountID(String theAccountXML)
-	{
-		String anAccountID = "";
-		User aUserInfo = new User();
-		
-		try
-		{
-			JAXBContext aContext = JAXBContext.newInstance(ViewerSecurityManager.XML_USER_DATA_PACKAGE);
-			Unmarshaller anUnmarshaller = aContext.createUnmarshaller();
+	private String getAuthnServerRedirectUrl(ViewerSecurityManager aSecurityMgr, String locationHash, String callbackUri) {
+		String redirectUrl = null;
+		try {
+			String nonce = "n-0S6_WzA2Mj"; //TODO generate this everytime and verify it when token returned to prevent replay attacks
+			//create JWT to use as state for use when we get called back
+			JwtBuilder jwtBuilder = Jwts.builder()
+					.setSubject(ViewerSecurityManager.AUTHN_STATE_TOKEN_SUBJECT)
+					.claim(ViewerSecurityManager.AUTHN_STATE_TOKEN_LOCATION_HASH, locationHash)
+					.signWith(
+						SignatureAlgorithm.HS256,
+						TextCodec.BASE64.decode(aSecurityMgr.getPropsAuthnStateSigningKey())
+						);
 			
-			// Read the configuration from from the XML in the input stream
-			aUserInfo = (User)anUnmarshaller.unmarshal(IOUtils.toInputStream(theAccountXML));
-			anAccountID = aUserInfo.getUri();				
+			String stateToken = jwtBuilder.compact();
+			redirectUrl = aSecurityMgr.getPropsAuthnServerLoginUrl()
+						+ "?redirect_uri="+URLEncoder.encode(callbackUri, "UTF-8")
+						+ "&nonce="+URLEncoder.encode(nonce, "UTF-8")
+						+ "&state="+URLEncoder.encode(stateToken, "UTF-8");
+			//System.out.println("AuthN Server redirect URL:" + redirectUrl);
+		} catch (Exception e) {
+			System.err.println("Failed to build URL to redirect to AuthN Server: "+e.getMessage());
+			e.printStackTrace();
+			throw new IllegalArgumentException("Failed to contact Authentication Server, unable to authenticate user.");
 		}
-		catch (JAXBException aJaxbEx)
-		{
-			System.err.println("ViewerSecurityManager Error processing user data XML");
-			System.err.println("Message: " + aJaxbEx.getLocalizedMessage());
-			aJaxbEx.printStackTrace();
-		}		
-		catch (IllegalArgumentException anIllegalArgEx)
-		{
-			System.err.println("ViewerSecurityManager Error processing user data XML");
-			System.err.println("Message: " + anIllegalArgEx.getLocalizedMessage());
-			anIllegalArgEx.printStackTrace();
-		}
-		
-		return anAccountID;
+		return redirectUrl;
 	}
+
 
 }

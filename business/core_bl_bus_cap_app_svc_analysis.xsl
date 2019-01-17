@@ -24,8 +24,10 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Service', 'Application_Provider', 'Supplier', 'Technology_Component', 'Technology_Product')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="inScopeBusCaps" select="/node()/simple_instance[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomain/name]"/>
-	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $inScopeBusCaps/name]"/>
+	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
+	<xsl:variable name="inScopeBusCaps" select="$allBusinessCaps[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomain/name]"/>
+	<xsl:variable name="allInScopeBusCaps" select="eas:get_object_descendants($inScopeBusCaps, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
+	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allInScopeBusCaps/name]"/>
 	<xsl:variable name="inScopeBusProcs2AppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $inScopeBusProcs/name]"/>
 	<xsl:variable name="inScopeAppSvcs" select="/node()/simple_instance[name = $inScopeBusProcs2AppSvcs/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
 	<xsl:variable name="inScopeAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_application_service']/value = $inScopeAppSvcs/name]"/>
@@ -194,8 +196,9 @@
 
 
 		<xsl:variable name="currentBusCap" select="current()"/>
+		<xsl:variable name="currentBusCapDescendants" select="eas:get_object_descendants($currentBusCap, $allInScopeBusCaps, 0, 6, 'supports_business_capabilities')"/>
 
-		<xsl:variable name="impl_busproc_list" select="$inScopeBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $currentBusCap/name]"/>
+		<xsl:variable name="impl_busproc_list" select="$inScopeBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $currentBusCapDescendants/name]"/>
 		<!-- Get the list of Application Services supporting each process -->
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet exclude-result-prefixes="pro xalan xs functx eas fn easlang" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:easlang="http://www.enterprise-architecture.org/essential/language">
 	<!--
-        * Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+        * Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
         *
@@ -26,6 +26,8 @@
 	<!-- 15.07.2013 JWC - Account for \n characters in renderJSText() -->
 	<!-- 29.01.2015 JWC - Added the security features -->
 	<!-- 03.04.2017	JWC	- Added the geographic region search for containing regions -->
+	<!-- 15.06.2018	JMK	- added a isRenderAsJSString parameter to some templates -->
+	<!-- 26.07.2018 JWC	- Added functions to render alphabetic catalogues -->
 
 	<!-- Render the name of an Instance, given its instance id.
     This is the EAS_Class name slot without any special transform -->
@@ -489,6 +491,7 @@
 	<xsl:template name="RenderInstanceLinkJavascript">
 		<xsl:param name="instanceClassName"/>
 		<xsl:param name="targetMenu"/>
+		<xsl:param name="newWindow" select="false()"/>
 
 
 		<!-- Get the default menu for the class of the instance, if one exists -->
@@ -503,6 +506,7 @@
 				<xsl:if test="eas:isUserAuthZ($targetMenu)">
 					<xsl:call-template name="RenderPopUpJavascript">
 						<xsl:with-param name="thisMenu" select="$targetMenu"/>
+						<xsl:with-param name="newWindow" select="$newWindow"/>
 					</xsl:call-template>
 				</xsl:if>
 			</xsl:when>
@@ -514,6 +518,7 @@
 					<xsl:if test="eas:isUserAuthZ(current())">
 						<xsl:call-template name="RenderPopUpJavascript">
 							<xsl:with-param name="thisMenu" select="current()"/>
+							<xsl:with-param name="newWindow" select="$newWindow"/>
 						</xsl:call-template>
 					</xsl:if>
 				</xsl:for-each>
@@ -624,8 +629,9 @@
 		<xsl:param name="divStyle"/>
 		<xsl:param name="divId"/>
 		<xsl:param name="anchorClass"/>
+		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
 
-
+		
 		<!-- Create the elements of the query string for a potential link -->
 		<!--<xsl:variable name="generalQueryString">
             <xsl:call-template name="ConstructPopUpQueryString">
@@ -654,11 +660,11 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-
+				
 				<!--<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference='report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference='report_menu_is_default']/value ='true')]" />-->
 
 				<xsl:variable name="defaultMenu" select="eas:get_default_menu_for_instance($theSubjectInstance)"/>
-
+				<xsl:variable name="instanceNameAnchor" select="if ($isRenderAsJSString) then eas:renderJSText($instanceName) else $instanceName"/>
 				<!-- Render the appropriate link based on the given parameters -->
 				<xsl:choose>
 					<!-- If a target report has been provided, just create a normal link to the specific report -->
@@ -697,6 +703,7 @@
 								<xsl:with-param name="divStyle" select="$divStyle"/>
 								<xsl:with-param name="divId" select="$divId"/>
 								<xsl:with-param name="instanceName" select="$instanceName"/>
+								<xsl:with-param name="isRenderAsJSString" select="$isRenderAsJSString"/>
 							</xsl:call-template>
 						</a>
 					</xsl:when>
@@ -706,7 +713,7 @@
 						<!-- Define the class for the anchor -->
 						<xsl:variable name="linkClass" select="concat($anchorClass, ' ', 'context-menu-', $menuShortName)"/>
 
-						<a id="{$instanceName}" class="{$linkClass}">
+						<a id="{$instanceNameAnchor}" class="{$linkClass}">
 							<xsl:call-template name="CommonRenderLinkHref">
 								<xsl:with-param name="theInstanceID" select="$theSubjectInstance/name"/>
 								<xsl:with-param name="theXML" select="$theXML"/>
@@ -718,6 +725,7 @@
 								<xsl:with-param name="divStyle" select="$divStyle"/>
 								<xsl:with-param name="divId" select="$divId"/>
 								<xsl:with-param name="instanceName" select="$instanceName"/>
+								<xsl:with-param name="isRenderAsJSString" select="$isRenderAsJSString"/>
 							</xsl:call-template>
 						</a>
 					</xsl:when>
@@ -727,7 +735,7 @@
 						<!-- Define the class for the anchor -->
 						<xsl:variable name="linkClass" select="concat($anchorClass, ' ', 'context-menu-', $menuShortName)"/>
 
-						<a id="{$instanceName}" class="{$linkClass}">
+						<a id="{$instanceNameAnchor}" class="{$linkClass}">
 							<xsl:call-template name="CommonRenderLinkHref">
 								<xsl:with-param name="theInstanceID" select="$theSubjectInstance/name"/>
 								<xsl:with-param name="theXML" select="$theXML"/>
@@ -739,6 +747,7 @@
 								<xsl:with-param name="divStyle" select="$divStyle"/>
 								<xsl:with-param name="divId" select="$divId"/>
 								<xsl:with-param name="instanceName" select="$instanceName"/>
+								<xsl:with-param name="isRenderAsJSString" select="$isRenderAsJSString"/>
 							</xsl:call-template>
 							<!--<xsl:value-of select="$viewScopeTerms[1]/own_slot_value[slot_reference='name']/value"/>-->
 						</a>
@@ -750,6 +759,7 @@
 							<xsl:with-param name="divStyle" select="$divStyle"/>
 							<xsl:with-param name="divId" select="$divId"/>
 							<xsl:with-param name="instanceName" select="$instanceName"/>
+							<xsl:with-param name="isRenderAsJSString" select="$isRenderAsJSString"/>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -798,6 +808,7 @@
 
 				<!-- Get the name of the instance that has been passed -->
 				<xsl:variable name="instanceId" select="$theSubjectInstance/name"/>
+				<xsl:variable name="quoteString"><xsl:text disable-output-escaping="no">&apos;</xsl:text></xsl:variable>
 
 				<xsl:variable name="instanceName">
 					<xsl:choose>
@@ -812,6 +823,8 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
+				
+				<xsl:variable name="escapedInstanceName" select="translate($instanceName, $quoteString, '')"/>
 
 				<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
 
@@ -866,10 +879,10 @@
 						<xsl:text>\&quot; class = \&quot;</xsl:text>
 						<xsl:value-of select="$anchorClass"/>
 						<xsl:text>\&quot; id =\&quot;</xsl:text>
-						<xsl:value-of select="$instanceName"/>
-						<xsl:text>\&quot; &gt;</xsl:text>
+						<xsl:value-of select="$instanceId"/>
+						<xsl:text>Link\&quot; &gt;</xsl:text>
 						<xsl:call-template name="RenderInstanceLinkText">
-							<xsl:with-param name="instanceName" select="$instanceName"/>
+							<xsl:with-param name="instanceName" select="$escapedInstanceName"/>
 						</xsl:call-template>
 						<xsl:text>&lt;/a&gt;</xsl:text>
 					</xsl:when>
@@ -894,10 +907,10 @@
 						<xsl:text>\&quot; class = \&quot;</xsl:text>
 						<xsl:value-of select="$linkClass"/>
 						<xsl:text>\&quot; id =\&quot;</xsl:text>
-						<xsl:value-of select="$instanceName"/>
-						<xsl:text>\&quot; &gt;</xsl:text>
+						<xsl:value-of select="$instanceId"/>
+						<xsl:text>Link\&quot; &gt;</xsl:text>
 						<xsl:call-template name="RenderInstanceLinkText">
-							<xsl:with-param name="instanceName" select="$instanceName"/>
+							<xsl:with-param name="instanceName" select="$escapedInstanceName"/>
 						</xsl:call-template>
 						<xsl:text>&lt;/a&gt;</xsl:text>
 					</xsl:when>
@@ -922,17 +935,17 @@
 						<xsl:text>\&quot; class = \&quot;</xsl:text>
 						<xsl:value-of select="$linkClass"/>
 						<xsl:text>\&quot; id =\&quot;</xsl:text>
-						<xsl:value-of select="$instanceName"/>
-						<xsl:text>\&quot; &gt;</xsl:text>
+						<xsl:value-of select="$instanceId"/>
+						<xsl:text>Link\&quot; &gt;</xsl:text>
 						<xsl:call-template name="RenderInstanceLinkText">
-							<xsl:with-param name="instanceName" select="$instanceName"/>
+							<xsl:with-param name="instanceName" select="$escapedInstanceName"/>
 						</xsl:call-template>
 						<xsl:text>&lt;/a&gt;</xsl:text>
 					</xsl:when>
 					<!-- If no menu is found, then just display the name of the instance without an anchor -->
 					<xsl:otherwise>
 						<xsl:call-template name="RenderInstanceLinkText">
-							<xsl:with-param name="instanceName" select="$instanceName"/>
+							<xsl:with-param name="instanceName" select="$escapedInstanceName"/>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -1007,26 +1020,49 @@
 	<xsl:template name="RenderMultiLangCommentarySlot">
 		<xsl:param name="theSubjectInstance"/>
 		<xsl:param name="slotName"/>
-		<xsl:value-of>
-			<xsl:choose>
-				<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-					<xsl:value-of select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]/own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:variable name="thisComment" select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]"/>
-					<xsl:variable name="instanceSynonym" select="$utilitiesAllSynonyms[(name = $thisComment/own_slot_value[slot_reference = 'synonyms']/value) and (own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name)]"/>
-					<xsl:choose>
-						<xsl:when test="count($instanceSynonym) > 0">
-							<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = 'name']/value"/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:value-of>
+		
+		<xsl:choose>
+			<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+				<xsl:value-of select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]/own_slot_value[slot_reference = 'name']/value"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="thisComment" select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]"/>
+				<xsl:variable name="instanceSynonym" select="$utilitiesAllSynonyms[(name = $thisComment/own_slot_value[slot_reference = 'synonyms']/value) and (own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name)]"/>
+				<xsl:choose>
+					<xsl:when test="count($instanceSynonym) > 0">
+						<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]/own_slot_value[slot_reference = 'name']/value"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
+	
+	
+	<xsl:function name="eas:getMultiLangCommentarySlot">
+		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="slotName"/>
+		
+		<xsl:choose>
+			<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+				<xsl:value-of select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]/own_slot_value[slot_reference = 'name']/value"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="thisComment" select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]"/>
+				<xsl:variable name="instanceSynonym" select="$utilitiesAllSynonyms[(name = $thisComment/own_slot_value[slot_reference = 'synonyms']/value) and (own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name)]"/>
+				<xsl:choose>
+					<xsl:when test="count($instanceSynonym) > 0">
+						<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$utilitiesAllCommentaries[name = $theSubjectInstance/own_slot_value[slot_reference = $slotName]/value]/own_slot_value[slot_reference = 'name']/value"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:function>
 
 
 	<xsl:template name="RenderMultiLangCommentarySlotList">
@@ -1052,7 +1088,7 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<li>
-									<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
+									<xsl:value-of select="$thisComment/own_slot_value[slot_reference = 'name']/value"/>
 								</li>
 							</xsl:otherwise>
 						</xsl:choose>
@@ -1110,23 +1146,26 @@
     -->
 	<xsl:template name="RenderMultiLangInstanceDescription">
 		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
 
 		<!-- First perform user clearance check -->
+		<xsl:variable name="unprotectedText">
 		<xsl:choose>
 			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
 				<xsl:choose>
 					<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-						<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = 'description']/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+						<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:choose>
 							<xsl:when test="count($instanceSynonym) > 0">
-								<xsl:value-of select="replace($instanceSynonym[1]/own_slot_value[slot_reference = 'description']/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+
+								<xsl:value-of select="replace($instanceSynonym[1]/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = 'description']/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+								<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:otherwise>
@@ -1136,6 +1175,8 @@
 				<xsl:value-of select="eas:i18n($theRedactedString)"/>
 			</xsl:otherwise>
 		</xsl:choose>
+		</xsl:variable>
+		<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>
 	</xsl:template>
 
 	<!-- TEMPLATE TO CREATE THE QUERY STRING FOR DRILLING DOWN TO A REPORT -->
@@ -1158,18 +1199,19 @@
 		<xsl:param name="divClass"/>
 		<xsl:param name="divStyle"/>
 		<xsl:param name="divId"/>
-
+		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
+		<xsl:variable name="renderedInstanceName" select="if ($isRenderAsJSString) then eas:renderJSText($instanceName) else $instanceName"/>
 		<xsl:choose>
 			<xsl:when test="string-length($divClass) > 0">
 				<div>
 					<xsl:attribute name="class" select="$divClass"/>
 					<xsl:attribute name="style" select="$divStyle"/>
 					<xsl:attribute name="id" select="$divId"/>
-					<xsl:value-of select="$instanceName"/>
+					<xsl:value-of select="$renderedInstanceName"/>
 				</div>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="$instanceName"/>
+				<xsl:value-of select="$renderedInstanceName"/>
 			</xsl:otherwise>
 		</xsl:choose>
 
@@ -2130,10 +2172,27 @@
 
 	<!-- START ELEMENT STYLE FUNCTIONS -->
 	<!-- Get the css class associated with an element -->
+	<xsl:function name="eas:get_element_style_instance" as="node()*">
+		<xsl:param name="element"/>
+		
+		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $element/name]"/>
+		<xsl:choose>
+			<xsl:when test="count($elementStyle) > 0">
+				<xsl:sequence select="$elementStyle[1]"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:sequence select="()"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:function>
+	
+	
+	<!-- Get the css class associated with an element -->
 	<xsl:function name="eas:get_element_style_class" as="xs:string">
 		<xsl:param name="element"/>
-
-		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[name = $element/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		
+		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $element/name]"/>
 		<xsl:choose>
 			<xsl:when test="count($elementStyle) > 0">
 				<xsl:value-of select="$elementStyle[1]/own_slot_value[slot_reference = 'element_style_class']/value"/>
@@ -2142,14 +2201,14 @@
 				<xsl:value-of select="''"/>
 			</xsl:otherwise>
 		</xsl:choose>
-
+		
 	</xsl:function>
-
+	
 	<!-- Get the background colour associated with an element -->
 	<xsl:function name="eas:get_element_style_colour" as="xs:string">
 		<xsl:param name="element"/>
-
-		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[name = $element/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		
+		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $element/name]"/>
 		<xsl:choose>
 			<xsl:when test="count($elementStyle) > 0">
 				<xsl:value-of select="$elementStyle[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>
@@ -2158,15 +2217,15 @@
 				<xsl:value-of select="''"/>
 			</xsl:otherwise>
 		</xsl:choose>
-
+		
 	</xsl:function>
-
-
+	
+	
 	<!-- Get the text colour associated with an element -->
 	<xsl:function name="eas:get_element_style_textcolour" as="xs:string">
 		<xsl:param name="element"/>
-
-		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[name = $element/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		
+		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $element/name]"/>
 		<xsl:choose>
 			<xsl:when test="count($elementStyle) > 0">
 				<xsl:value-of select="$elementStyle[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>
@@ -2175,15 +2234,15 @@
 				<xsl:value-of select="''"/>
 			</xsl:otherwise>
 		</xsl:choose>
-
+		
 	</xsl:function>
-
-
+	
+	
 	<!-- Get the path to the icon associated with an element -->
 	<xsl:function name="eas:get_element_style_icon" as="xs:string">
 		<xsl:param name="element"/>
-
-		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[name = $element/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		
+		<xsl:variable name="elementStyle" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $element/name]"/>
 		<xsl:choose>
 			<xsl:when test="count($elementStyle) > 0">
 				<xsl:value-of select="$elementStyle[1]/own_slot_value[slot_reference = 'element_style_icon']/value"/>
@@ -2192,10 +2251,8 @@
 				<xsl:value-of select="''"/>
 			</xsl:otherwise>
 		</xsl:choose>
-
+		
 	</xsl:function>
-
-
 	<!-- END ELEMENT STYLE FUNCTIONS -->
 
 	<!-- Function to return the Geographic Region that has a Region Identifier Value set
@@ -2229,5 +2286,36 @@
 
 	</xsl:function>
 
+	<!-- Render alphabetic catalogues -->
+	<!-- Render the index keys, as a set of hyperlinks to sections of the catalogue that have instances
+		Ordered alphabetically -->
+	
+	
+	<xsl:template name="eas:renderIndexSections">
+		<xsl:param name="theIndexOfNames"></xsl:param>
+		
+		<!-- Generate the index based on the set of elements in the indexList -->		
+		<xsl:for-each select="$theIndexOfNames">			
+			<xsl:variable name="anHref" select="concat('#section_', upper-case(current()))"></xsl:variable>
+			<a class="AlphabetLinks">
+				<xsl:attribute name="href" select="$anHref"></xsl:attribute>
+				<xsl:value-of select="eas:i18n(upper-case(current()))"/>
+			</a>
+		</xsl:for-each>
+		
+	</xsl:template>
+	
+	<!-- Find the first character of the set of items that are passed in as Strings -->
+	<xsl:function name="eas:getFirstCharacter">
+		<xsl:param name="theItemNames"></xsl:param>
+		
+		<xsl:for-each-group select="$theItemNames" group-by="upper-case(substring(current(), 1, 1))">
+			<xsl:sort select="upper-case(substring(current()[1], 1, 1))" lang="{$i18n}"></xsl:sort>
+			<xsl:sequence select="substring(current()[1], 1, 1)"></xsl:sequence>
+		</xsl:for-each-group>
+		
+	</xsl:function>
+	
+	<!-- End of alphabetic catalogue rendering -->
 
 </xsl:stylesheet>

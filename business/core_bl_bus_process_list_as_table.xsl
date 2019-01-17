@@ -50,14 +50,14 @@
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Capability')"/>
+	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Capability','Business_Process_Family')"/>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
 	<!-- START CATALOGUE SPECIFIC VARIABLES -->
 	<xsl:variable name="busProcListByName" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue by Name')]"/>
 	<xsl:variable name="busProcListByServiceCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue by Business Service')]"/>
 	<xsl:variable name="busProcListByDomain" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue by Business Domain')]"/>
-
+    <xsl:variable name="businessProcessFamily" select="/node()/simple_instance[type = 'Business_Process_Family']"/>
 	<xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="realisesCaps" select="/node()/simple_instance[name = $businessProcess/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>
 
@@ -109,45 +109,47 @@
 										<xsl:value-of select="$pageLabel"/>
 									</span>
 								</h1>
-								<div class="altViewName">
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Show by')"/>:&#160;</span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListByName"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="eas:i18n('Name')"/>
-										</xsl:call-template>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListByDomain"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="eas:i18n('Business Domain')"/>
-										</xsl:call-template>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListByServiceCatalogue"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="eas:i18n('Business Service')"/>
-										</xsl:call-template>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-primary">
-										<xsl:value-of select="eas:i18n('Table')"/>
-									</span>
-								</div>
+								<xsl:if test="not($targetReport/own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Family Summary')">
+									<div class="altViewName">
+										<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Show by')"/>:&#160;</span>
+										<span class="text-darkgrey">
+											<xsl:call-template name="RenderCatalogueLink">
+												<xsl:with-param name="theCatalogue" select="$busProcListByName"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+												<xsl:with-param name="targetReport" select="$targetReport"/>
+												<xsl:with-param name="targetMenu" select="$targetMenu"/>
+												<xsl:with-param name="displayString" select="eas:i18n('Name')"/>
+											</xsl:call-template>
+										</span>
+										<span class="text-darkgrey"> | </span>
+										<span class="text-darkgrey">
+											<xsl:call-template name="RenderCatalogueLink">
+												<xsl:with-param name="theCatalogue" select="$busProcListByDomain"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+												<xsl:with-param name="targetReport" select="$targetReport"/>
+												<xsl:with-param name="targetMenu" select="$targetMenu"/>
+												<xsl:with-param name="displayString" select="eas:i18n('Business Domain')"/>
+											</xsl:call-template>
+										</span>
+										<span class="text-darkgrey"> | </span>
+										<span class="text-darkgrey">
+											<xsl:call-template name="RenderCatalogueLink">
+												<xsl:with-param name="theCatalogue" select="$busProcListByServiceCatalogue"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+												<xsl:with-param name="targetReport" select="$targetReport"/>
+												<xsl:with-param name="targetMenu" select="$targetMenu"/>
+												<xsl:with-param name="displayString" select="eas:i18n('Business Service')"/>
+											</xsl:call-template>
+										</span>
+										<span class="text-darkgrey"> | </span>
+										<span class="text-primary">
+											<xsl:value-of select="eas:i18n('Table')"/>
+										</span>
+									</div>
+								</xsl:if>
 							</div>
 						</div>
 					</div>
@@ -196,8 +198,8 @@
 									sort: true,
 									responsive: true,
 									columns: [
-									    { "width": "25%" },
-									    { "width": "35%" },
+									    { "width": "29%" },{ "width": "10%" },
+									    { "width": "30%" },
 									    { "width": "40%" }
 									  ],
 									dom: 'Bfrtip',
@@ -239,6 +241,9 @@
 						<xsl:value-of select="eas:i18n('Business Process')"/>
 					</th>
 					<th>
+						<xsl:value-of select="eas:i18n('Process Family')"/>
+					</th>
+                    <th>
 						<xsl:value-of select="eas:i18n('Description')"/>
 					</th>
 					<th>
@@ -250,6 +255,9 @@
 				<tr>
 					<th>
 						<xsl:value-of select="eas:i18n('Business Process')"/>
+					</th>
+                    <th>
+						<xsl:value-of select="eas:i18n('Process Family')"/>
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Description')"/>
@@ -282,17 +290,48 @@
 		<xsl:variable name="processDesc" select="current()/own_slot_value[slot_reference = 'description']/value"/>
 		<!--<xsl:variable name="programmeProjects" select="$allProgProjects[name=current()/own_slot_value[slot_reference='projects_for_programme']/value]"/>-->
 		<xsl:variable name="busCaps" select="$realisesCaps[name = current()/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>
+        <xsl:variable name="this" select="current()"/>
+        <xsl:variable name="thisfamily" select="$businessProcessFamily[own_slot_value[slot_reference='bpf_contained_business_process_types']/value=$this/name]"/>
 
 		<tr>
 			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-					<xsl:with-param name="targetMenu" select="$targetMenu"/>
-					<xsl:with-param name="targetReport" select="$targetReport"/>
-				</xsl:call-template>
+				<xsl:choose>
+					<xsl:when test="not($targetReport/own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Family Summary')">
+						<xsl:call-template name="RenderInstanceLink">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+							<xsl:with-param name="theXML" select="$reposXML"/>
+							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+							<xsl:with-param name="targetMenu" select="$targetMenu"/>
+							<xsl:with-param name="targetReport" select="$targetReport"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="RenderInstanceLink">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+							<xsl:with-param name="theXML" select="$reposXML"/>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
 			</td>
+            <td>
+            	<xsl:choose>
+            		<xsl:when test="$targetReport/own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Family Summary'">
+            			<xsl:call-template name="RenderInstanceLink">
+            				<xsl:with-param name="theSubjectInstance" select="$thisfamily"/>
+            				<xsl:with-param name="theXML" select="$reposXML"/>
+            				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+            				<xsl:with-param name="targetMenu" select="$targetMenu"/>
+            				<xsl:with-param name="targetReport" select="$targetReport"/>
+            			</xsl:call-template>
+            		</xsl:when>
+            		<xsl:otherwise>
+            			<xsl:call-template name="RenderInstanceLink">
+            				<xsl:with-param name="theSubjectInstance" select="$thisfamily"/>
+            				<xsl:with-param name="theXML" select="$reposXML"/>
+            			</xsl:call-template>
+            		</xsl:otherwise>
+            	</xsl:choose>
+            </td>
 			<td>
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -305,11 +344,9 @@
 							<xsl:call-template name="RenderInstanceLink">
 								<xsl:with-param name="theSubjectInstance" select="current()"/>
 								<xsl:with-param name="theXML" select="$reposXML"/>
-								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 							</xsl:call-template>
 						</li>
 					</xsl:for-each>
-
 				</ul>
 			</td>
 		</tr>

@@ -110,7 +110,10 @@
 										<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 										<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Data Object Summary for')"/>&#160; </span>
 										<span class="text-primary">
-											<xsl:value-of select="$dataObjectName"/>
+											<xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
+												<xsl:with-param name="theSubjectInstance" select="$currentDataObject"/>
+											</xsl:call-template>
 										</span>
 									</h1>
 								</div>
@@ -308,7 +311,7 @@
 
 
 							<div class="content-section">
-								<xsl:apply-templates select="/node()/simple_instance[name = $param1]" mode="ReportExternalDocRef"/>
+								<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
 							</div>
 
 							<hr/>
@@ -557,9 +560,22 @@
 						</tfoot>
 						<tbody>
 							<xsl:for-each select="$dataReps">
+								<xsl:variable name="this" select="current()"/>
 								<xsl:variable name="dataRepName" select="./own_slot_value[slot_reference = 'name']/value"/>
 								<xsl:variable name="dataRepDesc" select="./own_slot_value[slot_reference = 'description']/value"/>
+							
 								<xsl:variable name="dataRepTechnical" select="./own_slot_value[slot_reference = 'dr_technical_name']/value"/>
+								
+								<xsl:variable name="dataRepLabel">
+									<xsl:choose>
+										<xsl:when test="string-length() > 0">
+											<xsl:value-of select="$dataRepTechnical"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$dataRepName"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:variable>
 								<xsl:variable name="dataRepAttr" select="$allDataRepAttr[name = current()/own_slot_value[slot_reference = 'contained_data_representation_attributes']/value]"/>
 								
 								<tr>
@@ -568,7 +584,7 @@
 											<xsl:with-param name="theSubjectInstance" select="current()"/>
 											<xsl:with-param name="theXML" select="$reposXML"/>
 											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="displayString" select="$dataRepTechnical"/>
+											<xsl:with-param name="displayString" select="$dataRepLabel"/>
 										</xsl:call-template>
 									</td>
 									<td>

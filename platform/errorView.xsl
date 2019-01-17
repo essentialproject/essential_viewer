@@ -11,12 +11,12 @@
 
 	<xsl:param name="theMessage"/>
 	<xsl:param name="theFriendlyMessage"/>
-	<xsl:param name="theStackTrace"/>
+	<!--<xsl:param name="theStackTrace"/>-->
 	<xsl:param name="theTransformerError"/>
 
 
 	<!--
-		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -36,6 +36,7 @@
 	-->
 	<!-- 08.11.2011	JWC First implementation	 -->
 	<!-- 11.11.2011	JWC Added theFriendlyMessage parameter -->
+	<!-- 04.07.2018	JWC Commented out the detailed stack trace -->
 
 
 	<xsl:template match="ess:errorsourcedoc">
@@ -118,20 +119,20 @@
 							<xsl:value-of select="eas:i18n('For more information about how to resolve this error, visit')"/>&#160; <a>
 								<xsl:attribute name="href">http://www.enterprise-architecture.org/reporting-tutorials/199-essential-viewer-errors</xsl:attribute><xsl:value-of select="eas:i18n('Essential Viewer Error Messages articles')"/>. </a>
 						</p>
-						<form>
+						<!--<form>
 							<label for="stackTrace">
 								<xsl:value-of select="eas:i18n('Show Detailed Error Message')"/>
 								<span>:&#160;</span>
 							</label>
 							<input type="checkbox" id="stackTrace"/>
-						</form>
+						</form>-->
 					</div>
 					<hr/>
 				</div>
 
 
 				<!--Setup About This View Section-->
-				<div id="sectionTrace">
+				<!--<div id="sectionTrace">
 					<div class="col-xs-12">
 						<div class="sectionIcon">
 							<i class="fa fa-gears icon-section icon-color"/>
@@ -149,7 +150,7 @@
 						<hr/>
 					</div>
 				</div>
-
+				-->
 				<div id="sectionEngineDetails">
 					<div class="col-xs-12">
 						<div class="sectionIcon">

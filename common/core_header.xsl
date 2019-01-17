@@ -33,7 +33,7 @@
 	<xsl:param name="pageHistory"/>
 	<xsl:param name="theURLFullPath"/>
 	<xsl:param name="reposXML">reportXML.xml</xsl:param>
-	<xsl:param name="eipMode"></xsl:param>
+	<xsl:param name="eipMode"/>
 
 	<!-- Specify the selected user -->
 	<xsl:param name="userID"/>
@@ -93,33 +93,6 @@
 				});				
 			</script>
 
-		<!-- Piwik -->
-		<xsl:if test="$eipMode = 'true'">
-			<xsl:variable name="userDisplayName">
-				<xsl:value-of select="$userData//user:firstname"/>&#160;<xsl:value-of select="$userData//user:lastname"/>
-			</xsl:variable>
-			<script type="text/javascript">
-				var _paq = _paq || [];
-				  var userTrack = "<xsl:value-of select="$userDisplayName"/>";
-				  _paq.push(["setDomains", ["*.essentialintelligence.com"]]);
-				  _paq.push(['setUserId', userTrack]);
-				  _paq.push(['trackPageView']);
-				  _paq.push(['enableLinkTracking']);
-				  (function() {
-				    var u="https://e-asolutions.net/piwik/";
-				    _paq.push(['setTrackerUrl', u+'piwik.php']);
-				    _paq.push(['setSiteId', 1]);
-				    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-				    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-				  })();
-			</script>
-			<noscript>
-				<p>
-					<img src="https://e-asolutions.net/piwik/piwik.php?idsite=1" style="border:0;" alt=""/>
-				</p>
-			</noscript>
-		</xsl:if>
-		<!-- End Piwik Code -->
 
 		<xsl:text disable-output-escaping="yes">&lt;!--[if lt IE 9]&gt;&lt;div class=&quot;bg-warning&quot;&gt;&lt;div class=&quot;container-fluid alignCentre&quot;&gt;&lt;em&gt;Oops! It looks like you&apos;re using Internet Explorer 8. Essential Viewer requires a modern web browser to function properly.&lt;/em&gt;&lt;/div&gt;&lt;/div&gt;&lt;![endif]--&gt;</xsl:text>
 		<nav class="app-brand-header">
@@ -218,7 +191,7 @@
 											<span>Integration Examples</span>
 										</a>
 									</li>
-									<li>
+									<!--<li>
 										<a>
 											<xsl:call-template name="CommonRenderLinkHref">
 												<xsl:with-param name="theXSL" select="'integration/core_int_all_instances_by_class.xsl'"/>
@@ -245,6 +218,33 @@
 											<span>Instance Overview</span>
 										</a>
 									</li>
+									<li>
+										<a>
+											<xsl:call-template name="CommonRenderLinkHref">
+												<xsl:with-param name="theXSL" select="'integration/class_overview.xsl'"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+											</xsl:call-template>
+											<span>Class Overview</span>
+										</a>
+									</li>
+									<li>
+										<a>
+											<xsl:call-template name="CommonRenderLinkHref">
+												<xsl:with-param name="theXSL" select="'integration/core_ut_completeness_view.xsl'"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+											</xsl:call-template>
+											<span>Completeness View</span>
+										</a>
+									</li>
+									<li>
+										<a>
+											<xsl:call-template name="CommonRenderLinkHref">
+												<xsl:with-param name="theXSL" select="'integration/core_ut_duplicate_dashboard_filter.xsl'"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+											</xsl:call-template>
+											<span>Duplicate Finder</span>
+										</a>
+									</li>-->
 								</ul>
 							</li>
 							<xsl:choose>

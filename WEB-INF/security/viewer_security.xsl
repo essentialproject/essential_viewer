@@ -11,7 +11,7 @@
     version="2.0">
     
     <!--
-		* Copyright ©2015-2016 Enterprise Architecture Solutions Limited.
+		* Copyright ©2015-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -31,6 +31,8 @@
 	-->
     <!-- XSL query library for security implementation in Viewer -->
     <!-- 28.01.2015	JWC First implementation	 -->
+    <!-- 27.03.2018 JWC Implement support for default classifications -->
+    <!-- 17.04.2018 JWC Remove test for default classification as will have already been performed at View level -->
     
     <!-- XML document holding the user data = empty node-set by default -->
     <xsl:param name="userData" select="/.."></xsl:param>
@@ -48,9 +50,11 @@
     <xsl:variable name="theRedactedString">[CLASSIFIED]</xsl:variable>
     
     <!-- Get relevant user clearances -->
+    <!--<xsl:variable name="userClearance" select="parse-xml($userData)"></xsl:variable>-->
     <xsl:variable name="userClearance" select="$userData"></xsl:variable>
     <xsl:variable name="userGroupClearance" select="$userClearance//user:clearance[@type=$classificationType and user:repository=$repositoryID]"></xsl:variable>
     
+    <!--<xsl:variable name="classConfig" select="parse-xml($classificationConfig)"></xsl:variable>-->
     <xsl:variable name="classConfig" select="$classificationConfig"></xsl:variable>
     
     <!-- Get all the classification groups -->
@@ -59,19 +63,22 @@
     <!-- Get all the security classifications -->
     <xsl:variable name="classifications" select="/node()/simple_instance[type='EA_Content_Classification']"></xsl:variable>
     
+    <!-- Get the default classification for all elements, if defined -->
+    <xsl:variable name="defaultClassificationClass" select="/node()/class[name='EA_Default_Classification']"></xsl:variable>
+    
     <!-- Test harness -->
     <!--<xsl:template match="knowledge_base">
         <xsl:variable name="testSubject" select="/node()/simple_instance[name='essential_baseline_v3.0.4_Class181']"></xsl:variable>
         <xsl:variable name="aReportSet" select="/node()/simple_instance[type='Report']"></xsl:variable>
         
-        <xsl:for-each select="$aReportSet">
+        <!-\-<xsl:for-each select="$aReportSet">
             <xsl:value-of select="eas:renderSecuredElement(current())"/>
             <xsl:text>
                 
             </xsl:text>
-        </xsl:for-each>
+        </xsl:for-each>-\->
         
-        <!-\-<xsl:choose>
+        <xsl:choose>
             <xsl:when test="eas:isUserAuthZ($testSubject)">
                 AUTHORISED        
             </xsl:when>
@@ -79,9 +86,9 @@
                 NOT AUTHORISED
             </xsl:otherwise>
         </xsl:choose>
-        -\->
-    </xsl:template>-->
-    
+        
+    </xsl:template>
+    -->
     <!-- function to test whether user can access specified instance -->
     <xsl:function name="eas:isUserAuthZ" as="xs:boolean">
         <xsl:param name="theInstance"></xsl:param>
@@ -93,8 +100,11 @@
                 <xsl:variable name="readIDs" select="$theInstance/own_slot_value[slot_reference='system_security_read_classification']/value"></xsl:variable>        
                 <xsl:variable name="readClearance" select="$classifications[name=$readIDs]"></xsl:variable>
                 
+                <!-- Find the default read classification instance -->
+                <xsl:variable name="defaultClassification" select="$classifications[name=$defaultClassificationClass/own_slot_value[slot_reference='system_security_read_classification']/value]"></xsl:variable>
+                
                 <xsl:choose>
-                    <xsl:when test="count($readClearance) > 0">                
+                    <xsl:when test="(count($readClearance) > 0) or (count($defaultClassification) > 0)">                
                         <!-- Get the groups associated with those -->
                         <!-- get the set of classifications that are defined and are relevant to the selected View template -->
                         <xsl:variable name="aClearanceGroupList" select="$classificationGroups[name=$readClearance/own_slot_value[slot_reference='contained_in_content_classification_group']/value]"></xsl:variable>
@@ -106,8 +116,18 @@
                             </xsl:apply-templates>
                         </xsl:variable>
                         
+                        <!-- Find the details of the default classification in the security config element -->
+                        <xsl:variable name="defaultClassificationDefs" select="$classConfig//view:defaultClassification/view:readClassification"></xsl:variable>                                        
+                        <xsl:variable name="defaultAuthResult">
+                            <!--<xsl:apply-templates mode="testAuthZ" select="$defaultClassification">
+                                <xsl:with-param name="classificationDefs" select="$defaultClassificationDefs"></xsl:with-param>
+                                <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
+                            </xsl:apply-templates>-->
+                            <xsl:text>AUTHORISED </xsl:text>
+                        </xsl:variable>
+                        
                         <xsl:choose>
-                            <xsl:when test="contains($authResult, 'ACCESS DENIED')">
+                            <xsl:when test="contains($authResult, 'ACCESS DENIED') or contains($defaultAuthResult, 'ACCESS DENIED')">
                                 <xsl:value-of select="false()"></xsl:value-of>
                             </xsl:when>
                             <xsl:otherwise>
@@ -127,7 +147,7 @@
                 <xsl:value-of select="true()"/>
             </xsl:otherwise>
         </xsl:choose>
-  
+        
     </xsl:function>
     
     <!-- Test user authorisation against the classification instance to which this template is applied-->

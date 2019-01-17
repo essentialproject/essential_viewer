@@ -6,6 +6,7 @@
 	<xsl:variable name="currentViewerVersion" select="$errorFile//ess:viewerversion"/>
 	<xsl:variable name="updateFile" select="document('https://s3.amazonaws.com/essential-updater/viewerLatestVersion.xml')"/>
 	<xsl:variable name="latestViewerVersion" select="$updateFile//ess:viewerversion"/>
+	
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -54,6 +55,9 @@
 							localize("<xsl:value-of select="$utcTimeStamp"/>");
 						</script>
 						</span>
+						<xsl:if test="$eipMode = 'true'">
+							<span class="pageFooterLabel"> from the <xsl:value-of select="repository/name"/> repository</span>
+						</xsl:if>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:variable name="currentTime" select="current-dateTime()"/>
