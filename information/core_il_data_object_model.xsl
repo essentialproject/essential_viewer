@@ -42,6 +42,8 @@
 		* 
 	-->
 	<!-- 23.04.2015 JP	Created -->
+	<!-- 23.02.2019 JMK	Escape quotation marks -->
+	<!-- 23.02.2019 JMK	Remove translation for some characters in json keys -->
 
 
 	<xsl:variable name="allDataCardinalities" select="/node()/simple_instance[type = 'Data_Attribute_Cardinality']"/>
@@ -49,6 +51,9 @@
 	<xsl:variable name="allDataObjects" select="/node()/simple_instance[type = 'Data_Object']"/>
 
 	<xsl:variable name="modelSubject" select="$allDataObjects[name = $param1]"/>
+	<xsl:variable name="textModelSubjectName">
+	  
+	</xsl:variable>
 	<xsl:variable name="modelSubjectName">
 		<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="$modelSubject"/>
@@ -223,9 +228,12 @@
 	<xsl:template mode="RenderDataObjectUML" match="node()">
 		<xsl:variable name="currentDataObject" select="current()"/>
 		<xsl:variable name="dataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$currentDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$currentDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsDataObjectName" select="eas:get_js_name_for_data_object($dataObjectName)"/>
+		<xsl:variable name="jsDataObjectName" select="eas:get_js_name_for_data_object($currentDataObject)"/>
 		<xsl:variable name="primitiveAttributes" select="$inScopeDataAttributes[(name = $currentDataObject/own_slot_value[slot_reference = 'contained_data_attributes']/value) and (own_slot_value[slot_reference = 'type_for_data_attribute']/value = $allPrimitiveDataTypes/name)]"/>
 		<xsl:variable name="umlClassType">
 			<xsl:choose>
@@ -246,7 +254,7 @@
 				<xsl:with-param name="theXSL" select="$dataObjectModelReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:value-of select="translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', '')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		'<xsl:value-of select="$jsDataObjectName"/>': new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 			
 		</xsl:text>
@@ -256,11 +264,17 @@
 	<!-- TEMPLATE TO RENDER A DATA OBJECT ATTRIBUTE AS A UML CLASS ATTRIBUTE -->
 	<xsl:template mode="RenderPrimitiveDataAttributeUML" match="node()">
 		<xsl:variable name="dataAttributeName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="current()"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="primitiveType" select="$allPrimitiveDataTypes[name = current()/own_slot_value[slot_reference = 'type_for_data_attribute']/value]"/>
 		<xsl:variable name="primitiveTypeName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$primitiveType"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$primitiveType"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable> '<xsl:value-of select="$dataAttributeName"/>: <xsl:value-of select="$primitiveTypeName"/>'<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
@@ -270,20 +284,29 @@
 	<!-- TEMPLATE TO RENDER AN ASSOCIATION BETWEEN DATA OBJECTS -->
 	<xsl:template mode="RenderObjectAssociations" match="node()">
 		<xsl:variable name="attName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="current()"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="attCardinality" select="$allDataCardinalities[name = current()/own_slot_value[slot_reference = 'data_attribute_cardinality']/value]"/>
 		<xsl:variable name="cardinalitySymbol" select="$attCardinality/own_slot_value[slot_reference = 'enumeration_value']/value"/>
 		<xsl:variable name="sourceDataObject" select="$allDataObjects[name = current()/own_slot_value[slot_reference = 'belongs_to_data_object']/value]"/>
 		<xsl:variable name="sourceDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$sourceDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$sourceDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsSourceDataObjectName" select="eas:get_js_name_for_data_object($sourceDataObjectName)"/>
+		<xsl:variable name="jsSourceDataObjectName" select="eas:get_js_name_for_data_object($sourceDataObject)"/>
 		<xsl:variable name="targetDataObject" select="$allDataObjects[name = current()/own_slot_value[slot_reference = 'type_for_data_attribute']/value]"/>
 		<xsl:variable name="targetDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$targetDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$targetDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsTargetDataObjectName" select="eas:get_js_name_for_data_object(translate(translate(translate($targetDataObjectName, '-', ''), ' ', ''), ',', ''))"/> new uml.Association({ source: { id: classes.<xsl:value-of select="translate(translate(translate($jsSourceDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate($jsTargetDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, labels: [ { position: -20, attrs: { text: { text: '<xsl:value-of select="$cardinalitySymbol"/>' } }}, { position: .2, attrs: { text: { text: '<xsl:value-of select="lower-case($attName)"/>' } } } ]})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:variable name="jsTargetDataObjectName" select="eas:get_js_name_for_data_object($targetDataObject)"/> new uml.Association({ source: { id: classes['<xsl:value-of select="$jsSourceDataObjectName"/>'].id }, target: { id: classes['<xsl:value-of select="$jsTargetDataObjectName"/>'].id }, labels: [ { position: -20, attrs: { text: { text: '<xsl:value-of select="$cardinalitySymbol"/>' } }}, { position: .2, attrs: { text: { text: '<xsl:value-of select="lower-case($attName)"/>' } } } ]})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
 	</xsl:template>
@@ -293,14 +316,20 @@
 	<xsl:template mode="RenderObjectGeneralisations" match="node()">
 		<xsl:variable name="childDataObject" select="current()"/>
 		<xsl:variable name="childDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$childDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$childDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsChildDataObjectName" select="eas:get_js_name_for_data_object($childDataObjectName)"/>
+		<xsl:variable name="jsChildDataObjectName" select="eas:get_js_name_for_data_object($childDataObject)"/>
 		<xsl:variable name="parentDataObject" select="$modelSubject"/>
 		<xsl:variable name="parentDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parentDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$parentDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsParentDataObjectName" select="eas:get_js_name_for_data_object(translate(translate(translate($parentDataObjectName, '-', ''), ' ', ''), ',', ''))"/> new uml.Generalization({ source: { id: classes.<xsl:value-of select="translate(translate(translate($jsChildDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate($jsParentDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:variable name="jsParentDataObjectName" select="$parentDataObject/name"/> new uml.Generalization({ source: { id: classes['<xsl:value-of select="$jsChildDataObjectName"/>'].id }, target: { id: classes['<xsl:value-of select="$jsParentDataObjectName"/>'].id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
 	</xsl:template>
@@ -310,37 +339,54 @@
 	<xsl:template mode="RenderObjectSpecialisations" match="node()">
 		<xsl:variable name="parentDataObject" select="current()"/>
 		<xsl:variable name="parentDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parentDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$parentDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsParentDataObjectName" select="eas:get_js_name_for_data_object($parentDataObjectName)"/>
+		<xsl:variable name="jsParentDataObjectName" select="eas:get_js_name_for_data_object($parentDataObject)"/>
 		<xsl:variable name="childDataObject" select="$modelSubject"/>
+		<xsl:variable name="childDataObjectId" select="$modelSubject/name"/>
 		<xsl:variable name="childDataObjectName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$childDataObject"/></xsl:call-template>
+		  <xsl:call-template name="RenderMultiLangInstanceName">
+		    <xsl:with-param name="theSubjectInstance" select="$childDataObject"/>
+		    <xsl:with-param name="isRenderAsJSString" select= "true()"/>
+		  </xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsChildDataObjectName" select="eas:get_js_name_for_data_object(translate(translate(translate($childDataObjectName, '-', ''), ' ', ''), ',', ''))"/> new uml.Generalization({ source: { id: classes.<xsl:value-of select="translate(translate(translate($jsChildDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate($jsParentDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:variable name="jsChildDataObjectName" select="$childDataObjectId"/> new uml.Generalization({ source: { id: classes['<xsl:value-of select="$jsChildDataObjectName"/>'].id }, target: { id: classes['<xsl:value-of select="$jsParentDataObjectName"/>'].id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
 	</xsl:template>
 
 
 	<!-- FUNCTION THAT RETURNS A LOWER CASE STRING WITHOUT ANY SPACES FOR A DATA OBJECT NAME -->
-	<xsl:function as="xs:string" name="eas:get_js_name_for_data_object">
-		<xsl:param name="dataObjectName"/>
+	<!-- JMK : what's the very purpose of this mess ?
+	     It seems that the author forgot that you can use a string map notation
+	     (such as : anObject['a vèry compl&_çà (((())) syntax']) instead of the dotted
+	     notation (such as anObject.collSyntax) for attribute access in javascript.
+	     So the only unallowed char in javascript attribute access is "'" ... a character
+	     whose probability of occurrence in protege ids is rather low :)
 
-		<xsl:variable name="lowerCaseName" select="lower-case($dataObjectName)"/>
+	-->
+	<xsl:function as="xs:string" name="eas:get_js_name_for_data_object">
+		<xsl:param name="dataObject" as="element(simple_instance)"/>
+		<!--
+		<xsl:variable name="lowerCaseName" select="lower-case($dataObject/name)"/>
 		<xsl:variable name="noOpenBrackets" select="translate($lowerCaseName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="translate($noCloseBrackets, ' ', '')"/>
+		-->
+		<xsl:value-of select="translate($dataObject/name,'&quot;','')"/>
 
 	</xsl:function>
 
 	<!-- FUNCTION THAT RETURNS A LOWER CASE STRING WITHOUT ANY SPACES FOR A DATA OBJECT NAME -->
 	<xsl:function as="xs:string" name="eas:no_specials_js_name_for_data_object">
-		<xsl:param name="dataObjectName"/>
-
+		<xsl:param name="dataObject" as="element(simple_instance)"/>
+		<!--
 		<xsl:variable name="noOpenBrackets" select="translate($dataObjectName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="$noCloseBrackets"/>
+		-->
+		<xsl:value-of select="$dataObject/name"/>
 
 	</xsl:function>
 
