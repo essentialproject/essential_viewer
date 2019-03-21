@@ -1105,6 +1105,7 @@
     -->
 	<xsl:template name="RenderMultiLangInstanceName">
 		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
 		<!-- First perform user clearance check -->
@@ -1118,15 +1119,19 @@
 				<xsl:value-of>
 					<xsl:choose>
 						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-							<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+						  <xsl:variable name="unescapedText" select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+						  <xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unescapedText) else $unescapedText" disable-output-escaping="yes"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:choose>
 								<xsl:when test="count($instanceSynonym) > 0">
-									<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+								  <xsl:variable name="unescapedText" select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+								  <xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unescapedText) else $unescapedText" disable-output-escaping="yes"/>
+								  
 								</xsl:when>
 								<xsl:otherwise>
-									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+								  <xsl:variable name="unescapedText"  select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+								  <xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unescapedText) else $unescapedText" disable-output-escaping="yes"/>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:otherwise>
