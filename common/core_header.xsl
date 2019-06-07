@@ -93,6 +93,35 @@
 				});				
 			</script>
 
+		<!-- Piwik -->
+		<xsl:if test="$eipMode = 'true'">
+			<xsl:variable name="userEmail">
+				<xsl:value-of select="$userData//user:email"/>
+			</xsl:variable>
+			<xsl:variable name="anonUser" select="concat('user@', substring-after($userEmail, '@'))"/>
+			<script type="text/javascript">
+                        var _paq = _paq || [];
+                        var userTrack = '<xsl:value-of select="$anonUser"/>';
+                          _paq.push(["setDomains", ["*.essentialintelligence.com"]]);
+                          _paq.push(['setUserId', userTrack]);
+                          _paq.push(['trackPageView']);
+                          _paq.push(['enableLinkTracking']);
+                          _paq.push(['setSecureCookie', true]);
+                          (function() {
+                            var u="https://e-asolutions.net/piwik/";
+                            _paq.push(['setTrackerUrl', u+'piwik.php']);
+                            _paq.push(['setSiteId', 1]);
+                            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+                          })();
+                </script>
+			<noscript>
+				<p>
+					<img src="https://e-asolutions.net/piwik/piwik.php?idsite=1" style="border:0;" alt=""/>
+				</p>
+			</noscript>
+		</xsl:if>
+		<!-- End Piwik Code -->
 
 		<xsl:text disable-output-escaping="yes">&lt;!--[if lt IE 9]&gt;&lt;div class=&quot;bg-warning&quot;&gt;&lt;div class=&quot;container-fluid alignCentre&quot;&gt;&lt;em&gt;Oops! It looks like you&apos;re using Internet Explorer 8. Essential Viewer requires a modern web browser to function properly.&lt;/em&gt;&lt;/div&gt;&lt;/div&gt;&lt;![endif]--&gt;</xsl:text>
 		<nav class="app-brand-header">

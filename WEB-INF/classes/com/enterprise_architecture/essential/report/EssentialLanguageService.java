@@ -1,5 +1,5 @@
 /**
- * Copyright (c)2012-2013 Enterprise Architecture Solutions ltd. and the Essential Project
+ * Copyright (c)2012-2018 Enterprise Architecture Solutions ltd. and the Essential Project
  * contributors.
  * This file is part of Essential Architecture Manager, 
  * the Essential Architecture Meta Model and The Essential Project.
@@ -22,11 +22,13 @@
  * 					caching
  * 05.03.2013	JWC Back to the re-direct approach to ensure that the target page (after selecting
  * 					language) can be cached.
+ * 03.07.2018	JWC Process the currentPageLink to plug open redirection vulnerability
  * 
  */
 package com.enterprise_architecture.essential.report;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -97,8 +99,16 @@ public class EssentialLanguageService extends HttpServlet implements javax.servl
 		// Set the cookie as required		
 		aCookie.setLanguage(theRequest, theResponse, aSelectedLanguage);
 	
+		// Trace
+		// System.out.println("EssentialLanguageService.doGet(): Redirect URL = " + aReturnURL);
+		
 		// Return them to the page that they came from
-		theResponse.sendRedirect(aReturnURL);
+		// 1. Re-work the full URL so that the host and port match the current server
+		String aValidRedirectURL = computeRedirectURL(theRequest, aReturnURL);
+		
+		// Trace
+		// System.out.println("EssentialLanguageService.doGet(): Computed Redirect URL = " + aValidRedirectURL);
+		theResponse.sendRedirect(aValidRedirectURL);
 		//theRequest.getRequestDispatcher(aReturnURL).forward(theRequest, theResponse);
 	}
 	
@@ -113,5 +123,51 @@ public class EssentialLanguageService extends HttpServlet implements javax.servl
 	{
 		// Forward to doGet - as servlet supports POST and GET similarly and ensures consistency
 		doGet(theRequest, theResponse);
+	}
+	
+	/**
+	 * Ensure that theSpecifiedURL is a URL that corresponds to the server on which theRequest was made
+	 * 
+	 * @param theRequest the request to this server from the client
+	 * @param theSpecifiedURL the specified return URL that will be validated and adjusted if required
+	 * @return the specified URL string, updated if required, to ensure that the host path matches that of theRequest 
+	 */
+	private String computeRedirectURL(HttpServletRequest theRequest, String theSpecifiedURL)
+	{
+		String aValidRedirectURL = "";
+		
+		String aRequestURL = theRequest.getRequestURL().toString();
+		try
+		{
+			// Get the specified query from theSpecifiedURL, get the query and build the correct URL
+			URL aSpecifiedURL = new URL(theSpecifiedURL);
+			String aQuery = aSpecifiedURL.getQuery();
+			
+			// Trace
+			//System.out.println("User Query: " + aQuery);
+			
+			// Process theRequestURL to get just the protocol, host and port
+			URL aReqURL = new URL(aRequestURL);
+			String aProtocol = aReqURL.getProtocol();
+			String aHost = aReqURL.getHost();
+			int aPort = aReqURL.getPort();
+			String aPath = aSpecifiedURL.getPath();
+			URL aValidRequestStart = new URL(aProtocol, aHost, aPort, aPath + "?" + aQuery); 
+			
+			// Trace
+			//System.out.println("Requested URL prefix: " + aReqURL.toString());
+			// Trace
+			//System.out.println("Computed URL: " + aValidRequestStart.toString());
+			
+			// Combine the current context request URL with the specified query
+			aValidRedirectURL = aValidRequestStart.toString();			
+		}
+		catch(Exception anEx)
+		{
+			// Make sure we return something in the event of a URL problem
+			aValidRedirectURL = aRequestURL;
+		}
+		
+		return aValidRedirectURL;
 	}
 }

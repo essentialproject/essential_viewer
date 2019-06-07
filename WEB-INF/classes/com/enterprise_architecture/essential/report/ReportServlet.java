@@ -52,6 +52,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+//import org.owasp.html.PolicyFactory;
+//import org.owasp.html.Sanitizers;
+
 
 /**
  * Servlet implementation class for Servlet: ReportServlet
@@ -197,8 +200,13 @@ import javax.servlet.http.HttpSession;
 		boolean isSuccess = anEngine.generateView(request, response, aStreamResult);
 		if(isSuccess)
 		{
+			// Use OWASP Sanitizer
+			//PolicyFactory aPolicy = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
+			//String aSafeHTML = aPolicy.sanitize(aStreamResult.toString());
+			
 			// Write the resulting view to the response.
-			response.getWriter().print(aStreamResult.toString());
+			//response.getWriter().print(aSafeHTML);
+			response.getWriter().print(aStreamResult.toString());			
 			response.getWriter().flush();
 		}
 		// On error, the Essential Viewer Engine error handling will respond to the client.

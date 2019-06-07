@@ -26,14 +26,14 @@
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Roadmap_Model')"/>
+	<xsl:variable name="linkClasses" select="('Roadmap_Model', 'Roadmap')"/>
 	<xsl:variable name="pageLabel">
 		<xsl:value-of select="eas:i18n('Roadmap Catalogue by Layer')"/>
 	</xsl:variable>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
 	<xsl:variable name="roadmapListByNameCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Roadmap Catalogue by Name')]"/>
-	<xsl:variable name="allInstances" select="/node()/simple_instance[type = 'Roadmap_Model']"/>
+	<xsl:variable name="allInstances" select="/node()/simple_instance[type = ('Roadmap_Model', 'Roadmap')]"/>
 	<xsl:variable name="layerTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Enterprise Architecture Layers')]"/>
 	<xsl:variable name="layerTaxonomyTerms" select="/node()/simple_instance[own_slot_value[slot_reference = 'term_in_taxonomy']/value = $layerTaxonomy/name]"/>
 	<xsl:variable name="eaArchViewsTaxonomyTerm" select="$layerTaxonomyTerms[(own_slot_value[slot_reference = 'name']/value = 'Cross-Domain Architecture Layer')]"/>
@@ -65,6 +65,7 @@
 	<!-- 18 Jan 2012 - NJW Created -->
 	<!-- 26.01.2012	JWC Fixed the filter label -->
 	<!-- 27.01.2012 JWC Hide links to Views that have no manual page -->
+	<!-- 07.02.2019 JP  Updated to support new Roadmap class	 -->
 
 
 	<xsl:template match="knowledge_base">
@@ -205,7 +206,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>
@@ -238,7 +239,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>
@@ -271,7 +272,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>
@@ -304,7 +305,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>
@@ -337,7 +338,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>
@@ -371,7 +372,7 @@
 						<tr>
 							<td colspan="2">
 								<em>
-									<xsl:value-of select="eas:i18n('No Roadmap Models defined')"/>
+									<xsl:value-of select="eas:i18n('No Roadmaps defined')"/>
 								</em>
 							</td>
 						</tr>

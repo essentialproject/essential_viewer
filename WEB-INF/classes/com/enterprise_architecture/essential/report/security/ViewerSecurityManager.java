@@ -131,6 +131,8 @@ public class ViewerSecurityManager
 	
 	private static final String AUTHN_SERVER_PROPERTIES_FILE = "/WEB-INF/security/.authn-server/authn-server.properties";
 	
+	private static final String AUTHN_SERVER_BASE_URL = "loginService.base.url";
+	
 	private static final String AUTHN_STATE_TOKEN_SIGNING_KEY = "loginService.stateToken.signingKey";
 	
 	private static final String AUTHN_SERVER_LOGIN_URL = "loginService.login.url";
@@ -204,6 +206,14 @@ public class ViewerSecurityManager
 			System.err.println("ViewerSecurityManager Constructor failed. Could not load AuthN Server Properties");
 		}
 		
+	}
+	
+	/**
+	 * property Getters
+	 * @return get the AuthN Server Login URL
+	 */
+	public String getPropsAuthnServerBaseUrl() {
+		return itsAuthnServerProperties.getProperty(AUTHN_SERVER_BASE_URL);
 	}
 	
 	/**
@@ -396,7 +406,7 @@ public class ViewerSecurityManager
 			if(aViewerURL.endsWith("/"))
 			{
 				aViewerURL = aViewerURL.substring(0, aViewerURL.length()-1);				
-			}
+			}			
 			if(isGroupForViewer(theViewerName, aViewerURL))
 			{
 				// Check that account can access repository if the repository URI is not empty
@@ -453,6 +463,11 @@ public class ViewerSecurityManager
 			// DEbug test code
 			//System.out.println("Found user has permission to access repository: " + theRepositoryURI);
 			// We only need one valid record for success			
+		}
+		else
+		{
+			// Log that the user has not been authorized to access the repository
+			System.out.println("ViewerSecurityManager.isUserAuthorisedForRepository(). User: " + theUserURI + " not authorized for repository: " + theRepositoryURI);
 		}
 		
 		// Release the connection to the Graph Database
@@ -561,9 +576,14 @@ public class ViewerSecurityManager
 	{
 		boolean isSysAdmin = false;
 		
+		// DEBUG
+		// System.out.println("ViewerSecurityManager.isUserSystemAdminForViewer(): Test user authZ-ised with account = " + theAccount);
 		// First test that the user is authorised to access the specified Viewer
 		boolean canAccessViewer = isUserAuthorisedForViewer(theAccount, "", theViewerName);
 		
+		// DEBUG
+		// System.out.println("ViewerSecurityManager.isUserSystemAdminForViewer(): Viewer = " + theViewerName);
+				
 		if(canAccessViewer)
 		{
 			// Check that they have system admin role
@@ -572,11 +592,17 @@ public class ViewerSecurityManager
 			// Get the user account
 			String anAccountURI = aUser.getUri();
 			
+			// DEBUG
+			// System.out.println("ViewerSecurityManager.isUserSystemAdminForViewer(): User can access viewer. User URI = " + anAccountURI);	
+			
 			// Connect to the Graph Database and check user AuthZ
 			Driver aGraphDBDriver = GraphDatabase.driver(itsAuthZProperties.getProperty(GRAPH_DB_URI_PROPERTY), 
 														 AuthTokens.basic(itsAuthZProperties.getProperty(GRAPH_DB_USER_PROPERTY), 
 																	 	  itsAuthZProperties.getProperty(GRAPH_DB_PWD_PROPERTY)));
 			Session aGraphDBSession = aGraphDBDriver.session();
+			
+			// DEBUG
+			// System.out.println("ViewerSecurityManager.isUserSystemAdminForViewer(): Test user authZ-ised with account = " + theAccount);
 			
 			// Query the GraphDB
 			StatementResult aResult = aGraphDBSession.run("MATCH (u:User) " +
@@ -591,10 +617,13 @@ public class ViewerSecurityManager
 				isSysAdmin = true;
 				
 				// DEbug test code
-				//System.out.println("Found user has permission for import. User URI: " + anAccountURI);
+				// System.out.println("Found user has permission for import. User URI: " + anAccountURI);
 				// We only need one valid record for success
 			}
 			
+			// DEBUG
+			// System.out.println("ViewerSecurityManager.isUserSystemAdminForViewer(): Tested permission, cleaning up...");
+						
 
 			// Release the connection to the Graph Database
 			aGraphDBSession.close();
@@ -746,7 +775,12 @@ public class ViewerSecurityManager
 			aGraphDBSession = aGraphDBDriver.session();
 
 			// Process the user account data
+			// DEBUG
+			//System.out.println("ViewerSecurityManager.getAccountFromUserManager(): Getting User Data for user ID = " + theUserId);			
 			UserDataManager aUserData = new UserDataManager(aGraphDBSession, theUserId);
+			// DEBUG
+			//System.out.println("ViewerSecurityManager.getAccountFromUserManager(): UserData XML = " + aUserData.getUserXML());			
+						
 			anAccountXML = aUserData.getUserXML();
 			//System.out.println(anAccountXML);
 		}
@@ -874,6 +908,12 @@ public class ViewerSecurityManager
 		// 01.03.2017 JWC - Trim off the scheme part of both URLs before comparing
 		int aViewerURLStart = theViewerName.indexOf(URL_COMPARISON_START_STRING);		
 		String aViewerURL = theViewerName.substring(aViewerURLStart);
+		
+		// If there's a trailing '/' in the viewer URL, remove it
+		if(aViewerURL.endsWith("/"))
+		{
+			aViewerURL = aViewerURL.substring(0, aViewerURL.length()-1);				
+		}
 		
 		//System.out.println("Requested Viewer URL is: " + aViewerURL);
 		
@@ -1023,11 +1063,16 @@ public class ViewerSecurityManager
 		CloseableHttpClient client = null;
 		try {
 			String apiKey = getPropsAuthnApiKey();
-			String baseUrl = "https://"+theRequest.getHeader("host");
+			String baseUrl = getPropsAuthnServerBaseUrl();			
 			String userProfileUrl = baseUrl+getPropsAuthnServerUserProfileUrl();
 			userProfileUrl = addPathParameterToUrl(userProfileUrl, "{tenantId}", tenantId);
 			userProfileUrl = addPathParameterToUrl(userProfileUrl, "{userId}", userId);
 			validateUrl(userProfileUrl);
+			
+			
+			//trace
+			//System.out.println(">>>>> getUserProfile from Login App URL: "+userProfileUrl);
+			
 			URIBuilder builder = new URIBuilder(userProfileUrl);
 			client = HttpClients.createDefault();
 			HttpGet httpGet = new HttpGet(builder.build());
@@ -1042,6 +1087,11 @@ public class ViewerSecurityManager
 				throw new IllegalStateException(status+":"+responseStr);
 			}
 			EntityUtils.consume(entity);
+			
+			//trace
+			//System.out.println(">>>>> getUserProfile response: "+responseStr);
+
+			
 			return new ObjectMapper().readValue(responseStr, UserProfile.class);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());

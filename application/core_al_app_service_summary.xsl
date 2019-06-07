@@ -41,6 +41,7 @@
 	<!-- 25.11.2009	JWC	Added the Static Application Service Architecture image -->
 	<!-- 05.04.2010 JWC	Added panel to show how a composite service is composed -->
 	<!-- 25.10.2016 JP	Highlighted standard Applicatons for the App Service in the Implementing Applications ection -->
+	<!-- 12.02.2019	JP  Updated to use cpmmon Strategic Plans template-->
 
 
 	<!-- param1 = the application service that is being summarised -->
@@ -684,7 +685,7 @@
 					</h2>
 
 					<div class="content-section">
-						<xsl:apply-templates select="$currentService/name" mode="StrategicPlansForElement"/>
+						<xsl:apply-templates select="$currentService" mode="StrategicPlansForElement"/>
 					</div>
 					<hr/>
 				</div>
@@ -932,8 +933,8 @@
 		</tr>
 	</xsl:template>
 
-	<!-- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -->
-	<!-- Given a reference (instance ID) to an element, find all its plans and render each -->
+	<!--<!-\- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -\->
+	<!-\- Given a reference (instance ID) to an element, find all its plans and render each -\->
 	<xsl:template match="node()" mode="StrategicPlansForElement">
 		<xsl:variable name="anElement">
 			<xsl:value-of select="node()"/>
@@ -948,28 +949,28 @@
 		<xsl:variable name="aStragegicPlanViaRelSet" select="/node()/simple_instance[name = $aStrategicPlanRelSet/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
 
 		<xsl:variable name="aStrategicPlanSet" select="$aDirectStrategicPlanSet union $aStragegicPlanViaRelSet"/>
-		<!-- Test to see if any plans are defined yet -->
+		<!-\- Test to see if any plans are defined yet -\->
 		<xsl:choose>
 			<xsl:when test="count($aStrategicPlanSet) > 0">
-				<!-- Show active plans first -->
+				<!-\- Show active plans first -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $anActivePlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anActivePlan/name"/>
 					</xsl:with-param>
 				</xsl:apply-templates>
-				<!-- Then the future -->
+				<!-\- Then the future -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $aFuturePlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$aFuturePlan/name"/>
 					</xsl:with-param>
 				</xsl:apply-templates>
-				<!-- Then the old -->
+				<!-\- Then the old -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $anOldPlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anOldPlan/name"/>
 					</xsl:with-param>
 				</xsl:apply-templates>
-				<!-- Then any without a status -->
+				<!-\- Then any without a status -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[count(own_slot_value[slot_reference = 'strategic_plan_status']/value) = 0]" mode="StrategicPlanDetailsTable"/>
 
 			</xsl:when>
@@ -980,9 +981,9 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- Render the details of a particular strategic plan in a small table -->
-	<!-- No details of plan inter-dependencies is presented here. However, a link 
-        to the plan definition page is provided where those details will be shown -->
+	<!-\- Render the details of a particular strategic plan in a small table -\->
+	<!-\- No details of plan inter-dependencies is presented here. However, a link 
+        to the plan definition page is provided where those details will be shown -\->
 	<xsl:template match="node()" mode="StrategicPlanDetailsTable">
 		<xsl:param name="theStatus" select="()"/>
 
@@ -1024,7 +1025,7 @@
 			</tbody>
 		</table>
 
-	</xsl:template>
+	</xsl:template>-->
 
 	<!-- Render Popup  Containing the list of Orgs that scope an application standard -->
 	<xsl:template name="RenderStandardAppPopup">

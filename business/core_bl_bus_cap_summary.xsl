@@ -210,7 +210,9 @@
 										</em>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$currentBusCapDescription"/>
+										<xsl:call-template name="RenderMultiLangInstanceDescription">
+											<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
+										</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>

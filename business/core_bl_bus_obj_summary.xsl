@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential">
+<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential">
 
 	<xsl:import href="../common/core_strategic_plans.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
@@ -40,11 +40,30 @@
 
 	<xsl:variable name="busObjOrgOwners" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 	<xsl:variable name="busObjIndividualOwners" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_owners']/value]"/>
-	<xsl:variable name="busObjTargetDate" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
+	
+	<xsl:variable name="targetISODate" select="$currentObj/own_slot_value[slot_reference = 'bo_target_date_iso_8601']/value"/>
+	<xsl:variable name="targetEssDateId" select="$currentObj/own_slot_value[slot_reference = 'bo_target_date']/value"/>
+	<xsl:variable name="jsTargetDate">
+		<xsl:choose>
+			<xsl:when test="string-length($targetISODate) > 0">
+				<xsl:value-of select="xs:date($targetISODate)"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="objTargetDate" select="/node()/simple_instance[name = $targetEssDateId]"/>
+				<xsl:value-of select="eas:get_end_date_for_essential_time($objTargetDate)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
 	<xsl:variable name="displayTargetDate">
-		<xsl:call-template name="FullFormatDate">
-			<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($busObjTargetDate)"/>
-		</xsl:call-template>
+		<xsl:choose>
+			<xsl:when test="count($targetISODate) + count($targetEssDateId) > 0">
+				<xsl:call-template name="FullFormatDate">
+					<xsl:with-param name="theDate" select="$jsTargetDate"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise></xsl:otherwise>
+		</xsl:choose>
 	</xsl:variable>
 
 	<xsl:variable name="allBusinessServiceQualities" select="/node()/simple_instance[type = 'Business_Service_Quality']"/>
@@ -155,7 +174,7 @@
 					</h2>
 					<p>
 						<xsl:choose>
-							<xsl:when test="count($displayTargetDate) > 0">
+							<xsl:when test="string-length($displayTargetDate) > 0">
 								<xsl:value-of select="$displayTargetDate"/>
 							</xsl:when>
 							<xsl:otherwise>

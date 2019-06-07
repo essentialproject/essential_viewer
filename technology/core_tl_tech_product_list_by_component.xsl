@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
+	<xsl:include href="../common/datatables_includes.xsl"/>
 
-	<!--<xsl:include href="../technology/menus/core_tech_product_menu.xsl" />-->
+
 
 	<xsl:output method="html"/>
 
 	<!--
-		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -34,9 +35,12 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
+	<!-- 08.04.2019 JP Updated to be roadmap enabled -->
 
 	<!-- param4 = the optional taxonomy term used to scope the view -->
-	<!--<xsl:param name="param4" />-->
+	<xsl:param name="param4"/>
+
+	<!-- Get all of the Application Services in the repository -->
 
 	<!-- START GENERIC CATALOGUE PARAMETERS -->
 	<xsl:param name="targetReportId"/>
@@ -50,44 +54,55 @@
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="instanceClassName" select="('Technology_Product')"/>
 	<xsl:variable name="linkClasses" select="('Technology_Product', 'Technology_Component')"/>
+	
+	
+	<xsl:variable name="allInstances" select="/node()/simple_instance[supertype = $instanceClassName or type = $instanceClassName]"/>
+	<xsl:variable name="allIntermediateCategories" select="/node()/simple_instance[name = $allInstances/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
+	<xsl:variable name="allInstanceCategories" select="/node()/simple_instance[name = $allIntermediateCategories/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
+	<xsl:variable name="orphanInstances" select="$allInstances[not(own_slot_value[slot_reference = 'implements_technology_components']/value)]"/>
+	
+	<xsl:variable name="catalogueTitle" select="eas:i18n('Technology Product Catalogue by Component')"/>
+	<xsl:variable name="catalogueSectionTitle" select="eas:i18n('Technology Product Catalogue')"/>
+	<xsl:variable name="catalogueIntro" select="eas:i18n('Please click on one of the Technology Products below to navigate to the required view')"/>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
-	<xsl:variable name="pageLabel">
-		<xsl:value-of select="eas:i18n('Technology Product Catalogue by Component')"/>
-	</xsl:variable>
-	<xsl:variable name="techProdListByVendorCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Technology Product Catalogue by Vendor')]"/>
-	<xsl:variable name="techProdListByCapCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Technology Product Catalogue by Technology Capability')]"/>
+	<!-- START CATALOGUE SPECIFIC VARIABLES -->
+	<xsl:variable name="techProdListByVendorCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Vendor')"/>
+	<xsl:variable name="techProdListByCapCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Technology Capability')"/>
 	<xsl:variable name="techProdListAsTableCatalogue" select="eas:get_report_by_name('Core: Technology Product Cataloigue as Table')"/>
-	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type = 'Technology_Product_Role']"/>
+	
+	<!-- END CATALOGUE SPECIFIC VARIABLES -->
 
+	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
+	<xsl:variable name="allRoadmapInstances" select="($allInstances)"/>
+	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
 		<xsl:choose>
 			<xsl:when test="string-length($viewScopeTermIds) > 0">
 				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeTechComps" select="$allTechComps[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
-					<xsl:with-param name="inScopeTechProds" select="$allTechProds[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
-					<xsl:with-param name="inScopeTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
+					<xsl:with-param name="inScopeInstances" select="$allInstances[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeTechComps" select="$allTechComps"/>
-					<xsl:with-param name="inScopeTechProds" select="$allTechProds"/>
-					<xsl:with-param name="inScopeTechProdRoles" select="$allTechProdRoles"/>
+					<xsl:with-param name="inScopeInstances" select="$allInstances"/>
 				</xsl:call-template>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template name="BuildPage">
-		<xsl:param name="inScopeTechComps"/>
-		<xsl:param name="inScopeTechProds"/>
-		<xsl:param name="inScopeTechProdRoles"/>
+		<xsl:param name="pageLabel">
+			<xsl:value-of select="$catalogueTitle"/>
+		</xsl:param>
+		<xsl:param name="orgName">
+			<xsl:value-of select="eas:i18n('the enterprise')"/>
+		</xsl:param>
+		<xsl:param name="inScopeInstances"/>
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
@@ -96,14 +111,8 @@
 					<xsl:value-of select="$pageLabel"/>
 				</title>
 				<script type="text/javascript" src="js/jquery.columnizer.js"/>
-				<!--script to turn the app providers list into columns-->
-				<script>				
-					$(function(){					
-						if (document.documentElement.clientWidth &gt; 767) {
-							$('.catalogItems').columnize({columns: 2});
-						}			
-					});
-				</script>
+				<xsl:call-template name="dataTablesLibrary"/>
+
 				<!--script to support smooth scroll back to top of page-->
 				<script type="text/javascript">
 					$(document).ready(function() {
@@ -113,19 +122,36 @@
 					    });
 					});
 				</script>
+				
+				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
+				<xsl:call-template name="RenderRoadmapJSLibraries">
+					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
+				</xsl:call-template>
+				
 			</head>
 			<body>
-				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, WHERE REQUIRED -->
-				<xsl:for-each select="$linkClasses">
-					<xsl:call-template name="RenderInstanceLinkJavascript">
-						<xsl:with-param name="instanceClassName" select="current()"/>
-						<xsl:with-param name="targetMenu" select="()"/>
-					</xsl:call-template>
-				</xsl:for-each>
-
+				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
+				<xsl:if test="$isRoadmapEnabled">
+					<xsl:call-template name="RenderRoadmapWidgetButton"/>
+				</xsl:if>
+				
+				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, IF REQUIRED -->
+				<xsl:call-template name="RenderInstanceLinkJavascript">
+					<xsl:with-param name="instanceClassName" select="$linkClasses"/>
+					<xsl:with-param name="targetMenu" select="$targetMenu"/>
+				</xsl:call-template>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
+				
+				<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
+				<div id="ess-roadmap-content-container">
+					<xsl:call-template name="RenderCommonRoadmapJavscript">
+						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
+						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+					</xsl:call-template>
+					<div class="clearfix"></div>
+				</div>
+				
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
@@ -155,7 +181,7 @@
 										</xsl:call-template>
 									</span>
 									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
+									<span class="text-primary">
 										<xsl:call-template name="RenderCatalogueLink">
 											<xsl:with-param name="theCatalogue" select="$techProdListByVendorCatalogue"/>
 											<xsl:with-param name="theXML" select="$reposXML"/>
@@ -179,470 +205,255 @@
 								</div>
 							</div>
 						</div>
-
-
-						<!--Setup Description Section-->
 					</div>
 					<div class="row">
-						<div id="sectionCatalogue">
-							<div class="col-xs-12">
-								<div class="sectionIcon">
-									<i class="fa fa-list-ul icon-section icon-color"/>
-								</div>
-								<h2 class="text-primary">
-									<xsl:value-of select="eas:i18n('Catalogue')"/>
-								</h2>
-								<p>
-									<xsl:value-of select="eas:i18n('Click on one of the Technology Components or Technology Products below to navigate to the required view')"/>
-								</p>
-								<div class="AlphabetQuickJumpLabel hidden-xs"><xsl:value-of select="eas:i18n('Go to')"/>:&#160;</div>
-								<div class="AlphabetQuickJumpLinks hidden-xs">
-									<a class="AlphabetLinks" href="#section_A">
-										<xsl:value-of select="eas:i18n('A')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_B">
-										<xsl:value-of select="eas:i18n('B')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_C">
-										<xsl:value-of select="eas:i18n('C')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_D">
-										<xsl:value-of select="eas:i18n('D')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_E">
-										<xsl:value-of select="eas:i18n('E')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_F">
-										<xsl:value-of select="eas:i18n('F')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_G">
-										<xsl:value-of select="eas:i18n('G')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_H">
-										<xsl:value-of select="eas:i18n('H')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_I">
-										<xsl:value-of select="eas:i18n('I')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_J">
-										<xsl:value-of select="eas:i18n('J')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_K">
-										<xsl:value-of select="eas:i18n('K')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_L">
-										<xsl:value-of select="eas:i18n('L')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_M">
-										<xsl:value-of select="eas:i18n('M')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_N">
-										<xsl:value-of select="eas:i18n('N')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_O">
-										<xsl:value-of select="eas:i18n('O')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_P">
-										<xsl:value-of select="eas:i18n('P')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_Q">
-										<xsl:value-of select="eas:i18n('Q')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_R">
-										<xsl:value-of select="eas:i18n('R')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_S">
-										<xsl:value-of select="eas:i18n('S')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_T">
-										<xsl:value-of select="eas:i18n('T')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_U">
-										<xsl:value-of select="eas:i18n('U')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_V">
-										<xsl:value-of select="eas:i18n('V')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_W">
-										<xsl:value-of select="eas:i18n('W')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_X">
-										<xsl:value-of select="eas:i18n('X')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_Y">
-										<xsl:value-of select="eas:i18n('Y')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_Z">
-										<xsl:value-of select="eas:i18n('Z')"/>
-									</a>
-									<a class="AlphabetLinks" href="#section_number">#</a>
-								</div>
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'A'"/>
-									<xsl:with-param name="letterLow" select="'a'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'B'"/>
-									<xsl:with-param name="letterLow" select="'b'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'C'"/>
-									<xsl:with-param name="letterLow" select="'c'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'D'"/>
-									<xsl:with-param name="letterLow" select="'d'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'E'"/>
-									<xsl:with-param name="letterLow" select="'e'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'F'"/>
-									<xsl:with-param name="letterLow" select="'f'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'G'"/>
-									<xsl:with-param name="letterLow" select="'g'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'H'"/>
-									<xsl:with-param name="letterLow" select="'h'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'I'"/>
-									<xsl:with-param name="letterLow" select="'i'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'J'"/>
-									<xsl:with-param name="letterLow" select="'j'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'K'"/>
-									<xsl:with-param name="letterLow" select="'k'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'L'"/>
-									<xsl:with-param name="letterLow" select="'l'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'M'"/>
-									<xsl:with-param name="letterLow" select="'m'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'N'"/>
-									<xsl:with-param name="letterLow" select="'n'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'O'"/>
-									<xsl:with-param name="letterLow" select="'o'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'P'"/>
-									<xsl:with-param name="letterLow" select="'p'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'Q'"/>
-									<xsl:with-param name="letterLow" select="'q'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'R'"/>
-									<xsl:with-param name="letterLow" select="'r'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'S'"/>
-									<xsl:with-param name="letterLow" select="'s'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'T'"/>
-									<xsl:with-param name="letterLow" select="'t'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'U'"/>
-									<xsl:with-param name="letterLow" select="'u'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'V'"/>
-									<xsl:with-param name="letterLow" select="'v'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'W'"/>
-									<xsl:with-param name="letterLow" select="'w'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'X'"/>
-									<xsl:with-param name="letterLow" select="'x'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'Y'"/>
-									<xsl:with-param name="letterLow" select="'y'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'Z'"/>
-									<xsl:with-param name="letterLow" select="'z'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<a id="section_number"/>
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'0'"/>
-									<xsl:with-param name="letterLow" select="'0'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'1'"/>
-									<xsl:with-param name="letterLow" select="'1'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'2'"/>
-									<xsl:with-param name="letterLow" select="'2'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'3'"/>
-									<xsl:with-param name="letterLow" select="'3'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'4'"/>
-									<xsl:with-param name="letterLow" select="'4'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'5'"/>
-									<xsl:with-param name="letterLow" select="'5'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'6'"/>
-									<xsl:with-param name="letterLow" select="'6'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'7'"/>
-									<xsl:with-param name="letterLow" select="'7'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'8'"/>
-									<xsl:with-param name="letterLow" select="'8'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
-								<xsl:call-template name="Index">
-									<xsl:with-param name="letterCap" select="'9'"/>
-									<xsl:with-param name="letterLow" select="'9'"/>
-									<xsl:with-param name="inScopeTechComps" select="$inScopeTechComps"/>
-									<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-									<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-								</xsl:call-template>
-
-
+						<!--Setup Description Section-->
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
+
+							<h2 class="text-primary">
+								<xsl:value-of select="$catalogueSectionTitle"/>
+							</h2>
+
+							<p><xsl:value-of select="$catalogueIntro"/>.</p>
+
+							<div class="AlphabetQuickJumpLabel hidden-xs"><xsl:value-of select="eas:i18n('Go to')"/>:</div>
+							<div id="catalogue-section-nav" class="AlphabetQuickJumpLinks hidden-xs"/>
+							
+							<div class="clear"/>
+
+							<diV id="catalogue-section-container"/>							
+
 						</div>
+						<div class="clear"/>
+
 					</div>
 				</div>
+
+				<div class="clear"/>
+
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
+				
+				<!-- ***REQUIRED*** CALL THE ROADMAP CATALOGUE XSL TEMPLATE TO RENDER COMMON JS FUNCTIONS AND HANDLEBARS TEMPLATES -->
+				<xsl:call-template name="RenderCatalogueByCategoryJS">
+					<xsl:with-param name="theInstances" select="$allInstances"/>
+					<xsl:with-param name="orphanInstances" select="$orphanInstances"/>
+					<xsl:with-param name="orphanSubject">Component</xsl:with-param>
+					<xsl:with-param name="theCategories" select="$allInstanceCategories"/>
+					<xsl:with-param name="theDisplaySlots" select="('product_label')"/>
+					<xsl:with-param name="theRoadmapInstances" select="$allRoadmapInstances"/>
+					<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+				</xsl:call-template>
 			</body>
 		</html>
 	</xsl:template>
+	
+	
+	
+	<xsl:template name="RenderCatalogueByCategoryJS">
+		<xsl:param name="theInstances" select="()"/>
+		<xsl:param name="orphanInstances" select="()"/>
+		<xsl:param name="orphanSubject"/>
+		<xsl:param name="theCategories" select="()"/>
+		<xsl:param name="theDisplaySlots" select="()"/>
+		<xsl:param name="theRoadmapInstances" select="()"/>
+		<xsl:param name="isRoadmapEnabled" select="false()"/>
+		
+		<script type="text/javascript">
+			// the list of JSON objects representing the instances in use across the enterprise
+		  	var categories = {
+					categories: [<xsl:apply-templates select="$theCategories" mode="RenderCatalogueCategory">
+						<xsl:with-param name="theRoadmapInstances" select="$theRoadmapInstances"/>
+						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+						<xsl:with-param name="allCatInstances" select="$theInstances"/>
+					</xsl:apply-templates>
+		    	]
+		  	};
+		  	
+		  	var instances = {
+					instances: [<xsl:apply-templates select="$theInstances" mode="RenderCatalogueByNameInstance"><xsl:with-param name="theRoadmapInstances" select="$theRoadmapInstances"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theDisplaySlots" select="$theDisplaySlots"/></xsl:apply-templates>
+		    	]
+		  	};
+		  	
+		  	var orphanInstances = {
+					instances: [<xsl:apply-templates select="$orphanInstances" mode="RenderCatalogueByNameInstance"><xsl:with-param name="theRoadmapInstances" select="$theRoadmapInstances"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theDisplaySlots" select="$theDisplaySlots"/></xsl:apply-templates>
+		    	]
+		  	};
+		  	
+		  	//the list of categories for the current scope
+		  	var inScopeCategories = {
+		  		categories: categories.categories
+		  	};
+		  	
+		  	//the list of instances for the current scope
+		  	var inScopeInstances = {
+		  		instances: instances.instances
+		  	};
+		  	
+		  	//the list of instances for the current scope
+		  	var inScopeOrphans = {
+		  		instances: orphanInstances.instances
+		  	};
+		  	
+		  	var orphanSubject = '<xsl:value-of select="$orphanSubject"/>';
+		  	
+		  	var sectionLabels = [];
+		  	
+		  	var sectionTemplate, sectionNavTemplate;
+		  	
+		  	function initSectionLabels() {
+		  		sectionLabels = [];
+		  		categories.categories.forEach(function (aCat) {
+		  			var firstLetter = aCat.name.charAt(0).toLowerCase();
+		  			if(sectionLabels.indexOf(firstLetter) &lt; 0) {
+		  				sectionLabels.push(firstLetter);
+		  			}
+		  		});
+		  		orphanInstances.instances.forEach(function (anInst) {
+		  			var firstLetter = anInst.name.charAt(0).toLowerCase();
+		  			if(sectionLabels.indexOf(firstLetter) &lt; 0) {
+		  				sectionLabels.push(firstLetter);
+		  			}
+		  		});
+		  		sectionLabels.sort();
+		  	}
+		  	
+		  	//function to create the list of relevant sections for the current scope
+		  	function renderCatalogueSections() {
+		  		var catalogueSections = {
+		  			'sections': []
+		  		}
+		  		
+		  		
+		  		sectionLabels.forEach(function (sectionLetter) {
+		  			var catsForSection = inScopeCategories.categories.filter(aCat => aCat.name.toLowerCase().startsWith(sectionLetter));
+		  			var orphansForSection = inScopeOrphans.instances.filter(anInst => anInst.name.toLowerCase().startsWith(sectionLetter));
+		  			console.log('orphan count for: ' + sectionLetter + ' = ' + orphansForSection.length);
+		  			
+		  			if((catsForSection.length > 0) || (orphansForSection.length > 0)) {
+		  				var aSection = {
+		  					'label': sectionLetter.toUpperCase(),
+		  					'orphanSubject': orphanSubject,
+		  					'orphans': orphansForSection,
+		  					'categories': []
+		  				}
+		  				catsForSection.forEach(function (aCat) {
+		  					//instancesForCat = inScopeInstances.instances.filter(anInst => aCat.instances.indexOf(anInst.id) &lt; 0);
+		  					instancesForCat = getObjectsByIds(inScopeInstances.instances, 'id', aCat.instances)
+		  					var aCatSection = {
+			  					'label': aCat.link,
+			  					'instances': instancesForCat
+			  				}
+			  				aSection.categories.push(aCatSection);
+		  				});
+		  				catalogueSections.sections.push(aSection);
+		  			}			  			
+		  		});
+		  		
+		  		$('#catalogue-section-nav').html(sectionNavTemplate(catalogueSections));
+		  		
+		  		$('#catalogue-section-container').html(sectionTemplate(catalogueSections)).promise().done(function(){
+		  			if (document.documentElement.clientWidth &gt; 767) {
+						$('.catalogItems').columnize({columns: 2});
+					}	
+					
+					$('a.topLink').click(function(){
+				        $('html, body').animate({scrollTop:0}, 'slow');
+				        return false;
+				    });
+		  		});
+		  		
+		  	}
+		  	
+		  	<!-- ***REQUIRED*** JAVASCRIPT FUNCTION TO REDRAW THE VIEW WHEN THE ANY SCOPING ACTION IS TAKEN BY THE USER -->
+		  	//function to redraw the view based on the current scope
+			function redrawView() {
+				//console.log('Redrawing View');
+				
+				<xsl:if test="$isRoadmapEnabled">
+					<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
+					//update the roadmap status of the catalogue instances passed as an array of arrays
+					rmSetElementListRoadmapStatus([instances.instances, orphanInstances.instances]);
+					
+					<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
+					//filter instances to those in scope for the roadmap start and end date
+					inScopeInstances.instances = rmGetVisibleElements(instances.instances);
+					inScopeOrphans.instances = rmGetVisibleElements(orphanInstances.instances);
+				</xsl:if>			
+				
+				<!-- VIEW SPECIFIC JS CALLS -->
+				//update the catalogue
+				renderCatalogueSections();
+																	
+			}
+		  	
+		  	
+		  	$(document).ready(function(){
+		  		//Initialise the section labels
+		  		initSectionLabels();
+		  	
+		  		//Set up the html template for catalogue navigation
+				var sectionNavFragment = $("#catalogue-nav-template").html();
+				sectionNavTemplate = Handlebars.compile(sectionNavFragment);
+		  	
+		  		//Set up the html template for catalogue sections
+				var sectionFragment   = $("#category-section-template").html();
+				sectionTemplate = Handlebars.compile(sectionFragment);
+				
+				redrawView();
+		  	});
+		  	
+		</script>
+		
+		<!-- START HANDLEBARS TEMPLATES -->
+		<!-- Handlebars template to render a section in the catalogue -->
+		<script id="catalogue-nav-template" type="text/x-handlebars-template">
+			{{#each sections}}
+				<a class="AlphabetLinks" href="#section_A">
+					<xsl:attribute name="href">#section_{{label}}</xsl:attribute>
+					{{label}}
+				</a>
+			{{/each}}
+		</script>
+	
+	
+		<!-- Handlebars template to render the navigation section-->
+		<script id="category-section-template" type="text/x-handlebars-template">
+			{{#each sections}}
+				<a>
+					<xsl:attribute name="id">section_{{label}}</xsl:attribute>
+				</a>
+				<div class="alphabetSectionHeader">
+					<h2 class="text-primary">{{label}}</h2>
+				</div>
+			
+				{{#each categories}}
+					{{#if instances.length}}
+						<h3>{{{label}}}</h3>
+						<div class="catalogItems">
+							<ul>
+								{{#each instances}}
+									<xsl:call-template name="RenderHandlebarsRoadmapBullet"/>
+								{{/each}}
+							</ul>
+						</div>
+					{{/if}}
+				{{/each}}
+				
+				{{#if orphans.length}}
+					<h3>No {{orphanSubject}} defined</h3>
+					<div class="catalogItems">
+						<ul>
+							{{#each orphans}}
+								<xsl:call-template name="RenderHandlebarsRoadmapBullet"/>
+							{{/each}}
+						</ul>
+					</div>
+				{{/if}}
 
-
-
-	<xsl:template name="Index">
-		<xsl:param name="letterCap"/>
-		<xsl:param name="letterLow"/>
-		<xsl:param name="inScopeTechComps"/>
-		<xsl:param name="inScopeTechProds"/>
-		<xsl:param name="inScopeTechProdRoles"/>
-
-		<div class="alphabetSectionHeader">
-			<h2 class="text-primary">
-				<xsl:value-of select="$letterCap"/>
-			</h2>
-		</div>
-		<xsl:text disable-output-escaping="yes">&lt;a id="section_</xsl:text>
-		<xsl:value-of select="$letterCap"/>
-		<xsl:text disable-output-escaping="yes">"&gt;&lt;/a&gt;</xsl:text>
-
-		<!-- TECH COMPS START HERE -->
-		<xsl:variable name="compList" select="$inScopeTechComps[((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"/>
-		<xsl:choose>
-			<xsl:when test="count($compList) > 0">
-				<xsl:apply-templates select="$compList" mode="Technology_Components">
-					<xsl:with-param name="compLetterCap" select="$letterCap"/>
-					<xsl:with-param name="compLetterLow" select="$letterLow"/>
-					<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-					<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:apply-templates>
 				<div class="jumpToTopLink">
 					<a href="#top" class="topLink">
 						<xsl:value-of select="eas:i18n('Back to Top')"/>
@@ -650,128 +461,63 @@
 				</div>
 				<div class="clear"/>
 				<hr/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:variable name="orphanTechProds" select="$inScopeTechProds[(not(count(own_slot_value[slot_reference = 'implementing_technology_component']/value) > 0)) and ((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"/>
-				<xsl:if test="count($orphanTechProds) > 0">
-					<h3>
-						<xsl:value-of select="eas:i18n('No Technology Component Defined')"/>
-					</h3>
-					<xsl:apply-templates select="$orphanTechProds" mode="TechnologyProduct">
-						<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
-					</xsl:apply-templates>
-				</xsl:if>
-			</xsl:otherwise>
-		</xsl:choose>
-
-		<xsl:if test="count($compList) = 0">
-			<xsl:apply-templates select="$compList" mode="Technology_Components">
-				<xsl:with-param name="compLetterCap" select="$letterCap"/>
-				<xsl:with-param name="compLetterLow" select="$letterLow"/>
-				<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-				<xsl:with-param name="inScopeTechProdRoles" select="$inScopeTechProdRoles"/>
-				<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
-			</xsl:apply-templates>
-			<div class="jumpToTopLink">
-				<a href="#top" class="topLink">
-					<xsl:value-of select="eas:i18n('Back to Top')"/>
-				</a>
-			</div>
-			<div class="clear"/>
-			<hr/>
+			{{/each}}
+		</script>
+		<!-- END HANDLEBARS TEMPLATES -->
+	</xsl:template>
+	
+	
+	<xsl:template match="node()" mode="RenderCatalogueCategory">
+		<xsl:param name="theRoadmapInstances" select="()"/>
+		<xsl:param name="isRoadmapEnabled" select="false()"/>
+		<xsl:param name="allCatInstances" select="()"/>
+		
+		<xsl:variable name="thisCategory" select="current()"/>
+		<xsl:variable name="thisIntermediateCategories" select="$allIntermediateCategories[own_slot_value[slot_reference = 'implementing_technology_component']/value = $thisCategory/name]"/>
+		<xsl:variable name="instForCat" select="$allCatInstances[own_slot_value[slot_reference = 'implements_technology_components']/value = $thisIntermediateCategories/name]"/>
+		
+		{
+		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+		<xsl:call-template name="RenderRoadmapJSONProperties">
+			<xsl:with-param name="theRoadmapInstance" select="$thisCategory"/>
+			<xsl:with-param name="theDisplayInstance" select="$thisCategory"/>
+			<xsl:with-param name="allTheRoadmapInstances" select="$theRoadmapInstances"/>
+			<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+		</xsl:call-template>,
+		'instances': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$instForCat"/>]
+		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
-
-		<!-- TECH COMPS END HERE -->
+		
 	</xsl:template>
-
-	<xsl:template match="node()" mode="Technology_Components">
-		<xsl:param name="compLetterCap"/>
-		<xsl:param name="compLetterLow"/>
-		<xsl:param name="inScopeTechProds" select="()"/>
-		<xsl:param name="inScopeTechProdRoles" select="()"/>
-		<!--<xsl:variable name="thisone">
-			<xsl:value-of select="name" />
-			</xsl:variable>-->
-		<xsl:variable name="currentTechComp" select="current()"/>
-		<h3>
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="$currentTechComp"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				<xsl:with-param name="anchorClass" select="'text-secondary'"/>
-			</xsl:call-template>
-		</h3>
-		<div class="tech_products">
-			<ul>
-				<xsl:apply-templates select="$inScopeTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = $currentTechComp/name]" mode="TechnologyProductRoles">
-					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
-					<xsl:with-param name="inScopeTechProds" select="$inScopeTechProds"/>
-				</xsl:apply-templates>
-			</ul>
-		</div>
-		<xsl:if test="position() = last()">
-			<xsl:if test="count($allTechProds[(not(count(own_slot_value[slot_reference = 'implements_technology_components']/value) > 0)) and ((starts-with(own_slot_value[slot_reference = 'name']/value, $compLetterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $compLetterLow)))]) &gt; 0">
-				<!-- ADD ANY ADDITIONAL ORPHANED Technology Products -->
-				<h3>
-					<xsl:value-of select="eas:i18n('No Technology Component Defined')"/>
-				</h3>
-			</xsl:if>
-
-			<div class="catalogItems">
-				<ul>
-					<xsl:apply-templates select="$allTechProds[(not(count(own_slot_value[slot_reference = 'implements_technology_components']/value) > 0)) and ((starts-with(own_slot_value[slot_reference = 'name']/value, $compLetterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $compLetterLow)))]" mode="TechnologyProduct">
-						<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
-					</xsl:apply-templates>
-				</ul>
-			</div>
-		</xsl:if>
-
-	</xsl:template>
-
-	<!-- Change this to Technology Products -->
-	<!-- Use any common rendering templates for Tech Prod Roles -->
-	<xsl:template match="node()" mode="TechnologyProductRoles">
-		<xsl:param name="inScopeTechProds"/>
-		<xsl:apply-templates select="$inScopeTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]" mode="TechnologyProduct"/>
-	</xsl:template>
-
-
-	<!-- Render the Technology Provider Name from a Technology Provider node -->
-	<xsl:template match="node()" mode="TechnologyProduct">
-
-		<xsl:variable name="techProdName">
-			<xsl:value-of select="translate(own_slot_value[slot_reference = 'product_label']/value, '::', ' ')"/>
+	
+	
+	<xsl:template match="node()" mode="RenderCatalogueByNameInstance">
+		<xsl:param name="theRoadmapInstances" select="()"/>
+		<xsl:param name="isRoadmapEnabled" select="false()"/>
+		<xsl:param name="theDisplaySlots"/>
+		
+		<xsl:variable name="thisInstance" select="current()"/>
+		
+		<xsl:variable name="theDisplayLabel">
+			<xsl:for-each select="$theDisplaySlots">
+				<xsl:if test="not(position() = 1)"><xsl:text> </xsl:text></xsl:if>
+				<xsl:value-of select="$thisInstance/own_slot_value[slot_reference = current()]/value"/>
+			</xsl:for-each>
 		</xsl:variable>
-
-		<xsl:choose>
-			<!-- If the product label is defined properly -->
-			<xsl:when test="string-length($techProdName) > 0">
-				<li>
-					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="theXML" select="$reposXML"/>
-						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-						<xsl:with-param name="targetMenu" select="$targetMenu"/>
-						<xsl:with-param name="targetReport" select="$targetReport"/>
-						<xsl:with-param name="displayString" select="$techProdName"/>
-					</xsl:call-template>
-				</li>
-			</xsl:when>
-			<!-- Otherwise, just use the 'name' slot -->
-			<xsl:otherwise>
-				<li>
-					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="theXML" select="$reposXML"/>
-						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-						<xsl:with-param name="targetMenu" select="$targetMenu"/>
-						<xsl:with-param name="targetReport" select="$targetReport"/>
-					</xsl:call-template>
-				</li>
-			</xsl:otherwise>
-		</xsl:choose>
-
-
+		
+		{
+		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+		<xsl:call-template name="RenderRoadmapJSONProperties">
+			<xsl:with-param name="theRoadmapInstance" select="$thisInstance"/>
+			<xsl:with-param name="theDisplayInstance" select="$thisInstance"/>
+			<xsl:with-param name="theDisplayLabel" select="translate($theDisplayLabel, '::', ' ')"/>
+			<xsl:with-param name="theTargetReport" select="$targetReport"/>
+			<xsl:with-param name="allTheRoadmapInstances" select="$theRoadmapInstances"/>
+			<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+		</xsl:call-template>
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
 	</xsl:template>
+
 
 </xsl:stylesheet>

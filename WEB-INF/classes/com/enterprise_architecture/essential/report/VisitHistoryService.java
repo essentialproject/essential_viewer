@@ -1,5 +1,5 @@
 /**
- * Copyright (c)2013 Enterprise Architecture Solutions Ltd.
+ * Copyright (c)2013-2018 Enterprise Architecture Solutions Ltd.
  * This file is part of Essential Architecture Manager, 
  * the Essential Architecture Meta Model and The Essential Project.
  *
@@ -18,10 +18,12 @@
  * 
  * 31.01.2013	JWC	1st coding.
  * 06.06.2013	JWC Revised visit history hash mapping
+ * 05.07.2018	JWC Updated to address potential for script code injection into the history
  */
 package com.enterprise_architecture.essential.report;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -178,7 +180,22 @@ public class VisitHistoryService extends HttpServlet
 			// Read the input parameters
 			String aURL = theRequest.getParameter(URL_REQUEST_PARAM);
 			String aLabel = theRequest.getParameter(LABEL_REQUEST_PARAM);
-				
+			
+			// Debug
+//			System.out.println(">>> VisitHistoryService.doPost(). un-encoded URL = " + aURL);
+//			System.out.println(">>> VisitHistoryService.doPost(). un-encoded Label = " + aLabel);
+			
+			// Encode the URL using the HTTPServletResponse
+			aURL = theResponse.encodeURL(aURL);
+			// URL Encode the label to make sure that no scripting can be rendered in here			
+			aLabel = URLEncoder.encode(aLabel, itsXMLEncoding);
+			aLabel = aLabel.replace('+', ' ');
+			
+			// Debug
+//			System.out.println(">>> Encoding...");
+//			System.out.println(">>> VisitHistoryService.doPost(). Encoded URL = " + aURL);
+//			System.out.println(">>> VisitHistoryService.doPost(). Encoded Label = " + aLabel);
+//			System.out.println(">>> ");
 			// Add the new visit to the history
 			HashMap<String, String> visitedPages = addToHistory(aURL, aLabel, theRequest);
 						

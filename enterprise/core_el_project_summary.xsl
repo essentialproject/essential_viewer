@@ -40,7 +40,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<!--<xsl:variable name="linkClasses" select="('Individual_Business_Role', 'Group_Business_Role', 'Group_Actor', 'Individual_Actor', 'Programme', 'Project', 'Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider')"/>-->
+	 <xsl:variable name="linkClasses2" select="('Individual_Business_Role', 'Group_Business_Role', 'Group_Actor', 'Individual_Actor', 'Programme', 'Project', 'Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider')"/>
 
 	<xsl:param name="param1"/>
 
@@ -63,87 +63,67 @@
 	<xsl:variable name="projectParentProgramme" select="/node()/simple_instance[name = $project/own_slot_value[slot_reference = 'contained_in_programme']/value]"/>
 	<xsl:variable name="projectParentProgrammeName" select="$projectParentProgramme/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="allDates" select="/node()/simple_instance[type = ('Gregorian', 'Quarter', 'Year')]"/>
-
-
-	<xsl:variable name="projectStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value]"/>
+	
+	<xsl:variable name="proposedISOStartDate" select="$project/own_slot_value[slot_reference = 'ca_proposed_start_date_iso_8601']/value"/>
+	<xsl:variable name="proposedEssStartDateId" select="$project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value"/>
 	<xsl:variable name="jsProposedStartDate">
 		<xsl:choose>
-			<xsl:when test="count($projectStartDate) = 0">new Date()</xsl:when>
+			<xsl:when test="string-length($proposedISOStartDate) > 0">
+				<xsl:value-of select="xs:date($proposedISOStartDate)"/>
+			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="eas:get_start_date_for_essential_time($projectStartDate)"/>
+				<xsl:variable name="projectPlannedStartDate" select="$allDates[name = $proposedEssStartDateId]"/>
+				<xsl:value-of select="eas:get_start_date_for_essential_time($projectPlannedStartDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	<!--<xsl:variable name="displayStartDate">
-		<xsl:choose>
-			<xsl:when test="count($projectStartDate) = 0"><em>Undefined</em></xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="FullFormatDate">
-					<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($projectStartDate)"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:variable>-->
-
-	<xsl:variable name="projectActualStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
+	
+	
+	<xsl:variable name="actualISOStartDate" select="$project/own_slot_value[slot_reference = 'ca_actual_start_date_iso_8601']/value"/>
+	<xsl:variable name="actualEssStartDateId" select="$project/own_slot_value[slot_reference = 'ca_actual_start_date']/value"/>
 	<xsl:variable name="jsActualStartDate">
 		<xsl:choose>
-			<xsl:when test="count($projectActualStartDate) = 0">new Date()</xsl:when>
+			<xsl:when test="string-length($actualISOStartDate) > 0">
+				<xsl:value-of select="xs:date($actualISOStartDate)"/>
+			</xsl:when>
 			<xsl:otherwise>
+				<xsl:variable name="projectActualStartDate" select="$allDates[name = $actualEssStartDateId]"/>
 				<xsl:value-of select="eas:get_start_date_for_essential_time($projectActualStartDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	<!--<xsl:variable name="displayActualStartDate">
-		<xsl:choose>
-			<xsl:when test="count($projectActualStartDate) = 0"><em>Undefined</em></xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="FullFormatDate">
-					<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($projectActualStartDate)"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:variable>-->
-
-	<xsl:variable name="projectEndDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_target_end_date']/value]"/>
+	
+	
+	
+	<xsl:variable name="targetISOEndDate" select="$project/own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value"/>
+	<xsl:variable name="targetEssEndDateId" select="$project/own_slot_value[slot_reference = 'ca_target_end_date']/value"/>
 	<xsl:variable name="jsTargetEndDate">
 		<xsl:choose>
-			<xsl:when test="count($projectEndDate) = 0">new Date()</xsl:when>
+			<xsl:when test="string-length($targetISOEndDate) > 0">
+				<xsl:value-of select="xs:date($targetISOEndDate)"/>
+			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="eas:get_end_date_for_essential_time($projectEndDate)"/>
+				<xsl:variable name="projectTargetEndDate" select="$allDates[name = $targetEssEndDateId]"/>
+				<xsl:value-of select="eas:get_end_date_for_essential_time($projectTargetEndDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	<!--<xsl:variable name="displayEndDate">
-		<xsl:choose>
-			<xsl:when test="count($projectEndDate) = 0"><em>Undefined</em></xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="FullFormatDate">
-					<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($projectEndDate)"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:variable>-->
-
-	<xsl:variable name="projectForecastEndDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value]"/>
+	
+	
+	<xsl:variable name="forecastISOEndDate" select="$project/own_slot_value[slot_reference = 'ca_forecast_end_date_iso_8601']/value"/>
+	<xsl:variable name="forecastEssEndDateId" select="$project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value"/>
 	<xsl:variable name="jsForecastEndDate">
 		<xsl:choose>
-			<xsl:when test="count($projectForecastEndDate) = 0">new Date()</xsl:when>
+			<xsl:when test="string-length($forecastISOEndDate) > 0">
+				<xsl:value-of select="xs:date($forecastISOEndDate)"/>
+			</xsl:when>
 			<xsl:otherwise>
+				<xsl:variable name="projectForecastEndDate" select="$allDates[name = $forecastEssEndDateId]"/>
 				<xsl:value-of select="eas:get_end_date_for_essential_time($projectForecastEndDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	<!--<xsl:variable name="displayForecastEndDate">
-		<xsl:choose>
-			<xsl:when test="count($projectForecastEndDate) = 0"><em>Undefined</em></xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="FullFormatDate">
-					<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($projectForecastEndDate)"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>	
-	</xsl:variable>-->
+
 
 	<xsl:variable name="targetEndColour">#FF386A</xsl:variable>
 	<xsl:variable name="forecastEndColour">#B6002B</xsl:variable>
@@ -204,7 +184,7 @@
 	<xsl:variable name="techLayerLabels" select="(eas:i18n('Technology Capability'), eas:i18n('Technology Component'), eas:i18n('Technology Product'), eas:i18n('Technology Build'), eas:i18n('Infrastructure Software Instance'), eas:i18n('Application Software Instance'), eas:i18n('Information/Data Store Instance'), eas:i18n('Hardware Instance'), eas:i18n('Technology Node'))"/>
 
 	<!-- Set up the requierd link classes -->
-	<xsl:variable name="linkClasses" select="($project union $busCapability union $projectImpactedElements union $allRelevantStrategicPlans union $projectActors union $projectParentProgramme)/type"/>
+	<xsl:variable name="linkClasses" select="($project union $busCapability union $projectImpactedElements union $allRelevantStrategicPlans union $projectActors union $projectParentProgramme)/type "/>
 
 	<!-- SET THE THRESHOLDS FOR LOW, MEDIUM AND HIGH PROJECT ACTIVITY LEVELS-->
 	<!--<xsl:variable name="activityLowThreshold" select="1"/>
@@ -255,6 +235,12 @@
 					<xsl:value-of select="$pageLabel"/>
 				</title>
 				<xsl:for-each select="$linkClasses">
+					<xsl:call-template name="RenderInstanceLinkJavascript">
+						<xsl:with-param name="instanceClassName" select="current()"/>
+						<xsl:with-param name="targetMenu" select="()"/>
+					</xsl:call-template>
+				</xsl:for-each>
+                <xsl:for-each select="$linkClasses2">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
@@ -328,7 +314,7 @@
 							</h2>
 							<div class="content-section">
 								<xsl:choose>
-									<xsl:when test="count($projectStartDate) + count($projectActualStartDate) + count($projectEndDate) + count($projectForecastEndDate) = 0">
+									<xsl:when test="string-length($proposedISOStartDate) + count($proposedEssStartDateId) + string-length($actualISOStartDate) + count($actualEssStartDateId) + string-length($targetISOEndDate) + count($targetEssEndDateId) + string-length($forecastISOEndDate) + count($forecastEssEndDateId) = 0">
 										<em>
 											<xsl:value-of select="eas:i18n('No start or end dates defined')"/>
 										</em>
@@ -338,27 +324,27 @@
 										<script type="text/javascript">
 											var projectTimeline = [
 												<xsl:choose>
-													<xsl:when test="count($projectStartDate) + count($projectActualStartDate) > 0">
+													<xsl:when test="string-length($proposedISOStartDate) + count($proposedEssStartDateId) + string-length($actualISOStartDate) + count($actualEssStartDateId) > 0">
 														<xsl:choose>
 															<xsl:when test="$jsActualStartDate = $jsProposedStartDate">
-																{name:"Start Date", date: "<xsl:value-of select="$jsActualStartDate"/>", color: "<xsl:value-of select="$actualStartColour"/>"}<xsl:if test="count($projectEndDate) + count($projectForecastEndDate) > 0">,</xsl:if>
+																{name:"Start Date", date: "<xsl:value-of select="$jsActualStartDate"/>", color: "<xsl:value-of select="$actualStartColour"/>"}<xsl:if test="string-length($targetISOEndDate) + count($targetEssEndDateId) + string-length($forecastISOEndDate) + count($forecastEssEndDateId) > 0">,</xsl:if>
 															</xsl:when>
 															<xsl:otherwise>
-																<xsl:if test="count($projectStartDate) > 0">{name:"Proposed Start Date", date: "<xsl:value-of select="$jsProposedStartDate"/>", color: "<xsl:value-of select="$proposedStartColour"/>"}<xsl:if test="count($jsActualStartDate) > 0">,</xsl:if></xsl:if>
-																<xsl:if test="count($projectActualStartDate) > 0">{name:"Actual Start Date", date: "<xsl:value-of select="$jsActualStartDate"/>", color: "<xsl:value-of select="$actualStartColour"/>"}<xsl:if test="count($projectEndDate) + count($projectForecastEndDate) > 0">,</xsl:if></xsl:if>
+																<xsl:if test="string-length($proposedISOStartDate) + count($proposedEssStartDateId) > 0">{name:"Proposed Start Date", date: "<xsl:value-of select="$jsProposedStartDate"/>", color: "<xsl:value-of select="$proposedStartColour"/>"}<xsl:if test="string-length($jsActualStartDate) > 0">,</xsl:if></xsl:if>
+																<xsl:if test="string-length($actualISOStartDate) + count($actualEssStartDateId) > 0">{name:"Actual Start Date", date: "<xsl:value-of select="$jsActualStartDate"/>", color: "<xsl:value-of select="$actualStartColour"/>"}<xsl:if test="string-length($targetISOEndDate) + count($targetEssEndDateId) + string-length($forecastISOEndDate) + count($forecastEssEndDateId) > 0">,</xsl:if></xsl:if>
 															</xsl:otherwise>
 														</xsl:choose>
 													</xsl:when>
 												</xsl:choose>
 												<xsl:choose>
-													<xsl:when test="count($projectEndDate) + count($projectForecastEndDate) > 0">
+													<xsl:when test="string-length($targetISOEndDate) + count($targetEssEndDateId) + string-length($forecastISOEndDate) + count($forecastEssEndDateId) > 0">
 														<xsl:choose>
 															<xsl:when test="$jsTargetEndDate = $jsForecastEndDate">
 																{name:"Forecast End Date", date: "<xsl:value-of select="$jsForecastEndDate"/>", color: "<xsl:value-of select="$forecastEndColour"/>"}
 															</xsl:when>
 															<xsl:otherwise>
-																<xsl:if test="count($projectEndDate) > 0">{name:"Target End Date", date: "<xsl:value-of select="$jsTargetEndDate"/>", color: "<xsl:value-of select="$targetEndColour"/>"}<xsl:if test="count($projectForecastEndDate) > 0">,</xsl:if></xsl:if>
-																<xsl:if test="count($projectForecastEndDate) > 0">{name:"Forecast End Date", date: "<xsl:value-of select="$jsForecastEndDate"/>", color: "<xsl:value-of select="$forecastEndColour"/>"}</xsl:if>
+																<xsl:if test="string-length($targetISOEndDate) + count($targetEssEndDateId) > 0">{name:"Target End Date", date: "<xsl:value-of select="$jsTargetEndDate"/>", color: "<xsl:value-of select="$targetEndColour"/>"}<xsl:if test="string-length($forecastISOEndDate) + count($forecastEssEndDateId) > 0">,</xsl:if></xsl:if>
+																<xsl:if test="string-length($forecastISOEndDate) + count($forecastEssEndDateId) > 0">{name:"Forecast End Date", date: "<xsl:value-of select="$jsForecastEndDate"/>", color: "<xsl:value-of select="$forecastEndColour"/>"}</xsl:if>
 															</xsl:otherwise>
 														</xsl:choose>
 													</xsl:when>
@@ -1110,6 +1096,38 @@
 
 
 	<xsl:template mode="RenderStrategicPlanRow" match="node()">
+		
+		<xsl:variable name="currentPlan" select="current()"/>
+		
+		<xsl:variable name="planISOStartDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>
+		<xsl:variable name="planEssStartDateId" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value"/>
+		<xsl:variable name="jsPlanStartDate">
+			<xsl:choose>
+				<xsl:when test="string-length($planISOStartDate) > 0">
+					<xsl:value-of select="xs:date($planISOStartDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="planStartDate" select="$allDates[name = $planEssStartDateId]"/>
+					<xsl:value-of select="eas:get_start_date_for_essential_time($planStartDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		
+		
+		<xsl:variable name="planISOEndDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>
+		<xsl:variable name="planEssEndDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value"/>
+		<xsl:variable name="jsPlanEndDate">
+			<xsl:choose>
+				<xsl:when test="string-length($planISOEndDate) > 0">
+					<xsl:value-of select="xs:date($planISOEndDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="planEndDate" select="$allDates[name = $planEssEndDate]"/>
+					<xsl:value-of select="eas:get_end_date_for_essential_time($planEndDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 		<tr>
 			<td>
@@ -1123,27 +1141,25 @@
 				</xsl:call-template>
 			</td>
 			<td>
-				<xsl:variable name="planStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value]"/>
 				<xsl:choose>
-					<xsl:when test="count($planStartDate) = 0">
+					<xsl:when test="count($planISOStartDate) + count($planEssStartDateId) = 0">
 						<em>Undefined</em>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:call-template name="FullFormatDate">
-							<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($planStartDate)"/>
+							<xsl:with-param name="theDate" select="$jsPlanStartDate"/>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
 			</td>
 			<td>
-				<xsl:variable name="planEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value]"/>
 				<xsl:choose>
-					<xsl:when test="count($planEndDate) = 0">
+					<xsl:when test="count($planISOEndDate) + count($planEssEndDate) = 0">
 						<em>Undefined</em>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:call-template name="FullFormatDate">
-							<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($planEndDate)"/>
+							<xsl:with-param name="theDate" select="$jsPlanEndDate"/>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>

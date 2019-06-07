@@ -18,6 +18,12 @@
 			return a;
 		};
 		
+		
+		//function to format a number
+		function formatNumber(num) {
+			return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+		}
+		
 		//function to return the intersect of beteen an array of arrays
 		function getArrayIntersect(arrays) {
 		var result = arrays.shift().reduce(function(res, v) {
@@ -324,7 +330,7 @@
 				var busOverlay = $('input:radio[name=busOverlay]:checked').val();
 				if(busOverlay =='duplication') {
 					//show duplication overlay
-					var appDuplicationScore = Math.round(appCount / appSvcDetailList.busCapApps.length);
+					var appDuplicationScore = appCount / appSvcDetailList.busCapApps.length;
 					busCapStyle = getDuplicationStyle(appDuplicationScore, 'busRefModel-blob');
 				} else {
 					//show no overlay
@@ -381,6 +387,10 @@
 			var appCapBlobId = '#' + theAppCap.id + '_blob';
 			var infoButtonId = '#' + theAppCap.id + '_info';
 			
+			if(theAppCap.id == 'Nov Update 1601_Class30004') {
+				console.log('Risk Management Details: ' + appCapBlobId);
+			}
+			
 			for( var i = 0; i &lt; appServices.length; i++ ){
 				anAppSvc = appServices[i];
 				appSvcAppIDList = anAppSvc.apps;		
@@ -406,7 +416,7 @@
 				var appOverlay = $('input:radio[name=appOverlay]:checked').val();
 				if(appOverlay =='duplication') {
 					//show duplication overlay
-					var appDuplicationScore = Math.round(appCount / appSvcDetailList.appCapApps.length);
+					var appDuplicationScore = appCount / appSvcDetailList.appCapApps.length;
 					appCapStyle = getDuplicationStyle(appDuplicationScore, 'appRefModel-blob');
 				} else {
 					//show no overlay
@@ -451,9 +461,9 @@
 		
 		//function that returns the style class for a reference moel element
 		function getDuplicationStyle(count, rootClass) {
-			if(count == 1) {
+			if(count &lt; 2) {
 				return rootClass + ' bg-brightgreen-120';
-			} else if((count > 1) &amp;&amp; (count &lt;= 3)) {
+			} else if((count >= 2) &amp;&amp; (count &lt;= 3)) {
 				return rootClass + ' bg-orange-120';
 			} else {
 				return rootClass + ' bg-brightred-120';
@@ -501,7 +511,7 @@
 		
 		//function to refresh the table of supporting Technology Components associated with a given technology capability
 		function refreshTRMDetailPopup(theTechCap) {
-		var techComps = theTechCap.techComponents;
+			var techComps = theTechCap.techComponents;
 			var aTechCompDetail, techCompProdIDList, aTechComp, techCapBlobId, techCapStyle, thisTechProdCount;
 			var techProdCount = 0;
 			var techProdList = []
@@ -546,7 +556,7 @@
 				var techOverlay = $('input:radio[name=techOverlay]:checked').val();
 				if(techOverlay =='duplication') {
 					//show duplication overlay
-					var techProdDuplicationScore = Math.round(techProdCount / techCompDetailList.techCapProds.length);
+					var techProdDuplicationScore = techProdCount / techCompDetailList.techCapProds.length;
 					techCapStyle = getDuplicationStyle(techProdDuplicationScore, 'techRefModel-blob');
 				} else if (techOverlay =='status') {
 					//show lifecycle status overlay
@@ -636,12 +646,13 @@
 	
 	
 	<xsl:template name="RenderInitDataScopeMap">
+		<xsl:param name="geoMap">world_mill</xsl:param>
 		<!--See JVectorMap Website for More Documentation http://jvectormap.com  -->
 		<script>
 					$(document).ready(function(){			
 						$('#mapScope').vectorMap(
 							{
-								map: 'world_mill',
+								map: '<xsl:value-of select="$geoMap"/>',
                                 zoomOnScroll: false,
 								backgroundColor: 'transparent',
 								hoverOpacity: 0.7,
@@ -722,10 +733,10 @@
 			for (i = 0; objectList.length > i; i += 1) {
 				country = objectList[i][propertyName];
 				if(country.length > 0) {
-				countryList.push(country);
+					<!--countryList = countryList.concat(country);-->
+					countryList = countryList.concat(country);
 				}
 			};
-			
 			return countryList;
 		
 		}
@@ -750,7 +761,7 @@
 		{
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 		name: "<xsl:value-of select="$thisName"/>",
-		colour: "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>",
+		colour: "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -797,8 +808,32 @@
 		</xsl:variable>
 		
 		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:value-of select="$thisName"/>",
+		description: "<xsl:value-of select="$thisDesc"/>",
+		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
+		}<xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	
+	<xsl:template match="node()" mode="getSimpleJSONListWithLink">
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		{
+		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		name: "<xsl:value-of select="$thisName"/>",
+		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 		description: "<xsl:value-of select="$thisDesc"/>",
 		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
@@ -809,7 +844,7 @@
 	<xsl:function name="eas:getSafeJSString">
 		<xsl:param name="theString"/>
 		
-		<xsl:value-of select="translate($theString, '.', '_')"/>
+		<xsl:value-of select="translate($theString, '. ', '__')"/>
 	</xsl:function>
 	
 	<!-- Template to render a JSON Object representing the styling details for an EA element -->

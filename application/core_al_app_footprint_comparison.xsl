@@ -86,7 +86,7 @@
 				<title>Application Footprint Comparison</title>
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				
 				<xsl:call-template name="refModelLegendInclude"/>
 				<xsl:call-template name="appRefModelComparisonInclude"/>
@@ -303,6 +303,7 @@
 					});
 								  	
 				</script>
+				<xsl:call-template name="refModelStyles"/>
 				<style>
 					.dashboardPanel{
 						padding: 10px;
@@ -359,10 +360,10 @@
 						-ms-transition: all 0.5s ease;
 						transition: all 0.5s ease;
 					}
+					.appRefModel-blob a {
+						color: #999;
+					}
 				</style>
-				
-				<xsl:call-template name="refModelStyles"/>
-				
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

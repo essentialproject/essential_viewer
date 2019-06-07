@@ -87,7 +87,7 @@
                             $('#historyList').empty();
                             $(data).find('visit').each(function (i)
                             {
-                                $('#historyList').append('&lt;li&gt;&lt;a href=&quot;' + $(this).find('url').text() + '">' + $(this).find('label').text() + '&lt;/a&gt;&lt;/li&gt;');
+                                $('#historyList').append('&lt;li&gt;&lt;a href=&quot;' + $(this).find('url').text() + '">' + decodeURI($(this).find('label').text()) + '&lt;/a&gt;&lt;/li&gt;');
                             });
                         },
                         <!--

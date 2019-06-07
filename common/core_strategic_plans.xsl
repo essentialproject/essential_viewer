@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" version="2.0" xmlns:eas="http://www.enterprise-architecture.org/essential">
+<xsl:stylesheet xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" version="2.0" xmlns:eas="http://www.enterprise-architecture.org/essential">
 	<!--
         * Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -50,18 +50,21 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Strategic_Plan', 'Information_Strategic_Plan', 'Application_Strategic_Plan', 'Technology_Strategic_Plan', 'Security_Strategic_Plan')"/>
 	<!-- END GENERIC LINK VARIABLES -->
+	
+	
+	<xsl:variable name="stratPlanDateTypes" select="('Year', 'Quarter', 'Gregorian')"/>
+	<xsl:variable name="stratPlanAllDates" select="/node()/simple_instance[type = $stratPlanDateTypes]"/>
 
 	<!-- Given a reference (instance ID) to an element, find all its plans and render each -->
 	<xsl:template match="node()" mode="StrategicPlansForElement">
-		<xsl:variable name="anElement">
-			<xsl:value-of select="node()"/>
-		</xsl:variable>
+		<xsl:variable name="anElement" select="current()"/>
+
 		<xsl:variable name="anActivePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Active_Plan')]"/>
 		<xsl:variable name="aFuturePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Future_Plan')]"/>
 		<xsl:variable name="anOldPlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Old_Plan')]"/>
 
-		<xsl:variable name="aDirectStrategicPlanSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $anElement]"/>
-		<xsl:variable name="aStrategicPlanRelSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $anElement]"/>
+		<xsl:variable name="aDirectStrategicPlanSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $anElement/name]"/>
+		<xsl:variable name="aStrategicPlanRelSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $anElement/name]"/>
 		<xsl:variable name="aStragegicPlanViaRelSet" select="/node()/simple_instance[name = $aStrategicPlanRelSet/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
 
 		<xsl:variable name="aStrategicPlanSet" select="$aDirectStrategicPlanSet union $aStragegicPlanViaRelSet"/>
@@ -114,6 +117,8 @@
         to the plan definition page is provided where those details will be shown -->
 	<xsl:template match="node()" mode="StrategicPlanDetailsTable">
 		<xsl:param name="theStatus"/>
+		
+		<xsl:variable name="currentPlan" select="current()"/>
 
 		<xsl:variable name="aStatusID" select="current()/own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
 		<xsl:if test="position() = 1">
@@ -262,40 +267,63 @@
 						</xsl:choose>
 					</td>
 					<td>
-						<!-- <xsl:variable name="aFromDate" select="own_slot_value[slot_reference='strategic_plan_valid_from_date']/value" />-->
-						<xsl:variable name="aFromDate" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value]"/>
+						<xsl:variable name="planISOStartDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>
+						<xsl:variable name="planEssStartDateId" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value"/>
+						<xsl:variable name="jsPlanStartDate">
+							<xsl:choose>
+								<xsl:when test="string-length($planISOStartDate) > 0">
+									<xsl:value-of select="xs:date($planISOStartDate)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="planStartDate" select="$stratPlanAllDates[name = $planEssStartDateId]"/>
+									<xsl:value-of select="eas:get_start_date_for_essential_time($planStartDate)"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+						
 						<xsl:choose>
-							<xsl:when test="count($aFromDate) > 0">
+							<xsl:when test="count($planISOStartDate) + count($planEssStartDateId) > 0">
 								<xsl:variable name="displayStartDate">
 									<xsl:call-template name="FullFormatDate">
-										<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($aFromDate)"/>
+										<xsl:with-param name="theDate" select="$jsPlanStartDate"/>
 									</xsl:call-template>
 								</xsl:variable>
 								<xsl:value-of select="$displayStartDate"/>
 							</xsl:when>
 							<xsl:otherwise>
 								<em>
-									<xsl:value-of select="eas:i18n('No information')"/>
+									<xsl:value-of select="eas:i18n('No start date captured')"/>
 								</em>
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>
 					<td>
-						<!--<xsl:variable name="aToDate" select="own_slot_value[slot_reference='strategic_plan_valid_to_date']/value" />-->
-						<xsl:variable name="aToDate" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value]"/>
+						<xsl:variable name="planISOEndDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>
+						<xsl:variable name="planEssEndDateId" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value"/>
+						<xsl:variable name="jsPlanEndDate">
+							<xsl:choose>
+								<xsl:when test="string-length($planISOEndDate) > 0">
+									<xsl:value-of select="xs:date($planISOEndDate)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="planEndDate" select="$stratPlanAllDates[name = $planEssEndDateId]"/>
+									<xsl:value-of select="eas:get_start_date_for_essential_time($planEndDate)"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
 
 						<xsl:choose>
-							<xsl:when test="count($aToDate) > 0">
+							<xsl:when test="count($planISOEndDate) + count($planEssEndDateId) > 0">
 								<xsl:variable name="displayToDate">
 									<xsl:call-template name="FullFormatDate">
-										<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($aToDate)"/>
+										<xsl:with-param name="theDate" select="$jsPlanEndDate"/>
 									</xsl:call-template>
 								</xsl:variable>
 								<xsl:value-of select="$displayToDate"/>
 							</xsl:when>
 							<xsl:otherwise>
 								<em>
-									<xsl:value-of select="eas:i18n('No information')"/>
+									<xsl:value-of select="eas:i18n('No end date captured')"/>
 								</em>
 							</xsl:otherwise>
 						</xsl:choose>

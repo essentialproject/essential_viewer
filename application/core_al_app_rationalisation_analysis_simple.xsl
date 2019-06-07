@@ -159,7 +159,7 @@
                 </style>
                 <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
-			    <script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
+			    <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
                 <script>
                         var appCardTemplate;
 

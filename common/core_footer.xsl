@@ -39,7 +39,7 @@
 	<xsl:template match="node()" name="Footer">
 		<!--Setup footers-->
 		<footer>
-			<div class="col-xs-6 bg-black text-white">
+			<div class="col-xs-9 bg-black text-white">
 				<xsl:variable name="aTimestamp" select="timestamp"/>
 				<xsl:choose>
 					<xsl:when test="string-length($aTimestamp) > 0">
@@ -75,7 +75,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</div>
-			<div class="col-xs-6 bg-black text-white alignRight">
+			<div class="col-xs-3 bg-black text-white alignRight">
 				<xsl:value-of select="eas:i18n('Essential Viewer Version')"/>&#160;<xsl:value-of select="$currentViewerVersion"/><span class="text-white" id="viewerUpdateText"/>
 			</div>
 			<input type="hidden" id="currentViewerVersion">

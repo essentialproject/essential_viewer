@@ -109,7 +109,7 @@ public class EipSSOCookie
 			// Save account ID in the cookie		
 			anAccount.setValue(theAccountID);
 			anAccount.setMaxAge(itsCookieMaxAge);
-			anAccount.setPath(COOKIE_PATH);
+			anAccount.setPath(COOKIE_PATH);			
 			String aCookieDomain = buildCookieDomain(theDomain);
 			
 			// TRACE - Cookie Domain

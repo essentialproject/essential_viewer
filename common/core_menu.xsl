@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet exclude-result-prefixes="pro xalan xs functx eas" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xpath-default-namespace="http://protege.stanford.edu/xml" version="2.0" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com">
+<xsl:stylesheet exclude-result-prefixes="pro xalan xs functx fn eas" 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xpath-default-namespace="http://protege.stanford.edu/xml" version="2.0" 
+	xmlns:eas="http://www.enterprise-architecture.org/essential" 
+	xmlns:xalan="http://xml.apache.org/xslt" 
+	xmlns:pro="http://protege.stanford.edu/xml" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:functx="http://www.functx.com"
+	xmlns:fn="http://www.w3.org/2005/xpath-functions">
 	<!--
-        * Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+        * Copyright ©2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
         *
@@ -21,9 +29,11 @@
     -->
 	<!-- 14.03.2012 JP - Contains a generic template to create the popup for the menu identified by the given parameter -->
 	<!-- 29.01.2015 JWC - Added the security clearance check implementation -->
+	<!-- 02.04.2019	JWC - Improved rendering of labels in URLs -->
 	<xsl:import href="../WEB-INF/security/viewer_security.xsl"/>
 
 	<!-- Set up the required variables for the menu -->
+	<xsl:variable name="allMenus" select="/node()/simple_instance[type = 'Report_Menu']"/>
 	<xsl:variable name="allMenuGroups" select="/node()/simple_instance[type = 'Report_Menu_Group']"/>
 	<xsl:variable name="allMenuItems" select="/node()/simple_instance[(type = 'Report_Menu_Item') and (own_slot_value[slot_reference = 'report_menu_item_is_enabled']/value = 'true')]"/>
 	<xsl:variable name="allMenuItemCategories" select="/node()/simple_instance[type = 'Menu_Item_Category']"/>
@@ -76,7 +86,7 @@
 		<xsl:variable name="menuItemTargetReport" select="$allTargetReports[name = current()/own_slot_value[slot_reference = 'report_menu_item_target_report']/value]"/>
 		<xsl:variable name="menuItemTargetXSLPath" select="$menuItemTargetReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 		<xsl:variable name="menuItemTargetContextXSLPath" select="$menuItemTargetReport/own_slot_value[slot_reference = 'report_context_xsl_filename']/value"/>
-		<xsl:variable name="menuItemTargetHistoryLabel" select="$menuItemTargetReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
+		<xsl:variable name="menuItemTargetHistoryLabel" select="fn:encode-for-uri($menuItemTargetReport/own_slot_value[slot_reference = 'report_history_label']/value)"/>
 		<xsl:variable name="menuItemTargetReportType" select="$allMenuTargetReportTypes[name = $menuItemTargetReport/own_slot_value[slot_reference = 'report_implementation_type']/value]"/>
 		<xsl:variable name="menuItemTargetReportParameters" select="$allTargetReportParameters[name = $menuItemTargetReport/own_slot_value[slot_reference = 'report_parameters']/value]"/>
 		<xsl:variable name="menuItemTargetReportParameterInstanceVals" select="$allTargetReportParameterInstanceVals[name = $menuItemTargetReportParameters/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
@@ -93,10 +103,10 @@
 		</xsl:variable>
 		<xsl:choose>
 			<xsl:when test="$newWindow">
-				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + opt.$trigger.attr("id"), "_blank"); }
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")), "_blank"); }
 			</xsl:when>
 			<xsl:otherwise>
-				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.location="<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + opt.$trigger.attr("id"); }
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.location="<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")); }
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -156,6 +166,29 @@
 	</xsl:template>
 
 
+	<xsl:template mode="RenderMenuItemParameters" match="node()">
+		<xsl:param name="paramInstanceVals" select="()"/>
+		
+		<xsl:variable name="thisParam" select="current()"/>
+		<xsl:variable name="thisParamInstanceVal" select="$paramInstanceVals[name = $thisParam/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
+		
+		<xsl:variable name="thisParamName" select="$thisParam/own_slot_value[slot_reference = 'report_parameter_name']/value"/>
+		<xsl:variable name="thisParamValue">
+			<xsl:choose>
+				<xsl:when test="count($thisParamInstanceVal) > 0">
+					<xsl:value-of select="$thisParamInstanceVal/name"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$thisParam/own_slot_value[slot_reference = 'report_parameter_string_value']/value"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:if test="(string-length($thisParamName) > 0) and (string-length($thisParamValue) > 0)">&amp;<xsl:value-of select="$thisParamName"/>=<xsl:value-of select="$thisParamValue"/></xsl:if>
+		
+	</xsl:template>
+
+
 	<xsl:template name="RenderMenuItemEntriesOLD">
 		<xsl:param name="menuItems"/>
 
@@ -169,6 +202,19 @@
 			<xsl:value-of select="$menuItemShortName"/>: {name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(index = $menuItemsSize)">, </xsl:if>
 		</xsl:for-each>
 	</xsl:template>
+	
+	
+	<!-- function that returns the names of the classes for which a given report is defined -->
+	<xsl:function name="eas:getClassNamesForReport">
+		<xsl:param name="theReport"/>
+		
+		<xsl:variable name="repMenuItem" select="$allMenuItems[own_slot_value[slot_reference = 'report_menu_item_target_report']/value = $theReport/name]"/>
+		<xsl:variable name="repMenuGroup" select="$allMenuGroups[own_slot_value[slot_reference = 'report_menu_items']/value = $repMenuItem/name]"/>
+		<xsl:variable name="repMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_groups']/value = $repMenuGroup/name]"/>
+		
+		<xsl:sequence select="$repMenus/own_slot_value[slot_reference = 'report_menu_class']/value"/>
+		
+	</xsl:function>
 
 
 	<!-- TEMPLATE TO CREATE THE QUERY STRING FOR PASSING THE MENU ID PARAMETER -->

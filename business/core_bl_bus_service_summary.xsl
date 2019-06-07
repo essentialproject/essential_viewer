@@ -50,7 +50,7 @@
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Get all of the required types of instances in the repository -->
-	<xsl:variable name="currentBusSvc" select="/node()/simple_instance[name = $param1]"/>
+	<!--<xsl:variable name="currentBusSvc" select="/node()/simple_instance[name = $param1]"/>
 	<xsl:variable name="currentBusSvcName" select="$currentBusSvc/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="currentBusSvcDescription">
 		<xsl:call-template name="RenderMultiLangInstanceDescription">
@@ -69,6 +69,66 @@
 	<xsl:variable name="busSvcAppProRoles" select="/node()/simple_instance[name = $busSvcApp2PhysProcs/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
 	<xsl:variable name="busSvcAppPros" select="/node()/simple_instance[name = $busSvcAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 
+
+-->
+	<!-- Get all of the required types of instances in the repository -->
+	<!-- NOTE: Queries accounts for composite and individual product types/products -->
+	<xsl:variable name="allBusServices" select="/node()/simple_instance[type = ('Product_Type','Composite_Product_Type')]"/>
+	<xsl:variable name="allBusServiceInstances" select="/node()/simple_instance[type = ('Product','Composite_Product')]"/>
+	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[supertype = 'Physical_Process_Type']"/>
+	<xsl:variable name="allBusProcs" select="/node()/simple_instance[supertype = 'Business_Process_Type']"/>
+	
+	
+	
+	<xsl:variable name="currentBusSvc" select="/node()/simple_instance[name = $param1]"/>
+	<xsl:variable name="currentBusSvcName" select="$currentBusSvc/own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:variable name="currentBusSvcDescription">
+		<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="theSubjectInstance" select="$currentBusSvc"/>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<!-- NOTE: Define all Business Services in scope, including sub product-types -->
+	<xsl:variable name="currentBusSvcSubServices" select="$allBusServices[name = $currentBusSvc/own_slot_value[slot_reference = 'contained_product_types']/value]"/>
+	<xsl:variable name="allCurrentBusSvcs" select="$currentBusSvc union $currentBusSvcSubServices"/>
+	
+	<!-- NOTE: Update filters to include sub-product types and sub-products -->
+	<xsl:variable name="allBusConsumers" select="/node()/simple_instance[name = $allCurrentBusSvcs/own_slot_value[slot_reference = 'product_type_target_audience']/value]"/>
+	<!-- FINE GRAINED FILTER FOR PHYSICAL PROCESSES AND APPS-->
+	<xsl:variable name="fineGrainedBusSvcInstances" select="$allBusServiceInstances[name = $allCurrentBusSvcs/own_slot_value[slot_reference = 'product_type_instances']/value]"/>
+	<xsl:variable name="busSvcPhysProcs" select="$allPhysProcs[name = $fineGrainedBusSvcInstances/own_slot_value[slot_reference = 'product_implemented_by_process']/value]"/>
+	<!-- End My Filter -->
+	<!-- Adaptation due to My Filter 
+	<xsl:variable name="busSvcSupportingProcs" select="/node()/simple_instance[name = $currentBusSvc/own_slot_value[slot_reference = 'product_type_produced_by_process']/value]"/>
+-->
+	<xsl:variable name="fineGrainedBusSvcSupportingProcs" select="$allBusProcs[name = $busSvcPhysProcs/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
+	<xsl:variable name="busSvcSupportingGroupRoles" select="/node()/simple_instance[name = $fineGrainedBusSvcSupportingProcs/own_slot_value[slot_reference = 'business_process_performed_by_business_role']/value]"/>
+	<xsl:variable name="busSvcSupportingIndividualRoles" select="/node()/simple_instance[name = $fineGrainedBusSvcSupportingProcs/own_slot_value[slot_reference = 'business_process_performed_by_business_role']/value]"/>
+	
+	<!-- Get the coarse grained supporting business processes -->
+	<xsl:variable name="coarseGrainedBusSvcSupportingProcs" select="$allBusProcs[name = $allCurrentBusSvcs/own_slot_value[slot_reference = 'product_type_produced_by_process']/value]"/>
+	
+	<!-- MAIN CHANGE: Define the complete set of fine-grained and coarse grained supporting business processes -->
+	<xsl:variable name="allBusSvcSupportingProcs" select="$fineGrainedBusSvcSupportingProcs union $coarseGrainedBusSvcSupportingProcs"/>
+	
+	<!-- Adaptation due to My Filter 
+	<xsl:variable name="busSvcPhysProcs" select="/node()/simple_instance[name = $busSvcSupportingProcs/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
+-->
+	<xsl:variable name="busSvcActor2Roles" select="/node()/simple_instance[name = $busSvcPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+	<xsl:variable name="busSvcActors" select="/node()/simple_instance[name = $busSvcActor2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:variable name="busSvcApp2PhysProcs" select="/node()/simple_instance[name = $busSvcPhysProcs/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
+	<xsl:variable name="busSvcAppProRoles" select="/node()/simple_instance[name = $busSvcApp2PhysProcs/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+	<xsl:variable name="busSvcAppPros" select="/node()/simple_instance[name = $busSvcAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+
+
+	<!-- COARSE GRAINED FILTER FOR ADITIONAL APPS-->
+	<!-- Get the logical processes that support the business service -->
+	
+	<!-- Get the phytsical processes that implement the logical processes -->
+	
+	<!-- Get the apps that support the physical processes -->
+	
+	<!--  -->
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
@@ -205,7 +265,7 @@
 								<xsl:value-of select="eas:i18n('Business Processes')"/>
 							</h2>
 							<xsl:choose>
-								<xsl:when test="count($busSvcSupportingProcs) = 0">
+								<xsl:when test="count($allBusSvcSupportingProcs) = 0">
 									<div class="content-section">
 										<em>
 											<xsl:value-of select="eas:i18n('No business processes captured for this business service')"/>
@@ -231,7 +291,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												<xsl:apply-templates mode="BusProcesses" select="$busSvcSupportingProcs">
+												<xsl:apply-templates mode="BusProcesses" select="$allBusSvcSupportingProcs">
 													<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 												</xsl:apply-templates>
 											</tbody>
@@ -255,7 +315,7 @@
 							</h2>
 							<div class="content-section">
 								<xsl:choose>
-									<xsl:when test="count($allBusConsumers) = 0">
+									<xsl:when test="count($busSvcAppPros) = 0">
 										<em>
 											<xsl:value-of select="eas:i18n('No supporting applications captured for this Business Service')"/>
 										</em>

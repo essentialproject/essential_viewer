@@ -141,12 +141,14 @@
 				
 				<!-- Start JointJS Diagramming Libraries and Styles-->
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/jointjs/lodash.min.js"/>
-				<script src="js/jointjs/backbone-min.js"/>
+				<script src="js/lodash/index.js"/>
+				<script src="js/backbone/backbone.js"/>
+				<script src="js/graphlib/graphlib.core.js"/>
+				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>	
+				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>	
 				
 				<!-- Start Slider libraries and styles -->
 				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js"></script>
@@ -164,7 +166,7 @@
 				<script src="js/select2/js/select2.min.js"/>
 				
 				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.0.8.js"/>
+				<script src="js/handlebars-v4.1.2.js"/>
 				
 				<style type="text/css">
 					.Rect{

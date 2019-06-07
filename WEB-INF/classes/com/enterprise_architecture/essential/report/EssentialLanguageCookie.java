@@ -97,6 +97,11 @@ public class EssentialLanguageCookie
 	private int itsCookieMaxAge = 31536000;
 	
 	/**
+	 * Define the regular expression that describes a valid language code
+	 */
+	private String itsValidValuePattern = "^[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*$";
+	
+	/**
 	 * Default - and only constructor for the EssentialLanguageCookie.
 	 * Create new instance and pick up configuration from servlet context
 	 * @param theServletContext context that contains the configuration parameters.
@@ -142,16 +147,22 @@ public class EssentialLanguageCookie
 			}
 		}
 		
+		// Make sure that a valid language code has been supplied
+		String aValidLanguageCode = getLanguageCode(theLanguageCode);
+		
 		// If it's not there, create it.
 		if(!isFound || (anI18n == null))
 		{
-			anI18n = new Cookie(itsCookieName, theLanguageCode);
+			anI18n = new Cookie(itsCookieName, aValidLanguageCode);
 		}
 				
 		// Save theLanguageCode in the cookie		
-		anI18n.setValue(theLanguageCode);
+		anI18n.setValue(aValidLanguageCode);
 		anI18n.setMaxAge(itsCookieMaxAge);
 		anI18n.setPath(COOKIE_PATH);
+		anI18n.setSecure(true);
+		// Set HTTPOnly=true when we move to Servlet 3.0 
+		//anI18n.setHttpOnly(true);
 		if(itsCookieDomain.length() > 0)
 		{
 			anI18n.setDomain(itsCookieDomain);
@@ -263,5 +274,34 @@ public class EssentialLanguageCookie
 	 */
 	public void setItsCookieMaxAge(int itsCookieMaxAge) {
 		this.itsCookieMaxAge = itsCookieMaxAge;
+	}
+	
+	/**
+	 * Get a 'safe', validated language code from the requested LanguageSetting
+	 * @param theLanguageSetting
+	 * @return the safe, validated language code
+	 */
+	private String getLanguageCode(String theLanguageSetting)
+	{
+		String aLanguageSetting = itsI18NDefault;
+
+		// Debug
+		//System.out.println("EssentialLanguageCookie.getLanguageCode() ===> theLanguageSetting: " + theLanguageSetting);
+		//System.out.println("EssentialLanguageCookie.getLanguageCode() ===> aLanguageSetting: " + aLanguageSetting);
+		
+		// Valid pattern is aa-bb, nothing else is a valid code		
+		if(theLanguageSetting.matches(itsValidValuePattern))
+		{
+			aLanguageSetting = theLanguageSetting;
+		}
+		else
+		{
+			// If theLanguageSetting doesn't match the pattern, log this and return default setting
+			// as the language setting is otherwise broken
+			System.err.println("EssentialLanguageCookie.getLanguageCode() ===> invalid language code specified to Viewer. Using default setting instead");
+		}
+		// Debug
+		// System.out.println("EssentialLanguageCookie.getLanguageCode() ===> aLanguageSetting: " + aLanguageSetting);		
+		return aLanguageSetting;
 	}
 }

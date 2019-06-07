@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+    
 	<xsl:import href="../common/core_js_functions.xsl"/>
 	<xsl:import href="../common/core_el_ref_model_include.xsl"/>
+    <xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
+	<xsl:include href="../common/datatables_includes.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
-	<xsl:param name="param1"/>
 
 	<!-- START GENERIC PARAMETERS -->
 	<xsl:param name="viewScopeTermIds"/>
@@ -19,9 +21,10 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Capability', 'Application_Service', 'Application_Provider', 'Technology_Capability', 'Technology_Component')"/>
+	
+	
 	<!-- END GENERIC LINK VARIABLES -->
-
+   
 	<xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Application Organisation User')]"/>
 	<xsl:variable name="appOrgUser2Roles" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appOrgUserRole/name]"/>
 	
@@ -55,6 +58,22 @@
 	<!--<xsl:variable name="techProdDeliveryTaxonomy" select="/node()/simple_instance[(type='Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Technology Product Delivery Types')]"/>-->
 	<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[name = $allTechProds/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
 	
+	<!-- Get default geographic map -->
+	<xsl:variable name="geoMapReportConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Default Geographic Map')]"/>
+	<xsl:variable name="geoMapInstance" select="/node()/simple_instance[name = $geoMapReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
+	<xsl:variable name="geoMapId">
+		<xsl:choose>
+			<xsl:when test="count($geoMapInstance) > 0"><xsl:value-of select="$geoMapInstance[1]/own_slot_value[slot_reference = 'enumeration_value']/value"/></xsl:when>
+			<xsl:otherwise>world_mill</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:variable name="geoMapPath">
+		<xsl:choose>
+			<xsl:when test="count($geoMapInstance) > 0"><xsl:value-of select="$geoMapInstance[1]/own_slot_value[slot_reference = 'description']/value"/></xsl:when>
+			<xsl:otherwise>js/jvectormap/jquery-jvectormap-world-mill.js</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
 	<xsl:variable name="techOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Technology Organisation User')]"/>
 	<xsl:variable name="techOrgUser2Roles" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $techOrgUserRole/name]"/>
 	
@@ -74,6 +93,15 @@
 	<xsl:variable name="L0BusCaps" select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	<xsl:variable name="L1BusCaps" select="$allBusCaps[name = $L0BusCaps/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	
+	<!-- ROADMAP VARIABLES -->
+	<xsl:variable name="allRoadmapInstances" select="$allApps union $allTechProds"/>
+    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
+	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
+    <!-- END ROADMAP VARIABLES -->
+    
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Capability', 'Application_Service', 'Application_Provider', 'Technology_Capability', 'Technology_Component'), $rmLinkTypes"/>
+    
+    
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -105,7 +133,8 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-				<xsl:for-each select="$linkClasses">
+               
+                <xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
@@ -116,7 +145,7 @@
 				<script src="js/select2/js/select2.min.js"/>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
-				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
+				<script src="{$geoMapPath}" type="text/javascript"/>
 				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
 				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js"/>
@@ -124,528 +153,18 @@
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<xsl:call-template name="dataTablesLibrary"/>
+				<xsl:call-template name="RenderRoadmapJSLibraries">
+					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
+				</xsl:call-template>
 				
-				<xsl:call-template name="RenderInitDataScopeMap"/>
+				<xsl:call-template name="RenderInitDataScopeMap">
+					<xsl:with-param name="geoMap" select="$geoMapId"/>
+				</xsl:call-template>
 				<xsl:call-template name="refModelLegendInclude"/>
 				
-				<script type="text/javascript">
-					
-					var appCodebasePie, appDeliveryModelPie, techProdStatusPie, techProdDeliveryPie, bcmDetailTemplate, appDetailTemplate, techDetailTemplate, ragOverlayLegend, noOverlayBCMLegend, noOverlayARMLegend, noOverlayTRMLegend;
-					
-					// the list of JSON objects representing the code base types for applications
-				  	var appCodebases = [<xsl:apply-templates select="$allAppCodebases" mode="RenderEnumerationJSONList"/>];
-					
-					// the list of JSON objects representing the delivery models for applications
-				  	var appDeliveryModels = [<xsl:apply-templates select="$allAppDeliveryModels" mode="RenderEnumerationJSONList"/>];
-					
-					// the list of JSON objects representing the delivery models for technology products
-				  	var techDeliveryModels = [<xsl:apply-templates select="$allTechProdDeliveryTypes" mode="RenderEnumerationJSONList"/>];
-					
-					// the list of JSON objects representing the environments
-				  	var lifecycleStatii = [
-						<xsl:apply-templates select="$allLifecycleStatii" mode="getSimpleJSONList"/>					
-					];
-					
-					// the list of JSON objects representing the business units pf the enterprise
-				  	var businessUnits = {
-							businessUnits: [<xsl:apply-templates select="$allBusinessUnits" mode="getBusinessUnits"/>
-				    	]
-				  	};
-				  	
-				  	// the list of JSON objects representing the applications in use across the enterprise
-				  	var applications = {
-						applications: [<xsl:apply-templates select="$allApps" mode="getApplications"/>
-				    	]
-				  	};
-				  	
-				  	// the list of JSON objects representing the technology products in use across the enterprise
-				  	var techProducts = {
-						techProducts: [     <xsl:apply-templates select="$allTechProds" mode="getTechProducts"/>
-				    	]
-				  	};
-				  	
-				  	// the JSON objects for the Business Capability Model (BCM)
-				  	var bcmData = <xsl:call-template name="RenderBCMData"/>;
-					
-					// the JSON objects for the Application Reference Model (ARM)
-				  	var armData = {
-				  		left: [
-				  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderAppCaps"/>
-				  		],
-				  		middle: [
-				  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderAppCaps"/>
-				  		],
-				  		right: [
-				  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderAppCaps"/>
-				  		],
-				  	
-				  	};
-					
-					// the JSON objects for the Technology Reference Model (TRM)
-				  	var trmData = {
-				  		top: [
-				  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $topRefLayer/name]" mode="RenderTechDomains"/>
-				  		],
-				  		left: [
-				  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderTechDomains"/>
-				  		],
-				  		middle: [
-				  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderTechDomains"/>
-				  		],
-				  		right: [
-				  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderTechDomains"/>
-				  		],
-				  		bottom: [
-				  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $bottomRefLayer/name]" mode="RenderTechDomains"/>
-				  		]
-				  	};
-				  	
-				  	
-				  	// the JSON objects for the Application Services and Applications that support Business Capabilities
-				  	var busCapDetails = [
-				  		<xsl:apply-templates select="$L1BusCaps" mode="BusCapDetails"/>
-				  	];
-				  	
-				  	// the JSON objects for the Application Services and Applications that implement Application Capabilities
-				  	var appCapDetails = [
-				  		<xsl:apply-templates select="$L1AppCaps" mode="AppCapDetails"/>
-				  	];
-				  	
-				  	
-					// the JSON objects for the Technology Components and Products that implement Technology Capabilities
-				  	var techCapDetails = [
-				  		<xsl:apply-templates select="$allTechCaps" mode="TechCapDetails"/>
-				  	];
-				  	
-				  	
-				  	
-				  	
-				  	<xsl:call-template name="RenderJavascriptUtilityFunctions"/>
-										
-					<xsl:call-template name="RenderJavascriptScopingFunctions"/>
-					
-					<xsl:call-template name="RenderGeographicMapJSFunctions"/>
-					
-					
-					
-					
-					<!-- START PAGE DRAWING FUNCTIONS -->
-					//function to draw the relevant dashboard components based on the currently selected Data Objects
-					function drawDashboard() {
-						
-						//Update the Geographic Scope map
-						setGeographicMap($('#mapScope').vectorMap('get', 'mapObject'), 'country', 'hsla(200, 80%, 60%, 1)');
-
-						//Update the BCM Model
-						setBusCapabilityOverlay();
-						
-						//Update the ARM Model
-						setAppCapabilityOverlay();
-						
-						//Set the Application Codebase pie chart values
-						setPieChartValues(appCodebasePie, appCodebases, selectedApps, "codebase");
-						
-						//Set the Application Delivery Model pie chart values
-						setPieChartValues(appDeliveryModelPie, appDeliveryModels, selectedApps, "delivery");
-						
-						//Update the TRM Model
-						setTechCapabilityOverlay();
-						
-						//Set the Technology Lifecycle Status pie chart values
-						setPieChartValues(techProdStatusPie, lifecycleStatii, selectedTechProds, "status");
-						
-						//Set the Technology Delivery Model pie chart values
-						setPieChartValues(techProdDeliveryPie, techDeliveryModels, selectedTechProds, "delivery");
-
-					}
-					
-					
-					//Function to set values for a pie chart based on properties that contain a specific value
-					function setPieChartValues(pieChart, segments, objectList, propertyName) {
-						var pieData = [];
-						var currentSegment;
-						var objectsForSegment;
-						var currentData;
-						
-						for (var i = 0; segments.length > i; i += 1) {
-							currentData = [];
-							currentSegment = segments[i];
-							objectsForSegment = getObjectsMatchingVal(objectList, propertyName, currentSegment.id);
-							currentData[0] = currentSegment.name + ' [' + objectsForSegment.length + ']';
-							currentData[1] = objectsForSegment.length;
-							pieData.push(currentData);
-							console.log("Count of " + propertyName + " for " + currentSegment.name + ": " + currentData[1]);
-						};
-						
-						var unknownObjects = getObjectsMatchingVal(objectList, propertyName, '');
-						currentData = [];
-						currentData[0] = 'Unknown [' + unknownObjects.length + ']';
-						currentData[1] = unknownObjects.length;
-						pieData.push(currentData);
-
-						pieChart.series[0].data = pieData;
-						pieChart.replot();					
-					}
-					
-					
-					
-					$(document).ready(function(){	
-					
-						$('h2').click(function(){
-							$(this).next().slideToggle();
-						});
-						
-						//INITIALISE THE SCOPING DROP DOWN LIST
-						$('#busUnitList').select2({
-							placeholder: "All",
-							allowClear: true
-						});
-						
-						//INITIALISE THE PAGE WIDE SCOPING VARIABLES					
-						allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
-						selectedBusUnitIDs = [];
-						selectedBusUnits = [];
-						setCurrentApps();
-						setCurrentTechProds();
-						
-						
-						<!--$.fn.select2.defaults.set("placeholder", "All");
-						$.fn.select2.defaults.set("allowClear", true);
-						$('#dataObjectList').select2({
-							placeholder: "All",
-							allowClear: true
-						});-->
-						
-						$('#busUnitList').on('change', function (evt) {
-						  var thisBusUnitIDs = $(this).select2("val");
-						  console.log("Select BUs: " + selectedBusUnitIDs);
-						  
-						  if(thisBusUnitIDs != null) {
-						  	setCurrentBusUnits(thisBusUnitIDs);
-						  } else {
-						  	selectedBusUnitIDs = [];
-						  	selectedBusUnits = [];
-						  	setCurrentApps();
-						  	setCurrentTechProds();
-						  }
-						  drawDashboard();
-						  //console.log("Select BUs: " + selectedBusUnitIDs);
-					
-						});
-						
-						<!--
-						//Initialise the Codebase Pie Chart
-						var appCodeBaseColours = [];
-						for (var i = 0; codebases.length > i; i += 1) {
-							appCodeBaseColours.push(codebases[i].colour)
-						};
-						
-						var appCodeBaseTempData = [];
-						var appCodeBaseEntry;
-						for (var i = 0; codebases.length > i; i += 1) {
-							appCodeBaseEntry = [];
-							appCodeBaseEntry[0] = codebases[i].name;
-							appCodeBaseEntry[1] = codebases[i].colour;
-							appCodeBaseTempData.push(appCodeBaseEntry);
-						};
-						
-						appCodebasePie = jQuery.jqplot ('pieChart2',[appCodeBaseTempData], {
-							
-							seriesColors: appCodeBaseColours,
-							legend: {
-								renderer: jQuery.jqplot.EnhancedLegendRenderer,
-								show: true,
-								location: 'e',
-								rendererOptions: {
-								   fontSize: "0.65em",
-								   textColor: 'red'
-								 }
-							},
-							grid: {
-								drawGridLines: false,
-								shadow: false,
-								background: 'transparent',
-								borderColor: '#999999',
-								borderWidth: 0
-							},
-							seriesDefaults: {
-								// Make this a pie chart.
-								renderer: jQuery.jqplot.PieRenderer,
-								rendererOptions: {
-									// Put data labels on the pie slices.
-									// By default, labels show the percentage of the slice.
-									showDataLabels: true,
-									padding: 5,
-									dataLabels: 'percent'
-								}
-							}
-						});
-						-->
-						
-						var busUnitSelectFragment   = $("#bus-unit-select-template").html();
-						var busUnitSelectTemplate = Handlebars.compile(busUnitSelectFragment);
-						$("#busUnitList").html(busUnitSelectTemplate(businessUnits));
-						
-						
-						<!-- SET UP THE REF MODEL LEGENDS -->
-						var legendFragment = $("#rag-overlay-legend-template").html();
-						var legendTemplate = Handlebars.compile(legendFragment);
-						ragOverlayLegend = legendTemplate();
-						
-						legendFragment = $("#no-overlay-legend-template").html();
-						legendTemplate = Handlebars.compile(legendFragment);
-						var legendLabels = {};
-						legendLabels["inScope"] = 'Has Supporting Applications';
-						noOverlayBCMLegend = legendTemplate(legendLabels);
-						legendLabels["inScope"] = 'Applications in Use';
-						noOverlayARMLegend = legendTemplate(legendLabels);
-						legendLabels["inScope"] = 'Technology Products in Use';
-						noOverlayTRMLegend = legendTemplate(legendLabels);
-						
-						
-						<!-- SET UP THE BCM MODEL -->
-						//initialise the BCM model
-						var bcmFragment   = $("#bcm-template").html();
-						var bcmTemplate = Handlebars.compile(bcmFragment);
-						$("#bcm").html(bcmTemplate(bcmData));
-						
-						var bcmDetailFragment = $("#bcm-buscap-popup-template").html();
-						bcmDetailTemplate = Handlebars.compile(bcmDetailFragment);
-						
-						<!-- SET UP THE ARM MODEL -->
-						//Initialise the App Codebase Pie Chart
-						var codebaseColours = [];
-						for (var i = 0; appCodebases.length > i; i += 1) {
-							codebaseColours.push(appCodebases[i].colour)
-						};
-						codebaseColours.push('lightgray');
-						
-						var codebaseTempData = [];
-						var codebaseEntry;
-						for (var i = 0; appCodebases.length > i; i += 1) {
-							codebaseEntry = [];
-							codebaseEntry[0] = appCodebases[i].name;
-							codebaseEntry[1] = appCodebases[i].colour;
-							codebaseTempData.push(codebaseEntry);
-						};
-						codebaseTempData.push(['Unknown', 'lightgray']);
-
-						
-						appCodebasePie = jQuery.jqplot ('appCodebasePieChart',[codebaseTempData], {
-							
-							seriesColors: codebaseColours,
-							legend: {
-								renderer: jQuery.jqplot.EnhancedLegendRenderer,
-								show: true,
-								location: 'e',
-								rendererOptions: {
-								   fontSize: "0.65em",
-								   textColor: 'red'
-								 }
-							},
-							grid: {
-								drawGridLines: false,
-								shadow: false,
-								background: 'transparent',
-								borderColor: '#999999',
-								borderWidth: 0
-							},
-							seriesDefaults: {
-								// Make this a pie chart.
-								renderer: jQuery.jqplot.PieRenderer,
-								rendererOptions: {
-									// Put data labels on the pie slices.
-									// By default, labels show the percentage of the slice.
-									showDataLabels: true,
-									padding: 5,
-									dataLabels: 'percent'
-								}
-							}
-						});
-						
-						
-						//Initialise the App Delivery Model Pie Chart
-						var appDeliveryColours = [];
-						for (var i = 0; appDeliveryModels.length > i; i += 1) {
-							appDeliveryColours.push(appDeliveryModels[i].colour)
-						};
-						appDeliveryColours.push('lightgray');
-						
-						var appDeliveryTempData = [];
-						var appDeliveryEntry;
-						for (var i = 0; appDeliveryModels.length > i; i += 1) {
-							appDeliveryEntry = [];
-							appDeliveryEntry[0] = appDeliveryModels[i].name;
-							appDeliveryEntry[1] = appDeliveryModels[i].colour;
-							appDeliveryTempData.push(appDeliveryEntry);
-						};
-						appDeliveryTempData.push(['Unknown', 'lightgray']);
-
-						
-						appDeliveryModelPie = jQuery.jqplot ('appDeliveryModelPieChart',[appDeliveryTempData], {
-							
-							seriesColors: appDeliveryColours,
-							legend: {
-								renderer: jQuery.jqplot.EnhancedLegendRenderer,
-								show: true,
-								location: 'e',
-								rendererOptions: {
-								   fontSize: "0.65em",
-								   textColor: 'red'
-								 }
-							},
-							grid: {
-								drawGridLines: false,
-								shadow: false,
-								background: 'transparent',
-								borderColor: '#999999',
-								borderWidth: 0
-							},
-							seriesDefaults: {
-								// Make this a pie chart.
-								renderer: jQuery.jqplot.PieRenderer,
-								rendererOptions: {
-									// Put data labels on the pie slices.
-									// By default, labels show the percentage of the slice.
-									showDataLabels: true,
-									padding: 5,
-									dataLabels: 'percent'
-								}
-							}
-						});
-					
-					
-						//initialise the ARM model
-						var armFragment   = $("#arm-template").html();
-						var armTemplate = Handlebars.compile(armFragment);
-						$("#appRefModelContainer").html(armTemplate(armData));
-						
-						var appDetailFragment = $("#arm-appcap-popup-template").html();
-						appDetailTemplate = Handlebars.compile(appDetailFragment);
-						
-						
-						
-						
-						<!-- SET UP THE TRM MODEL -->
-						//Initialise the Tech Product Lifecycle Status Pie Chart
-						var lifecycleColours = [];
-						for (var i = 0; lifecycleStatii.length > i; i += 1) {
-							lifecycleColours.push(lifecycleStatii[i].colour)
-						};
-						lifecycleColours.push('lightgray');
-						
-						var statusTempData = [];
-						var statusEntry;
-						for (var i = 0; lifecycleStatii.length > i; i += 1) {
-							statusEntry = [];
-							statusEntry[0] = lifecycleStatii[i].name;
-							statusEntry[1] = lifecycleStatii[i].colour;
-							statusTempData.push(statusEntry);
-						};
-						statusTempData.push(['Unknown', 'lightgray']);
-						
-						//console.log('Status Colours: ' + statusTempData);
-						
-						techProdStatusPie = jQuery.jqplot ('techProdStatusPieChart',[statusTempData], {
-							
-							seriesColors: lifecycleColours,
-							legend: {
-								renderer: jQuery.jqplot.EnhancedLegendRenderer,
-								show: true,
-								location: 'e',
-								rendererOptions: {
-								   fontSize: "0.65em",
-								   textColor: 'red'
-								 }
-							},
-							grid: {
-								drawGridLines: false,
-								shadow: false,
-								background: 'transparent',
-								borderColor: '#999999',
-								borderWidth: 0
-							},
-							seriesDefaults: {
-								// Make this a pie chart.
-								renderer: jQuery.jqplot.PieRenderer,
-								rendererOptions: {
-									// Put data labels on the pie slices.
-									// By default, labels show the percentage of the slice.
-									showDataLabels: true,
-									padding: 5,
-									dataLabels: 'percent'
-								}
-							}
-						});
-						
-						
-						//Initialise the Tech Product Delivery Model Pie Chart
-						var techDeliveryColours = [];
-						for (var i = 0; techDeliveryModels.length > i; i += 1) {
-							techDeliveryColours.push(techDeliveryModels[i].colour)
-						};
-						techDeliveryColours.push('lightgray');
-						
-						var techDeliveryTempData = [];
-						var techDeliveryEntry;
-						for (var i = 0; techDeliveryModels.length > i; i += 1) {
-							techDeliveryEntry = [];
-							techDeliveryEntry[0] = techDeliveryModels[i].name;
-							techDeliveryEntry[1] = techDeliveryModels[i].colour;
-							techDeliveryTempData.push(techDeliveryEntry);
-						};
-						techDeliveryTempData.push(['Unknown', 'lightgray']);
-						
-						//console.log('Delivery Colours: ' + statusTempData);
-						
-						techProdDeliveryPie = jQuery.jqplot ('techProdDeliveryPieChart',[techDeliveryTempData], {
-							
-							seriesColors: techDeliveryColours,
-							legend: {
-								renderer: jQuery.jqplot.EnhancedLegendRenderer,
-								show: true,
-								location: 'e',
-								rendererOptions: {
-								   fontSize: "0.65em",
-								   textColor: 'red'
-								 }
-							},
-							grid: {
-								drawGridLines: false,
-								shadow: false,
-								background: 'transparent',
-								borderColor: '#999999',
-								borderWidth: 0
-							},
-							seriesDefaults: {
-								// Make this a pie chart.
-								renderer: jQuery.jqplot.PieRenderer,
-								rendererOptions: {
-									// Put data labels on the pie slices.
-									// By default, labels show the percentage of the slice.
-									showDataLabels: true,
-									padding: 5,
-									dataLabels: 'percent'
-								}
-							}
-						});
-						
-						
-						//initialise the TRM model
-						var trmFragment   = $("#trm-template").html();
-						var trmTemplate = Handlebars.compile(trmFragment);
-						$("#techRefModelContainer").html(trmTemplate(trmData));
-						$('.matchHeight2').matchHeight();
-			 			$('.matchHeightTRM').matchHeight();
-			 			
-			 			var techDetailFragment = $("#trm-techcap-popup-template").html();
-						techDetailTemplate = Handlebars.compile(techDetailFragment);
-						
-						drawDashboard();
-					});
-								  	
-				</script>
+				
 				<style>
 					.dashboardPanel{
 						padding: 10px;
@@ -721,14 +240,30 @@
 						font-size: 12px;
 					}</style>
 				<!--Ends-->
+                
+                
+				
 			</head>
 			<body>
+				<xsl:if test="$isRoadmapEnabled">
+					<xsl:call-template name="RenderRoadmapWidgetButton"/>
+				</xsl:if>
+				
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
+				<div id="ess-roadmap-content-container">
+					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
+					<xsl:call-template name="RenderCommonRoadmapJavscript">
+						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
+						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+					</xsl:call-template>
+					<div class="clearfix"></div>
+				</div>
 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
+
 						<div class="col-xs-12">
 							<div class="page-header">
 								<h1>
@@ -737,7 +272,559 @@
 								</h1>
 							</div>
 						</div>
-
+						
+						<script type="text/javascript">
+							
+							var appCodebasePie, appDeliveryModelPie, techProdStatusPie, techProdDeliveryPie, bcmDetailTemplate, appDetailTemplate, techDetailTemplate, ragOverlayLegend, noOverlayBCMLegend, noOverlayARMLegend, noOverlayTRMLegend;
+							var defaultPieColour = 'white';
+							
+							// the list of JSON objects representing the code base types for applications
+						  	var appCodebases = [<xsl:apply-templates select="$allAppCodebases" mode="RenderEnumerationJSONList"/>];
+							
+							// the list of JSON objects representing the delivery models for applications
+						  	var appDeliveryModels = [<xsl:apply-templates select="$allAppDeliveryModels" mode="RenderEnumerationJSONList"/>];
+							
+							// the list of JSON objects representing the delivery models for technology products
+						  	var techDeliveryModels = [<xsl:apply-templates select="$allTechProdDeliveryTypes" mode="RenderEnumerationJSONList"/>];
+							
+							// the list of JSON objects representing the environments
+						  	var lifecycleStatii = [
+								<xsl:apply-templates select="$allLifecycleStatii" mode="getSimpleJSONList"/>					
+							];
+							
+							// the list of JSON objects representing the business units pf the enterprise
+						  	var businessUnits = {
+									businessUnits: [<xsl:apply-templates select="$allBusinessUnits" mode="getBusinessUnits"/>
+						    	]
+						  	};
+						  	
+						  	// the list of JSON objects representing the applications in use across the enterprise
+						  	var applications = {
+								applications: [<xsl:apply-templates select="$allApps" mode="getApplications"/>
+						    	]
+						  	};
+						  	
+						  	// the list of JSON objects representing the technology products in use across the enterprise
+						  	var techProducts = {
+								techProducts: [     <xsl:apply-templates select="$allTechProds" mode="getTechProducts"/>
+						    	]
+						  	};
+						  	
+						  	// the JSON objects for the Business Capability Model (BCM)
+						  	var bcmData = <xsl:call-template name="RenderBCMData"/>;
+							
+							// the JSON objects for the Application Reference Model (ARM)
+						  	var armData = {
+						  		left: [
+						  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderAppCaps"/>
+						  		],
+						  		middle: [
+						  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderAppCaps"/>
+						  		],
+						  		right: [
+						  			<xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderAppCaps"/>
+						  		],
+						  	
+						  	};
+							
+							// the JSON objects for the Technology Reference Model (TRM)
+						  	var trmData = {
+						  		top: [
+						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $topRefLayer/name]" mode="RenderTechDomains"/>
+						  		],
+						  		left: [
+						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderTechDomains"/>
+						  		],
+						  		middle: [
+						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderTechDomains"/>
+						  		],
+						  		right: [
+						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderTechDomains"/>
+						  		],
+						  		bottom: [
+						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $bottomRefLayer/name]" mode="RenderTechDomains"/>
+						  		]
+						  	};
+						  	
+						  	
+						  	// the JSON objects for the Application Services and Applications that support Business Capabilities
+						  	var busCapDetails = [
+						  		<xsl:apply-templates select="$L1BusCaps" mode="BusCapDetails"/>
+						  	];
+						  	
+						  	// the JSON objects for the Application Services and Applications that implement Application Capabilities
+						  	var appCapDetails = [
+						  		<xsl:apply-templates select="$L1AppCaps" mode="AppCapDetails"/>
+						  	];
+						  	
+						  	
+							// the JSON objects for the Technology Components and Products that implement Technology Capabilities
+						  	var techCapDetails = [
+						  		<xsl:apply-templates select="$allTechCaps" mode="TechCapDetails"/>
+						  	];
+						  	
+						  	
+						  	
+						  	
+						  	<xsl:call-template name="RenderJavascriptUtilityFunctions"/>
+												
+							<xsl:call-template name="RenderJavascriptScopingFunctions"/>
+							
+							<xsl:call-template name="RenderGeographicMapJSFunctions"/>
+							
+							
+							
+							<!-- START PAGE DRAWING FUNCTIONS -->
+							//function to scope the relevant elements in acordance with the current roadmap period
+							function scopeDashboardRoadmapElements() {
+								if(roadmapEnabled) {
+									rmSetElementListRoadmapStatus([applications.applications, techProducts.techProducts]);
+								}
+							
+								setCurrentTechProds();
+								setCurrentApps();
+							
+								if(roadmapEnabled) {
+									var appsForRM = rmGetVisibleElements(selectedApps);
+									selectedApps = appsForRM;
+			
+									var techProdsForRM = rmGetVisibleElements(selectedTechProds);
+									selectedTechProds = techProdsForRM;
+								}
+								
+								selectedAppIDs = getObjectListPropertyVals(selectedApps, "id");
+								selectedTechProdIDs = getObjectListPropertyVals(selectedTechProds, "id");
+							}
+							
+							
+							//function to draw the relevant dashboard components based on the currently selected Data Objects
+							function redrawView() {
+							
+								//Hide any elements that are out of scope for the selected roadmap period
+								scopeDashboardRoadmapElements();
+								
+								//Update the Geographic Scope map
+								setGeographicMap($('#mapScope').vectorMap('get', 'mapObject'), 'country', 'hsla(200, 80%, 60%, 1)');
+		
+								//Update the BCM Model
+								setBusCapabilityOverlay();
+								
+								//Update the ARM Model
+								setAppCapabilityOverlay();
+								
+								//Set the Application Codebase pie chart values
+								setPieChartValues(appCodebasePie, appCodebases, selectedApps, "codebase");
+								
+								//Set the Application Delivery Model pie chart values
+								setPieChartValues(appDeliveryModelPie, appDeliveryModels, selectedApps, "delivery");
+								
+								//Update the TRM Model
+								setTechCapabilityOverlay();
+								
+								//Set the Technology Lifecycle Status pie chart values
+								setPieChartValues(techProdStatusPie, lifecycleStatii, selectedTechProds, "status");
+								
+								//Set the Technology Delivery Model pie chart values
+								setPieChartValues(techProdDeliveryPie, techDeliveryModels, selectedTechProds, "delivery");
+		
+							}
+							
+							
+							//Function to set values for a pie chart based on properties that contain a specific value
+							function setPieChartValues(pieChart, segments, objectList, propertyName) {
+								var pieData = [];
+								var currentSegment;
+								var objectsForSegment;
+								var currentData;
+								
+								for (var i = 0; segments.length > i; i += 1) {
+									currentData = [];
+									currentSegment = segments[i];
+									objectsForSegment = getObjectsMatchingVal(objectList, propertyName, currentSegment.id);
+									currentData[0] = currentSegment.name + ' [' + objectsForSegment.length + ']';
+									currentData[1] = objectsForSegment.length;
+									pieData.push(currentData);
+									//console.log("Count of " + propertyName + " for " + currentSegment.name + ": " + currentData[1]);
+								};
+								
+								var unknownObjects = getObjectsMatchingVal(objectList, propertyName, '');
+								currentData = [];
+								currentData[0] = 'Unknown [' + unknownObjects.length + ']';
+								currentData[1] = unknownObjects.length;
+								pieData.push(currentData);
+		
+								pieChart.series[0].data = pieData;
+								pieChart.replot();					
+							}
+							
+							//function to get the segment colour in a pie chart
+							function getPieColour(segmentColour) {
+								if(segmentColour == null) {
+									return defaultPieColour;
+								}
+								if(segmentColour.startsWith('hsl')) {
+									return defaultPieColour;
+								}
+								return segmentColour;
+							}
+							
+							
+							$(document).ready(function(){	
+							
+								$('h2').click(function(){
+									$(this).next().slideToggle();
+								});
+								
+								//INITIALISE THE SCOPING DROP DOWN LIST
+								$('#busUnitList').select2({
+									placeholder: "All",
+									allowClear: true
+								});
+								
+								//INITIALISE THE PAGE WIDE SCOPING VARIABLES					
+								allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
+								selectedBusUnitIDs = [];
+								selectedBusUnits = [];
+								<!--setCurrentApps();
+								setCurrentTechProds();-->
+								
+								
+								<!--$.fn.select2.defaults.set("placeholder", "All");
+								$.fn.select2.defaults.set("allowClear", true);
+								$('#dataObjectList').select2({
+									placeholder: "All",
+									allowClear: true
+								});-->
+								
+								$('#busUnitList').on('change', function (evt) {
+								  var thisBusUnitIDs = $(this).select2("val");
+								  console.log("Select BUs: " + selectedBusUnitIDs);
+								  
+								  if(thisBusUnitIDs != null) {
+								  	setCurrentBusUnits(thisBusUnitIDs);
+								  } else {
+								  	selectedBusUnitIDs = [];
+								  	selectedBusUnits = [];
+								  	<!--setCurrentApps();
+								  	setCurrentTechProds();-->
+								  }
+								  redrawView();
+								  //console.log("Select BUs: " + selectedBusUnitIDs);
+							
+								});
+								
+								<!--
+								//Initialise the Codebase Pie Chart
+								var appCodeBaseColours = [];
+								for (var i = 0; codebases.length > i; i += 1) {
+									appCodeBaseColours.push(codebases[i].colour)
+								};
+								
+								var appCodeBaseTempData = [];
+								var appCodeBaseEntry;
+								for (var i = 0; codebases.length > i; i += 1) {
+									appCodeBaseEntry = [];
+									appCodeBaseEntry[0] = codebases[i].name;
+									appCodeBaseEntry[1] = codebases[i].colour;
+									appCodeBaseTempData.push(appCodeBaseEntry);
+								};
+								
+								appCodebasePie = jQuery.jqplot ('pieChart2',[appCodeBaseTempData], {
+									
+									seriesColors: appCodeBaseColours,
+									legend: {
+										renderer: jQuery.jqplot.EnhancedLegendRenderer,
+										show: true,
+										location: 'e',
+										rendererOptions: {
+										   fontSize: "0.65em",
+										   textColor: 'red'
+										 }
+									},
+									grid: {
+										drawGridLines: false,
+										shadow: false,
+										background: 'transparent',
+										borderColor: '#999999',
+										borderWidth: 0
+									},
+									seriesDefaults: {
+										// Make this a pie chart.
+										renderer: jQuery.jqplot.PieRenderer,
+										rendererOptions: {
+											// Put data labels on the pie slices.
+											// By default, labels show the percentage of the slice.
+											showDataLabels: true,
+											padding: 5,
+											dataLabels: 'percent'
+										}
+									}
+								});
+								-->
+								
+								var busUnitSelectFragment   = $("#bus-unit-select-template").html();
+								var busUnitSelectTemplate = Handlebars.compile(busUnitSelectFragment);
+								$("#busUnitList").html(busUnitSelectTemplate(businessUnits));
+								
+								
+								<!-- SET UP THE REF MODEL LEGENDS -->
+								var legendFragment = $("#rag-overlay-legend-template").html();
+								var legendTemplate = Handlebars.compile(legendFragment);
+								ragOverlayLegend = legendTemplate();
+								
+								legendFragment = $("#no-overlay-legend-template").html();
+								legendTemplate = Handlebars.compile(legendFragment);
+								var legendLabels = {};
+								legendLabels["inScope"] = 'Has Supporting Applications';
+								noOverlayBCMLegend = legendTemplate(legendLabels);
+								legendLabels["inScope"] = 'Applications in Use';
+								noOverlayARMLegend = legendTemplate(legendLabels);
+								legendLabels["inScope"] = 'Technology Products in Use';
+								noOverlayTRMLegend = legendTemplate(legendLabels);
+								
+								
+								<!-- SET UP THE BCM MODEL -->
+								//initialise the BCM model
+								var bcmFragment   = $("#bcm-template").html();
+								var bcmTemplate = Handlebars.compile(bcmFragment);
+								$("#bcm").html(bcmTemplate(bcmData));
+								
+								var bcmDetailFragment = $("#bcm-buscap-popup-template").html();
+								bcmDetailTemplate = Handlebars.compile(bcmDetailFragment);
+								
+								<!-- SET UP THE ARM MODEL -->
+								//Initialise the App Codebase Pie Chart
+								var codebaseColours = [];
+								for (var i = 0; appCodebases.length > i; i += 1) {
+									codebaseColours.push(appCodebases[i].colour)
+								};
+								codebaseColours.push('lightgray');
+								
+								var codebaseTempData = [];
+								var codebaseEntry;
+								for (var i = 0; appCodebases.length > i; i += 1) {
+									codebaseEntry = [];
+									codebaseEntry[0] = appCodebases[i].name;
+									codebaseEntry[1] = getPieColour(appCodebases[i].colour);
+									codebaseTempData.push(codebaseEntry);
+								};
+								codebaseTempData.push(['Unknown', 'lightgray']);
+		
+								
+								appCodebasePie = jQuery.jqplot ('appCodebasePieChart',[codebaseTempData], {
+									
+									seriesColors: codebaseColours,
+									legend: {
+										renderer: jQuery.jqplot.EnhancedLegendRenderer,
+										show: true,
+										location: 'e',
+										rendererOptions: {
+										   fontSize: "0.65em",
+										   textColor: 'red'
+										 }
+									},
+									grid: {
+										drawGridLines: false,
+										shadow: false,
+										background: 'transparent',
+										borderColor: '#999999',
+										borderWidth: 0
+									},
+									seriesDefaults: {
+										// Make this a pie chart.
+										renderer: jQuery.jqplot.PieRenderer,
+										rendererOptions: {
+											// Put data labels on the pie slices.
+											// By default, labels show the percentage of the slice.
+											showDataLabels: true,
+											padding: 5,
+											dataLabels: 'percent'
+										}
+									}
+								});
+								
+								
+								//Initialise the App Delivery Model Pie Chart
+								var appDeliveryColours = [];
+								for (var i = 0; appDeliveryModels.length > i; i += 1) {
+									appDeliveryColours.push(appDeliveryModels[i].colour)
+								};
+								appDeliveryColours.push('lightgray');
+								
+								var appDeliveryTempData = [];
+								var appDeliveryEntry;
+								for (var i = 0; appDeliveryModels.length > i; i += 1) {
+									appDeliveryEntry = [];
+									appDeliveryEntry[0] = appDeliveryModels[i].name;
+									appDeliveryEntry[1] = getPieColour(appDeliveryModels[i].colour);
+									appDeliveryTempData.push(appDeliveryEntry);
+								};
+								appDeliveryTempData.push(['Unknown', 'lightgray']);
+		
+								
+								appDeliveryModelPie = jQuery.jqplot ('appDeliveryModelPieChart',[appDeliveryTempData], {
+									
+									seriesColors: appDeliveryColours,
+									legend: {
+										renderer: jQuery.jqplot.EnhancedLegendRenderer,
+										show: true,
+										location: 'e',
+										rendererOptions: {
+										   fontSize: "0.65em",
+										   textColor: 'red'
+										 }
+									},
+									grid: {
+										drawGridLines: false,
+										shadow: false,
+										background: 'transparent',
+										borderColor: '#999999',
+										borderWidth: 0
+									},
+									seriesDefaults: {
+										// Make this a pie chart.
+										renderer: jQuery.jqplot.PieRenderer,
+										rendererOptions: {
+											// Put data labels on the pie slices.
+											// By default, labels show the percentage of the slice.
+											showDataLabels: true,
+											padding: 5,
+											dataLabels: 'percent'
+										}
+									}
+								});
+							
+							
+								//initialise the ARM model
+								var armFragment   = $("#arm-template").html();
+								var armTemplate = Handlebars.compile(armFragment);
+								$("#appRefModelContainer").html(armTemplate(armData));
+								
+								var appDetailFragment = $("#arm-appcap-popup-template").html();
+								appDetailTemplate = Handlebars.compile(appDetailFragment);
+								
+								
+								
+								
+								<!-- SET UP THE TRM MODEL -->
+								//Initialise the Tech Product Lifecycle Status Pie Chart
+								var lifecycleColours = [];
+								for (var i = 0; lifecycleStatii.length > i; i += 1) {
+									lifecycleColours.push(lifecycleStatii[i].colour)
+								};
+								lifecycleColours.push('lightgray');
+								
+								var statusTempData = [];
+								var statusEntry;
+								for (var i = 0; lifecycleStatii.length > i; i += 1) {
+									statusEntry = [];
+									statusEntry[0] = lifecycleStatii[i].name;
+									statusEntry[1] = getPieColour(lifecycleStatii[i].colour);
+									statusTempData.push(statusEntry);
+								};
+								statusTempData.push(['Unknown', 'lightgray']);
+								
+								//console.log('Status Colours: ' + statusTempData);
+								
+								techProdStatusPie = jQuery.jqplot ('techProdStatusPieChart',[statusTempData], {
+									
+									seriesColors: lifecycleColours,
+									legend: {
+										renderer: jQuery.jqplot.EnhancedLegendRenderer,
+										show: true,
+										location: 'e',
+										rendererOptions: {
+										   fontSize: "0.65em",
+										   textColor: 'red'
+										 }
+									},
+									grid: {
+										drawGridLines: false,
+										shadow: false,
+										background: 'transparent',
+										borderColor: '#999999',
+										borderWidth: 0
+									},
+									seriesDefaults: {
+										// Make this a pie chart.
+										renderer: jQuery.jqplot.PieRenderer,
+										rendererOptions: {
+											// Put data labels on the pie slices.
+											// By default, labels show the percentage of the slice.
+											showDataLabels: true,
+											padding: 5,
+											dataLabels: 'percent'
+										}
+									}
+								});
+								
+								
+								//Initialise the Tech Product Delivery Model Pie Chart
+								var techDeliveryColours = [];
+								for (var i = 0; techDeliveryModels.length > i; i += 1) {
+									techDeliveryColours.push(techDeliveryModels[i].colour)
+								};
+								techDeliveryColours.push('lightgray');
+								
+								var techDeliveryTempData = [];
+								var techDeliveryEntry;
+								for (var i = 0; techDeliveryModels.length > i; i += 1) {
+									techDeliveryEntry = [];
+									techDeliveryEntry[0] = techDeliveryModels[i].name;
+									techDeliveryEntry[1] = getPieColour(techDeliveryModels[i].colour);
+									techDeliveryTempData.push(techDeliveryEntry);
+								};
+								techDeliveryTempData.push(['Unknown', 'lightgray']);
+								
+								//console.log('Delivery Colours: ' + statusTempData);
+								
+								techProdDeliveryPie = jQuery.jqplot ('techProdDeliveryPieChart',[techDeliveryTempData], {
+									
+									seriesColors: techDeliveryColours,
+									legend: {
+										renderer: jQuery.jqplot.EnhancedLegendRenderer,
+										show: true,
+										location: 'e',
+										rendererOptions: {
+										   fontSize: "0.65em",
+										   textColor: 'red'
+										 }
+									},
+									grid: {
+										drawGridLines: false,
+										shadow: false,
+										background: 'transparent',
+										borderColor: '#999999',
+										borderWidth: 0
+									},
+									seriesDefaults: {
+										// Make this a pie chart.
+										renderer: jQuery.jqplot.PieRenderer,
+										rendererOptions: {
+											// Put data labels on the pie slices.
+											// By default, labels show the percentage of the slice.
+											showDataLabels: true,
+											padding: 5,
+											dataLabels: 'percent'
+										}
+									}
+								});
+								
+								
+								//initialise the TRM model
+								var trmFragment   = $("#trm-template").html();
+								var trmTemplate = Handlebars.compile(trmFragment);
+								$("#techRefModelContainer").html(trmTemplate(trmData));
+								$('.matchHeight2').matchHeight();
+					 			$('.matchHeightTRM').matchHeight();
+					 			
+					 			var techDetailFragment = $("#trm-techcap-popup-template").html();
+								techDetailTemplate = Handlebars.compile(techDetailFragment);
+								
+								redrawView();
+							});
+										  	
+						</script>
 
 						<xsl:call-template name="RenderDashboardBusUnitFilter"/>
 						<xsl:call-template name="scopeMap"/>
@@ -768,7 +855,7 @@
 								return $(this).next().html();
 							}
 						});
-						
+						redrawView();
 					});
 				</script>
 			</body>
@@ -810,7 +897,7 @@
 					<div class="col-xs-6">
 						<div class="pull-right">
 							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayNone" value="none" checked="checked" onchange="setBusCapabilityOverlay()"/>None</label>
+							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayNone" value="none" checked="checked" onchange="setBusCapabilityOverlay()"/>Application Support</label>
 							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayDup" value="duplication" onchange="setBusCapabilityOverlay()"/>Duplication</label>
 							<!--<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>-->
 						</div>
@@ -896,7 +983,7 @@
 					<div class="col-xs-6">
 						<div class="pull-right">
 							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayNone" value="none" checked="checked" onchange="setAppCapabilityOverlay()"/>None</label>
+							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayNone" value="none" checked="checked" onchange="setAppCapabilityOverlay()"/>Footprint</label>
 							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayDup" value="duplication" onchange="setAppCapabilityOverlay()"/>Duplication</label>
 							<!--<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>-->
 						</div>
@@ -1074,7 +1161,7 @@
 					<div class="col-xs-6">
 						<div class="pull-right">
 							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setTechCapabilityOverlay()"/>None</label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setTechCapabilityOverlay()"/>Footprint</label>
 							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setTechCapabilityOverlay()"/>Duplication</label>
 							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>
 						</div>
@@ -1274,13 +1361,14 @@
 		
 		
 		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$thisBusinessUnitName"/>",
 			description: "<xsl:value-of select="$thisBusinessUnitDescription"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",
-			apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			<!--country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",-->
+			country: [<xsl:for-each select="$thisBusinessUnitCountry">"<xsl:value-of select="current()/own_slot_value[slot_reference='gr_region_identifier']/value"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
+			apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
+			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1290,27 +1378,17 @@
 		<xsl:variable name="thisAppDeliveryModel" select="$allAppDeliveryModels[name = current()/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 		<xsl:variable name="thisAppOrgUser2Roles" select="$appOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
 		<xsl:variable name="thsAppUsers" select="$allBusinessUnits[name = $thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-		<xsl:variable name="thisAppName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="thisAppDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>	
 		
 		
 		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			<!--id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$thisAppName"/>",
 			description: "<xsl:value-of select="$thisAppDescription"/>",
-			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",-->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 			codebase: "<xsl:value-of select="translate($thisAppCodebase/name, '.', '_')"/>",
 			delivery: "<xsl:value-of select="translate($thisAppDeliveryModel/name, '.', '_')"/>",
-			appOrgUsers: [<xsl:for-each select="$thsAppUsers">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			appOrgUsers: [<xsl:for-each select="$thsAppUsers">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1335,14 +1413,15 @@
 		
 
 		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			<!--id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$thisTechProdName"/>",
 			description: "<xsl:value-of select="$thisTechProdDescription"/>",
-			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",-->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 			status: "<xsl:value-of select="translate($theLifecycleStatus/name, '.', '_')"/>",
 			statusScore: <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
 			delivery: "<xsl:value-of select="translate($theDeliveryModel/name, '.', '_')"/>",
-			techOrgUsers: [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			techOrgUsers: [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1369,7 +1448,7 @@
 		<!--<xsl:variable name="L0Caps" select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"></xsl:variable>-->
 		
 		{
-		l0BusCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		l0BusCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		l0BusCapName: "<xsl:value-of select="$rootBusCapName"/>",
 		l0BusCapLink: "<xsl:value-of select="$rootBusCapLink"/>",
 		l0BusCapDescription: "<xsl:value-of select="eas:renderJSText($rootBusCapDescription)"/>",
@@ -1402,7 +1481,7 @@
 		<xsl:variable name="L1Caps" select="$allBusCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 		
 		{
-		busCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		busCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		busCapName: "<xsl:value-of select="$currentBusCapName"/>",
 		busCapDescription: "<xsl:value-of select="$currentBusCapDescription"/>",
 		busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
@@ -1437,7 +1516,7 @@
 		<xsl:variable name="appServices" select="$allAppServices[own_slot_value[slot_reference = 'realises_application_capabilities']/value = $appCaps/name]"/>-->
 		
 		{
-			busCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			busCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			busCapName: "<xsl:value-of select="$currentBusCapName"/>",
 			busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
 			busCapDescription: "<xsl:value-of select="$currentBusCapDescription"/>"
@@ -1452,7 +1531,7 @@
 		<xsl:variable name="appServices" select="$allAppServices[own_slot_value[slot_reference = 'realises_application_capabilities']/value = $appCaps/name]"/>
 		
 		{
-			busCapId: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			busCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			appServices: [	
 				<xsl:apply-templates select="$appServices" mode="RenderAppServices"/>		
 			]
@@ -1464,29 +1543,10 @@
 	
 	<!-- APPLICATION REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderAppCaps" match="node()">
-		<xsl:variable name="appCapName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appCapDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appCapLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
 		<xsl:variable name="childAppCaps" select="$allAppCaps[name = current()/own_slot_value[slot_reference = 'contained_app_capabilities']/value]"></xsl:variable>
 		
-		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="$appCapName"/>",
-		description: "<xsl:value-of select="$appCapDescription"/>",
-		link: "<xsl:value-of select="$appCapLink"/>",
+		{<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 		childAppCaps: [
 			<xsl:apply-templates select="$childAppCaps" mode="RenderChildAppCaps"/>		
 		]
@@ -1496,29 +1556,8 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="RenderChildAppCaps">
-		<xsl:variable name="appCapName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appCapDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appCapLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
 
-		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="$appCapName"/>",
-		link: "<xsl:value-of select="$appCapLink"/>",
-		description: "<xsl:value-of select="$appCapDescription"/>"
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1528,7 +1567,7 @@
 		<xsl:variable name="appServices" select="$allAppServices[own_slot_value[slot_reference = 'realises_application_capabilities']/value = current()/name]"/>
 		
 		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			appServices: [	
 				<xsl:apply-templates select="$appServices" mode="RenderAppServices"/>		
 			]
@@ -1539,31 +1578,11 @@
 	
 	
 	<xsl:template match="node()" mode="RenderAppServices">
-		<xsl:variable name="appServiceName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appSvcDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="appServiceLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
 		<xsl:variable name="thisAppProRoles" select="$allAppProRoles[own_slot_value[slot_reference = 'implementing_application_service']/value = current()/name]"/>
 		<xsl:variable name="thisApps" select="$allApps[name = $thisAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 		
-		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="$appServiceName"/>",
-		link: "<xsl:value-of select="$appServiceLink"/>",
-		description: "<xsl:value-of select="$appSvcDescription"/>",
-		apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		apps: [<xsl:for-each select="$thisApps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1590,7 +1609,7 @@
 		<xsl:variable name="childTechCaps" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
 		
 		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:value-of select="$techDomainName"/>",
 		description: "<xsl:value-of select="$techDomainDescription"/>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
@@ -1603,30 +1622,9 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="RenderChildTechCaps">
-		<xsl:variable name="techCapName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="techCapDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="techCapLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
 		<xsl:variable name="techComponents" select="$allTechComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = current()/name]"/>
 		
-		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-			name: "<xsl:value-of select="$techCapName"/>",
-			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:value-of select="$techCapDescription"/>"
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1636,7 +1634,7 @@
 		<xsl:variable name="techComponents" select="$allTechComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = current()/name]"/>
 		
 		{
-			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
+			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			techComponents: [	
 				<xsl:apply-templates select="$techComponents" mode="RenderTechComponents"/>		
 			]
@@ -1646,31 +1644,11 @@
 	
 	
 	<xsl:template match="node()" mode="RenderTechComponents">
-		<xsl:variable name="techCompName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="techCompDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="techCompLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</xsl:variable>
 		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
 		<xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 		
-		{
-		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="$techCompName"/>",
-		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:value-of select="$techCompDescription"/>",
-		techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="translate(current()/name, '.', '_')"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>

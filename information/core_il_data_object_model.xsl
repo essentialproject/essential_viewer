@@ -98,13 +98,15 @@
 				</xsl:for-each>
 
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/jointjs/lodash.min.js"/>
-				<script src="js/jointjs/backbone-min.js"/>
+				<script src="js/lodash/index.js"/>
+				<script src="js/backbone/backbone.js"/>
+				<script src="js/graphlib/graphlib.core.js"/>
+				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
 				<script src="js/jquery-ui.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
 				<style type="text/css">
 					.link-tools,
 					.marker-arrowheads,
@@ -246,7 +248,7 @@
 				<xsl:with-param name="theXSL" select="$dataObjectModelReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:value-of select="translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', '')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:value-of select="translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', '')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, position: { x: 0, y: 0 }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 			
 		</xsl:text>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+	<xsl:include href="../business/core_bl_utilities.xsl"/>
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
@@ -22,20 +24,33 @@
 	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
-	<!-- END GENERIC PARAMETERS -->
-
-	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Technology_Component', 'Technology_Capability', 'Supplier', 'Technology_Product')"/>
+	<xsl:variable name="linkClasses" select="('Supplier', 'Technology_Product', 'Technology_Component', 'Technology_Capability')"/>
 	<!-- END GENERIC LINK VARIABLES -->
+
+
+	<xsl:variable name="allTechProducts" select="/node()/simple_instance[type = 'Technology_Product']"/>
+	<xsl:variable name="allTechSuppliers" select="/node()/simple_instance[name = $allTechProducts/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
+	<xsl:variable name="allTechComponents" select="/node()/simple_instance[type = 'Technology_Component']"/>
+	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[(own_slot_value[slot_reference = 'role_for_technology_provider']/value = $allTechProducts/name) and (own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComponents/name)]"/>
+	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
+	
+	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+	
+	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 
 	<xsl:variable name="techProdListByVendorCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Vendor')"/>
 	<xsl:variable name="techProdListByCapCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Technology Capability')"/>
 	<xsl:variable name="techProdListByNameCatalogue" select="eas:get_report_by_name('Core: Technology Product Catalogue by Technology Component')"/>
-
-
+	
+	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
+	<xsl:variable name="allRoadmapInstances" select="($allTechProducts, $allTechProdRoles)"/>
+	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
+	
 	<!--
-		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -58,17 +73,8 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
+	<!-- 28.07.2018 JP Updated to support Roadmap capabilities -->
 
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type = 'Technology_Product_Role']"/>
-	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
-	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
-	<xsl:variable name="allSuppliers" select="/node()/simple_instance[type = 'Supplier']"/>
-	
-	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
-	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
-	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-
-	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
@@ -82,39 +88,40 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>
-					<xsl:value-of select="eas:i18n('Technology Catalogue')"/>
+					<xsl:value-of select="eas:i18n('Technology Product Catalogue')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<style type="text/css">
-					.standardBadge{ 	
-						width: 90px; 
-						height: 15px;
-						font-size: x-small; 
-						border: 1px solid #eee; 
-						text-align: center; 
-						border-radius: 10px; 
-						-webkit-box-shadow: #666 2px 2px 0px 0px; 
-						-moz-box-shadow: #666 2px 2px 0px 0px; 
-						box-shadow: #aaa 2px 2px 0px 0px; 
-						padding: 2px 5px;
-					 }
-					
-					.legendIcon{
-						font-size: 1.2em;
-					}
-				</style>
+				
+				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
+				<xsl:call-template name="RenderRoadmapJSLibraries">
+					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
+				</xsl:call-template>
+
 			</head>
 			<body>
+				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
+				<xsl:if test="$isRoadmapEnabled">
+					<xsl:call-template name="RenderRoadmapWidgetButton"/>
+				</xsl:if>
+						
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
+				<div id="ess-roadmap-content-container">
+					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
+					<xsl:call-template name="RenderCommonRoadmapJavscript">
+						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
+						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+					</xsl:call-template>
+					<div class="clearfix"></div>
+				</div>
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
+
 						<div class="col-xs-12">
 							<div class="page-header">
 								<h1>
-									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>:&#160;</span>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 									<span class="text-darkgrey">
 										<xsl:value-of select="eas:i18n('Technology Product Catalogue as Table')"/>
 									</span>
@@ -161,52 +168,207 @@
 							</div>
 						</div>
 					</div>
+					
 
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
+
 							<h2 class="text-primary">
 								<xsl:value-of select="eas:i18n('Catalogue')"/>
 							</h2>
-							<div>
-								<p>
-									<xsl:value-of select="eas:i18n('This table lists all the Technology Products in use and allows download as CSV')"/>
-								</p>
-								<script>
+
+
+							<p><xsl:value-of select="eas:i18n('This table lists all the Technology Products in use and allows search as well as copy to spreadsheet')"/>.</p>
+							<script type="text/javascript">
+	
+								<!-- START VIEW SPECIFIC JAVASCRIPT VARIABLES -->
+								//global catalogu specific variables
+								var catalogueTable;
+								var techCapListTemplate, techCompListTemplate, techProdNameTemplate;
+								
+								// the list of JSON objects representing the Suppliers in use across the enterprise
+							  	var techSuppliers = {
+										techSuppliers: [<xsl:apply-templates select="$allTechSuppliers" mode="RenderTechSupplierJSON"/>
+							    	]
+							  	};
+							  	
+							  	
+							  	// the list of JSON objects representing the technology capabilities in use across the enterprise
+							  	var techCapabilities = {
+										techCapabilities: [<xsl:apply-templates select="$allTechCaps" mode="RenderTechCapJSON"/>
+							    	]
+							  	};
+								
+								// the list of JSON objects representing the techProducts in use across the enterprise
+							  	var techProducts = {
+										techProducts: [<xsl:apply-templates select="$allTechProducts" mode="RenderTechProdJSON"/>
+							    	]
+							  	};
+							  	
+							  	// the list of JSON objects representing the techProducts in use across the enterprise
+							  	var techProductRoles = {
+										techProductRoles: [<xsl:apply-templates select="$allTechProdRoles" mode="RenderTechProdRoleJSON"/>
+							    	]
+							  	};
+							  	
+							  	//the list of techProducts for the current scope
+							  	var inScopeTechProducts = {
+							  		techProducts: techProducts.techProducts
+							  	}
+							  	<!-- END VIEW SPECIFIC JAVASCRIPT VARIABLES -->
+							  	
+							  	
+							  	//function to create the data structure needed to render table rows
+								function renderTechProductsTableData() {
+									var dataTableSet = [];
+									var dataTableRow;
+
+									//Note: The list of techProducts is based on the "inScopeTechProducts" variable which ony contains apps visible within the current roadmap time frame
+									for (var i = 0; inScopeTechProducts.techProducts.length > i; i += 1) {
+										dataTableRow = [];
+										//get the current Tech Prod
+										var aTechProd = inScopeTechProducts.techProducts[i];
+										//Apply handlebars template
+										var techProdLinkHTML = techProdNameTemplate(aTechProd);
+										
+										//get the supplier
+										var aSupplier = getObjectById(techSuppliers.techSuppliers, 'id', aTechProd.supplierId);
+										var aSupplierLink = '';
+										if(aSupplier != null) {
+											aSupplierLink = aSupplier.link;
+										}
+										
+										//get the current list of app services provided by the app based on the full list of app provider roles
+										var techCompList = getObjectsByIds(techProductRoles.techProductRoles, 'id', aTechProd.components);
+										var techCompListJSON = {
+											techComponents: techCompList
+										}							
+										//Apply handlebars template
+										var techCompListHTML = techCompListTemplate(techCompListJSON);
+										
+										//Add the tech capabilities
+										var techCapIdLists = [];
+										var techCapIds;
+										techCompList.forEach(function (aTechComp) {
+											techCapIds = aTechComp.techCaps;
+											if(techCapIds.length > 0) {
+												techCapIdLists.push(techCapIds);
+											}
+										});
+										var uniqueTechCapIds = getUniqueArrayVals(techCapIdLists);
+										var techCapList = getObjectsByIds(techCapabilities.techCapabilities, 'id', uniqueTechCapIds);
+										var techCapListJSON = {
+											techCapabilities: techCapList
+										}
+										//Apply handlebars template
+										var techCapListHTML = techCapListTemplate(techCapListJSON);
+										
+										dataTableRow.push(aSupplierLink);
+										dataTableRow.push(techProdLinkHTML);
+										dataTableRow.push(techCompListHTML);
+										dataTableRow.push(techCapListHTML);
+										
+										dataTableSet.push(dataTableRow);
+									}
+									
+									return dataTableSet;
+								}
+								
+								
+								//funtion to set contents of the Application catalogue table
+								function setTechProductsTable() {					
+									var tableData = renderTechProductsTableData();								
+									catalogueTable.clear();
+									catalogueTable.rows.add(tableData);
+			    					catalogueTable.draw();
+								}
+								
+							  	
+							  	<!-- ***REQUIRED*** JAVASCRIPT FUNCTION TO REDRAW THE VIEW WHEN THE ANY SCOPING ACTION IS TAKEN BY THE USER -->
+							  	//function to redraw the view based on the current scope
+								function redrawView() {
+									//console.log('Redrawing View');
+									
+									if(roadmapEnabled) {
+									<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
+										//update the roadmap status of the techProducts and application provider roles passed as an array of arrays
+										rmSetElementListRoadmapStatus([techProducts.techProducts, techProductRoles.techProductRoles]);
+										
+										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
+										//filter techProducts to those in scope for the roadmap start and end date
+										inScopeTechProducts.techProducts = rmGetVisibleElements(techProducts.techProducts);
+									}
+									
+									<!-- VIEW SPECIFIC JS CALLS -->
+									//update the catalogue
+									setTechProductsTable();
+									
+									<!--<!-\- START TEST DIV STYLING -\->
+									var testApp1 = getObjectById(inScopeTechProducts.techProducts, 'id', 'essential_baseline_v62_it_asset_dashboard_Class21110');
+									refreshDOMRoadmapStyles('#testStyling1', techProdNameTemplate, testApp1);
+
+								    
+								    var testApp2 = getObjectById(inScopeTechProducts.techProducts, 'id', 'essential_baseline_v62_it_asset_dashboard_Class21092');
+								    refreshDOMRoadmapStyles('#testStyling2', techProdNameTemplate, testApp2);				    
+								    <!-\- END TEST DIV STYLING -\->-->
+																						
+								}
+								
+								
 								$(document).ready(function(){
+								
+									//START COMPILE HANDLEBARS TEMPLATES
+									
+									//Set up the html templates for technology products, components and capabilities
+									var techCapListFragment   = $("#tech-capability-bullets").html();
+									techCapListTemplate = Handlebars.compile(techCapListFragment);
+									
+									var techCompListFragment   = $("#tech-component-bullets").html();
+									techCompListTemplate = Handlebars.compile(techCompListFragment);
+									
+									var techProdNameFragment   = $("#tech-product-name").html();
+									techProdNameTemplate = Handlebars.compile(techProdNameFragment);
+									
+									//END COMPILE HANDLEBAR TEMPLATES
+
+								
+									//START INITIALISE UP THE CATALOGUE TABLE
 									// Setup - add a text input to each footer cell
-								    $('#dt_techProd tfoot th').each( function () {
+								    $('#dt_techProds tfoot th').each( function () {
 								        var title = $(this).text();
 								        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
 								    } );
 									
-									var table = $('#dt_techProd').DataTable({
-									scrollY: "350px",
-									scrollCollapse: true,
+									catalogueTable = $('#dt_techProds').DataTable({
 									paging: false,
-									info: false,
+									deferRender:    true,
+						            scrollY:        350,
+						            scrollCollapse: true,
+									info: true,
 									sort: true,
-									responsive: true,
+									responsive: false,
 									columns: [
-									    { "width": "15%" },
-									    { "width": "35%" },
-									    { "width": "25%" },
-									    { "width": "25%" }
+									    { "width": "20%" },
+									    { "width": "30%" },
+                                        { "width": "25%", "type": "html"},
+									    { "width": "25%", "type": "html"}
 									  ],
 									dom: 'Bfrtip',
 								    buttons: [
 							            'copyHtml5', 
 							            'excelHtml5',
 							            'csvHtml5',
-							            'pdfHtml5', 'print'
+							            'pdfHtml5',
+							            'print'
 							        ]
 									});
 									
 									
 									// Apply the search
-								    table.columns().every( function () {
+								    catalogueTable.columns().every( function () {
 								        var that = this;
 								 
 								        $( 'input', this.footer() ).on( 'keyup change', function () {
@@ -217,174 +379,185 @@
 								            }
 								        } );
 								    } );
-								    
-								    table.columns.adjust();
+								     
+								    catalogueTable.columns.adjust();
 								    
 								    $(window).resize( function () {
-								        table.columns.adjust();
+								        catalogueTable.columns.adjust();
 								    });
+								    
+								    <!-- ***OPTIONAL*** Register the table as having roadmap aware contents -->
+								    if(roadmapEnabled) {
+								    	registerRoadmapDatatable(catalogueTable);
+								    }
+								    
+								    //END INITIALISE UP THE CATALOGUE TABLE
+								    
+								    //DRAW THE VIEW
+								    redrawView();
 								});
 							</script>
-								<!--<xsl:call-template name="legend"/>-->
-								<table id="dt_techProd" class="table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>
-												<xsl:value-of select="eas:i18n('Supplier')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Product')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Implemented Components')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Realised Capabilities')"/>
-											</th>
-										</tr>
-									</thead>
-									<tfoot>
-										<tr>
-											<th>
-												<xsl:value-of select="eas:i18n('Supplier')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Product')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Implemented Components')"/>
-											</th>
-											<th>
-												<xsl:value-of select="eas:i18n('Realised Capabilities')"/>
-											</th>
-										</tr>
-									</tfoot>
-									<tbody>
-										<xsl:apply-templates select="/node()/simple_instance[type = 'Technology_Product']" mode="Catalogue">
-											<xsl:sort select="current()/own_slot_value[slot_reference = 'name']/value" order="ascending"/>
-										</xsl:apply-templates>
-									</tbody>
-								</table>
-							</div>
+							<!-- START TEST DIVS -->
+							<div id="testStyling1"/>
+							<div id="testStyling2"/>
+							<!-- END TEST DIVS -->
+							<table id="dt_techProds" class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>
+											<xsl:value-of select="eas:i18n('Supplier')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Product')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Implemented Components')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Realised Capabilities')"/>
+										</th>
+									</tr>
+								</thead>
+								<tfoot>
+									<tr>
+										<th>
+											<xsl:value-of select="eas:i18n('Supplier')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Product')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Implemented Components')"/>
+										</th>
+										<th>
+											<xsl:value-of select="eas:i18n('Realised Capabilities')"/>
+										</th>
+                                    </tr>
+								</tfoot>
+								<tbody/>								
+							</table>
 						</div>
+
+						<!--Setup Closing Tags-->
 					</div>
 				</div>
 
+				<div class="clear"/>
+
+
+
+				<!-- START HANDLEBARS TEMPLATES -->
+				<!-- Handlebars template to render a list of technology components -->
+				<script id="tech-component-bullets" type="text/x-handlebars-template">
+					<ul>
+						{{#techComponents}}
+							<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A BULLET DOM ELEMENT -->
+							<li>
+								<xsl:call-template name="RenderHandlebarsRoadmapSpan"/>
+								{{#if standard}}{{{standard}}}{{/if}}
+							</li>
+						{{/techComponents}}
+					</ul>
+				</script>
+				
+				<!-- Handlebars template to render a list of technology capabilities -->
+				<script id="tech-capability-bullets" type="text/x-handlebars-template">
+					<ul>
+						{{#techCapabilities}}
+							<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A BULLET DOM ELEMENT -->
+							<xsl:call-template name="RenderHandlebarsRoadmapBullet"/>
+						{{/techCapabilities}}
+					</ul>
+				</script>
+				
+				<!-- Handlebars template to render an individual application as text-->
+				<script id="tech-product-name" type="text/x-handlebars-template">
+					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
+					<xsl:call-template name="RenderHandlebarsRoadmapSpan"/>
+				</script>
+				<!-- END HANDLEBARS TEMPLATES -->
+				
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 			</body>
 		</html>
 	</xsl:template>
-
-	<xsl:template match="node()" mode="Catalogue">
-		<xsl:variable name="tech_prod_role_list" select="$allTechProdRoles[name = current()/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
-		<xsl:variable name="techComps" select="$allTechComps[name = $tech_prod_role_list/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-		<xsl:variable name="supplier" select="$allSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-		<xsl:variable name="techCaps" select="$allTechCaps[name = $techComps/own_slot_value[slot_reference = 'realisation_of_technology_capability']/value]"/>
-
 	
-		<tr>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$supplier"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<xsl:choose>
-					<xsl:when test="count($techComps) = 0">
-						<em>-</em>
-					</xsl:when>
-					<xsl:otherwise>
-						<ul>
-							<xsl:for-each select="$techComps">
-								<xsl:variable name="allThisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-								<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allThisTechProdRoles/name]"/>
-								<xsl:variable name="thisTechProdRole" select="$tech_prod_role_list[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-								<xsl:variable name="thisTechProdStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRole/name]"/>
-								<li>
-									<xsl:choose>
-										<xsl:when test="count($thisTechProdStandard) > 0">
-											<xsl:variable name="thisStandardStrength" select="$allStandardStrengths[name = $thisTechProdStandard[1]/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
-											<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-											<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
-											<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-											<div class="standardBadge left-5 {$thisStandardStyleClass}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></div>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-											<xsl:if test="count($allThisTechProdStandards) > 0">
-												<div class="standardBadge left-5 {$offStrategyStyle}"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
-											</xsl:if>
-										</xsl:otherwise>
-									</xsl:choose>
-								</li>
-							</xsl:for-each>
-						</ul>
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td>
-				<xsl:choose>
-					<xsl:when test="count($techCaps) = 0">
-						<em>-</em>
-					</xsl:when>
-					<xsl:otherwise>
-						<ul>
-							<xsl:for-each select="$techCaps">
-								<li>
-									<xsl:call-template name="RenderInstanceLink">
-										<xsl:with-param name="theSubjectInstance" select="current()"/>
-										<xsl:with-param name="theXML" select="$reposXML"/>
-										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-									</xsl:call-template>
-								</li>
-							</xsl:for-each>
-						</ul>
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-		</tr>
+	<!-- START TEMPLATES TO RENDER THE JSON OBJECTS REQUIRED FOR THE VIEW -->
+	<xsl:template match="node()" mode="RenderTechSupplierJSON">
+		
+		{
+		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+		<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
 	</xsl:template>
 	
 	
-	<!--<xsl:template name="legend">
-		<xsl:if test="count($allTechProdStandards) > 0">
-			<div class="keyContainer">
-				<div class="float-left keySampleLabel"><xsl:value-of select="eas:i18n('Standards Compliance Legend')"/>:</div>
-				<xsl:for-each select="$allStandardStrengths">
-					<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
-					<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = current()/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-					<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
-					<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>
-					
-					<div class="float-left keySampleLabel {$thisStandardStyleClass}">
-						<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
-					</div>
-					<div class="float-left"><i class="legendIcon {$thisStandardStyleClass} {$thisStandardStyleIcon}"/></div>
-				</xsl:for-each>
-				<div class="float-left keySampleLabel textColourRed"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
-				<div class="float-left"><i class="legendIcon {$offStrategyStyle}"/></div>
-			</div>
+	<!-- START TEMPLATES TO RENDER THE JSON OBJECTS REQUIRED FOR THE VIEW -->
+	<xsl:template match="node()" mode="RenderTechCapJSON">
+		
+		{
+		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+		<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
+		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
-	</xsl:template>-->
-
+	</xsl:template>
+	
+	
+	
+	<xsl:template match="node()" mode="RenderTechProdJSON">
+		
+		<xsl:variable name="thisSupplier" select="$allTechSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
+		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'role_for_technology_provider']/value = current()/name]"/>
+		
+		
+		{
+			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+			supplierId: '<xsl:value-of select="eas:getSafeJSString($thisSupplier/name)"/>', 
+			components: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisTechProdRoles"/>]
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	
+	<xsl:template match="node()" mode="RenderTechProdRoleJSON">
+		<xsl:variable name="thisTechProd" select="$allTechProducts[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+		<xsl:variable name="thisTechComp" select="$allTechComponents[name = current()/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>	
+		<xsl:variable name="thisTechCaps" select="$allTechCaps[name = $thisTechComp/own_slot_value[slot_reference = 'realisation_of_technology_capability']/value]"/>
+		
+		<xsl:variable name="allThisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = $thisTechComp/name]"/>
+		<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allThisTechProdRoles/name]"/>
+		
+		<xsl:variable name="thisTechProdStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>
+		
+		<xsl:variable name="standardHTML">
+			<xsl:choose>
+				<xsl:when test="count($thisTechProdStandard) > 0">
+					<xsl:variable name="thisStandardStrength" select="$allStandardStrengths[name = $thisTechProdStandard[1]/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+					<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+					<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
+					<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>
+					<div class="standardBadge left-5 {$thisStandardStyleClass}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></div>
+				</xsl:when>
+				<xsl:otherwise>
+					<div class="standardBadge left-5 {$offStrategyStyle}"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		
+		{
+			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="$thisTechComp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+			techProdId: '<xsl:value-of select="eas:getSafeJSString($thisTechProd[1]/name)"/>',
+			techCompId: '<xsl:value-of select="eas:getSafeJSString($thisTechComp[1]/name)"/>',
+			<xsl:if test="count($allThisTechProdStandards) > 0">standard: '<xsl:copy-of select="$standardHTML"/>',</xsl:if>
+			techCaps: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisTechCaps"/>]
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>
+	<!-- END TEMPLATES TO RENDER THE JSON OBJECTS REQUIRED FOR THE VIEW -->
 
 </xsl:stylesheet>

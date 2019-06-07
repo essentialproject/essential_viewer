@@ -14,7 +14,7 @@
 	<xsl:variable name="TechnologyProvider" select="/node()/simple_instance[name=$param1]" />-->
 
 	<!--
-		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -37,6 +37,8 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
+	<!-- 27.07.2018	JWC i18N version of catalogue -->
+	
 
 	<!-- START GENERIC CATALOGUE PARAMETERS -->
 	<xsl:param name="targetReportId"/>
@@ -181,248 +183,31 @@
 							<p>
 								<xsl:value-of select="eas:i18n('Click on one of the Physical Nodes below to view its detailed specification')"/>
 							</p>
+							<xsl:variable name="allSuppliersForNodes" select="$allSuppliers[name=$allTechNodes/own_slot_value[slot_reference='tn_supplier']/value]"></xsl:variable>
+							<xsl:variable name="allTechProdForNodes" select="$allTechProducts[name=$allTechNodes/own_slot_value[slot_reference='deployment_of']/value]"></xsl:variable>
+							<xsl:variable name="allSuppliersForTechProdNodes" select="$allSuppliers[name=$allTechProdForNodes/own_slot_value[slot_reference='supplier_technology_product']/value]"></xsl:variable>
+							<xsl:variable name="allInScopeSuppliers" select="$allSuppliersForNodes union $allSuppliersForTechProdNodes"></xsl:variable>
 							<div class="AlphabetQuickJumpLabel hidden-xs"><xsl:value-of select="eas:i18n('Go to')"/>:&#160;</div>
 							<div class="AlphabetQuickJumpLinks hidden-xs">
-								<a class="AlphabetLinks" href="#section_A">
-									<xsl:value-of select="eas:i18n('A')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_B">
-									<xsl:value-of select="eas:i18n('B')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_C">
-									<xsl:value-of select="eas:i18n('C')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_D">
-									<xsl:value-of select="eas:i18n('D')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_E">
-									<xsl:value-of select="eas:i18n('E')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_F">
-									<xsl:value-of select="eas:i18n('F')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_G">
-									<xsl:value-of select="eas:i18n('G')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_H">
-									<xsl:value-of select="eas:i18n('H')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_I">
-									<xsl:value-of select="eas:i18n('I')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_J">
-									<xsl:value-of select="eas:i18n('J')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_K">
-									<xsl:value-of select="eas:i18n('K')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_L">
-									<xsl:value-of select="eas:i18n('L')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_M">
-									<xsl:value-of select="eas:i18n('M')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_N">
-									<xsl:value-of select="eas:i18n('N')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_O">
-									<xsl:value-of select="eas:i18n('O')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_P">
-									<xsl:value-of select="eas:i18n('P')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_Q">
-									<xsl:value-of select="eas:i18n('Q')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_R">
-									<xsl:value-of select="eas:i18n('R')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_S">
-									<xsl:value-of select="eas:i18n('S')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_T">
-									<xsl:value-of select="eas:i18n('T')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_U">
-									<xsl:value-of select="eas:i18n('U')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_V">
-									<xsl:value-of select="eas:i18n('V')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_W">
-									<xsl:value-of select="eas:i18n('W')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_X">
-									<xsl:value-of select="eas:i18n('X')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_Y">
-									<xsl:value-of select="eas:i18n('Y')"/>
-								</a>
-								<a class="AlphabetLinks" href="#section_Z">
-									<xsl:value-of select="eas:i18n('Z')"/>
-								</a>
+																
+								<!-- Build a list of the names of the elements to be sorted -->
+								<xsl:variable name="anInFocusInstances" select="$allInScopeSuppliers"></xsl:variable>
+								
+								<!-- Get the names of the in-focus instances -->
+								<xsl:variable name="anIndexList" select="$anInFocusInstances/own_slot_value[slot_reference='name']/value"></xsl:variable>																		
+								
+								<!-- Generate the index based on the set of elements in the indexList -->																			
+								<xsl:call-template name="eas:renderIndex">
+									<xsl:with-param name="theIndexList" select="$anIndexList"></xsl:with-param>
+									<xsl:with-param name="theInFocusInstances" select="$anInFocusInstances"></xsl:with-param>
+								</xsl:call-template>
+								
 								<a class="AlphabetLinks" href="#section_number">#</a>
 								<a class="AlphabetLinks" href="#section_other">
 									<xsl:value-of select="eas:i18n('Other')"/>
 								</a>
 							</div>
 							<div class="clear"/>
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'A'"/>
-								<xsl:with-param name="letterLow" select="'a'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'B'"/>
-								<xsl:with-param name="letterLow" select="'b'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'C'"/>
-								<xsl:with-param name="letterLow" select="'c'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'D'"/>
-								<xsl:with-param name="letterLow" select="'d'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'E'"/>
-								<xsl:with-param name="letterLow" select="'e'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'F'"/>
-								<xsl:with-param name="letterLow" select="'f'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'G'"/>
-								<xsl:with-param name="letterLow" select="'g'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'H'"/>
-								<xsl:with-param name="letterLow" select="'h'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'I'"/>
-								<xsl:with-param name="letterLow" select="'i'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'J'"/>
-								<xsl:with-param name="letterLow" select="'j'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'K'"/>
-								<xsl:with-param name="letterLow" select="'k'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'L'"/>
-								<xsl:with-param name="letterLow" select="'l'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'M'"/>
-								<xsl:with-param name="letterLow" select="'m'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'N'"/>
-								<xsl:with-param name="letterLow" select="'n'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'O'"/>
-								<xsl:with-param name="letterLow" select="'o'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'P'"/>
-								<xsl:with-param name="letterLow" select="'p'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'Q'"/>
-								<xsl:with-param name="letterLow" select="'q'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'R'"/>
-								<xsl:with-param name="letterLow" select="'r'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'S'"/>
-								<xsl:with-param name="letterLow" select="'s'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'T'"/>
-								<xsl:with-param name="letterLow" select="'t'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'U'"/>
-								<xsl:with-param name="letterLow" select="'u'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'V'"/>
-								<xsl:with-param name="letterLow" select="'v'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'W'"/>
-								<xsl:with-param name="letterLow" select="'w'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'X'"/>
-								<xsl:with-param name="letterLow" select="'x'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'Y'"/>
-								<xsl:with-param name="letterLow" select="'y'"/>
-							</xsl:call-template>
-
-
-							<xsl:call-template name="Index">
-								<xsl:with-param name="letterCap" select="'Z'"/>
-								<xsl:with-param name="letterLow" select="'z'"/>
-							</xsl:call-template>
-
 
 							<a id="section_number"/>
 
@@ -511,13 +296,14 @@
 		<xsl:value-of select="$letterCap"/>
 		<xsl:text disable-output-escaping="yes">"&gt;&lt;/a&gt;</xsl:text>
 
-
 		<xsl:choose>
 			<xsl:when test="string-length($viewScopeTermIds) > 0">
 				<xsl:variable name="node_list" select="$allTechNodes[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
 				<xsl:variable name="product_list" select="$allTechProducts[name = $node_list/own_slot_value[slot_reference = 'deployment_of']/value]"/>
 				<xsl:variable name="vendor_list" select="$allSuppliers[name = $product_list/own_slot_value[slot_reference = 'supplier_technology_product']/value and ((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"/>
-				<xsl:apply-templates select="$vendor_list" mode="Vendor">
+				<xsl:variable name="node_vendors" select="$allSuppliers[name = $node_list/own_slot_value[slot_reference = 'tn_supplier']/value and ((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"></xsl:variable>
+				<xsl:variable name="vendors" select="$vendor_list union $node_vendors"></xsl:variable>
+				<xsl:apply-templates select="$vendors" mode="Vendor">
 					<xsl:with-param name="node_list" select="$node_list"/>
 					<xsl:with-param name="product_list" select="$product_list"/>
 					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
@@ -526,7 +312,9 @@
 			<xsl:otherwise>
 				<xsl:variable name="product_list" select="$allTechProducts[name = $allTechNodes/own_slot_value[slot_reference = 'deployment_of']/value]"/>
 				<xsl:variable name="vendor_list" select="$allSuppliers[name = $product_list/own_slot_value[slot_reference = 'supplier_technology_product']/value and ((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"/>
-				<xsl:apply-templates select="$vendor_list" mode="Vendor">
+				<xsl:variable name="node_vendors" select="$allSuppliers[name = $allTechNodes/own_slot_value[slot_reference = 'tn_supplier']/value and ((starts-with(own_slot_value[slot_reference = 'name']/value, $letterCap)) or (starts-with(own_slot_value[slot_reference = 'name']/value, $letterLow)))]"></xsl:variable>
+				<xsl:variable name="vendors" select="$vendor_list union $node_vendors"></xsl:variable>				
+				<xsl:apply-templates select="$vendors" mode="Vendor">
 					<xsl:with-param name="node_list" select="$allTechNodes"/>
 					<xsl:with-param name="product_list" select="$product_list"/>
 					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
@@ -603,7 +391,8 @@
 		<xsl:param name="node_list"/>
 		<xsl:param name="product_list"/>
 		<!-- 13.11.2008 JWC Add node count for each vendor -->
-		<xsl:variable name="vendorNodes" select="$node_list[own_slot_value[slot_reference = 'deployment_of']/value = $product_list[own_slot_value[slot_reference = 'supplier_technology_product']/value = current()/name]/name]"/>
+		<xsl:variable name="vendorNodesTech" select="$node_list[own_slot_value[slot_reference = 'deployment_of']/value = $product_list[own_slot_value[slot_reference = 'supplier_technology_product']/value = current()/name]]"/>
+		<xsl:variable name="vendorNodes" select="$vendorNodesTech union $node_list[own_slot_value[slot_reference='tn_supplier']/value = current()/name]"></xsl:variable>		
 		<h3>
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -640,5 +429,35 @@
 			</xsl:call-template>
 		</li>
 	</xsl:template>
+	
+	<!-- Render alphabetic catalogues -->
+	<!-- Render the index keys, as a set of hyperlinks to sections of the catalogue that have instances
+		Ordered alphabetically -->
+	<xsl:template name="eas:renderIndex">
+		<xsl:param name="theIndexList"></xsl:param>
+		<xsl:param name="theInFocusInstances"></xsl:param>
+		
+		<!-- Generate the index based on the set of elements in the indexList -->																		
+		<xsl:variable name="anIndexKeys" select="eas:getFirstCharacter($theIndexList)"></xsl:variable>									
+		<xsl:call-template name="eas:renderIndexSections">
+			<xsl:with-param name="theIndexOfNames" select="$anIndexKeys"></xsl:with-param>
+		</xsl:call-template>
+		
+		<a class="AlphabetLinks" href="#section_number">#</a>
+		<a class="AlphabetLinks" href="#section_other">
+			<xsl:value-of select="eas:i18n('Other')"/>
+		</a>
+		
+		<!-- Render each section of the index -->
+		<xsl:for-each select="$anIndexKeys">
+			<xsl:call-template name="Index">
+				<xsl:with-param name="letterCap" select="upper-case(current())"/>
+				<xsl:with-param name="letterLow" select="lower-case(current())"/>				
+			</xsl:call-template>
+			
+		</xsl:for-each>
+		
+	</xsl:template>
+	
 
 </xsl:stylesheet>

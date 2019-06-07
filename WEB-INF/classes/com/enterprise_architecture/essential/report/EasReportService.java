@@ -62,6 +62,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 
 /**
  * EAS Report Service provides the interface to the EA reporting capabilities 
@@ -154,6 +155,11 @@ public class EasReportService extends HttpServlet
 	protected final static String UPLOAD_SUCCESS_URL = "platform/postXMLFormSuccess.html";
 	
 	protected final static String UPLOAD_ERROR_URL = "platform/postXMLFormError.html";
+	
+	/**
+	 * Static string that is the last line of the repository snapshot XML 
+	 */
+	protected final static String XML_SNAPSHOT_CONTENT_END = "</knowledge_base>";
 	
 	/**
 	 * The name of the XML file to save the repository snapshot to.
@@ -476,10 +482,18 @@ public class EasReportService extends HttpServlet
 				// Close the file
 				aFile.close();
 				
-				// Check file size = received XML size.
+				// Check that the received file ends with the closing tag
 				File aWrittenFile = new File(aRealFile);
-				long aWrittenFileLength = aWrittenFile.length();
-				if(aWrittenFileLength == theReceivedXML.length())
+				ReversedLinesFileReader aReverseFileReader = new ReversedLinesFileReader(aWrittenFile);
+				String aLastLine = aReverseFileReader.readLine();
+				aReverseFileReader.close();
+				
+				// Debug
+				//System.out.println("** EasReportService.saveReportSource(): XML Length = " + theReceivedXML.length());
+				//System.out.println("** EasReportService.saveReportSource(): File Length = " + aWrittenFile.length());
+				//System.out.println("** Last line of received file is: " + aLastLine);
+				
+				if(aLastLine.compareToIgnoreCase(XML_SNAPSHOT_CONTENT_END) == 0)
 				{
 					isSuccess = true;
 				}

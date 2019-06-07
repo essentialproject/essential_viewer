@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet exclude-result-prefixes="pro xalan xs functx eas fn easlang" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:easlang="http://www.enterprise-architecture.org/essential/language">
 	<!--
-        * Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
+        * Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
         *
@@ -28,6 +28,7 @@
 	<!-- 03.04.2017	JWC	- Added the geographic region search for containing regions -->
 	<!-- 15.06.2018	JMK	- added a isRenderAsJSString parameter to some templates -->
 	<!-- 26.07.2018 JWC	- Added functions to render alphabetic catalogues -->
+	<!-- 02.04.2019	JWC - Improved rendering of labels in URLs -->
 
 	<!-- Render the name of an Instance, given its instance id.
     This is the EAS_Class name slot without any special transform -->
@@ -207,10 +208,10 @@
 				</xsl:otherwise>
 			</xsl:choose>
 
-			<xsl:if test="$reportType = 'uml'">
+			<!--<xsl:if test="$reportType = 'uml'">
 				<xsl:text>&amp;PAGEXSL=</xsl:text>
 				<xsl:value-of select="$thePageXSL"/>
-			</xsl:if>
+			</xsl:if>-->
 
 			<xsl:if test="count($theInstanceID) > 0">
 				<xsl:text>&amp;PMA=</xsl:text>
@@ -294,10 +295,10 @@
 			</xsl:otherwise>
 		</xsl:choose>
 
-		<xsl:if test="$reportType = 'uml'">
+		<!--<xsl:if test="$reportType = 'uml'">
 			<xsl:text>&amp;PAGEXSL=</xsl:text>
 			<xsl:value-of select="$thePageXSL"/>
-		</xsl:if>
+		</xsl:if>-->
 
 		<xsl:if test="string-length($theInstanceID) > 0">
 			<xsl:text>&amp;PMA=</xsl:text>

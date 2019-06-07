@@ -634,6 +634,8 @@
 			</div>
 			<!--Ends-->
 		</script>
+		
+		<!-- Handlebars template for the contents of the popup table for a technology capability -->
 		<script id="trm-techcap-popup-template" type="text/x-handlebars-template">
 			{{#techCapProds}}			
 				<tr>
@@ -1280,14 +1282,25 @@
 					}
 					
 					.refModel-l1-outer{
+						border: 1px solid #aaa;
+						border-radius: 4px;
+						margin-bottom: 10px;
+					}
+					
+					.refModel-l1-inner{
+						background-color: #fff;
+						padding: 10px;
 					}
 					
 					.refModel-l1-title{
+						line-height: 1.1em;
+						padding: 5px 10px;
 					}
 					
 					.refModel-blob, .busRefModel-blob, .appRefModel-blob, .techRefModel-blob {
 						display: table;
-						width: 130px;
+						width: 120px;
+						max-width: 120px;
 						height: 50px;
 						padding: 5px 15px;
 						max-height: 50px;
@@ -1301,6 +1314,26 @@
 						text-align: center;
 						font-size: 12px;
 						position: relative;
+					}
+					
+					.appRefModel-blob a {
+						color: white;
+					}
+					
+					.busRefModel-blob a {
+						color: white;
+					}
+					
+					.techRefModel-blob a {
+						color: white;
+					}
+					
+					.refModel-l1-title a {
+						color: white !important;
+					}
+					
+					.bg-lightgrey a {
+						color: #333 !important;
 					}
 					
 					.refModel-blob:hover {border: 2px solid #666;}

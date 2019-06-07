@@ -84,12 +84,33 @@
 
 	<xsl:variable name="archStateName" select="$archState/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="archStateDescription" select="$archState/own_slot_value[slot_reference = 'description']/value"/>
-	<xsl:variable name="archTargetDate" select="/node()/simple_instance[name = $archState/own_slot_value[slot_reference = 'start_date']/value]"/>
+	
+	<xsl:variable name="archStateISOTargetDate" select="$archState/own_slot_value[slot_reference = 'start_date_iso_8601']/value"/>
+	<xsl:variable name="jsTargetDate">
+		<xsl:choose>
+			<xsl:when test="string-length($archStateISOTargetDate) > 0">
+				<xsl:value-of select="xs:date($archStateISOTargetDate)"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="targetDate" select="/node()/simple_instance[name = $archState/own_slot_value[slot_reference = 'start_date']/value]"/>
+				<xsl:value-of select="eas:get_start_date_for_essential_time($targetDate)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
+	<xsl:variable name="displayTargetDate">
+		<xsl:call-template name="FullFormatDate">
+			<xsl:with-param name="theDate" select="$jsTargetDate"/>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	
+	<!--<xsl:variable name="archTargetDate" select="/node()/simple_instance[name = $archState/own_slot_value[slot_reference = 'start_date']/value]"/>
 	<xsl:variable name="displayTargetDate">
 		<xsl:call-template name="FullFormatDate">
 			<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($archTargetDate)"/>
 		</xsl:call-template>
-	</xsl:variable>
+	</xsl:variable>-->
 
 	<xsl:variable name="allPlanningActions" select="/node()/simple_instance[type = 'Planning_Action']"/>
 

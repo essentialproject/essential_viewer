@@ -34,14 +34,14 @@
 	<xsl:variable name="highUserCountStyle" select="'gradLevelAlt5'"/>
 
 
-	<xsl:variable name="appCategoryTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Application Capability Category')]"/>
+	<xsl:variable name="appCategoryTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = ('Application Capability Category', 'Reference Model Layout'))]"/>
 	<xsl:variable name="allTaxTerms" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $appCategoryTaxonomy/name)]"/>
 
-	<xsl:variable name="sharedAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = 'Shared')]"/>
-	<xsl:variable name="coreAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = 'Core')]"/>
-	<xsl:variable name="manageAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = 'Management')]"/>
-	<xsl:variable name="foundationAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = 'Foundation')]"/>
-	<xsl:variable name="enablingAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = 'Enabling')]"/>
+	<xsl:variable name="sharedAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = ('Shared', 'Left'))]"/>
+	<xsl:variable name="coreAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = ('Core', 'Middle'))]"/>
+	<xsl:variable name="manageAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = ('Management', 'Right'))]"/>
+	<xsl:variable name="foundationAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = ('Foundation', 'Middle'))]"/>
+	<xsl:variable name="enablingAppCapType" select="$allTaxTerms[(own_slot_value[slot_reference = 'name']/value = ('Enabling', 'Bottom'))]"/>
 
 	<!--<xsl:variable name="customCodeBase" select="/node()/simple_instance[(type='Codebase_Status') and (own_slot_value[slot_reference='name']/value = 'Custom')]"/>
 	<xsl:variable name="vendorCodeBase" select="/node()/simple_instance[(type='Codebase_Status') and (own_slot_value[slot_reference='name']/value = 'Vendor')]"/>-->
@@ -245,15 +245,16 @@
 
 			<!--Middle-->
 			<div class="appRef_WideColContainer col-xs-6">
-				<xsl:apply-templates mode="RenderFoundationAppCap" select="$allAppCaps[not(own_slot_value[slot_reference = 'contained_in_application_capability']/value) and (own_slot_value[slot_reference = 'element_classified_by']/value = $coreAppCapType/name)]">
+				<xsl:variable name="coreAppCaps" select="$allAppCaps[not(own_slot_value[slot_reference = 'contained_in_application_capability']/value) and (own_slot_value[slot_reference = 'element_classified_by']/value = $coreAppCapType/name)]"/>
+				<xsl:apply-templates mode="RenderFoundationAppCap" select="$coreAppCaps">
 					<xsl:sort select="own_slot_value[slot_reference = 'application_capability_index']/value"/>
 				</xsl:apply-templates>
 
-				<xsl:variable name="foundationAppCaps" select="$allAppCaps[not(own_slot_value[slot_reference = 'contained_in_application_capability']/value) and (own_slot_value[slot_reference = 'element_classified_by']/value = $foundationAppCapType/name)]"/>
+				<xsl:variable name="foundationAppCaps" select="($allAppCaps except $coreAppCaps)[not(own_slot_value[slot_reference = 'contained_in_application_capability']/value) and (own_slot_value[slot_reference = 'element_classified_by']/value = $foundationAppCapType/name)]"/>
 				<xsl:choose>
 					<xsl:when test="count($foundationAppCaps) &gt; 0">
 						<div class="verticalSpacer_20px"/>
-						<xsl:apply-templates mode="RenderFoundationAppCap" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $foundationAppCapType/name]">
+						<xsl:apply-templates mode="RenderFoundationAppCap" select="$foundationAppCaps">
 							<xsl:sort select="own_slot_value[slot_reference = 'application_capability_index']/value"/>
 						</xsl:apply-templates>
 					</xsl:when>
@@ -265,7 +266,7 @@
 				<xsl:choose>
 					<xsl:when test="count($enablingAppCaps) &gt; 0">
 						<div class="verticalSpacer_20px"/>
-						<xsl:apply-templates mode="RenderEnablingAppCap" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $enablingAppCapType/name]">
+						<xsl:apply-templates mode="RenderEnablingAppCap" select="$enablingAppCaps">
 							<xsl:sort select="own_slot_value[slot_reference = 'application_capability_index']/value"/>
 						</xsl:apply-templates>
 					</xsl:when>

@@ -30,6 +30,8 @@
     <!-- 27.03.2018 JWC Updated to include test with default classification -->
     <!-- 13.04.2018 JWC Tweaked the parameters to testAuthZ() for default classification as union -->
     <!-- 16.04.2018 JWC Revised query to ensure 18 security scenarios are handled correctly -->
+    <!-- 02.08.2018 JWC Re-worked security algorithm with respect to default classifications, as was too strict -->
+    <!-- 07.08.2018 JWC Completed detailed testing in OxygenXML -->
     
     <xsl:output method="text"/>
     
@@ -61,7 +63,9 @@
         <xsl:variable name="userGroupClearance" select="$userDoc//user:clearance[@type=$classificationType and user:repository=$repositoryID]"></xsl:variable>
         
         <xsl:choose>
-            <xsl:when test="(count($viewClassifications) > 0) or (count($defaultClassification) > 0)">
+            
+            <!-- Test for explicit classification of the View Template -->
+            <xsl:when test="count($viewClassifications) > 0">
                 
                 <xsl:variable name="authResult">
                     <xsl:apply-templates mode="testAuthZ" select="$viewClassifications">
@@ -70,17 +74,9 @@
                         <xsl:with-param name="allClassificationsForGroup" select="$allClassificationsInGroup"></xsl:with-param>
                     </xsl:apply-templates>
                 </xsl:variable>
-                                                
-                <xsl:variable name="defaultAuthResult">
-                    <xsl:apply-templates mode="testAuthZ" select="$defaultClassification">
-                        <xsl:with-param name="classificationDefs" select="$viewClassifications union $defaultClassification"></xsl:with-param>                        
-                        <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
-                        <xsl:with-param name="allClassificationsForGroup" select="$allClassificationsInGroup"></xsl:with-param>                        
-                    </xsl:apply-templates>
-                </xsl:variable>                
-                
+                                                                
                 <xsl:choose>
-                    <xsl:when test="contains($authResult, 'ACCESS DENIED') or contains($defaultAuthResult, 'ACCESS DENIED')">
+                    <xsl:when test="contains($authResult, 'ACCESS DENIED')">
                         <xsl:text>ACCESS DENIED</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -89,6 +85,26 @@
                 </xsl:choose>
                 
             </xsl:when>
+            
+            <!-- Test the default classification if the view is not classified explicitly -->
+            <xsl:when test="count($defaultClassification) > 0">
+                <xsl:variable name="defaultAuthResult">
+                    <xsl:apply-templates mode="testAuthZ" select="$defaultClassification">
+                        <xsl:with-param name="classificationDefs" select="$viewClassifications union $defaultClassification"></xsl:with-param>                        
+                        <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
+                        <xsl:with-param name="allClassificationsForGroup" select="$allClassificationsInGroup"></xsl:with-param>                        
+                    </xsl:apply-templates>
+                </xsl:variable>                
+                <xsl:choose>
+                    <xsl:when test="contains($defaultAuthResult, 'ACCESS DENIED')">
+                        <xsl:text>ACCESS DENIED</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>AUTHORISED</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            
             <xsl:otherwise>                
                 <!-- No relevant views classified, so authorised -->
                 <xsl:text>AUTHORISED</xsl:text>

@@ -290,12 +290,12 @@ public class EssentialViewerEngine
 	 /**
 	  * Separator to use in the visit history parameter string to separate each individual visit
 	  */
-	 protected static final String VISIT_SEPARATOR = "¤";
+	 protected static final String VISIT_SEPARATOR = "\u00A7";
 	 
 	 /**
 	  * Separator to use in the visit history parameter string to separate the URL from the label in each visit.
 	  */
-	 protected static final String VISIT_URL_LABEL_SEPARATOR = "±";
+	 protected static final String VISIT_URL_LABEL_SEPARATOR = "\u00B1";
 
 	 /**
 	  * Error message raised on System.err when all attempts to report an error have failed.

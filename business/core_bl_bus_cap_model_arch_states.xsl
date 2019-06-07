@@ -67,10 +67,10 @@
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>
-				<script src="ext/apml/jquery-migrate-1.2.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
 	 			<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<script type="text/javascript">
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width

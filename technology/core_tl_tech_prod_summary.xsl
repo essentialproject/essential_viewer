@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:import href="../common/core_strategic_plans.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -22,7 +23,7 @@
 	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Individual_Actor', 'Technology_Function', 'Technology_Capability', 'Technology_Product', 'Supplier', 'Technology_Strategic_Plan', 'Technology_Component', 'Application_Provider', 'Application_Deployment', 'Application_Software_Instance', 'Infrastructure_Software_Instance', 'Information_Store_Instance', 'Technology_Node')"/>
+	<xsl:variable name="linkClasses" select="('Individual_Actor', 'Group_Actor', 'Business_Process', 'Site', 'Technology_Function', 'Technology_Capability', 'Technology_Product', 'Supplier', 'Technology_Strategic_Plan', 'Technology_Component', 'Composite_Application_Provider', 'Application_Provider', 'Application_Deployment', 'Application_Software_Instance', 'Infrastructure_Software_Instance', 'Information_Store_Instance', 'Technology_Node')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<xsl:variable name="currentNode" select="/node()/simple_instance[name = $param1]"/>
@@ -35,11 +36,13 @@
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component' or supertype = 'Technology_Component']"/>
 	<xsl:variable name="allTechBuilds" select="/node()/simple_instance[type = 'Technology_Build_Architecture']"/>
 	<xsl:variable name="allTechProductFamilies" select="/node()/simple_instance[type = 'Technology_Product_Family']"/>
+	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>
 
 	<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[name = $allTechProdRoles/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
 	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
 	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+	
 	
 	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 	<!--
@@ -68,6 +71,7 @@
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
 	<!-- 08.03.2013 JWC	Resolved some issues rendering impacted Applcations -->
 	<!-- 14.05.2013	JWC Sorted out the rendering of Strategic Plans - to include usage of the product -->
+	<!-- 12.02.2019	JP	- Updated to use cpmmon Strategic Plans template-->
 
 
 	<xsl:template match="knowledge_base">
@@ -236,13 +240,13 @@
 						<h3>
 							<xsl:value-of select="eas:i18n('Plans for Product')"/>
 						</h3>
-						<xsl:apply-templates select="name" mode="StrategicPlansForElement"/>
+						<xsl:apply-templates select="$currentNode" mode="StrategicPlansForElement"/>
 
 						<div class="verticalSpacer_20px"/>
 						<h3>
 							<xsl:value-of select="eas:i18n('Plans for use of Product')"/>
 						</h3>
-						<xsl:apply-templates select="$aRoleList/name" mode="StrategicPlansForElement"/>
+						<xsl:apply-templates select="$aRoleList" mode="StrategicPlansForElement"/>
 
 					</div>
 					<hr/>
@@ -316,7 +320,7 @@
 
 				<xsl:variable name="techProvsInScope" select="$techProdBuildList/own_slot_value[slot_reference = 'describes_technology_provider']/value"/>
 				<xsl:variable name="app_deployment_list" select="/node()/simple_instance[(own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $techProvsInScope) or (own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $param1)]"/>
-
+				
 
 				<div class="col-xs-12">
 					<div class="sectionIcon">
@@ -363,6 +367,74 @@
 						</xsl:choose>
 					</div>
 
+					<hr/>
+				</div>
+				
+
+				<xsl:variable name="supportedAppProviders" select="/node()/simple_instance[name = $app_deployment_list/own_slot_value[slot_reference = 'application_provider_deployed']/value]"/>
+				<xsl:variable name="supportedAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference='role_for_application_provider']/value = $supportedAppProviders/name]"/>
+				<xsl:variable name="supportedAPRToPhysProcRels" select="/node()/simple_instance[own_slot_value[slot_reference=('apppro_to_physbus_from_apppro', 'apppro_to_physbus_from_appprorole')]/value = ($supportedAppProviders, $supportedAppProRoles)/name]"/>
+				<xsl:variable name="supportedPhysProcs" select="/node()/simple_instance[name = $supportedAPRToPhysProcRels/own_slot_value[slot_reference='apppro_to_physbus_to_busproc']/value]"/>
+				<xsl:variable name="supportedBusProcs" select="/node()/simple_instance[name = $supportedPhysProcs/own_slot_value[slot_reference='implements_business_process']/value]"/>
+				<xsl:variable name="supportedActorsAndRoles" select="/node()/simple_instance[name = $supportedPhysProcs/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+				<xsl:variable name="supportedDirecActors" select="$supportedActorsAndRoles[type = 'Group_Actor']"/>
+				<xsl:variable name="supportedActor2Roles" select="$supportedActorsAndRoles[type = 'ACTOR_TO_ROLE_RELATION']"/>
+				<xsl:variable name="supportedIndirectActors" select="/node()/simple_instance[name = $supportedActor2Roles/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+				<xsl:variable name="allSupportedActors" select="$supportedDirecActors union $supportedIndirectActors"/>
+				
+				<div class="col-xs-12">
+					<div class="sectionIcon">
+						<i class="fa fa-users icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Supports Business Processes')"/>
+					</h2>
+					<div class="content-section">
+						<xsl:choose>
+							<xsl:when test="not(count($supportedPhysProcs))">
+								<p>
+									<em>
+										<xsl:value-of select="eas:i18n('No supported Business Processes defined for this Technology Product')"/>
+									</em>
+								</p>
+							</xsl:when>
+							<xsl:otherwise>
+								
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th class="cellWidth-30pc">
+												<xsl:value-of select="eas:i18n('Business Process Supported')"/>
+											</th>
+											<th class="cellWidth-30pc">
+												<xsl:value-of select="eas:i18n('Performed By Organisation')"/>
+											</th>
+											<th class="cellWidth-15pc">
+												<xsl:value-of select="eas:i18n('At Locations')"/>
+											</th>
+											<th class="cellWidth-25pc">
+												<xsl:value-of select="eas:i18n('Using Applications')"/>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<xsl:apply-templates select="$supportedPhysProcs" mode="PhysicalProcesess">
+											<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+											<xsl:with-param name="supportedAppProviders" select="$supportedAppProviders"/>
+											<xsl:with-param name="supportedAppProRoles" select="$supportedAppProRoles"/>
+											<xsl:with-param name="supportedAPRToPhysProcRels" select="$supportedAPRToPhysProcRels"/>
+											<xsl:with-param name="supportedBusProcs" select="$supportedBusProcs"/>
+											<xsl:with-param name="supportedActorsAndRoles" select="$supportedActorsAndRoles"/>
+											<xsl:with-param name="allSupportedActors" select="$allSupportedActors"/>
+										</xsl:apply-templates>
+									</tbody>
+									
+								</table>
+								
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+					
 					<hr/>
 				</div>
 
@@ -694,7 +766,7 @@
 				<xsl:when test="count($allRelevantTechProdStandards) = 0">
 					<td class="alignCentre">
 						<em><xsl:value-of select="eas:i18n('no standards defined')"/></em>
-					</td>
+					</td>oce
 				</xsl:when>
 				<xsl:when test="count($thisTechProdStandard) >0">
 					<td class="alignCentre {$thisStandardStyleClass}">
@@ -710,6 +782,11 @@
 		</tr>
 
 	</xsl:template>
+	
+	
+	
+	
+	
 	<!-- Render information about each Application Deployment that is supported by a Product 
 		Takes instances of Application Deployment-->
 	<xsl:template match="node()" mode="ApplicationDeployment">
@@ -786,6 +863,84 @@
 			</td>
 		</tr>
 	</xsl:template>
+
+
+	<!-- Render information about the Physical Processes that are supported by this Technology product -->
+	<xsl:template match="node()" mode="PhysicalProcesess">
+		<xsl:param name="supportedAppProviders"/>
+		<xsl:param name="supportedAppProRoles"/>
+		<xsl:param name="supportedAPRToPhysProcRels"/>
+		<xsl:param name="supportedBusProcs"/>
+		<xsl:param name="supportedActorsAndRoles"/>
+		<xsl:param name="allSupportedActors"/>
+		
+		<xsl:variable name="thisPhysProc" select="current()"/>
+		
+		<!-- Get the logical process being supported -->
+		<xsl:variable name="thisBusProcess" select="$supportedBusProcs[name = $thisPhysProc/own_slot_value[slot_reference='implements_business_process']/value]"/>
+		
+		<!-- Get the organisation performing the process -->
+		<xsl:variable name="thisActorsAndRoles" select="$supportedActorsAndRoles[name = $thisPhysProc/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="thisDirecActor" select="$thisActorsAndRoles[type = 'Group_Actor']"/>
+		<xsl:variable name="thisActor2Role" select="$thisActorsAndRoles[type = 'ACTOR_TO_ROLE_RELATION']"/>
+		<xsl:variable name="thisIndirectActor" select="$allSupportedActors[name = $thisActor2Role/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+		<xsl:variable name="thisActor" select="$thisDirecActor union $thisIndirectActor"/>
+		
+		<xsl:variable name="thisSites" select="$allSites[name = ($thisPhysProc, $thisActor)/own_slot_value[slot_reference=('process_performed_at_sites', 'actor_based_at_site')]/value]"/>
+		
+		
+		<!-- Get the supporting applications for the physical processes -->
+		<xsl:variable name="thisAPRToPhysProcRels" select="$supportedAPRToPhysProcRels[own_slot_value[slot_reference='apppro_to_physbus_to_busproc']/value = $thisPhysProc/name]"/>
+		<xsl:variable name="thisDirectApps" select="$supportedAppProviders[name = $thisAPRToPhysProcRels/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
+		<xsl:variable name="thisAPRs" select="$supportedAppProRoles[name = $thisAPRToPhysProcRels/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]"/>
+		<xsl:variable name="thisIndirectApps" select="$supportedAppProviders[name = $thisAPRs/own_slot_value[slot_reference='role_for_application_provider']/value]"/>
+		<xsl:variable name="allThisApps" select="$thisDirectApps union $thisIndirectApps"/>
+
+
+
+		<tr>
+			<!-- Business Process -->
+			<td>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$thisBusProcess"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				</xsl:call-template>
+			</td>
+			<!-- Performing Org -->
+			<td>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$thisActor"/>
+				</xsl:call-template>
+			</td>
+			<!-- Performed at Sites -->
+			<td>
+				<ul>
+					<xsl:for-each select="$thisSites">
+						<li>
+							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+							</xsl:call-template>
+						</li>	
+					</xsl:for-each>
+				</ul>
+			</td>
+			<!-- Supporting Apps -->
+			<td>
+				<ul>
+					<xsl:for-each select="$allThisApps">
+						<li>
+							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+							</xsl:call-template>
+						</li>	
+					</xsl:for-each>
+				</ul>
+			</td>
+		</tr>
+		
+	</xsl:template>
+
 
 	<!-- Render information about an Application Software Instance -->
 	<xsl:template match="node()" mode="ApplicationSoftwareInstances">
@@ -1025,8 +1180,8 @@
 
 	</xsl:template>
 
-	<!-- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -->
-	<!-- Given a reference (instance ID) to an element, find all its plans and render each -->
+	<!--<!-\- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -\->
+	<!-\- Given a reference (instance ID) to an element, find all its plans and render each -\->
 	<xsl:template match="node()" mode="StrategicPlansForElement">
 		<xsl:variable name="anElement">
 			<xsl:value-of select="node()"/>
@@ -1035,11 +1190,11 @@
 		<xsl:variable name="aFuturePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Future_Plan')]"/>
 		<xsl:variable name="anOldPlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Old_Plan')]"/>
 		<xsl:variable name="aStrategicPlanSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $anElement]"/>
-		<!-- Test to see if any plans are defined yet -->
+		<!-\- Test to see if any plans are defined yet -\->
 		<xsl:choose>
 			<xsl:when test="count($aStrategicPlanSet) > 0">
-				<!-- Show active plans first -->
-				<!--<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference='strategic_plan_status']/value=$anActivePlan/name]" mode="StrategicPlanDetailsTable">
+				<!-\- Show active plans first -\->
+				<!-\-<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference='strategic_plan_status']/value=$anActivePlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anActivePlan/name" />
 					</xsl:with-param>
@@ -1055,9 +1210,9 @@
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anOldPlan/name" />
 					</xsl:with-param>
-				</xsl:apply-templates>-->
+				</xsl:apply-templates>-\->
 
-				<!-- Then all other plans -->
+				<!-\- Then all other plans -\->
 				<xsl:apply-templates select="$aStrategicPlanSet" mode="StrategicPlanDetailsTable">
 					<xsl:sort select="own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
 				</xsl:apply-templates>
@@ -1070,14 +1225,14 @@
 		</xsl:choose>
 
 	</xsl:template>
-	<!-- Render the details of a particular strategic plan in a small table -->
-	<!-- No details of plan inter-dependencies is presented here. However, a link 
-        to the plan definition page is provided where those details will be shown -->
+	<!-\- Render the details of a particular strategic plan in a small table -\->
+	<!-\- No details of plan inter-dependencies is presented here. However, a link 
+        to the plan definition page is provided where those details will be shown -\->
 	<xsl:template match="node()" mode="StrategicPlanDetailsTable">
 		<xsl:param name="theStatus"/>
 		<xsl:variable name="aStatusID" select="current()/own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
 
-		<!--	<xsl:if test="$aStatusID = $theStatus">-->
+		<!-\-	<xsl:if test="$aStatusID = $theStatus">-\->
 		<table>
 
 			<thead>
@@ -1110,8 +1265,8 @@
 				</tr>
 			</tbody>
 		</table>
-		<!--		</xsl:if>-->
-	</xsl:template>
+		<!-\-		</xsl:if>-\->
+	</xsl:template>-->
 
 
 

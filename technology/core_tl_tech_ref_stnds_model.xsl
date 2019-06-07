@@ -53,16 +53,16 @@
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
 
 	<xsl:variable name="monitoringConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Monitoring Term']"/>
-	<xsl:variable name="monitoringTerm" select="$allTaxonomyTerms[name = $monitoringConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
+	<xsl:variable name="monitoringTerm" select="$allTaxonomyTerms[(name = $monitoringConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = 'Right')]"/>
 
 	<xsl:variable name="configConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Configuration Term']"/>
-	<xsl:variable name="configTerm" select="$allTaxonomyTerms[name = $configConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
+	<xsl:variable name="configTerm" select="$allTaxonomyTerms[(name = $configConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = 'Left')]"/>
 
 	<xsl:variable name="platformConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Platform Term']"/>
-	<xsl:variable name="platformTerm" select="$allTaxonomyTerms[name = $platformConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
+	<xsl:variable name="platformTerm" select="$allTaxonomyTerms[(name = $platformConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = 'Bottom')]"/>
 
 	<xsl:variable name="centralConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Central Capablities']"/>
-	<xsl:variable name="centralTerms" select="$allTaxonomyTerms[name = $centralConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
+	<xsl:variable name="centralTerms" select="$allTaxonomyTerms[(name = $centralConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = ('Top', 'Middle'))]"/>
 
 	<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
 	<xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>
@@ -207,37 +207,38 @@
 		</script>
 		<div class="col-xs-3">
 			<div id="techRefModel_leftContainer" class="backColourBlue equalise">
-
 				<xsl:variable name="configDomains" select="$techDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $configTerm/name]"/>
-				<xsl:variable name="configLabel">
+				<xsl:for-each select="$configDomains">
+					<xsl:variable name="domainLabel"><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+					<xsl:variable name="domainCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = current()/name]"/>
+					<xsl:variable name="allDomainCaps" select="eas:get_techcap_descendants($domainCaps, $techCaps, 1)"/>
+					<xsl:variable name="domainComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allDomainCaps/name]"/>
 					<xsl:choose>
-						<xsl:when test="count($configDomains) > 0">
-							<xsl:value-of select="$configDomains[1]/own_slot_value[slot_reference = 'name']/value"/>
+						<xsl:when test="count($domainComps) &gt; 0">
+							<div class="techRefModel_CentreBox">
+								<div class="techRefModel_LeftColTitle backColourBlue">
+									<h3 class="text-white">
+										<!--<xsl:value-of select="$centralLabel"/>-->
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="current()"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											<xsl:with-param name="anchorClass" select="'text-white'"/>
+										</xsl:call-template>
+									</h3>
+								</div>
+								<div class="techRefModel_LeftColContentContainer backColourBlue col-xs-6">
+									<xsl:apply-templates mode="PrintTechComp" select="$domainComps">
+										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+									</xsl:apply-templates>
+								</div>
+							</div>						
+							<xsl:if test="position() != last()">
+								<div class="verticalSpacer_20px bg-white"/>
+							</xsl:if>
 						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$configTerm/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/>
-						</xsl:otherwise>
 					</xsl:choose>
-				</xsl:variable>
-				<xsl:variable name="configCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = $configDomains/name]"/>
-				<xsl:variable name="allConfigCaps" select="eas:get_techcap_descendants($configCaps, $techCaps, 1)"/>
-				<xsl:variable name="configComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allConfigCaps/name]"/>
-				<div class="techRefModel_LeftColTitle backColourBlue">
-					<h3 class="text-white">
-						<!--<xsl:value-of select="$configLabel"/>-->
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="$configDomains[1]"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-							<xsl:with-param name="anchorClass" select="'text-white'"/>
-						</xsl:call-template>
-					</h3>
-				</div>
-				<div class="techRefModel_LeftColContentContainer backColourBlue">
-					<xsl:apply-templates mode="PrintTechComp" select="$configComps">
-						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-					</xsl:apply-templates>
-				</div>
+				</xsl:for-each>
 			</div>
 		</div>
 		<div class="col-xs-6">
@@ -246,8 +247,8 @@
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 					<xsl:variable name="centralDomains" select="$techDomains[own_slot_value[slot_reference = 'element_classified_by']/value = current()/name]"/>
 					<xsl:for-each select="$centralDomains">
-						<xsl:variable name="centralLabel" select="own_slot_value[slot_reference = 'name']/value"/>
-						<xsl:variable name="centralCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = $centralDomains/name]"/>
+						<xsl:variable name="centralLabel"><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+						<xsl:variable name="centralCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = current()/name]"/>
 						<xsl:variable name="allCentralCaps" select="eas:get_techcap_descendants($centralCaps, $techCaps, 1)"/>
 						<xsl:variable name="centralComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allCentralCaps/name]"/>
 						<xsl:choose>
@@ -270,11 +271,9 @@
 										</xsl:apply-templates>
 									</div>
 								</div>
-								<xsl:if test="position() != count($centralTerms)">
-									<div class="verticalSpacer_20px"/>
-								</xsl:if>
 							</xsl:when>
 						</xsl:choose>
+						<div class="verticalSpacer_20px"/>
 					</xsl:for-each>
 				</xsl:for-each>
 			</div>
@@ -282,70 +281,72 @@
 		<div class="col-xs-3">
 			<div id="techRefModel_rightContainer" class="backColourBlue equalise">
 				<xsl:variable name="monitoringDomains" select="$techDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $monitoringTerm/name]"/>
-				<xsl:variable name="monitoringLabel">
+				<xsl:for-each select="$monitoringDomains">
+					<xsl:variable name="domainLabel"><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+					<xsl:variable name="domainCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = current()/name]"/>
+					<xsl:variable name="allDomainCaps" select="eas:get_techcap_descendants($domainCaps, $techCaps, 1)"/>
+					<xsl:variable name="domainComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allDomainCaps/name]"/>
 					<xsl:choose>
-						<xsl:when test="count($monitoringDomains) > 0">
-							<xsl:value-of select="$monitoringDomains[1]/own_slot_value[slot_reference = 'name']/value"/>
+						<xsl:when test="count($domainComps) &gt; 0">
+							<div class="techRefModel_CentreBox">
+								<div class="techRefModel_RightColTitle backColourBlue">
+									<h3 class="text-white">
+										<!--<xsl:value-of select="$centralLabel"/>-->
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="current()"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											<xsl:with-param name="anchorClass" select="'text-white'"/>
+										</xsl:call-template>
+									</h3>
+								</div>
+								<div class="techRefModel_RightColContentContainer backColourBlue col-xs-6">
+									<xsl:apply-templates mode="PrintTechComp" select="$domainComps">
+										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+									</xsl:apply-templates>
+								</div>
+							</div>
+							<xsl:if test="position() != last()">
+								<div class="verticalSpacer_20px bg-white"/>
+							</xsl:if>
 						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$monitoringTerm/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/>
-						</xsl:otherwise>
 					</xsl:choose>
-				</xsl:variable>
-				<xsl:variable name="monitoringCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = $monitoringDomains/name]"/>
-				<xsl:variable name="allMonitoringCaps" select="eas:get_techcap_descendants($monitoringCaps, $techCaps, 1)"/>
-				<xsl:variable name="monitoringComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allMonitoringCaps/name]"/>
-				<div class="techRefModel_RightColTitle backColourBlue">
-					<h3 class="text-white">
-						<!--<xsl:value-of select="$monitoringLabel"/>-->
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="$monitoringDomains[1]"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-							<xsl:with-param name="anchorClass" select="'text-white'"/>
-						</xsl:call-template>
-					</h3>
-				</div>
-				<div class="techRefModel_RightColContentContainer backColourBlue">
-					<xsl:apply-templates mode="PrintTechComp" select="$monitoringComps">
-						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-					</xsl:apply-templates>
-				</div>
+				</xsl:for-each>
 			</div>
 		</div>
 		<div class="verticalSpacer_20px"/>
 		<div class="col-xs-12">
 			<div id="techRefModel_bottomContainer">
 				<xsl:variable name="platformDomains" select="$techDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $platformTerm/name]"/>
-				<xsl:variable name="platformLabel">
+				<xsl:for-each select="$platformDomains">
+					<xsl:variable name="domainLabel"><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+					<xsl:variable name="domainCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = current()/name]"/>
+					<xsl:variable name="allDomainCaps" select="eas:get_techcap_descendants($domainCaps, $techCaps, 1)"/>
+					<xsl:variable name="domainComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allDomainCaps/name]"/>
 					<xsl:choose>
-						<xsl:when test="count($platformDomains) > 0">
-							<xsl:value-of select="$platformDomains[1]/own_slot_value[slot_reference = 'name']/value"/>
+						<xsl:when test="count($domainComps) &gt; 0">
+							<div class="techRefModel_CentreBox">
+								<div class="techRefModel_BottomColTitle backColourBlue">
+									<h3 class="text-white">
+										<!--<xsl:value-of select="$centralLabel"/>-->
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="current()"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											<xsl:with-param name="anchorClass" select="'text-white'"/>
+										</xsl:call-template>
+									</h3>
+								</div>
+								<div class="techRefModel_BottomColContentContainer backColourBlue col-xs-6">
+									<xsl:apply-templates mode="PrintTechComp" select="$domainComps">
+										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+									</xsl:apply-templates>
+								</div>
+							</div>
 						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$platformTerm/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/>
-						</xsl:otherwise>
 					</xsl:choose>
-				</xsl:variable>
-				<xsl:variable name="platformCaps" select="$techCaps[own_slot_value[slot_reference = 'belongs_to_technology_domain']/value = $platformDomains/name]"/>
-				<xsl:variable name="allPlatformCaps" select="eas:get_techcap_descendants($platformCaps, $techCaps, 1)"/>
-				<xsl:variable name="platformComps" select="$techComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = $allPlatformCaps/name]"/>
-				<div class="techRefModel_BottomColTitle backColourBlue col-xs-12">
-					<h3 class="text-white">
-						<!--<xsl:value-of select="$platformLabel"/>-->
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="$platformDomains[1]"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-							<xsl:with-param name="anchorClass" select="'text-white'"/>
-						</xsl:call-template>
-					</h3>
-				</div>
-				<div class="techRefModel_BottomColContentContainer backColourBlue col-xs-12">
-					<xsl:apply-templates mode="PrintTechComp" select="$platformComps">
-						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-					</xsl:apply-templates>
-				</div>
+					<div class="verticalSpacer_20px bg-white"/>
+				</xsl:for-each>
 			</div>
 		</div>
 	</xsl:template>
@@ -354,20 +355,6 @@
 	<xsl:template match="node()" mode="PrintTechComp">
 		<xsl:variable name="techCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
 		<div class="gridModel_objectContainer">
-			<!--<a id="{$techCapName}" class="context-menu-techComponent menu-1">
-				<xsl:call-template name="RenderLinkHref">
-					<xsl:with-param name="theInstanceID">
-						<xsl:value-of select="name" />
-					</xsl:with-param>
-					<xsl:with-param name="theXML">reportXML.xml</xsl:with-param>
-					<xsl:with-param name="theParam4" select="$param4" />
-					<!-\- pass the id of the taxonomy term used for scoping as parameter 4-\->
-					<!-\- <xsl:with-param name="theUserParams">tax=Organisation&amp;syn=Fred</xsl:with-param> -\->
-				</xsl:call-template>
-				<div class="gridModel_object bg-white">
-					<xsl:value-of select="$techCapName" />
-				</div>
-			</a>-->
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>

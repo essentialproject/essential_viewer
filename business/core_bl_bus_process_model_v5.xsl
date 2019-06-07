@@ -133,7 +133,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script src="ext/apml/jquery-migrate-1.2.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<script type="text/javascript" src="js/jquery.zoomable.js"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:for-each select="$linkClasses">

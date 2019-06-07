@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:import href="../common/core_strategic_plans.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -52,7 +53,9 @@
 	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
 	<!-- 05.11.2008 JWC - Completed updated migration to new servlet reporting engine -->
 	<!-- 19.11.2008	JWC - Added links to Technology Product definitions -->
-	<!--01.09.2011	NJW	- Updated to Support Viewer 3.0-->
+	<!-- 01.09.2011	NJW	- Updated to Support Viewer 3.0-->
+	<!-- 12.02.2019	JP	- Updated to use cpmmon Strategic Plans template-->
+	
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<html>
@@ -285,7 +288,7 @@
 						<xsl:value-of select="eas:i18n('Strategic Plans')"/>
 					</h2>
 					<div class="content-section">
-						<xsl:apply-templates select="name" mode="StrategicPlansForElement"/>
+						<xsl:apply-templates select="$currentNode" mode="StrategicPlansForElement"/>
 					</div>
 					<hr/>
 				</div>
@@ -815,8 +818,9 @@
 			<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 		</xsl:call-template>
 	</xsl:template>
-	<!-- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -->
-	<!-- Given a reference (instance ID) to an element, find all its plans and render each -->
+	
+	<!--<!-\- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -\->
+	<!-\- Given a reference (instance ID) to an element, find all its plans and render each -\->
 	<xsl:template match="node()" mode="StrategicPlansForElement">
 		<xsl:variable name="anElement">
 			<xsl:value-of select="node()"/>
@@ -825,22 +829,22 @@
 		<xsl:variable name="aFuturePlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Future_Plan')]"/>
 		<xsl:variable name="anOldPlan" select="/node()/simple_instance[type = 'Planning_Status' and (own_slot_value[slot_reference = 'name']/value = 'Old_Plan')]"/>
 		<xsl:variable name="aStrategicPlanSet" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $anElement]"/>
-		<!-- Test to see if any plans are defined yet -->
+		<!-\- Test to see if any plans are defined yet -\->
 		<xsl:choose>
 			<xsl:when test="count($aStrategicPlanSet) > 0">
-				<!-- Show active plans first -->
+				<!-\- Show active plans first -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $anActivePlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anActivePlan/name"/>
 					</xsl:with-param>
 				</xsl:apply-templates>
-				<!-- Then the future -->
+				<!-\- Then the future -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $aFuturePlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$aFuturePlan/name"/>
 					</xsl:with-param>
 				</xsl:apply-templates>
-				<!-- Then the old -->
+				<!-\- Then the old -\->
 				<xsl:apply-templates select="$aStrategicPlanSet[own_slot_value[slot_reference = 'strategic_plan_status']/value = $anOldPlan/name]" mode="StrategicPlanDetailsTable">
 					<xsl:with-param name="theStatus">
 						<xsl:value-of select="$anOldPlan/name"/>
@@ -856,9 +860,9 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- Render the details of a particular strategic plan in a small table -->
-	<!-- No details of plan inter-dependencies is presented here. However, a link 
-        to the plan definition page is provided where those details will be shown -->
+	<!-\- Render the details of a particular strategic plan in a small table -\->
+	<!-\- No details of plan inter-dependencies is presented here. However, a link 
+        to the plan definition page is provided where those details will be shown -\->
 	<xsl:template match="node()" mode="StrategicPlanDetailsTable">
 		<xsl:param name="theStatus"/>
 		<xsl:variable name="aStatusID" select="current()/own_slot_value[slot_reference = 'strategic_plan_status']/value"/>
@@ -893,5 +897,5 @@
 				</tbody>
 			</table>
 		</xsl:if>
-	</xsl:template>
+	</xsl:template>-->
 </xsl:stylesheet>

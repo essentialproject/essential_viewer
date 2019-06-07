@@ -157,6 +157,12 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 	
 	protected String itsContextPath = "/";
 	
+	/**
+	 * Context parameter to switch Viewer into debug mode
+	 * Valid values (Strings) are "true" or "false"
+	 */
+	protected static final String DEBUG_MODE = "debugMode";
+	protected static final String DEBUG_MODE_ON = "true";
 	
 	/**
 	 * @param theServletContext
@@ -229,7 +235,10 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		String aReposID = getRepositoryID(theRequest, theResponse, aSourceDocPath, itsContextPath);
 		
 		// Get full path to this application - removing the servlet path to drop '/report' if it's included
-		//System.out.println("SecureViewer: Checking for authorisation for Viewer: " + theRequest.getRequestURL().toString());
+		if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+		{			
+			System.out.println("SecureViewer: Checking for authorisation for Viewer: " + theRequest.getRequestURL().toString());
+		}
 		String aRequestURL = theRequest.getRequestURL().toString();
 		if(aRequestURL.endsWith("/report"))
 		{
@@ -242,11 +251,17 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 			aRequestURL = aRequestURL.substring(0, aRequestURL.length()-1);
 		}
 
-		//System.out.println("SecureViewer: Authorising for URL: " + aRequestURL);
+		if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+		{
+			System.out.println("SecureViewer: Authorising for URL: " + aRequestURL);
+		}
 		
 		if(itsSecurityMgr.isUserAuthorisedForViewer(anAccount, aReposID, aRequestURL))
 		{
-			//System.out.println("SecureViewer: TRACE == User authorised to access viewer for specified repository");
+			if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+			{
+				System.out.println("SecureViewer: TRACE == User authorised to access viewer for specified repository");
+			}
 			// If access allowed, continue
 			
 			// Check user is allowed to View the selected view.			
@@ -326,13 +341,18 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 		try
 		{
 			// DEBUG TRACE
-			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View: " + aTemplateFile);
-			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: UserData XML: \n" + aUserData);
-			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View Classifications: \n" + aViewClassification);
-			
+			if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+			{
+				System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View: " + aTemplateFile);
+				System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: UserData XML: \n" + aUserData);
+				System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE: View Classifications: \n" + aViewClassification);
+			}
 			// AuthZ user for access to the requested view
 			aUserAuthZResult = queryUserAuthZ(aTemplateFile, aUserData, aViewClassification, itsContextPath);
-			//System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE = queryUserAuthZ(): " + aUserAuthZResult);
+			if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+			{
+				System.out.println("SecureEssentialViewer.isUserAuthZForView(): TRACE = queryUserAuthZ(): " + aUserAuthZResult);
+			}
 			
 			// If an instance has been requested, PMA query parameter, test authorisation for that instance
 			// but only if user has authZ to access the view
@@ -341,7 +361,10 @@ public class SecureEssentialViewerEngine extends EssentialViewerEngine
 			{				
 				aUserAuthZResult = queryUserAuthZInstance(theRequest, theResponse, xmlFile, aRequestedInstanceID, itsContextPath);
 				// DEBUG TRACE
-				//System.out.println("SecureViewer.isUserAuthZForView(): TRACE == queryUserAuthZInstance(XSL): " + aUserAuthZResult);
+				if(itsServletContext.getInitParameter(DEBUG_MODE).equals(DEBUG_MODE_ON))
+				{
+					System.out.println("SecureViewer.isUserAuthZForView(): TRACE == queryUserAuthZInstance(XSL): " + aUserAuthZResult);
+				}
 			}
 		}
 		catch (Exception ex)

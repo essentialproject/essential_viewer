@@ -48,10 +48,9 @@
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery-2.2.4.min.js"/>
-		<script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"/>
+		<script type="text/javascript" src="js/jquery-3.4.1.min.js"/>
 		<!--Custom JQuery UI library to support various visual effects-->
-		<script type="text/javascript" src="js/jquery-ui.js"/>
+		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>
 		<!--JQuery plugin to support popup menus for link navigation-->
 		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js"/>
 		<!--script to support the feedback page-->
@@ -66,6 +65,21 @@
 		<!--script to show hide sections by click on the icon-->
 		<script>
 			$(document).ready(function () {$('.sectionIcon').click(function (){$(this).parent().children('.content-section').slideToggle(200);});});
+		</script>
+		<!--Later versions of bootstrap use Sanitize to filter certain DOM elements from popovers (including tables). This is our custom whitelist to workaround this-->
+		<script>
+			$(document).ready(function(){
+				if($.fn.tooltip.Constructor != null) {
+					var myDefaultWhiteList = $.fn.tooltip.Constructor.DEFAULTS.whiteList;
+					myDefaultWhiteList.table = [];
+					myDefaultWhiteList.thead = [];
+					myDefaultWhiteList.tbody = [];
+					myDefaultWhiteList.tfoot = [];
+					myDefaultWhiteList.tr = [];
+					myDefaultWhiteList.th = [];
+					myDefaultWhiteList.td = [];
+				}
+			});
 		</script>
 		<xsl:variable name="viewerPrimaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'primary_header_colour_viewer']/value"/>
 		<xsl:variable name="viewerSecondaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'secondary_header_colour_viewer']/value"/>

@@ -140,7 +140,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script src="js/jquery-migrate-1.2.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -150,11 +150,11 @@
 				</xsl:for-each>
 				<!--Dependencies for JointJS UML Diagram-->
 				<script src="js/jquery-ui.js" async="" type="text/javascript"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
 				<link rel="stylesheet" type="text/css" href="js/jointjs_v2.0/joint.min.css"/>
 				<script src="js/jointjs_v2.0/lodash.js"/>
 				<script src="js/jointjs_v2.0/backbone.js"/>
+				<script src="js/graphlib/graphlib.core.js"/>
+				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs_v2.0/joint.min.js"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
 				<style>

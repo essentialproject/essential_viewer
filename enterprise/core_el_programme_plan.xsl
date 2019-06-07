@@ -391,7 +391,82 @@
 		<xsl:variable name="project" select="current()"/>
 		<xsl:variable name="projectId" select="concat($parentProgrammeId, '-', $project/name)"/>
 		<xsl:variable name="projectName" select="$project/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="projectPlannedStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value]"/>
+		
+		<xsl:variable name="proposedISOStartDate" select="$project/own_slot_value[slot_reference = 'ca_proposed_start_date_iso_8601']/value"/>
+		<xsl:variable name="proposedEssStartDateId" select="$project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value"/>
+		<xsl:variable name="jsProposedStartDate">
+			<xsl:choose>
+				<xsl:when test="string-length($proposedISOStartDate) > 0">
+					<xsl:value-of select="xs:date($proposedISOStartDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="projectPlannedStartDate" select="$allDates[name = $proposedEssStartDateId]"/>
+					<xsl:value-of select="eas:get_start_date_for_essential_time($projectPlannedStartDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		
+		<xsl:variable name="actualISOStartDate" select="$project/own_slot_value[slot_reference = 'ca_actual_start_date_iso_8601']/value"/>
+		<xsl:variable name="actualEssStartDateId" select="$project/own_slot_value[slot_reference = 'ca_actual_start_date']/value"/>
+		<xsl:variable name="jsActualStartDate">
+			<xsl:choose>
+				<xsl:when test="string-length($actualISOStartDate) > 0">
+					<xsl:value-of select="xs:date($actualISOStartDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="projectActualStartDate" select="$allDates[name = $actualEssStartDateId]"/>
+					<xsl:value-of select="eas:get_start_date_for_essential_time($projectActualStartDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="jsStartDate">
+			<xsl:choose>
+				<xsl:when test="(count($actualISOStartDate) + count($actualEssStartDateId) > 0)"><xsl:value-of select="$jsActualStartDate"/></xsl:when>
+				<xsl:otherwise><xsl:value-of select="$jsProposedStartDate"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		
+		
+		<xsl:variable name="targetISOEndDate" select="$project/own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value"/>
+		<xsl:variable name="targetEssEndDateId" select="$project/own_slot_value[slot_reference = 'ca_target_end_date']/value"/>
+		<xsl:variable name="jsTargetEndDate">
+			<xsl:choose>
+				<xsl:when test="string-length($targetISOEndDate) > 0">
+					<xsl:value-of select="xs:date($targetISOEndDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="projectTargetEndDate" select="$allDates[name = $targetEssEndDateId]"/>
+					<xsl:value-of select="eas:get_end_date_for_essential_time($projectTargetEndDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		
+		<xsl:variable name="forecastISOEndDate" select="$project/own_slot_value[slot_reference = 'ca_forecast_end_date_iso_8601']/value"/>
+		<xsl:variable name="forecastEssEndDateId" select="$project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value"/>
+		<xsl:variable name="jsForecastEndDate">
+			<xsl:choose>
+				<xsl:when test="string-length($forecastISOEndDate) > 0">
+					<xsl:value-of select="xs:date($forecastISOEndDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="projectForecastEndDate" select="$allDates[name = $forecastEssEndDateId]"/>
+					<xsl:value-of select="eas:get_end_date_for_essential_time($projectForecastEndDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="jsEndDate">
+			<xsl:choose>
+				<xsl:when test="(count($forecastISOEndDate) + count($forecastEssEndDateId) > 0)"><xsl:value-of select="$jsForecastEndDate"/></xsl:when>
+				<xsl:otherwise><xsl:value-of select="$jsTargetEndDate"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<!--<xsl:variable name="projectPlannedStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value]"/>
 		<xsl:variable name="jsPlannedStartDate" select="eas:get_start_date_for_essential_time($projectPlannedStartDate)"/>
 		<xsl:variable name="projectActualStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
 		<xsl:variable name="jsActualStartDate" select="eas:get_start_date_for_essential_time($projectActualStartDate)"/>
@@ -410,9 +485,13 @@
 				<xsl:when test="count($projectForecastEndDate) > 0"><xsl:value-of select="$jsForecastEndDate"/></xsl:when>
 				<xsl:otherwise><xsl:value-of select="$jsTargetEndDate"/></xsl:otherwise>
 			</xsl:choose>
-		</xsl:variable>
+		</xsl:variable>-->
+		
+		
+		
 		<xsl:variable name="projectStatus" select="$allProjectStatii[name = $project/own_slot_value[slot_reference = 'project_lifecycle_status']/value]"/>
-		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/> {id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span>'<xsl:choose><xsl:when test="(count($projectPlannedStartDate) + count($projectActualStartDate) > 0) and (count($projectTargetEndDate) + count($projectForecastEndDate) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentProgrammeId"/>', <!--subgroup: '<xsl:value-of select="$parentProgrammeId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$projectPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$projectActualStartDate"/><xsl:with-param name="targetEndDate" select="$projectTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$projectForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/>
+		{id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span>'<xsl:choose><xsl:when test="(count($proposedISOStartDate) + count($proposedEssStartDateId) + count($actualISOStartDate) + count($actualEssStartDateId) + count($targetISOEndDate) + count($targetEssEndDateId) + count($forecastISOEndDate) + count($forecastEssEndDateId) > 0)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentProgrammeId"/>', <!--subgroup: '<xsl:value-of select="$parentProgrammeId"/>',--> className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$jsProposedStartDate"/><xsl:with-param name="actualStartDate" select="$jsActualStartDate"/><xsl:with-param name="targetEndDate" select="$jsTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$jsForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="RenderMilestones" match="node()">
@@ -420,8 +499,25 @@
 		<xsl:variable name="milestone" select="current()"/>
 		<xsl:variable name="milestoneId" select="concat($parentProgrammeId, '-', $milestone/name)"/>
 		<xsl:variable name="milestoneName" select="$milestone/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="milestoneStartDate" select="$allDates[name = $milestone/own_slot_value[slot_reference = 'cm_date']/value]"/>
-		<xsl:variable name="jsStartDate" select="eas:get_start_date_for_essential_time($milestoneStartDate)"/> {id: '<xsl:value-of select="$milestoneId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $milestoneId)"/><xsl:value-of select="eas:renderJSText($milestoneName)"/></span>', start: <xsl:choose><xsl:when test="count($milestoneStartDate) > 0">'<xsl:value-of select="$jsStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentProgrammeId"/>', className: 'milestone', type: 'point', popupContent:'<xsl:call-template name="milestonePopupDiv"><xsl:with-param name="milestone" select="$milestone"/><xsl:with-param name="milestoneId" select="$milestoneId"/><xsl:with-param name="startDate" select="$jsStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		
+		
+		<xsl:variable name="milestoneISOStartDate" select="$milestone/own_slot_value[slot_reference = 'start_date_iso_8601']/value"/>
+		<xsl:variable name="milestonEsseStartDateId" select="$milestone/own_slot_value[slot_reference = 'start_date']/value"/>
+		<xsl:variable name="jsMilestoneStartDate">
+			<xsl:choose>
+				<xsl:when test="string-length($milestoneISOStartDate) > 0">
+					<xsl:value-of select="xs:date($milestoneISOStartDate)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="milestoneStartDate" select="$allDates[name = $milestonEsseStartDateId]"/>
+					<xsl:value-of select="eas:get_start_date_for_essential_time($milestoneStartDate)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<!--<xsl:variable name="milestoneStartDate" select="$allDates[name = $milestone/own_slot_value[slot_reference = 'cm_date']/value]"/>-->
+		
+		{id: '<xsl:value-of select="$milestoneId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $milestoneId)"/><xsl:value-of select="eas:renderJSText($milestoneName)"/></span>', start: <xsl:choose><xsl:when test="count($milestoneISOStartDate) + count($milestonEsseStartDateId) > 0">'<xsl:value-of select="$jsMilestoneStartDate"/>'</xsl:when><xsl:otherwise>new Date()</xsl:otherwise></xsl:choose>, group:'<xsl:value-of select="$parentProgrammeId"/>', className: 'milestone', type: 'point', popupContent:'<xsl:call-template name="milestonePopupDiv"><xsl:with-param name="milestone" select="$milestone"/><xsl:with-param name="milestoneId" select="$milestoneId"/><xsl:with-param name="startDate" select="$jsMilestoneStartDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -508,48 +604,6 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template name="strategicPlanPopupDiv">
-		<xsl:param name="strategicPlanId"/>
-		<xsl:param name="strategicPlan"/>
-		<xsl:param name="startDate"/>
-		<xsl:param name="endDate"/>
-
-
-		<xsl:variable name="formattedStartDate">
-			<xsl:call-template name="FullFormatDate">
-				<xsl:with-param name="theDate" select="$startDate"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="formattedEndDate">
-			<xsl:call-template name="FullFormatDate">
-				<xsl:with-param name="theDate" select="$endDate"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<div>
-			<xsl:attribute name="id" select="concat('popup', $strategicPlanId)"/>
-			<p class="fontBlack">
-				<xsl:call-template name="RenderInstanceLink">
-				  <xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
-				  <xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>
-			</p>
-			<p class="small">
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-				  <xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
-				  <xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>
-			</p>
-			<div class="small">
-				<strong>Start Date: </strong>
-				<xsl:value-of select="$formattedStartDate"/>
-			</div>
-			<div class="small">
-				<strong>End Date: </strong>
-				<xsl:value-of select="$formattedEndDate"/>
-			</div>
-
-		</div>
-	</xsl:template>
 
 	<xsl:template name="projectPopupDiv">
 		<xsl:param name="projectId"/>
@@ -564,7 +618,7 @@
 			<xsl:choose>
 				<xsl:when test="count($plannedStartDate) > 0">
 					<xsl:call-template name="FullFormatDate">
-						<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($plannedStartDate)"/>
+						<xsl:with-param name="theDate" select="$plannedStartDate"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>-</xsl:otherwise>
@@ -575,7 +629,7 @@
 			<xsl:choose>
 				<xsl:when test="count($actualStartDate) > 0">
 					<xsl:call-template name="FullFormatDate">
-						<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($actualStartDate)"/>
+						<xsl:with-param name="theDate" select="$actualStartDate"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>-</xsl:otherwise>
@@ -586,7 +640,7 @@
 			<xsl:choose>
 				<xsl:when test="count($targetEndDate) > 0">
 					<xsl:call-template name="FullFormatDate">
-						<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($targetEndDate)"/>
+						<xsl:with-param name="theDate" select="$targetEndDate"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>-</xsl:otherwise>
@@ -597,7 +651,7 @@
 			<xsl:choose>
 				<xsl:when test="count($forecastEndDate) > 0">
 					<xsl:call-template name="FullFormatDate">
-						<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($forecastEndDate)"/>
+						<xsl:with-param name="theDate" select="$forecastEndDate"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>-</xsl:otherwise>

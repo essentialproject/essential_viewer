@@ -168,13 +168,15 @@
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/jointjs/lodash.min.js"/>
-				<script src="js/jointjs/backbone-min.js"/>
+				<script src="js/lodash/index.js"/>
+				<script src="js/backbone/backbone.js"/>
+				<script src="js/graphlib/graphlib.core.js"/>
+				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
 				<script src="js/jquery-ui.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -862,9 +864,10 @@
 											responsive: true,
 											columns: [
 											    { "width": "40%" },
-											    { "width": "20%" },
-											    { "width": "20%" },
-											    { "width": "20%" }
+											    { "width": "15%" },
+											    { "width": "15%" },
+											    { "width": "15%" },
+											    { "width": "15%" }
 											  ],
 											dom: 'Bfrtip',
 										    buttons: [
@@ -981,6 +984,9 @@
 												<tr>
 													<th>
 														<xsl:value-of select="eas:i18n('Supported Processes')"/>
+													</th>
+                                                    <th>
+														<xsl:value-of select="eas:i18n('Application Service Used')"/>
 													</th>
 													<th>
 														<xsl:value-of select="eas:i18n('Business Units Supported')"/>
@@ -1219,7 +1225,7 @@
 								</h2>
 							</div>
 							<div class="content-section">
-								<xsl:apply-templates select="$currentApp/name" mode="StrategicPlansForElement"/>
+								<xsl:apply-templates select="$currentApp" mode="StrategicPlansForElement"/>
 							</div>
 							<hr/>
 						</div>
