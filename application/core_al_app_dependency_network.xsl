@@ -197,13 +197,13 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<!--Dependencies for JointJS UML Diagram-->
-				<script src="js/jquery-ui.js" async="" type="text/javascript"/>
-				<link rel="stylesheet" type="text/css" href="js/jointjs_v2.0/joint.min.css"/>
-				<script src="js/jointjs_v2.0/lodash.js"/>
-				<script src="js/jointjs_v2.0/backbone.js"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
+				<script src="js/lodash/index.js"/>
+				<script src="js/backbone/backbone.js"/>
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs_v2.0/joint.min.js"/>
+				<script src="js/jointjs/joint.min.js"/>
+				<script src="js/jquery-ui/jquery-ui.min.js" async="" type="text/javascript"/>
 				<script src="js/handlebars-v4.1.2.js"/>
 				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
