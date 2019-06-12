@@ -77,10 +77,6 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Business Capability Model</title>
-				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
-				<!--JQuery plugin to support tooltips-->
-	 		<script src="js/jquery.tools.min.js" type="text/javascript"/>  
 				<script type="text/javascript">
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width
@@ -231,6 +227,7 @@
 					    background: url(images/value_chain_arrow_end.png) no-repeat right center;
 					    position: relative;
 					    box-sizing: content-box;
+					    line-height: 1.1em;
 					}
 					
 					.threeColModel_valueChainColumnContainerDouble{
@@ -250,6 +247,7 @@
 					    background: url(images/value_chain_arrow_end.png) no-repeat right center;
 					    position: relative;
 					    box-sizing: content-box;
+					    line-height: 1.1em;
 					}
 					
 					.threeColModel_ObjectContainer{
@@ -301,7 +299,7 @@
 					    text-align: center;
 					    opacity: 1.0;
 					    box-sizing: content-box;
-					    line-height: 1.2em;
+					    line-height: 1.1em;
 					    box-sizing: content-box;
                     box-shadow: 2px 2px 1px #d3d3d3;
 					}
@@ -317,6 +315,7 @@
 					    float: left;
 					    text-align: center;
 					    box-sizing: content-box;
+					    line-height: 1.1em;
 					}
 					
 					.capModel_ObjectContainer{
