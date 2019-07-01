@@ -72,6 +72,14 @@
 	<xsl:template match="node()" name="Heading">
 		<xsl:param name="contentID"/>
 		<xsl:param name="subPortalID"/>
+		<xsl:param name="mode">VIEW</xsl:param>
+		
+		<xsl:variable name="headerStyle">
+			<xsl:choose>
+				<xsl:when test="$mode = 'EDIT'">navbar navbar-default nav-edit-color</xsl:when>
+				<xsl:otherwise>navbar navbar-default nav-color</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 		<script type="text/javascript">
 				$(document).ready(function(){
@@ -144,7 +152,7 @@
 				</xsl:choose>
 			</div>
 		</nav>
-		<nav class="navbar navbar-default nav-color">
+		<nav class="{$headerStyle}">
 			<div class="container-fluid">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">

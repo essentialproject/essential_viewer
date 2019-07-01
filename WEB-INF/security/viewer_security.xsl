@@ -37,6 +37,7 @@
     <!-- 02.08.2018 JWC Re-worked security algorithm with respect to default classifications, as was too strict -->
     <!-- 07.08.2018 JWC Completed detailed testing in OxygenXML -->
     <!-- 18.02.2019 JWC Added capability to secure instances by Class and test Class-level authZ -->
+    <!-- 24.06.2019 JWC New functions to test for authZ across set of instances or a set of classes -->
     
     <!-- XML document holding the user data = empty node-set by default -->
     <xsl:param name="userData" select="/.."></xsl:param>
@@ -229,6 +230,46 @@
                 <xsl:value-of select="$theRedactedString"/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:function>
+    
+    <!-- Test that the user is authorized to access any of the specified instances 
+        Instances are provided as a sequence -->
+    <xsl:function name="eas:isUserAuthZInstances" as="xs:boolean">
+        <xsl:param name="theInstanceList"></xsl:param>
+        
+        <xsl:variable name="anInstance" select="$theInstanceList[1]"></xsl:variable>
+        <xsl:choose>
+            <xsl:when test="count($theInstanceList) = 1">
+                <xsl:value-of select="eas:isUserAuthZ($theInstanceList)"></xsl:value-of>                
+            </xsl:when>
+            <xsl:when test="eas:isUserAuthZ($anInstance)">                
+                <xsl:value-of select="eas:isUserAuthZInstances(subsequence($theInstanceList, 2))"></xsl:value-of>                
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="false()"></xsl:value-of>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <!-- Test that the user is authorized to access any of the specified classes
+        Classes are specified by name in a sequence -->
+    <xsl:function name="eas:isUserAuthZClasses" as="xs:boolean">
+        <xsl:param name="theClassList"></xsl:param>
+        
+        <xsl:variable name="aClassName" select="$theClassList[1]"></xsl:variable>
+        <xsl:variable name="aClass" select="$theClassSet[name=$aClassName]"></xsl:variable>
+        
+        <xsl:choose>
+            <xsl:when test="count($theClassList) = 1">
+                <xsl:value-of select="eas:isUserAuthZ($aClass)"></xsl:value-of>                
+            </xsl:when>
+            <xsl:when test="eas:isUserAuthZ($aClass)">                
+                <xsl:value-of select="eas:isUserAuthZClasses(subsequence($theClassList, 2))"></xsl:value-of>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="false()"></xsl:value-of>
+            </xsl:otherwise>
+        </xsl:choose>            
     </xsl:function>
     
 </xsl:stylesheet>

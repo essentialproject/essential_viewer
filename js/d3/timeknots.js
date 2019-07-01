@@ -30,7 +30,6 @@ var TimeKnots = {
     .append('div')
     .style("opacity", 0)
     .style("position", "absolute")
-    .style("font-family", "Helvetica Neue")
     .style("font-weight", "300")
     .style("background","black")
     .style("color", "white")
@@ -175,7 +174,8 @@ var TimeKnots = {
       tip.transition()
       .duration(100)
       .style("opacity", .9)
-      .style("top", d3.select(this).attr("cy") + "px");
+      .style("top", d3.select(this).attr("cy"-20) + "px")
+      .style("left", d3.select(this).attr("cx") + "px");
 
     })
     .on("mouseout", function(){
@@ -211,7 +211,10 @@ var TimeKnots = {
 
     svg.on("mousemove", function(){
         tipPixels = parseInt(tip.style("height").replace("px", ""));
-    return tip.style("top", (d3.select(this).attr("cy"))+"px").style("left",(d3.event.pageX+20)+"px");})
+    	return tip
+    		.style("top", d3.select(this).attr("cy"-20) + "px")
+      		.style("left", d3.select(this).attr("cx") + "px");
+    	})
     .on("mouseout", function(){return tip.style("opacity", 0).style("top","0px").style("left","0px");});
   }
 }

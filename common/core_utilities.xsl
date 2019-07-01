@@ -63,6 +63,12 @@
 
 	<!-- Collect all available reports -->
 	<xsl:variable name="utilitiesAllReports" select="/node()/simple_instance[type = 'Report']"/>
+	
+	<!-- Collect all available editors -->
+	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = 'Editor']"/>
+	
+	<!-- Collect all available editor sections -->
+	<xsl:variable name="utilitiesAllEditorSections" select="/node()/simple_instance[type = 'Editor_Section']"/>
 
 	<!-- Collect all available taxonomy terms -->
 	<xsl:variable name="utilitiesAllTaxonomyTerms" select="/node()/simple_instance[(type = 'Taxonomy_Term')]"/>

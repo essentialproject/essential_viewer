@@ -103,7 +103,8 @@
 	<xsl:variable name="appNoOfUsers" select="$currentApp/own_slot_value[slot_reference = 'ap_max_number_of_users']/value"/>
     <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $currentApp/name]"/>
 	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
-    <xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
+	<xsl:variable name="inScopeCostInstances" select="$inScopeCosts union $inScopeCostComponents"></xsl:variable>
+	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
 	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
 
 	<xsl:variable name="objectWidth" select="240"/>
@@ -428,8 +429,9 @@
 						</div>
                         <!-- Application Costs  -->
        
-                                
-                                <xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
+						<xsl:variable name="isAuthzForCostClasses" select="eas:isUserAuthZClasses(('Cost', 'Cost_Component'))"/>
+						<xsl:variable name="isAuthzForCostInstances" select="eas:isUserAuthZInstances($inScopeCostInstances)"/>
+                        <xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
                                 
                         <div class="col-xs-6">
 							<div class="sectionIcon">
@@ -439,8 +441,12 @@
 								<xsl:value-of select="eas:i18n('Application Cost')"/>
 							</h2>
 							<div class="content-section">
-                                <xsl:choose><xsl:when test="$costTypeTotal=0"> -</xsl:when><xsl:otherwise><xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/></xsl:otherwise></xsl:choose>
-                             
+                                <xsl:choose>
+                                	<xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"><span><xsl:value-of select="$theRedactedString"/></span></xsl:when>
+                                	<xsl:when test="$costTypeTotal=0">-</xsl:when>
+                                	<xsl:otherwise><xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/>
+                                	</xsl:otherwise>
+                                </xsl:choose>              
 							</div>
 							<hr/>
 						</div>      

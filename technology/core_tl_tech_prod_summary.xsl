@@ -8,11 +8,13 @@
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+	
 	<!--<xsl:include href="../common/core_arch_image.xsl"/>-->
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
 	<xsl:param name="param1"/>
+
 
 	<!-- START GENERIC PARAMETERS -->
 	<xsl:param name="viewScopeTermIds"/>
@@ -118,8 +120,6 @@
 		<xsl:variable name="tech_prod_usage_list" select="/node()/simple_instance[own_slot_value[slot_reference = 'provider_as_role']/value = $tech_prod_role_list/name]"/>
 		<!-- Get all the technology product builds where these usages are used -->
 		<xsl:variable name="techProdBuildList" select="/node()/simple_instance[name = $tech_prod_usage_list/own_slot_value[slot_reference = 'used_in_technology_provider_architecture']/value]"/>
-
-
 
 
 		<div class="container-fluid">

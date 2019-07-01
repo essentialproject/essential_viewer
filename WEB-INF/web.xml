@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+<!-- <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"> -->
 	<!--
-        * Copyright (c)2006-2018 Enterprise Architecture Solutions ltd.
+        * Copyright (c)2006-2019 Enterprise Architecture Solutions ltd.
         * This file is part of Essential Architecture Manager, 
         * the Essential Architecture Meta Model and The Essential Project.
         *
@@ -28,10 +33,35 @@
         19.01.2015	JWC Updates to apply Security to Essential Viewer
         03.03.2016	JWC Added Expires filters and configuration parameter for ReportServiceImages servlet
         25.08.2016	JWC Revised apprach for caching setup with a relative path
+        27.03.2019	JWC Added Anti-CSRF Filters
     -->
 	
 	<display-name>Essential Viewer</display-name>
+	
+	<filter-mapping>
+		<filter-name>ValidateSession</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
 
+	<!-- Filters for the anti CSRF -->
+	<filter-mapping>
+		<filter-name>LoadCSRFFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+		
+	<!-- Filters for the anti CSRF -->
+	<filter-mapping>
+		<filter-name>ValidateCSRF</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>ValidateOauthBearerToken</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- End of anti CSRF filters -->
+	
 	<!-- Context parameters, including those required by the Essential Viewer Engine -->
 	<context-param>
 		<param-name>debugMode</param-name>
@@ -298,6 +328,19 @@
 		<servlet-name>AuthnServerCallback</servlet-name>
 		<servlet-class>com.enterprise_architecture.essential.report.security.AuthnServerCallback</servlet-class>
 	</servlet>
+	
+	<!-- Add the API PassThru Servlet -->
+	<servlet>
+  		<display-name>Essential API Pass Thru</display-name>  		
+  		<servlet-name>essentialAPIPassThru</servlet-name>
+  		<servlet-class>com.enterprise_architecture.essential.report.api.EssentialAPIPassThru</servlet-class> 
+  	</servlet>
+    
+  	<servlet-mapping>
+  		<servlet-name>essentialAPIPassThru</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+  
 
 	<servlet-mapping>
 		<servlet-name>reportService</servlet-name>

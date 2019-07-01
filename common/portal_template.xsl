@@ -19,7 +19,7 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = 'Report')]"/>
+	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Editor', 'Report')]"/>
 	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
 	<xsl:variable name="allPortalSections" select="/node()/simple_instance[type = 'Portal_Section']"/>
@@ -185,39 +185,54 @@
 					<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 					<!-- Only render if user is authorised -->
 					<xsl:if test="eas:isUserAuthZ(current())">
-						<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
-						<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
-						<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-						<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-						<xsl:variable name="targetReportIdQueryString">
-							<xsl:text>&amp;targetReportId=</xsl:text>
-							<xsl:value-of select="current()/name"/>
-						</xsl:variable>
-						<li class="fontSemi large">
-							<xsl:choose>
-								<xsl:when test="string-length($qualifyingReportId) > 0">
-									<a class="text-darkgrey">
-										<xsl:call-template name="RenderLinkHref">
-											<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
-											<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
-											<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
-										</xsl:call-template>
-										<xsl:call-template name="RenderMultiLangInstanceName">
-											<xsl:with-param name="theSubjectInstance" select="current()"/>
-										</xsl:call-template>
+						<xsl:choose>
+							<xsl:when test="current()/type = 'Editor'">
+								<xsl:variable name="theEditorId" select="current()/name"/>
+								<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+								<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
+								<li class="fontSemi large">
+									<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
+										<xsl:value-of select="$theEditorLabel"/>
 									</a>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:call-template name="RenderCatalogueLink">
-										<xsl:with-param name="theCatalogue" select="current()"/>
-										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-										<xsl:with-param name="targetReport" select="()"/>
-										<xsl:with-param name="targetMenu" select="()"/>
-										<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
-									</xsl:call-template>
-								</xsl:otherwise>
-							</xsl:choose>
-						</li>
+								</li>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
+								<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
+								<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
+								<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+								<xsl:variable name="targetReportIdQueryString">
+									<xsl:text>&amp;targetReportId=</xsl:text>
+									<xsl:value-of select="current()/name"/>
+								</xsl:variable>
+								<li class="fontSemi large">
+									<xsl:choose>
+										<xsl:when test="string-length($qualifyingReportId) > 0">
+											<a class="text-darkgrey">
+												<xsl:call-template name="RenderLinkHref">
+													<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
+													<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
+													<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+												</xsl:call-template>
+												<xsl:call-template name="RenderMultiLangInstanceName">
+													<xsl:with-param name="theSubjectInstance" select="current()"/>
+												</xsl:call-template>
+											</a>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="RenderCatalogueLink">
+												<xsl:with-param name="theCatalogue" select="current()"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+												<xsl:with-param name="targetReport" select="()"/>
+												<xsl:with-param name="targetMenu" select="()"/>
+												<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
+								</li>
+							</xsl:otherwise>
+						</xsl:choose>
+						
 					</xsl:if>
 				</xsl:for-each>
 			</ul>

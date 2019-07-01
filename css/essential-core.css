@@ -104,6 +104,10 @@ input[type = "checkbox"]{
 	background-color: #c41e3a;
 }
 
+.nav-edit-color{
+	background-color: hsla(220, 70%, 40%, 1);
+}
+
 .nav-contrast{
 	background-color: #111;
 	height: 3px;
@@ -1315,6 +1319,54 @@ tfoot input{
 	color: #333;
 }
 
+.text-darkred{
+	color: hsla(350, 50%, 35%, 1);
+}
+
+.text-brightred{
+	color: hsla(0, 75%, 50%, 1);
+}
+
+.text-orange{
+	color: hsla(40, 100%, 50%, 1);
+}
+
+.text-yellow{
+	color: hsla(55, 95%, 50%, 1);
+}
+
+.text-lightgreen{
+	color: hsla(80, 70%, 50%, 1);
+}
+
+.text-brightgreen{
+	color: hsla(140, 70%, 40%, 1);
+}
+
+.text-darkgreen{
+	color: hsla(130, 50%, 30%, 1);
+}
+
+.text-aqua{
+	color: hsla(175, 60%, 50%, 1);
+}
+
+.text-lightblue{
+	color: hsla(200, 80%, 50%, 1);
+}
+
+.text-darkblue{
+	color: hsla(220, 70%, 40%, 1);
+}
+
+.text-purple{
+	color: hsla(265, 85%, 45%, 1);
+}
+
+.text-pink{
+	color: hsla(320, 75%, 50%, 1);
+}
+
 .backColourBlue{
 	background-color: #56a4d8;
 }
@@ -1704,6 +1756,57 @@ tfoot input{
 	background-color: hsla(320, 75%, 90%, 1);
 	color: hsla(320, 75%, 35%, 1);
 }
+
+.border-darkred{
+	border-color: hsla(350, 50%, 35%, 1);
+}
+
+.border-brightred{
+	border-color: hsla(0, 75%, 50%, 1);
+}
+
+.border-orange{
+	border-color: hsla(40, 100%, 50%, 1);
+}
+
+.border-yellow{
+	border-color: hsla(55, 95%, 50%, 1);
+}
+
+.border-lightgreen{
+	border-color: hsla(80, 70%, 50%, 1);
+}
+
+.border-brightgreen{
+	border-color: hsla(140, 70%, 40%, 1);
+}
+
+.border-darkgreen{
+	border-color: hsla(130, 50%, 30%, 1);
+}
+
+.border-aqua{
+	border-color: hsla(175, 60%, 50%, 1);
+}
+
+.border-lightblue{
+	border-color: hsla(200, 80%, 50%, 1);
+}
+
+.border-darkblue{
+	border-color: hsla(220, 70%, 40%, 1);
+}
+
+.border-purple{
+	border-color: hsla(265, 85%, 45%, 1);
+}
+
+.border-pink{
+	border-color: hsla(320, 75%, 50%, 1);
+}
+
+
+
 /*######### Helper Classes for Spacing #########*/
 
 .verticalSpacer_5px{
@@ -1932,7 +2035,8 @@ tfoot input{
 
 .context-menu-icon-summary:before,
 .context-menu-icon-matrix:before,
-.context-menu-icon-graphic:before{
+.context-menu-icon-graphic:before,
+.context-menu-icon-editor:before{
 	position: absolute;
 	top: 55%;
 	left: 0;
@@ -1973,6 +2077,15 @@ tfoot input{
 }
 
 .context-menu-icon-graphic.context-menu-hover:before{
+	color: #fff;
+}
+
+.context-menu-icon-editor:before{
+	content: "\f044";
+	color: red; !important
+}
+
+.context-menu-icon-editor.context-menu-hover:before{
 	color: #fff;
 }
 /*######### Classes for Special Tables #########*/
