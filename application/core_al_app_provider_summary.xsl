@@ -431,8 +431,7 @@
        
 						<xsl:variable name="isAuthzForCostClasses" select="eas:isUserAuthZClasses(('Cost', 'Cost_Component'))"/>
 						<xsl:variable name="isAuthzForCostInstances" select="eas:isUserAuthZInstances($inScopeCostInstances)"/>
-                        <xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
-                                
+         
                         <div class="col-xs-6">
 							<div class="sectionIcon">
 								<i class="fa fa-pie-chart icon-section icon-color"/>
@@ -443,8 +442,14 @@
 							<div class="content-section">
                                 <xsl:choose>
                                 	<xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"><span><xsl:value-of select="$theRedactedString"/></span></xsl:when>
-                                	<xsl:when test="$costTypeTotal=0">-</xsl:when>
-                                	<xsl:otherwise><xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/>
+                                	<xsl:otherwise>
+                                		<xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
+                                		<xsl:choose>
+                                			<xsl:when test="$costTypeTotal=0">-</xsl:when>
+                                			<xsl:otherwise>
+                                				<xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/>
+                                			</xsl:otherwise>
+                                		</xsl:choose>
                                 	</xsl:otherwise>
                                 </xsl:choose>              
 							</div>

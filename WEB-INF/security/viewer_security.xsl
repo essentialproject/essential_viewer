@@ -235,41 +235,23 @@
     <!-- Test that the user is authorized to access any of the specified instances 
         Instances are provided as a sequence -->
     <xsl:function name="eas:isUserAuthZInstances" as="xs:boolean">
-        <xsl:param name="theInstanceList"></xsl:param>
+        <xsl:param name="theInstanceList"/>
         
-        <xsl:variable name="anInstance" select="$theInstanceList[1]"></xsl:variable>
-        <xsl:choose>
-            <xsl:when test="count($theInstanceList) = 1">
-                <xsl:value-of select="eas:isUserAuthZ($theInstanceList)"></xsl:value-of>                
-            </xsl:when>
-            <xsl:when test="eas:isUserAuthZ($anInstance)">                
-                <xsl:value-of select="eas:isUserAuthZInstances(subsequence($theInstanceList, 2))"></xsl:value-of>                
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="false()"></xsl:value-of>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:variable name="notAuthZResultList" select="$theInstanceList[not(eas:isUserAuthZ(.))]"/>
+        <xsl:value-of select="count($notAuthZResultList) = 0"/>
+
     </xsl:function>
+    
     
     <!-- Test that the user is authorized to access any of the specified classes
         Classes are specified by name in a sequence -->
     <xsl:function name="eas:isUserAuthZClasses" as="xs:boolean">
-        <xsl:param name="theClassList"></xsl:param>
+        <xsl:param name="theClassList"/>
         
-        <xsl:variable name="aClassName" select="$theClassList[1]"></xsl:variable>
-        <xsl:variable name="aClass" select="$theClassSet[name=$aClassName]"></xsl:variable>
-        
-        <xsl:choose>
-            <xsl:when test="count($theClassList) = 1">
-                <xsl:value-of select="eas:isUserAuthZ($aClass)"></xsl:value-of>                
-            </xsl:when>
-            <xsl:when test="eas:isUserAuthZ($aClass)">                
-                <xsl:value-of select="eas:isUserAuthZClasses(subsequence($theClassList, 2))"></xsl:value-of>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="false()"></xsl:value-of>
-            </xsl:otherwise>
-        </xsl:choose>            
+        <xsl:variable name="relevantClassSet" select="$theClassSet[name = $theClassList]"/>
+        <xsl:variable name="notAuthZResultList" select="$relevantClassSet[not(eas:isUserAuthZ(.))]"/>
+        <xsl:value-of select="count($notAuthZResultList) = 0"/>
+                  
     </xsl:function>
     
 </xsl:stylesheet>

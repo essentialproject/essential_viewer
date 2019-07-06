@@ -847,6 +847,13 @@
 		<xsl:value-of select="translate($theString, '. ', '__')"/>
 	</xsl:function>
 	
+	<xsl:function name="eas:removeQuotesFromString">
+		<xsl:param name="theString"/>
+		<xsl:variable name="apos">'</xsl:variable>
+		<xsl:variable name="quot">"</xsl:variable>
+		<xsl:value-of select="translate(translate($theString, $apos, ''), $quot, '')"/>
+	</xsl:function>
+	
 	<!-- Template to render a JSON Object representing the styling details for an EA element -->
 	<xsl:function name="eas:getElementContextMenuName">
 		<xsl:param name="element" as="node()"/>

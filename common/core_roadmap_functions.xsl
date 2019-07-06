@@ -166,9 +166,9 @@
 		<xsl:variable name="allThisRoadmapInstanceArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $theRoadmapInstance/name]"/>
 		
 		'id': '<xsl:value-of select="$thisId"/>',
-		'name': '<xsl:value-of select="$thisName"/>',
+		'name': '<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>',
 		'link': '<xsl:value-of select="$thisLink"/>',
-		'description': '<xsl:value-of select="$thisDescription"/>'<xsl:if test="$isRoadmapEnabled">,
+		'description': '<xsl:value-of select="eas:removeQuotesFromString($thisDescription)"/>'<xsl:if test="$isRoadmapEnabled">,
 		'menu': '<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>',
 		'roadmap': {
 			'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
@@ -182,7 +182,7 @@
 			'rmEALayer': '<xsl:value-of select="eas:rmGetInstanceEALayer($theRoadmapInstance)"/>',
 			'strategicPlans': [
 				<xsl:apply-templates mode="RenderElementStrategicPlanJSON" select="$allPlansForElement">
-					<xsl:sort select="$allThisPlans[own_slot_value[slot_reference = 'strategic_plan_for_elements']/value = name]/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>
+					<!--<xsl:sort select="$allThisPlans[own_slot_value[slot_reference = 'strategic_plan_for_elements']/value = name]/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>-->
 				</xsl:apply-templates>
 			],
 			'archStates': [
@@ -271,6 +271,8 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		
+			
 		
 		
 		{
