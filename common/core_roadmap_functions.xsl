@@ -169,7 +169,7 @@
 		'name': '<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>',
 		'link': '<xsl:value-of select="$thisLink"/>',
 		'description': '<xsl:value-of select="eas:removeQuotesFromString($thisDescription)"/>'<xsl:if test="$isRoadmapEnabled">,
-		'menu': '<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>',
+		<xsl:if test="count($theTargetReport) = 0">'menu': '<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>',</xsl:if>
 		'roadmap': {
 			'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
 			'isVisible': true,
@@ -242,6 +242,13 @@
 		<xsl:variable name="planStartDate" select="$thisPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>
 		<xsl:variable name="planEndDate" select="$thisPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>
 		
+		<xsl:variable name="planDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="$thisPlanForElement"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
 		<xsl:variable name="planRoadmapStatus">
 			<xsl:choose>
 				<xsl:when test="$thisPlanForElement/name = $rmCreatePlansForElements/name">
@@ -277,7 +284,7 @@
 		
 		{
 			'id': '<xsl:value-of select="$planId"/>',
-			'description': '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisPlanForElement"/></xsl:call-template>',
+			'description': '<xsl:value-of select="eas:removeQuotesFromString($planDesc)"/>',
 			'changeLabel': '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlanningAction"/></xsl:call-template>',
 			'startDate': '<xsl:value-of select="$planStartDate"/>',
 			'endDate': '<xsl:value-of select="$planEndDate"/>',
@@ -361,11 +368,25 @@
 		<xsl:variable name="planRoadmaps" select="$rmAllRoadmaps[own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $thisPlan/name]"/>
 		<xsl:variable name="planObjectives" select="$rmAllObjectives[(name = $thisPlan/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value)]"/>
 		
+		<xsl:variable name="planName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$thisPlan"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="planDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="$thisPlan"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		
 		{
 		'id': '<xsl:value-of select="$planId"/>',
-		'name': '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlan"/></xsl:call-template>',
+		'name': '<xsl:value-of select="eas:removeQuotesFromString($planName)"/>',
 		'link': '<xsl:value-of select="$planLink"/>',
-		'description': '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisPlan"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
+		'description': '<xsl:value-of select="eas:removeQuotesFromString($planDesc)"/>',
 		'startDate': '<xsl:value-of select="$planStartDate"/>',
 		'endDate': '<xsl:value-of select="$planEndDate"/>',
 		'roadmaps': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planRoadmaps"/>],
@@ -387,11 +408,25 @@
 		<xsl:variable name="archStateRoadmaps" select="$rmAllRoadmaps[own_slot_value[slot_reference = 'roadmap_architecture_states']/value = $thisArchState/name]"/>
 		<xsl:variable name="archStateObjectives" select="$rmAllObjectives[(name = $thisArchState/own_slot_value[slot_reference = 'arch_state_objectives']/value)]"/>
 		
+		<xsl:variable name="archStateName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$archStateId"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="archStateDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="$thisArchState"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		
 		{
 		'id': '<xsl:value-of select="$archStateId"/>',
-		'name': '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$archStateId"/></xsl:call-template>',
+		'name': '<xsl:value-of select="eas:removeQuotesFromString($archStateName)"/>',
 		'link': '<xsl:value-of select="$archStateLink"/>',
-		'description': '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisArchState"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
+		'description': '<xsl:value-of select="eas:removeQuotesFromString($archStateDesc)"/>',
 		'startDate': '<xsl:value-of select="$archStateStartDate"/>',
 		'endDate': '<xsl:value-of select="$archStateEndDate"/>',
 		'roadmaps': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateRoadmaps"/>],
@@ -427,11 +462,11 @@
 		{
 		id: '<xsl:value-of select="eas:getSafeJSString(current()/name)"/>',
 		ref: <xsl:value-of select="$thisRef"/>,
-		name: "<xsl:value-of select="$thisName"/>",
+		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
 		type: '<xsl:value-of select="$metaClassLabel"/>',
 		icon: '<xsl:value-of select="$metaClassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
 		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="$thisDesc"/>",
+		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
 		targetDate: "<xsl:value-of select="current()/own_slot_value[slot_reference = ('bo_target_date_iso_8601', 'ao_target_date_iso_8601', 'io_target_date_iso_8601', 'tao_target_date_iso_8601')]/value"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -455,9 +490,9 @@
 		
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$thisName"/>",
+		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
 		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="$thisDesc"/>",
+		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

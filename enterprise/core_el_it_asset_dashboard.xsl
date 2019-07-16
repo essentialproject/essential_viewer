@@ -850,6 +850,7 @@
 						$('.fa-info-circle').popover({
 							container: 'body',
 							html: true,
+							sanitize: false,
 							trigger: 'click',
 							content: function(){
 								return $(this).next().html();

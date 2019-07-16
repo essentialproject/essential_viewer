@@ -482,7 +482,7 @@
                          getRelevantApps()
                          <!-- var uniqueApps= $.unique(Apps.map(function (d) {return d.application;}));  -->
                         var temp=[];
-                        var uniqueApps=Apps.filter((x, i)=> {
+                        var uniqueApps=Apps.filter(function(x, i) {
                           if (temp.indexOf(x.id) &lt; 0) {
                             temp.push(x.id);
                             return true;
@@ -572,15 +572,16 @@
             $('#ticks').val(null).trigger('change');
             $('#SLs').val(null).trigger('change');
             $('#myRange').attr('value',0);
-            updateCards();
-            }
             
+           
+            updateCards($('#ticks').val);
+            }
+ 
             function updateCards(){
             servs= ($('#myRange').val());
             codebase= ($('#ticks').val());
             statusVals=($('#SLs').val());     
-
-            if(codebase){
+            if(codebase.length &gt; 0){
             thisAppCode = appJSON.filter(function (el) {  
                            
                                 for(var i=0;i &lt; codebase.length; i++){  
@@ -594,7 +595,7 @@
             else{
                 thisAppCode = appJSON;
             }; 
-            if(statusVals){
+            if(statusVals.length &gt; 0){
             thisAppStatus = thisAppCode.filter(function (el) {  
 
                                     for(var i=0;i &lt; statusVals.length; i++){  

@@ -927,21 +927,24 @@
 				pannedGraph.reset();
 			}
 			
+			
+			
 			'use strict';
+			
 
 			// Based on the methodology from here: http://ihaochi.com/2015/03/14/exporting-svg-to-pdf-in-javascript.html
 			// Libraries used:
 			// 		saveSvgAsPng - https://github.com/exupero/saveSvgAsPng
 			// 		jsPDF - https://github.com/MrRio/jsPDF
-			$(() => {
-					let $svg = modelSVG,
+			$(function() {
+					var $svg = modelSVG,
 			    		$save = $('#save-to-pdf');
 			        
-			  	$save.on('click', () => {
+			  	$save.on('click', function() {
 			    		// Convert it to PDF first
-			    		pdflib.convertToPdf($svg[0], doc => {
+			    		pdflib.convertToPdf($svg[0], function(doc) {
 			        		// Get the file name and download the pdf
-			        		let filename = 'app-dependency-network.pdf';
+			        		var filename = 'app-dependency-network.pdf';
 			            pdflib.downloadPdf(filename, doc);
 			        });
 			    });
@@ -950,19 +953,19 @@
 			(function(global, $) {
 					function convertToPdf(svg, callback) {
 			        // Call svgAsDataUri from saveSvgAsPng.js
-			        window.svgAsDataUri(svg, {}, svgUri => {
+			        window.svgAsDataUri(svg, {}, function(svgUri) {
 			            // Create an anonymous image in memory to set 
 			            // the png content to
-			            let $image = $('<img/>'),
+			            var $image = $('<img/>'),
 			            		image = $image[0];
 			
 			            // Set the image's src to the svg png's URI
 			            image.src = svgUri;
 			            $image
-			                .on('load', () => {
+			                .on('load', function() {
 			                    // Once the image is loaded, create a canvas and
 			                    // invoke the jsPDF library
-			                    let canvas = document.createElement('canvas'),
+			                    var canvas = document.createElement('canvas'),
 			                        ctx = canvas.getContext('2d'),
 			                        doc = new jsPDF('portrait', 'pt'),
 			                        imgWidth = image.width,
@@ -976,7 +979,7 @@
 			                    ctx.drawImage(image, 0, 0, imgWidth, imgHeight);
 			
 			                    // Add the image to the pdf
-			                    let dataUrl = canvas.toDataURL('image/jpeg');
+			                    var dataUrl = canvas.toDataURL('image/jpeg');
 			                    doc.addImage(dataUrl, 'JPEG', 0, 0, imgWidth, imgHeight);
 			
 			                    callback(doc);
@@ -986,13 +989,13 @@
 			
 			    function downloadPdf(fileName, pdfDoc) {
 			    		// Dynamically create a link
-			        let $link = $('<a/>'),
+			        var $link = $('<a/>'),
 			        		link = $link[0],
 			        		dataUriString = pdfDoc.output('dataurlstring');
 			      	
 			        // On click of the link, set the HREF and download of it
 			        // so that it behaves as a link to a file
-			        $link.on('click', () => {
+			        $link.on('click', function() {
 			          link.href = dataUriString;
 			          link.download = fileName;
 			          $link.detach(); // Remove it from the DOM once the download starts

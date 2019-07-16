@@ -66,7 +66,7 @@
 	
 	<xsl:variable name="catalogueTitle" select="eas:i18n('Technology Product Catalogue by Vendor')"/>
 	<xsl:variable name="catalogueSectionTitle" select="eas:i18n('Technology Product Catalogue')"/>
-	<xsl:variable name="catalogueIntro" select="eas:i18n('Please click on one of the Technology Products below to navigate to the required view')"/>
+	<xsl:variable name="catalogueIntro" select="eas:i18n('Please search for, and select a Technology Supplier below to view the associated Technology Products')"/>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
 	<!-- START CATALOGUE SPECIFIC VARIABLES -->

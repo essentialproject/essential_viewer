@@ -202,7 +202,7 @@
 				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>
 				
 				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment/moment.min.js"/>
+				<script type="text/javascript" src="js/moment/moment.js"/>
 					
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {

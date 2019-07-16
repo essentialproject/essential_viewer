@@ -714,7 +714,7 @@
 				
 				zoom_handler.scaleTo(svg, 0.4);
 				
-				$("#resetZoom").click(() => {
+				$("#resetZoom").click(function() {
 					zoom_handler.scaleTo(svg, 0.4);
 				 <!-- g.transition()
 				    .duration(750)

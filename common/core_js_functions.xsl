@@ -760,7 +760,7 @@
 		
 		{
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="$thisName"/>",
+		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
 		colour: "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -809,8 +809,8 @@
 		
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$thisName"/>",
-		description: "<xsl:value-of select="$thisDesc"/>",
+		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
+		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
 		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -832,9 +832,9 @@
 		
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$thisName"/>",
+		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
 		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="$thisDesc"/>",
+		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
 		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>

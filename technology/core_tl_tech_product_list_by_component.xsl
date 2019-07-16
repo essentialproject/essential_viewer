@@ -329,8 +329,8 @@
 		  		
 		  		
 		  		sectionLabels.forEach(function (sectionLetter) {
-		  			var catsForSection = inScopeCategories.categories.filter(aCat => aCat.name.toLowerCase().startsWith(sectionLetter));
-		  			var orphansForSection = inScopeOrphans.instances.filter(anInst => anInst.name.toLowerCase().startsWith(sectionLetter));
+		  			var catsForSection = inScopeCategories.categories.filter(function(aCat) {return aCat.name.toLowerCase().startsWith(sectionLetter)});
+		  			var orphansForSection = inScopeOrphans.instances.filter(function(anInst) {return anInst.name.toLowerCase().startsWith(sectionLetter)});
 		  			console.log('orphan count for: ' + sectionLetter + ' = ' + orphansForSection.length);
 		  			
 		  			if((catsForSection.length > 0) || (orphansForSection.length > 0)) {
@@ -341,7 +341,7 @@
 		  					'categories': []
 		  				}
 		  				catsForSection.forEach(function (aCat) {
-		  					//instancesForCat = inScopeInstances.instances.filter(anInst => aCat.instances.indexOf(anInst.id) &lt; 0);
+		  					//instancesForCat = inScopeInstances.instances.filter(function(anInst) {return aCat.instances.indexOf(anInst.id) &lt; 0});
 		  					instancesForCat = getObjectsByIds(inScopeInstances.instances, 'id', aCat.instances)
 		  					var aCatSection = {
 			  					'label': aCat.link,

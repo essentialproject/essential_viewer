@@ -167,19 +167,19 @@
 								
 								// the list of JSON objects representing the applications in use across the enterprise
 							  	var applications = {
-										applications: [<xsl:apply-templates select="$allAppProviders" mode="getApplications"/>
+										'applications': [<xsl:apply-templates select="$allAppProviders" mode="getApplications"/>
 							    	]
 							  	};
 							  	
 							  	// the list of JSON objects representing the applications in use across the enterprise
 							  	var appProviderRoles = {
-										appProviderRoles: [<xsl:apply-templates select="$allAppProviderRoles" mode="getAppProviderRoles"/>
+										'appProviderRoles': [<xsl:apply-templates select="$allAppProviderRoles" mode="getAppProviderRoles"/>
 							    	]
 							  	};
 							  	
 							  	//the list of applications for the current scope
 							  	var inScopeApplications = {
-							  		applications: applications.applications
+							  		'applications': applications.applications
 							  	}
 							  	<!-- END VIEW SPECIFIC JAVASCRIPT VARIABLES -->
 							  	
@@ -431,8 +431,8 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			status: '<xsl:copy-of select="$statusHTML"/>',
-			services: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"><xsl:sort select="own_slot_value[slot_reference = 'role_for_application_provider']/value"/></xsl:apply-templates>]
+			'status': '<xsl:copy-of select="$statusHTML"/>',
+			'services': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"><xsl:sort select="own_slot_value[slot_reference = 'role_for_application_provider']/value"/></xsl:apply-templates>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -445,8 +445,8 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="$thisAppService"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			appId: '<xsl:value-of select="eas:getSafeJSString($thisAppProvider/name)"/>',
-			appServiceId: '<xsl:value-of select="eas:getSafeJSString($thisAppService/name)"/>'
+			'appId': '<xsl:value-of select="eas:getSafeJSString($thisAppProvider/name)"/>',
+			'appServiceId': '<xsl:value-of select="eas:getSafeJSString($thisAppService/name)"/>'
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

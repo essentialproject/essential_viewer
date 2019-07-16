@@ -210,23 +210,23 @@
 					//function to initialise the TRM data structure
 					function initTRMData() {
 						var topLayer = '<xsl:value-of select="$topRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var topLayerDomains = techDomains.techDomains.filter(aTD => aTD.refLayer == topLayer);
+						var topLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == topLayer});
 						trmData.top = topLayerDomains;
 					
 						var leftLayer = '<xsl:value-of select="$leftRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var leftLayerDomains = techDomains.techDomains.filter(aTD => aTD.refLayer == leftLayer);
+						var leftLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == leftLayer});
 						trmData.left = leftLayerDomains;
 					
 						var middleLayer = '<xsl:value-of select="$middleRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var middleLayerDomains = techDomains.techDomains.filter(aTD => aTD.refLayer == middleLayer);
+						var middleLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == middleLayer});
 						trmData.middle = middleLayerDomains;
 						
 						var rightLayer = '<xsl:value-of select="$rightRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var rightLayerDomains = techDomains.techDomains.filter(aTD => aTD.refLayer == rightLayer);
+						var rightLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == rightLayer});
 						trmData.right = rightLayerDomains;
 						
 						var bottomLayer = '<xsl:value-of select="$bottomRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var bottomLayerDomains = techDomains.techDomains.filter(aTD => aTD.refLayer == bottomLayer);
+						var bottomLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == bottomLayer});
 						trmData.bottom = bottomLayerDomains;
 					
 					}
@@ -487,7 +487,7 @@
 					        $('.tech-domain-drill').click(function(){
 								var techDomainId = $(this).attr('eas-id');
 								
-								var selectedTechDomain = techDomains.techDomains.find( aTD => aTD.id === techDomainId);
+								var selectedTechDomain = techDomains.techDomains.find(function(aTD) {return aTD.id === techDomainId});
 								if(selectedTechDomain != null) {
 									currentMode = techDomainMode;
 									currentTechDomain = selectedTechDomain;
