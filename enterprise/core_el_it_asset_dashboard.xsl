@@ -141,6 +141,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>IT Asset Dashboard</title>
+				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>

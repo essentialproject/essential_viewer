@@ -105,6 +105,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
+				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
 				<script type="text/javascript" src="js/jquery.columnizer.js"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 

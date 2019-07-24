@@ -149,7 +149,7 @@
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
 				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>	
-				
+
 				<!-- Start Slider libraries and styles -->
 				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js"></script>
 				<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css"/>
@@ -749,7 +749,7 @@
 					function refreshServiceQualitySliders() {
 						for (var i = 0; techServiceQualities.techServiceQualities.length > i; i += 1) {
 							aTSQ = techServiceQualities.techServiceQualities[i];
-							$('#' + aTSQ.id).slider('relayout');
+							$('#' + aTSQ.id).bootstrapSlider('relayout');
 						}
 					}
 				
@@ -1712,7 +1712,7 @@
 						var aTSQ;
 						for (var i = 0; techServiceQualities.techServiceQualities.length > i; i += 1) {
 							aTSQ = techServiceQualities.techServiceQualities[i];
-							$('#' + aTSQ.id).slider({
+							$('#' + aTSQ.id).bootstrapSlider({
 							    ticks: [0, 1, 2, 3],
 							    ticks_labels: ['n/a', 'Low', 'Medium', 'High'],
 							    ticks_snap_bounds: 1,
@@ -1721,7 +1721,7 @@
 							})
 							.on( 'slideStop', function () {
 					            //set the weighting for this Service Quality Value
-					            setServiceQualityWeighting($(this).attr('id'), $(this).slider('getValue'));
+					            setServiceQualityWeighting($(this).attr('id'), $(this).bootstrapSlider('getValue'));
 					        });
 						}
 						
