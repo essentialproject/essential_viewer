@@ -52,7 +52,7 @@
 	<xsl:variable name="goalObjectiveType" select="/node()/simple_instance[(type = 'Taxonomy_Term') and (own_slot_value[slot_reference = 'name']/value = 'Strategic Goal')]"/>
 
 	<xsl:variable name="allBusObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $smartObjectiveType/name)]"/>
-	<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalObjectiveType/name)]"/>
+	<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalObjectiveType/name))]"/>
 	<xsl:variable name="allDrivers" select="/node()/simple_instance[type = 'Business_Driver']"/>
 	<xsl:variable name="allGroupActors" select="/node()/simple_instance[type = 'Group_Actor']"/>
 	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
@@ -232,7 +232,7 @@
 
 
 	<xsl:template match="node()" mode="StrategicGoal">
-		<xsl:variable name="goalBusObjectives" select="$allBusObjectives[own_slot_value[slot_reference = 'objective_supports_objective']/value = current()/name]"/>
+		<xsl:variable name="goalBusObjectives" select="$allBusObjectives[own_slot_value[slot_reference = ('objective_supports_objective', 'objective_supports_goals')]/value = current()/name]"/>
 		<xsl:variable name="busObjRows" select="max((count($goalBusObjectives), 1))"/>
 
 		<xsl:text disable-output-escaping="yes">&lt;tr></xsl:text>

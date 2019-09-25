@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:import href="editors/common/core_editor_functions.xsl"/>
 	<xsl:include href="common/core_doctype.xsl"/>
 	<xsl:include href="common/core_common_head_content.xsl"/>
 	<xsl:include href="common/core_header.xsl"/>
@@ -10,8 +11,10 @@
 	<!-- param4 = the taxonomy term that will be used to scope the organisation model -->
 	<!--<xsl:param name="param4" />-->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = 'Report')]"/>
+	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = ('Report', 'Editor'))]"/>
+	<xsl:variable name="anyEditors" select="/node()/simple_instance[type='Editor']"/>
 	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
+	<xsl:variable name="allEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
 	<xsl:variable name="allReportConstants" select="/node()/simple_instance[type = 'Report_Constant']"/>
 	<xsl:variable name="eaArchViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Enterprise Architecture Views']"/>
@@ -263,7 +266,8 @@
 							<!--Close Left Container-->
 						</div>
 						<!--Setup Right Hand Container-->
-						<div class="col-xs-12 col-md-3 bg-offwhite">
+						<div class="col-xs-12 col-md-3">
+							<div class=" bg-offwhite portalPanel">
 							<xsl:variable name="catalogueViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name]"/>
 							<xsl:variable name="portalViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $portalViewsTaxonomyTerm/name]"/>
 							<xsl:variable name="dashboardViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $dashboardViewsTaxonomyTerm/name]"/>
@@ -288,6 +292,33 @@
 									</xsl:for-each>
 								</ul>
 							</xsl:if>
+							</div>
+						</div>
+						<div class="col-xs-12 col-md-3 top-30">
+							<div class="bg-offwhite portalPanel">
+							<xsl:if test="count($allEditors) > 0">
+								<h1 class="text-primary">
+									<xsl:value-of select="eas:i18n('Editors')"/>
+								</h1>
+							</xsl:if>
+							<xsl:if test="count($allEditors) > 0">
+								<ul>
+									<xsl:for-each select="$allEditors">
+										<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+										<li class="fontSemi large">
+											<a class="text-darkgrey" target="_blank">
+												<xsl:attribute name="href">
+													<xsl:call-template name="RenderEditorLinkHref">
+														<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+													</xsl:call-template>
+												</xsl:attribute>
+												<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
+											</a>
+										</li>
+									</xsl:for-each>
+								</ul>
+							</xsl:if>
+							</div>
 						</div>
 						<!--Setup Closing Tags-->
 					</div>
@@ -473,41 +504,79 @@
 
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
-						
-					<a class="noUL">
-						<xsl:call-template name="RenderLinkHref">
-							<xsl:with-param name="theXSL" select="$reportFilename"/>
-							<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
-							<xsl:with-param name="viewScopeTerms" select="$homeViewScopeTerms"/>
-						</xsl:call-template>
-	
-						<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-							<div class="viewElementContainer {$nameStyleSetting}">
-								<div class=" viewElement">
-	
-									<div class="viewElementName fontBold large">
-										<xsl:value-of select="$reportLabelName"/>
-									</div>
-									<div class="viewElementDescription text-darkgrey">
-										<xsl:value-of select="$reportDescription"/>
-									</div>
-	
-									<div class="viewElementImage hidden-xs">
-										<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
-										<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
-											<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
-										</img>
+					<xsl:choose>
+						<xsl:when test="$aReport/type = 'Report'">
+							<a class="noUL">
+								<xsl:call-template name="RenderLinkHref">
+									<xsl:with-param name="theXSL" select="$reportFilename"/>
+									<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
+									<xsl:with-param name="viewScopeTerms" select="$homeViewScopeTerms"/>
+								</xsl:call-template>
+			
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+									<div class="viewElementContainer {$nameStyleSetting}">
+										<div class=" viewElement">
+			
+											<div class="viewElementName fontBold large">
+												<xsl:value-of select="$reportLabelName"/>
+											</div>
+											<div class="viewElementDescription text-darkgrey">
+												<xsl:value-of select="$reportDescription"/>
+											</div>
+			
+											<div class="viewElementImage hidden-xs">
+												<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
+												<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
+													<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
+												</img>
+											</div>
+										</div>
+										<div class="viewElement-placeholder"/>
+										<div class="report-element-preview">
+											<span href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
+												<i class="fa fa-search"/>
+											</span>
+										</div>
 									</div>
 								</div>
-								<div class="viewElement-placeholder"/>
-								<div class="report-element-preview">
-									<span href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
-										<i class="fa fa-search"/>
-									</span>
+							</a>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:variable name="busNeedEditorPath">
+								<xsl:call-template name="RenderEditorLinkText">
+									<xsl:with-param name="theEditor" select="$aReport"/>
+								</xsl:call-template>
+							</xsl:variable>
+							<a class="noUL" target="_blank">
+								<xsl:attribute name="href" select="$busNeedEditorPath"/>								
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+									<div class="editorElementContainer {$nameStyleSetting}">
+										<div class=" viewElement">
+											<div class="viewElementName fontBold large">
+												<xsl:value-of select="$reportLabelName"/>
+											</div>
+											<div class="viewElementDescription text-darkgrey">
+												<xsl:value-of select="$reportDescription"/>
+											</div>
+											
+											<div class="viewElementImage hidden-xs">
+												<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
+												<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
+													<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
+												</img>
+											</div>
+										</div>
+										<div class="viewElement-placeholder"/>
+										<div class="report-element-preview">
+											<span href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
+												<i class="fa fa-search"/>
+											</span>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					</a>
+							</a>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:if>
 			</xsl:otherwise>
 		</xsl:choose>

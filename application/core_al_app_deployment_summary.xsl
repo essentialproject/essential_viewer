@@ -45,7 +45,7 @@
 	<xsl:variable name="appName" select="$currentApp/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="appDescription" select="$currentApp/own_slot_value[slot_reference = 'description']/value"/>
 
-	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = 'Application User']"/>
+	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = 'Application Organisation User']"/>
 	<xsl:variable name="thisAppUser2Roles" select="$allActor2Roles[(name = $currentApp/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appUserRole/name)]"/>
 	<xsl:variable name="thisAppUsers" select="$allGroupActors[name = $thisAppUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	<xsl:variable name="thisUserSites" select="$allSites[name = $thisAppUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+	<xsl:import href="../editors/common/core_editor_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -39,6 +40,7 @@
 	<xsl:variable name="portalPanels" select="$allPortalPanels[name = $currentPortal/own_slot_value[slot_reference = 'portal_panels']/value]"/>
 
 	<xsl:variable name="viewerPrimaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'primary_header_colour_viewer']/value"/>
+	<xsl:variable name="viewerSecondaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'secondary_header_colour_viewer']/value"/>
 
 	<!--
 		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
@@ -84,8 +86,14 @@
 					}); 
 				</script>
 				<style type="text/css">
-					.viewElementContainer {border-color: <xsl:value-of select="$viewerPrimaryHeader"/>
-					}</style>
+					.viewElementContainer {
+						border-color: <xsl:value-of select="$viewerPrimaryHeader"/>
+					}
+					
+					.editorElementContainer {
+						border-color: <xsl:value-of select="$viewerSecondaryHeader"/>
+					}
+				</style>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -110,11 +118,11 @@
 					<div class="row">
 						<div class="col-xs-12 col-sm-9">
 							<xsl:apply-templates mode="portalSections" select="$portalSections">
-								<xsl:sort select="current()/own_slot_value[slot_reference = 'portal_section_sequence']/value"/>
+								<xsl:sort select="number(current()/own_slot_value[slot_reference = 'portal_section_sequence']/value)"/>
 							</xsl:apply-templates>
 						</div>
 						<xsl:apply-templates mode="portalPanels" select="$portalPanels">
-							<xsl:sort select="current()/own_slot_value[slot_reference = 'portal_panel_sequence']/value"/>
+							<xsl:sort select="number(current()/own_slot_value[slot_reference = 'portal_panel_sequence']/value)"/>
 						</xsl:apply-templates>
 					</div>
 				</div>
@@ -147,7 +155,7 @@
 			</xsl:if>
 			<div class="row">
 				<xsl:apply-templates select="$allR2PSRForSection" mode="sectionReports">
-					<xsl:sort select="current()/own_slot_value[slot_reference = 'report_to_portal_section_index']/value"/>
+					<xsl:sort select="number(current()/own_slot_value[slot_reference = 'report_to_portal_section_index']/value)"/>
 				</xsl:apply-templates>
 				<div class="col-xs-12 ">
 					<hr/>
@@ -168,76 +176,78 @@
 	<xsl:template mode="portalPanels" match="node()">
 		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>
 		<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
-		<div class="col-xs-12 col-sm-3 bg-offwhite">
-			<h1 class="text-primary">
-				<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-			</h1>
-			<p>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-			</p>
-			<div class="verticalSpacer_5px"/>
-			<ul>
-				<xsl:for-each select="$panelReports">					
-					<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-					<!-- Only render if user is authorised -->
-					<xsl:if test="eas:isUserAuthZ(current())">
-						<xsl:choose>
-							<xsl:when test="current()/type = 'Editor'">
-								<xsl:variable name="theEditorId" select="current()/name"/>
-								<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
-								<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
-								<li class="fontSemi large">
-									<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
-										<xsl:value-of select="$theEditorLabel"/>
-									</a>
-								</li>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
-								<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
-								<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-								<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-								<xsl:variable name="targetReportIdQueryString">
-									<xsl:text>&amp;targetReportId=</xsl:text>
-									<xsl:value-of select="current()/name"/>
-								</xsl:variable>
-								<li class="fontSemi large">
-									<xsl:choose>
-										<xsl:when test="string-length($qualifyingReportId) > 0">
-											<a class="text-darkgrey">
-												<xsl:call-template name="RenderLinkHref">
-													<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
-													<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
-													<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+		<div class="col-xs-12 col-sm-3">
+			<div class="bg-offwhite portalPanel">
+				<h1 class="text-primary">
+					<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+					</xsl:call-template>
+				</h1>
+				<p>
+					<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+					</xsl:call-template>
+				</p>
+				<div class="verticalSpacer_5px"/>
+				<ul>
+					<xsl:for-each select="$panelReports">					
+						<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+						<!-- Only render if user is authorised -->
+						<xsl:if test="eas:isUserAuthZ(current())">
+							<xsl:choose>
+								<xsl:when test="current()/type = 'Editor'">
+									<xsl:variable name="theEditorId" select="current()/name"/>
+									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
+									<li class="fontSemi large">
+										<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
+											<xsl:value-of select="$theEditorLabel"/>
+										</a>
+									</li>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
+									<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
+									<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
+									<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+									<xsl:variable name="targetReportIdQueryString">
+										<xsl:text>&amp;targetReportId=</xsl:text>
+										<xsl:value-of select="current()/name"/>
+									</xsl:variable>
+									<li class="fontSemi large">
+										<xsl:choose>
+											<xsl:when test="string-length($qualifyingReportId) > 0">
+												<a class="text-darkgrey">
+													<xsl:call-template name="RenderLinkHref">
+														<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
+														<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
+														<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+													</xsl:call-template>
+													<xsl:call-template name="RenderMultiLangInstanceName">
+														<xsl:with-param name="theSubjectInstance" select="current()"/>
+													</xsl:call-template>
+												</a>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:call-template name="RenderCatalogueLink">
+													<xsl:with-param name="theCatalogue" select="current()"/>
+													<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+													<xsl:with-param name="targetReport" select="()"/>
+													<xsl:with-param name="targetMenu" select="()"/>
+													<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
 												</xsl:call-template>
-												<xsl:call-template name="RenderMultiLangInstanceName">
-													<xsl:with-param name="theSubjectInstance" select="current()"/>
-												</xsl:call-template>
-											</a>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:call-template name="RenderCatalogueLink">
-												<xsl:with-param name="theCatalogue" select="current()"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-												<xsl:with-param name="targetReport" select="()"/>
-												<xsl:with-param name="targetMenu" select="()"/>
-												<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
-											</xsl:call-template>
-										</xsl:otherwise>
-									</xsl:choose>
-								</li>
-							</xsl:otherwise>
-						</xsl:choose>
-						
-					</xsl:if>
-				</xsl:for-each>
-			</ul>
-			<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections"/>
-			<br/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</li>
+								</xsl:otherwise>
+							</xsl:choose>
+							
+						</xsl:if>
+					</xsl:for-each>
+				</ul>
+				<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections"/>
+				<br/>
+			</div>
 		</div>
 		<div class="col-xs-12 col-sm-3"> &#160; </div>
 	</xsl:template>
@@ -443,39 +453,75 @@
 
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
-
-				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-					<div class="viewElementContainer {$nameStyleSetting}">
-						<a class="noUL">
-							<xsl:call-template name="RenderLinkHref">
-								<xsl:with-param name="theXSL" select="$reportFilename"/>
-								<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
-							</xsl:call-template>
-							<div class=" viewElement">
-
-								<div class="viewElementName fontBold large">
-									<xsl:value-of select="$reportLabelName"/>
-								</div>
-								<div class="viewElementDescription text-darkgrey">
-									<xsl:value-of select="$reportDescription"/>
-								</div>
-
-								<div class="viewElementImage hidden-xs">
-									<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
-									<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
-                                        <xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
-                                    </img>    
+					<xsl:choose>
+						<xsl:when test="$aReport/type = 'Editor'">
+							<xsl:variable name="busNeedEditorPath">
+								<xsl:call-template name="RenderEditorLinkText">
+									<xsl:with-param name="theEditor" select="$aReport"/>
+								</xsl:call-template>
+							</xsl:variable>
+							<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+								<div class="editorElementContainer {$nameStyleSetting}">
+									<a class="noUL" target="_blank">
+										<xsl:attribute name="href" select="$busNeedEditorPath"/>
+										<div class=" viewElement">										
+											<div class="viewElementName fontBold large">
+												<xsl:value-of select="$reportLabelName"/>
+											</div>
+											<div class="viewElementDescription text-darkgrey">
+												<xsl:value-of select="$reportDescription"/>
+											</div>											
+											<div class="viewElementImage hidden-xs">
+												<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
+												<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
+													<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
+												</img>    
+											</div>
+										</div>
+									</a>
+									<div class="viewElement-placeholder"/>
+									<div class="report-element-preview">
+										<a href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
+											<i class="fa fa-search"/>
+										</a>
+									</div>
 								</div>
 							</div>
-						</a>
-						<div class="viewElement-placeholder"/>
-						<div class="report-element-preview">
-							<a href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
-								<i class="fa fa-search"/>
-							</a>
-						</div>
-					</div>
-				</div>
+						</xsl:when>
+						<xsl:otherwise>
+							<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+								<div class="viewElementContainer {$nameStyleSetting}">
+									<a class="noUL">
+										<xsl:call-template name="RenderLinkHref">
+											<xsl:with-param name="theXSL" select="$reportFilename"/>
+											<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
+										</xsl:call-template>
+										<div class=" viewElement">											
+											<div class="viewElementName fontBold large">
+												<xsl:value-of select="$reportLabelName"/>
+											</div>
+											<div class="viewElementDescription text-darkgrey">
+												<xsl:value-of select="$reportDescription"/>
+											</div>											
+											<div class="viewElementImage hidden-xs">
+												<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
+												<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
+													<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
+												</img>    
+											</div>
+										</div>
+									</a>
+									<div class="viewElement-placeholder"/>
+									<div class="report-element-preview">
+										<a href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
+											<i class="fa fa-search"/>
+										</a>
+									</div>
+								</div>
+							</div>
+						</xsl:otherwise>
+					</xsl:choose>
+					
 				</xsl:if>
 			</xsl:otherwise>
 		</xsl:choose>

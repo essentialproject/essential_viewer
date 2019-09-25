@@ -45,7 +45,10 @@
 	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 	
-	
+    <xsl:variable name="productLifecycles" select="/node()/simple_instance[type='Lifecycle_Model'][own_slot_value[slot_reference='lifecycle_model_subject']/value=$currentNode/name]"/>
+
+    <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type='Lifecycle_Status_Usage'][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
+    <xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status')]"/>
 	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -91,6 +94,12 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<xsl:call-template name="dataTablesLibrary"/>
+                <style>
+                .btn-vstatus {background-color:#ffffff;
+                    border:1pt solid #d3d3d3;
+                    font-size:1.1em;
+                    pointer:none;}
+                </style>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -204,7 +213,55 @@
 
 				<!--Setup Misc Section-->
 
-				<div class="col-xs-12">
+				<div class="col-xs-6">
+					<div class="sectionIcon">
+						<i class="fa fa-info-circle icon-section icon-color"/>
+					</div>
+					<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('Lifecycle Status')"/>
+					</h2>
+					<div class="content-section">
+                         
+                             <button type="button" class="btn btn-primary" >Internal:</button><xsl:text> </xsl:text> <button type="button" class="btn btn-vstatus"><span id="internal"></span></button><p></p>
+                            <button type="button" class="btn btn-primary" >External:</button><xsl:text> </xsl:text> <button type="button" class="btn btn-vstatus"><span id="vendor"></span></button><br/>
+                       
+					</div>
+					<hr/>
+				</div>
+<script>
+    <xsl:variable name="internal" select="$lifecycles[name=current()/own_slot_value[slot_reference='technology_provider_lifecycle_status']/value]"/>
+    <xsl:variable name="external" select="$lifecycles[name=current()/own_slot_value[slot_reference='vendor_product_lifecycle_status']/value]"/>
+    today= new Date().getTime();
+statusJSON=[<xsl:apply-templates select="$lifecycleStatusUsages" mode="lifecyclesJSON"/>]; 
+thisvendor=['<xsl:value-of select="$external/own_slot_value[slot_reference='enumeration_value']/value"/>'];    
+thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='enumeration_value']/value"/>'];  
+ 
+    
+     var list=statusJSON.filter(function(d){
+        return new Date(d.date).getTime() &lt; today; 
+    })
+    
+    list.sort(custom_sort);
+    vendors=list;
+    vendor=list.filter(function(d){
+        return d.type==="Vendor_Lifecycle_Status";
+    })
+    
+  internal=list.filter(function(d){
+        return d.type==="Lifecycle_Status";
+    })
+  
+    if(internal[0]){$('#internal').text(internal[0].name)}else{$('#internal').text(thisinternal[0])}
+    if(vendor[0]){$('#vendor').text(vendor[0].name)}else{$('#vendor').text(thisvendor[0])}
+    
+    function custom_sort(a, b) {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+}
+    
+    
+</script>
+         
+                <div class="col-xs-6">
 					<div class="sectionIcon">
 						<i class="fa fa-info-circle icon-section icon-color"/>
 					</div>
@@ -225,7 +282,6 @@
 					</div>
 					<hr/>
 				</div>
-
 
 				<!--Setup the Strategic Plans section-->
 
@@ -1179,6 +1235,10 @@
 		</tr>
 
 	</xsl:template>
+<xsl:template match="node()" mode="lifecyclesJSON">
+    <xsl:variable name="thisLife" select="$lifecycles[name=current()/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"/>
+    {"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="$thisLife/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>","type":"<xsl:value-of select="$lifecycles[name=current()/own_slot_value[slot_reference='lcm_lifecycle_status']/value]/type"/>"},
+    </xsl:template>
 
 	<!--<!-\- TEMPLATE TO CREATE THE DETAILS FOR A SUPPORTING STRATEGIC PLAN  -\->
 	<!-\- Given a reference (instance ID) to an element, find all its plans and render each -\->

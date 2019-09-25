@@ -122,7 +122,7 @@
 	<xsl:variable name="objectColour">hsla(220, 70%, 95%, 1)</xsl:variable>
 	<xsl:variable name="objectTextColour">Black</xsl:variable>
 	<xsl:variable name="objectOutlineColour">Black</xsl:variable>
-
+    <xsl:variable name="appType" select="$allAppFamilies[name = $currentApp/own_slot_value[slot_reference = 'type_of_application']/value]"/>
 	<xsl:variable name="techProdSummaryReport" select="eas:get_report_by_name('Core: Technology Product Summary')"/>
 
 	<!-- End VIEW SPECIFIC SETUP VARIABES -->
@@ -271,19 +271,26 @@
 								<i class="fa fa-table icon-section icon-color"/>
 							</div>
 							<div>
+                              
 								<h2 class="text-primary">
-									<xsl:value-of select="eas:i18n('Application Family')"/>
+                                    <xsl:choose>
+                                        <xsl:when test="count($appType)&lt;2">
+									       <xsl:value-of select="eas:i18n('Application Family')"/>
+                                        </xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="eas:i18n('Application Families')"/></xsl:otherwise>
+                                        
+                                    </xsl:choose>    
 								</h2>
 							</div>
 							<div class="content-section">
-								<xsl:variable name="appType" select="$allAppFamilies[name = $currentApp/own_slot_value[slot_reference = 'type_of_application']/value]"/>
+								
 								<xsl:choose>
 									<xsl:when test="count($appType) = 0">
 										<span>-</span>
 									</xsl:when>
 									<xsl:otherwise>
 										<p>
-											<xsl:value-of select="$appType/own_slot_value[slot_reference = 'name']/value"/>
+                                            <xsl:apply-templates select="$appType" mode="listOfThings"><xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"/></xsl:apply-templates>    
 										</p>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -1973,7 +1980,9 @@
 		<xsl:value-of select="$nodeListName"/>: new joint.shapes.custom.Cluster({ position: { x: 100, y: 20 }, size: { width: <xsl:value-of select="$objectWidth"/>, height: <xsl:value-of select="$objectHeight"/> }, attrs: { rect: { 'stroke-width': <xsl:value-of select="$objectStrokeWidth"/>, fill: '<xsl:value-of select="$objectColour"/>', stroke: '<xsl:value-of select="$objectOutlineColour"/>'<!--, rx: 5, ry: 5--> }, a: { 'xlink:href': '<xsl:value-of select="$techProdSummaryLinkHref"/>', cursor: 'pointer' }, text: { text: <xsl:value-of select="$nameVariable"/>, fill: '<xsl:value-of select="$objectTextColour"/>', 'font-weight': 'bold' }} })<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
-
+<xsl:template match="node()" mode="listOfThings">
+    <i class="fa fa-circle-o"></i><xsl:text> </xsl:text><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/><xsl:if test="not(position()=last())"><br/></xsl:if>
+    </xsl:template>
 
 
 	<xsl:template mode="RenderTechProdRelation" match="node()">

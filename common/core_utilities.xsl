@@ -1857,6 +1857,7 @@
 			<xsl:when test="$theClass = 'Requirement_Impact'">enumeration_value</xsl:when>
 			<xsl:when test="$theClass = 'Secured_Action'">enumeration_value</xsl:when>
 			<xsl:when test="$theClass = 'Report'">report_label</xsl:when>
+			<xsl:when test="$theClass = 'Editor'">report_label</xsl:when>
 			<xsl:when test="$theClass = 'Taxonomy_Term'">taxonomy_term_label</xsl:when>
 			<xsl:when test="$theClass = 'Taxonomy'">taxonomy_display_label</xsl:when>
 			<xsl:when test="$theClass = 'Issue_Category'">enumeration_value</xsl:when>
