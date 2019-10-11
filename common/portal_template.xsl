@@ -194,7 +194,7 @@
 						<!-- Only render if user is authorised -->
 						<xsl:if test="eas:isUserAuthZ(current())">
 							<xsl:choose>
-								<xsl:when test="current()/type = 'Editor'">
+								<xsl:when test="($eipMode) and (current()/type = 'Editor')">
 									<xsl:variable name="theEditorId" select="current()/name"/>
 									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
 									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
@@ -453,8 +453,8 @@
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
 					<xsl:choose>
-						<xsl:when test="$aReport/type = 'Editor'">
-							<xsl:variable name="busNeedEditorPath">
+						<xsl:when test="($eipMode) and ($aReport/type = 'Editor')">
+							<xsl:variable name="thisEditorPath">
 								<xsl:call-template name="RenderEditorLinkText">
 									<xsl:with-param name="theEditor" select="$aReport"/>
 								</xsl:call-template>
@@ -462,7 +462,7 @@
 							<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 								<div class="editorElementContainer {$nameStyleSetting}">
 									<a class="noUL" target="_blank">
-										<xsl:attribute name="href" select="$busNeedEditorPath"/>
+										<xsl:attribute name="href" select="$thisEditorPath"/>
 										<div class=" viewElement">										
 											<div class="viewElementName fontBold large">
 												<xsl:value-of select="$reportLabelName"/>

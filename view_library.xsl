@@ -293,32 +293,34 @@
 							</xsl:if>
 							</div>
 						</div>
-						<div class="col-xs-12 col-md-3 top-30">
-							<div class="bg-offwhite portalPanel">
-							<xsl:if test="count($allEditors) > 0">
-								<h1 class="text-primary">
-									<xsl:value-of select="eas:i18n('Editors')"/>
-								</h1>
-							</xsl:if>
-							<xsl:if test="count($allEditors) > 0">
-								<ul>
-									<xsl:for-each select="$allEditors">
-										<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-										<li class="fontSemi large">
-											<a class="text-darkgrey" target="_blank">
-												<xsl:attribute name="href">
-													<xsl:call-template name="RenderEditorLinkHref">
-														<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
-													</xsl:call-template>
-												</xsl:attribute>
-												<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
-											</a>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</xsl:if>
+						<xsl:if test="$eipMode">
+							<div class="col-xs-12 col-md-3 top-30">
+								<div class="bg-offwhite portalPanel">
+								<xsl:if test="count($allEditors) > 0">
+									<h1 class="text-primary">
+										<xsl:value-of select="eas:i18n('Editors')"/>
+									</h1>
+								</xsl:if>
+								<xsl:if test="count($allEditors) > 0">
+									<ul>
+										<xsl:for-each select="$allEditors">
+											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+											<li class="fontSemi large">
+												<a class="text-darkgrey" target="_blank">
+													<xsl:attribute name="href">
+														<xsl:call-template name="RenderEditorLinkHref">
+															<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+														</xsl:call-template>
+													</xsl:attribute>
+													<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
+												</a>
+											</li>
+										</xsl:for-each>
+									</ul>
+								</xsl:if>
+								</div>
 							</div>
-						</div>
+						</xsl:if>
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
@@ -541,39 +543,41 @@
 							</a>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:variable name="busNeedEditorPath">
-								<xsl:call-template name="RenderEditorLinkText">
-									<xsl:with-param name="theEditor" select="$aReport"/>
-								</xsl:call-template>
-							</xsl:variable>
-							<a class="noUL" target="_blank">
-								<xsl:attribute name="href" select="$busNeedEditorPath"/>								
-								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-									<div class="editorElementContainer {$nameStyleSetting}">
-										<div class=" viewElement">
-											<div class="viewElementName fontBold large">
-												<xsl:value-of select="$reportLabelName"/>
+							<xsl:if test="$eipMode">
+								<xsl:variable name="thisEditorPath">
+									<xsl:call-template name="RenderEditorLinkText">
+										<xsl:with-param name="theEditor" select="$aReport"/>
+									</xsl:call-template>
+								</xsl:variable>
+								<a class="noUL" target="_blank">
+									<xsl:attribute name="href" select="$thisEditorPath"/>								
+									<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+										<div class="editorElementContainer {$nameStyleSetting}">
+											<div class=" viewElement">
+												<div class="viewElementName fontBold large">
+													<xsl:value-of select="$reportLabelName"/>
+												</div>
+												<div class="viewElementDescription text-darkgrey">
+													<xsl:value-of select="$reportDescription"/>
+												</div>
+												
+												<div class="viewElementImage hidden-xs">
+													<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
+													<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
+														<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
+													</img>
+												</div>
 											</div>
-											<div class="viewElementDescription text-darkgrey">
-												<xsl:value-of select="$reportDescription"/>
+											<div class="viewElement-placeholder"/>
+											<div class="report-element-preview">
+												<span href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
+													<i class="fa fa-search"/>
+												</span>
 											</div>
-											
-											<div class="viewElementImage hidden-xs">
-												<!--<xsl:attribute name="style" select="concat('background-image:url(',$reportScreenshot,')')"/>-->
-												<img src="{$reportScreenshot}" alt="screenshot" class="img-responsive">
-													<xsl:attribute name="id" select="translate($reportLabelName,' ','')"></xsl:attribute>
-												</img>
-											</div>
-										</div>
-										<div class="viewElement-placeholder"/>
-										<div class="report-element-preview">
-											<span href="{$reportScreenshot}" data-toggle="lightbox" class="text-lightgrey">
-												<i class="fa fa-search"/>
-											</span>
 										</div>
 									</div>
-								</div>
-							</a>
+								</a>
+							</xsl:if>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:if>

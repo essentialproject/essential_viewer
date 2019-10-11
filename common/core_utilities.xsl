@@ -69,6 +69,9 @@
 	
 	<!-- Collect all available editor sections -->
 	<xsl:variable name="utilitiesAllEditorSections" select="/node()/simple_instance[type = 'Editor_Section']"/>
+	
+	<!-- Collect all available data set APIs -->
+	<xsl:variable name="utilitiesAllDataSetAPIs" select="/node()/simple_instance[type = 'Data_Set_API']"/>
 
 	<!-- Collect all available taxonomy terms -->
 	<xsl:variable name="utilitiesAllTaxonomyTerms" select="/node()/simple_instance[(type = 'Taxonomy_Term')]"/>
@@ -816,6 +819,7 @@
 				<!-- Get the name of the instance that has been passed -->
 				<xsl:variable name="instanceId" select="$theSubjectInstance/name"/>
 				<xsl:variable name="quoteString"><xsl:text disable-output-escaping="no">&apos;</xsl:text></xsl:variable>
+				<xsl:variable name="doubleQuoteString"><xsl:text disable-output-escaping="no">&quot;</xsl:text></xsl:variable>
 
 				<xsl:variable name="instanceName">
 					<xsl:choose>
@@ -831,8 +835,9 @@
 					</xsl:choose>
 				</xsl:variable>
 				
-				<xsl:variable name="escapedInstanceName" select="translate($instanceName, $quoteString, '')"/>
-
+				<!--<xsl:variable name="escapedInstanceName" select="translate($instanceName, $quoteString, '')"/>-->				
+				<xsl:variable name="escapedInstanceName" select="eas:validJSONString($instanceName)"/>
+				
 				<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
 
 
@@ -1183,7 +1188,9 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		</xsl:variable>
-		<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>
+		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
+		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:validJSONString($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
+		<xsl:value-of select="$unprotectedText" disable-output-escaping="yes"></xsl:value-of>
 	</xsl:template>
 
 	<!-- TEMPLATE TO CREATE THE QUERY STRING FOR DRILLING DOWN TO A REPORT -->
@@ -2325,5 +2332,167 @@
 	</xsl:function>
 	
 	<!-- End of alphabetic catalogue rendering -->
+	
+	<!-- Ensure that JSON Strings are rendered correctly -->
+	<xsl:function name="eas:validJSONString">
+		<xsl:param name="theString"/>		
+		<xsl:variable name="aQuote">"</xsl:variable>
+		<xsl:variable name="anEscapedQuote">\\"</xsl:variable>
+		<xsl:value-of select="replace(normalize-unicode($theString), $aQuote, $anEscapedQuote)"/>
+	</xsl:function>
+	
+	
+	<!-- ********************************************
+	EDITOR FUNCTIONS
+	**************************************************-->
+	
+	<xsl:template name="RenderEditorLinkText">
+		<xsl:param name="theEditor"/>
+		<xsl:param name="theInstanceId"/>
+		
+		<xsl:variable name="theEditorId" select="$theEditor/name"/>
+		<xsl:variable name="theEditorLabel" select="$theEditor/own_slot_value[slot_reference = 'report_label']/value"/>
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:if test="string-length($theInstanceId) > 0">&amp;PMA=<xsl:value-of select="$theInstanceId"/></xsl:if></xsl:variable>
+		<xsl:value-of select="$theEditorLinkHref"/>
+	</xsl:template>
+	
+	<!-- template to render a panel containing a list of links to Editors relevenat to the View with the given xsl path -->
+	<xsl:template name="RenderReportEditorsPanel">
+		<xsl:param name="theReportPath"/>
+		<xsl:param name="theInstanceId"/>
+		
+		<xsl:variable name="theReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theReportPath]"/>
+		<xsl:if test="count($theReport) > 0">
+			<xsl:variable name="theReportEEditorSections" select="$utilitiesAllEditorSections[name = $theReport[1]/own_slot_value[slot_reference = 'report_related_editor_sections']/value]"/>
+			<xsl:if test="$theReportEEditorSections">
+				<style type="text/css">		
+					.view-editors-container {
+						position: relative;
+					}
+					.view-editors-panel {
+						height: auto;
+						min-width: 400px;
+						position:absolute;
+						z-index:1000;
+						border: 1px solid grey;
+						right: 0;
+						top:0;
+					}
+					
+					.view-editors-header {
+						padding: 3px 0 3px 10px;
+					}
+					
+					.view-editors-contents {
+						padding: 3px 0 3px 10px;
+					}
+					
+					.view-editor-entry {
+						
+					}
+					
+					.view-editor-entry-icon {
+					
+					}
+					
+					.view-editor-entry-label {
+					
+					}
+				</style>
+				<div class="row view-editors-container">
+					<div class="view-editors-panel">
+						<a href="#view-editors-list" data-toggle="collapse"><div class="view-editors-header fontSemi bg-darkblue-100">Editors</div></a>
+						<div id="view-editors-list" class="view-editors-contents collapse">
+							<xsl:apply-templates mode="RenderReportEditorLink" select="$theReportEEditorSections"/>
+						</div>
+					</div>
+				</div>
+			</xsl:if>
+		</xsl:if>
+		
+	</xsl:template>
+	
+	
+	<!-- template to render a list of links to the given Editor Sections -->
+	<xsl:template mode="RenderReportEditorLink" match="node()">
+		<xsl:param name="theInstanceId"/>
+		
+		<xsl:variable name="theEditorSection" select="current()"/>
+		<xsl:variable name="theEditorSectionAnchorId" select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_anchor_id']/value"/>
+		<xsl:variable name="theEditorSectionIsDefault" select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_is_default']/value = 'true'"/>
+		<xsl:variable name="theEditor" select="$utilitiesAllEditors[name = $theEditorSection/own_slot_value[slot_reference = 'editor_section_parent']/value]"/>
+		<xsl:variable name="theEditorId" select="$theEditor/name"/>
+		<xsl:variable name="theEditorLabel" select="$theEditor/own_slot_value[slot_reference = 'report_label']/value"/>
+		
+		<xsl:variable name="theEditorLinkLabel">
+			<xsl:choose>
+				<xsl:when test="$theEditorSectionIsDefault">
+					<xsl:value-of select="$theEditorLabel"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$theEditorLabel"/><xsl:text> - </xsl:text><xsl:value-of select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_label']/value"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
+		<div class="view-editor-entry">
+			<a href="{$theEditorLinkHref}" target="_blank">
+				<i class="view-editor-entry-icon fa fa-pencil right-10"/><span class="view-editor-entry-label"><xsl:value-of select="$theEditorLinkLabel"/></span>
+			</a>
+		</div>
+	</xsl:template>
+	
+	<!-- template to render a link to the given Editor section, optionally passing the given instance id -->
+	<xsl:template name="RenderEditorLink">
+		<xsl:param name="theEditorSection"/>
+		<xsl:param name="theInstanceId"/>
+		
+		<xsl:variable name="theEditorSectionAnchorId" select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_anchor_id']/value"/>
+		<xsl:variable name="theEditorSectionIsDefault" select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_is_default']/value = 'true'"/>
+		<xsl:variable name="theEditor" select="$utilitiesAllEditors[name = $theEditorSection/own_slot_value[slot_reference = 'editor_section_parent']/value]"/>
+		<xsl:variable name="theEditorId" select="$theEditor/name"/>
+		<xsl:variable name="theEditorLabel" select="$theEditor/own_slot_value[slot_reference = 'report_label']/value"/>
+		
+		<xsl:variable name="theEditorLinkLabel">
+			<xsl:choose>
+				<xsl:when test="$theEditorSectionIsDefault">
+					<xsl:value-of select="$theEditorLabel"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$theEditorLabel"/><xsl:text> - </xsl:text><xsl:value-of select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_label']/value"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
+		<div class="view-editor-entry">
+			<a href="{$theEditorLinkHref}" target="_blank">
+				<i class="view-editor-entry-icon fa fa-pencil right-10"/><span class="view-editor-entry-label"><xsl:value-of select="$theEditorLinkLabel"/></span>
+			</a>
+		</div>
+	</xsl:template>
+	
+	<!-- template to render a link to the given Editor section, optionally passing the given instance id -->
+	<xsl:template name="RenderEditorLinkHref">
+		<xsl:param name="theEditor"/>
+		<xsl:param name="theInstanceId"/>
+		
+		<xsl:variable name="theEditorSection" select="$allTargetEditorSections[(name = $theEditor/own_slot_value[slot_reference = 'editor_sections']/value) and (own_slot_value[slot_reference = 'editor_section_is_default']/value = 'true')]"/>
+		<xsl:variable name="theEditorSectionAnchorId" select="$theEditorSection/own_slot_value[slot_reference = 'editor_section_anchor_id']/value"/>
+		<xsl:variable name="theEditorId" select="$theEditor/name"/>
+		<xsl:variable name="theEditorLabel" select="$theEditor/own_slot_value[slot_reference = 'report_label']/value"/>		
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
+		<xsl:value-of select="$theEditorLinkHref"/>
+	</xsl:template>
+	
+	<!-- function to retrieve a specific Editor Section with the given name -->
+	<xsl:function name="eas:get_editor_section_by_name" as="node()">
+		<xsl:param name="editorSectionName"/>
+		<xsl:sequence select="$utilitiesAllEditorSections[own_slot_value[slot_reference = 'name']/value = $editorSectionName]"/>
+	</xsl:function>
+	
 
 </xsl:stylesheet>
