@@ -66,6 +66,7 @@
 					<xsl:value-of select="eas:i18n('Data Subject Summary')"/>
 				</title>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

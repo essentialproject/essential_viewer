@@ -86,6 +86,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>System Lifecycle Plan - <xsl:value-of select="$appName"/></title>
 				<script type="text/javascript">
 				<![CDATA[

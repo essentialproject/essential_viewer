@@ -40,7 +40,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	 <xsl:variable name="linkClasses2" select="('Individual_Business_Role', 'Group_Business_Role', 'Group_Actor', 'Individual_Actor', 'Programme', 'Project', 'Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider')"/>
+	<xsl:variable name="linkClasses2" select="('Individual_Business_Role', 'Group_Business_Role', 'Group_Actor', 'Individual_Actor', 'Programme', 'Project', 'Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')"/>
 
 	<xsl:param name="param1"/>
 
@@ -134,7 +134,7 @@
 
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="allChildCap2ParentCapRels" select="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']"/>
-	<xsl:variable name="allApps" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')]"/>
 	<xsl:variable name="allAppServices" select="/node()/simple_instance[(type = 'Application_Service') or (type = 'Composite_Application_Service')]"/>
 	<xsl:variable name="allAppRoles" select="/node()/simple_instance[type = 'Application_Provider_Role']"/>
 	<xsl:variable name="allBusProc2AppSvcs" select="/node()/simple_instance[type = 'APP_SVC_TO_BUS_RELATION']"/>
@@ -175,13 +175,16 @@
 	<xsl:variable name="businessLayerLabels" select="(eas:i18n('Business Objective'), eas:i18n('Business Driver'), eas:i18n('Business Capability'), eas:i18n('Business Process'), eas:i18n('Business Activity'), eas:i18n('Individual Role'), eas:i18n('Organisation Role'), eas:i18n('Service Type'), eas:i18n('Service'), eas:i18n('Communication Channel'), eas:i18n('Organisation'), eas:i18n('Location'), eas:i18n('Implemented Process'), eas:i18n('Implemented Activity'))"/>
 
 	<xsl:variable name="infoLayerClasses" select="('Information_View', 'Data_Subject', 'Data_Object', 'Data_Representation', 'Security_Policy', 'Information_Store')"/>
+    <xsl:variable name="infoLayerClasses2" select="/node()/simple_instance[type=('Information_View', 'Data_Subject', 'Data_Object', 'Data_Representation', 'Security_Policy', 'Information_Store')]"/>
 	<xsl:variable name="infoLayerLabels" select="(eas:i18n('Information Object'), eas:i18n('Data Subject'), eas:i18n('Data Object'), eas:i18n('Data Representation'), eas:i18n('Security Policy'), eas:i18n('Information/Data Store'))"/>
 
-	<xsl:variable name="appLayerClasses" select="('Application_Service', 'Composite_Application_Provider', 'Application_Provider', 'Application_Function', 'Application_Deployment')"/>
-	<xsl:variable name="appLayerLabels" select="(eas:i18n('Application Service'), eas:i18n('Application'), eas:i18n('Application'), eas:i18n('Application Function'), eas:i18n('Application Deployment'))"/>
+	<xsl:variable name="appLayerClasses" select="('Application_Service', 'Application_Provider_Interface', 'Composite_Application_Provider', 'Application_Provider', 'Application_Function', 'Application_Deployment')"/>
+	<xsl:variable name="appLayerLabels" select="(eas:i18n('Application Service'), eas:i18n('Application Interface'),  eas:i18n('Application'), eas:i18n('Application'), eas:i18n('Application Function'), eas:i18n('Application Deployment'))"/>
 
 	<xsl:variable name="techLayerClasses" select="('Technology_Capability', 'Technology_Component', 'Technology_Product', 'Technology_Product_Build', 'Infrastructure_Software_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Hardware_Instance', 'Technology_Node')"/>
 	<xsl:variable name="techLayerLabels" select="(eas:i18n('Technology Capability'), eas:i18n('Technology Component'), eas:i18n('Technology Product'), eas:i18n('Technology Build'), eas:i18n('Infrastructure Software Instance'), eas:i18n('Application Software Instance'), eas:i18n('Information/Data Store Instance'), eas:i18n('Hardware Instance'), eas:i18n('Technology Node'))"/>
+    
+    <xsl:variable name="projectPlanToElements" select="$allStratPlanToElementRelations[name=$project/own_slot_value[slot_reference='ca_planned_changes']/value]"/>
 
 	<!-- Set up the requierd link classes -->
 	<xsl:variable name="linkClasses" select="($project union $busCapability union $projectImpactedElements union $allRelevantStrategicPlans union $projectActors union $projectParentProgramme)/type "/>
@@ -231,6 +234,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
@@ -509,6 +513,84 @@
 							<div class="clear"/>
 							<hr/>
 						</div>
+                        
+                        
+                     <div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-users icon-section icon-color" />
+							</div>
+
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('Impacted Business Elements')"/>
+							</h2>
+							<div class="content-section">
+								<xsl:apply-templates select="$projectPlanToElements" mode="DirectImpactedElements">
+                                    <xsl:with-param name="classes" select="$businessLayerClasses"/>
+                                </xsl:apply-templates>
+							</div>
+							<hr/>
+						</div>
+
+
+						<!--Impacted Information Elements-->
+
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-file-text icon-section icon-color" />
+							</div>
+
+
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('Impacted Information/Data Elements')" />
+							</h2>
+							<div class="content-section">
+								<xsl:apply-templates select="$projectPlanToElements" mode="DirectImpactedElements">
+                                    <xsl:with-param name="classes" select="$infoLayerClasses"/>
+                                </xsl:apply-templates>
+							</div>
+							<hr/>
+						</div>
+
+
+
+						<!--Impacted Application Elements-->
+
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-desktop icon-section icon-color"/>
+							</div>
+
+							<h2 class="text-primary" >
+								<xsl:value-of select="eas:i18n('Impacted Application Elements')"/>
+							</h2>
+							<div class="content-section">
+								<xsl:apply-templates select="$projectPlanToElements" mode="DirectImpactedElements">
+                                    <xsl:with-param name="classes" select="$appLayerClasses"/>
+                                </xsl:apply-templates>
+							</div>
+							<hr/>
+						</div>
+
+
+						<!--Impacted Technology Elements-->
+
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-cogs icon-section icon-color"/>
+							</div>
+
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('Impacted Technology Elements')"/>
+							</h2>
+							<div class="content-section">
+                                	  
+                                            <xsl:apply-templates select="$projectPlanToElements" mode="DirectImpactedElements">
+                                                 <xsl:with-param name="classes" select="$techLayerClasses"/>
+                                            </xsl:apply-templates>
+								
+							</div>
+							<hr/>
+						</div>
 
 						<!--Impacted Processes-->
 						<div class="col-xs-12">
@@ -528,12 +610,16 @@
 
 
 						<!--Impacted Processes-->
+                        <div class="col-xs-1"></div>
+                        <div class="col-xs-11"  style="border-left:1pt solid #a6a6a6"><p>
+                            <h4>Strategic Plan Impacts</h4>
+                            These elements are impacted by the projects supporting the above Strategic Plans and should be considered when making changes to this project</p>
 						<div class="col-xs-12">
 							<div class="sectionIcon">
-								<i class="fa fa-users icon-section icon-color"/>
+								<i class="fa fa-users icon-section"  style="font-size:1.4em;color:#a6a6a6"/>
 							</div>
 
-							<h2 class="text-primary">
+							<h2 class="text-primary" style="font-size:1.4em">
 								<xsl:value-of select="eas:i18n('Impacted Business Elements')"/>
 							</h2>
 							<div class="content-section">
@@ -551,12 +637,12 @@
 
 						<div class="col-xs-12">
 							<div class="sectionIcon">
-								<i class="fa fa-file-text icon-section icon-color"/>
+								<i class="fa fa-file-text icon-section" style="font-size:1.4em;color:#a6a6a6"/>
 							</div>
 
 
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Impacted Information/Data Elements')"/>
+							<h2 class="text-primary" style="font-size:1.4em">
+								<xsl:value-of select="eas:i18n('Impacted Information/Data Elements')" />
 							</h2>
 							<div class="content-section">
 								<xsl:call-template name="ImpactedElements">
@@ -574,10 +660,10 @@
 
 						<div class="col-xs-12">
 							<div class="sectionIcon">
-								<i class="fa fa-desktop icon-section icon-color"/>
+								<i class="fa fa-desktop icon-section" style="font-size:1.4em;color:#a6a6a6"/>
 							</div>
 
-							<h2 class="text-primary">
+							<h2 class="text-primary"  style="font-size:1.4em">
 								<xsl:value-of select="eas:i18n('Impacted Application Elements')"/>
 							</h2>
 							<div class="content-section">
@@ -595,10 +681,10 @@
 
 						<div class="col-xs-12">
 							<div class="sectionIcon">
-								<i class="fa fa-cogs icon-section icon-color"/>
+								<i class="fa fa-cogs icon-section" style="font-size:1.4em;color:#a6a6a6"/>
 							</div>
 
-							<h2 class="text-primary">
+							<h2 class="text-primary" style="font-size:1.4em">
 								<xsl:value-of select="eas:i18n('Impacted Technology Elements')"/>
 							</h2>
 							<div class="content-section">
@@ -611,7 +697,7 @@
 							<hr/>
 						</div>
 
-
+                        </div>
 						<!--Setup the Supporting Documentation section-->
 
 						<div class="col-xs-12">
@@ -1188,5 +1274,52 @@
 		</xsl:choose>
 	</xsl:function>
 
+    <xsl:template match="node()" mode="DirectImpactedElements">
+        <xsl:param name="classes"/>
+        <xsl:variable name="this" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='plan_to_element_ea_element']/value]"/>
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th class="cellWidth-20pc">
+								<xsl:value-of select="eas:i18n('Type')"/>
+							</th>
+							<th class="cellWidth-25pc">
+								<xsl:value-of select="eas:i18n('Element')"/>
+							</th>
+							<th class="cellWidth-40pc">
+								<xsl:value-of select="eas:i18n('Description')"/>
+							</th>
+							<th class="cellWidth-15pc">
+								<xsl:value-of select="eas:i18n('Impact')"/>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+                        <xsl:apply-templates select="$this[type=$classes]" mode="getRow">
+                            <xsl:with-param name="action" select="current()/own_slot_value[slot_reference='plan_to_element_change_action']/value"/>
+                        </xsl:apply-templates>
+					</tbody>
+				</table>
+       
+	</xsl:template>
+    
+    <xsl:template match="node()" mode="getRow">
+    <xsl:param name="action"/>    
+        <tr>
+            <td>
+                <xsl:value-of select="current()/type"/>
+            </td>
+            <td>
+                <xsl:call-template name="RenderInstanceLink">
+										<xsl:with-param name="theSubjectInstance" select="current()"/>
+										<xsl:with-param name="theXML" select="$reposXML"/>
+										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+                </xsl:call-template></td>
+            <td>
+            <xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/>
+            </td>
+            <td><xsl:value-of select="$impactActions[name=$action]/own_slot_value[slot_reference='name']/value"/></td>
+        </tr>
+    </xsl:template>
 
 </xsl:stylesheet>

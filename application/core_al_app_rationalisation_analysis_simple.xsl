@@ -70,12 +70,13 @@
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js" integrity="sha256-aYYnqVVhAJ4lDammP4Qybmxg3/HVpA7/sNSCntyCyu4=" crossorigin="anonymous"/>
 				<xsl:call-template name="commonHeadContent"/>
-				<xsl:for-each select="$linkClasses">
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
+                <xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
+						<xsl:with-param name="newWindow" select="true()"/>
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Application Rationalisation Analysis</title>
@@ -159,6 +160,7 @@
                 </style>
                 <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
+				<script src="js/d3/d3_4-11/d3.min.js"/>
 			    <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
                 <script>
                         var appCardTemplate;
@@ -670,7 +672,7 @@
 		</xsl:variable>
 		<xsl:variable name="subSubApps" select="$apps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 		
-        {"application":'<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>', "id":'<xsl:value-of select="current()/name"/>','services':[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],link:'<xsl:value-of select="$appLink"/>','codebase':'<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>','codebaseID':'<xsl:value-of select="$codebaseStatus[name=$codeBase]/name"/>','statusID':'<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/name"/>','status':'<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>'}, </xsl:template>
+        {"application":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "id":"<xsl:value-of select="current()/name"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>","codebase":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/name"/>","statusID":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/name"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>"}, </xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONservices">
 		<xsl:variable name="this" select="current()/name"/>
@@ -683,7 +685,7 @@
 	</xsl:template>
    
 
-	<xsl:template match="node()" mode="getServJSON"> {"service":'<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>', "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}, </xsl:template>
+	<xsl:template match="node()" mode="getServJSON"> {"service":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}, </xsl:template>
 	
     <xsl:template match="node()" mode="getServJSONapps">
 		<xsl:variable name="this" select="current()/name"/>

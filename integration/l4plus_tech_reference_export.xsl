@@ -62,7 +62,6 @@
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
   <SupBook>
-   <Path>https://easglobal-my.sharepoint.com/Users/jasonpowell/OneDrive - Enterprise Architecture Solutions Limited/Clients/CCI/Investmenyt Planning/Data Capture/Technology Catalogue/CCI Technology Inventory - Data Capture 20171130.xlsx</Path>
    <SheetName>Table of Contents</SheetName>
    <SheetName>Applications</SheetName>
    <SheetName>Business Units</SheetName>
@@ -739,7 +738,7 @@
    ss:RefersTo="='REFERENCE DATA'!R50C3:R50C7"/>
   <NamedRange ss:Name="Servers" ss:RefersTo="=#REF!"/>
   <NamedRange ss:Name="Tech_Cap_Layers"
-   ss:RefersTo="='https://easglobal-my.sharepoint.com/Users/jasonpowell/OneDrive - Enterprise Architecture Solutions Limited/Clients/CCI/Investmenyt Planning/Data Capture/Technology Catalogue/[CCI Technology Inventory - Data Capture 20171130.xlsx]REFERENCE DATA'!R22C3:R22C12"/>
+   ss:RefersTo="='REFERENCE DATA'!R22C3:R22C12"/>
   <NamedRange ss:Name="Tech_Compliance_Levels" ss:RefersTo="=#REF!"/>
   <NamedRange ss:Name="Tech_Delivery_Models" ss:RefersTo="=#REF!"/>
   <NamedRange ss:Name="Tech_Ref_Archs"

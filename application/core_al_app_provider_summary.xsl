@@ -21,7 +21,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Service', 'Application_Provider', 'Business_Process', 'Application_Strategic_Plan', 'Site', 'Group_Actor', 'Technology_Component', 'Technology_Product', 'Infrastructure_Software_Instance', 'Hardware_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Technology_Node', 'Individual_Actor', 'Application_Function', 'Application_Function_Implementation', 'Enterprise_Strategic_Plan', 'Information_Representation')"/>
+	<xsl:variable name="linkClasses" select="('Application_Service', 'Application_Provider_Interface', 'Application_Provider', 'Business_Process', 'Application_Strategic_Plan', 'Site', 'Group_Actor', 'Technology_Component', 'Technology_Product', 'Infrastructure_Software_Instance', 'Hardware_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Technology_Node', 'Individual_Actor', 'Application_Function', 'Application_Function_Implementation', 'Enterprise_Strategic_Plan', 'Information_Representation')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- START VIEW SPECIFIC SETUP VARIABES -->
@@ -158,6 +158,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -165,7 +166,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>
-					<xsl:value-of select="eas:i18n('Application Provider Summary')"/>
+					<xsl:value-of select="eas:i18n('Application Summary')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
@@ -174,7 +175,6 @@
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jquery-ui/jquery-ui.min.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
 				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
@@ -191,7 +191,7 @@
 								<h1 id="viewName">
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 									<span class="text-darkgrey">
-										<xsl:value-of select="eas:i18n('Application Provider Summary')"/>
+										<xsl:value-of select="eas:i18n('Application Summary')"/>
 									</span>
 									<span>&#160;</span>
 									<span class="text-darkgrey">
@@ -1607,7 +1607,7 @@
 											<xsl:choose>
 												<xsl:when test="count($techProvArch) > 0">
 													<xsl:variable name="apDepModelID" select="concat($appDepID, 'Model')"/>
-													<div class="simple-scroller" style="overflow: scroll;">
+													<div class="simple-scroller" style="height: 400px;">
 														<div>
 															<xsl:attribute name="id" select="$apDepModelID"/>
 														</div>
@@ -1901,7 +1901,7 @@
 					var <xsl:value-of select="$targetID"/>paper = new joint.dia.Paper({
 						el: $('#<xsl:value-of select="$targetID"/>'),
 				        width: $('#<xsl:value-of select="$targetID"/>').width(),
-				        height: <xsl:value-of select="($objectHeight + 30) * count($techProdRoleUsages)"/>,
+				        height: <xsl:value-of select="($objectHeight + 60) * count($techProdRoleUsages)"/>,
 				        gridSize: 1,
 				        model: <xsl:value-of select="$targetID"/>graph
 				    });

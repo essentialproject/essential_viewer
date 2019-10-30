@@ -68,6 +68,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -75,7 +76,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>NIST Compliance</title>
-                <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.1/d3.min.js"></script>
+				<script src="js/d3/d3.min.js"/>
                 <style>
 
                 </style> 

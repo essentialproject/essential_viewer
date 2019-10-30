@@ -185,6 +185,7 @@
 			<head>
 				<meta http-equiv="expires" content="-1"/>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
@@ -203,7 +204,6 @@
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jquery-ui/jquery-ui.min.js" async="" type="text/javascript"/>
 				<script src="js/handlebars-v4.1.2.js"/>
 				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->

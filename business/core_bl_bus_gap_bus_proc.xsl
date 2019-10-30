@@ -240,6 +240,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>

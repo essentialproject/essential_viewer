@@ -95,7 +95,7 @@
 		<script id="arm-template" type="text/x-handlebars-template">
 			<div class="col-xs-4 col-md-3 col-lg-2" id="refLeftCol">
 							{{#each left}}
-								<div class="row">
+								<div class="row bottom-15">
 									<div class="col-xs-12">
 										<div class="refModel-l0-outer matchHeight1">
 											<div class="refModel-l0-title fontBlack large">
@@ -188,7 +188,7 @@
 						</div>
 						<div class="col-xs-4 col-md-3 col-lg-2" id="refRightCol">
 							{{#each right}}
-								<div class="row">
+								<div class="row bottom-15">
 									<div class="col-xs-12">
 										<div class="refModel-l0-outer matchHeight1">
 											<div class="refModel-l0-title fontBlack large">
@@ -250,7 +250,7 @@
 		<script id="arm-template" type="text/x-handlebars-template">
 			<div class="col-xs-4 col-md-3 col-lg-2" id="refLeftCol">
 							{{#each left}}
-								<div class="row">
+								<div class="row bottom-15">
 									<div class="col-xs-12">
 										<div class="refModel-l0-outer matchHeight1">
 											<div class="refModel-l0-title fontBlack large">
@@ -345,7 +345,7 @@
 						</div>
 						<div class="col-xs-4 col-md-3 col-lg-2" id="refRightCol">
 							{{#each right}}
-								<div class="row">
+								<div class="row bottom-15">
 									<div class="col-xs-12">
 										<div class="refModel-l0-outer matchHeight1">
 											<div class="refModel-l0-title fontBlack large">
@@ -1298,15 +1298,16 @@
 					}
 					
 					.refModel-blob, .busRefModel-blob, .appRefModel-blob, .techRefModel-blob {
-						display: table;
+						display: flex;
+						align-items: center;
+						justify-content: center;
 						width: 120px;
 						max-width: 120px;
 						height: 50px;
-						padding: 5px 15px;
+						padding: 3px;
 						max-height: 50px;
 						overflow: hidden;
 						border: 1px solid #aaa;
-						<!--background-color: #fff;-->
 						border-radius: 4px;
 						float: left;
 						margin-right: 10px;
@@ -1314,6 +1315,7 @@
 						text-align: center;
 						font-size: 12px;
 						position: relative;
+
 					}
 					
 					.appRefModel-blob a {
@@ -1339,8 +1341,6 @@
 					.refModel-blob:hover {border: 2px solid #666;}
 					
 					.refModel-blob-title{
-						display: table-cell;
-						vertical-align: middle;
 						line-height: 1em;
 					
 					}

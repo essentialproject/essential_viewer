@@ -29,7 +29,8 @@
     <xsl:variable name="phyProc" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="busProc" select="/node()/simple_instance[type = 'Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value=$phyProc/name]"/>
     <xsl:variable name="act2role" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][own_slot_value[slot_reference = 'performs_physical_processes']/value=$phyProc/name]"/>
-    <xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor'][own_slot_value[slot_reference = 'actor_plays_role']/value=$act2role/name]"/>
+    <xsl:variable name="groupActors" select="/node()/simple_instance[type = 'Group_Actor']"/>
+    <xsl:variable name="actors" select="$groupActors[own_slot_value[slot_reference = 'actor_plays_role']/value=$act2role/name]"/>
     <xsl:variable name="busRole" select="/node()/simple_instance[type = ('Group_Business_Role','Individual_Business_Role')][own_slot_value[slot_reference = 'bus_role_played_by_actor']/value=$act2role/name]"/>
     <xsl:variable name="products" select="/node()/simple_instance[type = 'Product_Type']"/>
     <xsl:variable name="valueStreams" select="/node()/simple_instance[type = 'Value_Stream']"/>
@@ -289,7 +290,7 @@
  </Names>
 
  <Worksheet ss:Name="Physical Processes">
-  <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="7" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($phyProc)+8"/></xsl:attribute>
    <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="324"/>
    <Column ss:AutoFitWidth="0" ss:Width="347"/>
@@ -317,7 +318,7 @@
     <Cell ss:StyleID="s70"><Data ss:Type="String">Organisational Role</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="6">
-    <Cell ss:Index="3" ss:StyleID="s67"/>
+  <!--  <Cell ss:Index="3" ss:StyleID="s67"/>-->
     <Cell ss:StyleID="s67"/>
    </Row>
       <xsl:apply-templates select="$phyProc" mode="getPhysProcessRow">
@@ -5532,12 +5533,13 @@
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+  <!--<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C2:R2090C2</Range>
    <Type>List</Type>
   
    <Value>'Customer Journey Phases'!R8C8:R3000C8</Value>
   </DataValidation>
+-->
 <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R2009C5</Range>
    <Type>List</Type>
@@ -5666,7 +5668,7 @@
     <Cell ss:Index="3" ss:StyleID="s62"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s75"><Data ss:Type="String">Customer Jourmey Phase</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s75"><Data ss:Type="String">Customer Journey Phase</Data></Cell>
     <Cell ss:StyleID="s81"><Data ss:Type="String">Physical Process</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="6">
@@ -6596,7 +6598,7 @@
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C3:R2310C3</Range>
    <Type>List</Type>
-   <Value>'Physical Processes'!R8C5:R3000C5</Value>
+   <Value>'Physical Processes'!R8C7:R3000C7</Value>
   </DataValidation>
  </Worksheet>
  <Worksheet ss:Name="CJPs to Emotions">
@@ -6758,6 +6760,7 @@
         <xsl:variable name="thisact2role" select="$act2role[own_slot_value[slot_reference = 'performs_physical_processes']/value=current()/name]"/>
         <xsl:variable name="thisactors" select="$actors[name=$thisact2role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
         <xsl:variable name="thisbusRole" select="$busRole[name=$thisact2role/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
+        <xsl:variable name="thisActorOnly" select="$groupActors[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
         
         
         
@@ -6772,7 +6775,7 @@
                 </Data></Cell>
 	        <Cell ss:StyleID="s72">
                 <Data ss:Type="String">
-                <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/> 
+                <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/><xsl:value-of select="$thisActorOnly/own_slot_value[slot_reference='name']/value"/>  
                 </Data>
             </Cell>
 	        <Cell ss:StyleID="s72">
@@ -6784,7 +6787,7 @@
      ss:Formula="=IF(RC[-1]=&quot;&quot;,&quot;&quot;,CONCATENATE(RC[-2],&quot; as &quot;,RC[-1],&quot; performing &quot;,RC[-3]))"><Data
       ss:Type="String"> <xsl:choose><xsl:when test="$thisbusRole">
     
-                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/> 
+                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/><xsl:value-of select="$thisActorOnly/own_slot_value[slot_reference='name']/value"/> 
                     <xsl:text> </xsl:text>as<xsl:text> </xsl:text> 
                 <xsl:value-of select="$thisbusRole/own_slot_value[slot_reference='name']/value"/> 
                      <xsl:text> </xsl:text>performing<xsl:text> </xsl:text>
@@ -6795,21 +6798,42 @@
                     </xsl:otherwise>
                 </xsl:choose>
                
-                </Data><NamedCell
-      ss:Name="Physical_Processes"/></Cell>
+                </Data></Cell>
     <Cell ss:Formula="=IF(RC[-2]=&quot;&quot;,CONCATENATE(RC[-3],&quot; performing &quot;,RC[-4]),&quot;&quot;)"><Data
       ss:Type="String"> <xsl:choose><xsl:when test="$thisbusRole">
 
                     </xsl:when>
                 <xsl:otherwise>        
-                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/> 
+                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/><xsl:value-of select="$thisActorOnly/own_slot_value[slot_reference='name']/value"/> 
                     <xsl:text> </xsl:text>performing<xsl:text> </xsl:text>
                      <xsl:value-of select="$thisProcess/own_slot_value[slot_reference='name']/value"/> 
                
                     </xsl:otherwise>
                 </xsl:choose>
                
-                </Data><NamedCell
+                </Data></Cell>
+            
+            <Cell ss:Formula="=CONCATENATE(RC[-2],RC[-1])"><Data ss:Type="String"> <xsl:choose><xsl:when test="$thisbusRole">
+    
+                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/><xsl:value-of select="$thisActorOnly/own_slot_value[slot_reference='name']/value"/> 
+                    <xsl:text> </xsl:text>as<xsl:text> </xsl:text> 
+                <xsl:value-of select="$thisbusRole/own_slot_value[slot_reference='name']/value"/> 
+                     <xsl:text> </xsl:text>performing<xsl:text> </xsl:text>
+                     <xsl:value-of select="$thisProcess/own_slot_value[slot_reference='name']/value"/> 
+             
+                    </xsl:when>
+                <xsl:otherwise>
+                    </xsl:otherwise>
+                </xsl:choose></Data><xsl:choose><xsl:when test="$thisbusRole">
+
+                    </xsl:when>
+                <xsl:otherwise>        
+                    <xsl:value-of select="$thisactors/own_slot_value[slot_reference='name']/value"/><xsl:value-of select="$thisActorOnly/own_slot_value[slot_reference='name']/value"/> 
+                    <xsl:text> </xsl:text>performing<xsl:text> </xsl:text>
+                     <xsl:value-of select="$thisProcess/own_slot_value[slot_reference='name']/value"/> 
+               
+                    </xsl:otherwise>
+                </xsl:choose><NamedCell
       ss:Name="Physical_Processes"/></Cell>
              
         <!--     <Cell ss:StyleID="s72">

@@ -130,6 +130,7 @@
 			<head>
 				<meta http-equiv="expires" content="-1" />
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>

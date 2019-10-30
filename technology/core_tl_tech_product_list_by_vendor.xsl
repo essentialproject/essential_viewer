@@ -108,6 +108,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
@@ -132,10 +133,7 @@
 				
 			</head>
 			<body>
-				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
+				
 				
 				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, IF REQUIRED -->
 				<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -144,7 +142,10 @@
 				</xsl:call-template>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-				
+				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
+				<xsl:if test="$isRoadmapEnabled">
+					<xsl:call-template name="RenderRoadmapWidgetButton"/>
+				</xsl:if>
 				<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
 				<div id="ess-roadmap-content-container">
 					<xsl:call-template name="RenderCommonRoadmapJavscript">

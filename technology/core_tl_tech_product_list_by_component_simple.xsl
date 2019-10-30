@@ -83,6 +83,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
@@ -231,21 +232,38 @@
 						var tprJSON=[<xsl:apply-templates select="$allTechProdRoles" mode="getTPRs2"/>];       
 						var productJSON=[<xsl:apply-templates select="$allTechProds" mode="getProducts"/>];				
 						
-						function addFilterListener() {
+						function addFilterListener() {<!--
 					    	$('#catalogue-filter').on( 'keyup change', function () {
 					     	   var textVal = $(this).val().toLowerCase();
+                             console.log(textVal);
+                    $('.productMain').show();
 						       $('.product').each(function(i, obj) {
 						            $(this).show();
 						            if(textVal != null) {
 						                var itemName = $(this).text().toLowerCase();
 						                if(!(itemName.includes(textVal))) {
-						                    $(this).hide();
+						                    $(this).parent().parent().hide();
 						                }
 						            }
 						        });
-						    });			
+						    });		-->	
 					    };
 						
+                    
+      $('.fa-search').on('click', function(){
+        var textVal = $('#catalogue-filter').val().toLowerCase();
+	       $('.product').each(function(i, obj) {
+	            $(this).show();
+	            if(textVal != null) {
+	                var itemName = $(this).text().toLowerCase();
+	                if(!(itemName.includes(textVal))) {
+	                    $(this).parent().parent().hide();
+	                }
+	            }
+	        }); 
+                    })                
+                    
+                    
 						$(document).ready(function() {                    
 						    $('#componentName').select2(
 						    	{
@@ -314,7 +332,7 @@
 	            	<div class="catalogueList">
 	            		<div class="row">
 	            			{{#each products}}
-		            			<div class="col-xs-12 col-md-6">
+		            			<div class="col-xs-12 col-md-6 productMain">
 		            				<div class="productElement"><span class="supplier">{{supplierName}}</span><span class="product">{{{link}}}</span></div>
 		            			</div>
 		                    {{/each}}  

@@ -1,1 +1,0 @@
-This file ensures that the uml folder is included in all packaging and can be safely ignored.

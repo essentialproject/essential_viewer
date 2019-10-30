@@ -77,6 +77,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
@@ -229,12 +230,14 @@
 	            if(textVal != null) {
 	                var itemName = $(this).text().toLowerCase();
 	                if(!(itemName.includes(textVal))) {
-	                    $(this).hide();
+	                    $(this).parent().parent().hide();
 	                }
 	            }
 	        });
 	    });			
     };
+                    
+
     				
     $(document).ready(function() {                    
         $('select').select2(
@@ -294,9 +297,9 @@
 
 	<!-- Render the Technology Provider Name from a Technology Provider node -->
 	<xsl:template match="node()" mode="getSuppliers">
-		<xsl:variable name="thisTechProds" select="$allTechProds[own_slot_value[slot_reference = 'supplier_technology_product']/value = current()/name]"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="eas:removeQuotesFromString(current()/own_slot_value[slot_reference = 'name']/value)"/>","products":[<xsl:apply-templates select="$thisTechProds" mode="getProducts"/>]}, </xsl:template>
+		<xsl:variable name="thisTechProds" select="$allTechProds[own_slot_value[slot_reference = 'supplier_technology_product']/value = current()/name]"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference = 'name']/value)"/>","products":[<xsl:apply-templates select="$thisTechProds" mode="getProducts"/>]}, </xsl:template>
 
-	<xsl:template match="node()" mode="getProducts">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="eas:removeQuotesFromString(current()/own_slot_value[slot_reference = 'name']/value)"/>","link":"<xsl:call-template name="RenderInstanceLinkForJS">
+	<xsl:template match="node()" mode="getProducts">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference = 'name']/value)"/>","link":"<xsl:call-template name="RenderInstanceLinkForJS">
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>"}, </xsl:template>
 

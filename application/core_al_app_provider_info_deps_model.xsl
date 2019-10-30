@@ -51,11 +51,11 @@
 	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Information_Representation', 'Application_Provider', 'Composite_Application_Provider')"/>
+	<xsl:variable name="linkClasses" select="('Information_Representation', 'Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Get the Application Provider for param1 -->
-	<xsl:variable name="allApps" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')]"/>
 	<xsl:variable name="topApp" select="$allApps[name = $param1]"/>
 	<xsl:variable name="subApps" select="$allApps[name = $topApp/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 	<xsl:variable name="subSubApps" select="$allApps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
@@ -70,6 +70,7 @@
 	<xsl:variable name="allInfoViews" select="/node()/simple_instance[type = 'Information_View']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
 	<xsl:variable name="allAppDependencies" select="/node()/simple_instance[type = ':APU-TO-APU-STATIC-RELATION']"/>
+	<xsl:variable name="allAppDepInfoExchanged" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_EXCHANGE_RELATION']"/>
 	<xsl:variable name="allAppUsages" select="/node()/simple_instance[type = 'Static_Application_Provider_Usage']"/>
 	<xsl:variable name="allServiceQuals" select="/node()/simple_instance[supertype = 'Service_Quality' or type = 'Service_Quality']"/>
 	<xsl:variable name="allServiceQualVals" select="/node()/simple_instance[type = 'Information_Service_Quality_Value']"/>
@@ -81,6 +82,8 @@
 	<xsl:variable name="integrationPurpose" select="$allAppPurposes[(own_slot_value[slot_reference = 'name']/value = 'Application Integration') or (own_slot_value[slot_reference = 'name']/value = 'Data Integration')]"/>
 	<xsl:variable name="allDataAcquisitionMethods" select="/node()/simple_instance[type = 'Data_Acquisition_Method']"/>
 	<xsl:variable name="manualDataAcquisition" select="$allDataAcquisitionMethods[own_slot_value[slot_reference = 'name']/value = 'Manual Data Entry']"/>
+
+	<xsl:variable name="allDataAcquisitionStyles" select="/node()/simple_instance[name = $allDataAcquisitionMethods/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 
 	<!-- Set the label for dependencies that have no defined information in the model -->
 	<xsl:variable name="noInfoRendering">
@@ -136,6 +139,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -777,7 +781,8 @@
 									</td>
 
 									<td colspan="3" class="col-xs-9">
-										<xsl:for-each select="$aDirectRels">
+										<xsl:apply-templates mode="RenderDependencyDetail" select="$aDirectRels"/>
+										<!--<xsl:for-each select="$aDirectRels">
 											<xsl:variable name="anApu2Apu" select="current()"/>
 											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
 											<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
@@ -808,7 +813,7 @@
 													</div>
 												</xsl:otherwise>
 											</xsl:choose>
-										</xsl:for-each>
+										</xsl:for-each>-->
 									</td>
 								</tr>
 							</xsl:for-each-group>
@@ -967,7 +972,8 @@
 								<xsl:variable name="aDirectRels" select="eas:getRelevantDependencies(eas:getSubApps($aTargetApp), $currentApp)"/>
 								<tr>
 									<td colspan="3" class="col-xs-9">
-										<xsl:for-each select="$aDirectRels">
+										<xsl:apply-templates mode="RenderDependencyDetail" select="$aDirectRels"/>
+										<!--<xsl:for-each select="$aDirectRels">
 											<xsl:variable name="anApu2Apu" select="current()"/>
 											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
 											<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
@@ -998,7 +1004,7 @@
 													</div>
 												</xsl:otherwise>
 											</xsl:choose>
-										</xsl:for-each>
+										</xsl:for-each>-->
 									</td>
 									<td class="col-xs-3">
 										<div class="depModelObject bg-darkblue-100 fontBlack small text-white clear appID_sourceA">
@@ -1194,9 +1200,9 @@
 
 	<xsl:template name="popoverContent">
 		<xsl:param name="appDepRelation"/>
-		<xsl:variable name="inboundAcquisitionMethod" select="$allAcquisitionMethods[name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>
-		<xsl:variable name="currency" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
-		<xsl:variable name="anSqvList" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value)]"/>
+		<!--<xsl:variable name="inboundAcquisitionMethod" select="$allAcquisitionMethods[name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>-->
+		<xsl:variable name="currency" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
+		<xsl:variable name="anSqvList" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
 		<xsl:for-each select="$anSqvList">
 			<xsl:variable name="aServQual" select="$allServiceQuals[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
 			<xsl:if test="$aServQual/name != $timelinessQualityType/name">
@@ -1220,7 +1226,7 @@
 			</xsl:when>
 			<xsl:otherwise>&#160;-</xsl:otherwise>
 		</xsl:choose>
-		<xsl:text>&lt;br/&gt;</xsl:text>
+		<!--<xsl:text>&lt;br/&gt;</xsl:text>
 		<xsl:text>&lt;strong&gt;</xsl:text>
 		<xsl:value-of select="eas:i18n('Method')"/>:&#160; <xsl:text>&lt;/strong&gt;</xsl:text>
 		<xsl:choose>
@@ -1234,8 +1240,123 @@
 				<xsl:value-of select="eas:i18n('Unknown')"/>
 				<xsl:text>&lt;/em&gt;</xsl:text>
 			</xsl:otherwise>
-		</xsl:choose>
+		</xsl:choose>-->
 	</xsl:template>
+	
+	
+	<xsl:template mode="RenderDependencyDetail" match="node()">
+		<xsl:variable name="anApu2Apu" select="current()"/>
+		<xsl:variable name="directApp2InfoReps" select="$allApp2InfoReps[name = $anApu2Apu/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
+		<xsl:variable name="thisInfoRepExchanges" select="$allAppDepInfoExchanged[name = $anApu2Apu/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
+		<xsl:variable name="indirectApp2InfoReps" select="$allApp2InfoReps[name = $thisInfoRepExchanges/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+		<xsl:variable name="anApp2InfoRep" select="$directApp2InfoReps union $indirectApp2InfoReps"/>
+		<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
+		<xsl:variable name="directInfoReps" select="$anInfoReps[not(name = $indirectApp2InfoReps/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value)]"/>
+		<xsl:variable name="anAcqnMethod" select="$allAcquisitionMethods[name = $anApu2Apu/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>
+		<xsl:variable name="thisDataAcquisitionStyles" select="$allDataAcquisitionStyles[name = $anAcqnMethod/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		<xsl:variable name="anAcquStyleClass">
+			<xsl:choose>
+				<xsl:when test="count($thisDataAcquisitionStyles) > 0"><xsl:text>acq-badge badge </xsl:text><xsl:value-of select="$thisDataAcquisitionStyles[1]/own_slot_value[slot_reference = 'element_style_class']/value"/></xsl:when>
+				<xsl:otherwise>acq-badge badge bg-darkblue</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:choose>
+			<xsl:when test="count($anInfoReps) > 0">
+				<xsl:apply-templates mode="RenderInfoRepArrow" select="$directInfoReps">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+					<xsl:with-param name="anAcqnMethod" select="$anAcqnMethod"/>
+					<xsl:with-param name="anAcqStyle" select="$anAcquStyleClass"/>
+					<xsl:with-param name="anAppRel" select="$anApu2Apu"/>
+				</xsl:apply-templates>
+				<xsl:apply-templates mode="RenderInfoRepExchangeArrow" select="$thisInfoRepExchanges">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+					<xsl:with-param name="inScopeInfoReps" select="$anInfoReps"/>
+					<xsl:with-param name="inScopeApp2InfoReps" select="$indirectApp2InfoReps"/>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<div class="feed depModelArrowShort small">
+					<span class="small">
+						<em>
+							<xsl:value-of select="$noInfoRendering"/>
+						</em>
+					</span>
+				</div>
+			</xsl:otherwise>
+		</xsl:choose>	
+	</xsl:template>
+	
+	
+	
+	<xsl:template mode="RenderInfoRepExchangeArrow" match="node()">
+		<xsl:param name="inScopeApp2InfoReps"/>
+		<xsl:param name="inScopeInfoReps"/>
+		
+		<xsl:variable name="thisExchange" select="current()"/>
+		<xsl:variable name="thisApp2InfoRep" select="$inScopeApp2InfoReps[name = $thisExchange/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+		<xsl:variable name="thisInfoRep" select="$inScopeInfoReps[name = $thisApp2InfoRep/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
+		<xsl:variable name="anAcqnMethod" select="$allAcquisitionMethods[name = $thisExchange/own_slot_value[slot_reference = 'atire_acquisition_method']/value]"/>
+		<xsl:variable name="thisDataAcquisitionStyles" select="$allDataAcquisitionStyles[name = $anAcqnMethod/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		<xsl:variable name="anAcquStyleClass">
+			<xsl:choose>
+				<xsl:when test="count($thisDataAcquisitionStyles) > 0"><xsl:text>acq-badge badge </xsl:text><xsl:value-of select="$thisDataAcquisitionStyles[1]/own_slot_value[slot_reference = 'element_style_class']/value"/></xsl:when>
+				<xsl:otherwise>acq-badge badge bg-darkblue</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<div class="feed depModelArrowLong small">
+			<div>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="$thisInfoRep"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="anchorClass" select="'small'"/>
+				</xsl:call-template>
+				<xsl:call-template name="popupInfoButton">
+					<xsl:with-param name="theAppDepRel" select="$thisExchange"/>
+				</xsl:call-template>
+				<!--<xsl:if test="count($thisStdInfoViews) > 0">
+					<xsl:call-template name="popupCanonicalInfoButton">
+						<xsl:with-param name="theStdViews" select="$thisStdInfoViews"/>
+					</xsl:call-template>		
+				</xsl:if>-->														
+			</div>
+			<xsl:if test="count($anAcqnMethod) > 0">
+				<div class="{$anAcquStyleClass}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$anAcqnMethod"/></xsl:call-template></div>
+			</xsl:if>			
+		</div>
+	</xsl:template>
+	
+	
+	<xsl:template mode="RenderInfoRepArrow" match="node()">
+		<xsl:param name="anAcqnMethod"/>
+		<xsl:param name="anAcqStyle"/>
+		<xsl:param name="anAppRel"/>
+		
+		
+		<div class="feed depModelArrowLong small">
+			<div>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="anchorClass" select="'small'"/>
+				</xsl:call-template>
+				<xsl:call-template name="popupInfoButton">
+					<xsl:with-param name="theAppDepRel" select="$anAppRel"/>
+				</xsl:call-template>													
+			</div>
+			<!--EXAMPLE BADGE CODE-->
+			<!--Must add an additional div surrounding the instance link and info/icon-->
+			<xsl:if test="count($anAcqnMethod) > 0">
+				<div class="{$anAcqStyle}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$anAcqnMethod"/></xsl:call-template></div>
+			</xsl:if>
+			<!--END EXAMPLE CODE-->					
+		</div>
+	</xsl:template>
+	
+	
 
 	<xsl:function name="eas:findInboundMiddlewareDeps" as="node()*">
 		<xsl:param name="theInboundApp"/>

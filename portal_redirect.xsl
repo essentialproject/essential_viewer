@@ -7,6 +7,7 @@
 
 	<xsl:param name="i18n"/>
 	<xsl:param name="pageHistory"/>
+	<xsl:param name="param1"/>
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>

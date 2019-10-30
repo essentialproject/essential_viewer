@@ -54,6 +54,7 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="instanceClassName" select="'Application_Provider'"/>
 	<xsl:variable name="allInstances" select="/node()/simple_instance[supertype = $instanceClassName or type = $instanceClassName]"/>
+	<xsl:variable name="linkClasses" select="('Application_Provider', 'Composite_Application_Provider')"/>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
 	<!-- START CATALOGUE SPECIFIC VARIABLES -->
@@ -94,6 +95,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>

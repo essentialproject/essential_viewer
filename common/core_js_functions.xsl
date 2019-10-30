@@ -93,6 +93,8 @@
 		function getUniqueArrayVals(arrayList) {
 			var values = [];
 			var currentVal, currentArray;
+console.log(arrayList[[0]]);
+            if(arrayList[0]){
 			for (i = 0; arrayList.length > i; i += 1) {
 				currentArray = arrayList[i];
 				for (j = 0; currentArray.length > j; j += 1) {
@@ -102,6 +104,7 @@
 					}
 				}
 			}
+            }
 			return values;
 		}
 		
@@ -202,6 +205,66 @@
 		}
 		<!-- END UTILITY FUNCTIONS -->
 		
+	</xsl:template>
+	
+	
+	<xsl:template name="RenderJavascriptRESTFunctions">
+		<!-- TODO remove. Refactor to use the same function in core_common_editor_api_functions.js. -->
+
+		//Utility function to create a CORs request
+		function createCORSRequest(method, url, csrfToken) {
+			var xhr = new XMLHttpRequest();
+			if ("withCredentials" in xhr) {
+			
+				// Check if the XMLHttpRequest object has a "withCredentials" property.
+				// "withCredentials" only exists on XMLHTTPRequest2 objects.
+				xhr.open(method, url, true);
+				xhr.setRequestHeader('x-csrf-token', csrfToken);
+
+				
+			} else if (typeof XDomainRequest != "undefined") {
+				
+				// Otherwise, check if XDomainRequest.
+				// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+				xhr = new XDomainRequest();
+				xhr.open(method, url);
+				xhr.setRequestHeader('x-csrf-token', csrfToken);
+
+			
+			} else {
+			
+			// Otherwise, CORS is not supported by the browser.
+			xhr = null;
+			
+			}
+			return xhr;
+		}
+
+		function onXhrLoad(xhr, success, failure) {
+			return function() {
+				var status = xhr.status;
+				if (status &gt;= 200 &amp;&amp; status &lt; 300) {
+					// http success code
+					success(xhr);
+				} else {
+					// http error code
+					var response = xhr.responseText;
+					try {
+						//console.log('Error Response:');
+						//console.log(response);
+						var theResponseJson = JSON.parse(response);
+						if (status === 403 &amp;&amp; theResponseJson.message &amp;&amp; theResponseJson.message.errorCode &amp;&amp; theResponseJson.message.errorCode === 10) {
+							// specific error code that informs the client that the server has logged the user out and requires a page refresh to complete the logout
+							location.reload();
+						}
+					} catch (e) {
+						// do nothing - if the API doesn't return a JSON error response, just continue
+					}
+					failure();
+				}
+			};
+		}
+
 	</xsl:template>
 	
 	
@@ -760,7 +823,7 @@
 		
 		{
 		id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
+		name: "<xsl:value-of select="eas:validJSONString($thisName)"/>",
 		colour: "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -808,10 +871,60 @@
 		</xsl:variable>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
-		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
-		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"colour": "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
+		}<xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template match="node()" mode="getEnumJSONList">
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		{
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"style": <xsl:call-template name="RenderElementStyleJSON"><xsl:with-param name="element" select="current()"/></xsl:call-template>
+		}<xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	
+	<xsl:template match="node()" mode="getSimpleJSONListWithLink">
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisLink">
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+		</xsl:variable>
+		
+		{
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"link": "<xsl:value-of select="$thisLink"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"colour": "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -831,11 +944,11 @@
 		</xsl:variable>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
-		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
-		colour: "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"colour": "<xsl:value-of select="eas:get_element_style_colour(current())"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -847,13 +960,14 @@
 		<xsl:value-of select="translate($theString, '. ', '__')"/>
 	</xsl:function>
 	
-	<xsl:function name="eas:removeQuotesFromString">
-		<xsl:param name="theString"/>
-		<xsl:variable name="apos">'</xsl:variable>
-		<xsl:variable name="quot">"</xsl:variable>
-		<xsl:value-of select="translate(translate($theString, $apos, ''), $quot, '')"/>
+	<!-- Move this to core_utilities.xsl -->
+<!--	<xsl:function name="eas:validJSONString">
+		<xsl:param name="theString"/>		
+		<xsl:variable name="aQuote">"</xsl:variable>
+		<xsl:variable name="anEscapedQuote">\\"</xsl:variable>
+		<xsl:value-of select="replace(normalize-unicode($theString), $aQuote, $anEscapedQuote)"/>
 	</xsl:function>
-	
+	-->
 	<!-- Template to render a JSON Object representing the styling details for an EA element -->
 	<xsl:function name="eas:getElementContextMenuName">
 		<xsl:param name="element" as="node()"/>
@@ -870,16 +984,14 @@
 	
 	<!-- Template to render a JSON Object representing the styling details for an EA element -->
 	<xsl:template name="RenderElementStyleJSON">
-		<xsl:param name="element" as="node()"/>
-		
+		<xsl:param name="element" as="node()"/>		
 		<xsl:variable name="elementStyle" select="eas:get_element_style_instance($element)"/>
-
 		{
-			'elementId': '<xsl:value-of select="eas:getSafeJSString($element/name)"/>',
-			'styleClass': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>',
-			'styleBgColour': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>',
-			'styleIcon': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
-			'styleTextColour': '<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>'
+			"elementId": "<xsl:value-of select="eas:getSafeJSString($element/name)"/>",
+			"styleClass": "<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>",
+			"styleBgColour": "<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>",
+			"styleIcon": "<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>",
+			"styleTextColour": "<xsl:value-of select="$elementStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>"
 		}
 	</xsl:template>
 	

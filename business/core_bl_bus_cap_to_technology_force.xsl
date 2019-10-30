@@ -61,6 +61,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -74,9 +75,10 @@
                      text { font: 10px sans-serif; pointer-events: none; }
 
                     </style>
+				<script src="js/d3/d3_4-11/d3.min.js"/>
 			</head>
-<body>
-<script src="https://d3js.org/d3.v3.min.js"></script>
+			<body>
+	
 
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
@@ -199,6 +201,8 @@
 	</xsl:template>
     
     <xsl:template match="node()" mode="buscaps">
+    <xsl:param name="thiscap"></xsl:param>
+    <xsl:if test="not($thiscap = current()/name)">    
         <xsl:variable name="this" select="current()"/>
          <xsl:variable name="thisbuscaps" select="$allBusCaps[own_slot_value[slot_reference='supports_business_capabilities']/value=$this/name]"/>    
         
@@ -208,7 +212,10 @@
         <xsl:if test="count(own_slot_value[slot_reference='contained_business_capabilities']/value)=0">
              <xsl:apply-templates select="$relatedBusProcesses" mode="busprocesses"/>
         </xsl:if>
-        <xsl:apply-templates select="$thisbuscaps" mode="buscaps"/>
+        <xsl:apply-templates select="$thisbuscaps" mode="buscaps">
+            <xsl:with-param name="thiscap" select="current()/name"/>
+        </xsl:apply-templates>
+    </xsl:if>    
     </xsl:template>
     
     <xsl:template match="node()" mode="busprocesses">

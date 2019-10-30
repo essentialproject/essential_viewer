@@ -57,6 +57,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>Application Distribution Change Analysis Catalogue</title>
 				<script type="text/javascript" src="js/autocolumn.js"/>
 				<!--script to turn the app providers list into columns-->

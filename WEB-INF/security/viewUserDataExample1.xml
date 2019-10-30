@@ -10,6 +10,10 @@
         <viewer>/essential_viewer_3</viewer>
         <viewer>/essential_viewer1</viewer>
     </viewers>
+    <contentApproverClasses>
+    	<className>Business_Event</className>
+    	<className>Application_Capability</className>
+    </contentApproverClasses>
     <clearanceList>
         <clearance type="read">
             <repository>12345jhhhkhj</repository>

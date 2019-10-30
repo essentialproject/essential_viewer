@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language xmlns="http://www.enterprise-architecture.org/essential/language" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="en-gb" xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
+
+	<!--
+        * Copyright (c)2012 Enterprise Architecture Solutions ltd.
+        * This file is part of Essential Architecture Manager, 
+        * the Essential Architecture Meta Model and The Essential Project.
+        *
+        * Essential Architecture Manager is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Essential Architecture Manager is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
+        * 
+        Default Language internationalisation (i18n) specification for Essential Viewer - en-gb.xml
+    -->
+
+<strings>
+<message><name>A</name><value>A</value></message>
+<message><name>About Essential</name><value>Apie 'Essential'</value></message>
+<message><name>About This View</name><value>Daugiau apie ataskaitą</value></message>
+<message><name>A breakdown of the Business Processes by Business Domain, the Business Capabilities that are in each and the Business Processes that implement the Business Capabilities</name><value>Veiklos procesų suskirstymas pagal veiklos kryptis, jose esančios veiklos sritis ir veiklos procesai, kurie įgalina veiklos sritis</value></message>
+<message><name>Absorb</name><value>Įtraukimas</value></message>
+<message><name>Access Right</name><value>Prieigos teisės</value></message>
+<message><name>Acquisition Method</name><value>Įsigijimo būdas</value></message>
+<message><name>Actor</name><value>Darbuotojas</value></message>
+<message><name>Actor (Consumer)</name><value>Naudotojas</value></message>
+<message><name>Actor (Provider)</name><value>Tiekėjas</value></message>
+<message><name>Actor as Role</name><value>Darbuotojas</value></message>
+<message><name>Actual Retirement Date</name><value>Faktinė galiojimo pabaiga</value></message>
+<message><name>All</name><value>Visi</value></message>
+<message><name>All Objectives</name><value>Visi objektai</value></message>
+<message><name>Application</name><value>Programa</value></message>
+<message><name>application</name><value>Programa</value></message>
+<message><name>Application Capability</name><value>Sistemos funkcija</value></message>
+<message><name>Application Capability Catalogue</name><value>Sistemos funkcijų katalogas</value></message>
+<message><name>Application Capability Catalogue by Name</name><value>Sistemos funkcijų katalogas, suskirstytas pagal vardą</value></message>
+<message><name>Application Capability Summary</name><value>Sistemos funkcijų ataskaita</value></message>
+<message><name>Application Catalogue</name><value>Sistemų sąrašas</value></message>
+<message><name>Application Catalogue as Table</name><value>Sistemų sąrašas lentelės pavidalu</value></message>
+<message><name>Application Catalogue by Application Family</name><value>Sistemų katalogas, suskirstytas pagal programos pavadinimą</value></message>
+<message><name>Application Catalogue by Name</name><value>Programų katalogas, suskirstytas pagal pavadinimą</value></message>
+<message><name>Application Change Analysis</name><value>Sistemos pokyčių analizė</value></message>
+<message><name>Application Change Analysis - Application Deficiency/Redundancy</name><value>Sistemos pokyčių analizė - sistemos stygius/trūkumas</value></message>
+<message><name>Application Change Analysis - Application Distribution</name><value>Sistemos pokyčių analizė - sistemos pasiskirstymas</value></message>
+<message><name>Application Change Analysis - Application Interface</name><value>Sistemos pokyčių analizė - sistemos paskyra</value></message>
+<message><name>Application Data Dependencies</name><value>Sistemos duomenų priklausomybė</value></message>
+<message><name>Application Data Dependency Model</name><value>Sistemos duomenų priklausomybės modelis</value></message>
+<message><name>Application Deficiency/Redundancy Change Analysis</name><value>Sistemos trūkumas/pertekliaus pokyčių analizė</value></message>
+<message><name>Application Dependencies</name><value>Sistemos priklausomybės</value></message>
+<message><name>Application Dependencies Model</name><value>Sistemų priklausomybių modelis</value></message>
+<message><name>Application Dependency Model</name><value>Sistemos priklausomybės modelis</value></message>
+<message><name>Application Deployment Description</name><value>Sistemos diegimo aprašas</value></message>
+<message><name>Application Deployment Instances Supported</name><value>Palaikomi sistemos diegimo įrašai</value></message>
+<message><name>Application Deployment Role</name><value>Sistemos diegimo vaidmuo</value></message>
+<message><name>Application Description</name><value>Sistemos aprašymas</value></message>
+<message><name>Application Distribution Change Analysis</name><value>Sistemos paskirstymo pokyčių analizė</value></message>
+<message><name>Application Distribution Change Analysis Catalogue</name><value>Sistemos paskirstymo pokyčių analizės katalogas</value></message>
+<message><name>Application Distribution Model</name><value>Sistemos paskirstymo modelis</value></message>
+<message><name>Application Diversity Analysis</name><value>Sistemų įvairovės analizė</value></message>
+<message><name>Application Diversity and Duplication Analysis</name><value>Sistemos paskirstymo ir dubliavimo analizė</value></message>
+<message><name>Application Family</name><value>Sistemų grupė</value></message>
+<message><name>Application Function Name</name><value>Sistemos funkcijos pavadinimas</value></message>
+<message><name>Application Impact Analysis</name><value>Sistemos poveikio analizė</value></message>
+<message><name>Application Info/Data Summary</name><value>Sistemos informacijos/duomenų suvestinė</value></message>
+<message><name>Application Information Dependency Model</name><value>Sistemos informacijos priklausomybės modelis</value></message>
+<message><name>Application Instance Name</name><value>Sistemos priklausomybė</value></message>
+<message><name>Application Interface</name><value>Sistemos paskyra</value></message>
+<message><name>Application Interface Change Analysis</name><value>Sistemos paskyros pokyčių analizė</value></message>
+<message><name>Application Interface Change Analysis Catalogue</name><value>Sistemos paskyros pokyčių analizės katalogas</value></message>
+<message><name>Application Lifecycle Model</name><value>Sistemos ciklo modelis</value></message>
+<message><name>Application List Extract - CSV</name><value>Sistemos sąrašo išrašas - csv</value></message>
+<message><name>Application List Extract - XML</name><value>Sistemos sąrašo išrašas - xml</value></message>
+<message><name>Application Milestone Summary</name><value>Sistemos rezultatų suvestinė</value></message>
+<message><name>Application Name</name><value>Sistemos pavadinimas</value></message>
+<message><name>Application Principles</name><value>Sistemos veikimo principai</value></message>
+<message><name>Application Provider Summary</name><value>Sistemos tiekėjo suvestinė</value></message>
+<message><name>Application Provider Summary for</name><value>Sistemos tiekėjo suvestinė</value></message>
+<message><name>Application Reference Model</name><value>Sistemos modelis</value></message>
+<message><name>Application Roadmap</name><value>Sistemos veiksmų planas</value></message>
+<message><name>Applications</name><value>Sistemos</value></message>
+<message><name>Application Service</name><value>Sistemos paslaugos</value></message>
+<message><name>application service</name><value>Sistemos paslaugos</value></message>
+<message><name>Application Service Catalogue</name><value>Sistemos paslaugų katalogas</value></message>
+<message><name>Application Service Catalogue by Name</name><value>Sistemos paslaugų katalogas, paskirstytas pagal pavadinimą</value></message>
+<message><name>Application Services</name><value>Sistemos paslaugos</value></message>
+<message><name>Application Services Supporting Business Capability Analysis</name><value>Sistemos paslaugos, palaikančios veiklos sričių analizę</value></message>
+<message><name>Application Service Stakeholder Model</name><value>Sistemos paslaugų suinteresuotų šalių modelis</value></message>
+<message><name>Application Service Stakeholder Model for</name><value>Sistemos paslaugų suinteresuotų šalių modelis</value></message>
+<message><name>Application Service Summary</name><value>Sistemos paslaugų suvestinė</value></message>
+<message><name>Application Software</name><value>Sistemos programinė įranga</value></message>
+<message><name>Application Summary</name><value>Sistemos suvestinė</value></message>
+<message><name>Application Supported</name><value>Sistema palaiko</value></message>
+<message><name>Application Technology Platform Model</name><value>Sistemos technologijų platformos modelis</value></message>
+<message><name>Application Technology Strategy Alignment</name><value>Sistemos technologijų strategijos suderinimas</value></message>
+<message><name>Application Type</name><value>Sistemos tipas</value></message>
+<message><name>Application Views</name><value>Sistemos ataskaitos</value></message>
+<message><name>Approved Technology Evaluation</name><value>Patvirtintas technologijų įvertinimas</value></message>
+<message><name>as the root organisation</name><value>Kaip pagrindinė organizacija</value></message>
+<message><name>A summary of the data managed by</name><value>Valdomų duomenų suvestinė</value></message>
+<message><name>A summary of the information interactions for the</name><value>Informacijos sąveikų suvestinė</value></message>
+<message><name>as well as the applications from where this data is sourced.</name><value>Taip pat sistemos, iš kurių gaunami šie duomenys.</value></message>
+<message><name>Attention</name><value>Dėmesio.</value></message>
+<message><name>Attributes</name><value>Parametrai</value></message>
+<message><name>Author</name><value>Autorius</value></message>
+<message><name>Author not defined</name><value>Nenustatytas autorius</value></message>
+<message><name>Automated</name><value>Automatizuota</value></message>
+<message><name>Automated Process</name><value>Automatizuotas procesas</value></message>
+<message><name>Available Maturity</name><value>Galimas pabaigos terminas</value></message>
+<message><name>B</name><value>B</value></message>
+<message><name>Back to Top</name><value>Atgal į viršų</value></message>
+<message><name>Baseline</name><value>Pradinis taškas</value></message>
+<message><name>Below is a list of the most recent pages viewed in Essential Viewer</name><value>Žemiau yra paskutinių puslapių, peržiūrėtų'Essential' aplinkoje, sąrašas</value></message>
+<message><name>Build Description</name><value>Versijos aprašas</value></message>
+<message><name>Business</name><value>Veikla</value></message>
+<message><name>Business Activity</name><value>Veiklos žingsnis</value></message>
+<message><name>Business Capability</name><value>Veiklos sritis</value></message>
+<message><name>Business Capability Catalogue</name><value>Veiklos sričių katalogas</value></message>
+<message><name>Business Capability Catalogue by Name</name><value>Veiklos sričių katalogas, suskirstytas pagal vardą</value></message>
+<message><name>Business Capability Change Footprint</name><value>Veiklos sričių pasikeitimo poveikis</value></message>
+<message><name>Business Capability Issues</name><value>Veiklos sričių problemos</value></message>
+<message><name>Business Capability Model</name><value>Veiklos sričių modelis</value></message>
+<message><name>Business Capability Summary</name><value>Veiklos sričių suvestinė</value></message>
+<message><name>Business Capability to Business Process Analysis</name><value>Veiklos pajėgumo ir veiklos procesų analizė</value></message>
+<message><name>Business Contact</name><value>Už veiklą atsakingo asmens kontaktai</value></message>
+<message><name>Business Continuity Plan in Place</name><value>Veiklos tęstinumo plano parengtumas</value></message>
+<message><name>Business Domain</name><value>Veiklos kryptis</value></message>
+<message><name>Business Domain Catalogue</name><value>Veiklos krypčių katalogas</value></message>
+<message><name>Business Domain Catalogue by Name</name><value>Veiklos krypčių katalogas, suskirstytas pagal pavadinimą</value></message>
+<message><name>Business Domain IT Analysis</name><value>Veiklos krypčių IT analizė</value></message>
+<message><name>Business Domain Process Analysis</name><value>Veiklos krypčių procesų analizė</value></message>
+<message><name>Business Driver</name><value>Veiklos veiksnys</value></message>
+<message><name>Business Drivers</name><value>Veiklos veiksniai</value></message>
+<message><name>Business Footprint</name><value>Veiklos poveikis</value></message>
+<message><name>Business Function/Service</name><value>Veiklos funkcija/paslauga</value></message>
+<message><name>Business Function / Service Change Analysis</name><value>Veiklos funkcijų/paslaugų pokyčių analizė</value></message>
+<message><name>Business Function/Service Model</name><value>Veiklos funkcijų/paslaugų modelis</value></message>
+<message><name>Business Impact</name><value>Veiklos poveikis</value></message>
+<message><name>Business Information Change Analysis</name><value>Veiklos informacijos pokyčių analizė</value></message>
+<message><name>Business Information Model</name><value>Veiklos informacijos modelis</value></message>
+<message><name>Business Milestone Summary</name><value>Veiklos rezultatų suvestinė</value></message>
+<message><name>Business Objective</name><value>Veiklos tikslas</value></message>
+<message><name>business objective</name><value>Veiklos tikslas</value></message>
+<message><name>Business Objective Footprint</name><value>Tikslo poveikis</value></message>
+<message><name>Business Objectives Catalogue</name><value>Veiklos tikslų katalogas</value></message>
+<message><name>Business Objective Summary</name><value>Veiklos tikslo suvestinė</value></message>
+<message><name>Business Objective Summary for</name><value>Veiklos tikslo suvestinė</value></message>
+<message><name>Business Owner</name><value>Už veiklą atsakingas asmuo</value></message>
+<message><name>Business Performance Change Analysis</name><value>Veiklos atlikties pokyčių analizė</value></message>
+<message><name>Business Performance Model</name><value>Veiklos atlikties modelis</value></message>
+<message><name>Business Principles</name><value>Veiklos vykdymo principai</value></message>
+<message><name>Business Process</name><value>Veiklos procesai</value></message>
+<message><name>Business Process Analysis</name><value>Veiklos procesų analizė;</value></message>
+<message><name>Business Process Analysis for Business Domain</name><value>Veiklos procesų analizė veiklos kryptims</value></message>
+<message><name>Business Process Catalogue</name><value>Veiklos procesų katalogas</value></message>
+<message><name>Business Process Catalogue by Business Domain</name><value>Veiklos procesų katalogas, suskirstytas pagal veiklos kryptis</value></message>
+<message><name>Business Process Catalogue by Business Service</name><value>Veiklos procesų katalogas, suskirstytas pagal veiklos paslaugas</value></message>
+<message><name>Business Process Catalogue by Domain</name><value>Veiklos procesų katalogas, paskirstytas pagal kryptį</value></message>
+<message><name>Business Process Catalogue by Name</name><value>Veiklos procesų katalogas, suskirstytas pagal pavadinimą</value></message>
+<message><name>Business Process Catalogue - Table View</name><value>Veiklos procesų katalogas - ataskaita lentelėje</value></message>
+<message><name>Business Process Change Analysis</name><value>Veiklos procesų pokyčių analizė</value></message>
+<message><name>Business Process Description</name><value>Veiklos proceso aprašas</value></message>
+<message><name>Business Processes</name><value>Veiklos procesai</value></message>
+<message><name>Business Processes Impacted</name><value>Paveikti veiklos procesai</value></message>
+<message><name>Business Processes Using</name><value>Veiklos procesai, naudojantys</value></message>
+<message><name>Business Processes Using Information Object</name><value>Veiklos procesai, naudojantys informacijos objektus</value></message>
+<message><name>Business Process IT Support Change Analysis</name><value>Veiklos procesų IT palaikymo pokyčių analizė</value></message>
+<message><name>Business Process Model</name><value>Veiklos procesų modelis</value></message>
+<message><name>Business Process Name</name><value>Veiklos proceso pavadinimas</value></message>
+<message><name>Business Process Summary</name><value>Veiklos procesų suvestinė</value></message>
+<message><name>Business Process Summary for</name><value>Veiklos procesų suvestinė</value></message>
+<message><name>Business Reference Model</name><value>Veiklos modelis</value></message>
+<message><name>Business Roadmap</name><value>Veiklos veiksmų planas</value></message>
+<message><name>Business Role</name><value>Veiklos vaidmuo</value></message>
+<message><name>Business Rule</name><value>Veiklos taisyklės</value></message>
+<message><name>Business Service</name><value>Veiklos paslaugos</value></message>
+<message><name>business service</name><value>Veikos paslaugos</value></message>
+<message><name>Business Service Catalogue</name><value>Veiklos paslaugų katalogas</value></message>
+<message><name>Business Service Catalogue by Name</name><value>Veiklos paslaugų katalogas, paskirstytas pagal pavadinimus</value></message>
+<message><name>Business Service Interaction Model</name><value>Veiklos paslaugų sąveikos modelis</value></message>
+<message><name>Business Services</name><value>Veiklos paslaugos</value></message>
+<message><name>Business Service Summary</name><value>Veiklos paslaugų suvestinė</value></message>
+<message><name>Business Stakeholders</name><value>Veiklos suinteresuotosios šalys</value></message>
+<message><name>Business Task</name><value>Veiklos tęstinumo plano parengtumas</value></message>
+<message><name>Business Team</name><value>Veiklos grupė</value></message>
+<message><name>Business Views</name><value>Veiklos ataskaitos</value></message>
+<message><name>business workflow</name><value>Veiklos darbo eiga</value></message>
+<message><name>by indicating what needs to change across</name><value>Nurodant, ką reikia keisti</value></message>
+<message><name>C</name><value>C</value></message>
+<message><name>Cancel</name><value>Atšaukti</value></message>
+<message><name>Capability</name><value>Veiklos sritis</value></message>
+<message><name>Catalogue</name><value>Katalogas</value></message>
+<message><name>Catalogues</name><value>Katalogai</value></message>
+<message><name>Change (Strategic Plan)</name><value>Keisti (strateginį planą)</value></message>
+<message><name>Change Analysis</name><value>Pokyčių analizė</value></message>
+<message><name>Choose a Business Area</name><value>Pasirinkite veiklos sferą</value></message>
+<message><name>Choose a Domain</name><value>Pasirinkite veiklos kryptį</value></message>
+<message><name>Choose an Objective</name><value>Pasirinkite tikslą</value></message>
+<message><name>Choose your language</name><value>Pasirinkite kalbą</value></message>
+<message><name>Clear Filter</name><value>Išvalyti filtrą</value></message>
+<message><name>Click on one of the Data Objects below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant vieno iš žemiau pateiktų duomenų objektų</value></message>
+<message><name>Click on one of the Data Subjects below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant vieno iš žemiau pateiktų duomenų subjektų</value></message>
+<message><name>Click on one of the Physical Nodes below to navigate to the required view</name><value>0</value></message>
+<message><name>Click on one of the Physical Nodes below to view its detailed specification</name><value>0</value></message>
+<message><name>Click on one of the Technology Components below to view the relevant Interoperability Change Analysis</name><value>Norėdami pamatyti pokyčių analizę, paspauskite ant vieno iš žemiau pateiktų technologijų komponentų ar technologijų produktų</value></message>
+<message><name>Click on one of the Technology Components or Technology Products below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant vieno iš žemiau pateiktų technologijų komponentų ar technologijų produktų</value></message>
+<message><name>Click on one of the Technology Products below to analyse which nodes are of the given computer type</name><value>0</value></message>
+<message><name>Click on one of the Technology Products below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant vieno iš žemiau pateiktų technologijų produktų</value></message>
+<message><name>Click to view Business Domains</name><value>Peržiūrėti veiklos kryptis</value></message>
+<message><name>Comment on Site</name><value>Komentarai svetainėje</value></message>
+<message><name>Comments</name><value>Komentarai</value></message>
+<message><name>Completeness</name><value>Užbaigtumas</value></message>
+<message><name>Component</name><value>Dalis</value></message>
+<message><name>Concept</name><value>Dalis</value></message>
+<message><name>Conditional Master Data</name><value>Lygtiniai pagrindiniai duomenys</value></message>
+<message><name>consumed and sourced?</name><value>Sunaudojama ir paskirstoma?</value></message>
+<message><name>Contact Details</name><value>Kontaktiniai duomenys</value></message>
+<message><name>Contract Owner</name><value>Sutarties sudarytojas</value></message>
+<message><name>CREATE</name><value>Sukurti</value></message>
+<message><name>Creates</name><value>Sukuriama</value></message>
+<message><name>Criticality to Process</name><value>Didelė svarba proceso eigai</value></message>
+<message><name>CRUD</name><value>CRUD</value></message>
+<message><name>Currency</name><value>Valiuta</value></message>
+<message><name>D</name><value>D</value></message>
+<message><name>Dashboards</name><value>Valdymo skydas</value></message>
+<message><name>Data Attributes</name><value>Duomenų parametrai</value></message>
+<message><name>Data Availability Change Analysis</name><value>Duomenų prieinamumo pokyčių analizė</value></message>
+<message><name>Database Installation Technology</name><value>Duomenų bazių diegimo technologijos</value></message>
+<message><name>Database Schema</name><value>Duomenų bazės schema</value></message>
+<message><name>Database Schema Description</name><value>Duomenų bazės schemos aprašas</value></message>
+<message><name>Database Schema Name</name><value>Duomenų bazės schemos pavadinimas</value></message>
+<message><name>Data Catalogue</name><value>Duomenų katalogas</value></message>
+<message><name>Data Catalogue by Category</name><value>Duomenų katalogas, suskirstytas pagal kategorijas</value></message>
+<message><name>Data Catalogue by Name</name><value>Duomenų katalogas, suskirstytas pagal pavadinimą</value></message>
+<message><name>Data Category</name><value>Duomenų kategorija</value></message>
+<message><name>Data Integrity Change Analysis</name><value>Duomenų integracijos pokyčių analizė</value></message>
+<message><name>data is</name><value>Duomenys yra</value></message>
+<message><name>Data Managed</name><value>Duomenų tvarkymas</value></message>
+<message><name>Data Milestone Summary</name><value>Duomenų rezultatų suvestinė</value></message>
+<message><name>Data Object</name><value>Duomenų objektas</value></message>
+<message><name>Data Object Name</name><value>Duomenų objekto pavadinimas</value></message>
+<message><name>Data Object Provider Model</name><value>Duomenų objektų teikėjo modelis</value></message>
+<message><name>Data Objects</name><value>Duomenų objektai</value></message>
+<message><name>Data Object Summary</name><value>Duomenų objekto suvestinė</value></message>
+<message><name>Data Object Summary for</name><value>Duomenų objekto suvestinė</value></message>
+<message><name>Data Provider Model</name><value>Duomenų teikėjo modelis</value></message>
+<message><name>Data Provider Model for</name><value>Duomenų teikėjo modelis</value></message>
+<message><name>Data Representation</name><value>Duomenų pateikimas</value></message>
+<message><name>Data Roadmap</name><value>Duomenų veiksmų planas</value></message>
+<message><name>Data Scarcity/Redundancy Change Analysis</name><value>Duomenų stygiaus/pertekliaus pokyčių analizė</value></message>
+<message><name>Data Scarcity / Redundancy Change Analysis</name><value>Duomenų stygiaus/pertekliaus pokyčių analizė</value></message>
+<message><name>Data Scarcity / Redundancy Change Analysis for</name><value>Duomenų stygiaus/pertekliaus pokyčių analizė</value></message>
+<message><name>Data Security Change Analysis</name><value>Duomenų saugos pokyčių analizė</value></message>
+<message><name>Data Security Model</name><value>Duomenų saugos modelis</value></message>
+<message><name>Data Security Model for</name><value>Duomenų saugos modelis</value></message>
+<message><name>Data Subject</name><value>Duomenų subjektas</value></message>
+<message><name>Data Subject</name><value>Duomenų subjektas</value></message>
+<message><name>Data Subject Catalogue</name><value>Duomenų subjekto katalogas</value></message>
+<message><name>Data Subject Catalogue by Name</name><value>Duomenų subjektų katalogas, suskirstytas pagal pavadinimus</value></message>
+<message><name>Data Subject Scarcity/Redundancy Change Analysis</name><value>Duomenų subjektų stygiaus/pertekliaus pokyčių analizė</value></message>
+<message><name>Data Subject Security Model</name><value>Duomenų subjektų saugos modelis</value></message>
+<message><name>Data Subject Summary</name><value>Duomenų subjektų suvestinė</value></message>
+<message><name>Data Subject Summary for</name><value>Duomenų subjektų suvestinė</value></message>
+<message><name>Data Subject to Application Service Model</name><value>Duomenų subjekto ir sistemos paslaugų modelis</value></message>
+<message><name>Data Subject-to-Application Service Model for</name><value>Duomenų subjekto ir sistemos paslaugų modelis</value></message>
+<message><name>Data-to-Application Service Matrix</name><value>Duomenų ir sistemos paslaugų matrica</value></message>
+<message><name>Data to Application Service Model</name><value>Duomenų ir sistemos paslaugų modelis</value></message>
+<message><name>Data-to-Application Service Model</name><value>Duomenų ir sistemos paslaugų modelis</value></message>
+<message><name>Data-to-Role Matrix</name><value>Duomenų ir vaidmenų ryšio matrica</value></message>
+<message><name>DB Installation Technology</name><value>DB diegimo technologija</value></message>
+<message><name>DB Schema Description</name><value>DB schemos aprašymas</value></message>
+<message><name>DB Schema Name</name><value>DB schemos pavadinimas</value></message>
+<message><name>Decommission</name><value>Uždaryti</value></message>
+<message><name>Defining Process Flow</name><value>Proceso srauto apibrėžimas</value></message>
+<message><name>Definition</name><value>Apibrėžimas</value></message>
+<message><name>DELETE</name><value>Ištrinti</value></message>
+<message><name>Deletes</name><value>Ištrintieji</value></message>
+<message><name>Delivery Method</name><value>Pateikimo būdas</value></message>
+<message><name>Delivery Projects</name><value>Pristatymo projektai</value></message>
+<message><name>Dependant Application Instances</name><value>Priklausomi sistemos įrašai</value></message>
+<message><name>Dependant Technology Instances</name><value>Priklausomi technologijų įrašai</value></message>
+<message><name>Dependencies</name><value>Priklausomybės</value></message>
+<message><name>Dependency Model</name><value>Priklausomybės modelis</value></message>
+<message><name>Depends on Plans</name><value>Priklauso nuo planų</value></message>
+<message><name>Deployed Application Instances</name><value>Įdiegtos taikomosios programos</value></message>
+<message><name>Deployed Database Schema</name><value>Įdiegta duomenų bazės schema</value></message>
+<message><name>Deployed Instances</name><value>0</value></message>
+<message><name>Deployed on Node</name><value>0</value></message>
+<message><name>Deployed on Physical Node</name><value>0</value></message>
+<message><name>Deployed Technology Instances</name><value>Įdiegtos technologijos</value></message>
+<message><name>Deployed to</name><value>Įdiegta</value></message>
+<message><name>Deployment of Application</name><value>Sistemų įdiegimas</value></message>
+<message><name>Deployment Status</name><value>Diegimo būsena</value></message>
+<message><name>Deployment Technology Format</name><value>Technologijų formato įdiegimas</value></message>
+<message><name>Description</name><value>Aprašas</value></message>
+<message><name>Designated System of Record</name><value>Priskirta įrašų sistema</value></message>
+<message><name>Destination</name><value>Paskirties vieta</value></message>
+<message><name>Details of this element are integrated with other repositories as follows</name><value>Išsami informacija apie šį elementą yra integruota su kitomis saugyklomis</value></message>
+<message><name>Document</name><value>Dokumentas</value></message>
+<message><name>Document List</name><value>Dokumentų sąrašas</value></message>
+<message><name>Document Name</name><value>Dokumento pavadinimas</value></message>
+<message><name>documents</name><value>Dokumentai</value></message>
+<message><name>documents have been published</name><value>Dokumentai buvo pateikti</value></message>
+<message><name>Download</name><value>Parsisiųsti</value></message>
+<message><name>Downstream Systems</name><value>0</value></message>
+<message><name>Driver</name><value>Veiksnys</value></message>
+<message><name>Duplication/Gap Analysis</name><value>Dubliavimosi/spragų analizė</value></message>
+<message><name>E</name><value>E</value></message>
+<message><name>EA Principles</name><value>EA principai</value></message>
+<message><name>Element</name><value>Elementas</value></message>
+<message><name>Email</name><value>El. Paštas</value></message>
+<message><name>Empty</name><value>Tuščia</value></message>
+<message><name>End Date</name><value>Pabaigos data</value></message>
+<message><name>Enhance</name><value>Padidinti</value></message>
+<message><name>Enterprise</name><value>Įmonė</value></message>
+<message><name>Enterprise Views</name><value>Įmonės ataskaitos</value></message>
+<message><name>environment:</name><value>Aplinka:</value></message>
+<message><name>Essential Architecture Manager - Application Services Supporting Business Capability Analysis</name><value>'Essential' architektūros administratorius - sistemos paslaugos, palaikančios veiklos sričių analizę</value></message>
+<message><name>Essential Architecture Manager - Strategic Plan Specification</name><value>'Essential' architektūros administratorius - strateginio plano specifikacija</value></message>
+<message><name>Essential Utilities</name><value>'Essential' įrankiai</value></message>
+<message><name>Essential Viewer History</name><value>'Essential' aplinkų istorija</value></message>
+<message><name>Essential Viewer last updated</name><value>'Essential' aplinka paskutinį kartą atnaujinta</value></message>
+<message><name>Existing Solutions</name><value>Esami sprendimai</value></message>
+<message><name>Expand</name><value>Išskleisti</value></message>
+<message><name>External</name><value>Išorinis</value></message>
+<message><name>External Document References</name><value>Išorės dokumentų nuorodos</value></message>
+<message><name>External Facing</name><value>Išorinis susidūrimas</value></message>
+<message><name>External References</name><value>Išorinės nuorodos</value></message>
+<message><name>External Repository</name><value>Išorinė saugykla</value></message>
+<message><name>External Repository ID</name><value>Išorinis saugyklos ID</value></message>
+<message><name>F</name><value>F</value></message>
+<message><name>false</name><value>Klaidinga</value></message>
+<message><name>Feedback</name><value>Atsiliepimas</value></message>
+<message><name>Feedback Type</name><value>Grįžtamojo ryšio tipas</value></message>
+<message><name>Filter</name><value>Filtras</value></message>
+<message><name>Fixed Price Deal in Place</name><value>Fiksuota kaina</value></message>
+<message><name>Forecast End Date</name><value>Prognozės pabaigos data</value></message>
+<message><name>Frequency</name><value>Dažnis</value></message>
+<message><name>from the baseline state to the target state</name><value>Nuo pradinės būsenos iki tikslinės būsenos</value></message>
+<message><name>Function/Service Change Analysis</name><value>Funkcijų / paslaugų pakeitimų analizė</value></message>
+<message><name>Functions/Services</name><value>Funkcijos / paslaugos</value></message>
+<message><name>Functions Name</name><value>Funkcijos pavadinimas</value></message>
+<message><name>Functions Provided</name><value>Teikiamos funkcijos</value></message>
+<message><name>Further Information</name><value>Papildoma informacija</value></message>
+<message><name>G</name><value>G</value></message>
+<message><name>Get In Touch</name><value>Susisiekti</value></message>
+<message><name>Go to</name><value>Eiti į</value></message>
+<message><name>Granularity</name><value>Detalumas</value></message>
+<message><name>H</name><value>H</value></message>
+<message><name>Hardware Instance</name><value>Techninė įranga</value></message>
+<message><name>he purpose of the Strategic Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key enterprise elements that will exist at this stage of the Strategic Roadmap</name><value>Strateginio plano rezultatų suvestinės ataskaitos paskirtis yra nurodyti, kokie veiksniai ir tikslai yra palaikomi bei pateikti sąrašą esminių įmonių elementų, kurie bus įgyvendinti šiame strateginio veiksmų plano etape</value></message>
+<message><name>High</name><value>Aukšta</value></message>
+<message><name>Highlight Objective</name><value>Paryškinti tikslą</value></message>
+<message><name>History</name><value>Istorija</value></message>
+<message><name>Home</name><value>Pagrindinis puslapis</value></message>
+<message><name>I</name><value>I</value></message>
+<message><name>Impacted Applications</name><value>Paveiktos sistemos</value></message>
+<message><name>Impacted Application Services</name><value>Paveiktos sistemų paslaugos</value></message>
+<message><name>Impacted Application Services</name><value>Paveiktos sistemų funkcijos</value></message>
+<message><name>Impacted Business Drivers</name><value>Paveikti veiklos veiksniai</value></message>
+<message><name>Impacted Business Objectives</name><value>Paveikti veiklos tikslai</value></message>
+<message><name>Impacted Business Processes</name><value>Paveikti veiklos procesai</value></message>
+<message><name>Impacted Business Roles</name><value>Paveiktos rolės</value></message>
+<message><name>Impacted Business Services</name><value>Paveiktos veiklos paslaugos</value></message>
+<message><name>Impacted Data Objects</name><value>Paveikti duomenų objektai</value></message>
+<message><name>Impacted Drivers</name><value>Paveikti veiksniai</value></message>
+<message><name>Impacted Elements</name><value>Paveikti elementai</value></message>
+<message><name>Impacted Information Views</name><value>Paveiktos formos</value></message>
+<message><name>Impacted Locations</name><value>Paveiktos lokacijos</value></message>
+<message><name>Impacted Objectives</name><value>Paveikti tikslai</value></message>
+<message><name>Impacted Organisations</name><value>Paveiktos organizacijos</value></message>
+<message><name>Impacted Organisation Units</name><value>Paveikti organizacijų padaliniai</value></message>
+<message><name>Impacted Processes</name><value>Paveikti procesai</value></message>
+<message><name>Impacted Roles</name><value>Paveikti vaidmenys</value></message>
+<message><name>Impacted Teams</name><value>Paveiktos grupės</value></message>
+<message><name>Impacted Technology Components</name><value>Paveikti technologijų komponentai</value></message>
+<message><name>Impacted Technology Products</name><value>Paveikti technologijų produktai</value></message>
+<message><name>Impacted Technology Products/Builds</name><value>Paveikti technologijų produktai</value></message>
+<message><name>Implemented</name><value>Įdiegta</value></message>
+<message><name>Implemented Applications</name><value>Įdiegtos sistemos</value></message>
+<message><name>Implemented Components</name><value>Įdiegti sistemų komponentai</value></message>
+<message><name>Implementing Applications</name><value>Įdiegti sistemas</value></message>
+<message><name>Implementing Processes</name><value>Įdiegti procesus</value></message>
+<message><name>Implements Tech Components</name><value>Įdiegti technologijų komponentus</value></message>
+<message><name>Implications for Applications</name><value>Poveikis programoms</value></message>
+<message><name>Implications for Information</name><value>Poveikis informacijai</value></message>
+<message><name>Implications for Technology</name><value>Poveikis technologijai</value></message>
+<message><name>Implications for the Business</name><value>Poveikis veiklai</value></message>
+<message><name>Import Spreadsheet Templates</name><value>Importuoti skaičiuoklės šablonus</value></message>
+<message><name>Inbound</name><value>Gaunamas</value></message>
+<message><name>Infomation Concept of View</name><value>Ataskaitos informacijos dalis</value></message>
+<message><name>Info Representation Deployments</name><value>Informacijos atvaizdavimo diegimai</value></message>
+<message><name>Information</name><value>Informacija</value></message>
+<message><name>Information/Data Roadmap</name><value>Informacijos/duomenų veiksmų planas</value></message>
+<message><name>Information/Data Summary</name><value>Informacijos/duomenų suvestinė</value></message>
+<message><name>Information/Data Summary for Application</name><value>Informacijos/duomenų suvestinė pasirinktai sistemai</value></message>
+<message><name>Information and Data Views</name><value>Informacija ir duomenų ataskaita</value></message>
+<message><name>Information Catalogue</name><value>Informacijos katalogas</value></message>
+<message><name>Information Catalogue by Business Domain</name><value>Informacijos katalogai, suskirstyti pagal veiklos kryptis</value></message>
+<message><name>Information Catalogue by Concept</name><value>Informacijos katalogai, suskirstyti pagal dalis</value></message>
+<message><name>Information Change Analysis</name><value>Informacijos keitimo analizė</value></message>
+<message><name>Information Concept</name><value>Informacijos dalis</value></message>
+<message><name>Information Concept Summary</name><value>Informacijos dalių suvestinė</value></message>
+<message><name>Information Created</name><value>Sukurta informacija</value></message>
+<message><name>Information Deleted</name><value>Informacija ištrinta</value></message>
+<message><name>Information Name</name><value>Informacijos pavadinimas</value></message>
+<message><name>Information Object</name><value>Informacijos objektas</value></message>
+<message><name>Information Object</name><value>Informacijos objektas</value></message>
+<message><name>Information Object Summary</name><value>Informacijos objekto suvestinė</value></message>
+<message><name>Information Object Summary for</name><value>Informacijos objekto suvestinė</value></message>
+<message><name>Information Principles</name><value>Informacijos pateikimo principai</value></message>
+<message><name>Information Provided</name><value>Suteikta informacija</value></message>
+<message><name>Information Reference Model</name><value>Informacijos modelis</value></message>
+<message><name>Information Representation</name><value>Informacijos atvaizdavimas</value></message>
+<message><name>Information Representation Deployments</name><value>Informacijos atvaizdavimo diegimai</value></message>
+<message><name>Information Representations</name><value>Informacijos atvaizdavimai</value></message>
+<message><name>Information Representation Summary</name><value>Informacijos atvaizdavimo suvestinė</value></message>
+<message><name>Information Representation Summary for</name><value>Informacijos atvaizdavimo suvestinė</value></message>
+<message><name>Information Store</name><value>Duomenų bazė</value></message>
+<message><name>Information System</name><value>Informacinė sistema</value></message>
+<message><name>Information System Change Analysis</name><value>Informacinės sistemos pokyčių analizė</value></message>
+<message><name>Information Type (View)</name><value>Ataskaita</value></message>
+<message><name>Information Updated</name><value>Atnaujinta informacija</value></message>
+<message><name>Information Used</name><value>Panaudota informacija</value></message>
+<message><name>Information View</name><value>Forma</value></message>
+<message><name>Information View Name</name><value>Formos pavadinimas</value></message>
+<message><name>Information Views</name><value>Formos </value></message>
+<message><name>Information Views &amp; Concepts</name><value>Formos ir informacijos dalys</value></message>
+<message><name>Information Views Represented</name><value>Formos atvaizdavimas</value></message>
+<message><name>Information View Summary</name><value>Formos suvestinė</value></message>
+<message><name>Infrastructure Software</name><value>Infrastruktūros programinė įranga</value></message>
+<message><name>Input Method</name><value>Įrašymo būdas</value></message>
+<message><name>Instance Configuration</name><value>Priklausomybių konfigūracija</value></message>
+<message><name>Internal</name><value>Vidinis</value></message>
+<message><name>Internal Facing</name><value>Vidinė procedūra</value></message>
+<message><name>is created based on teh following schedules:</name><value>yra sukurta remiantis šiuo tvarkaraščiu:</value></message>
+<message><name>is delivered using the following methods:</name><value>Yra pristatomi šiais metodais:</value></message>
+<message><name>is provided in the following formats:</name><value>Yra pateikiami šiais formatais:</value></message>
+<message><name>is to inform stakeholders regarding the extent of change that is required to move</name><value>Suteikti suinteresuotoms šalims informaciją apie pokyčius, kurie turi būti įgyvendinti, norint </value></message>
+<message><name>IT Contact</name><value>IT kontaktai</value></message>
+<message><name>It is a model that defines a portfolio of applications and its service/function decomposition</name><value>Tai yra modelis, kuris apibūdina sistemų visumą ir jos paslaugų/funkcijų struktūrą</value></message>
+<message><name>It is a model that defines the applications, their locations and the interfaces between applications</name><value>Tai yra modelis, kuris apibūdina sistemas, jų lokacijas bei paskyras tarp sistemų</value></message>
+<message><name>It is a model that defines the business processes of the enterprise, in the form of events, activities, rules and responsibilities</name><value>Tai yra modelis, kuris apibūdina pateikia įmonės veiklos procesus - įvykius, veiklą, taisykles ir atsakomybes</value></message>
+<message><name>It is a model that defines the Core and Support Functions/Services of the Enterprise, the Information Systems that enable the function/service, and the roles of the actors that participate</name><value>Tai yra modelis, kuris apibūdina įmonės kamieną bei palaikomas funkcijas/paslaugas, informacijos sistemą, kuri vykdo funkcijas/paslaugas; su veikla susijusių asmenų vaidmenis</value></message>
+<message><name>It is a model that defines the defines the technologies in different locations/environments</name><value>Tai yra modelis, kuris apibūdina skirtingose lokacijose/aplinkose esančias technologijas</value></message>
+<message><name>It is a model that defines the information assets that are consumed and produced by each Business Function/Service, including information exchange requirements with external business functions/services</name><value>0</value></message>
+<message><name>It is a model that defines the interaction (e.g. create, read, update, delete) between applications and data</name><value>Tai yra modelis, kuris apibūdina sąveiką (pvz., kūrimas, peržiūra, atnaujinimas, ištrynimas) tarp sistemos ir duomenų</value></message>
+<message><name>It is a model that defines the organisational structure (hierarchical decomposition), the functions/service performed by each organisational unit, the geographic location where these organisation unit reside, and the responsible authority (owner) of these organisation units</name><value>Tai yra modelis, kuris apibūdina organizacijos struktūrą (hierarchinę sudėtį), funkcijas/paslaugas, kurias vykdo kiekvienas organizacijos padalinys, geografinė lokacija, kur yra šie organizacijos padaliniai bei jų atsakingi asmenys (savininkas)</value></message>
+<message><name>It is a model that defines the relationships between objectives / imperatives as derived from Policy, Act, Regulation and requirements, and the responsible organisation to achieve the objectives, and the measures or key performance indicators (KPI) by which to measure achievements of such objectives</name><value>0</value></message>
+<message><name>It is a model that defines the security classification of Data Objects and the roles in the organisation that need access thereto</name><value>Tai yra modelis, kuris apibūdina duomenų objektų saugos klasifikaciją bei vaidmenis organizacijoje, kuriems reikia prieigos</value></message>
+<message><name>It is a model that defines the security classification of Data Subjects and the roles in the organisation that need access thereto</name><value>Tai yra modelis, kuris apibūdina duomenų subjektų klasifikaciją bei vaidmenis organizacijoje, kuriems reikia prieigos</value></message>
+<message><name>It is a model that defines the Technologies in relation to the different subsystems in a distributed computing or client-server configuration (Note: Also known as the “technology stack” of a specific system)</name><value>0</value></message>
+<message><name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline</name><value>Tai modelis, kuris apibūdina trūkumus bei tobulinimo galimybes, gautas palyginant</value></message>
+<message><name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Business Architecture models and the Target Business Architecture models</name><value>Tai modelis, kuris apibūdina trūkumus bei tobulinimo galimybes, gautas palyginant veiklos architektūros modelį su veiklos tikslo architektūros modeliu</value></message>
+<message><name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Data Architecture models and the Target Business Architecture models</name><value>Tai modelis, kuris apibūdina trūkumus bei tobulinimo galimybes, gautas palyginant pradinę duomenų architektūrą su veiklos tikslo architektūros modeliu</value></message>
+<message><name>It outlines a list of individual increments of change over a timeline to show progression from a baseline to a target architecture state</name><value>Pateikiamas atskirų per tam tikrą laikotarpį įgyvendintų pokyčių sąrašą, tam kad būtų parodytas progresas ir skirtumas tarp pradinės bei tikslinės architektūros būsenų</value></message>
+<message><name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Application Architecture to the Target Application Architecture</name><value>Pateikiamas atskirų per tam tikrą laikotarpį įgyvendintų pokyčių sąrašą, tam kad būtų parodytas progresas ir skirtumas tarp pradinės sistemos architektūros bei tikslinės sistemos architektūros</value></message>
+<message><name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Data Architecture to the Target Data Architecture</name><value>Pateikiamas atskirų per tam tikrą laikotarpį įgyvendintų pokyčių sąrašą, tam kad būtų parodytas progresas ir skirtumas tarp pradinės sistemos architektūros bei tikslinės duomenų architektūros</value></message>
+<message><name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Technology Architecture to the Target Technology Architecture</name><value>Pateikiamas atskirų per tam tikrą laikotarpį įgyvendintų pokyčių sąrašą, tam kad būtų parodytas progresas ir skirtumas tarp pradinės technologijų architektūros ir tikslinės technologijų architektūros</value></message>
+<message><name>It provides a model that defines the major classes of technology components/services (infrastructure software, hardware, and network) and the interoperability standards associated thereto</name><value>Pateikiamas modelis, kuris nurodo pagrindines technologijų  modulių/paslaugų klases (infrastruktūros programinė įranga, techninė įranga ir tinklas) bei su jais susijusius standartus</value></message>
+<message><name>IT System Analysis</name><value>IT sistemų analizė</value></message>
+<message><name>J</name><value>J</value></message>
+<message><name>Jump to</name><value>Pereiti į</value></message>
+<message><name>K</name><value>K</value></message>
+<message><name>Keep</name><value>Palikti</value></message>
+<message><name>Key</name><value>Raktas</value></message>
+<message><name>KPI Measures</name><value>KPI matavimai</value></message>
+<message><name>KPIs</name><value>KPI</value></message>
+<message><name>L</name><value>L</value></message>
+<message><name>Language Selection</name><value>Kalbos parinkimas</value></message>
+<message><name>Last Updated</name><value>Paskutinį kartą atnaujinta</value></message>
+<message><name>Legend</name><value>Rodyklė</value></message>
+<message><name>Level of Project Activity</name><value>Projekto veiklos lygmuo</value></message>
+<message><name>Loading</name><value>Įkeliama</value></message>
+<message><name>Local Name</name><value>Vietinis vardas</value></message>
+<message><name>Location</name><value>Lokacija</value></message>
+<message><name>Location Change Analysis</name><value>Lokacijos pasikeitimų analizė</value></message>
+<message><name>Locations</name><value>Lokacijos</value></message>
+<message><name>Low</name><value>Žemas</value></message>
+<message><name>M</name><value>M</value></message>
+<message><name>Maintenance Cost</name><value>Palaikymo kaštai</value></message>
+<message><name>Manual</name><value>Rankinis</value></message>
+<message><name>Manual Process</name><value>Rankinis procesas</value></message>
+<message><name>Master Data</name><value>Pagrindiniai duomenys</value></message>
+<message><name>Matrix</name><value>Matrica</value></message>
+<message><name>Measure/KPI</name><value>KPI</value></message>
+<message><name>Measures</name><value>Matavimai</value></message>
+<message><name>Medium</name><value>0</value></message>
+<message><name>Member of Organisations</name><value>Organizacijos nariai</value></message>
+<message><name>Member of Product Family</name><value>Produkto kategorijos narys</value></message>
+<message><name>Method</name><value>Metodas</value></message>
+<message><name>Milestone Summary</name><value>Rezultatų suvestinė</value></message>
+<message><name>Model</name><value>Modelis</value></message>
+<message><name>models</name><value>Modeliai</value></message>
+<message><name>models and the Target</name><value>Modeliai ir tikslas</value></message>
+<message><name>Motivating Drivers</name><value>Motyvaciniai veiksniai</value></message>
+<message><name>N</name><value>N</value></message>
+<message><name>Name</name><value>Vardas</value></message>
+<message><name>Network Diagram</name><value>Tinklo diagrama</value></message>
+<message><name>New</name><value>Naujas</value></message>
+<message><name>No</name><value>Ne</value></message>
+<message><name>No actors captured for this workflow</name><value>Šiai darbo eigai nėra priskirtų vaidmenų</value></message>
+<message><name>No Additional Technology Nodes defined for this Node</name><value>0</value></message>
+<message><name>No Application Instances dependant on this Technology Instance</name><value>Jokie sistemų įrašai nepriklauso nuo šio technologijų įrašo</value></message>
+<message><name>No Applications captured</name><value>Nerasta programa</value></message>
+<message><name>No Applications Defined</name><value>Nenustatyta jokių programų</value></message>
+<message><name>No Applications defined for this milestone</name><value>Šiam rezultatui nėra nustatyta jokių sistemų</value></message>
+<message><name>No Application Services defined for this Capability</name><value>Šiai galimybei nėra nustatyta jokių sistemos paslaugų</value></message>
+<message><name>No Application Services defined for this milestone</name><value>Šiam rezultatui nėra nustatyta jokių sistemos paslaugų</value></message>
+<message><name>No Application Services have been captured for this Application Capability</name><value>Šiai sistemos galimybei nerasta jokių sistemos paslaugų</value></message>
+<message><name>No Applications Mapped</name><value>Nėra pritaikyta jokia sistema</value></message>
+<message><name>No business capabilities defined for this process</name><value>Šiam procesui nėra nustatyta jokių veiklos sričių</value></message>
+<message><name>No business domain captured</name><value>Nenustatyta jokia veiklos kryptis</value></message>
+<message><name>No Business Domain captured for this Application Capability</name><value>Šioms sistemos sričiai nenustatyta jokia veiklos kryptis</value></message>
+<message><name>No business drivers captured</name><value>Nerasti jokie veiklos veiksniai</value></message>
+<message><name>No business owner captured</name><value>Nenustatytas veiklos savininkas</value></message>
+<message><name>No business owner has been captured for the</name><value>Nenustatytas veiklos savininkas</value></message>
+<message><name>No business processes captured for this business service</name><value>Šioms veiklos paslaugoms nėra nustatyta jokių veiklos procesų </value></message>
+<message><name>No Business Processes defined for this Capability</name><value>Šiai galimybei nėra nustatyta jokių veiklos galimybių</value></message>
+<message><name>No Business Processes defined for this milestone</name><value>Šiam rezultatui nėra nustatyti jokie veiklos procesai</value></message>
+<message><name>No Business Processes Mapped</name><value>Nėra pritaikyti jokie veiklos procesai</value></message>
+<message><name>No Business Processes mapped</name><value>Nėra pritaikyti jokie veiklos procesai</value></message>
+<message><name>No business roles defined for</name><value>Nenustatyta joks veiklos vaidmuo </value></message>
+<message><name>No Business Services defined for this milestone</name><value>Šiam etapui nenustatytos jokios veiklos paslaugos</value></message>
+<message><name>No business stakeholders have been captured for the</name><value>Nerasta suinteresuotų šalių</value></message>
+<message><name>No Components Defined</name><value>Nenustatyti jokie moduliai</value></message>
+<message><name>No configuration details captured for this Technology Instance</name><value>Šiam technologijų įrašui nerasta jokių konfigūracijos detalių</value></message>
+<message><name>No consumers captured for this Business Service</name><value>Šioms veiklos paslaugoms nerasti jokie vartotojai</value></message>
+<message><name>No Data Attributes Defined</name><value>Nenustatyti jokie duomenų parametrai</value></message>
+<message><name>No Database Scheme Defined for this object</name><value>Šiam objektui nėra nustatytos jokios duomenų bazės schemos</value></message>
+<message><name>No data integrations defined for</name><value>Nenustatytas duomenų integravimas</value></message>
+<message><name>No Data Managed captured for this Application - Manager?</name><value>0</value></message>
+<message><name>No Data Objects defined for this milestone</name><value>Šiam etapui nėra nustatyti jokie duomenų objektai</value></message>
+<message><name>No Data Subjects have been captured for this Information Concept</name><value>Šiai informacijos daliai nerasta jokių duomenų subjektų</value></message>
+<message><name>No defined deployments for this Information Representation</name><value>Šiems įdiegimams</value></message>
+<message><name>No definition captured for this Business Capability</name><value>Šiai veiklos galimybei nerasta jokių apibrėžimų</value></message>
+<message><name>No definition captured for this Information Concept</name><value>Nenustatyta informacijos dalis</value></message>
+<message><name>No definition captured for this Technology Component</name><value>Šiam technologijų moduliui nerasta jokių apibrėžimų </value></message>
+<message><name>No delivery methods have been captured for the</name><value>Nerasta jokių pristatymo būdų</value></message>
+<message><name>Node Name</name><value>0</value></message>
+<message><name>No dependant applications captured</name><value>Nerasta jokių priklausomų sistemų</value></message>
+<message><name>No dependant business processes/teams captured</name><value>Nerasta jokių priklausomų veiklos procesų/grupių</value></message>
+<message><name>No dependent plans defined for this Strategic Plan</name><value>Šiam strateginiam planui nenustatyti jokie priklausantys planai</value></message>
+<message><name>No Deployed Application Instances Defined for this object</name><value>Šiam objektui nėra nustatytos jokios įdiegtos sistemos</value></message>
+<message><name>No Deployed Instances for this Product</name><value>Šiam produktui nėra jokio konkretaus įdiegimo</value></message>
+<message><name>No description captured for this Application Capability</name><value>Šiai sistemos galimybei nerastas joks aprašas</value></message>
+<message><name>No description captured for this Business Service</name><value>Šioms veiklos paslaugoms nerastas joks aprašas</value></message>
+<message><name>No description captured for this type of document</name><value>Šio tipo dokumentui nerastas joks aprašas</value></message>
+<message><name>Node Technology</name><value>0</value></message>
+<message><name>No directly impacted applications captured</name><value>Nerasta jokių tiesiogiai paveikiamų sistemų</value></message>
+<message><name>No directly impacted business processes captured</name><value>Nerasta jokių tiesiogiai paveikiamų veiklos procesų</value></message>
+<message><name>No directly impacted organisations captured</name><value>Nerasta jokių tiesiogiai paveikiamų organizacijų </value></message>
+<message><name>No downstream systems identified for this workflow</name><value>0</value></message>
+<message><name>No Drivers defined for this milestone</name><value>Šiam etapui nerasta jokių veiksnių</value></message>
+<message><name>No email address provided</name><value>Nepateiktas el. Paštas</value></message>
+<message><name>No external references for this object</name><value>Šiam objektui nėra išorinių sąsajų</value></message>
+<message><name>No Functions Defined</name><value>Nenustatytos funkcijos</value></message>
+<message><name>No further details provided</name><value>Daugiau informacijos nepateikta</value></message>
+<message><name>No Impacted Elements defined for this Strategic Plan</name><value>Šiam strateginiam planui nenustatyti jokie elementai</value></message>
+<message><name>No Inbound Business Services Mapped for</name><value>Nenurodytos gaunamos veiklos paslaugos</value></message>
+<message><name>No Inbound Information Dependencies Mapped for</name><value>Nenurodytos jokios gaunamos informacijos priklausomybės</value></message>
+<message><name>No information</name><value>Nėra jokios informacijos</value></message>
+<message><name>No Information Concepts captured</name><value>Nerasta jokių informacijos dalių</value></message>
+<message><name>No Information Concepts defined for this Domain</name><value>Šiai krypčiai nėra nustatyta jokių informacijos dalių</value></message>
+<message><name>No Information Dependencies Mapped for</name><value>Nenurodyta jokia gaunama informacija</value></message>
+<message><name>No Information Provided captured for this Application</name><value>Šiai sistemai nerasta jokios pateiktos informacijos</value></message>
+<message><name>No Information Store dependencies defined for this product</name><value>Šiam produktui nenustatyti jokie </value></message>
+<message><name>No Information Views defined for This Information Concept</name><value>Šiai informacijos daliai nenustatyta jokių formų</value></message>
+<message><name>No Information Views defined for this representation</name><value>Šiam atvaizdavimui nerasta jokių formų</value></message>
+<message><name>No KPI measures captured</name><value>Nerasta KPI matmenų</value></message>
+<message><name>No Locations defined for this object</name><value>Šiam objektui nenustatytos jokios vietos</value></message>
+<message><name>No logical Information Objects defined for this milestone</name><value>Šiam rezultatui nenustatyti jokie informacijos objektai</value></message>
+<message><name>No logical Information Views have been captured for this Information Concept</name><value>Šiai daliai nerasta jokių loginių formų</value></message>
+<message><name>None</name><value>Nė vienas</value></message>
+<message><name>No Objectives defined for this milestone</name><value>Šiam etapui nenustatyti jokie tikslai</value></message>
+<message><name>No Organisastion Units defined for this milestone</name><value>Šiam etapui nenustatyti jokie organizacijos vienetai</value></message>
+<message><name>No Organisations Captured</name><value>Nerasta jokių organizacijų</value></message>
+<message><name>No Organisations Mapped</name><value>Nėra priskirtų organizacijų</value></message>
+<message><name>No Organisations mapped for this objects</name><value>Šiam objektui </value></message>
+<message><name>No Organisation Units defined for this milestone</name><value>Šiam etapui nenustatyti jokie organizacijos vienetai</value></message>
+<message><name>No other Technology Instances dependant on this Technology Instance</name><value>Jokios kitos technologijos nepriklauso nuo šių technologijų</value></message>
+<message><name>No other Technology Instances supporting this Technology Instance</name><value>Jokios kitos technologijos nepalaiko šių technologijų</value></message>
+<message><name>No Outbound Business Services Mapped for</name><value>Nesusietos jokios veiklos paslaugos</value></message>
+<message><name>No Parent Application</name><value>Nėra pagrindinių sistemų</value></message>
+<message><name>No parent capability captured</name><value>Nerasta jokių pagrindinių sričių</value></message>
+<message><name>No Physical Information Schema dependant on this Technology Instance</name><value>0</value></message>
+<message><name>No physical processes captured for this business domain</name><value>Šiai veiklos krypčiai nenustatytas joks fizinis procesas</value></message>
+<message><name>No Physical Processes Defined</name><value>Nenustatytas fizinis procesas</value></message>
+<message><name>No Processes Defined</name><value>Nenustatytas procesas</value></message>
+<message><name>No process flow defined for the</name><value>Nenustatytas proceso srautas</value></message>
+<message><name>No process steps defined for the</name><value>Nenustatyti proceso etapai</value></message>
+<message><name>No Product Vendor Defined</name><value>Nenustatytas produkto pardavėjas</value></message>
+<message><name>No related Projects defined</name><value>Nenustatyti jokie susiję projektai</value></message>
+<message><name>No report data objects have been captured for the</name><value>Nerasta jokių </value></message>
+<message><name>No reports have been captured for this workflow</name><value>Šiai darbo eigai nerasta jokių ataskaitų</value></message>
+<message><name>No Roles defined for this milestone</name><value>Šiame etape nėra nustatytų darbuotojų vaidmenų</value></message>
+<message><name>No roles defined for this process</name><value>Šiame procese nėra nustato darbuotojų vaidmenų</value></message>
+<message><name>No Root Environment Architecture Defined</name><value>Nenustatyta pirminė architektūros aplinka</value></message>
+<message><name>No security information has been captured for the</name><value>Nerasta jokia saugos informacija</value></message>
+<message><name>No Solutions Captured</name><value>Nerasta sprendimų</value></message>
+<message><name>No Source Applications Captured</name><value>Nerasta pamatinė sistema</value></message>
+<message><name>No spreadsheets classified for this layer</name><value>Į šį sluoksnį neįtraukta jokia skaičiuoklė</value></message>
+<message><name>No stakeholders defined for the</name><value>Nenustatytos suinteresuotos šalys</value></message>
+<message><name>No stakeholders defined for this programme</name><value>Šiai programai nėra nustatyta jokių suinteresuotų šalių</value></message>
+<message><name>No stakeholders defined for this project</name><value>Šiam projektui nėra nustatyta jokių suinteresuotų šalių</value></message>
+<message><name>No strategic plans defined for this element</name><value>Šiam elementui nėra nustatytų strateginių planų</value></message>
+<message><name>No supported applications defined for this Information Representation</name><value>Šiam informacijos atvaizdavimui nėra nustatyta jokių palaikančių sistemų</value></message>
+<message><name>No Supported Applications Defined for this Product</name><value>Šiam projektui nėra nustatytų palaikančių sistemų</value></message>
+<message><name>No supported processes defined for this Information Representation</name><value>Šiam informacijos atvaizdavimui nėra nustatyta jokių palaikančių procesų</value></message>
+<message><name>No supported strategic goals captured</name><value>Nerasta palaikomų strateginių planų</value></message>
+<message><name>No supporting applications captured for this Business Service</name><value>Šioms veiklos paslaugoms nerasta jokių sistemų</value></message>
+<message><name>No Supporting Data Objects Defined</name><value>Nenustatyti palaikantys informacijos objektai</value></message>
+<message><name>No supporting Objectives defined for this Strategic Plan</name><value>Šiam strateginiam planui nėra nustatytų palakančiųjų tikslų</value></message>
+<message><name>No supporting plans defined for this Strategic Plan</name><value>Šiam strateginiam planui nėra nustatytų palaikančiųjų planų</value></message>
+<message><name>No supporting Projects defined for this Strategic Plan</name><value>Šiam strateginiam planui nėra nustatytų palaikančiųjų projektų </value></message>
+<message><name>No supporting systems identified for this workflow</name><value>Šiai darbo eigai nėra nustatytų sistemų</value></message>
+<message><name>No supporting technology components defined for the</name><value>Nenustatyti palaikantys technologijų moduliai</value></message>
+<message><name>No Systems Defined</name><value>Nenustatytos sistemos</value></message>
+<message><name>No target date captured</name><value>Nenustatyta tikslo data</value></message>
+<message><name>not defined</name><value>Nenustatyta</value></message>
+<message><name>No Technology Architectures Defined for this Product</name><value>Šiam produktui nėra nustatyta technologijų architektūra</value></message>
+<message><name>No Technology Capabilities have been mapped to this Technology Component</name><value>Šioms technologijų sritims nėra priskirta technologijų modulių</value></message>
+<message><name>No Technology Capability Defined</name><value>Nenustatytos technologijų sritys</value></message>
+<message><name>No Technology Component Defined</name><value>Nenustatyti technologijų moduliai</value></message>
+<message><name>No Technology Component defined</name><value>Nenustatyti technologijų moduliai</value></message>
+<message><name>No Technology Components defined for this milestone</name><value>Šiam etapui nenustatyti jokie technologijų moduliai</value></message>
+<message><name>No Technology Components implemented</name><value>Neįdiegti jokie technologijų moduliai</value></message>
+<message><name>No Technology Functions defined for this product</name><value>Šiam produktui nenustatyta jokia technologijų funkcija</value></message>
+<message><name>No Technology Functions have been defined for this Technology Component</name><value>Šiam technologijų moduliui nenustatyta technologijų funkcija</value></message>
+<message><name>No Technology Instances Defined for this object</name><value>Šiam tikslui nenustatyti jokie technologijų įrašų</value></message>
+<message><name>No Technology Platform Defined</name><value>Nenustatyta technologijų platforma</value></message>
+<message><name>No Technology Products/Builds defined for this milestone</name><value>Šiam etapui nėra nustatyti jokie technologijų produktai</value></message>
+<message><name>No Technology Products have been mapped to this Technology Component</name><value>Prie šio technologijų modulio nepriskirti jokie technologijos produktai</value></message>
+<message><name>Notes</name><value>Pastabos</value></message>
+<message><name>No timing/frequency information has been captured for the</name><value>Nebuvo užfiksuota jokia laiko/dažnio informacija</value></message>
+<message><name>No triggers captured for this workflow</name><value>Šiai darbo eigai nėra jokių katalizatorių</value></message>
+<message><name>Not System of Record - No System of Record</name><value>Sistemoje nėra jokių įrašų</value></message>
+<message><name>No unclassified spreadsheets available</name><value>Nėra jokių neklasifikuotų skaičiuoklių</value></message>
+<message><name>No Views Defined</name><value>Nėra suformuotų ataskaitų</value></message>
+<message><name>No workflow steps defined for the</name><value>Nėra suformuotų darbo eigos etapų</value></message>
+<message><name>O</name><value>O</value></message>
+<message><name>Objective</name><value>Tikslas</value></message>
+<message><name>Off Strategy</name><value>Nukrypimas nuo strategijos</value></message>
+<message><name>OK</name><value>Gerai</value></message>
+<message><name>On Strategy</name><value>Strategijos laikymasis</value></message>
+<message><name>Organisation</name><value>Organizacija</value></message>
+<message><name>organisation</name><value>Organizacija</value></message>
+<message><name>Organisational Scope</name><value>Organizacijos apimtis</value></message>
+<message><name>Organisation Hierarchy</name><value>Organizacijos hierarchija</value></message>
+<message><name>Organisation Performance Change Analysis</name><value>Organizacijos našumo pokyčių analizė</value></message>
+<message><name>Organisation Role</name><value>Organizacijos vaidmuo</value></message>
+<message><name>Organisation Service Catalogue</name><value>Organizacijos paslaugų katalogas</value></message>
+<message><name>Organisations Impacted</name><value>Paveiktos organizacijos</value></message>
+<message><name>Organisation Structure Change Analysis</name><value>Organizacijos struktūros pokyčių analizė</value></message>
+<message><name>Organisation Structure Model</name><value>Organizacijos struktūros modelis</value></message>
+<message><name>Organisations Using</name><value>Organizacijos, kurios naudoja</value></message>
+<message><name>Organisations Using Information Object</name><value>Organizacijos, naudojančios nurodytą informaciją</value></message>
+<message><name>Organisation Unit</name><value>Organizacijos padalinys</value></message>
+<message><name>Org Unit</name><value>Org. Padalinys</value></message>
+<message><name>Other</name><value>Kita</value></message>
+<message><name>Others</name><value>Kiti</value></message>
+<message><name>Others (No Parent Application)</name><value>Kita (nėra pagrindinės paraiškos)</value></message>
+<message><name>Outbound</name><value>Išsiunčiamieji</value></message>
+<message><name>Output Format</name><value>Išvesties formatas</value></message>
+<message><name>Overall Demand</name><value>Bendra paklausa</value></message>
+<message><name>Owner(s)</name><value>Savininkas (-ai)</value></message>
+<message><name>P</name><value>P</value></message>
+<message><name>Page Loading - Please Wait</name><value>Puslapis kraunasi - prašome palaukti</value></message>
+<message><name>Parent Business Capability</name><value>Pagrindinė veiklos sritis</value></message>
+<message><name>Parent Capability</name><value>Pagrindinis veiklos sritys</value></message>
+<message><name>Parent Data Subject</name><value>Pagrindinis duomenų subjektas</value></message>
+<message><name>Parent Information Concept</name><value>Pagrindinė informacijos dalis</value></message>
+<message><name>Parent Programme</name><value>Motininė programa</value></message>
+<message><name>People</name><value>Žmonės</value></message>
+<message><name>Performed at Sites</name><value>Atlikta svetainėse</value></message>
+<message><name>Performed By</name><value>Atlikta</value></message>
+<message><name>Performed by Roles</name><value>Atlikta šių asmenų/vaidmenų</value></message>
+<message><name>Performing Roles</name><value>Dalyvaujantys vaidmenys</value></message>
+<message><name>Performing Roles/Automating System</name><value>Dalyvaujantys vaidmenys/automatizavimo sistema</value></message>
+<message><name>Person</name><value>Asmuo</value></message>
+<message><name>Physical Node</name><value>0</value></message>
+<message><name>Physical Node Name</name><value>0</value></message>
+<message><name>Physical Node Specification for</name><value>0</value></message>
+<message><name>Physical Node Technology</name><value>0</value></message>
+<message><name>Physical Process Catalogue</name><value>Fizinių procesų katalogas</value></message>
+<message><name>Physical Process Catalogue by Business Domain</name><value>Fizinių procesų katalogas, suskirstytas pagal veiklos kryptis</value></message>
+<message><name>Physical Process Description</name><value>Fizinio proceso aprašymas</value></message>
+<message><name>Physical Processes</name><value>Fizinis procesas</value></message>
+<message><name>Physical Process Workflow</name><value>Fizinio proceso darbo eiga</value></message>
+<message><name>Plan</name><value>Planas</value></message>
+<message><name>Plan Action</name><value>Suplanuoti veiksmus</value></message>
+<message><name>Planned Changes</name><value>Planuojami pakeitimai</value></message>
+<message><name>Planned End Date</name><value>Planuojama pabaigos data</value></message>
+<message><name>Planned Retirement Date</name><value>Planuojama galiojimo pabaigos</value></message>
+<message><name>Planned Start Date</name><value>Planuojama pradžios data</value></message>
+<message><name>Planned Target Date</name><value>Planuojama pabaigos data</value></message>
+<message><name>Planning Comments</name><value>Plano komentarai</value></message>
+<message><name>Plans</name><value>Planai</value></message>
+<message><name>Plans for Product</name><value>Produkto planai</value></message>
+<message><name>Plans for use of Product</name><value>Gaminio naudojimo planai</value></message>
+<message><name>Plan Status</name><value>Plano būsena</value></message>
+<message><name>Please click on an Information Concept, View or Representation below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų informacijos dalių, formų ar atvaizdavimo</value></message>
+<message><name>Please click on an Information Concept or Information View below to navigate to the required view</name><value>Norėdami pamatyti formą, paspauskite ant žemiau pateiktų informacijos dalių ar formų</value></message>
+<message><name>Please click on a Physical Process below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateikto fizinio proceso</value></message>
+<message><name>Please click on one of the Application Capabilities below to navigate to the required view.</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų sistemos sričių</value></message>
+<message><name>Please click on one of the Applications below</name><value>Paspauskite ant vieną iš žemiau pateiktų sistemų</value></message>
+<message><name>Please click on one of the Application Services below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų veiklos galimybių </value></message>
+<message><name>Please click on one of the Business Capabilities below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų veiklos sričių</value></message>
+<message><name>Please click on one of the Business Domains below to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų veiklos krypčių</value></message>
+<message><name>Please click on one of the Business Services below to view its detailed specification</name><value>Norėdami pamatyti išsamią specifikaciją, paspauskite ant veiklos paslaugų</value></message>
+<message><name>Please select a Business Capability or Business Process to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, pasirinkite veiklos galimybes arba veiklos procesą</value></message>
+<message><name>Please select a Business Process to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų veiklos procesų</value></message>
+<message><name>Please select a Data Subject to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų duomenų subjektų</value></message>
+<message><name>Please select a Roadmap Model to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, paspauskite ant žemiau pateiktų veiksmų planų modelių</value></message>
+<message><name>Please select a stakeholder to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, pasirinkite suinteresuotą šalį</value></message>
+<message><name>Please select a Technology Component to navigate to the required view</name><value>Norėdami pamatyti ataskaitą, pasirinktie technologijų modulį</value></message>
+<message><name>Please select a Technology Node to navigate to the required view</name><value>0</value></message>
+<message><name>Populated</name><value>0</value></message>
+<message><name>Portals</name><value>Svetainės/vartai ?</value></message>
+<message><name>Powered by</name><value>Parengta pagal/rėmėjai</value></message>
+<message><name>Presentation of the conceptual Data Subjects in scope for the enterprise, organised by category</name><value>Įmonės duomenų subjektai, suskirstyti pagal kategorijas</value></message>
+<message><name>Primary Business Actors</name><value>Priminiai veiklos dalyviai</value></message>
+<message><name>Print This Page</name><value>Spausdinti šį puslapį </value></message>
+<message><name>Process</name><value>Procesas</value></message>
+<message><name>process</name><value>Procesas/apdoroti</value></message>
+<message><name>process</name><value>Procesas/apdoroti</value></message>
+<message><name>Processes</name><value>Procesai</value></message>
+<message><name>Process Flow</name><value>Proceso eiga</value></message>
+<message><name>Process Manager</name><value>Procesų vadovas</value></message>
+<message><name>Process Name</name><value>Proceso pavadinimas</value></message>
+<message><name>Process Performed by</name><value>Procesas, kurį atlieka</value></message>
+<message><name>Process Step</name><value>Proceso žingsnis</value></message>
+<message><name>Process Steps</name><value>Proceso žingsniai</value></message>
+<message><name>Producing Business Processes</name><value>Veiklos procesų kūrimas</value></message>
+<message><name>Product</name><value>Produktas</value></message>
+<message><name>Product Name</name><value>Produkto pavadinimas</value></message>
+<message><name>Product Vendor</name><value>Produkto pardavėjas</value></message>
+<message><name>Programme</name><value>Programas</value></message>
+<message><name>Programme Catalogue</name><value>Programos katalogas</value></message>
+<message><name>Programme Catalogue by Name</name><value>Programų katalogas, suskirstytas pagal pavadinimus</value></message>
+<message><name>Programme Overview for</name><value>Programos apžvalga</value></message>
+<message><name>Programme Plan</name><value>Programos planas</value></message>
+<message><name>Programme Summary</name><value>Programos suvestinė</value></message>
+<message><name>Programme Summary for</name><value>Programos suvestinė</value></message>
+<message><name>Project</name><value>Projektas</value></message>
+<message><name>Project Catalogue</name><value>Projekto katalogas</value></message>
+<message><name>Project Catalogue by Name</name><value>Projektų katalogas, suskirstytas pagal pavadinimus</value></message>
+<message><name>Project Colleagues</name><value>Projekte dirbantys asmenys</value></message>
+<message><name>Project Manager</name><value>Projekto vadovas</value></message>
+<message><name>Project Members</name><value>Projekto nariai</value></message>
+<message><name>Project Network</name><value>Projekto tinklas</value></message>
+<message><name>Project People Network</name><value>Projekto dalyvių tinklas</value></message>
+<message><name>Projects</name><value>Projektai</value></message>
+<message><name>Projects to Business Objective Mapping</name><value>Projektai veiklos tikslų susiejimui</value></message>
+<message><name>Project Summary</name><value>Projekto suvestinė</value></message>
+<message><name>Project Summary for</name><value>Projekto suvestinė</value></message>
+<message><name>Provider Model</name><value>Teikėjo modelis</value></message>
+<message><name>Published Date</name><value>Paskelbimo data</value></message>
+<message><name>Published date not defined</name><value>Nenurodyta paskelbimo data</value></message>
+<message><name>Q</name><value>Q</value></message>
+<message><name>Question About Content</name><value>Klausimas apie turinį</value></message>
+<message><name>R</name><value>R</value></message>
+<message><name>Rationale</name><value>0</value></message>
+<message><name>READ</name><value>Skaityti</value></message>
+<message><name>Reads</name><value>Perskaityti</value></message>
+<message><name>Realised Business Capabilities</name><value>Įgyvendintos veiklos sritys</value></message>
+<message><name>Realised Capabilities</name><value>Įgyvendintos sritys</value></message>
+<message><name>Realised Technology Capabilities</name><value>Įgyvendintos technologijų sritys</value></message>
+<message><name>Realises Business Capabilities  - realised?</name><value>Įgyvendintos veiklos sritys</value></message>
+<message><name>Reference Data</name><value>Susijusi informacija</value></message>
+<message><name>Related Business Objectives</name><value>Susiję veiklos tikslai</value></message>
+<message><name>Related Documents</name><value>Susiję dokumentai</value></message>
+<message><name>Related Objectives</name><value>Susiję tikslai</value></message>
+<message><name>Related Projects</name><value>Susiję projektai</value></message>
+<message><name>relation</name><value>Santykis</value></message>
+<message><name>Removed</name><value>Pašalinta</value></message>
+<message><name>Replace</name><value>Pakeisti</value></message>
+<message><name>Report an Error</name><value>Pranešti apie klaidą</value></message>
+<message><name>Report Name</name><value>Ataskaitos pavadinimas</value></message>
+<message><name>Reports Produced</name><value>Pateiktos ataskaitos</value></message>
+<message><name>Representation Attributes</name><value>Atvaizdavimo parametrai</value></message>
+<message><name>Responsibilities</name><value>Atsakomybės</value></message>
+<message><name>Responsibility</name><value>Atsakomybė</value></message>
+<message><name>RMG Plan</name><value>RMG planas</value></message>
+<message><name>Roadmap</name><value>Veiksmų planas</value></message>
+<message><name>Roadmap Catalogue by Layer</name><value>Veiksmų planų katalogas, suskirstytas pagal sluoksnius</value></message>
+<message><name>Roadmap Catalogue by Name</name><value>Veiksmų planai, suskirstytas pagal pavadinimus</value></message>
+<message><name>Roadmap Model Catalogue</name><value>Veiksmų planų modelių katalogas</value></message>
+<message><name>Roadmap Model Catalogue by Layer</name><value>Veiksmų planų modelių katalogas, suskirstytas pagal sluoksnius</value></message>
+<message><name>Role</name><value>Vaidmuo</value></message>
+<message><name>Roles</name><value>Vaidmenys</value></message>
+<message><name>Roles &amp; People</name><value>Vaidmenys ir žmonės</value></message>
+<message><name>Runtime Status</name><value>Vykdymo būsena</value></message>
+<message><name>Runtime Status (e.g. Live, Failover)</name><value>Vykdymo būsena (pvz., vykdoma, klaida)</value></message>
+<message><name>S</name><value>S</value></message>
+<message><name>Save Setting</name><value>Išsaugoti nustatymą</value></message>
+<message><name>Search all columns</name><value>Ieškoti visuose stulpeliuose</value></message>
+<message><name>Security</name><value>Saugumas</value></message>
+<message><name>Select a Business Process or Business Capability to navigate to the required view</name><value>Norėdami peržvelgti ataskaitą, pasirinkite norimą veiklos procesą ar veiklos galimybes</value></message>
+<message><name>Select a Language</name><value>Pasirinkite kalbą</value></message>
+<message><name>Select an Option</name><value>Pasirinkite variantą</value></message>
+<message><name>Select Application</name><value>Pasirinkite programą</value></message>
+<message><name>Select Application for Distribution Change Analysis</name><value>Norėdami pamatyti pasiskirstymo pokyčių analizę, pasirinkite sistemą</value></message>
+<message><name>Select Application for Interface Change Analysis</name><value>Norėdami pamatyti paskyros pokyčių analizę, pasirinkite sistemą</value></message>
+<message><name>Select a Programme or Project to navigate to the required view</name><value>Pasirinkite programą arba projektą, norėdami pereiti į reikiamą ataskaitą</value></message>
+<message><name>Select a Project or Person to navigate to the required view</name><value>Pasirinkite projektą arba asmenį, norėdami pereiti į reikiamą ataskaitą</value></message>
+<message><name>Select a view or click the View Filter button to get started</name><value>Norėdami pradėti, pasirinkite ataskaitą arba paspauskite ant ataskaitų filtro </value></message>
+<message><name>Selected Technology Platforms</name><value>Pasirinktos technologijų platformos</value></message>
+<message><name>Service Consumers</name><value>Paslaugų vartotojai</value></message>
+<message><name>Service Criticality to Process</name><value>Paslaugos svarba procesui</value></message>
+<message><name>Service Definition Document</name><value>Paslaugų nustatymo dokumentas</value></message>
+<message><name>Service Delivery Managers</name><value>Paslaugų teikimo vadovai</value></message>
+<message><name>Service Functions</name><value>Paslaugų funkcijos</value></message>
+<message><name>Service Owner</name><value>Paslaugų savininkas</value></message>
+<message><name>Services Provided</name><value>Teikiamos paslaugos</value></message>
+<message><name>Show</name><value>Rodyti</value></message>
+<message><name>Show/Hide Business Process and Systems Overview</name><value>Rodyti/slėpti veiklos procesų ir sistemų apžvalgą</value></message>
+<message><name>Show/Hide Information Objects</name><value>Rodyti/slėpti informacijos objektus</value></message>
+<message><name>Show/Hide Information Views &amp; Representations</name><value>Rodyti/slėpti informacijos formas ir atvaizdavimą</value></message>
+<message><name>Show/Hide Physical Processes</name><value>Rodyti/slėpti fizinius procesus</value></message>
+<message><name>Show/Hide Strategic Technology Platforms</name><value>Rodyti/slėpti technologijų platformas</value></message>
+<message><name>Show by</name><value>Rodyti pagal</value></message>
+<message><name>Source</name><value>Šaltinis</value></message>
+<message><name>Sourced from Applications</name><value>Ištraukta iš programų</value></message>
+<message><name>Source of Truth</name><value>Tiesos šaltinis</value></message>
+<message><name>Spreadsheet Template Catalogue</name><value>Skaičiuoklės šablonų katalogas</value></message>
+<message><name>Spreadsheet Template Download</name><value>Skaičiuoklės šablono atsisiuntimas</value></message>
+<message><name>Stakeholder Catalogue by Name</name><value>Suinteresuotų šalių katalogas, suskirstytas pagal pavadinimus</value></message>
+<message><name>Stakeholder Model</name><value>Suinteresuotų šalių modelis</value></message>
+<message><name>Stakeholders</name><value>Suinteresuotos šalys</value></message>
+<message><name>Stakeholders for the</name><value>Suinteresuotos šalys</value></message>
+<message><name>Stakeholders for the</name><value>Suinteresuotos šalys</value></message>
+<message><name>Stakeholder Summary</name><value>Suinteresuotų šalių suvestinė</value></message>
+<message><name>Stakeholder Summary for</name><value>Suinteresuotų šalių suvestinė</value></message>
+<message><name>Standardisation Level</name><value>Standartizacijos lygis</value></message>
+<message><name>Standardisation level not defined for this process</name><value>Šiame procese nenustatytas standartizacijos lygis</value></message>
+<message><name>Start Date</name><value>Pradžios data</value></message>
+<message><name>Status</name><value>Būsena</value></message>
+<message><name>Strategic Alignment</name><value>Strateginis derinimas</value></message>
+<message><name>Strategic Goal</name><value>Strateginis tikslas</value></message>
+<message><name>Strategic Goal Catalogue</name><value>Strateginio tikslo katalogas</value></message>
+<message><name>Strategic Goals Model</name><value>Strateginių tikslų modelis</value></message>
+<message><name>Strategic Milestone Summary</name><value>Strateginės eigos suvestinė</value></message>
+<message><name>Strategic Plan</name><value>Strateginis planas</value></message>
+<message><name>Strategic Planning</name><value>Strateginis planavimas</value></message>
+<message><name>Strategic Plans</name><value>Strateginiai planai</value></message>
+<message><name>Strategic Plan Specification</name><value>Strateginio plano specifikacija</value></message>
+<message><name>Strategic Plan Summary</name><value>Strateginio plano suvestinė</value></message>
+<message><name>Strategic Roadmap</name><value>Strateginis veiksmų planas</value></message>
+<message><name>Strategic Technology Platforms</name><value>Strateginės technologijų platformos</value></message>
+<message><name>Strategic Usage Policy (e.g. Production, Prototype, Off Strategy)</name><value>Strateginė panaudojimo politika (pvz., gamyba, prototipai, nukrypimas nuo strategijos)</value></message>
+<message><name>Strategy Alignment</name><value>Strategijos suderinimas</value></message>
+<message><name>Supplier</name><value>Tiekėjas</value></message>
+<message><name>Support</name><value>Pagalba</value></message>
+<message><name>Supported Applications</name><value>Palaikomos programos</value></message>
+<message><name>Supported Business Processes</name><value>Palaikomi veiklos procesai</value></message>
+<message><name>Supported Drivers</name><value>Palaikomos tvarkyklės</value></message>
+<message><name>Supported Objectives</name><value>Palaikomi tikslai</value></message>
+<message><name>Supported Processes</name><value>Palaikomi procesai </value></message>
+<message><name>Supporting Application Analysis for Business Domain</name><value>Verslo sektoriaus analizės programų palaikymas</value></message>
+<message><name>Supporting Application Runtime Instance</name><value>Palaikančios sistemos vykdymo laikas</value></message>
+<message><name>Supporting Application Runtime Technology</name><value>Palaikančios sistemos vykdymo technologija</value></message>
+<message><name>Supporting Applications</name><value>Palaikomos sistemos</value></message>
+<message><name>Supporting Application Services</name><value>Paslaugų sistemos palaikymas</value></message>
+<message><name>Supporting Capabilities</name><value>Palaikymo sritys</value></message>
+<message><name>Supporting Data</name><value>Duomenų palaikymas</value></message>
+<message><name>Supporting Database Installation</name><value>Duomenų bazės įdiegimo palaikymas</value></message>
+<message><name>Supporting Data Objects</name><value>Palaiko</value></message>
+<message><name>Supporting DB Installation</name><value>DB įdiegimo palaikymas</value></message>
+<message><name>Supporting Information</name><value>Palaikanti informacija</value></message>
+<message><name>Supporting Processes</name><value>Palaikantys procesai </value></message>
+<message><name>Supporting Projects</name><value>Palaikantys projektai</value></message>
+<message><name>Supporting Systems</name><value>Palaikomosios sistemos</value></message>
+<message><name>Supporting Technology</name><value>Palaikomosios technologijos</value></message>
+<message><name>Supporting Technology Components</name><value>Palaikomosios technologijos moduliai</value></message>
+<message><name>Supporting Technology Instances</name><value>Palaikomieji technologijų įrašai</value></message>
+<message><name>Supports Applications</name><value>Palaiko sistemas</value></message>
+<message><name>Supports Information Stores</name><value>Palaiko informacijos saugyklas</value></message>
+<message><name>Supports Plans</name><value>Palaiko planus</value></message>
+<message><name>Support Views</name><value>Palaiko ataskaitas</value></message>
+<message><name>Switch Off</name><value>Išjungti</value></message>
+<message><name>system</name><value>Sistema</value></message>
+<message><name>System Managers</name><value>Sistemos administratorius</value></message>
+<message><name>System Name</name><value>Sistemos pavadinimas</value></message>
+<message><name>System of Record Undefined</name><value>Nenustatyta registravimo sistema </value></message>
+<message><name>Systems Impacted</name><value>Paveiktos sistemos</value></message>
+<message><name>Systems Using</name><value>Naudojančios sistemos</value></message>
+<message><name>Systems Using Information Object</name><value>Sistemos, naudojančios nurodytą informaciją</value></message>
+<message><name>T</name><value>T</value></message>
+<message><name>Table</name><value>Lentelė</value></message>
+<message><name>Target</name><value>Tikslas</value></message>
+<message><name>Target and Baseline</name><value>Pradinis taškas ir tikslas</value></message>
+<message><name>Target Date</name><value>Tikslo data</value></message>
+<message><name>Technology</name><value>Technologija</value></message>
+<message><name>Technology Capabilities</name><value>Technologijų veiklos sritys</value></message>
+<message><name>Technology Capability</name><value>Technologijų veiklos sritys</value></message>
+<message><name>Technology Catalogue</name><value>Technologijų katalogai</value></message>
+<message><name>Technology Change Analysis - Technology Component</name><value>Technologijų pokyčių analizė - technologijos komponentas</value></message>
+<message><name>Technology Change Analysis - Technology Distribution</name><value>Technologijų pokyčių analizė - technologijų paskirstymas</value></message>
+<message><name>Technology Change Analysis - Technology Interoperability</name><value>Technologijų pokyčių analizė - technologijų sąveika</value></message>
+<message><name>Technology Component</name><value>Technologijų komponentas</value></message>
+<message><name>Technology Component</name><value>Technologijų komponentas</value></message>
+<message><name>Technology Component</name><value>Technologijų komponentas</value></message>
+<message><name>Technology Component Catalogue</name><value>Technologijų modulių katalogas</value></message>
+<message><name>Technology Component Catalogue by Name</name><value>Technologijų modulių katalogas, suskirstytas pagal pavadinimus</value></message>
+<message><name>Technology Component Change Analysis</name><value>Technologijų modulių pokyčių analizė</value></message>
+<message><name>Technology Component Interoperability Catalogue</name><value>Technologijų modulių sąveikos katalogas</value></message>
+<message><name>Technology Component Interoperability Change Analysis Catalogue</name><value>Technologijų modulių sąveikos pokyčių analizės katalogas</value></message>
+<message><name>Technology Components</name><value>Technologijų komponentai</value></message>
+<message><name>Technology Component Summary</name><value>Technologijų modulių suvestinė</value></message>
+<message><name>Technology Composite</name><value>Technologijų sudėtis</value></message>
+<message><name>Technology Dependency</name><value>Technologijų priklausomybė</value></message>
+<message><name>Technology Deployment</name><value>Technologijų diegimas</value></message>
+<message><name>Technology Distribution Change Analysis</name><value>Technologijų pasiskirstymo pokyčių analizė</value></message>
+<message><name>Technology Distribution Model</name><value>Technologijų pasiskirstymo modelis</value></message>
+<message><name>Technology Function</name><value>Technologijų funkcija</value></message>
+<message><name>Technology Functions</name><value>Technologijų funkcijos</value></message>
+<message><name>Technology Functions Offered</name><value>Galimos technologijos funkcijos</value></message>
+<message><name>Technology Instance Description</name><value>Technologijų įrašo aprašas</value></message>
+<message><name>Technology Instance Name</name><value>Technologijų įrašo pavadinimas</value></message>
+<message><name>Technology Instance Specification for</name><value>Technologijų įrašo specifikacija</value></message>
+<message><name>Technology Instance Summary</name><value>Technologijų įrašo suvestinė</value></message>
+<message><name>Technology Interoperability Change Analysis</name><value>Technologijų sąveikos pokyčių analizė</value></message>
+<message><name>Technology Interoperability Change Analysis Catalogue</name><value>Technologijų sąveikos pokyčių analizės katalogas</value></message>
+<message><name>Technology Milestone Summary</name><value>Technologijų veiklos eigos suvestinė</value></message>
+<message><name>Technology Node</name><value>0</value></message>
+<message><name>Technology Node Catalogue</name><value>0</value></message>
+<message><name>Technology Node Catalogue by Name</name><value>0</value></message>
+<message><name>Technology Node Catalogue by Product</name><value>0</value></message>
+<message><name>Technology Node Catalogue by Vendor</name><value>0</value></message>
+<message><name>Technology Node Products by Vendor</name><value>0</value></message>
+<message><name>Technology Node Summary</name><value>0</value></message>
+<message><name>Technology Platform Model</name><value>Technologijų platformos modelis</value></message>
+<message><name>Technology Principles</name><value>Technologijų veikimo principai</value></message>
+<message><name>Technology Product</name><value>Technologijų produktas</value></message>
+<message><name>Technology Product/Build</name><value>Technologijų produktas</value></message>
+<message><name>Technology Product Build</name><value>Technologijų produkto kūrimas</value></message>
+<message><name>Technology Product Catalogue</name><value>Technologijų produktų katalogas</value></message>
+<message><name>Technology Product Catalogue as Table</name><value>Technologijų produktų katalogai kaip lentelė</value></message>
+<message><name>Technology Product Catalogue by Capability</name><value>Technologijų produktų katalogas, suskirstytas pagal galimybes</value></message>
+<message><name>Technology Product Catalogue by Component</name><value>Technologijų produktų katalogas, suskirstytas pagal komponentus</value></message>
+<message><name>Technology Product Catalogue by Vendor</name><value>Technologijos produktų katalogas, suskirstytas pagal pardavėjus</value></message>
+<message><name>Technology Product Name</name><value>Technologijos produkto pavadinimas</value></message>
+<message><name>Technology Products</name><value>Technologijų produktai</value></message>
+<message><name>Technology Product Summary</name><value>Technologijų produktų suvestinė</value></message>
+<message><name>Technology Product Summary for</name><value>Technologijų produktų suvestinė</value></message>
+<message><name>Technology Reference and Standards Model</name><value>Technologijų ir standartų modelis</value></message>
+<message><name>Technology Reference Model</name><value>Technologijų modelis</value></message>
+<message><name>Technology Roadmap</name><value>Technologijų veiksmų planas</value></message>
+<message><name>Technology Strategy Alignment</name><value>Technologijų strategijos derinimas</value></message>
+<message><name>Technology Views</name><value>Technologijos ataskaitos</value></message>
+<message><name>Technoogyg Node Products by Vendor</name><value>0</value></message>
+<message><name>Template Name</name><value>Šablono pavadinimas</value></message>
+<message><name>The</name><value>0</value></message>
+<message><name>The Application Services supporting this capability</name><value>Sistemos paslaugos, palaikančios šią funkciją</value></message>
+<message><name>The Business Capability Model informs stakeholders of the conceptual functional capabilities of the enterprise</name><value>Veiklos pajėgumo modelis informuoja suinteresuotąsias šalis apie galimas veiklos sritis</value></message>
+<message><name>The Business Driver/Change Footprint view compares the footprint of current change activities (i.e. programmes/projects against the business objectives that have been defined</name><value>'verslo veiksnys/pokytis' ataskaitoje lyginamas dabartinių pokyčių poveikis (pvz., programos, projekto su veiklos tikslais, kurie turi būti nustatyti)</value></message>
+<message><name>The conceptual data subjects that support the</name><value>Duomenų subjektai, kurie palaiko</value></message>
+<message><name>the enterprise</name><value>Įmonė</value></message>
+<message><name>The Essential Project</name><value>'Essential' projektas</value></message>
+<message><name>The following access control policies are in place for the</name><value>Toliau pateiktos prieigos kontrolės politika yra tam, kad</value></message>
+<message><name>The following Application Principles guide and govern changes to the application architecture</name><value>Toliau pateiktos sistemos veikimo principai nustato ir apriboja galimus informacijos ir duomenų architektūros pokyčius</value></message>
+<message><name>The following Applications are directly impacted by this Project</name><value>Toliau pateiktos sistemos yra tiesiogiai paveikiamos šio projekto</value></message>
+<message><name>The following applications are supported by this Information Representation</name><value>Toliau pateiktos sistemos yra palaikomos šio informacijos atvaizdavimo</value></message>
+<message><name>The following Applications support the</name><value>Toliau pateikta sistema palaiko</value></message>
+<message><name>The following applications would be impacted by the removal of or changes to the</name><value>Toliau pateiktos sistemos būtų paveiktos pašalinus ar pakeitus vieną iš komponentų</value></message>
+<message><name>The following Business Capabilities and Process support the</name><value>Toliau pateiktos veiklos sritys ir procesai palaiko</value></message>
+<message><name>The following Business Principles guide and govern changes to the business architecture</name><value>Toliau pateikti veiklos veikimo principai nustato ir apriboja galimus informacijos ir duomenų architektūros pokyčius</value></message>
+<message><name>The following business processes and teams would be impacted by the removal of or changes to the</name><value>Toliau pateikti veiklos procesai ir grupės būtų paveiki pašalinus ar pakeitus</value></message>
+<message><name>The following Business Processes are directly impacted by this Project</name><value>Toliau pateikti veiklos procesai būtų tiesiogiai paveikiami šio projekto</value></message>
+<message><name>The following diagram describes the conceptual business capabilities in scope for</name><value>Toliau pateiktoje diagramoje apibūdinamos veiklos sritys</value></message>
+<message><name>The following diagram describes the conceptual business capablities in scope for</name><value>Toliau pateiktoje diagramoje apibūdinamos veiklos sritys</value></message>
+<message><name>The following diagram describes the different types of applications that are in use across</name><value>Toliau pateiktoje diagramoje apibūdinami skirtingi sistemų tipai, kurie yra naudojami </value></message>
+<message><name>The following diagram describes the different types of information that are in use across</name><value>Toliau pateiktoje diagramoje apibūdinami skirtingi informacijos tipai, kurie yra naudojami</value></message>
+<message><name>The following diagram describes the different types of technology components that are in use across</name><value>Toliau pateiktoje diagramoje apibūdinamos skirtingos technologijos, kurios yra naudojamos</value></message>
+<message><name>The following diagram describes the information assets that are consumed and produced by the</name><value>Toliau pateiktoje diagramoje apibūdinami informacijos aktyvai, kurie yra vartojami ir sukuriami</value></message>
+<message><name>The following diagram highlights the conceptual business capabilities directly or indirectly impacted by the</name><value>Toliau pateiktoje diagramoje akcentuojamos veiklos sritys, kurioms ši programa daro tiesioginę įtaką</value></message>
+<message><name>The following diagram highlights the conceptual business capablities impacted by this programme</name><value>Toliau pateiktoje diagramoje akcentuojamos konceptinės veiklos sritys, kurioms ši programa daro įtaką</value></message>
+<message><name>The following diagram lists the different logical business roles that interact with the</name><value>Toliau pateiktoje diagramoje išvardijami skirtingi loginiai veiklos vaidmenys, kurie sąveikauja su </value></message>
+<message><name>The following diagram shows the organisational hierarchy for the</name><value>Toliau pateiktoje diagramoje nurodoma organizacinė hierarchija</value></message>
+<message><name>The following diagram shows the process flow that describes the design of the</name><value>Toliau pateiktoje diagramoje nurodomas procesų srautas, kuris apibūdina dizainą</value></message>
+<message><name>The following documents are available to view</name><value>Galima peržiūrėti šiuos dokumentus</value></message>
+<message><name>The following Information Concepts support the</name><value>Toliau pateiktos informacijos dalys palaiko</value></message>
+<message><name>The following Information Principles guide and govern changes to the information and data architecture</name><value>Toliau pateikti informacijos kūrimo principai nustato ir apriboja galimus informacijos ir duomenų architektūros pokyčius</value></message>
+<message><name>The following items provide details for the</name><value>Toliau pateikiami elementai pateikia duomenis apie </value></message>
+<message><name>The following matrix maps conceptual Data Subjects to the Business Roles in use across</name><value>Toliau pateikiama matrica sieja duomenų subjektus su veiklos vaidmenimis, kurie naudojami</value></message>
+<message><name>The following matrix maps logical Data Objects for</name><value>Toliau pateikiama matrica susieja loginius duomenų objektus </value></message>
+<message><name>The following matrix maps logical Data Objects of</name><value>Toliau pateikiama matrica susieja loginius duomenų objektus iš</value></message>
+<message><name>The following matrix maps logical Data Objects to the Application Services in use across</name><value>Toliau pateikia matrica susieja loginius duomenų objektus su sistemos paslaugomis, naudojamomis</value></message>
+<message><name>The following Organisations are directly impacted by this Project</name><value>Toliau pateikiamos organizacijos yra tiesiogiai paveikiamos šio projekto</value></message>
+<message><name>The following physical processes are performed within the domain of</name><value>Toliau pateikiami fiziniai procesai yra atliekami šioje srityje</value></message>
+<message><name>The following processes are supported by this Information Representation</name><value>Toliau pateikiami procesai yra palaikomi šio informacijos atvaizdavimo</value></message>
+<message><name>The following process steps are defined for the</name><value>Toliau pateikiami proceso etapai yra nustatyti</value></message>
+<message><name>The following report data objects are contained within the</name><value>Toliau pateikiami ataskaitų duomenų objektai yra talpinami</value></message>
+<message><name>The following roles are defined for</name><value>Toliau pateikiami vaidmenys yra nustatyti</value></message>
+<message><name>The following table describes the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name><value>Toliau pateiktoje lentelėje aprašomos sistemų paslaugos, kurios yra nustatytos šiai sričiai bei sistemos, kurios yra naudojamos teikti kiekvieną iš paslaugų, taip pat ir technologijų produktai, kurie yra naudojami programai vykdyti.</value></message>
+<message><name>The following table describes the Business Capabilities that are mapped to this business area, the Business Processes that realise each capability and the applications that are being used to implement the each process. Information about the supplier and the technology products used is also shown</name><value>Toliau pateiktoje lentelėje išvardyti veiklos sritys, kurios yra susitiekti su šia veiklos kryptimi; veiklos procesai, nuo kurių priklauso kiekviena iš sričių ir sistemos, kurios yra naudojamos vykdant kiekvieną procesą. Taip pat yra pateikiama informacija apie tiekėją ir technologijų produktus </value></message>
+<message><name>The following table lists the Business Functions/Services for</name><value>Toliau pateiktoje lentelėje išvardytos veiklos funkcijos/paslaugos</value></message>
+<message><name>The following table lists the Business Objectives for</name><value>Toliau pateiktoje lentelėje išvardyti veiklos tikslai</value></message>
+<message><name>The following table lists the business processes supporting the</name><value>Toliau pateiktoje lentelėje išvardyti veiklos procesai, kurie palaiko</value></message>
+<message><name>The following table lists the Business Services that are produced by the organisation units within the</name><value>Toliau pateiktoje lentelėje išvardytos veiklos paslaugos, kurias teikia šie organizacijos padaliniai </value></message>
+<message><name>The following table lists the spreadsheets that are available for download</name><value>Šioje lentelėje išvardytos skaičiuoklės, kurias galima atsisiųsti</value></message>
+<message><name>The following table lists the Strategic Business Goals for</name><value>Šioje lentelėje pateikiami strateginiai verslo tikslai</value></message>
+<message><name>The following tables describe other Technology Instances that are dependant on this Technology Instance</name><value>Šioje lentelėje pateikiami kitos technologijos, kurios priklauso nuo šių technologijų</value></message>
+<message><name>The following tables describe other Technology Instances that are supporting on this Technology Instance</name><value>Šioje lentelėje apibūdinamos kitos technologijos, kurios palaiko šias technologijas</value></message>
+<message><name>The following tables describe the Application Instances that are dependant on this Technology Instance</name><value>Šioje lentelėje pateikiamos sistemos, kurios priklauso nuo šių technologijų</value></message>
+<message><name>The following tables describe the applications that are being used to implement the functions of this service</name><value>Toliau pateikiamose lentelėse išvardytos sistemos, naudojamos šių paslaugų funkcijoms įgyvendinti</value></message>
+<message><name>The following tables describe the Business Capabilities that are mapped to this business area, the Application Services that support each capability and the applications that are being used to implement the each service. Information about the supplier and the technology products used is also shown</name><value>Toliau pateiktose lentelėse išvardintos veiklos sritys, kurios yra susietos su šia veiklos kryptimi; sistemos paslaugos, kurios palaiko kiekvieną iš sričių; ir sistemos, kurios yra naudojamos kiekvienai iš paslaugų. Taip pat rodoma informacija apie tiekėją bei technologijų produktus.</value></message>
+<message><name>The following tables describe the physical information schema that are dependant on this technology instance</name><value>Toliau pateiktose lentelėse nurodoma fizinės informacijos schema, kuri priklauso nuo šio technologijų įrašo</value></message>
+<message><name>The following tables provides details of the data elements managed by</name><value>Šioje lentelėje nurodomi tie duomenų elementai, kurie yra valdomi</value></message>
+<message><name>The following technology components are used to support the</name><value>Toliau pateikti technologijų moduliai yra naudojami palaikyti</value></message>
+<message><name>The following Technology Principles guide and govern changes to the technology architecture</name><value>Toliau pateikti technologijų veiklos principai nustato ir apriboja galimus informacijos ir duomenų architektūros pokyčius</value></message>
+<message><name>The following workflow steps are defined for the</name><value>Toliau pateikti darbo eigos etapai yra nustatyti</value></message>
+<message><name>the free open-source Enterprise Architecture Management Platform</name><value>Nemokama laisvos prieigos įmonės architektūros valdymo platforma</value></message>
+<message><name>The logical Information Views that are refinements of this Information Concept</name><value>Loginės formos, kurios yra šių informacijos dalių patobulinimai</value></message>
+<message><name>The output format has not been captured for the</name><value>Nerastas išvesties formatas </value></message>
+<message><name>The Principles catalogue captures principles of the business and architecture principles that describe what a 'good' solution or architecture should look like. Principles are used to evaluate and agree an outcome for architecture decision points. Principles are also used as a tool to assist in architectural governance of change initiatives</name><value>Veiklos/kūrimo principų katalogas pateikia informaciją apie veiklos ir architektūros principus, kurie nustato, kad yra 'geras' sprendimas ar kokia turėtų būti architektūra. Veiklos/kūrimo principai yra naudojami architektūros dizaino įvertinimui ir suderinimui. Veiklos/kūrimo principai yra taip pat naudojami, kaip pagalbinis įrankis architektūros pokyčių valdymui</value></message>
+<message><name>The Programme Plan shows the timelines for the individual projects contained within the overall Programme</name><value>Programos plane pateikiami atskirų projektų, numatytų bendroje programoje, terminai</value></message>
+<message><name>The purpose of a Strategic Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to deliver the business and IT strategy of an enterprise</name><value>Strateginio plano tikslas - informuoti suinteresuotąsias šalis apie papildomus pokyčius, kurių reikia imtis, kad būtų įgyvendinta įmonės verslo ir IT strategija.</value></message>
+<message><name>The purpose of the</name><value>Tikslas</value></message>
+<message><name>The purpose of the Application Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Application elements that will exist at this stage of the Application Roadmap</name><value>Sistemos rezultatų suvestinė ataskaitos paskirtis yra nurodyti veiksnius ir tikslus bei pateikti sąrašą sistemos elementų, kurie bus įgyvendinti šiame sistemos veiksmų plano etape</value></message>
+<message><name>The purpose of the Application Reference Model is to inform stakeholders regarding the major classes of applications that are needed to automate or enable the functions/services of</name><value>Sistemos modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie pagrindines sistemų klases, kurių reikia funkcijų/paslaugų automatizacijai ar vykdymui </value></message>
+<message><name>The purpose of the Application Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name><value>Sistemos veiksmų plano paskirtis yra suteikti suinteresuotoms šalims informaciją apie pagrindines sistemos klases, kurias reikia automatizuoti, tam kad teikti paslaugą ar funkciją</value></message>
+<message><name>The purpose of the Application Service Stakeholder Model is to inform stakeholders of the different roles (internal and external) that will interact with a given application service</name><value>Sistemos paslaugų suinteresuotų šalių modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie skirtingus išorinius ir vidinius vaidmenis, kurie sąveikaus su pasirinktomis sistemos paslaugomis</value></message>
+<message><name>The purpose of the Business Function/Service Model is to inform stakeholders regarding the Service Catalogue of an enterprise, the degree of automation of each function/service, and the roles (people) required to perform the function/service</name><value>Veiklos funkcijos/paslaugų modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie įmonės paslaugų katalogą, funkcijų ir paslaugų automatizacijos lygį bei funkcijai, paslaugai suteikti reikalingus asmenis</value></message>
+<message><name>The purpose of the Business Information Model is to inform stakeholders regarding the Data Subject classes that the enterprise must manage through its life-cycle</name><value>Veiklos informacijos modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie duomenų subjektų klases, kurias įmonė privalo sutvarkyti per šį ciklą</value></message>
+<message><name>The purpose of the Business Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key business elements that will exist at this stage of the Business Roadmap</name><value>Veiklos rezultatų suvestinės paskirtis yra nurodyti palaikomus veiksnius ir tikslus bei pateikti sąrašą pagrindinių veiklos elementų, kurie bus įgyvendinti šiame veiklos veiksmų plano etape</value></message>
+<message><name>The purpose of the Business Performance Model is to inform stakeholders regarding the performance accountability in an enterprise and the line of sight of an enterprise towards government strategic outcomes</name><value>Veiklos atlikties modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie tai įmonėje esančią atskaitomybę už veiklą bei įmonės nuostatas valdžios strateginių rezultatų atžvilgiu</value></message>
+<message><name>The purpose of the Business Roadmap is to inform stakeholders regarding the incremental changes to business ekements of the enterprise that are to be undertaken to deliver the business strategy</name><value>Veiklos plano paskirtis yra suteikti suinteresuotoms šalims informaciją apie tai, kokie pokyčiai veiklos elementams bus įvykdyti tam, kad būtų įgyvendinta veiklos strategija</value></message>
+<message><name>The purpose of the Data Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Information/Data elements that will exist at this stage of the Data Roadmap</name><value>Duomenų rezultatų suvestinės paskirtis yra suteikti informaciją apie veiksnius bei tikslus bei pateikti informacijos/duomenų elementų sąrašą, kurie bus pateikti šiame duomenų veiklos plano etape</value></message>
+<message><name>The purpose of the Data Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name><value>Duomenų veiksmų plano paskirtis yra suteikti suinteresuotoms šalims informaciją apie planuojamus pokyčius, kurie atliekami dėl stygiaus ar perteklinių elementų, apie kurių egzistavimą buvo nustatyta per spragų analizę </value></message>
+<message><name>The purpose of the Data Security Model is to inform stakeholders regarding the security and responsibilities of the data assets in a department in order to improve data accountability</name><value>Duomenų saugumo modelio paskirtis yra suteikti suinteresuotoms šalims informacijos dėl padalinio duomenų aktyvų saugumo ir atsakomybių, tam kad pagerinti atskaitomybę duomenims</value></message>
+<message><name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between Data Subjects and applications in an enterprise that is needed to inform the development, integration and deployment of software solutions</name><value>Duomenų sistemai modelio paskirtis yra suteikti suinteresuotoms šalims informaciją dėl ryšio ar panašumo tarp loginių duomenų subjektų ir įmonės naudojamų sistemos paslaugų, reikalingų programinės įrangos sprendimų kūrimui, integravimui ir diegimui</value></message>
+<message><name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between logical Data Objects and application services in use across an enterprise that is needed to inform the development, integration and deployment of software solutions</name><value>Duomenų sistemai modelio paskirtis yra suteikti suinteresuotoms šalims informaciją dėl ryšio ar panašumo tarp loginių duomenų objektų ir įmonės naudojamų sistemos paslaugų, reikalingų programinės įrangos sprendimų kūrimui, integravimui ir diegimui</value></message>
+<message><name>The purpose of the Information Reference Model is to inform stakeholders regarding the information assets of an enterprise in a consistent manner that will enable re-use and information sharing</name><value>Informacijos modelio paskirtis yra suteikti suinteresuotoms šalims nuoseklią informaciją apie įmonės aktyvus, kurią galės panaudoti ar ja keistis</value></message>
+<message><name>The purpose of the Organisation Structure Model is to inform stakeholders regarding the accountability and responsibility towards the services that are routinely rendered by an enterprise – be it an internal service or external service; and the business footprint to inform capacity and network design</name><value>Organizacijos struktūros modelio paskirtis yra suteikti suinteresuotoms šalims informaciją apie atskaitomybę ir atsakomybę įmonės nuolat teikiamų paslaugų atžvilgiu - ar tai vidinė ar išorinė paslauga</value></message>
+<message><name>The purpose of the Strategic Goals Model is to provide stakeholders with a line of sight from high level strategic business goals, through objectives and the drivers that motivate them</name><value>Strateginių tikslų modelio paskirtis yra suteikti suinteresuotoms šalims strateginių veiklos tikslų planą, nurodant tikslus ir motyvacinius veiksnius</value></message>
+<message><name>The purpose of the Technology Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Technology elements that will exist at this stage of the Technology Roadmap</name><value>Technologijų etapų santraukos ataskaitos paskirtis yra nurodyti palaikomus veiksnius ir tikslus bei išvardyti šiame veiksmų plane planuojamus įgyvendinti technologijų elementus</value></message>
+<message><name>The purpose of the Technology Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name><value>Technologijų veiksmų plano paskirtis yra informuoti suinteresuotas šalis apie planuojamus pokyčius, kurie atliekami dėl stygiaus ar perteklinių elementų, apie kurių egzistavimą buvo nustatyta per spragų analizę </value></message>
+<message><name>The purpose of this view is to define the distribution of technology components for a distributed operating environment that will reduce duplication and optimise the re-use of shared infrastructure whilst providing optimal access channels to information intensive services to the intended users</name><value>0</value></message>
+<message><name>The purpose of this view is to describe the direct data related dependencies that exist for the</name><value>Šios ataskaitos paskirtis yra nurodyti esamų priklausomybių.... </value></message>
+<message><name>The purpose of this view is to describe the flow of steps and participants (users and systems) in the</name><value>Šios ataskaitos paskirtis yra nurodyti eigos ir dalyvių (vartotojų bei sistemų) srautą</value></message>
+<message><name>The purpose of this view is to inform stakeholders on how applications or application components are distributed across the footprint of the organisation and how they interface or integrate with each other and the environment</name><value>Šios ataskaitos paskirtis yra informuoti suinteresuotas šalis apie tai, kai sistema ar sistemos moduliai yra paskirstyti pagal organizacijos poveikį ir tai, kaip jie sąveikauja ir jungiasi su aplinka bei tarpusavyje </value></message>
+<message><name>The purpose of this view is to inform stakeholders regarding the redundancies and deficiencies of technology in an enterprise</name><value>Šios ataskaitos paskirtis yra informuoti suinteresuotas šalis apie </value></message>
+<message><name>The purpose of this view is to inform stakeholders regarding the workflow (and information flow) that is needed to produce a product or render a service.</name><value>Šios ataskaitos paskirtis yra informuoti suinteresuotas šalis apie darbo eigą (ir informacijos srautą), kuris reikalingas produkto sukūrimui ar paslaugos teikimui.</value></message>
+<message><name>There are no Business Roles captured for the</name><value>Nenustatyti veiklos vaidmenys</value></message>
+<message><name>The source of truth for</name><value>Tiesos šaltinis </value></message>
+<message><name>The table below provides a comparative analysis between</name><value>Apačioje nurodytoje lentelėje pateikiama palyginamoji analizė tarp</value></message>
+<message><name>The table belows lists the relevant Data Objects for the</name><value>Apačioje pateiktoje lentelėje išvardyti susiję duomenų objektai</value></message>
+<message><name>The Technology Capabilities that realise the</name><value>Technologijų veiklos sritys, kurios</value></message>
+<message><name>The Technology Functions provided by the</name><value>Technologijų funkcijos, teikiamos</value></message>
+<message><name>The Technology Products that implement the</name><value>Technologijos produktai, vykdantys</value></message>
+<message><name>The Technology Reference Model informs stakeholders regarding the major kinds of technologies and standards that are needed as a common infrastructure to enable the integration, execution, distribution and management of Information Management systems (data and applications) of an enterprise</name><value>Technologijų modelis suteikia suinteresuotosioms šalims informaciją apie tai, kokie pagrindiniai technologijų tipai ir standartai yra reikalingi tam, kad būtų galima integruoti, vykdyti ir paskirstyti įmonės informacijos valdymo sistemas </value></message>
+<message><name>This page describes the inbound and outbound information flows for the selected Application</name><value>Šiame puslapyje nurodoma pasirinktos sistemos gaunamos ir siunčiamos informacijos srautai </value></message>
+<message><name>This page is highly complex and may take a few minutes to load</name><value>Šiame puslapyje daug kompleksinės informacijos, todėl gali praeiti kelios mintutės, kol jis užsikraus</value></message>
+<message><name>This provides an overview of the selected Data Object</name><value>Šioje ataskaitoje rodoma pasirinktų duomenų objektų apžvalga</value></message>
+<message><name>This table lists all the Applications in use and allows search as well as copy to spreadsheet</name><value>Šioje lentelėje išvardytos visos naudojamos sistemos, joje galima vykdyti paiešką bei iš jos kopijuoti į skaičiuoklę</value></message>
+<message><name>This table lists all the Technology Products in use and allows download as CSV</name><value>Šioje lentelėje išvardyti visi naudojami technologijos produktai ir leidžia juos atsisiųsti CSV formatu</value></message>
+<message><name>This view contains links to download Excel spreadsheet templates in Excel 2003 XML format (either empty or populated), specifically structured for importing into Essential</name><value>Šioje ataskaitoje yra nuorodos, kurias paspaudus galima atsisiųsti Excel skaičiuokles 2003 XML formatu (arba tuščias, arba užpildytas), specialiai sustruktūruotas įkėlimui į 'Essential' aplinką</value></message>
+<message><name>This view describes duplication and gaps that exist for the Application Services required by an enterprise</name><value>Šioje ataskaitoje apibūdinami sistemos paslaugose esantys dublikatai ir spragos </value></message>
+<message><name>This view displays all programmes in scope for the enterprise, as well as their constituent projects</name><value>Šioje ataskaitoje rodomos visos įmonės programos ir projektai</value></message>
+<message><name>This view displays all projects in scope for the enterprise, as well as the individuals involved in them</name><value>Šioje ataskaitoje rodomi visi įmonės projektai bei su juo susiję asmenys</value></message>
+<message><name>This view is summary of the</name><value>Šioje ataskaitoje rodoma suvestinė</value></message>
+<message><name>This view outlines the use of approved technology platforms in the selected application by showing the degree of technology strategy alignment for the technology platforms used to support the Application</name><value>Ši ataskaita nusako, kurios technologijų platformos pasirinktoje sistemoje yra patvirtintos, parodant technologijų strategijos suderinamumą su technologijų platformomis, kurios naudojamos palaikyti sistemą</value></message>
+<message><name>This view provide analysis of the applications that support the Business Capabilities for the selected Business Domain</name><value>Šioje ataskaitoje rodoma pasirinktos veiklos krypties veiklos sritis palaikančių sistemų analizė</value></message>
+<message><name>This view provides a catalogue of the Applications in use across the enterprise</name><value>Šioje ataskaitoje rodomas įmonės sistemų katalogas</value></message>
+<message><name>This view provides a catalogue of the Technology Products available across the enterprise</name><value>Šioje ataskaitoje rodomas įmonės technologijų produktų katalogas</value></message>
+<message><name>This view provides a detailed summary of the selected Technology Instance</name><value>0</value></message>
+<message><name>This view provides an analysis of the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name><value>Šioje ataskaitoje rodoma šiai sričiai nustatytos sistemos paslaugų analizė; sistemos, kurios naudojamos vykdyti kiekvieną iš paslaugų bei technologijų produktai, kurie naudojami </value></message>
+<message><name>This view provides an analysis of the Application Services that support the Business Capabilities for the selected Business Domain</name><value>Šioje ataskaitoje rodomos pasirinktos veiklos krypties verslo sritys, kurios palaiko sistemos paslaugų analizę</value></message>
+<message><name>This view provides an overview of the</name><value>Šioje ataskaitoje rodoma apžvalga</value></message>
+<message><name>This view provides an overview of the key elements of the</name><value>Šioje ataskaitoje rodoma pagrindinių elementų apžvalga</value></message>
+<message><name>This view provides a summary of a set of related changes to elements of the enterprise</name><value>Šioje ataskaitoje rodoma su įmonės elementais susijusių pakeitimų suvestinė </value></message>
+<message><name>This view provides a summary of details related to an individual actor</name><value>Šioje ataskaitoje rodoma su konkrečiu veiksniu susijusių duomenų suvestinė</value></message>
+<message><name>This view provides a summary of the</name><value>Šioje ataskaitoje rodoma suvestinė</value></message>
+<message><name>This view provides a summary of the Information and Data that the selected Application provides and uses</name><value>Šioje ataskaitoje rodoma sistemos naudojamos ir teikiamos informacijos ir duomenų  suvestinė</value></message>
+<message><name>This view provides a summary of the key attributes and relationships of an Information Object</name><value>Šioje ataskaitoje rodoma pagrindinių parametrų suvestinė bei informacijos objekto ryšiai</value></message>
+<message><name>This view provides a summary of the key elements of the</name><value>Šioje ataskaitoje rodoma pagrindinių elementų suvestinė</value></message>
+<message><name>This view provides links to published</name><value>Šioje ataskaitoje rodomos nuorodos į įkeltus</value></message>
+<message><name>This view shows actual physical processes performed by the business, organised by business domain</name><value>Šioje ataskaitoje rodomi įmonės fiziniai procesai, suskirstyti pagal veiklos kryptį</value></message>
+<message><name>This view shows a list of Business Processes as a searchable table</name><value>Šioje ataskaitoje rodomas veiklos procesų sąrašas kaip lentelė su paieškos funkcija</value></message>
+<message><name>This view shows all individual actors in scope for</name><value>Šioje ataskaitoje rodomi visi savarankiški veikėjai</value></message>
+<message><name>This view shows all the application capabilities for the enterprise</name><value>Šioje ataskaitoje rodomi visos įmonės veiklos sritys</value></message>
+<message><name>This view shows all the Applications contained in the repository. Select the Application from this list to view its Application Distribution Change Analysis.</name><value>Šioje ataskaitoje rodomos visos sistemos talpinamos saugykloje. Norėdami pamatyti sistemos paskirstymo pokyčio analizę, šiame sąraše pasirinkite sistemą</value></message>
+<message><name>This view shows all the Applications contained in the repository. Select the Application from this list to view its Application Interface Change Analysis</name><value>Šioje ataskaitoje rodomos visos sistemos talpinamos saugykloje. Norėdami pamatyti sistemos sąsajos pokyčio analizę, šiame sąraše pasirinkite sistemą</value></message>
+<message><name>This view shows all the Application Services in scope for</name><value>Šioje ataskaitoje rodomos visos sistemos paslaugos</value></message>
+<message><name>This view shows all the Applications in scope for</name><value>Šioje ataskaitoje rodomos visos sistemos</value></message>
+<message><name>This view shows all the Applications in scope for the enterprise</name><value>Šioje ataskaitoje rodomos visos įmonės sistemos</value></message>
+<message><name>This view shows all the business capabilities for the enterprise</name><value>Šioje ataskaitoje rodomi visos veiklos sritys</value></message>
+<message><name>This view shows all the Business Domains for the enterprise</name><value>Šioje ataskaitoje rodomos visos įmonės veiklos kryptys</value></message>
+<message><name>This view shows all the Business Processes in scope for</name><value>Šioje ataskaitoje rodomi visi veiklos procesai</value></message>
+<message><name>This view shows all the Business Services in scope for</name><value>Šioje ataskaitoje rodomos visos veiklos paslaugos</value></message>
+<message><name>This view shows all the Data Objects in scope for the enterprise</name><value>Šioje ataskaitoje rodomi visi įmonės duomenų objektai</value></message>
+<message><name>This view shows all the Data Subjects in scope for</name><value>Šioje ataskaitoje rodomi visi duomenų subjektai</value></message>
+<message><name>This view shows all the physical technology node products in the enterprise, organised by manufacturer</name><value>0</value></message>
+<message><name>This view shows all the Roadmap Models in scope for</name><value>Šioje ataskaitoje rodomi visi veiksmų plano modeliai</value></message>
+<message><name>This view shows all the Technology Components in scope for</name><value>Šioje ataskaitoje rodomi visi technologijų moduliai</value></message>
+<message><name>This view shows all the technology components in use across the enterprise. Select a Technology Component to view the Technology Interoperability Change Analysis for that component</name><value>Ši ataskaita rodo visus technologijų modulius naudojamus įmonėje. Norėdami pamatyti technologijų sąsajų pokyčių analizę, pasirinkite technologijų modulį</value></message>
+<message><name>This view shows all the technology nodes contained in the repository, organised by hardware model</name><value>0</value></message>
+<message><name>This view shows all the technology nodes contained in the repository, organised by manufacturer</name><value>0</value></message>
+<message><name>This view shows all the technology nodes contained in the repository, organised in alphabetical order by name</name><value>0</value></message>
+<message><name>This view shows all the technology products contained in the repository, organised by Vendor</name><value>Šioje ataskaitoje rodomi visi technologijų produktai, talpinami saugykloje, suskirstyti pagal pardavėją</value></message>
+<message><name>This view shows all the technology products in use across the enterprise, organised by Technology Capability/Component</name><value>Šioje ataskaitoje rodomi visi įmonės technologijų produktai, suskirstyti pagal technologijų sritis/modulius</value></message>
+<message><name>This view shows all the technology products in use across the enterprise, organised by Technology Component</name><value>Šioje ataskaitoje rodomi visi įmonės technologijų produktai, suskirstyti pagal technologijų modulius</value></message>
+<message><name>This view shows a summary of the</name><value>Šioje ataskaitoje pateikiama suvestinė</value></message>
+<message><name>This view shows relationships between people and currently active projects</name><value>Ši ataskaita rodo ryšius tarp žmonių ir šiuo metu aktyvių projektų</value></message>
+<message><name>This view shows relationships between people and currently active projects. Click on a node to refocus the diagram</name><value>Šioje ataskaitoje rasite ryšį tarp žmonių ir šiuo metu vykdomų projektų. Paspauskite ant node, kad perorientuotumėte diagramą</value></message>
+<message><name>This view shows the information concepts, views and logical representations in scope for the enterprise</name><value>Šioje ataskaitoje rasite informacijos sąvokas, ataskaitas ir loginį atvaizdavimą įmonei </value></message>
+<message><name>This view shows the IT and Business impact of removing or changing a given Application</name><value>Šioje ataskaitoje rasite informaciją apie tai, kokias pasekmes it ar verslui turėtų nurodytos sistemos pašalinimas </value></message>
+<message><name>This view shows the main information concepts and views for the enterprise, organised by business domain</name><value>Šioje ataskaitoje rasite pagrindines informacijos dalis apie įmonę, suskirstytas pagal veiklos kryptis</value></message>
+<message><name>This view shows which systems are the source and which are consumers of a specified Data Object</name><value>Šioje ataskaitoje rasite informaciją apie tai, kurios sistemos yra nurodyto duomenų objekto šaltiniai ir vartotojai</value></message>
+<message><name>Timeline</name><value>Laiko juosta</value></message>
+<message><name>Timing/Frequency</name><value>Laikas/dažnis</value></message>
+<message><name>Timing / Frequency</name><value>Laikas/dažnis</value></message>
+<message><name>TO BE DEFINED</name><value>Nustatykite</value></message>
+<message><name>to see the inbound and outbound information flows for</name><value>Norėdami pamatyti siunčiamos ir gaunamos informacijos srautus</value></message>
+<message><name>to the Application Services in use across</name><value>sistemos paslaugoms, kurios yra naudojamos</value></message>
+<message><name>to the Business Roles in use across</name><value>veiklos vaidmenims, kurie yra naudojami</value></message>
+<message><name>Triggers</name><value>Katalizatoriai</value></message>
+<message><name>U</name><value>U</value></message>
+<message><name>Unclassified</name><value>Nenurodyta klasifikacija</value></message>
+<message><name>Undefined</name><value>Neapibrėžtas</value></message>
+<message><name>undefined</name><value>Neapibrėžtas</value></message>
+<message><name>Unknown</name><value>Nežinomas</value></message>
+<message><name>Unknown (Waiver Required)</name><value>Nežinoma (privalomi atsisakymo dokumentai)</value></message>
+<message><name>Unknown Supplier</name><value>Nežinomas tiekėjas</value></message>
+<message><name>Unknown Vendor</name><value>Nežinomas pardavėjas</value></message>
+<message><name>UPDATE</name><value>Atnaujinimas</value></message>
+<message><name>Updates</name><value>Atnaujinimai</value></message>
+<message><name>Upstream Systems</name><value>0</value></message>
+<message><name>Usage</name><value>Paskirtis</value></message>
+<message><name>Used As</name><value>Naudojama kaip</value></message>
+<message><name>Used By</name><value>Naudojama</value></message>
+<message><name>Used In Technology Architectures</name><value>Naudojama technologijų architektūroje</value></message>
+<message><name>Used in Technology Architectures</name><value>Naudojama technologijų architektūroje</value></message>
+<message><name>Used to Implement Technology Components</name><value>Naudojami technologijų modulių įdiegimui</value></message>
+<message><name>V</name><value>V</value></message>
+<message><name>Vendor</name><value>Pardavėjas</value></message>
+<message><name>View</name><value>Peržiūrėti</value></message>
+<message><name>View Filter</name><value>Filtro peržiūra</value></message>
+<message><name>View Manuals</name><value>P</value></message>
+<message><name>View of Information Concept</name><value>Informacijos dalių peržiūra</value></message>
+<message><name>W</name><value>W</value></message>
+<message><name>Waiver Required</name><value>Privalomi atsisakymo dokumentai</value></message>
+<message><name>Welcome to the Essential Viewer Home Page. Here you can access all the available views or filter them to see just the ones you want.</name><value>Sveikiname prisijungus prie  „essential“ aplinkos pagrindinio puslapio. Čia galite pasiekti visas formas bei jas filtruoti, kad matytumėte tik tas, kurių ieškote.</value></message>
+<message><name>Where is the Data Object</name><value>Kur yra duomenų tikslas</value></message>
+<message><name>workflow</name><value>Darbo eiga</value></message>
+<message><name>Workflow Step</name><value>Darbo eigos žingsnis</value></message>
+<message><name>Workflow Steps</name><value>Darbo eigos </value></message>
+<message><name>X</name><value>X</value></message>
+<message><name>Y</name><value>Y</value></message>
+<message><name>Your Comment</name><value>Jūsų komentaras</value></message>
+<message><name>Z</name><value>Z</value></message>
+</strings>
+</language>

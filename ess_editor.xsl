@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview" xmlns:user="http://www.enterprise-architecture.org/essential/vieweruserdata">
+	<xsl:import href="WEB-INF/security/viewer_security.xsl"/>
 	<xsl:include href="common/core_doctype.xsl"/>
 	<xsl:include href="editors/common/editor_common_head_content.xsl"/>
 	<xsl:include href="editors/common/editor_header.xsl"/>
@@ -21,12 +22,15 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	
 	<xsl:variable name="targetEditor" select="$utilitiesAllEditors[name = $EDITOR]"/>
 	<xsl:variable name="targetEditorLabel" select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = 'editor_menu_link_classes']/value"/>
+	
+	<!-- Get the list of supporting data set APIs -->
+	<xsl:variable name="supportingAPIs" select="$utilitiesAllDataSetAPIs[name = $targetEditor/own_slot_value[slot_reference = 'editor_data_set_apis']/value]"/>
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -108,12 +112,28 @@
 
 					// define the global object to hold environment variables
 					// note we have to define this script in-line to make use of the xsl values
-					const essEnvironment = {};
+					var essEnvironment = {};
+					
+					//define the details for the current user
+					var essUserDets = {
+						'id': '<xsl:value-of select="$userData//user:email"/>',
+						'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
+						'lastName': '<xsl:value-of select="$userData//user:lastname"/>'
+					};
 
 					essEnvironment.repoId = '<xsl:value-of select="repository/repositoryID"/>';
 					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
 
 					essEnvironment.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
+					
+					var essDataSetAPIs = {
+						<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
+					};
+					
+					function essGetDataSetAPIUrl(dataSetLabel) {
+						var apiURL = essDataSetAPIs[dataSetLabel];
+						return apiURL;
+					}
 				</script>
 
 				<!-- main script -->
@@ -145,6 +165,41 @@
 				</div>
 				
 				
+				<!-- Handlebars template for the contents of the CREATE RESOURCE Modal -->
+				<script id="ess-create-modal-template" type="text/x-handlebars-template">
+					<div class="modal-header">
+						<p class="modal-title xlarge" id="essCreateModalLabel"><i class="fa fa-exclamation-triangle right-10"/><strong><span>New </span><span class="text-primary">{{resourceTypeLabel}}</span></strong></p>
+					</div>
+					<div class="modal-body">
+						<div class="col-xs-12">
+							<label for="ess-create-name" class="fontBold">Name</label>
+							<textarea id="ess-create-name"  class="bottom-10" placeholder="Enter a name"/>
+						</div>
+						<div class="col-xs-12">
+							<label for="ess-create-desc" class="fontBold">Description</label>
+							<textarea id="ess-create-desc" placeholder="Enter a description"/>
+						</div>
+						<div>
+							<p id="ess-create-error" class="ess-modal-error"/>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="essCreateCancelBtn" class="btn btn-danger right-5"><xsl:value-of select="eas:i18n('Cancel')"/></button>
+						<button type="button" id="essCreateBtn" class="btn btn-success">
+							<xsl:value-of select="eas:i18n('Create')"/>
+						</button>
+					</div>
+				</script>
+				
+				
+				<!-- Div for the CREATE RESOURCE modal -->
+				<div class="modal fade" id="essCreateModal" tabindex="-1" role="dialog" aria-labelledby="essCreateModalLabel" data-backdrop="static" data-keyboard="false">
+					<div class="modal-dialog">
+						<div class="modal-content" id="essCreateModalContent"/>				
+					</div>
+				</div>
+				
+				
 				<!-- Handlebars template for the contents of the ERROR Modal -->
 				<script id="ess-error-modal-template" type="text/x-handlebars-template">
 					<div class="modal-header">
@@ -171,6 +226,20 @@
 				
 			</body>
 		</html>
+	</xsl:template>
+	
+	<xsl:template mode="RenderDataSetAPIDetails" match="node()">
+		<!-- Get the URL path for the data set -->
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderLinkText">
+				<xsl:with-param name="theXSL" select="current()/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<!-- Get the property label to be used for accessing the data set details -->
+		<xsl:variable name="dataSetLabel" select="current()/own_slot_value[slot_reference = 'dsa_data_label']/value"/>
+		"<xsl:value-of select="$dataSetLabel"/>": "<xsl:value-of select="$dataSetPath"/>"<xsl:if test="not(position() = last())">,
+		</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

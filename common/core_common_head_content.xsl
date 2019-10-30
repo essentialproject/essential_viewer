@@ -41,6 +41,8 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
 		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css" type="text/css"/>
 		<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css"/>
+		<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+		<link href="js/hopscotch/css/ess-hopscotch.css" rel="stylesheet"/>
 		<link rel="stylesheet" href="css/essential-core.css" type="text/css"/>
 		<link href="fonts/source-sans/source-sans-pro.css" rel="stylesheet" type="text/css"/>
 		<xsl:if test="$currentLanguage/own_slot_value[slot_reference = 'right_to_left_text']/value = 'true'">
@@ -51,6 +53,11 @@
 		<script type="text/javascript" src="js/jquery-3.4.1.min.js"/>
 		<!--Custom JQuery UI library to support various visual effects-->
 		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>
+		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->
+		<script>
+		$.widget.bridge('uibutton', $.ui.button);
+		$.widget.bridge('uitooltip', $.ui.tooltip);
+		</script>
 		<!--JQuery plugin to support popup menus for link navigation-->
 		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js"/>
 		<!--script to support the feedback page-->
@@ -61,7 +68,13 @@
 		<script type="text/javascript" src="js/bootstrap.min.js"/>
 		<!--Match Height Library-->
 		<script src="js/jquery.matchHeight.js" type="text/javascript"/>
-
+		<script src="js/select2/js/select2.min.js"/>
+		<!-- Handlebars templating library -->
+		<script src="js/handlebars-v4.1.2.js"/>
+		<!-- Date formatting library -->
+		<script src="js/moment/moment.js"/>
+		<!--Help text and tour library-->
+		<script src="js/hopscotch/js/hopscotch.min.js"/>
 		<!--script to show hide sections by click on the icon-->
 		<script>
 			$(document).ready(function () {$('.sectionIcon').click(function (){$(this).parent().children('.content-section').slideToggle(200);});});

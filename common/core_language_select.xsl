@@ -36,6 +36,7 @@
 
 	<xsl:param name="currentPageLink"/>
 	<xsl:param name="theURLPrefix"/>
+	<xsl:variable name="aSafeCurrentPageLink" select="replace($currentPageLink, '[&lt;&gt;]', '')"></xsl:variable>
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
@@ -61,17 +62,13 @@
 									</span>
 								</h1>
 							</div>
-
-
-							<div class="verticalSpacer_20px"/>
-
 							<form action="essentialLanguage" method="POST" name="languageForm">
 								<!--	<xsl:variable name="encodedURL" select="translate($theURLFullPath, '&amp;', '%26')" />-->
-								<input type="hidden" name="currentPage" value="{$currentPageLink}"/>
+								<input type="hidden" name="currentPage" value="{$aSafeCurrentPageLink}"/>
 								<label for="language">
 									<strong><xsl:value-of select="eas:i18n('Choose your language')"/>: </strong>
 								</label>
-								<select name="i18n" id="language">
+								<select name="i18n" id="language" class="form-control" style="width: 300px;">
 									<xsl:for-each select="$enabledLanguages">
 										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 										<option>
@@ -84,18 +81,14 @@
 									</xsl:for-each>
 
 								</select>
-								<div class="verticalSpacer_20px"/>
-								<a href="javascript: submitform()" class="noUL">
-									<div class="basicButton bg-primary text-white fontBlack uppercase small pull-left">
+								<div class="top-15">
+									<button class="btn btn-success right-10" onclick="submitform();">
 										<xsl:value-of select="eas:i18n('Save Setting')"/>
-									</div>
-								</a>
-								<div class="horizSpacer_10px pull-left"/>
-								<a href="javascript:history.back()" class="noUL">
-									<div class="basicButton backColour3 text-white fontBlack uppercase small pull-left">
+									</button>
+									<button class="btn btn-danger right-10" onclick="history.back();">
 										<xsl:value-of select="eas:i18n('Cancel')"/>
-									</div>
-								</a>
+									</button>
+								</div>
 							</form>
 						</div>
 						<!--<script type="text/javascript">

@@ -27,6 +27,7 @@
 		<script type="text/javascript" src="js/DataTables/1-10.18/Responsive-2.2.2/js/responsive.bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/DataTables/1-10.18/Scroller-2.0.0/js/dataTables.scroller.min.js"></script>
 		<script type="text/javascript" src="js/DataTables/1-10.18/Select-1.3.0/js/dataTables.select.min.js"></script>
+		<script type="text/javascript" src="js/DataTables/datetime-moment.js"/>
 		<style type="text/css">
 			div.dataTables_wrapper{
 				margin-top: -5px;

@@ -190,7 +190,7 @@
 							<h1 class="text-primary">
 								<span class="text-primary"><xsl:value-of select="eas:i18n('Search results for')"/>: </span>
 								<span class="text-black" style="text-transform: capitalize;">
-									<xsl:value-of select="$SearchQuery"/>
+									<xsl:value-of select="$currentSearch"/>
 								</span>
 							</h1>
 							<table class="table table-striped table-bordered" id="dt_results">

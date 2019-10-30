@@ -40,6 +40,7 @@
                 <xs:element name="email" type="xs:string"/>
                 <xs:element name="viewers" type="viewerURLList" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="clearanceList" type="clearanceList"/>
+                <xs:element name="contentApproverClasses" type="contentApproverClassList"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -69,6 +70,12 @@
     <xs:complexType name="viewerURLList">
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element name="viewer" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="contentApproverClassList">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="className" type="xs:string"></xs:element>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

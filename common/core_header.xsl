@@ -26,9 +26,11 @@
 	<!-- 01.04.2011 NJW	updated for viewer3 -->
 	<!-- 15.11.2016 JWC Apply sort by portal_sequence to links in drop-down nav-bar -->
 
+	<xsl:import href="../common/core_header_interactions.xsl"/>
 	<xsl:include href="../common/core_utilities.xsl"/>
 	<xsl:include href="../common/core_page_history.xsl"/>
 	<xsl:include href="../common/core_feedback.xsl"/>
+	
 
 	<xsl:param name="pageHistory"/>
 	<xsl:param name="theURLFullPath"/>
@@ -73,7 +75,7 @@
 		<xsl:param name="contentID"/>
 		<xsl:param name="subPortalID"/>
 		<xsl:param name="mode">VIEW</xsl:param>
-		
+
 		<xsl:variable name="headerStyle">
 			<xsl:choose>
 				<xsl:when test="$mode = 'EDIT'">navbar navbar-default nav-edit-color</xsl:when>
@@ -98,6 +100,7 @@
 						$('#historyOverlay').hide();
 						$('#searchOverlay').slideToggle();
 					});
+					$('li[data-toggle="tooltip"]').tooltip();
 				});				
 			</script>
 
@@ -130,29 +133,7 @@
 			</noscript>
 		</xsl:if>
 		<!-- End Piwik Code -->
-
-		<xsl:text disable-output-escaping="yes">&lt;!--[if lt IE 9]&gt;&lt;div class=&quot;bg-warning&quot;&gt;&lt;div class=&quot;container-fluid alignCentre&quot;&gt;&lt;em&gt;Oops! It looks like you&apos;re using Internet Explorer 8. Essential Viewer requires a modern web browser to function properly.&lt;/em&gt;&lt;/div&gt;&lt;/div&gt;&lt;![endif]--&gt;</xsl:text>
-		<nav class="app-brand-header">
-			<div class="app-logo pull-left">
-				<img src="images/essential_white_dots_only_2017@0.5x.png" alt="application logo" style="height: 14px; margin-right: 5px; margin-top: -1px;"/>
-				<span style="font-weight: 600;letter-spacing: 1px;position: relative; top: 1px;" class="text-white">The Essential Project</span>
-			</div>
-			<div class="pull-right text-white small" style="margin-top:3px;">
-				<xsl:choose>
-					<xsl:when test="$eipMode = 'true'">
-						<a class="header-link" href="https://enterprise-architecture.org/">About</a>
-					</xsl:when>
-					<xsl:otherwise>
-						<a class="header-link" href="http://www.enterprise-architecture.org/about/licensing">Licensing</a>
-						<span> | </span>
-						<a class="header-link" href="http://www.enterprise-architecture.org/services">Support</a>
-						<span> | </span>
-						<a class="header-link" href="http://www.enterprise-architecture.org/forums">Community</a>
-					</xsl:otherwise>
-				</xsl:choose>
-			</div>
-		</nav>
-		<nav class="{$headerStyle}">
+		<nav class="{$headerStyle}" id="mainHeader">
 			<div class="container-fluid">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
@@ -174,7 +155,7 @@
 					</a>
 					<button class="pull-right navbar-toggle collapsed">
 						<span class="sr-only">Toggle navigation</span>
-						<i class="fa fa-bars collapsed text-white" style="font-size:36px;" data-toggle="collapse" data-target="#nav-collapse"/>
+						<i class="fa fa-bars collapsed text-white" style="font-size:28px;" data-toggle="collapse" data-target="#nav-collapse"/>
 					</button>
 
 				</div>
@@ -185,30 +166,72 @@
 					<div class="collapse navbar-collapse" id="nav-collapse">
 
 						<ul class="nav navbar-nav navbar-right">
-							<li>
+							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('Search')"/>
 								<a href="#" id="searchLink">
-									<i class="fa fa-search" style="font-size: 20px;margin-top: -2px;"/>
+									<i class="fa fa-search"/>
 								</a>
 							</li>
-							<li>
-								<a href="#" id="historyLink">
-									<xsl:value-of select="eas:i18n('History')"/>
+							<!-- ONLY SHOW THE FOLLOWING IF IN EIP MODE -->
+							<xsl:if test="($eipMode = 'true') and ($thisRepoVersion >= '6.6')">
+								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+									<xsl:attribute name="title" select="eas:i18n('Comments')"/>
+									<a href="#" id="commentLink" onclick="toggleComments();setTimeout(initCommentJS,500);">
+										<i class="fa fa-comment-o"/>
+										<span id="comments-badge" class="badge"/>
+									</a>
+								</li>
+								<xsl:if test="$sysIdeationIsOn">
+									<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+										<xsl:attribute name="title" select="eas:i18n('Ideas')"/>
+										<a href="#" id="ideaLink" onclick="toggleIdeas();setTimeout(initIdeasJS,600);">
+											<i class="fa fa-lightbulb-o"/>
+											<span id="ideas-badge" class="badge"/>
+										</a>
+									</li>
+									<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+										<xsl:attribute name="title" select="eas:i18n('Approvals')"/>
+										<a href="#" id="approvalLink">
+											<xsl:call-template name="RenderLinkHref">
+												<xsl:with-param name="theXSL" select="'enterprise/core_el_approvals_dashboard.xsl'"/>
+											</xsl:call-template>
+											<i class="fa fa-check"/>
+											<span id="approvals-badge" class="badge"/>
+										</a>
+									</li>
+								</xsl:if>
+							</xsl:if>
+							<li class="disabled" data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('Roadmaps')"/>
+								<a href="#" id="ess-roadmap-widget-toggle">
+									<i class="fa fa-road" style="position: relative; top: 1px;"/>
 								</a>
 							</li>
-							<li>
+							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('Feedback')"/>
 								<a href="#" id="feedbackLink">
-									<xsl:value-of select="eas:i18n('Feedback')"/>
+									<i class="fa fa-envelope"/>
 								</a>
 							</li>
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilities&#160;<span class="caret"/></a>
+							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('History')"/>
+								<a href="#" id="historyLink">
+									<i class="fa fa-history"/>
+								</a>
+							</li>
+							<li class="dropdown" data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('Utilities')"/>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									<!--Utilities&#160;<span class="caret"/>-->
+									<i class="fa fa-gear"/>
+								</a>
 								<ul class="dropdown-menu" role="menu">
 									<li>
 										<a>
 											<xsl:call-template name="CommonRenderLinkHref">
 												<xsl:with-param name="theXSL">view_manual/view_manual_catalogue.xsl</xsl:with-param>
 											</xsl:call-template>
-											<span>View Manuals</span>
+											<span><xsl:value-of select="eas:i18n('View Manuals')"/></span>
 										</a>
 									</li>
 									<!--<li>
@@ -225,7 +248,7 @@
 												<xsl:with-param name="theXSL" select="'essential_utilities.xsl'"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 											</xsl:call-template>
-											<span>Integration Examples</span>
+											<span><xsl:value-of select="eas:i18n('Integration Examples')"/></span>
 										</a>
 									</li>
 									<!--<li>
@@ -437,8 +460,9 @@
 				</div>
 			</div>
 			<xsl:call-template name="portalBar"/>
+			<xsl:call-template name="RenderInteractiveHeaderBars"/>
 		</div>
-
+		
 	</xsl:template>
 
 	<xsl:template name="portalBar">
@@ -539,5 +563,5 @@
 			</div>
 		</div>
 	</xsl:template>
-
+	
 </xsl:stylesheet>

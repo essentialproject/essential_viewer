@@ -63,6 +63,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -240,10 +241,11 @@
 			<xsl:with-param name="parentProgrammeId" select="'PROGRAMME'"/>
 		</xsl:apply-templates>
     ]);
-
+            
+var today = new Date();
     var container = document.getElementById('visualization');
     var options = {
-        start: '2015-01-10',
+        start: today - ((((365*1000)*60)*60)*24),
         editable: false,
         selectable: false,
         stack: true,
@@ -261,6 +263,7 @@
       if(itemId != null) {
       
       		var itemObject = items.get({
+                       
 				    filter: function(item) {
 				       return (item.id == itemId);
 				    }

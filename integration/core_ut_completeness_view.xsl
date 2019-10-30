@@ -149,7 +149,7 @@
 				</script>
 			</head>
 			<body>
-				<script src="https://d3js.org/d3.v3.min.js"/>
+				<script src="js/d3/d3.min.js"/>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
 

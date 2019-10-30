@@ -130,6 +130,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title> Organisation Summary - <xsl:value-of select="$currentActor/own_slot_value[slot_reference = 'name']/value"/>
 				</title>
 

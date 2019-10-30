@@ -84,6 +84,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>Logical Model for Data Subject for <xsl:value-of select="$modelSubjectName"/></title>
 				<!--<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -97,7 +98,6 @@
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jquery-ui/jquery-ui.min.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
 				<script src="js/jointjs/joint_002.js"/>
 				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>

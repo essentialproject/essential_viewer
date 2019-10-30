@@ -168,6 +168,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
 				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
@@ -200,9 +201,6 @@
 				<script src="js/dhtmlxgantt/dhtmlxgantt.js"></script>
 				<link href="js/dhtmlxgantt/dhtmlxgantt.css" rel="stylesheet"/>
 				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>
-				
-				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment/moment.js"/>
 					
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {

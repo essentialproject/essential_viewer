@@ -96,18 +96,13 @@
 			<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 			<link href="js/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
 			<link href="js/jquery-ui-month-picker/MonthPicker.min.css" rel="stylesheet" type="text/css" />
-			<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>
+			<!--<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>-->
 			<script type="text/javascript" src="js/jquery.maskedinput.min.js"/>
 			<script type="text/javascript" src="js/jquery-ui-month-picker/MonthPicker.min.js"/>
 			
 			<!-- TIMELINE LIBRARIES AND STYLESHEETS -->
 			<link rel="stylesheet" href="js/jquery-timeline/timeline.min.css"/>
 			<script type="text/javascript" src="js/jquery-timeline/timeline.min.js"/>
-			
-			
-			<!-- MOMENT AND MOMENT DATATABLES PLUG-IN -->
-			<script type="text/javascript" src="js/moment/moment.js"/>
-			<script type="text/javascript" src="js/DataTables/datetime-moment.js"/>
 			
 		</xsl:if>
 	</xsl:template>
@@ -165,27 +160,27 @@
 		<!-- Variable containing all architecture states that contain the Roadmap instance -->
 		<xsl:variable name="allThisRoadmapInstanceArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $theRoadmapInstance/name]"/>
 		
-		'id': '<xsl:value-of select="$thisId"/>',
-		'name': '<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>',
-		'link': '<xsl:value-of select="$thisLink"/>',
-		'description': '<xsl:value-of select="eas:removeQuotesFromString($thisDescription)"/>'<xsl:if test="$isRoadmapEnabled">,
-		<xsl:if test="count($theTargetReport) = 0">'menu': '<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>',</xsl:if>
-		'roadmap': {
-			'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-			'isVisible': true,
-			'plansForPeriod': [],
-			'archStatesForPeriod': [],
-			'objectivesForPeriod': [],
-			'rmStyle': <xsl:value-of select="$rmNoChangePlanningActionStyleJSON"/>, <!-- default to no change style -->
-			'rmLink': '<xsl:value-of select="$thisRoadmapLink"/>',
-			'rmMetaClassStyle': rmMetaClassStyles.<xsl:value-of select="eas:getSafeJSString($theRoadmapInstance/type)"/>,
-			'rmEALayer': '<xsl:value-of select="eas:rmGetInstanceEALayer($theRoadmapInstance)"/>',
-			'strategicPlans': [
+		"id": "<xsl:value-of select="$thisId"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"link": "<xsl:value-of select="$thisLink"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDescription)"/>"<xsl:if test="$isRoadmapEnabled">,
+		<xsl:if test="count($theTargetReport) = 0">"menu": "<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>",</xsl:if>
+		"roadmap": {
+			"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+			"isVisible": true,
+			"plansForPeriod": [],
+			"archStatesForPeriod": [],
+			"objectivesForPeriod": [],
+			"rmStyle": <xsl:value-of select="$rmNoChangePlanningActionStyleJSON"/>, <!-- default to no change style -->
+			"rmLink": "<xsl:value-of select="$thisRoadmapLink"/>",
+			"rmMetaClassStyle": rmMetaClassStyles.<xsl:value-of select="eas:getSafeJSString($theRoadmapInstance/type)"/>,
+			"rmEALayer": "<xsl:value-of select="eas:rmGetInstanceEALayer($theRoadmapInstance)"/>",
+			"strategicPlans": [
 				<xsl:apply-templates mode="RenderElementStrategicPlanJSON" select="$allPlansForElement">
 					<!--<xsl:sort select="$allThisPlans[own_slot_value[slot_reference = 'strategic_plan_for_elements']/value = name]/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>-->
 				</xsl:apply-templates>
 			],
-			'archStates': [
+			"archStates": [
 				<xsl:if test="count($allThisRoadmapInstanceArchStates) > 0">
 					<xsl:apply-templates mode="RenderElementArchStateJSON" select="$allTheRoadmapInstancesArchStates">
 						<xsl:with-param name="thisArchStates" select="$allThisRoadmapInstanceArchStates"/>
@@ -203,29 +198,29 @@
 		
 		<xsl:choose>
 			<xsl:when test="$thisStratPlanForElement/name = $rmCreatePlansForElements/name">
-				'roadmapStatus': '<xsl:value-of select="$createStatusValue"/>',
-				'rmStyle': rmCreateStyle,
-				'visibility': true,
+				"roadmapStatus": "<xsl:value-of select="$createStatusValue"/>",
+				"rmStyle": rmCreateStyle,
+				"visibility": true,
 			</xsl:when>
 			<xsl:when test="$thisStratPlanForElement/name = $rmEnhancePlansForElements/name">
-				'roadmapStatus': '<xsl:value-of select="$enhanceStatusValue"/>',
-				'rmStyle': rmEnhanceStyle,
-				'visibility': true,
+				"roadmapStatus": "<xsl:value-of select="$enhanceStatusValue"/>",
+				"rmStyle": rmEnhanceStyle,
+				"visibility": true,
 			</xsl:when>
 			<xsl:when test="$thisStratPlanForElement/name = $rmReducePlansForElements/name">
-				'roadmapStatus': '<xsl:value-of select="$reduceStatusValue"/>',
-				'rmStyle': rmReduceStyle,
-				'visibility': true,
+				"roadmapStatus": "<xsl:value-of select="$reduceStatusValue"/>",
+				"rmStyle": rmReduceStyle,
+				"visibility": true,
 			</xsl:when>
 			<xsl:when test="$thisStratPlanForElement/name = $rmRemovePlansForElements/name">
-				'roadmapStatus': '<xsl:value-of select="$removeStatusValue"/>',
-				'rmStyle': rmRemoveStyle,
-				'visibility': false,
+				"roadmapStatus": "<xsl:value-of select="$removeStatusValue"/>",
+				"rmStyle": rmRemoveStyle,
+				"visibility": false,
 			</xsl:when>
 			<xsl:otherwise>
-				'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-				'rmStyle': rmNoChangeStyle,
-				'visibility': true,
+				"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+				"rmStyle": rmNoChangeStyle,
+				"visibility": true,
 			</xsl:otherwise>
 		</xsl:choose>
 		
@@ -252,29 +247,29 @@
 		<xsl:variable name="planRoadmapStatus">
 			<xsl:choose>
 				<xsl:when test="$thisPlanForElement/name = $rmCreatePlansForElements/name">
-					'roadmapStatus': '<xsl:value-of select="$createStatusValue"/>',
-					'rmStyle': rmCreateStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$createStatusValue"/>",
+					"rmStyle": rmCreateStyle,
+					"visibility": true
 				</xsl:when>
 				<xsl:when test="$thisPlanForElement/name = $rmEnhancePlansForElements/name">
-					'roadmapStatus': '<xsl:value-of select="$enhanceStatusValue"/>',
-					'rmStyle': rmEnhanceStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$enhanceStatusValue"/>",
+					"rmStyle": rmEnhanceStyle,
+					"visibility": true
 				</xsl:when>
 				<xsl:when test="$thisPlanForElement/name = $rmReducePlansForElements/name">
-					'roadmapStatus': '<xsl:value-of select="$reduceStatusValue"/>',
-					'rmStyle': rmReduceStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$reduceStatusValue"/>",
+					"rmStyle": rmReduceStyle,
+					"visibility": true
 				</xsl:when>
 				<xsl:when test="$thisPlanForElement/name = $rmRemovePlansForElements/name">
-					'roadmapStatus': '<xsl:value-of select="$removeStatusValue"/>',
-					'rmStyle': rmRemoveStyle,
-					'visibility': false
+					"roadmapStatus": "<xsl:value-of select="$removeStatusValue"/>",
+					"rmStyle": rmRemoveStyle,
+					"visibility": false
 				</xsl:when>
 				<xsl:otherwise>
-					'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-					'rmStyle': rmNoChangeStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+					"rmStyle": rmNoChangeStyle,
+					"visibility": true
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
@@ -283,11 +278,11 @@
 		
 		
 		{
-			'id': '<xsl:value-of select="$planId"/>',
-			'description': '<xsl:value-of select="eas:removeQuotesFromString($planDesc)"/>',
-			'changeLabel': '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlanningAction"/></xsl:call-template>',
-			'startDate': '<xsl:value-of select="$planStartDate"/>',
-			'endDate': '<xsl:value-of select="$planEndDate"/>',
+			"id": "<xsl:value-of select="$planId"/>",
+			"description": "<xsl:value-of select="eas:validJSONString($planDesc)"/>",
+			"changeLabel": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlanningAction"/></xsl:call-template>",
+			"startDate": "<xsl:value-of select="$planStartDate"/>",
+			"endDate": "<xsl:value-of select="$planEndDate"/>",
 			<xsl:value-of select="$planRoadmapStatus"/>
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -314,42 +309,42 @@
 			<xsl:choose>
 				<!-- Set to NOCHANGE if the element exists in the first arch state -->
 				<xsl:when test="$instanceInArchState and ($thisArchStateIndex = 1)">
-					'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-					'rmStyle': rmNoChangeStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+					"rmStyle": rmNoChangeStyle,
+					"visibility": true
 				</xsl:when>
 				<!-- Set to NOCHANGE if the element exists in the current arch state and existed in at least one prior arch state -->
 				<xsl:when test="$instanceInArchState and $instanceExistsBeforeArchState">
-					'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-					'rmStyle': rmNoChangeStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+					"rmStyle": rmNoChangeStyle,
+					"visibility": true
 				</xsl:when>
 				<!-- Set to CREATE if the element exists in the current arch state but did not exists in any prior arch states -->
 				<xsl:when test="$instanceInArchState and not($instanceExistsBeforeArchState)">
-					'roadmapStatus': '<xsl:value-of select="$createStatusValue"/>',
-					'rmStyle': rmCreateStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$createStatusValue"/>",
+					"rmStyle": rmCreateStyle,
+					"visibility": true
 				</xsl:when>
 				<!-- Set to REMOVE if the element does not exist in the current arch state -->
 				<xsl:when test="not($instanceInArchState)">
-					'roadmapStatus': '<xsl:value-of select="$removeStatusValue"/>',
-					'rmStyle': rmRemoveStyle,
-					'visibility': false
+					"roadmapStatus": "<xsl:value-of select="$removeStatusValue"/>",
+					"rmStyle": rmRemoveStyle,
+					"visibility": false
 				</xsl:when>
 				<!-- Otherwise set to NOCHANGE -->
 				<xsl:otherwise>
-					'roadmapStatus': '<xsl:value-of select="$unchangedStatusValue"/>',
-					'rmStyle': rmNoChangeStyle,
-					'visibility': true
+					"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+					"rmStyle": rmNoChangeStyle,
+					"visibility": true
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		
 		
 		{
-		'id': '<xsl:value-of select="$archStateId"/>',
-		'startDate': '<xsl:value-of select="$archStateStartDate"/>',
-		'endDate': '<xsl:value-of select="$archStateEndDate"/>',
+		"id": "<xsl:value-of select="$archStateId"/>",
+		"startDate": "<xsl:value-of select="$archStateStartDate"/>",
+		"endDate": "<xsl:value-of select="$archStateEndDate"/>",
 		<xsl:value-of select="$thisArchStateRoadmapStatus"/>
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -383,14 +378,14 @@
 		
 		
 		{
-		'id': '<xsl:value-of select="$planId"/>',
-		'name': '<xsl:value-of select="eas:removeQuotesFromString($planName)"/>',
-		'link': '<xsl:value-of select="$planLink"/>',
-		'description': '<xsl:value-of select="eas:removeQuotesFromString($planDesc)"/>',
-		'startDate': '<xsl:value-of select="$planStartDate"/>',
-		'endDate': '<xsl:value-of select="$planEndDate"/>',
-		'roadmaps': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planRoadmaps"/>],
-		'objectives': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planObjectives"/>]
+		"id": "<xsl:value-of select="$planId"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($planName)"/>",
+		"link": "<xsl:value-of select="$planLink"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($planDesc)"/>",
+		"startDate": "<xsl:value-of select="$planStartDate"/>",
+		"endDate": "<xsl:value-of select="$planEndDate"/>",
+		"roadmaps": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planRoadmaps"/>],
+		"objectives": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planObjectives"/>]
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 		
@@ -423,14 +418,14 @@
 		
 		
 		{
-		'id': '<xsl:value-of select="$archStateId"/>',
-		'name': '<xsl:value-of select="eas:removeQuotesFromString($archStateName)"/>',
-		'link': '<xsl:value-of select="$archStateLink"/>',
-		'description': '<xsl:value-of select="eas:removeQuotesFromString($archStateDesc)"/>',
-		'startDate': '<xsl:value-of select="$archStateStartDate"/>',
-		'endDate': '<xsl:value-of select="$archStateEndDate"/>',
-		'roadmaps': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateRoadmaps"/>],
-		'objectives': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateObjectives"/>]
+		"id": "<xsl:value-of select="$archStateId"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($archStateName)"/>",
+		"link": "<xsl:value-of select="$archStateLink"/>",
+		"description": "<xsl:value-of select="eas:validJSONString($archStateDesc)"/>",
+		"startDate": "<xsl:value-of select="$archStateStartDate"/>",
+		"endDate": "<xsl:value-of select="$archStateEndDate"/>",
+		"roadmaps": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateRoadmaps"/>],
+		"objectives": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateObjectives"/>]
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 		
@@ -460,14 +455,14 @@
 		<xsl:variable name="thisRef" select="position() + $rmObjectiveRefOffset"/>
 		
 		{
-		id: '<xsl:value-of select="eas:getSafeJSString(current()/name)"/>',
-		ref: <xsl:value-of select="$thisRef"/>,
-		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
-		type: '<xsl:value-of select="$metaClassLabel"/>',
-		icon: '<xsl:value-of select="$metaClassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>',
-		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
-		targetDate: "<xsl:value-of select="current()/own_slot_value[slot_reference = ('bo_target_date_iso_8601', 'ao_target_date_iso_8601', 'io_target_date_iso_8601', 'tao_target_date_iso_8601')]/value"/>"
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"ref": <xsl:value-of select="$thisRef"/>,
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"type": "<xsl:value-of select="$metaClassLabel"/>",
+		"icon": "<xsl:value-of select="$metaClassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>",
+		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"targetDate": "<xsl:value-of select="current()/own_slot_value[slot_reference = ('bo_target_date_iso_8601', 'ao_target_date_iso_8601', 'io_target_date_iso_8601', 'tao_target_date_iso_8601')]/value"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -489,10 +484,10 @@
 		</xsl:variable>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="eas:removeQuotesFromString($thisName)"/>",
-		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		description: "<xsl:value-of select="eas:removeQuotesFromString($thisDesc)"/>",
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -583,14 +578,19 @@
 				.timeline-event-view {
 					margin: 5px 0;
 				}
-				#ess-roadmap-widget-button {
-					height: 34px;
-					width: auto;
-					padding: 2px 19px 2px 6px;
-					position: absolute;
-					top: 84px;
-					right: 0px;
-					z-index: 99999999;
+				#ess-roadmap-widget-bar {
+					<!--height: 35px;-->
+					float: left;
+					width: 100%;
+					padding: 4px 10px;
+					position: relative;
+					top: 0px;
+					z-index: 100;
+					background-color: #f6f6f6;
+					box-shadow: 0px 1px 2px 0px hsla(0, 0%, 0%, 0.5);
+				}
+				#ess-roadmap-widget-bar > div {
+					
 				}
 				#ess-roadmap-widget-toggle {
 					cursor: pointer;
@@ -600,7 +600,7 @@
 					padding: 15px;
 					position: relative;
 					right: 0px;
-					top: 34px;
+					<!--top: 34px;-->
 					margin-bottom: 15px;
 					background-color: #eee;
 					border-top: 1px solid #ccc;
@@ -614,16 +614,50 @@
 					width: 70px;
 					text-align: center;
 				}
+				
+				.month-picker {
+					box-shadow: 0px 1px 2px 0px hsla(0, 0%, 0%, 0.25);
+				}
+				
+				.month-picker .ui-widget {
+					font-family: 'Source Sans Pro', sans-serif;
+					font-size: 0.9em;
+				}
+				
+				.month-picker .ui-button {
+					border: none;
+					background: #eee;
+					padding: .3em .9em;
+				}
+				
+				.month-picker .ui-widget-header {
+					border: none;
+					background: #ccc;
+					
+				}
+				
+				.month-picker .ui-state-disabled {
+					opacity: 1
+				}
+				
+				.month-picker-previous > .ui-button,.month-picker-next > .ui-button{
+					background: none;
+					position: relative;
+					top: -2px;
+				}
+				.month-picker-year-table .ui-button {
+					width: auto;
+				}
 			</style>
 			<script>
 				$(window).scroll(function() {
-					if ($(this).scrollTop()>84) {
-						$('#ess-roadmap-widget-button').css('top','0px');
-						$('#ess-roadmap-widget-button').css('position','fixed');
+					if ($(this).scrollTop()>40) {
+						//$('#ess-roadmap-widget-bar').css('top','0px');
+						$('#ess-roadmap-widget-bar').css('position','fixed');
 					}
-					if ($(this).scrollTop()&lt;84) {
-						$('#ess-roadmap-widget-button').css('top', '84px');
-						$('#ess-roadmap-widget-button').css('position','absolute');
+					if ($(this).scrollTop()&lt;40) {
+						//$('#ess-roadmap-widget-bar').css('top', '00px');
+						$('#ess-roadmap-widget-bar').css('position','relative');
 					}
 				});
 				$(document).ready(function(){
@@ -1691,10 +1725,6 @@
 			<div class="row">
 				<div class="col-xs-12 rmPanel">
 					<div class="rm-panel-wrapper bg-white">
-						<div class="pull-right">
-							<label for="rmEnabledCheckbox">Roadmap Enabled?</label>
-							<input id="rmEnabledCheckbox" type="checkbox" checked="checked"/>
-						</div>
 						<h3 class="xlarge fontBold"><i class="fa fa-road right-5"></i>Roadmap Scope</h3>
 						<p class="fontLight large"><xsl:value-of select="$rmRoadmapPanelIntro"/></p>
 						<div id="rmRoadmapPanel"/>
@@ -1787,12 +1817,27 @@
 	</xsl:template>-->
 	
 	<xsl:template name="RenderRoadmapWidgetButton">
-		<div id="ess-roadmap-widget-button" class="bg-black text-white">
-			<div>
-				<span id="ess-roadmap-widget-toggle"><i class="fa fa-calendar right-5"/><strong>Roadmap</strong>: </span>
-				<span id="rm-button-active"><input id="rmWidgetStartDateSelect" class="ess-roadmap-widget-picker" type="text"/><span class="left-10 right-10"><strong>to</strong></span><input id="rmWidgetEndDateSelect" class="ess-roadmap-widget-picker" type="text"/></span><span id="rm-button-inactive" style="display: none;">Disabled</span>
+		<div id="ess-roadmap-widget-bar">
+			<div class="pull-left" style="margin-top: 3px;">
+				<span class="right-5"><strong>Roadmap Enabled?</strong></span>
+				<input id="rmEnabledCheckbox" type="checkbox" checked="checked"/>
+			</div>
+			<div class="pull-right">
+				<span class="right-5"><strong>Roadmap:</strong></span>
+				<span id="rm-button-active">
+					<input id="rmWidgetStartDateSelect" class="ess-roadmap-widget-picker" type="text"/>
+					<span class="left-10 right-10"><strong>to</strong></span>
+					<input id="rmWidgetEndDateSelect" class="ess-roadmap-widget-picker" type="text"/>
+				</span>
+				<span id="rm-button-inactive" style="display: none;">Disabled</span>
 			</div>
 		</div>
+		<script>
+			function enabledRoadmapButton(){
+				$('#ess-roadmap-widget-toggle').parent().removeClass('disabled');
+			}
+			enabledRoadmapButton();
+		</script>
 	</xsl:template>
 	
 	<!-- FUNCTION TO DEFINE THE EA LAYER JSON PROPERTY VALUE FOR A GIVEN INSTANCE -->

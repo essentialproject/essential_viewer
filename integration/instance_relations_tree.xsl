@@ -68,7 +68,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Instance Relations Tree</title>
-				<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.1/d3.min.js"/>
+				<script src="js/d3/d3.min.js"/>
 				<style>
 					.node{
 						cursor: pointer;

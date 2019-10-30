@@ -139,6 +139,19 @@
 				            </a><br/>
                             <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Value_Streams.docx" download="LaunchpadPlus-Value_Streams.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
 				        </div>
+
+                       	<div class="col-xs-6">
+                            <h3><i class="fa fa-file"></i> Launchpad Pre-Complete</h3>
+                            <p style="font-size:12pt">A pre-completed spreadsheet based on data in a populated repository</p>
+				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4_launchpad_export.xsl&amp;CT=application/ms-excel&amp;FILE=l4_launchpad_export.xml&amp;cl=en-gb">
+
+				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Launchpad as Excel</div>
+				            </a><br/>
+                           
+				       <hr/> 
+                           
+				        </div>
+
 				    </div>
 				</div>
 

@@ -117,6 +117,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>Application Impact Analysis - <xsl:value-of select="$currentProviderName"/></title>
 			</head>
 			<body>

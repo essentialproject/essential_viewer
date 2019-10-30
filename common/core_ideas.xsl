@@ -1005,42 +1005,42 @@
 				  steps: [
 				    {
 				      title: "Ideation",
-				      content: "Ideation lets you capture freeform ideas and collections of options to realise, etc....",
+				      content: "Ideation lets you capture freeform ideas and define, propose and rate options for their delivery as you navigate your portals",
 				      target: "esshelp-ideation",
 				      placement: "left",
 				      yOffset: -15
 				    },
 				    {
 				      title: "Ideas",
-				      content: "This explains about ideas",
+				      content: "An idea is a business need or issue that has the potential to be addressed through changes to your business, information/data, applications or technology",
 				      target: "esshelp-ideation-idea",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
 				      title: "Options",
-				      content: "This explains about options",
+				      content: "Define one or more options for how ideas proposed by you or others can be realised",
 				      target: "esshelp-ideation-option",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
-				      title: "Description",
-				      content: "This explains about the option description",
+				      title: "Option Description",
+				      content: "Provide an overall summary of a suggested option",
 				      target: "esshelp-ideation-description",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
-				      title: "Status",
-				      content: "This explains about the status field",
+				      title: "Option Status",
+				      content: "Options are initially created with a Draft status and only visible to you, but can be changed to Proposed when ready to be rated by other users, or approved / rejected by an authorised user",
 				      target: "esshelp-ideation-status",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
 				      title: "Proposed Changes",
-				      content: "This explains about the proposed changes section",
+				      content: "Suggested changes to business, information/data, application or technology elements can be added to Options using the Add to Idea popup menu item",
 				      target: "esshelp-ideation-changes",
 				      placement: "left",
 				      yOffset: -20

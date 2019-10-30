@@ -75,6 +75,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -92,14 +93,13 @@
 				</xsl:call-template>
 
 			</head>
-			<body>
+			<body>	
+				<!-- ADD THE PAGE HEADING -->
+				<xsl:call-template name="Heading"/>
 				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
 				<xsl:if test="$isRoadmapEnabled">
 					<xsl:call-template name="RenderRoadmapWidgetButton"/>
 				</xsl:if>
-						
-				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
 				<div id="ess-roadmap-content-container">
 					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
 					<xsl:call-template name="RenderCommonRoadmapJavscript">
@@ -109,7 +109,7 @@
 					<div class="clearfix"></div>
 				</div>
 				<!--ADD THE CONTENT-->
-				<div class="container-fluid">
+				<div class="container-fluid" id="main">
 					<div class="row">
 
 						<div class="col-xs-12">
@@ -466,7 +466,7 @@
 		
 		<xsl:variable name="thisBusProcFamilyRels" select="$allBusProc2FamilyRels[own_slot_value[slot_reference = 'busprocttype_to_busprocfam_busproctype']/value = current()/name]"/>
 		<xsl:variable name="indirectBusProcFamilies" select="$allBusProcFamilies[name = $thisBusProcFamilyRels/own_slot_value[slot_reference = 'busprocttype_to_busprocfam_busprocfam']/value]"/>
-		<xsl:variable name="directBusProcFamilies" select="$allBusProcFamilies[name = current()/own_slot_value[slot_reference = 'busproctype_in_busprocfamily']/value]"/>
+		<xsl:variable name="directBusProcFamilies" select="$allBusProcFamilies[name = current()/own_slot_value[slot_reference = 'busproctype_belongs_to_busprocfamily']/value]"/>
 		<xsl:variable name="thisBusProcFamilies" select="$indirectBusProcFamilies union $directBusProcFamilies"/>
 		<xsl:variable name="thisBusCaps" select="$allBusCaps[name = current()/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>
 		
@@ -474,6 +474,8 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+        "debugi":"<xsl:value-of select="$indirectBusProcFamilies/name"/>",
+        "debugd":"<xsl:value-of select="$directBusProcFamilies/name"/>",
 			familyId: '<xsl:value-of select="eas:getSafeJSString($thisBusProcFamilies[1]/name)"/>', 
 			capabilities: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusCaps"/>]
 		} <xsl:if test="not(position()=last())">,

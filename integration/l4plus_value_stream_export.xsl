@@ -349,7 +349,7 @@
     <Cell ss:StyleID="s24"/>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:MergeAcross="3" ss:StyleID="s48"><Data ss:Type="String">Map the Value Streams to the value sttreams to the products and roles and the expected condistions and emotions</Data></Cell>
+    <Cell ss:Index="2" ss:MergeAcross="3" ss:StyleID="s48"><Data ss:Type="String">Map the Value Streams to the value sttreams to the products and roles and the expected conditions and emotions</Data></Cell>
    </Row>
    <Row>
     <Cell ss:Index="2" ss:StyleID="s48"/>
@@ -1285,7 +1285,7 @@
    <Value>'Value Stages'!R8C8:R2010C8</Value>
       
   </DataValidation>
- </Worksheet>
+ </Worksheet>     
  <Worksheet ss:Name="Value Stages 2 KPI Values">
   <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">

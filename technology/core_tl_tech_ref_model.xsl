@@ -95,6 +95,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -164,8 +165,30 @@
 						techProdRoles: [<xsl:apply-templates select="$allTechProdRoles" mode="RenderTechProdRoleJSON"/>
 				    	]
 				  	};
-				  	
-					
+
+                    var tpr = techProdRoles.techProdRoles; 
+                    for(var i=0; i &lt; techComponents.techComponents.length;i++) {
+                    var techprodslist=[];
+                       for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
+                         
+                            var thistpr = tpr.filter(function(d){
+                            if(techComponents.techComponents[i].techProdRoles[j] === d.id){  techprodslist.push(d.techProdid);}
+                
+                        })
+                    }
+                    let unique = [...new Set(techprodslist)];      
+                    techComponents.techComponents[i]['techProds']=unique;
+                    
+                     <!--   d.techProdRoles.forEach(function(e){
+                            var thisTP = techProdRoles.filter(function(f){
+                              if(e === f.id){return f.techProdid;}
+                            })
+                    console.log('thisTP'); console.log(thisTP);
+                        })
+                    -->
+                    };
+				 
+                 
 					// the JSON objects for the Technology Reference Model (TRM)
 				  	var trmData = {
 				  		top: [
@@ -1089,8 +1112,6 @@
 		<xsl:variable name="thisTechProdOrgUser2Roles" select="$techOrgUser2Roles[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
 		<xsl:variable name="thisTechProdss" select="$allTechProds[own_slot_value[slot_reference = 'stakeholders']/value = $thisTechProdOrgUser2Roles/name]"/>
 		
-		
-		
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
@@ -1104,7 +1125,7 @@
 
 	<xsl:template match="node()" mode="getTechProducts">
 		<xsl:variable name="thisTechOrgUser2Roles" select="$techOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-		<xsl:variable name="thsTechUsers" select="$allBusinessUnits[name = $thisTechOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="thsTechUsers" select="$thisTechOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']"/>
 		<xsl:variable name="theLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'vendor_product_lifecycle_status']/value]"/>
 		<xsl:variable name="theDeliveryModel" select="$allTechProdDeliveryTypes[name = current()/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
 		<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value">
@@ -1119,7 +1140,7 @@
 			status: "<xsl:value-of select="$theLifecycleStatus/name"/>",
 			statusScore: <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
 			delivery: "<xsl:value-of select="$theDeliveryModel/name"/>",
-			techOrgUsers: [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			techOrgUsers: [<xsl:for-each select="$thsTechUsers/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1135,7 +1156,7 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="childTechCaps" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
+		<xsl:variable name="childTechCaps" select="current()/own_slot_value[slot_reference = 'contains_technology_capabilities']"/>
 		<xsl:variable name="thisRefLayer" select="$refLayers[name = current()/own_slot_value[slot_reference = 'element_classified_by']/value]"/>
 		
 		{
@@ -1146,7 +1167,7 @@
 		refLayer: "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
 		childTechCapIds: [
 		<!--<xsl:apply-templates select="$childTechCaps" mode="RenderChildTechCaps"/>-->
-			<xsl:for-each select="$childTechCaps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
+			<xsl:for-each select="$childTechCaps/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
 		]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -1162,8 +1183,9 @@
 				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="techComponents" select="$allTechComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = current()/name]"/>
-		
+	<!--	<xsl:variable name="techComponents" select="$allTechComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = current()/name]"/>-->
+        <xsl:variable name="techComponents" select="own_slot_value[slot_reference = 'realisation_of_technology_capability']"/>
+
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$techCapName"/>",
@@ -1171,7 +1193,7 @@
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 			techComponents: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechCompDetails"/>-->
-				<xsl:for-each select="$techComponents">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
+				<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
 			]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -1187,16 +1209,16 @@
 				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="techComponents" select="$allTechComps[own_slot_value[slot_reference = 'realisation_of_technology_capability']/value = current()/name]"/>
-		
+		<xsl:variable name="techComponents" select="current()/own_slot_value[slot_reference = 'realised_by_technology_components']"/>
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$techCapName"/>",
 			link: "<xsl:value-of select="$techCapLink"/>",
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
-			techComponentIds: [	
+
+        techComponentIds: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechComponents"/>-->
-				<xsl:for-each select="$techComponents">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
+				<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
 			]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -1213,18 +1235,19 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
-		
-		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-		<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRoles/name]"/>
-		<xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-		
-		{
+		 
+	<!--	<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
+				<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRoles/name]"/>
+        <xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+	-->	 <xsl:variable name="thisTechProdRoles2" select="current()/own_slot_value[slot_reference = 'realised_by_technology_products']"/>
+		{debug:"test",
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:value-of select="$techCompName"/>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
-		techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-		techProdRoles: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
+	<!--	techProdRoles: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
+        techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 		<!--<xsl:apply-templates select="$thisTechProdRoles" mode="RenderTechProdRoleJSON">
@@ -1237,38 +1260,16 @@
 	<xsl:template match="node()" mode="RenderTechProdRoleJSON">
 		
 		<xsl:variable name="thisTPR" select="current()"/>
-		<xsl:variable name="thisTechComp" select="$allTechComps[name = $thisTPR/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-		<xsl:variable name="thisTechProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>		
-		
-		<xsl:variable name="allThisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = $thisTechComp/name]"/>
-		<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allThisTechProdRoles/name]"/>
-		<xsl:variable name="thisTechProdStandard" select="$allThisTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTPR/name]"/>
-		<xsl:variable name="standardExists" select="count($allThisTechProdStandards) > 0"/>
-		
-		
-		<xsl:variable name="standardStyle">
-			<xsl:choose>
-				<xsl:when test="not($standardExists)"><xsl:value-of select="$noStrategyStyle"/></xsl:when>
-				<xsl:when test="count($thisTechProdStandard) > 0">
-					<xsl:variable name="thisStandardStrength" select="$allStandardStrengths[name = $thisTechProdStandard[1]/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
-					<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-					<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>
-					<xsl:value-of select="$thisStandardStyleClass"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$offStrategyStyle"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		
+        <xsl:variable name="thisTechCompid" select="$thisTPR/own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
+	 	<xsl:variable name="thisTechProdid" select="current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value"/>		
 		
 		{
 		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 		<!--<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="$thisTechComp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->
-		id: '<xsl:value-of select="eas:getSafeJSString($thisTPR/name)"/>',
-		techProdid: '<xsl:value-of select="eas:getSafeJSString($thisTechProd/name)"/>',
-		techCompid: '<xsl:value-of select="eas:getSafeJSString($thisTechComp/name)"/>',
-		standard: '<xsl:value-of select="$standardStyle"/>'
+		id: "<xsl:value-of select="eas:getSafeJSString($thisTPR/name)"/>",
+        techProdid: "<xsl:value-of select="eas:getSafeJSString($thisTechProdid)"/>",
+		techCompid: "<xsl:value-of select="eas:getSafeJSString($thisTechCompid)"/>",
+		standard: "<!--<xsl:value-of select="$standardStyle"/>-->"
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1281,15 +1282,13 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-		<xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-		
+        <xsl:variable name="thisTechProdRoles2" select="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:value-of select="$techCompName"/>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
-		techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+        techProdRole: [<xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>

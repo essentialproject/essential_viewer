@@ -6,7 +6,7 @@
 	<xsl:include href="common/core_footer.xsl"/>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
-	<!--<xsl:param name="param1" />-->
+	<xsl:param name="param1" />
 	<!-- param4 = the taxonomy term that will be used to scope the organisation model -->
 	<!--<xsl:param name="param4" />-->
 

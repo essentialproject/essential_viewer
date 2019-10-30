@@ -70,6 +70,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title><xsl:value-of select="eas:i18n('Data Provider Model for')"/>&#160;<xsl:value-of select="$dataObjectName"/></title>
 
 				<script src="js/setequalheights.js" type="text/javascript"/>

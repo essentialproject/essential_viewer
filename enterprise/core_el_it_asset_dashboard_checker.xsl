@@ -22,7 +22,7 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Capability', 'Application_Service', 'Application_Provider', 'Technology_Capability', 'Technology_Component')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Application Organisation User')]"/>
+    <xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = ('Application User', 'Application Organisation User'))]"/>
 	<xsl:variable name="appOrgUser2Roles" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appOrgUserRole/name]"/>
 	
 
@@ -113,6 +113,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -501,10 +502,10 @@
             <td colspan="2">You need to associate your Application Capabilities with a position.  The spreadsheet upload will do this or to do this manually, under EA Support>Taxonomy_Management, look for the ‘Reference Model Layout: {position}’ taxonomy terms and in the Classify Elements slot add the Application Capabilities for each position <i class="fa fa-close" onclick="$('#appcaph2').hide()"></i></td>        
         </tr>
         <tr>
-            <td>Application Capabilities tied to Top</td>
+            <td>Application Capabilities tied to Right</td>
             <td>
                 <xsl:choose>
-                    <xsl:when test="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $topRefLayer/name])&gt;0"><span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#3cad3c;color:#3cad3c"><xsl:value-of select="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $topRefLayer/name])"/></span></xsl:when>
+                    <xsl:when test="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name])&gt;0"><span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#3cad3c;color:#3cad3c"><xsl:value-of select="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name])"/></span></xsl:when>
                     <xsl:otherwise><span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#ef9090;color:#ef9090">0</span></xsl:otherwise>
                 </xsl:choose>
             </td>
@@ -714,7 +715,22 @@
 	<xsl:template match="node()" mode="colours">
         <xsl:variable name="ls" select="current()"/>
         <xsl:variable name="this" select="$lifecycleColour[own_slot_value[slot_reference='style_for_elements']/value=$ls/name]"/>
-        <tr><td width="50%"> <xsl:value-of select="$ls/own_slot_value[slot_reference='name']/value"/></td><td><xsl:choose><xsl:when test="not(contains($this/own_slot_value[slot_reference='element_style_colour']/value,'#'))"><span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#ef9090;color:#ef9090">.</span></xsl:when><xsl:when test="not($this)"><span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#ef9090;color:#ef9090">.</span></xsl:when><xsl:otherwise><span class="badge badge-primary badge-pill" style="font-size:8pt;cursor:pointer;background-color:#3cad3c;color:#3cad3c">.</span></xsl:otherwise></xsl:choose></td></tr>
+        <tr>
+            <td width="50%"><xsl:value-of select="$ls/own_slot_value[slot_reference='name']/value"/></td>
+            <td>
+                <xsl:choose>
+                    <xsl:when test="not($this)">
+                        <span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#ef9090;color:#ef9090">.</span>
+                    </xsl:when>
+                    <xsl:when test="not(contains($this[1]/own_slot_value[slot_reference='element_style_colour']/value,'#'))">
+                        <span class="badge badge-primary badge-pill" style="cursor:pointer;background-color:#ef9090;color:#ef9090">.</span>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <span class="badge badge-primary badge-pill" style="font-size:8pt;cursor:pointer;background-color:#3cad3c;color:#3cad3c">.</span>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </td>
+        </tr>
      
     </xsl:template>    
 

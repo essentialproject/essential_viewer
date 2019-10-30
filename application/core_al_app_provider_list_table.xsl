@@ -25,7 +25,7 @@
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Provider', 'Application_Service')"/>
+	<xsl:variable name="linkClasses" select="('Composite_Application_Provider', 'Application_Provider', 'Application_Service')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
@@ -72,6 +72,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -90,13 +91,12 @@
 
 			</head>
 			<body>
+				<!-- ADD THE PAGE HEADING -->
+				<xsl:call-template name="Heading"/>
 				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
 				<xsl:if test="$isRoadmapEnabled">
 					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>		
-				
-				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
+				</xsl:if>
 				<div id="ess-roadmap-content-container">
 					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
 					<xsl:call-template name="RenderCommonRoadmapJavscript">
@@ -173,13 +173,13 @@
 							  	
 							  	// the list of JSON objects representing the applications in use across the enterprise
 							  	var appProviderRoles = {
-										'appProviderRoles': [<xsl:apply-templates select="$allAppProviderRoles" mode="getAppProviderRoles"/>
+										"appProviderRoles": [<xsl:apply-templates select="$allAppProviderRoles" mode="getAppProviderRoles"/>
 							    	]
 							  	};
 							  	
 							  	//the list of applications for the current scope
 							  	var inScopeApplications = {
-							  		'applications': applications.applications
+							  		"applications": applications.applications
 							  	}
 							  	<!-- END VIEW SPECIFIC JAVASCRIPT VARIABLES -->
 							  	
@@ -431,8 +431,8 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			'status': '<xsl:copy-of select="$statusHTML"/>',
-			'services': [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"><xsl:sort select="own_slot_value[slot_reference = 'role_for_application_provider']/value"/></xsl:apply-templates>]
+			"status": "<xsl:copy-of select="eas:validJSONString($statusHTML)"/>",
+			"services": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"><xsl:sort select="own_slot_value[slot_reference = 'role_for_application_provider']/value"/></xsl:apply-templates>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -445,8 +445,8 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="$thisAppService"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			'appId': '<xsl:value-of select="eas:getSafeJSString($thisAppProvider/name)"/>',
-			'appServiceId': '<xsl:value-of select="eas:getSafeJSString($thisAppService/name)"/>'
+			"appId": "<xsl:value-of select="eas:getSafeJSString($thisAppProvider/name)"/>",
+			"appServiceId": "<xsl:value-of select="eas:getSafeJSString($thisAppService/name)"/>"
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

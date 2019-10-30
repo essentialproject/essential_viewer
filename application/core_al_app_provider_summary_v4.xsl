@@ -42,7 +42,7 @@
 	<xsl:variable name="allActors" select="$allIndivActors union $allGroupActors"/>
 	<xsl:variable name="allDeploymentRoles" select="/node()/simple_instance[type = 'Deployment_Role']"/>
 	<xsl:variable name="allRoles" select="/node()/simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]"/>
-	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = 'Application User']"/>
+	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = ('Application User', 'Application Organisation User')]"/>
 	<xsl:variable name="thisAppStakeholder2Roles" select="$allActor2Roles[(name = $currentApp/own_slot_value[slot_reference = 'stakeholders']/value) and not(own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appUserRole/name)]"/>
 	<xsl:variable name="thisStakeholders" select="$allGroupActors[name = $thisAppStakeholder2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 
@@ -85,6 +85,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title>
 					<xsl:value-of select="eas:i18n('Application Provider Summary')"/>
 				</title>

@@ -60,6 +60,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -83,12 +84,9 @@
 						stroke: #ccc;
 						stroke-width: 2px;
 					}</style>
+				<script src="js/d3/d3_4-11/d3.min.js"/>
 			</head>
 			<body>
-				<!-- <script src="https://d3js.org/d3.v3.min.js"></script>  -->
-				<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.js"/>
-
-
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
 
@@ -110,7 +108,6 @@
 							<i>Note: Shaded circles have more data, hover on name to offset and increase font</i>
 							<div class="simple-scroller">
 								<div id="model"/>
-								<script src="https://d3js.org/d3.v4.min.js"/>
 								<script>
 									var treeData =
 									  { "name": "<xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/>","colour":"red",

@@ -45,10 +45,11 @@
 	<xsl:variable name="appName" select="$currentApp/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="appDescription" select="$currentApp/own_slot_value[slot_reference = 'description']/value"/>
 
-	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = 'Application Organisation User']"/>
+	<xsl:variable name="appUserRole" select="$allRoles[own_slot_value[slot_reference = 'name']/value = ('Application User', 'Application Organisation User')]"/>
 	<xsl:variable name="thisAppUser2Roles" select="$allActor2Roles[(name = $currentApp/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appUserRole/name)]"/>
 	<xsl:variable name="thisAppUsers" select="$allGroupActors[name = $thisAppUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-	<xsl:variable name="thisUserSites" select="$allSites[name = $thisAppUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
+    <xsl:variable name="appSitesUsing" select="$allSites[name=$currentApp/own_slot_value[slot_reference = 'ap_site_access']/value]"/>
+	<xsl:variable name="thisUserSites" select="$allSites[name = $thisAppUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value] union $appSitesUsing"/>
 	<xsl:variable name="thisUserCountries" select="$allRegions[name = $thisUserSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 	
 	<xsl:variable name="thisAppDeployments" select="$allAppDeployments[name = $currentApp/own_slot_value[slot_reference = 'deployments_of_application_provider']/value]"/>
@@ -64,6 +65,7 @@
 
 	<!-- Defined the colours to be displayed on the map -->
 	<xsl:variable name="selectedColour" select="'#f8a85c'"/>
+    <xsl:variable name="bothColour" select="'#609f58'"/>
 	<xsl:variable name="accessedColour" select="'#6593c8'"/>
 
 	<!--
@@ -98,6 +100,7 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
+                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -131,6 +134,7 @@
 										</span>
 									</span>
 								</h1>
+ 
 							</div>
 						</div>
 
@@ -176,6 +180,10 @@
 									<div class="keySample backColour9"/>
 									<div class="keySampleLabel">
 										<xsl:value-of select="eas:i18n('Accessed')"/>
+									</div>
+                                    <div class="keySample" style="background-color:#609f58"/>
+									<div class="keySampleLabel">
+										<xsl:value-of select="eas:i18n('Both')"/>
 									</div>
 								</div>
 								<div class="clear"/>
@@ -542,6 +550,9 @@
 		<xsl:variable name="countryCode">'<xsl:value-of select="$country/own_slot_value[slot_reference = 'gr_region_identifier']/value"/>'</xsl:variable>
 				
 		<xsl:choose>
+            <xsl:when test="$techNodeCountries[eas:getRegionForLocation(self::node(), $allRegions, $allCountries)/name = $country/name] and $thisUserCountries[eas:getRegionForLocation(self::node(), $allRegions, $allCountries)/name = $country/name]">				
+				<xsl:value-of select="lower-case($countryCode)"/>: '<xsl:value-of select="$bothColour"/>'<xsl:if test="position() != last()">,</xsl:if>
+			</xsl:when>	
 			<xsl:when test="$techNodeCountries[eas:getRegionForLocation(self::node(), $allRegions, $allCountries)/name = $country/name]">				
 				<xsl:value-of select="lower-case($countryCode)"/>: '<xsl:value-of select="$selectedColour"/>'<xsl:if test="position() != last()">,</xsl:if>
 			</xsl:when>			
