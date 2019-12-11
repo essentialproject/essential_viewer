@@ -2887,7 +2887,7 @@
       ss:Type="String">OK</Data></Cell>
    </Row>
       
-    <xsl:apply-templates select="$busProc" mode="businessProcesses"/>
+    <xsl:apply-templates select="$busProcesses" mode="businessProcesses"/>
       
    <Row ss:AutoFitHeight="0" ss:Height="18">
     <Cell ss:Index="2" ss:StyleID="s1063"><Data ss:Type="String">BP1</Data></Cell>
@@ -13656,7 +13656,7 @@
    </Row>
     </xsl:template>  
     <xsl:template match="node()" mode="busprocessfamily">
-    <xsl:variable name="thisbusprocess" select="$busProc[name=current()/own_slot_value[slot_reference='bpf_contains_busproctypes']/value]"/> 
+    <xsl:variable name="thisbusprocess" select="$busProcesses[name=current()/own_slot_value[slot_reference='bpf_contains_busproctypes']/value]"/> 
     
      <Row ss:Height="17">
     <Cell ss:Index="2" ss:StyleID="s1063"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>

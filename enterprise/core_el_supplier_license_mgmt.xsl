@@ -342,7 +342,8 @@
 	       		
 	       		$('#pickSuppliers').select2({
 			        //allowClear: true,
-			        placeholder: "Suppliers"						  
+			        placeholder: "Suppliers",
+			        theme: "bootstrap"
 			    });
 	
 	
@@ -413,7 +414,8 @@
 	                savings['current']= prodsList.filter(function(f){
 	                        return f.id===focusProduct;
 	                    })
-	                
+    
+        
 	                savings['future']= prodsList.filter(function(f){
 	                        return f.id===selectedProd;
 	                    })
@@ -449,7 +451,7 @@
                         {tosaving='Investigate'};
     
 	                savings['totalPercent']=tosaving;
-	              
+          
 	                $('#analysisPane').append(analysisTemplate(savings));
 	    
 	                  $('.cls').click(function(){
@@ -514,7 +516,7 @@
 	               
 	               //DEBUG
 	               if(d['diff'] > 0) {
-		 				console.log(d);
+		 				
 		 			}
 		     
 		            
@@ -780,7 +782,7 @@
 							</div>
 							<div class="pull-right">
 								<div class="licenceInfo contract right-10">
-                                   {{#if future.0.licenseCostContract}}  
+                                   {{#if current.0.licenseCostContract}}  
 									<i class="fa fa-money right-5 "/><span>{{current.0.licenseCostContract}}</span>
 									<i class="fa fa-users right-5 left-10"/><span>{{current.0.licenseOnContract}}</span>
 									<i class="fa fa-th right-5 left-10"/><span>{{current.0.licenseUnitPriceContract}}</span>
@@ -937,7 +939,7 @@
 						<xsl:otherwise>0</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				<xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/>"Contract":"<xsl:value-of select="$currentContract/own_slot_value[slot_reference = 'name']/value"/>","Licence":"<xsl:value-of select="$currentLicense/own_slot_value[slot_reference = 'name']/value"/>","LicenceType":"<xsl:value-of select="$currentRenewalModel/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$currentContractRel/own_slot_value[slot_reference = 'ccr_contracted_units']/value"/>","YearsOnContract":"<xsl:choose><xsl:when test="$contractRelLengthMonths > 0"><xsl:value-of select="$contractRelLengthMonths div 12"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>","licenseCostContract":"<xsl:value-of select="format-number($currentContractRel/own_slot_value[slot_reference = 'ccr_total_annual_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($currentCostPerUnit, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor": "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
+				<xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/>"Contract":"<xsl:value-of select="$currentContract/own_slot_value[slot_reference = 'name']/value"/>","dbug":"test","Licence":"<xsl:value-of select="$currentLicense/own_slot_value[slot_reference = 'name']/value"/>","LicenceType":"<xsl:value-of select="$currentRenewalModel/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$currentContractRel/own_slot_value[slot_reference = 'ccr_contracted_units']/value"/>","YearsOnContract":"<xsl:choose><xsl:when test="$contractRelLengthMonths > 0"><xsl:value-of select="$contractRelLengthMonths div 12"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>","licenseCostContract":"<xsl:value-of select="format-number($currentContractRel/own_slot_value[slot_reference = 'ccr_total_annual_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($currentCostPerUnit, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor": "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
 					<xsl:when test="$remaining > 0 and $remaining &lt; 180">#f4c96a</xsl:when>
 					<xsl:otherwise>#98d193</xsl:otherwise></xsl:choose>", "contractNoticeMonths": <xsl:value-of select="$contractNoticeMonths"/>, "renewalReviewMonths": <xsl:value-of select="$renewalReviewMonths"/>, "potentialsCount":"<xsl:choose><xsl:when test="(count($allProductsforTPR)+count($potentialapps))&lt;2"></xsl:when><xsl:otherwise><xsl:value-of select="count($allProductsforTPR)+count($potentialapps)-1"/></xsl:otherwise></xsl:choose>","potentials":[<xsl:apply-templates select="$allProductsforTPR" mode="opportunities"/><xsl:apply-templates select="$potentialapps" mode="opportunities"/>],"debugapr":"<xsl:value-of select="$allaprs/name"/>","debugserr":"<xsl:value-of select="$thisservices/name"/>","debugapp":"<xsl:value-of select="$potentialapps/name"/>", "dateDebug":"<xsl:value-of select="$endYear"/>"</xsl:when><xsl:otherwise>"licence":"none"</xsl:otherwise></xsl:choose>,"supplier":"<xsl:value-of select="$supplier[name = $this/own_slot_value[slot_reference = 'supplier_technology_product']/value]/own_slot_value[slot_reference = 'name']/value"/><xsl:value-of select="$supplier[name = $this/own_slot_value[slot_reference = 'ap_supplier']/value]/own_slot_value[slot_reference = 'name']/value"/>","supplierID":"<xsl:value-of select="translate($supplier[name = $this/own_slot_value[slot_reference = 'supplier_technology_product']/value]/name, '.', '')"/><xsl:value-of select="translate($supplier[name = $this/own_slot_value[slot_reference = 'ap_supplier']/value]/name, '.', '')"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
@@ -1000,6 +1002,7 @@
 				<xsl:variable name="currentContractRel" select="$thisContractRels[$contractRelCount]"/>
 				<xsl:variable name="currentContract" select="$thisActualContracts[name = $currentContractRel/own_slot_value[slot_reference = 'contract_component_from_contract']/value]"/>
 				<xsl:variable name="currentLicense" select="$allLicenses[name = $currentContractRel/own_slot_value[slot_reference = 'ccr_license']/value]"/>
+                <xsl:variable name="currentRenewalModel" select="$allRenewalModels[name = $currentContractRel/own_slot_value[slot_reference = 'ccr_renewal_model']/value]"/>
 				<xsl:variable name="renewalNoticeDays">
 					<xsl:choose>
 						<xsl:when test="$currentContractRel">
@@ -1049,7 +1052,7 @@
 						<xsl:otherwise>0</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				<xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/>"Contract":"<xsl:value-of select="$currentContract/own_slot_value[slot_reference = 'name']/value"/>","Licence":"<xsl:value-of select="$currentLicense/own_slot_value[slot_reference = 'name']/value"/>","LicenceType":"<xsl:value-of select="$licenseType[name = $currentLicense/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$currentContractRel/own_slot_value[slot_reference = 'ccr_contracted_units']/value"/>","YearsOnContract":"<xsl:choose><xsl:when test="$contractRelLengthMonths > 0"><xsl:value-of select="$contractRelLengthMonths div 12"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>","licenseCostContract":"<xsl:value-of select="format-number($currentContractRel/own_slot_value[slot_reference = 'ccr_total_annual_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($currentCostPerUnit, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor": "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
+				<xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/>"Contract":"<xsl:value-of select="$currentContract/own_slot_value[slot_reference = 'name']/value"/>","Licence":"<xsl:value-of select="$currentLicense/own_slot_value[slot_reference = 'name']/value"/>","LicenceType":"<xsl:value-of select="$currentRenewalModel/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$currentContractRel/own_slot_value[slot_reference = 'ccr_contracted_units']/value"/>","YearsOnContract":"<xsl:choose><xsl:when test="$contractRelLengthMonths > 0"><xsl:value-of select="$contractRelLengthMonths div 12"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>","licenseCostContract":"<xsl:value-of select="format-number($currentContractRel/own_slot_value[slot_reference = 'ccr_total_annual_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($currentCostPerUnit, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor": "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
 					<xsl:when test="$remaining > 0 and $remaining &lt; 180">#f4c96a</xsl:when>
 					<xsl:otherwise>#98d193</xsl:otherwise></xsl:choose>", "dateDebug":"<xsl:value-of select="$endYear"/>" </xsl:when><xsl:otherwise>"licence":"none"</xsl:otherwise></xsl:choose>},
 	</xsl:template>

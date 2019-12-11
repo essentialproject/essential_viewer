@@ -260,7 +260,7 @@
 			$(document).ready(function(){		
 			
 				//Init Select2 library
-				$('.approvalSelect').select2();
+				$('.approvalSelect').select2({theme: "bootstrap"});
 		
 				<xsl:if test="not($viewSubject/type = ('Portal','Report'))">
 					pageSubjectId = "<xsl:value-of select="$viewSubject/name"/>";

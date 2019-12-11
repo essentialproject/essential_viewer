@@ -251,6 +251,16 @@
 											<span><xsl:value-of select="eas:i18n('Integration Examples')"/></span>
 										</a>
 									</li>
+									<!--<xsl:if test="$eipMode">
+										<li>
+											<a>
+												<xsl:call-template name="CommonRenderLinkHref">
+													<xsl:with-param name="theXSL">ext/audit/ess_el_audit_reporting.xsl</xsl:with-param>
+												</xsl:call-template>
+												<span><xsl:value-of select="eas:i18n('Audit Log')"/></span>
+											</a>
+										</li>
+									</xsl:if>-->
 									<!--<li>
 										<a>
 											<xsl:call-template name="CommonRenderLinkHref">

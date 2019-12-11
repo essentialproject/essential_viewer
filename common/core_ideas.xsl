@@ -519,7 +519,7 @@
 						essIdeas.currentIdea.changes.forEach(function(aChange) {
 							if(aChange.change != null) {
 								let changeSelect = $('select[eas-id="' + aChange.id + '"]');
-								changeSelect.select2();
+								changeSelect.select2({theme: "bootstrap"});
 								let changeActionId = aChange.change.id;
 								changeSelect.val(changeActionId).trigger('change');
 								
@@ -674,7 +674,7 @@
 			function initIdeasJS(){
 				//Initialise JS for the Ideas Panel. Triggered by the Ideas icon in the header (core_header.xsl)
 				//Init Select2 library
-				$('.ideaSelect').select2();
+				$('.ideaSelect').select2({theme: "bootstrap"});
 				$('#idea-info-trigger,#option-info-trigger').click(function() {
 					$('[role="tooltip"]').remove();
 				});
@@ -1545,7 +1545,7 @@
 		
 		
 		<!-- Need Catalogue Modal -->
-		<xsl:call-template name="dataTablesLibrary"/>
+		<!--<xsl:call-template name="dataTablesLibrary"/>-->
 		<!-- Handlebars template for the contents of the Business Need Modal -->
 		<script type="text/x-handlebars-template" id="ess-ideation-text-bullets-template">
 			<ul>

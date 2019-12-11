@@ -254,10 +254,12 @@
 						//INITIALISE THE APP DROP DOWN LISTS
 						$('#leftAppList').select2({
 							placeholder: "Select an Application",
+							theme: "bootstrap"
 						});
 
 						$('#rightAppList').select2({
 							placeholder: "Select an Application",
+							theme: "bootstrap"
 						});
 						
 						$('#leftAppList').on('change', function (evt) {

@@ -170,7 +170,7 @@
 					}
 					
 					function initSelect2(){
-						$('.dt_ApprovalSelect').select2();
+						$('.dt_ApprovalSelect').select2({theme: "bootstrap"});
 					};
 					
 					//render the button for updating the statis of content

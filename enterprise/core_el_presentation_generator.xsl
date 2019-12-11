@@ -1688,7 +1688,8 @@
 					    <!-- Set up the Widget Tag list -->
                 		$('#widgetTagList').select2({
                 			//allowClear: true,
-						    placeholder: "Select tags to filter"						  
+						    placeholder: "Select tags to filter",
+						    theme: "bootstrap"
 						});			
 						
 						$('#widgetTagList').on('change', function (event) {
@@ -1788,7 +1789,7 @@
 						
 					
 						<!-- Set up the Theme selection box -->
-                		$('#widgetThemeList').select2();
+                		$('#widgetThemeList').select2({theme: "bootstrap"});
 						
 						<!-- Add an event listener to the widget theme list -->
 						//add an event listener to the widget themes dropdown list

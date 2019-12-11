@@ -256,7 +256,7 @@
 						
 						if(bcmData.showRoadmap) {
 							//INITIALISE THE ARCH STATE DROP DOWN LIST
-							$('#archStateList').select2();
+							$('#archStateList').select2({theme: "bootstrap"});
 						
 							var archStateFragment = $("#arch-state-template").html();
 							var archStateTemplate = Handlebars.compile(archStateFragment);

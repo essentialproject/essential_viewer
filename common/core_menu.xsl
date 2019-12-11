@@ -70,7 +70,7 @@
             <xsl:variable name="thisMenuShortName" select="current()/own_slot_value[slot_reference = 'report_menu_short_name']/value"/>
             <xsl:variable name="thisMenuDesc" select="current()/own_slot_value[slot_reference = 'description']/value"/>
             <xsl:variable name="thisMenuGroups" select="$allMenuGroups[name = current()/own_slot_value[slot_reference = 'report_menu_groups']/value]"/>
-            <xsl:variable name="thisMenuItems" select="$allMenuItems[name = $thisMenuGroups/own_slot_value[slot_reference = 'report_menu_items']/value]"/>
+            <xsl:variable name="thisMenuItems" select="$allMenuItems[(eas:isUserAuthZ(.)) and (name = $thisMenuGroups/own_slot_value[slot_reference = 'report_menu_items']/value)]"/>
         	<xsl:variable name="thisReportMenuItems" select="$thisMenuItems[name = $allReportMenuItems/name]"/>
         	<xsl:variable name="thisEditorMenuItems" select="$thisMenuItems[name = $allEditorMenuItems/name]"/>
             
@@ -97,16 +97,62 @@
         	<xsl:apply-templates mode="RenderEditorMenuItemFunction" select="$thisEditorMenuItems"/>
         	
         	<!-- Render the function that pops up the context menu -->
-            $(function(){$.contextMenu({selector: '.context-menu-<xsl:value-of select="$thisMenuShortName"/>',zIndex: 100, trigger: 'left',ignoreRightClick: true,autoHide: false,animation: {duration: 100, show: "fadeIn", hide: "fadeOut"},items: {title:	{type: "html", html: '<span class="uppercase fontBold menuTitle"><xsl:value-of select="$thisMenuIntro"/></span>', icon: "none"},
+            $(function(){$.contextMenu({selector: '.context-menu-<xsl:value-of select="$thisMenuShortName"/>',zIndex: 100, trigger: 'left',ignoreRightClick: true,autoHide: false,animation: {duration: 100, show: "fadeIn", hide: "fadeOut"},items: {title:	{type: "html", html: '<span class="uppercase fontBold menuTitle"><xsl:value-of select="$thisMenuIntro"/></span>', icon: "none"}
         		
         		<!-- Render the entries for menu items that target Reports -->
         		<xsl:apply-templates mode="RenderMenuGroupEntries" select="$thisMenuGroups"/>
         		<!-- If defined, render the entries for menu items that target Editors -->
-        		<xsl:if test="($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisEditorMenuItems) > 0)">, "sep1": "---------",<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
+        		<xsl:if test="($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisEditorMenuItems) > 0)">, "sep1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
         		<xsl:if test="($menuIdeationIsOn) and ($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisMenuModals) > 0)">
-					, "sep2": "---------",
+					, "sep2": "---------"
 	        		<xsl:apply-templates mode="RenderMenuItemModalEntries" select="$thisMenuModals"/>
         		</xsl:if>}});
+        	});
+        </xsl:for-each>
+        </script>
+	</xsl:template>
+	
+	
+	
+	<xsl:template name="RenderEditorPopUpJavascript">
+		<!-- thisMenu = the menu to be presented -->
+		<xsl:param name="thisMenu"/>
+		<!-- boolean as to whether a new window/tab should be opened -->
+		<xsl:param name="newWindow" select="false()"/>
+		
+		
+		<script type="text/javascript">
+        <xsl:for-each select="$thisMenu">
+            <xsl:variable name="thisMenuShortName" select="current()/own_slot_value[slot_reference = 'report_menu_short_name']/value"/>
+            <xsl:variable name="thisMenuDesc" select="current()/own_slot_value[slot_reference = 'description']/value"/>
+            <xsl:variable name="thisMenuGroups" select="$allMenuGroups[name = current()/own_slot_value[slot_reference = 'report_menu_groups']/value]"/>
+            <xsl:variable name="thisMenuItems" select="$allMenuItems[(eas:isUserAuthZ(.)) and (name = $thisMenuGroups/own_slot_value[slot_reference = 'report_menu_items']/value)]"/>
+        	<xsl:variable name="thisReportMenuItems" select="$thisMenuItems[name = $allReportMenuItems/name]"/>
+        	<xsl:variable name="thisEditorMenuItems" select="$thisMenuItems[name = $allEditorMenuItems/name]"/>
+
+        	<!-- Define the menu intro text -->
+        	<xsl:variable name="thisMenuIntro">
+                <xsl:choose>
+                    <xsl:when test="string-length($thisMenuDesc) > 0"><xsl:value-of select="$thisMenuDesc"/></xsl:when>
+                    <xsl:otherwise>Select a View/Editor:</xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>         
+        	
+        	<!-- Render the functions for menu items that target Reports -->
+            <xsl:apply-templates mode="RenderReportMenuItemFunction" select="$thisReportMenuItems">
+            	<xsl:with-param name="fromEditor" select="true()"/>
+            	<xsl:with-param name="newWindow" select="$newWindow"/>
+            </xsl:apply-templates>
+        	<xsl:apply-templates mode="RenderEditorMenuItemFunction" select="$thisEditorMenuItems"/>
+        	
+        	<!-- Render the function that pops up the context menu -->
+            $(function(){$.contextMenu({selector: '.context-menu-<xsl:value-of select="$thisMenuShortName"/>',zIndex: 100, trigger: 'left',ignoreRightClick: true,autoHide: false,animation: {duration: 100, show: "fadeIn", hide: "fadeOut"},items: {title:	{type: "html", html: '<span class="uppercase fontBold menuTitle"><xsl:value-of select="$thisMenuIntro"/></span>', icon: "none"}
+        		
+        		<!-- Render the entries for menu items that target Reports -->
+        		<xsl:apply-templates mode="RenderMenuGroupEntries" select="$thisMenuGroups"/>
+        		<!-- If defined, render the entries for menu items that target Editors -->
+        		<xsl:if test="($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisEditorMenuItems) > 0)">, "1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
+        		}});
         	});
         </xsl:for-each>
         </script>
@@ -125,6 +171,7 @@
 	<xsl:template mode="RenderReportMenuItemFunction" match="node()">
 		<!-- boolean as to whether a new window/tab should be opened -->
 		<xsl:param name="newWindow" select="false()"/>
+		<xsl:param name="fromEditor" select="false()"/>
 		
 		<xsl:variable name="menuItemShortName" select="current()/own_slot_value[slot_reference = 'menu_item_short_name']/value"/>
 		<xsl:variable name="menuItemFunctionName" select="concat($menuItemShortName, $urlNameSuffix)"/>
@@ -147,6 +194,9 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:choose>
+			<xsl:when test="$fromEditor">
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")), "viewerWindow"); }
+			</xsl:when>
 			<xsl:when test="$newWindow">
 				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")), "_blank"); }
 			</xsl:when>
@@ -185,7 +235,7 @@
 
 		<xsl:choose>
 			<xsl:when test="count($thisGroupReportMenuItems) > 0">
-				<xsl:if test="position() > 1">, "sep1": "---------",</xsl:if>
+				<xsl:if test="position() > 1">, "sep1": "---------"</xsl:if>
 				<!--   title:	{type: "html", html: '<span class="uppercase fontBlack text-darkgrey"><xsl:value-of select="$menuGroupLabel"/></span>', icon: "none"},-->
 				<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisGroupReportMenuItems"/>
 			</xsl:when>
@@ -205,7 +255,7 @@
 			<xsl:variable name="menuItemFunctionName" select="concat($menuItemShortName, $essModalFunctionSuffix)"/>
 			<xsl:variable name="menuItemCategory" select="$allMenuItemCategories[name = $thisModal/own_slot_value[slot_reference = 'modal_report_menu_item_category']/value]"/>
 			<xsl:variable name="menuItemIconName" select="$menuItemCategory/own_slot_value[slot_reference = 'enumeration_icon']/value"/>
-			<xsl:value-of select="$menuItemShortName"/>: {disabled: function(){ return !(essIdeas.ready) }, name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(position() = last())">,</xsl:if>
+			,<xsl:value-of select="$menuItemShortName"/>: {disabled: function(){ return !(essIdeas.ready) }, name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(position() = last())">,</xsl:if>
 		</xsl:if>
 		<!-- If not cleared, render nothing -->
 	</xsl:template>
@@ -215,13 +265,14 @@
 
 		<!-- Check that user can access target report before rendering the menu item -->
 		<xsl:variable name="menuItemTargetReport" select="$allMenuItemTargets[name = current()/own_slot_value[slot_reference = 'report_menu_item_target_report']/value]"/>
-		<xsl:if test="eas:isUserAuthZ($menuItemTargetReport)">
+		<xsl:variable name="isAuth" select="eas:isUserAuthZ($menuItemTargetReport)"/>
+		<xsl:if test="$isAuth">
 			<xsl:variable name="menuItemShortName" select="current()/own_slot_value[slot_reference = 'menu_item_short_name']/value"/>
 			<xsl:variable name="menuItemLabel" select="current()/own_slot_value[slot_reference = 'menu_item_label']/value"/>
 			<xsl:variable name="menuItemFunctionName" select="concat($menuItemShortName, $urlNameSuffix)"/>
 			<xsl:variable name="menuItemCategory" select="$allMenuItemCategories[name = current()/own_slot_value[slot_reference = 'report_menu_item_category']/value]"/>
 			<xsl:variable name="menuItemIconName" select="$menuItemCategory/own_slot_value[slot_reference = 'enumeration_icon']/value"/>
-			<xsl:value-of select="$menuItemShortName"/>: {name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(position() = last())">,</xsl:if>
+			,<xsl:value-of select="$menuItemShortName"/>: {name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}
 		</xsl:if>
 		<!-- If not cleared, render nothing -->
 	</xsl:template>

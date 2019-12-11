@@ -116,7 +116,9 @@
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
-				<xsl:call-template name="commonHeadContent"/>
+				<xsl:call-template name="commonHeadContent">
+					<xsl:with-param name="requiresDataTables" select="false()"/>
+				</xsl:call-template>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
@@ -539,7 +541,7 @@
 					.helpButton{
 						position: absolute;
 						z-index: 100;
-						top: -80px;
+						top: -60px;
 						right: 15px;
 						width: 200px;
 						box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 4px 0px;
@@ -588,7 +590,8 @@
 					$(document).ready(function(){					
 						//INITIALISE THE DROP DOWN LISTS
 						$('#techArchList').select2({
-						    placeholder: "Select IT Solutions"
+						    placeholder: "Select IT Solutions",
+						    theme: "bootstrap"
 						});									
 					});
 					
@@ -1016,7 +1019,7 @@
 						var inScopeLinks = aSelectedTechArch.techCompLinks;
 						var inScopeTechComps = getObjectsByIds(techComponents, 'id', aSelectedTechArch.techComponents);
 
-						console.log('in scope tech comps: ' + aSelectedTechArch.techComponents.length);
+						//console.log('in scope tech comps: ' + aSelectedTechArch.techComponents.length);
 						
 						//create the technology component nodes
 						for (var i = 0; inScopeTechComps.length > i; i += 1) {
@@ -1587,7 +1590,8 @@
 					$(document).ready(function(){
 						//INITIALISE THE DROP DOWN LISTS
 						$('#applicationList').select2({
-							placeholder: "Select or create a Shared Platform"
+							placeholder: "Select or create a Shared Platform",
+							theme: "bootstrap"
 						});
 						
 						var appSelectFragment   = $("#app-select-template").html();
@@ -1613,7 +1617,8 @@
 						techArchListTemplate = Handlebars.compile(techArchListFragment);
 						
 						$('#techArchList').select2({
-						    placeholder: "Select Reference Architecture"
+						    placeholder: "Select Reference Architecture",
+						    theme: "bootstrap"
 						});
 											
 						//$("#techArchList").html(techArchListTemplate(techArchPatterns));
@@ -1763,6 +1768,7 @@
 						               'selectRow': false,
 						               'selectCallback': function(nodes, selected){
 						                  	// get list of ref architecture ids for selected rows
+						                  	//console.log(refArchListTable.column(0).checkboxes);
 						                  	selectedRefArchIds = refArchListTable.column(0).checkboxes.selected();
 						                  	//refresh the selected reference architectures section
 						                  	refreshSelectedRefArchs();					                  	
@@ -2148,7 +2154,7 @@
 								
 								//console.log('Dropping Elememt with class ' + el.classList + ' on target with class: ' + target.classList);
 								if((hasClass(el, 'draggableTechProd')) &amp;&amp; (hasClass(target, 'techArchitecture'))) {
-									console.log('Dropping Elememt');
+									//console.log('Dropping Elememt');
 									return true;
 								} else {
 									return false;

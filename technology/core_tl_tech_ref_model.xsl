@@ -602,7 +602,8 @@
 						//INITIALISE THE SCOPING DROP DOWN LIST
 						$('#busUnitList').select2({
 							placeholder: "All",
-							allowClear: true
+							allowClear: true,
+							theme: "bootstrap"
 						});
 						
 						//Initialise the data

@@ -48,6 +48,22 @@ function essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb)
 			// http success code
 			try {
 				let theElements = JSON.parse(response);
+                let pagCount = xhr.getResponseHeader('Pagination-Count');
+                if(pagCount != null) {
+                    let pagDetails = {
+                        "count": pagCount
+                    }
+                    let pagStart = xhr.getResponseHeader('Pagination-Start');
+                    if(pagStart != null) {
+                        pagDetails["start"] = pagStart;
+                    }
+                    let pagLimit = xhr.getResponseHeader('Pagination-Limit');
+                    if(pagLimit != null) {
+                        pagDetails["limit"] = pagLimit;
+                    }
+                    theElements["pagination"] = pagDetails;
+                }
+				
 				resolve(theElements);
 			} catch (e) {
 				let requestError = new Error('Error in the ' + resourceTypeLabel + ' data returned by the server');

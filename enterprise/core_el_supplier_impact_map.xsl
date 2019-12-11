@@ -401,7 +401,7 @@
                             var timeFragment = $("#time-template").html();
                             timeTemplate = Handlebars.compile(timeFragment);
                             
-                            $('#pickSuppliers').select2();
+                            $('#pickSuppliers').select2({theme: "bootstrap"});
                         });
                 </script>
 			</head>

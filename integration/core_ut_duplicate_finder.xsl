@@ -69,7 +69,7 @@
 				<script src="js/select2/js/select2.min.js"/>
 				<script>
 					$(document).ready(function(){
-						$('select').select2();
+						$('select').select2({theme: "bootstrap"});
 					});
 				</script>
 			</head>

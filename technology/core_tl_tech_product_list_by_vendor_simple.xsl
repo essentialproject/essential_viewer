@@ -240,11 +240,10 @@
 
     				
     $(document).ready(function() {                    
-        $('select').select2(
-        	{
-	    		'placeholder': 'Select a Supplier'
-	    	}
-        );
+        $('select').select2({
+	    	'placeholder': 'Select a Supplier',
+	    	theme: "bootstrap"
+	    });
 
         var techCardFragment   = $("#tech-card-template").html();
             techCardTemplate = Handlebars.compile(techCardFragment);

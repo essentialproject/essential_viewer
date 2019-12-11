@@ -1837,7 +1837,7 @@
 						
 						
 						//Initialise the valuestream list as a select2 drop down
-						$('#busCapValueStreamsList').select2();
+						$('#busCapValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
 						if(aBusCap.valueStreams.length > 0) { 
@@ -1975,7 +1975,7 @@
 						setTimeout(renderBusProcessCustSvcGauge,600);
 						
 						//Initialise the planning action list as a select2 drop down
-						$('#busProcessModalPlanningActionList').select2();
+						$('#busProcessModalPlanningActionList').select2({theme: "bootstrap"});
 						
 						//pre-select the current planning action 
 						if(currentAction == null) {
@@ -2036,7 +2036,7 @@
 						
 						
 						//Initialise the valuestream list as a select2 drop down
-						$('#busProcessValueStreamsList').select2();
+						$('#busProcessValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
 						if(aBusProcess.valueStreams.length > 0) { 
@@ -2175,7 +2175,7 @@
 						setTimeout(renderOrgCustSvcGauge,600);
 						
 						//Initialise the planning action list as a select2 drop down
-						$('#orgModalPlanningActionList').select2();
+						$('#orgModalPlanningActionList').select2({theme: "bootstrap"});
 						
 						//pre-select the current planning action 
 						if(currentAction == null) {
@@ -2235,7 +2235,7 @@
 						});
 						
 						//Initialise the valuestream list as a select2 drop down
-						$('#orgValueStreamsList').select2();
+						$('#orgValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
 						if(anOrg.valueStreams.length > 0) { 
@@ -2384,7 +2384,7 @@
 						setTimeout(renderAppServiceTechHealthGauge,600);
 						
 						//Initialise the planning action list as a select2 drop down
-						$('#appServiceModalPlanningActionList').select2();
+						$('#appServiceModalPlanningActionList').select2({theme: "bootstrap"});
 						
 						//pre-select the current planning action 
 						if(currentAction == null) {
@@ -2447,7 +2447,7 @@
 						
 						
 						//Initialise the valuestream list as a select2 drop down
-						$('#appServiceValueStreamsList').select2();
+						$('#appServiceValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
 						if(anAppService.valueStreams.length > 0) { 
@@ -2586,7 +2586,7 @@
 						
 						
 						//Initialise the planning action list as a select2 drop down
-						$('#appModalPlanningActionList').select2();
+						$('#appModalPlanningActionList').select2({theme: "bootstrap"});
 						
 						//pre-select the current planning action 
 						if(currentAction == null) {
@@ -2647,7 +2647,7 @@
 						
 						
 						//Initialise the valuestream list as a select2 drop down
-						$('#appValueStreamsList').select2();
+						$('#appValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
 						if(anApp.valueStreams.length > 0) { 
@@ -3432,7 +3432,8 @@
 						var valueStreamsListTemplate = Handlebars.compile(valueStreamsListFragment);
 						
 						$('#valueStreamsList').select2({
-						    placeholder: "Select Value Stream"
+						    placeholder: "Select Value Stream",
+						    theme: "bootstrap"
 						});
 											
 						$("#valueStreamsList").html(valueStreamsListTemplate(viewData));

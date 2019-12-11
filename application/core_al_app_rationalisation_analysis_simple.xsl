@@ -166,7 +166,9 @@
                         var appCardTemplate;
 
                         $(document).ready(function() {
-                            $('select').select2();
+                            $('select').select2({
+                            	theme: "bootstrap"
+                            });
                             
                             var appCardFragment   = $("#app-card-template").html();
                             appCardTemplate = Handlebars.compile(appCardFragment);

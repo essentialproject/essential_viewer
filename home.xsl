@@ -201,7 +201,8 @@
 							<a class="text-default">
 								<xsl:call-template name="CommonRenderLinkHref">
 									<xsl:with-param name="theXML" select="$reposXML"/>
-									<xsl:with-param name="theXSL" select="'view_library.xsl'"/>
+									<xsl:with-param name="theXSL" select="$viewLibraryXSL"/>
+									<xsl:with-param name="theHistoryLabel" select="$viewLibraryHistoryLabel"/>
 								</xsl:call-template>
 								<span>
 									<xsl:value-of select="$viewLibraryLabel"/>

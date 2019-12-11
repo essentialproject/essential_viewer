@@ -88,7 +88,8 @@
 				<script>
 					$(document).ready(function(){
 						$('select').select2({
-							placeholder: "Select a class"
+							placeholder: "Select a class",
+							theme: "bootstrap"
 						});
 					});
 				</script>

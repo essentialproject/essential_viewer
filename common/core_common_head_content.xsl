@@ -21,10 +21,12 @@
 	-->
 
 	<xsl:import href="core_utilities.xsl"/>
+	<xsl:import href="datatables_includes.xsl"/>
 	<xsl:variable name="allViewerStyles" select="/node()/simple_instance[type = 'Viewer_Styling']"/>
 	<xsl:variable name="activeViewerStyle" select="$allViewerStyles[own_slot_value[slot_reference = 'style_is_active']/value = 'true'][1]"/>
 
 	<xsl:template match="node()" name="commonHeadContent">
+		<xsl:param name="requiresDataTables" select="true()"/>
 		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<!--Setup common content for html head tag	-->
@@ -42,6 +44,7 @@
 		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css" type="text/css"/>
 		<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css"/>
 		<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+		<link href="js/select2/css/select2-bootstrap.min.css" rel="stylesheet"/>
 		<link href="js/hopscotch/css/ess-hopscotch.css" rel="stylesheet"/>
 		<link rel="stylesheet" href="css/essential-core.css" type="text/css"/>
 		<link href="fonts/source-sans/source-sans-pro.css" rel="stylesheet" type="text/css"/>
@@ -79,6 +82,9 @@
 		<script>
 			$(document).ready(function () {$('.sectionIcon').click(function (){$(this).parent().children('.content-section').slideToggle(200);});});
 		</script>
+		<xsl:if test="$requiresDataTables">
+			<xsl:call-template name="dataTablesLibrary"/>
+		</xsl:if>
 		<!--Later versions of bootstrap use Sanitize to filter certain DOM elements from popovers (including tables). This is our custom whitelist to workaround this-->
 		<script>
 			$(document).ready(function(){
@@ -93,6 +99,9 @@
 					myDefaultWhiteList.td = [];
 				}
 			});
+			
+			this.name = "viewerWindow";
+			
 		</script>
 		<xsl:variable name="viewerPrimaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'primary_header_colour_viewer']/value"/>
 		<xsl:variable name="viewerSecondaryHeader" select="$activeViewerStyle/own_slot_value[slot_reference = 'secondary_header_colour_viewer']/value"/>

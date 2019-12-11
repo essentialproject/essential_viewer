@@ -57,6 +57,7 @@
 	<xsl:variable name="techProdListByComponentCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Technology Product Catalogue by Technology Component')]"/>
 	<xsl:variable name="techProdListByCapCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Technology Product Catalogue by Technology Capability')]"/>
 	<xsl:variable name="techProdListAsTableCatalogue" select="eas:get_report_by_name('Core: Technology Product Cataloigue as Table')"/>
+    <xsl:variable name="allTechProdFamilies" select="/node()/simple_instance[type = 'Technology_Product_Family']"/>
 	<xsl:variable name="allTechSuppliers" select="/node()/simple_instance[type = 'Supplier']"/>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
 	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type = 'Technology_Product_Role'][own_slot_value[slot_reference = 'role_for_technology_provider']/value = $allTechProds/name]"/>
@@ -182,8 +183,8 @@
 						border-radius: 3px}</style>
 				<script>
 					$(document).ready(function(){
-						$('#productsSelect').select2();
-						$('#HMLSelect').select2();
+						$('#productsSelect').select2({theme: "bootstrap"});
+						$('#HMLSelect').select2({theme: "bootstrap"});
 					});
 				</script>
 			</head>
@@ -351,7 +352,7 @@
             return cveJSONset; // this will show the info it in firebug console
             }).done( function(cveJSONset) {
                 cveJSON=cveJSONset;
-           
+         
             doCompare();
             
             });;
@@ -385,7 +386,7 @@ function doCompare(){
                     return e.vendor.toUpperCase() ===d.vendor_name.toUpperCase() ; 
                 })
             
-              
+   console.log(prods)             
             
             if(prods[0]){opts.push(prods[0]);}
         
@@ -511,6 +512,7 @@ function uniq(a) {
 	</xsl:template>
 
 	<xsl:template match="node()" mode="TechnologyProduct">
+        <xsl:variable name="thisFamily" select="$allTechProdFamilies[own_slot_value[slot_reference='groups_technology_products']/value=current()/name]"/>
 		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'role_for_technology_provider']/value = current()/name]"/>
 		<xsl:variable name="thisTPUs" select="$allTPUs[own_slot_value[slot_reference = 'provider_as_role']/value = $thisTechProdRoles/name]"/>
 		<xsl:variable name="thisTPURels" select="$allTPURels[own_slot_value[slot_reference = ':TO']/value = $thisTPUs/name or own_slot_value[slot_reference = ':FROM']/value = $thisTPUs/name]"/>
@@ -522,7 +524,7 @@ function uniq(a) {
 		<xsl:variable name="thisAPRstoProcs" select="$allAPRstoProcs[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
 		<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
 		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
-		<xsl:variable name="supplier" select="$allTechSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/> {"id":"<xsl:value-of select="name"/>", "vendor":"<xsl:value-of select="$supplier/own_slot_value[slot_reference = 'name']/value"/>","product":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>","version":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'technology_provider_version']/value"/>","appimpacts":[<xsl:apply-templates select="$thisApps" mode="appImpact"/>],"busimpacts":[<xsl:apply-templates select="$thisBusProcs" mode="busImpact"/>]}, </xsl:template>
+		<xsl:variable name="supplier" select="$allTechSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/> {"id":"<xsl:value-of select="name"/>", "vendor":"<xsl:value-of select="$supplier/own_slot_value[slot_reference = 'name']/value"/>","product":"<xsl:value-of select="$thisFamily/own_slot_value[slot_reference = 'name']/value"/>","productName":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>","version":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'technology_provider_version']/value"/>","appimpacts":[<xsl:apply-templates select="$thisApps" mode="appImpact"/>],"busimpacts":[<xsl:apply-templates select="$thisBusProcs" mode="busImpact"/>]}, </xsl:template>
 	<xsl:template match="node()" mode="appImpact"> {"name":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>","id":"<xsl:value-of select="current()/name"/>"}, </xsl:template>
 	<xsl:template match="node()" mode="busImpact"> {"name":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>","product":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>"}, </xsl:template>
 </xsl:stylesheet>

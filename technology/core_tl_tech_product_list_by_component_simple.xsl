@@ -265,11 +265,10 @@
                     
                     
 						$(document).ready(function() {                    
-						    $('#componentName').select2(
-						    	{
-						    		'placeholder': 'Select a Technology Type'
-						    	}
-						    );
+						    $('#componentName').select2({
+					    		'placeholder': 'Select a Technology Type',
+					    		theme: "bootstrap"
+						    });
 						
 						    var prodCardFragment   = $("#prod-card-template").html();
 						    prodCardTemplate = Handlebars.compile(prodCardFragment);

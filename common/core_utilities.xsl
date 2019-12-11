@@ -536,6 +536,46 @@
 		</xsl:choose>
 
 	</xsl:template>
+	
+	
+	<xsl:template name="RenderEditorInstanceLinkJavascript">
+		<xsl:param name="instanceClassName"/>
+		<xsl:param name="targetMenu"/>
+		<xsl:param name="newWindow" select="false()"/>
+		
+		
+		<!-- Get the default menu for the class of the instance, if one exists -->
+		<xsl:variable name="defaultMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $instanceClassName) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
+		
+		<!-- Render the appropriate link based on the given parameters -->
+		<xsl:choose>
+			<!-- If a target menu has been provided, create the appropriate javscript -->
+			<xsl:when test="count($targetMenu) > 0">
+				
+				<!-- Check user is cleared for Menu -->
+				<xsl:if test="eas:isUserAuthZ($targetMenu)">
+					<xsl:call-template name="RenderEditorPopUpJavascript">
+						<xsl:with-param name="thisMenu" select="$targetMenu"/>
+						<xsl:with-param name="newWindow" select="$newWindow"/>
+					</xsl:call-template>
+				</xsl:if>
+			</xsl:when>
+			<!-- If no target menu has been provided and a default menu exists for the class, create the appropriate javascript for the default menus -->
+			<xsl:when test="count($defaultMenus) > 0">
+				<xsl:for-each select="$defaultMenus">
+					
+					<!-- Check user is cleared for Menu -->
+					<xsl:if test="eas:isUserAuthZ(current())">
+						<xsl:call-template name="RenderEditorPopUpJavascript">
+							<xsl:with-param name="thisMenu" select="current()"/>
+							<xsl:with-param name="newWindow" select="$newWindow"/>
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:when>
+		</xsl:choose>
+		
+	</xsl:template>
 
 
 	<!-- Render the code to produce either a link, popup menu or plain text for a given instance 

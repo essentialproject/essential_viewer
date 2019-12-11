@@ -28,6 +28,7 @@
 	<xsl:variable name="targetEditorLabel" select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = 'editor_menu_link_classes']/value"/>
+	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
 	
 	<!-- Get the list of supporting data set APIs -->
 	<xsl:variable name="supportingAPIs" select="$utilitiesAllDataSetAPIs[name = $targetEditor/own_slot_value[slot_reference = 'editor_data_set_apis']/value]"/>
@@ -64,9 +65,10 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
 				<xsl:for-each select="$linkClasses">
-					<xsl:call-template name="RenderInstanceLinkJavascript">
+					<xsl:call-template name="RenderEditorInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
+						<xsl:with-param name="newWindow" select="true()"/>
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="$targetEditorLabel"/></title>
@@ -134,6 +136,54 @@
 						var apiURL = essDataSetAPIs[dataSetLabel];
 						return apiURL;
 					}
+					
+					var esslinkMenuNames = {
+						<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
+					}
+					
+					
+					
+					function essGetMenuName(instance) {
+						let menuName = null;
+						if((instance != null) &amp;&amp; (instance.meta != null) &amp;&amp; (instance.meta.anchorClass != null)) {
+							menuName = esslinkMenuNames[instance.meta.anchorClass];
+						}
+						return menuName;
+					}
+					
+					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+					
+					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
+						if(instance != null) {
+							let linkMenuName = essGetMenuName(instance);
+							let instanceLink = instance.name;
+							if(linkMenuName != null) {
+								let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+								let linkClass = 'context-menu-' + linkMenuName;
+								let linkId = instance.id + 'Link';
+								instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+								<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+							}
+						  	return instanceLink;
+					  	} else {
+					  		return '';
+					  	}
+					});
+					
+					
+					Handlebars.registerHelper('essInstanceStyle', function(instance, styleProperty, options){
+						if((instance != null) &amp;&amp; (instance.styles != null) &amp;&amp; (instance.styles.length > 0) &amp;&amp; (instance.styles[0][styleProperty] != null)) {							
+							return instance.styles[0][styleProperty];
+					  	} else {
+					  		return '';
+					  	}
+					});
+					
+					var essTableLinkTemplate;
+					$('document').ready(function(){
+						let essTableLinkFragment = $("#ess-table-link-template").html();
+			    		essTableLinkTemplate = Handlebars.compile(essTableLinkFragment);
+		    		});
 				</script>
 
 				<!-- main script -->
@@ -217,6 +267,11 @@
 					</div>
 				</script>
 				
+				<!-- Handlebars template for displaying a popup link in a table cell -->
+				<script id="ess-table-link-template" type="text/x-handlebars-template">
+					<span>{{{essRenderInstanceLink this}}}</span>
+				</script>
+				
 				<!-- Div for the ERROR modal -->
 				<div class="modal fade" id="essErrorModal" tabindex="-1" role="dialog" aria-labelledby="essErrorModalLabel" data-backdrop="static" data-keyboard="true">
 					<div class="modal-dialog">
@@ -239,6 +294,14 @@
 		<!-- Get the property label to be used for accessing the data set details -->
 		<xsl:variable name="dataSetLabel" select="current()/own_slot_value[slot_reference = 'dsa_data_label']/value"/>
 		"<xsl:value-of select="$dataSetLabel"/>": "<xsl:value-of select="$dataSetPath"/>"<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template mode="RenderClassMenu" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="thisMenus" select="$editorLinkMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+		
+		"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
 

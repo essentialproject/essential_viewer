@@ -57,7 +57,7 @@
 	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[name = $allTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
 	
 	<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>
 	
@@ -582,7 +582,8 @@
 								//INITIALISE THE SCOPING DROP DOWN LIST
 								$('#busUnitList').select2({
 									placeholder: "All",
-									allowClear: true
+									allowClear: true,
+									theme: "bootstrap"
 								});
 								
 								//INITIALISE THE PAGE WIDE SCOPING VARIABLES					

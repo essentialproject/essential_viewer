@@ -908,7 +908,7 @@
 
 
 		<xsl:variable name="plansForBusProcs" select="$allBusImpactStrategicPlans[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $busProcsForCap/name]"/>
-		<xsl:variable name="plansForApps" select="$allAppImpactStrategicPlans[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $busProcsForCap/name]"/>
+		<xsl:variable name="plansForApps" select="$allAppImpactStrategicPlans[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $appsForCap/name]"/>
 		<xsl:variable name="impactingProjects" select="$inScopeProjects[own_slot_value[slot_reference = 'ca_strategic_plans_supported']/value = ($plansForBusProcs union $plansForApps)/name]"/>
 
 		<xsl:value-of select="count($impactingProjects)"/>

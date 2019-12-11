@@ -370,7 +370,8 @@
 						}	
 					
 						$('.ideaReqList').select2({
-							'placeholder': 'Select a requirement'
+							'placeholder': 'Select a requirement',
+							theme: "bootstrap"
 						});
 						
 						if(essIdeas.currentNeed != null) {
@@ -400,7 +401,8 @@
 						
 						
 						$('.ideaList').select2({
-							'placeholder': 'Select an idea'
+							'placeholder': 'Select an idea',
+							theme: "bootstrap"
 						});
 						
 						$('.ideaList').on('select2:select', function (e) {
@@ -424,7 +426,7 @@
 						
 						
 						
-						$('.planningActionlist').select2();
+						$('.planningActionlist').select2({theme: "bootstrap"});
 						
 						$('.planningActionlist').on('select2:select', function (e) {
 						    var newActionId = e.params.data.id;

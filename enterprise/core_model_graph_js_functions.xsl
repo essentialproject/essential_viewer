@@ -541,7 +541,8 @@
 				if(gmGraphSearchTemplate == null) {
 					//initialise the search list
 					$('#graphModelSearch').select2({
-						    placeholder: "Select an element"
+						    placeholder: "Select an element",
+						    theme: "bootstrap"
 					});
 					
 					//add event listener to search list
