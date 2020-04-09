@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+<xsl:stylesheet version="3.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -155,7 +155,8 @@
 			<div class="row">
 				<xsl:apply-templates select="$allR2PSRForSection" mode="sectionReports">
 					<xsl:sort select="number(current()/own_slot_value[slot_reference = 'report_to_portal_section_index']/value)"/>
-				</xsl:apply-templates>
+				</xsl:apply-templates>				
+				<!--All R2PSRForSection: <xsl:value-of select="$allR2PSRForSection/own_slot_value[slot_reference='relation_name']/value"></xsl:value-of>-->
 				<div class="col-xs-12 ">
 					<hr/>
 				</div>
@@ -164,7 +165,9 @@
 	</xsl:template>
 
 	<xsl:template mode="sectionReports" match="node()">
-		<xsl:variable name="currentReport" select="$allReports[name = current()/own_slot_value[slot_reference = 'r2psr_report']/value]"/>
+		<xsl:variable name="aCurNode" select="current()"></xsl:variable>
+		<xsl:variable name="currentReport" select="$allReports[name = $aCurNode/own_slot_value[slot_reference = 'r2psr_report']/value]"/>
+		<!--<xsl:value-of select="$currentReport/own_slot_value[slot_reference='name']/value"></xsl:value-of>-->		
 		<xsl:if test="eas:isUserAuthZ($currentReport) and $currentReport/own_slot_value[slot_reference = 'report_is_enabled']/value = 'true'">
 			<xsl:call-template name="PrintReportBox">
 				<xsl:with-param name="aReport" select="$currentReport"/>
@@ -363,10 +366,7 @@
 		<xsl:choose>
 			<!-- Go straight to the report if the report constant value is set -->
 			<!-- But only if the user is authorised -->
-			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
-				<xsl:variable name="reportHistoryLabelName" select="$aReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-				<xsl:variable name="reportFilename" select="$aReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-
+			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">				
 
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="viewElementContainer {$nameStyleSetting}">
@@ -402,8 +402,7 @@
 			</xsl:when>
 
 			<!-- Check that the user is authorised to access the qualifying report -->
-			<xsl:when test="eas:isUserAuthZ($aReport) and eas:isUserAuthZ($qualifyingReport) and string-length($qualifyingReportId) > 0">
-				<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
+			<xsl:when test="eas:isUserAuthZ($aReport) and eas:isUserAuthZ($qualifyingReport) and string-length($qualifyingReportId) > 0">				
 				<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 				<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 				<xsl:variable name="targetReportIdQueryString">

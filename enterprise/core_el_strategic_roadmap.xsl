@@ -49,13 +49,13 @@
 
 	<xsl:variable name="currentRoadmap" select="/node()/simple_instance[name = $param1]"/>
 	<xsl:variable name="allRoadmapRelations" select="/node()/simple_instance[name = $currentRoadmap/own_slot_value[slot_reference = 'contained_roadmap_relations']/value]"/>
-	<xsl:variable name="allStrategicPlans" select="/node()/simple_instance[name = ($allRoadmapRelations, $currentRoadmap)/own_slot_value[slot_reference = (':roadmap_strategic_plans', 'roadmap_strategic_plans')]/value]"/>
+	<xsl:variable name="allStrategicPlans" select="/node()/simple_instance[name = ($allRoadmapRelations, $currentRoadmap)/own_slot_value[slot_reference = (':roadmap_strategic_plans', 'roadmap_strategic_plans')]/value][count(own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value)&gt;0]"/>
 	<xsl:variable name="allStrategicPlanRels" select="/node()/simple_instance[name = $allStrategicPlans/own_slot_value[slot_reference = ('strategic_plan_for_elements', 'strategic_plan_for_element')]/value]"/>
 	<xsl:variable name="allPlanningActions" select="/node()/simple_instance[name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
 	<xsl:variable name="allMilestones" select="/node()/simple_instance[(type = 'Roadmap_Milestone') and (name = $currentRoadmap/own_slot_value[slot_reference = 'contained_roadmap_model_elements']/value)]"/>
-	<xsl:variable name="allArchStates" select="/node()/simple_instance[name = ($allMilestones, $currentRoadmap)/own_slot_value[slot_reference = ('milestone_architecture_state', 'roadmap_architecture_states')]/value]"/>
-	<xsl:variable name="allDirectProjects" select="/node()/simple_instance[(type = 'Project') and (name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value)]"/>
-	<xsl:variable name="allProjectsViaPlanRels" select="/node()/simple_instance[name = $allStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value]"/>
+	<xsl:variable name="allArchStates" select="/node()/simple_instance[name = ($allMilestones, $currentRoadmap)/own_slot_value[slot_reference = ('milestone_architecture_state', 'roadmap_architecture_states')]/value][count(own_slot_value[slot_reference='end_date_iso_8601']/value)&gt;0]"/>
+	<xsl:variable name="allDirectProjects" select="/node()/simple_instance[(type = 'Project') and (name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value)][own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value]"/>
+	<xsl:variable name="allProjectsViaPlanRels" select="/node()/simple_instance[name = $allStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value][own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value]"/>
 	<xsl:variable name="allProjects" select="$allDirectProjects union $allProjectsViaPlanRels"/>
 	<xsl:variable name="allProjectStatii" select="/node()/simple_instance[type = 'Project_Lifecycle_Status']"/>
 
@@ -113,7 +113,6 @@
 								<xsl:value-of select="$DEBUG"/>
 							</h1>
 						</div>
-
 
 						<!--Setup Description Section-->
 						<div id="sectionDescription">

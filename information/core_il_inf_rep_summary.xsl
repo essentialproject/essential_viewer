@@ -140,9 +140,10 @@
 										<span class="text-darkgrey">
 											<xsl:value-of select="eas:i18n('Information Representation Summary for ')"/>
 										</span>
-										<span class="text-primary">
-											<xsl:value-of select="$currentRepresentation/own_slot_value[slot_reference = 'name']/value"/>
-										</span>
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="$currentRepresentation"/>
+											<xsl:with-param name="anchorClass" select="'text-primary'"/>
+										</xsl:call-template>
 									</h1>
 								</div>
 							</div>
@@ -159,9 +160,11 @@
 								<xsl:value-of select="eas:i18n('Description')"/>
 							</h2>
 							<div class="content-section">
-								<xsl:variable name="description" select="$currentRepresentation/own_slot_value[slot_reference = 'description']/value"/>
-								<xsl:if test="not(count($description) > 0)">-</xsl:if>
-								<xsl:value-of select="$description"/>
+								<p>
+									<xsl:call-template name="RenderMultiLangInstanceDescription">
+										<xsl:with-param name="theSubjectInstance" select="$currentRepresentation"/>
+									</xsl:call-template>
+								</p>
 							</div>
 							<hr/>
 						</div>

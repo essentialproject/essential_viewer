@@ -73,8 +73,6 @@
 				<title>Roadmap Timeline</title>
 				<script src="js/vis/vis.js"/>
 				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"/>
-				<link rel="stylesheet" href="js/jquery.qtip.min.css"/>
-				<script src="js/jquery.qtip.min.js"/>
 				<script>
 					$(document).ready(function(){
 						$('#lifecycleLegend').show();
@@ -85,7 +83,7 @@
 							if($('#filterProjects').is(':checked')){
 								$('#lifecycleLegend').show();
 							};
-						});	-->			
+						});	-->
 					});
 				</script>
 			</head>
@@ -226,8 +224,11 @@
     var projectItems = new vis.DataSet({
         type: { start: 'ISODate', end: 'ISODate' }
     });
-    var groups = new vis.DataSet([
-   		{id: 'PROGRAMME', content:'<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentProgramme"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>', className: 'entLayer'}
+   var groups = new vis.DataSet([
+   		{id: 'PROGRAMME', content:'<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="theSubjectInstance" select="$currentProgramme"/>
+                <xsl:with-param name="anchorClass">text-white</xsl:with-param>
+            </xsl:call-template>', className: 'entLayer'}
     ]);
     
     // add items to the Project DataSet
@@ -270,21 +271,16 @@ var today = new Date();
 			    })
 			
 		  var triggerId = '#trigger' + itemId;
+		  var popoverId = '#popover' + itemId;
 		  var popupContent = itemObject.popupContent;
-		  $(triggerId).qtip({
-	        content: {
-	            text: itemObject[0].popupContent // Use the "div" element next to the span trigger
-	        },
-	        style: { classes: 'qtip-bootstrap' },
-	        show: 'click',
-	        hide: 'unfocus',
-	        position: {
-		        adjust: {
-		            x: -10,
-		            y: -10
-		        }
-		      }
-		  });
+		  	/* Popover*/
+			$(triggerId).popover({
+				container: 'body',
+				html: true,
+				trigger: 'click',
+				placement: 'right',
+				content: itemObject[0].popupContent
+			});
 	 }
 	});
     
@@ -322,8 +318,8 @@ var today = new Date();
 			
 	var startDateFilter = document.getElementById('startDateFilter');
 	var endDateFilter = document.getElementById('endDateFilter');
-	var stratPlanFilter = document.getElementById('filterStratPlans');
-	var projectFilter = document.getElementById('filterProjects');
+	// var stratPlanFilter = document.getElementById('filterStratPlans');
+	// var projectFilter = document.getElementById('filterProjects');
 	var lifecycleLegend = document.getElementById('lifecycleLegend');
     
     //A common filter functon that checks the status of each checkbox and incrementally applies  filters
@@ -379,8 +375,8 @@ var today = new Date();
   
 		startDateFilter.onchange = filterFunction;
 		endDateFilter.onchange = filterFunction;
-		stratPlanFilter.onchange = filterFunction;
-		projectFilter.onchange = filterFunction;
+		//stratPlanFilter.onchange = filterFunction;
+		//projectFilter.onchange = filterFunction;
 		
 		$(window).bind("pageshow", filterFunction);
 	

@@ -208,9 +208,12 @@
 			_.each(classes, function(c) { graph.addCell(c); });
 			
 			var relations = [
-				<xsl:apply-templates mode="RenderObjectAssociations" select="$dataAttributesForSubject union $objectDataAttributes"/><xsl:if test="count($childDataObjects) > 0">,</xsl:if>
-				<xsl:apply-templates mode="RenderObjectGeneralisations" select="$childDataObjects"/><xsl:if test="(count($childDataObjects) > 0) or (count($parentDataObjects) > 0)">,</xsl:if>
-				<xsl:apply-templates mode="RenderObjectSpecialisations" select="$parentDataObjects"/>   
+               
+				<xsl:apply-templates mode="RenderObjectAssociations" select="$dataAttributesForSubject union $objectDataAttributes"/>
+            <xsl:if test="$childDataObjects"><xsl:if test="$dataAttributesForSubject union $objectDataAttributes">,</xsl:if></xsl:if>       
+				<xsl:apply-templates mode="RenderObjectGeneralisations" select="$childDataObjects"/>
+              <xsl:if test="$parentDataObjects"><xsl:if test="$childDataObjects or ($dataAttributesForSubject union $objectDataAttributes)">,</xsl:if><xsl:apply-templates mode="RenderObjectSpecialisations" select="$parentDataObjects"/>
+                  </xsl:if>   
 			];
 			
 			_.each(relations, function(r) { graph.addCell(r); });

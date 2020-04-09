@@ -45,7 +45,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Objective', 'Business_Driver', 'Service_Quality', 'Service_Quality_Measure', 'Service_Quality_Value', 'Group_Actor', 'Individual_Actor')"/>
+	<xsl:variable name="linkClasses" select="('Business_Objective', 'Business_Goal','Business_Driver', 'Service_Quality', 'Service_Quality_Measure', 'Service_Quality_Value', 'Group_Actor', 'Individual_Actor')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
@@ -57,6 +57,12 @@
 	<xsl:variable name="allBusinessServiceQualities" select="/node()/simple_instance[type = 'Business_Service_Quality']"/>
 	<xsl:variable name="allBusinessServiceQualityValues" select="/node()/simple_instance[type = 'Business_Service_Quality_Value']"/>
 	<xsl:variable name="allTargetDates" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
+    <xsl:variable name="allsvcToObj" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'bo_performance_measures']/value]"/>
+    <xsl:variable name="allTaxonomyTerm" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
+    <xsl:variable name="allBusGoals" select="/node()/simple_instance[type = 'Business_Goal']"/>
+    <xsl:variable name="tax" select="$allTaxonomyTerm[own_slot_value[slot_reference='name']/value='Strategic Goal']/name"/>
+    <xsl:variable name="boGoals" select="$allBusObjectives[own_slot_value[slot_reference = 'element_classified_by']/value=$tax]"/>
+     <xsl:variable name="allGoals" select="$allBusGoals union $boGoals"/>
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
@@ -124,8 +130,8 @@
 								</div>
 							</div>
 						</div>
-
-
+              
+ 
 						<!--Setup Description Section-->
 					</div>
 					<div class="row">
@@ -216,7 +222,7 @@
 						<xsl:value-of select="eas:i18n('Objective')"/>
 					</th>
 					<th>
-						<xsl:value-of select="eas:i18n('Type')"/>
+						<xsl:value-of select="eas:i18n('Goal Supporting')"/>
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Measures')"/>
@@ -278,11 +284,17 @@
 		<xsl:variable name="busObjIndivActors" select="$allIndividualActors[name = $busObj2GroupActorRels/own_slot_value[slot_reference = 'act_to_obj_actor']/value]"/>
 		<xsl:variable name="busObjGroupActorMeasures" select="$allBusinessServiceQualityValues[name = $busObj2GroupActorRels/own_slot_value[slot_reference = 'act_to_obj_target_value']/value]"/>
 		<xsl:variable name="busObjDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-		<xsl:variable name="busObjMeasures" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+        <xsl:variable name="busObjMeasures" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"></xsl:variable>
 		<xsl:variable name="busObjOrgOwners" select="$allGroupActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjIndividualOwners" select="$allIndividualActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjTargetDate" select="$allTargetDates[name = current()/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
-		<xsl:variable name="aTaxonomy" select="own_slot_value[slot_reference = 'element_classified_by']/value"/>  <tr>
+        <xsl:variable name="busObjTargetDateISO" select="current()/own_slot_value[slot_reference = 'bo_target_date_iso_8601']/value"/>
+		<xsl:variable name="aTaxonomy" select="own_slot_value[slot_reference = 'element_classified_by']/value"/>
+        <xsl:variable name="thisGoal" select="$allGoals[name=current()/own_slot_value[slot_reference='objective_supports_goals']/value]"/>
+        <xsl:variable name="thisObjGoal" select="$allGoals[name=current()/own_slot_value[slot_reference='objective_supports_objective']/value]"/>
+        <xsl:variable name="thisAllGoal" select="$thisGoal union $thisObjGoal"/>
+        <xsl:if test="$allTaxonomyTerm[name=$aTaxonomy]/own_slot_value[slot_reference='name']/value!='Strategic Goal'">
+            <tr>
 			<!-- Print out the name of the Business Objective -->
 			<td>
 				<strong>
@@ -294,24 +306,38 @@
 				</strong>
 			</td>
 			<td>
-				<xsl:for-each select="$aTaxonomy"> 
-						 <xsl:apply-templates select="current()" mode="RenderObjectiveTaxonomyTerm"/> 
-				</xsl:for-each> 
-				<xsl:if test="count($aTaxonomy)=0">-</xsl:if>
+                
+               
+                    <xsl:apply-templates select="$thisAllGoal" mode="parentGoal">
+                        
+                    </xsl:apply-templates>
+			
+				
 			</td>
 			<!-- Print out the list of Service Quality Values (Measures) -->
 			<td>
 				<ul>
-					<xsl:apply-templates select="$busObjMeasures union $busObjGroupActorMeasures" mode="Measure"/>
+                    <xsl:apply-templates select="$busObjMeasures union $busObjGroupActorMeasures" mode="Measure">
+                        <xsl:with-param name="bo" select="current()"/>
+                    </xsl:apply-templates>
 				</ul>
 			</td>
 			<!-- Print out the target date -->
 			<td>
+              
+                <xsl:choose>
+                 <xsl:when test="$busObjTargetDateISO">
+                    <xsl:value-of select="$busObjTargetDateISO"/>
+                 </xsl:when>
+                 <xsl:otherwise>
+                
 				<xsl:if test="count($busObjTargetDate) > 0">
 					<xsl:call-template name="FullFormatDate">
 						<xsl:with-param name="theDate" select="eas:get_end_date_for_essential_time($busObjTargetDate)"/>
 					</xsl:call-template>
 				</xsl:if>
+                 </xsl:otherwise>    
+                </xsl:choose>
 			</td>
 			<!-- Print out the list of Individual and Group Actors that own the Objective -->
 			<td>
@@ -327,10 +353,15 @@
 				</ul>
 			</td>
 		</tr>
+        </xsl:if>    
 	</xsl:template>
 
 	<!-- TEMPLATE TO PRINT OUT THE LIST OF SERVICE QUALITY VALUES FOR AN OBJECTIVE AS A BULLETED LIST ITEM -->
 	<xsl:template match="node()" mode="Measure">
+        <xsl:param name="bo"/>
+        <xsl:variable name="allsvcToObj" select="/node()/simple_instance[name = $bo/own_slot_value[slot_reference = 'bo_performance_measures']/value]"/>
+        <xsl:variable name="serviceQualityVia" select="$allBusinessServiceQualities[name = $allsvcToObj/own_slot_value[slot_reference = 'obj_to_svc_quality_service_quality']/value]"/>
+         <xsl:variable name="thisQualityScore" select="$allBusinessServiceQualityValues[name = $serviceQualityVia/own_slot_value[slot_reference = 'sq_maximum_value']/value]"/>
 		<xsl:variable name="serviceQuality" select="$allBusinessServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
 
 		<li>
@@ -342,11 +373,21 @@
 			</xsl:call-template>
 			<xsl:text> - </xsl:text>-->
 			<!--<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value" />-->
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-			</xsl:call-template>
+            <xsl:choose><xsl:when test="$thisQualityScore">
+                <xsl:call-template name="RenderInstanceLink">
+                    <xsl:with-param name="theSubjectInstance" select="$thisQualityScore"/>
+                    <xsl:with-param name="theXML" select="$reposXML"/>
+                    <xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+                </xsl:call-template>
+            </xsl:when>    
+            <xsl:otherwise>
+                <xsl:call-template name="RenderInstanceLink">
+                    <xsl:with-param name="theSubjectInstance" select="current()"/>
+                    <xsl:with-param name="theXML" select="$reposXML"/>
+                    <xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+                </xsl:call-template>
+            </xsl:otherwise>        
+        </xsl:choose> 
 		</li>
 	</xsl:template>
 
@@ -359,5 +400,12 @@
 			</xsl:call-template>
 		</li>
 	</xsl:template>
+    <xsl:template match="node()" mode="parentGoal">
+     <xsl:call-template name="RenderInstanceLink">
+        <xsl:with-param name="theSubjectInstance" select="current()"/>
+        <xsl:with-param name="theXML" select="$reposXML"/>
+        <xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+    </xsl:call-template><br/>
+    </xsl:template>
 
 </xsl:stylesheet>

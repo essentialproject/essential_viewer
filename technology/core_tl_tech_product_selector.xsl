@@ -2800,7 +2800,7 @@
 		{
 			id: "<xsl:value-of select="translate($this/name, '.', '_')"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"></xsl:with-param></xsl:call-template>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">app-text</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			inScope: false
 		}<xsl:if test="not(position()=last())">,
@@ -2810,7 +2810,7 @@
 	<!-- TECHNOLOGY REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderTechDomains" match="node()">
 		<xsl:variable name="techDomainName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param></xsl:call-template></xsl:variable>
-		<xsl:variable name="techDomainDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="techDomainDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></xsl:variable>
 		<xsl:variable name="techDomainLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -2821,7 +2821,7 @@
 		{
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 			name: "<xsl:value-of select="$techDomainName"/>",
-			description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
+			description: "<xsl:value-of select="$techDomainDescription"/>",
 			link: "<xsl:value-of select="$techDomainLink"/>",
 			childTechCaps: [
 				<xsl:apply-templates select="$childTechCaps" mode="RenderChildTechCaps"/>		
@@ -2833,7 +2833,7 @@
 	
 	<xsl:template match="node()" mode="RenderChildTechCaps">
 		<xsl:variable name="techCapName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param></xsl:call-template></xsl:variable>
-		<xsl:variable name="techCapDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="techCapDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></xsl:variable>
 		<xsl:variable name="techCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -2845,7 +2845,7 @@
 			id: "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
 			name: "<xsl:value-of select="$techCapName"/>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
+			description: "<xsl:value-of select="$techCapDescription"/>",
 			isRelevant: <xsl:choose><xsl:when test="current()/name = $allRelevantTechCaps/name">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -2858,7 +2858,7 @@
 		{
 			id: '<xsl:value-of select="translate($thisTechSvcQual/name, '.', '_')"/>',
 			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisTechSvcQual"></xsl:with-param></xsl:call-template>',
-			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechSvcQual"/></xsl:call-template>',
+			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechSvcQual"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			weighting: 1
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -2883,7 +2883,7 @@
 		{
 			id: '<xsl:value-of select="translate($thisTechComposite/name, '.', '_')"/>',
 			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisTechComposite"></xsl:with-param></xsl:call-template>',
-			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechComposite"/></xsl:call-template>',
+			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechComposite"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			link: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisTechComposite"/></xsl:call-template>',
 			techCapabilities: [<xsl:apply-templates mode="RenderInstanceIdJSONList" select="$thisTechCaps"/>],
 			techServiceQualityVals: [<xsl:apply-templates mode="RenderTechSvcQualsForTechArchJSON" select="$thisServiceQualityVals"><xsl:sort select="own_slot_value[slot_reference = 'usage_of_service_quality']/value"/></xsl:apply-templates>],
@@ -2961,8 +2961,8 @@
 		{
 			id: '<xsl:value-of select="translate($currentTechComponent/name, '.', '_')"/>',
 			ref: 'techComp<xsl:value-of select="index-of($allTechComponents, $currentTechComponent)"/>',
-			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$currentTechComponent"></xsl:with-param></xsl:call-template>',
-			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$currentTechComponent"/></xsl:call-template>',
+			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$currentTechComponent"/></xsl:call-template>',
+			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$currentTechComponent"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			link: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$currentTechComponent"/></xsl:call-template>',
 			techProducts: [<xsl:apply-templates mode="RenderTechProductForTechCompJSON" select="$thisTechProdRoles"><xsl:with-param name="thisTechComp" select="$currentTechComponent"/></xsl:apply-templates>]
 		}<xsl:if test="not(position() = last())">,
@@ -3020,12 +3020,12 @@
 			techProdId: '<xsl:value-of select="translate($thisTechProduct/name, '.', '_')"/>',
 			techProdName: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisTechProduct"/></xsl:call-template>',
 			techProdLink: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisTechProduct"/><xsl:with-param name="anchorClass" select="'text-white'"/></xsl:call-template>',
-			techProdDesc: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechProduct"/></xsl:call-template>',
+			techProdDesc: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechProduct"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			techProdSupplierLink: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisTechProdSupplier"/></xsl:call-template>',
 			techCompId: '<xsl:value-of select="translate($thisTechComp/name, '.', '_')"/>',
 			techCompRef: 'techComp<xsl:value-of select="index-of($allTechComponents, $thisTechComp)"/>',
 			techCompLink: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisTechComp"/></xsl:call-template>',
-			techCompDesc: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechComp"/></xsl:call-template>',
+			techCompDesc: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisTechComp"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			complianceStyle: '<xsl:value-of select="$complianceStyle"/>',
 			complianceColour: '<xsl:value-of select="$complianceColour"/>',
 			complianceLevel: '<button><xsl:attribute name="class">btn btn-block <xsl:value-of select="$complianceStyle"/></xsl:attribute><xsl:value-of select="$complianceLabel"/></button>'
@@ -3041,7 +3041,7 @@
 		{
 			id: '<xsl:value-of select="translate($currentTechProduct/name, '.', '_')"/>',
 			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$currentTechProduct"></xsl:with-param></xsl:call-template>',
-			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$currentTechProduct"/></xsl:call-template>',
+			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$currentTechProduct"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>',
 			link: '<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$currentTechProduct"/></xsl:call-template>'
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -3053,10 +3053,17 @@
 	<xsl:template mode="RenderComplianceLevelJSON" match="node()">
 		<xsl:variable name="currentComplianceLevel" select="current()"/>
 		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="$currentComplianceLevel"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
 		{
 			id: '<xsl:value-of select="translate($currentComplianceLevel/name, '.', '_')"/>',
 			name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$currentComplianceLevel"></xsl:with-param></xsl:call-template>',
-			description: '<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$currentComplianceLevel"/></xsl:call-template>',
+			description: '<xsl:value-of select="$thisDesc"/>',
 			style: '',
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -3066,6 +3073,13 @@
 	
 	<xsl:template match="node()" mode="getApplications">
 		<xsl:variable name="this" select="current()"/>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
 		
 		{
 			id: "<xsl:value-of select="translate($this/name, '.', '_')"/>",

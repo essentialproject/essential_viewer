@@ -21,8 +21,17 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	
-	
+	 <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BCM List']"/>
+    <xsl:variable name="anAPIReportARM" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Capability Model']"/>
+    <xsl:variable name="anAPIReportTRM" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Capability Model API']"/>
+    <xsl:variable name="anAPIReportAppStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Application Stakeholders API']"/>
+    <xsl:variable name="anAPIReportTechStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Stakeholders API']"/>
+    <xsl:variable name="anAPIReportAllApps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application List']"/>
+    <xsl:variable name="anAPIReportAllTechProducts" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Product List API']"/>
+    <xsl:variable name="anAPIReportAllAppCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Application Capability L1 API']"/>
+    <xsl:variable name="anAPIReportAllTechCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Capability L1 API']"/>
+    
+    
 	<!-- END GENERIC LINK VARIABLES -->
    
 	<xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = ('Application User', 'Application Organisation User'))]"/>
@@ -44,25 +53,25 @@
     
     
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>
-	<xsl:variable name="allAppCodebases" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
-	<xsl:variable name="allAppDeliveryModels" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
-	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>
+	<xsl:variable name="allAppCodebases" select="/node()/simple_instance[type = 'Codebase_Status']"/>
+	<xsl:variable name="allAppDeliveryModels" select="/node()/simple_instance[type = 'Application_Delivery_Model']"/>
+	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/>
 	
 	<xsl:variable name="allAppCaps" select="/node()/simple_instance[type = 'Application_Capability']"/>
 	
 	<xsl:variable name="allAppServices" select="/node()/simple_instance[type = 'Application_Service']"/>
-	<xsl:variable name="L0AppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $refLayers/name]"/>
+    <xsl:variable name="L0AppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $refLayers/name]"/>
 	<xsl:variable name="L1AppCaps" select="$allAppCaps[name = $L0AppCaps/own_slot_value[slot_reference = 'contained_app_capabilities']/value]"/>
-	
+		
 	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
-	
+
 	<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>
 	
-	<!--<xsl:variable name="techProdDeliveryTaxonomy" select="/node()/simple_instance[(type='Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Technology Product Delivery Types')]"/>-->
-	<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[name = $allTechProds/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
+ <xsl:variable name="techProdDeliveryTaxonomy" select="/node()/simple_instance[(type='Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Technology Product Delivery Types')]"/>
+	<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type = 'Technology_Delivery_Model']"/>
 	
 	<!-- Get default geographic map -->
 	<xsl:variable name="geoMapReportConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Default Geographic Map')]"/>
@@ -92,17 +101,16 @@
 	<xsl:variable name="allBusinessUnitCountries" select="$allBusinessUnitLocationCountries union $allBusinessUnitOfficeCountries"/>
 	
 	
-	<xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>
 	<xsl:variable name="allBusCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="busCapReportConstant" select="/node()/simple_instance[type = 'Report_Constant' and own_slot_value[slot_reference = 'name']/value = 'Root Business Capability']"/>
 	<xsl:variable name="rootBusCap" select="$allBusCaps[name = $busCapReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
 	<xsl:variable name="L0BusCaps" select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	<xsl:variable name="L1BusCaps" select="$allBusCaps[name = $L0BusCaps/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	
-	<!-- ROADMAP VARIABLES -->
+	<!-- ROADMAP VARIABLES 	-->
 	<xsl:variable name="allRoadmapInstances" select="$allApps union $allTechProds"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
+	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/> 
     <!-- END ROADMAP VARIABLES -->
     
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Capability', 'Application_Service', 'Application_Provider', 'Technology_Capability', 'Technology_Component'), $rmLinkTypes"/>
@@ -136,6 +144,54 @@
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
+         <xsl:variable name="apiPath">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReport"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathAPM">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportARM"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathTRM">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportTRM"/>
+            </xsl:call-template>
+        </xsl:variable>
+         <xsl:variable name="apiPathAppStakeholders">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportAppStakeholders"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathTechStakeholders">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportTechStakeholders"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathAllApps">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportAllApps"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathAllTechProds">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportAllTechProducts"/>
+            </xsl:call-template>
+        </xsl:variable>        
+         <xsl:variable name="apiPathAllAppCaps">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportAllAppCaps"/>
+            </xsl:call-template>
+        </xsl:variable>
+              <xsl:variable name="apiPathAllTechCaps">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportAllTechCaps"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        
+
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
@@ -148,7 +204,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>IT Asset Dashboard</title>
-				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
+				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
@@ -281,16 +337,34 @@
 								</h1>
 							</div>
 						</div>
-						
+					<xsl:call-template name="RenderDashboardBusUnitFilter"/>
+						<xsl:call-template name="scopeMap"/>
+						<!--<xsl:call-template name="investmentProfilePie"/>-->
+						<xsl:call-template name="busSection"/>
+						<xsl:call-template name="appSection"/>
+						<xsl:call-template name="techSection"/>	
 						<script type="text/javascript">
-							
-							var appCodebasePie, appDeliveryModelPie, techProdStatusPie, techProdDeliveryPie, bcmDetailTemplate, appDetailTemplate, techDetailTemplate, ragOverlayLegend, noOverlayBCMLegend, noOverlayARMLegend, noOverlayTRMLegend;
+				        <xsl:call-template name="RenderViewerAPIJSFunction">
+                            <xsl:with-param name="viewerAPIPath" select="$apiPath"/>
+                            <xsl:with-param name="viewerAPIPathAPM" select="$apiPathAPM"/>
+                            <xsl:with-param name="viewerAPIPathTRM" select="$apiPathTRM"/>
+                            <xsl:with-param name="viewerAPIPathAppStakeholders" select="$apiPathAppStakeholders"/>
+                            <xsl:with-param name="viewerAPIPathTechStakeholders" select="$apiPathTechStakeholders"/>
+                            <xsl:with-param name="viewerAPIPathAllApps" select="$apiPathAllApps"/>
+                            <xsl:with-param name="viewerAPIPathAllTechProds" select="$apiPathAllTechProds"/>
+                            <xsl:with-param name="viewerAPIPathAllAppCaps" select="$apiPathAllAppCaps"/>
+                            <xsl:with-param name="viewerAPIPathAllTechCaps" select="$apiPathAllTechCaps"/>
+                            
+                        </xsl:call-template>
+                      
+							var appCodebasePie, appDeliveryModelPie, techProdStatusPie, techProdDeliveryPie, bcmDetailTemplate, appDetailTemplate, techDetailTemplate, ragOverlayLegend, noOverlayBCMLegend, noOverlayARMLegend, noOverlayTRMLegend, stakeH, stakeHT,appCapDetails;
 							var defaultPieColour = 'white';
                             
+                        <!--
                             var appStakeholders =[<xsl:apply-templates select="$allApps" mode="RenderAppStakeholderJSONList"/>];
-                            
+                        
 							var techStakeholders =[<xsl:apply-templates select="$allTechProds" mode="RenderAppStakeholderJSONList"/>];
-                            
+                            -->
 							// the list of JSON objects representing the code base types for applications
 						  	var appCodebases = [<xsl:apply-templates select="$allAppCodebases" mode="RenderEnumerationJSONList"/>];
 							
@@ -307,150 +381,385 @@
 							
 							// the list of JSON objects representing the business units pf the enterprise
 						  	var businessUnits = {
-									businessUnits: [<xsl:apply-templates select="$allBusinessUnits" mode="getBusinessUnits"/>
+                            businessUnits: [<xsl:apply-templates select="$allBusinessUnits" mode="getBusinessUnits"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"></xsl:sort></xsl:apply-templates>
 						    	]
 						  	};
-                            
+                   
                             var tprsToTechProducts = [
                                 <xsl:apply-templates select="$allTechProdRoles" mode="RenderTPRJSONList"/>
                             ];
                             
-                            
-                     
-                            
-                            var stakeH = appStakeholders; 
-                            var stakeHT = techStakeholders;   
-                            console.log('businessUnits.businessUnits.length');
-                            for(var i=0; i &lt; businessUnits.businessUnits.length;i++) {
-                            var appList=[];
-                            var techList=[];
-                                 for(var j=0; j &lt; businessUnits.businessUnits[i].apps2.length;j++) {
-                                    
-                                    var focus = businessUnits.businessUnits[i].apps2[j];
-                                    
-                                var thisapp = stakeH.filter(function(d){
-                                       
-                                         var thisapp = d.stakeholders.filter(function(e){
-                                                if(e === focus){  appList.push(d.id)}
-                                        })
-                                    })
-                              }
-                            
-                            for(var j=0; j &lt; businessUnits.businessUnits[i].techProds2.length;j++) {
-                                    
-                                var focusT = businessUnits.businessUnits[i].techProds2[j];
-                                   
-                                var thistech = stakeHT.filter(function(d){
-                                         var thistech = d.stakeholders.filter(function(e){
-                                                if(e === focusT){  techList.push(d.id)}
-                                        })
-                                    }) 
-                              }
-    
-                            let uniqueT = [...new Set(techList)];      
-                            businessUnits.businessUnits[i]['techProds3']=uniqueT;
- 
-                            let unique = [...new Set(appList)];      
-                            businessUnits.businessUnits[i]['apps']=unique;
-                        
-                            } 
-                                                    
-			
-                            
-                            
-                            
-                            
+                          
 						  	// the list of JSON objects representing the applications in use across the enterprise
+                     
 						  	var applications = {
 								applications: [<xsl:apply-templates select="$allApps" mode="getApplications"/>
 						    	]
 						  	};
-
+                    
 						  	// the list of JSON objects representing the technology products in use across the enterprise
 						  	var techProducts = {
 								techProducts: [     <xsl:apply-templates select="$allTechProds" mode="getTechProducts"/>
 						    	]
 						  	};
-						  	
-						  	// the JSON objects for the Business Capability Model (BCM)
-						  	var bcmData = <xsl:call-template name="RenderBCMData"/>;
-							
-							// the JSON objects for the Application Reference Model (ARM)
-						  	var armData = {
-						  		left: [
-                                <xsl:choose>
-                                    <xsl:when test="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name])&gt;0">
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderAppCaps"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayerOld/name]" mode="RenderAppCaps"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-						  			
-						  		],
-						  		middle: [
-                                    <xsl:choose>
-                                    <xsl:when test="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name])&gt;0">
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderAppCaps"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayerOld/name]" mode="RenderAppCaps"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-						  		],
-						  		right: [
-                                    <xsl:choose>
-                                    <xsl:when test="count($allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name])&gt;0">
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderAppCaps"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:apply-templates select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayerOld/name]" mode="RenderAppCaps"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-						  		],
-						  	
-						  	};
-							
-							// the JSON objects for the Technology Reference Model (TRM)
-						  	var trmData = {
-						  		top: [
-						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $topRefLayer/name]" mode="RenderTechDomains"/>
-						  		],
-						  		left: [
-						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]" mode="RenderTechDomains"/>
-						  		],
-						  		middle: [
-						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]" mode="RenderTechDomains"/>
-						  		],
-						  		right: [
-						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]" mode="RenderTechDomains"/>
-						  		],
-						  		bottom: [
-						  			<xsl:apply-templates select="$allTechDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $bottomRefLayer/name]" mode="RenderTechDomains"/>
-						  		]
-						  	};
-						  	
+ 					  	
+						
 						  	
 						  	// the JSON objects for the Application Services and Applications that support Business Capabilities
-						  	var busCapDetails = [
+                       
+					  	var busCapDetails = [
 						  		<xsl:apply-templates select="$L1BusCaps" mode="BusCapDetails"/>
 						  	];
-						  	
+	 						  	
 						  	// the JSON objects for the Application Services and Applications that implement Application Capabilities
+                                
+                       
 						  	var appCapDetails = [
 						  		<xsl:apply-templates select="$L1AppCaps" mode="AppCapDetails"/>
 						  	];
-						  	
-						  	
+                            var techCapDetails = [];
+				 
 							// the JSON objects for the Technology Components and Products that implement Technology Capabilities
 						  	var techCapDetails = [
 						  		<xsl:apply-templates select="$allTechCaps" mode="TechCapDetails"/>
 						  	];
+        	          
+				  	
+						  	<xsl:call-template name="RenderJavascriptUtilityFunctions"/>
+												
+							<xsl:call-template name="RenderJavascriptScopingFunctions"/>
+							
+							<xsl:call-template name="RenderGeographicMapJSFunctions"/>
+								
+							<!-- START PAGE DRAWING FUNCTIONS -->
+							//function to scope the relevant elements in acordance with the current roadmap period
+			function scopeDashboardRoadmapElements() {
+			    if (roadmapEnabled) {
+			        rmSetElementListRoadmapStatus([applications.applications, techProducts.techProducts]);
+			    }
+
+			    setCurrentTechProds();
+			    setCurrentApps();
+
+			    if (roadmapEnabled) {
+			        var appsForRM = rmGetVisibleElements(selectedApps);
+			        selectedApps = appsForRM;
+
+			        var techProdsForRM = rmGetVisibleElements(selectedTechProds);
+			        selectedTechProds = techProdsForRM;
+			    }
+
+			    selectedAppIDs = getObjectListPropertyVals(selectedApps, "id");
+			    selectedTechProdIDs = getObjectListPropertyVals(selectedTechProds, "id");
+			}
+
+
+			//function to draw the relevant dashboard components based on the currently selected Data Objects
+			function redrawView() {
+
+			    //Hide any elements that are out of scope for the selected roadmap period
+			    scopeDashboardRoadmapElements();
+
+			    //Update the Geographic Scope map
+			    setGeographicMap($('#mapScope').vectorMap('get', 'mapObject'), 'country', 'hsla(200, 80%, 60%, 1)');
+
+			    //Update the BCM Model
+			    setBusCapabilityOverlay();
+
+			    //Update the ARM Model
+			    setAppCapabilityOverlay();
+
+			    //Set the Application Codebase pie chart values
+			    setPieChartValues(appCodebasePie, appCodebases, selectedApps, "codebase");
+
+			    //Set the Application Delivery Model pie chart values
+			    setPieChartValues(appDeliveryModelPie, appDeliveryModels, selectedApps, "delivery");
+
+			    //Update the TRM Model
+			    setTechCapabilityOverlay();
+
+			    //Set the Technology Lifecycle Status pie chart values
+			    setPieChartValues(techProdStatusPie, lifecycleStatii, selectedTechProds, "status");
+
+			    //Set the Technology Delivery Model pie chart values
+			    setPieChartValues(techProdDeliveryPie, techDeliveryModels, selectedTechProds, "delivery");
+
+			}
+
+
+			//Function to set values for a pie chart based on properties that contain a specific value
+			function setPieChartValues(pieChart, segments, objectList, propertyName) {
+
+
+			    var pieData = [];
+			    var currentSegment;
+			    var objectsForSegment;
+			    var currentData;
+
+			    for (var i = 0; segments.length > i; i += 1) {
+			        currentData = [];
+			        currentSegment = segments[i];
+			        objectsForSegment = getObjectsMatchingVal(objectList, propertyName, currentSegment.id);
+			        currentData[0] = currentSegment.name + ' [' + objectsForSegment.length + ']';
+			        currentData[1] = objectsForSegment.length;
+			        pieData.push(currentData);
+			        //console.log("Count of " + propertyName + " for " + currentSegment.name + ": " + currentData[1]);
+			    };
+
+			    var unknownObjects = getObjectsMatchingVal(objectList, propertyName, '');
+			    currentData = [];
+			    currentData[0] = 'Unknown [' + unknownObjects.length + ']';
+			    currentData[1] = unknownObjects.length;
+			    pieData.push(currentData);
+
+			    pieChart.series[0].data = pieData;
+			    pieChart.replot();
+
+			}
+
+			//function to get the segment colour in a pie chart
+			function getPieColour(segmentColour) {
+			    if (segmentColour == null) {
+			        return defaultPieColour;
+			    }
+			    if (segmentColour.startsWith('hsl')) {
+			        return defaultPieColour;
+			    }
+			    return segmentColour;
+			}
+
+			function setBusUnit() {
+			    //INITIALISE THE SCOPING DROP DOWN LIST
+			    $('#busUnitList').select2({
+			        placeholder: "All",
+			        allowClear: true
+			    });
+
+			    //INITIALISE THE PAGE WIDE SCOPING VARIABLES					
+			    allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
+			    selectedBusUnitIDs = [];
+			    selectedBusUnits = []; <!--setCurrentApps();
+			    setCurrentTechProds();
+			    -->
+
+
+			    <!--$.fn.select2.defaults.set("placeholder", "All");
+			    $.fn.select2.defaults.set("allowClear", true);
+			    $('#dataObjectList').select2({
+			        placeholder: "All",
+			        allowClear: true
+			    });
+			    -->
+
+			    $('#busUnitList').on('change', function(evt) {
+			        var thisBusUnitIDs = $(this).select2("val");
+			        
+			        if (thisBusUnitIDs != null) {
+			            setCurrentBusUnits(thisBusUnitIDs);
+			        } else {
+			            selectedBusUnitIDs = [];
+			            selectedBusUnits = []; <!--setCurrentApps();
+			            setCurrentTechProds();
+			            -->
+			        }
+			        redrawView();
+			        //console.log("Select BUs: " + selectedBusUnitIDs);
+
+			    });
+
+			    var busUnitSelectFragment = $("#bus-unit-select-template").html();
+			    var busUnitSelectTemplate = Handlebars.compile(busUnitSelectFragment);
+			    $("#busUnitList").html(busUnitSelectTemplate(businessUnits));
+			}
+
+			function setLegend() {
+			    var legendFragment = $("#rag-overlay-legend-template").html();
+			    var legendTemplate = Handlebars.compile(legendFragment);
+			    ragOverlayLegend = legendTemplate();
+
+			    legendFragment = $("#no-overlay-legend-template").html();
+			    legendTemplate = Handlebars.compile(legendFragment);
+			    var legendLabels = {};
+			    legendLabels["inScope"] = 'Has Supporting Applications';
+			    noOverlayBCMLegend = legendTemplate(legendLabels);
+			    legendLabels["inScope"] = 'Applications in Use';
+			    noOverlayARMLegend = legendTemplate(legendLabels);
+			    legendLabels["inScope"] = 'Technology Products in Use';
+			    noOverlayTRMLegend = legendTemplate(legendLabels);
+			}
+
+
+			$(document).ready(function() {
+                setBusUnit();                 
+			    promise_loadViewerAPIData(viewAPIData)
+			        .then(function(response1) {
                             
-                            //loop here
+			            //after the first data set is retrieved, set a global variable and render the view elements from the returned JSON data (e.g. via handlebars templates)
+			            viewAPIData = response1;
+           
+			            var bcmFragment = $("#bcm-template").html();
+			            var bcmTemplate = Handlebars.compile(bcmFragment);
+			            $("#bcm").html(bcmTemplate(viewAPIData.bcm[0]));
+console.log('bcm');   
+			        }).then(function() {
+                             promise_loadViewerAPIData(viewAPIDataAllAppCaps).then(function(response9) {
+                            <!-- *** app caps API -->
+                            appCapDetails2=response9.application_capabilities;
                             
-//                            get tprs for tech comp - separate tech comps??
-                            var tprs = tprsToTechProducts; 
+                                promise_loadViewerAPIData(viewAPIDataAllTechCaps).then(function(response10) {
+                            <!-- *** tech caps API -->
+                                techCapDetails2=response10.technology_capabilities;
+                            })
+                            
+                             
+                            }).then(function() {
+
+			            setGeographicMap($('#mapScope').vectorMap('get', 'mapObject'), 'country', 'hsla(200, 80%, 60%, 1)');
+  console.log('bus overlay');  
+			            setBusCapabilityOverlay();
+			        }).then(function() {
+                            <!-- application and technology fetch if required -->
+			            <!-- promise_loadViewerAPIData(viewAPIDataAllApps).then(function(response7) {
+			                  
+			                 var applications = response7.applications;
+			              
+			                
+			                promise_loadViewerAPIData(viewAPIDataTechProds).then(function(response8) {
+                                var techProducts = response8  
+			                }) 
+
+			            })-->
+
+			           
+			            promise_loadViewerAPIData(viewAPIDataAPM).then(function(response2) {
+			                viewAPIDataAPM = response2;
+			                //DO HTML stuff
+
+			                var armFragment = $("#arm-template").html();
+			                var armTemplate = Handlebars.compile(armFragment);
+			                $("#appRefModelContainer").html(armTemplate(viewAPIDataAPM.arm[0]));
+
+
+			            }).then(function() {
+                            console.log('adf');
+			                var appDetailFragment = $("#arm-appcap-popup-template").html();
+			                appDetailTemplate = Handlebars.compile(appDetailFragment);
+			            }).then(function() {
+
+    console.log('app overlay');
+			                setAppCapabilityOverlay();;
+			            }).then(function() {
+			                $('.match1').matchHeight();
+
+
+			            }).then(function() {
+
+
+			                promise_loadViewerAPIData(viewAPIDataTRM).then(function(response3) {
+			                        viewAPIDataTRM = response3;
+			                        //DO HTML stuff
+
+
+			                        var trmFragment = $("#trm-template").html();
+			                        var trmTemplate = Handlebars.compile(trmFragment);
+
+			                        $("#techRefModelContainer").html(trmTemplate(viewAPIDataTRM.trm[0]));
+
+			                    }).then(function() {
+
+			                        promise_loadViewerAPIData(viewAPIDataAppStakeholders).then(function(response4) {
+
+			                            var appStakeholders = response4;
+
+			                            stakeH = appStakeholders.appStakeholders;
+
+			                            promise_loadViewerAPIData(viewAPIDataTechStakeholders).then(function(response5) {
+			                                var techStakeholders = response5;
+			                                var stakeHT = techStakeholders.techStakeholders;
+			                                
+			                                for (var i = 0; i &lt; businessUnits.businessUnits.length; i++) {
+			                                    var appList = [];
+			                                    var techList = [];
+			                                    for (var j = 0; j &lt; businessUnits.businessUnits[i].apps2.length; j++) {
+
+			                                        var focus = businessUnits.businessUnits[i].apps2[j];
+
+			                                        var thisapp = stakeH.filter(function(d) {
+
+			                                            var thisapp = d.stakeholders.filter(function(e) {
+			                                                if (e === focus) {
+			                                                    appList.push(d.id)
+			                                                }
+			                                            })
+			                                        })
+			                                    }
+
+			                                    for (var j = 0; j &lt; businessUnits.businessUnits[i].techProds2.length; j++) {
+
+			                                        var focusT = businessUnits.businessUnits[i].techProds2[j];
+
+			                                        var thistech = stakeHT.filter(function(d) {
+			                                            var thistech = d.stakeholders.filter(function(e) {
+			                                                if (e === focusT) {
+			                                                    techList.push(d.id)
+			                                                }
+			                                            })
+			                                        })
+			                                    }
+
+			                                    let uniqueT = [...new Set(techList)];
+			                                    businessUnits.businessUnits[i]['techProds'] = uniqueT;
+
+			                                    let unique = [...new Set(appList)];
+			                                    businessUnits.businessUnits[i]['apps'] = unique;
+
+			                                }
+
+			                            });
+
+			                            $('.fa-info-circle').click(function() {
+			                                $('[role="tooltip"]').remove();
+			                                return false;
+			                            });
+			                            $('.fa-info-circle').popover({
+			                                container: 'body',
+			                                html: true,
+			                                sanitize: false,
+			                                trigger: 'click',
+			                                content: function() {
+			                                    return $(this).next().html();
+			                                }
+			                            });
+			                        });
+
+			                        $('.matchHeight2').matchHeight();
+			                        $('.matchHeightTRM').matchHeight();
+
+			                        var techDetailFragment = $("#trm-techcap-popup-template").html();
+			                        techDetailTemplate = Handlebars.compile(techDetailFragment);
+
+			                    }).then(function() {
+			                        
+			                        setTechCapabilityOverlay();
+			                    }).then(function() {
+
+
+			                        redrawView();
+			                    })
+			                    .catch(function(error) {
+			                        //display an error somewhere on the page   
+			                    });
+			            }).catch(function(error) {
+			                //display an error somewhere on the page   
+			            })
+                            
+                            $('h2').click(function() {
+			                $(this).next().slideToggle();
+			            });     
+                                
+                            }).then(function(appCapDetails) {
+                            console.log('appcap');
+                        var tprs = tprsToTechProducts; 
                           
 						   for(var i=0; i &lt; techCapDetails.length;i++) {
                              for(var k=0; k &lt; techCapDetails[i].techComponents.length;k++) {
@@ -468,496 +777,261 @@
                                techCapDetails[i].techComponents[k]['techProds']=uniqueTPR;	
                                }
                             }
-						  	
-						  	
-						  	<xsl:call-template name="RenderJavascriptUtilityFunctions"/>
-												
-							<xsl:call-template name="RenderJavascriptScopingFunctions"/>
-							
-							<xsl:call-template name="RenderGeographicMapJSFunctions"/>
-							
-							
-							
-							<!-- START PAGE DRAWING FUNCTIONS -->
-							//function to scope the relevant elements in acordance with the current roadmap period
-							function scopeDashboardRoadmapElements() {
-								if(roadmapEnabled) {
-									rmSetElementListRoadmapStatus([applications.applications, techProducts.techProducts]);
-								}
-							
-								setCurrentTechProds();
-								setCurrentApps();
-							
-								if(roadmapEnabled) {
-									var appsForRM = rmGetVisibleElements(selectedApps);
-									selectedApps = appsForRM;
-			
-									var techProdsForRM = rmGetVisibleElements(selectedTechProds);
-									selectedTechProds = techProdsForRM;
-								}
-								
-								selectedAppIDs = getObjectListPropertyVals(selectedApps, "id");
-								selectedTechProdIDs = getObjectListPropertyVals(selectedTechProds, "id");
-							}
-							
-							
-							//function to draw the relevant dashboard components based on the currently selected Data Objects
-							function redrawView() {
-							
-								//Hide any elements that are out of scope for the selected roadmap period
-								scopeDashboardRoadmapElements();
-								
-								//Update the Geographic Scope map
-								setGeographicMap($('#mapScope').vectorMap('get', 'mapObject'), 'country', 'hsla(200, 80%, 60%, 1)');
-		
-								//Update the BCM Model
-								setBusCapabilityOverlay();
-								
-								//Update the ARM Model
-								setAppCapabilityOverlay();
-								
-								//Set the Application Codebase pie chart values
-								setPieChartValues(appCodebasePie, appCodebases, selectedApps, "codebase");
-								
-								//Set the Application Delivery Model pie chart values
-								setPieChartValues(appDeliveryModelPie, appDeliveryModels, selectedApps, "delivery");
-								
-								//Update the TRM Model
-								setTechCapabilityOverlay();
-								
-								//Set the Technology Lifecycle Status pie chart values
-								setPieChartValues(techProdStatusPie, lifecycleStatii, selectedTechProds, "status");
-								
-								//Set the Technology Delivery Model pie chart values
-								setPieChartValues(techProdDeliveryPie, techDeliveryModels, selectedTechProds, "delivery");
-		
-							}
-							
-							
-							//Function to set values for a pie chart based on properties that contain a specific value
-							function setPieChartValues(pieChart, segments, objectList, propertyName) {
-								var pieData = [];
-								var currentSegment;
-								var objectsForSegment;
-								var currentData;
-								
-								for (var i = 0; segments.length > i; i += 1) {
-									currentData = [];
-									currentSegment = segments[i];
-									objectsForSegment = getObjectsMatchingVal(objectList, propertyName, currentSegment.id);
-									currentData[0] = currentSegment.name + ' [' + objectsForSegment.length + ']';
-									currentData[1] = objectsForSegment.length;
-									pieData.push(currentData);
-									//console.log("Count of " + propertyName + " for " + currentSegment.name + ": " + currentData[1]);
-								};
-								
-								var unknownObjects = getObjectsMatchingVal(objectList, propertyName, '');
-								currentData = [];
-								currentData[0] = 'Unknown [' + unknownObjects.length + ']';
-								currentData[1] = unknownObjects.length;
-								pieData.push(currentData);
-		
-								pieChart.series[0].data = pieData;
-								pieChart.replot();					
-							}
-							
-							//function to get the segment colour in a pie chart
-							function getPieColour(segmentColour) {
-								if(segmentColour == null) {
-									return defaultPieColour;
-								}
-								if(segmentColour.startsWith('hsl')) {
-									return defaultPieColour;
-								}
-								return segmentColour;
-							}
-							
-							
-							$(document).ready(function(){	
-							
-								$('h2').click(function(){
-									$(this).next().slideToggle();
-								});
-								
-								//INITIALISE THE SCOPING DROP DOWN LIST
-								$('#busUnitList').select2({
-									placeholder: "All",
-									allowClear: true,
-									theme: "bootstrap"
-								});
-								
-								//INITIALISE THE PAGE WIDE SCOPING VARIABLES					
-								allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
-								selectedBusUnitIDs = [];
-								selectedBusUnits = [];
-								<!--setCurrentApps();
-								setCurrentTechProds();-->
-								
-								
-								<!--$.fn.select2.defaults.set("placeholder", "All");
-								$.fn.select2.defaults.set("allowClear", true);
-								$('#dataObjectList').select2({
-									placeholder: "All",
-									allowClear: true
-								});-->
-								
-								$('#busUnitList').on('change', function (evt) {
-								  var thisBusUnitIDs = $(this).select2("val");
-								  console.log("Select BUs: " + selectedBusUnitIDs);
-								  
-								  if(thisBusUnitIDs != null) {
-								  	setCurrentBusUnits(thisBusUnitIDs);
-								  } else {
-								  	selectedBusUnitIDs = [];
-								  	selectedBusUnits = [];
-								  	<!--setCurrentApps();
-								  	setCurrentTechProds();-->
-								  }
-								  redrawView();
-								  //console.log("Select BUs: " + selectedBusUnitIDs);
-							
-								});
-								
-								<!--
-								//Initialise the Codebase Pie Chart
-								var appCodeBaseColours = [];
-								for (var i = 0; codebases.length > i; i += 1) {
-									appCodeBaseColours.push(codebases[i].colour)
-								};
-								
-								var appCodeBaseTempData = [];
-								var appCodeBaseEntry;
-								for (var i = 0; codebases.length > i; i += 1) {
-									appCodeBaseEntry = [];
-									appCodeBaseEntry[0] = codebases[i].name;
-									appCodeBaseEntry[1] = codebases[i].colour;
-									appCodeBaseTempData.push(appCodeBaseEntry);
-								};
-								
-								appCodebasePie = jQuery.jqplot ('pieChart2',[appCodeBaseTempData], {
-									
-									seriesColors: appCodeBaseColours,
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'red'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-								-->
-								
-								var busUnitSelectFragment   = $("#bus-unit-select-template").html();
-								var busUnitSelectTemplate = Handlebars.compile(busUnitSelectFragment);
-								$("#busUnitList").html(busUnitSelectTemplate(businessUnits));
-								
-								
-								<!-- SET UP THE REF MODEL LEGENDS -->
-								var legendFragment = $("#rag-overlay-legend-template").html();
-								var legendTemplate = Handlebars.compile(legendFragment);
-								ragOverlayLegend = legendTemplate();
-								
-								legendFragment = $("#no-overlay-legend-template").html();
-								legendTemplate = Handlebars.compile(legendFragment);
-								var legendLabels = {};
-								legendLabels["inScope"] = 'Has Supporting Applications';
-								noOverlayBCMLegend = legendTemplate(legendLabels);
-								legendLabels["inScope"] = 'Applications in Use';
-								noOverlayARMLegend = legendTemplate(legendLabels);
-								legendLabels["inScope"] = 'Technology Products in Use';
-								noOverlayTRMLegend = legendTemplate(legendLabels);
-								
-								
-								<!-- SET UP THE BCM MODEL -->
-								//initialise the BCM model
-								var bcmFragment   = $("#bcm-template").html();
-								var bcmTemplate = Handlebars.compile(bcmFragment);
-								$("#bcm").html(bcmTemplate(bcmData));
-								
-								var bcmDetailFragment = $("#bcm-buscap-popup-template").html();
-								bcmDetailTemplate = Handlebars.compile(bcmDetailFragment);
-								
-								<!-- SET UP THE ARM MODEL -->
-								//Initialise the App Codebase Pie Chart
-								var codebaseColours = [];
-								for (var i = 0; appCodebases.length > i; i += 1) {
-									codebaseColours.push(appCodebases[i].colour)
-								};
-								codebaseColours.push('lightgray');
-								
-								var codebaseTempData = [];
-								var codebaseEntry;
-								for (var i = 0; appCodebases.length > i; i += 1) {
-									codebaseEntry = [];
-									codebaseEntry[0] = appCodebases[i].name;
-									codebaseEntry[1] = getPieColour(appCodebases[i].colour);
-									codebaseTempData.push(codebaseEntry);
-								};
-								codebaseTempData.push(['Unknown', 'lightgray']);
-		
-								
-								appCodebasePie = jQuery.jqplot ('appCodebasePieChart',[codebaseTempData], {
-									
-									seriesColors: codebaseColours,
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'red'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-								
-								
-								//Initialise the App Delivery Model Pie Chart
-								var appDeliveryColours = [];
-								for (var i = 0; appDeliveryModels.length > i; i += 1) {
-									appDeliveryColours.push(appDeliveryModels[i].colour)
-								};
-								appDeliveryColours.push('lightgray');
-								
-								var appDeliveryTempData = [];
-								var appDeliveryEntry;
-								for (var i = 0; appDeliveryModels.length > i; i += 1) {
-									appDeliveryEntry = [];
-									appDeliveryEntry[0] = appDeliveryModels[i].name;
-									appDeliveryEntry[1] = getPieColour(appDeliveryModels[i].colour);
-									appDeliveryTempData.push(appDeliveryEntry);
-								};
-								appDeliveryTempData.push(['Unknown', 'lightgray']);
-		
-								
-								appDeliveryModelPie = jQuery.jqplot ('appDeliveryModelPieChart',[appDeliveryTempData], {
-									
-									seriesColors: appDeliveryColours,
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'red'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-							
-							
-								//initialise the ARM model
-								var armFragment   = $("#arm-template").html();
-								var armTemplate = Handlebars.compile(armFragment);
-								$("#appRefModelContainer").html(armTemplate(armData));
-								
-								var appDetailFragment = $("#arm-appcap-popup-template").html();
-								appDetailTemplate = Handlebars.compile(appDetailFragment);
-								
-								
-								
-								
-								<!-- SET UP THE TRM MODEL -->
-								//Initialise the Tech Product Lifecycle Status Pie Chart
-								var lifecycleColours = [];
-								for (var i = 0; lifecycleStatii.length > i; i += 1) {
-                                    if(lifecycleStatii[i].colour){
-									lifecycleColours.push(lifecycleStatii[i].colour)
-                                    }
-                                    else{
-                                     lifecycleColours.push('#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6))
-                                    }
-								};
-								lifecycleColours.push('lightgray');
-								
-								var statusTempData = [];
-								var statusEntry;
-								for (var i = 0; lifecycleStatii.length > i; i += 1) {
-									statusEntry = [];
-									statusEntry[0] = lifecycleStatii[i].name;
+   console.log('tprs');      
+                            
+			            var bcmDetailFragment = $("#bcm-buscap-popup-template").html();
+			            bcmDetailTemplate = Handlebars.compile(bcmDetailFragment);
 
-                                if(lifecycleStatii[i].colour!=''){
-                          
-									statusEntry[1] = getPieColour(lifecycleStatii[i].colour);}
-                                else{
-                         
-                                   statusEntry[1] = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
-                              console.log( statusEntry[1])
-                                    }
-									statusTempData.push(statusEntry);
-								};
-								statusTempData.push(['Unknown', 'lightgray']);
-								
-								//console.log('Status Colours: ' + statusTempData);
-								 
-								techProdStatusPie = jQuery.jqplot ('techProdStatusPieChart',[statusTempData], {
-									
-									seriesColors: lifecycleColours,
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'red'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-								
-								
-								//Initialise the Tech Product Delivery Model Pie Chart
-								var techDeliveryColours = [];
-								for (var i = 0; techDeliveryModels.length > i; i += 1) {
-                                    if(techDeliveryModels[i].colour!='#fff'){
-                             console.log(techDeliveryModels[i].colour)
-									techDeliveryColours.push(techDeliveryModels[i].colour)
-                                        }
-                                    else{
- 
-                                    techDeliveryColours.push('#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6));
-                                    }
-                             console.log(techDeliveryColours);
-								};
-								techDeliveryColours.push('lightgray');
-								
-								var techDeliveryTempData = [];
-								var techDeliveryEntry;
-								for (var i = 0; techDeliveryModels.length > i; i += 1) {
-									techDeliveryEntry = [];
-									techDeliveryEntry[0] = techDeliveryModels[i].name;
-									techDeliveryEntry[1] = getPieColour(techDeliveryModels[i].colour);
-									techDeliveryTempData.push(techDeliveryEntry);
-								};
-								techDeliveryTempData.push(['Unknown', 'lightgray']);
-								
-								//console.log('Delivery Colours: ' + statusTempData);
-								
-								techProdDeliveryPie = jQuery.jqplot ('techProdDeliveryPieChart',[techDeliveryTempData], {
-									
-									seriesColors: techDeliveryColours,
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'red'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-								
-								
-								//initialise the TRM model
-								var trmFragment   = $("#trm-template").html();
-								var trmTemplate = Handlebars.compile(trmFragment);
-								$("#techRefModelContainer").html(trmTemplate(trmData));
-								$('.matchHeight2').matchHeight();
-					 			$('.matchHeightTRM').matchHeight();
-					 			
-					 			var techDetailFragment = $("#trm-techcap-popup-template").html();
-								techDetailTemplate = Handlebars.compile(techDetailFragment);
-								
-								redrawView();
-							});
+			        })
+			        ;
+
+			        });
+
+			    $('.fa-info-circle').click(function() {
+			        $('[role="tooltip"]').remove();
+			        return false;
+			    });
+			    $('.fa-info-circle').popover({
+			        container: 'body',
+			        html: true,
+			        sanitize: false,
+			        trigger: 'click',
+			        content: function() {
+			            return $(this).next().html();
+			        }
+			    });
+
+			    <!--SET UP THE TRM MODEL-->
+			    //Initialise the Tech Product Lifecycle Status Pie Chart
+			    var lifecycleColours = [];
+			    for (var i = 0; lifecycleStatii.length > i; i += 1) {
+			        if (lifecycleStatii[i].colour) {
+			            lifecycleColours.push(lifecycleStatii[i].colour)
+			        } else {
+			            lifecycleColours.push('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
+			        }
+			    };
+			    lifecycleColours.push('lightgray');
+
+			    var statusTempData = [];
+			    var statusEntry;
+			    for (var i = 0; lifecycleStatii.length > i; i += 1) {
+			        statusEntry = [];
+			        statusEntry[0] = lifecycleStatii[i].name;
+
+			        if (lifecycleStatii[i].colour != '') {
+
+			            statusEntry[1] = getPieColour(lifecycleStatii[i].colour);
+			        } else {
+
+			            statusEntry[1] = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
+
+			        }
+			        statusTempData.push(statusEntry);
+			    };
+			    statusTempData.push(['Unknown', 'lightgray']);
+
+			    //console.log('Status Colours: ' + statusTempData);
+
+			    techProdStatusPie = jQuery.jqplot('techProdStatusPieChart', [statusTempData], {
+
+			        seriesColors: lifecycleColours,
+			        legend: {
+			            renderer: jQuery.jqplot.EnhancedLegendRenderer,
+			            show: true,
+			            location: 'e',
+			            rendererOptions: {
+			                fontSize: "0.65em",
+			                textColor: 'red'
+			            }
+			        },
+			        grid: {
+			            drawGridLines: false,
+			            shadow: false,
+			            background: 'transparent',
+			            borderColor: '#999999',
+			            borderWidth: 0
+			        },
+			        seriesDefaults: {
+			            // Make this a pie chart.
+			            renderer: jQuery.jqplot.PieRenderer,
+			            rendererOptions: {
+			                // Put data labels on the pie slices.
+			                // By default, labels show the percentage of the slice.
+			                showDataLabels: true,
+			                padding: 5,
+			                dataLabels: 'percent'
+			            }
+			        }
+			    });
+
+
+			    //Initialise the Tech Product Delivery Model Pie Chart
+			    var techDeliveryColours = [];
+			    for (var i = 0; techDeliveryModels.length > i; i += 1) {
+			        if (techDeliveryModels[i].colour != '#fff') {
+
+			            techDeliveryColours.push(techDeliveryModels[i].colour)
+			        } else {
+
+			            techDeliveryColours.push('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6));
+			        }
+
+			    };
+			    techDeliveryColours.push('lightgray');
+
+			    var techDeliveryTempData = [];
+			    var techDeliveryEntry;
+			    for (var i = 0; techDeliveryModels.length > i; i += 1) {
+			        techDeliveryEntry = [];
+			        techDeliveryEntry[0] = techDeliveryModels[i].name;
+			        techDeliveryEntry[1] = getPieColour(techDeliveryModels[i].colour);
+			        techDeliveryTempData.push(techDeliveryEntry);
+			    };
+			    techDeliveryTempData.push(['Unknown', 'lightgray']);
+
+			    //console.log('Delivery Colours: ' + statusTempData);
+
+			    techProdDeliveryPie = jQuery.jqplot('techProdDeliveryPieChart', [techDeliveryTempData], {
+
+			        seriesColors: techDeliveryColours,
+			        legend: {
+			            renderer: jQuery.jqplot.EnhancedLegendRenderer,
+			            show: true,
+			            location: 'e',
+			            rendererOptions: {
+			                fontSize: "0.65em",
+			                textColor: 'red'
+			            }
+			        },
+			        grid: {
+			            drawGridLines: false,
+			            shadow: false,
+			            background: 'transparent',
+			            borderColor: '#999999',
+			            borderWidth: 0
+			        },
+			        seriesDefaults: {
+			            // Make this a pie chart.
+			            renderer: jQuery.jqplot.PieRenderer,
+			            rendererOptions: {
+			                // Put data labels on the pie slices.
+			                // By default, labels show the percentage of the slice.
+			                showDataLabels: true,
+			                padding: 5,
+			                dataLabels: 'percent'
+			            }
+			        }
+			    });
+
+			    //initialise the TRM model
+
+			    setLegend();
+			    var codebaseColours = [];
+			    for (var i = 0; appCodebases.length > i; i += 1) {
+			        codebaseColours.push(appCodebases[i].colour)
+			    };
+			    codebaseColours.push('lightgray');
+
+			    var codebaseTempData = [];
+			    var codebaseEntry;
+			    for (var i = 0; appCodebases.length > i; i += 1) {
+			        codebaseEntry = [];
+			        codebaseEntry[0] = appCodebases[i].name;
+			        codebaseEntry[1] = getPieColour(appCodebases[i].colour);
+			        codebaseTempData.push(codebaseEntry);
+			    };
+			    codebaseTempData.push(['Unknown', 'lightgray']);
+
+
+			    appCodebasePie = jQuery.jqplot('appCodebasePieChart', [codebaseTempData], {
+
+			        seriesColors: codebaseColours,
+			        legend: {
+			            renderer: jQuery.jqplot.EnhancedLegendRenderer,
+			            show: true,
+			            location: 'e',
+			            rendererOptions: {
+			                fontSize: "0.65em",
+			                textColor: 'red'
+			            }
+			        },
+			        grid: {
+			            drawGridLines: false,
+			            shadow: false,
+			            background: 'transparent',
+			            borderColor: '#999999',
+			            borderWidth: 0
+			        },
+			        seriesDefaults: {
+			            // Make this a pie chart.
+			            renderer: jQuery.jqplot.PieRenderer,
+			            rendererOptions: {
+			                // Put data labels on the pie slices.
+			                // By default, labels show the percentage of the slice.
+			                showDataLabels: true,
+			                padding: 5,
+			                dataLabels: 'percent'
+			            }
+			        }
+			    });
+
+			    var appDeliveryColours = [];
+			    for (var i = 0; appDeliveryModels.length > i; i += 1) {
+			        appDeliveryColours.push(appDeliveryModels[i].colour)
+			    };
+			    appDeliveryColours.push('lightgray');
+
+			    var appDeliveryTempData = [];
+			    var appDeliveryEntry;
+			    for (var i = 0; appDeliveryModels.length > i; i += 1) {
+			        appDeliveryEntry = [];
+			        appDeliveryEntry[0] = appDeliveryModels[i].name;
+			        appDeliveryEntry[1] = getPieColour(appDeliveryModels[i].colour);
+			        appDeliveryTempData.push(appDeliveryEntry);
+			    };
+			    appDeliveryTempData.push(['Unknown', 'lightgray']);
+
+
+			    appDeliveryModelPie = jQuery.jqplot('appDeliveryModelPieChart', [appDeliveryTempData], {
+
+			        seriesColors: appDeliveryColours,
+			        legend: {
+			            renderer: jQuery.jqplot.EnhancedLegendRenderer,
+			            show: true,
+			            location: 'e',
+			            rendererOptions: {
+			                fontSize: "0.65em",
+			                textColor: 'red'
+			            }
+			        },
+			        grid: {
+			            drawGridLines: false,
+			            shadow: false,
+			            background: 'transparent',
+			            borderColor: '#999999',
+			            borderWidth: 0
+			        },
+			        seriesDefaults: {
+			            // Make this a pie chart.
+			            renderer: jQuery.jqplot.PieRenderer,
+			            rendererOptions: {
+			                // Put data labels on the pie slices.
+			                // By default, labels show the percentage of the slice.
+			                showDataLabels: true,
+			                padding: 5,
+			                dataLabels: 'percent'
+			            }
+			        }
+			    });
+
+
+			    <!--redrawView();-->
+			});
 										  	
 						</script>
 
-						<xsl:call-template name="RenderDashboardBusUnitFilter"/>
-						<xsl:call-template name="scopeMap"/>
-						<!--<xsl:call-template name="investmentProfilePie"/>-->
-						<xsl:call-template name="busSection"/>
-						<xsl:call-template name="appSection"/>
-						<xsl:call-template name="techSection"/>
+						
 
 						<!--Setup Closing Tags-->
 					</div>
@@ -969,23 +1043,11 @@
 					$(document).ready(function(){
 						$('.match1').matchHeight();
 						
-						$('.fa-info-circle').click(function() {
-							$('[role="tooltip"]').remove();
-							return false;
-						});
-						$('.fa-info-circle').popover({
-							container: 'body',
-							html: true,
-							sanitize: false,
-							trigger: 'click',
-							content: function(){
-								return $(this).next().html();
-							}
-						});
-						redrawView();
+					
 					});
 				</script>
 			</body>
+            
 		</html>
 	</xsl:template>
 
@@ -1026,44 +1088,11 @@
 							<div class="keyTitle">Overlay:</div>
 							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayNone" value="none" checked="checked" onchange="setBusCapabilityOverlay()"/>Application Support</label>
 							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayDup" value="duplication" onchange="setBusCapabilityOverlay()"/>Duplication</label>
-							<!--<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>-->
+						
 						</div>
 					</div>
 					<xsl:call-template name="busCapModelInclude"/>
-					<div class="col-xs-12" id="bcm">
-						<!--<h3><xsl:value-of select="$rootBusCap/own_slot_value[slot_reference = 'name']/value"/> Capabilities</h3>
-						<xsl:for-each select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]">
-							<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
-							<xsl:variable name="subCaps" select="$allBusCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
-							<div class="row">
-								<div class="col-xs-12">
-									<div class="refModel-l0-outer bg-darkblue-40">
-										<div class="refModel-l0-title fontBlack large">
-											<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-										</div>
-										<xsl:for-each select="$subCaps">
-											<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/>
-											<a href="#" class="text-default">
-												<div class="refModel-blob">
-													<div class="refModel-blob-title">
-														<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-													</div>
-													<div class="refModel-blob-info">
-														<i class="fa fa-info-circle text-darkgrey"/>
-														<div class="hiddenDiv">Popover Content Here</div>
-													</div>
-												</div>
-											</a>
-
-										</xsl:for-each>
-										<div class="clearfix"/>
-									</div>
-									<xsl:if test="position() != last()">
-										<div class="clearfix bottom-10"/>
-									</xsl:if>
-								</div>
-							</div>
-						</xsl:for-each>-->
+					   <div class="col-xs-12" id="bcm">
 					</div>
 				</div>
 			</div>
@@ -1116,93 +1145,6 @@
 						</div>
 					</div>
 					<div class="simple-scroller" id="appRefModelContainer">
-						<!--<div class="col-xs-4 col-md-3 col-lg-2" id="refLeftCol">
-							<xsl:for-each select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $leftRefLayer/name]">
-								<xsl:variable name="subAppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'contained_in_application_capability']/value = current()/name]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-aqua-40 matchHeight1">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$subAppCaps">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<div class="col-xs-4 col-md-6 col-lg-8 matchHeight1" id="refCenterCol">
-							<xsl:for-each select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $middleRefLayer/name]">
-								<xsl:variable name="subAppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'contained_in_application_capability']/value = current()/name]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-aqua-40">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$subAppCaps">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-										<xsl:if test="position() != last()">
-											<div class="clearfix bottom-10"/>
-										</xsl:if>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<div class="col-xs-4 col-md-3 col-lg-2" id="refRightCol">
-							<xsl:for-each select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $rightRefLayer/name]">
-								<xsl:variable name="subAppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'contained_in_application_capability']/value = current()/name]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-aqua-40 matchHeight1">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$subAppCaps">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>-->
 					</div>
 				</div>
 			</div>
@@ -1221,45 +1163,6 @@
 				<h2 class="text-secondary">Technology Perspective</h2>
 				<div class="row">
 					<div class="col-xs-6 col-lg-6">
-						<!--<script type="text/javascript">
-							$(document).ready(function () {
-								var data =[['General Release', 701500],['Beta', 6.483E6],['Extended Support', 961297],['Out of Support', 2.2965E6]];
-								var plot1 = jQuery.jqplot ('pieChart3',[data], {
-					
-					
-									seriesColors:["#4196D9","#9B53B3","#EEC62A","#E37F2C","#1FA185"],
-									legend: {
-										renderer: jQuery.jqplot.EnhancedLegendRenderer,
-										show: true,
-										location: 'e',
-										rendererOptions: {
-										   fontSize: "0.65em",
-										   textColor: 'white'
-										 }
-									},
-									grid: {
-										drawGridLines: false,
-										shadow: false,
-										background: 'transparent',
-										borderColor: '#999999',
-										borderWidth: 0
-									},
-									seriesDefaults: {
-										// Make this a pie chart.
-										renderer: jQuery.jqplot.PieRenderer,
-										rendererOptions: {
-											// Put data labels on the pie slices.
-											// By default, labels show the percentage of the slice.
-											showDataLabels: true,
-											padding: 5,
-											dataLabels: 'percent'
-										}
-									}
-								});
-							});
-						</script>-->
-						
-						
 						<h3 class="text-primary">Product Release Status</h3>
 						<div class="pieChartContainer">
 							<div class="pieChart" id="techProdStatusPieChart"/>
@@ -1294,161 +1197,6 @@
 						</div>
 					</div>
 					<div class="simple-scroller" id="techRefModelContainer">
-						<!--<!-\-Top-\->
-						<div class="col-xs-12">
-							<xsl:for-each select="$allTechDomains[position() = 7]">
-								<xsl:variable name="capsForDomain" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-lightblue-40 matchHeight2">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$capsForDomain">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-								<div class="clearfix bottom-10"/>
-							</xsl:for-each>
-						</div>
-						<!-\-Ends-\->
-						<!-\-Left-\->
-						<div class="col-xs-4 col-md-3 col-lg-2">
-							<xsl:for-each select="$allTechDomains[position() = 6]">
-								<xsl:variable name="capsForDomain" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-lightblue-40 matchHeight2">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$capsForDomain">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<!-\-ends-\->
-						<!-\-Center-\->
-						<div class="col-xs-4 col-md-6 col-lg-8 matchHeight2">
-							<xsl:for-each select="$allTechDomains[position() &lt; 6]">
-								<xsl:variable name="capsForDomain" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-lightblue-40">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$capsForDomain">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-										<xsl:if test="position() != last()">
-											<div class="clearfix bottom-10"/>
-										</xsl:if>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<!-\-ends-\->
-						<!-\-Right-\->
-						<div class="col-xs-4 col-md-3 col-lg-2">
-							<xsl:for-each select="$allTechDomains[position() = 8]">
-								<xsl:variable name="capsForDomain" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-lightblue-40 matchHeight2">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$capsForDomain">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<!-\-ends-\->
-						<!-\-Bottom-\->
-						<div class="col-xs-12">
-							<div class="clearfix bottom-10"/>
-							<xsl:for-each select="$allTechDomains[position() = 9]">
-								<xsl:variable name="capsForDomain" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="refModel-l0-outer bg-lightblue-40 matchHeight2">
-											<div class="refModel-l0-title fontBlack large">
-												<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-											</div>
-											<xsl:for-each select="$capsForDomain">
-												<a href="#" class="text-default">
-													<div class="refModel-blob">
-														<div class="refModel-blob-title">
-															<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-														</div>
-														<div class="refModel-blob-info">
-															<i class="fa fa-info-circle text-darkgrey"/>
-															<div class="hiddenDiv">Popover Content Here</div>
-														</div>
-													</div>
-												</a>
-											</xsl:for-each>
-											<div class="clearfix"/>
-										</div>
-									</div>
-								</div>
-							</xsl:for-each>
-						</div>
-						<!-\-Ends-\->-->
 					</div>
 				</div>
 			</div>
@@ -1776,11 +1524,11 @@
 	
 	
 	<xsl:template match="node()" mode="RenderTechComponents">
-		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
-        <xsl:variable name="thisTechProdsIn" select="distinct-values($thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value)"/>
+
 		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-        tprs: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-       <!-- techProds: [<xsl:for-each select="$thisTechProdsIn">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]-->
+
+        tprs: [<xsl:for-each select="own_slot_value[slot_reference = 'realised_by_technology_products']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
+      
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
@@ -1791,5 +1539,112 @@
      <xsl:template match="node()" mode="RenderTPRJSONList">
          { id:"<xsl:value-of select="current()/name"/>", prodId:"<xsl:value-of select="current()/own_slot_value[slot_reference='role_for_technology_provider']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
     </xsl:template>
+  <xsl:template name="GetViewerAPIPath">
+        <xsl:param name="apiReport"/>
+        
+        <xsl:variable name="dataSetPath">
+            <xsl:call-template name="RenderLinkText">
+                <xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <xsl:value-of select="$dataSetPath"/>
 
+        
+    </xsl:template>
+    
+    <!-- This XSL template contains an example of the view-specific stuff -->
+    <xsl:template name="RenderViewerAPIJSFunction">
+        <xsl:param name="viewerAPIPath"/>
+        <xsl:param name="viewerAPIPathAPM"/>
+        <xsl:param name="viewerAPIPathTRM"/>
+        <xsl:param name="viewerAPIPathAppStakeholders"/>
+        <xsl:param name="viewerAPIPathTechStakeholders"/>
+        <xsl:param name="viewerAPIPathAllApps"/>
+        <xsl:param name="viewerAPIPathAllTechProds"/>
+        <xsl:param name="viewerAPIPathAllAppCaps"/>
+        <xsl:param name="viewerAPIPathAllTechCaps"/>
+        
+        //a global variable that holds the data returned by an Viewer API Report
+        var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
+        var viewAPIDataAPM = '<xsl:value-of select="$viewerAPIPathAPM"/>';
+        var viewAPIDataTRM = '<xsl:value-of select="$viewerAPIPathTRM"/>';
+        var viewAPIDataAppStakeholders = '<xsl:value-of select="$viewerAPIPathAppStakeholders"/>';
+        var viewAPIDataTechStakeholders = '<xsl:value-of select="$viewerAPIPathTechStakeholders"/>';
+        var viewAPIDataAllApps = '<xsl:value-of select="$viewerAPIPathAllApps"/>';
+        var viewAPIDataTechProds = '<xsl:value-of select="$viewerAPIPathAllTechProds"/>';
+        var viewAPIDataAllAppCaps =  '<xsl:value-of select="$viewerAPIPathAllAppCaps"/>';
+        var viewAPIDataAllTechCaps =  '<xsl:value-of select="$viewerAPIPathAllTechCaps"/>';
+        
+        //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+        
+        var promise_loadViewerAPIData = function(apiDataSetURL) {
+            return new Promise(function (resolve, reject) {
+                if (apiDataSetURL != null) {
+                    var xmlhttp = new XMLHttpRequest();
+//console.log(apiDataSetURL);    
+                    xmlhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 &amp;&amp; this.status == 200) {
+//console.log(this.responseText);  
+                            var viewerData = JSON.parse(this.responseText);
+                            resolve(viewerData);
+                        }
+                    };
+                    xmlhttp.onerror = function () {
+                        reject(false);
+                    };
+                    xmlhttp.open("GET", apiDataSetURL, true);
+                    xmlhttp.send();
+                } else {
+                    reject(false);
+                }
+            });
+        };
+        
+        
+        
+        
+        $('document').ready(function () {
+        
+      <!--      //OPTON 1: Call the API request function multiple times (once for each required API Report), then render the view based on the returned data
+            Promise.all([
+                promise_loadViewerAPIData(apiUrl1),
+                promise_loadViewerAPIData(apiUrl2)
+            ])
+            .then(function(responses) {
+                //after the data is retrieved, set the global variable for the dataset and render the view elements from the returned JSON data (e.g. via handlebars templates)
+                viewAPIData = responses[0];
+                //render the view elements from the first API Report
+                anotherAPIData = responses[1];
+                //render the view elements from the second API Report
+            })
+            .catch (function (error) {
+                //display an error somewhere on the page   
+            });
+            
+          -->
+        
+           
+            
+    /*    $('#click').click(function(){
+        
+        promise_loadViewerAPIData(viewAPIDataDM)
+            .then(function(response1) {
+                //after the first data set is retrieved, set a global variable and render the view elements from the returned JSON data (e.g. via handlebars templates)
+                viewAPIData2 = response1;
+                 //DO HTML stuff
+              
+
+            })
+            .catch (function (error) {
+                //display an error somewhere on the page   
+            });
+        }
+       
+        ); */
+        
+        
+        });
+        
+    </xsl:template>
 </xsl:stylesheet>

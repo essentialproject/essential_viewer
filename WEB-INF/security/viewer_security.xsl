@@ -11,7 +11,7 @@
     version="2.0">
     
     <!--
-		* Copyright ©2015-2019 Enterprise Architecture Solutions Limited.
+		* Copyright ©2015-2020 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -38,6 +38,7 @@
     <!-- 07.08.2018 JWC Completed detailed testing in OxygenXML -->
     <!-- 18.02.2019 JWC Added capability to secure instances by Class and test Class-level authZ -->
     <!-- 24.06.2019 JWC New functions to test for authZ across set of instances or a set of classes -->
+    <!-- 02.03.2020 JWC Revised query for default classification test -->
     
     <!-- XML document holding the user data = empty node-set by default -->
     <xsl:param name="userData" select="/.."></xsl:param>
@@ -161,10 +162,11 @@
                     <!-- Test the default classification if the view is not classified explicitly -->
                     <xsl:when test="count($defaultClassification) > 0">                
                         <!-- Find the details of the default classification in the security config element -->
-                        <xsl:variable name="defaultClassificationDefs" select="$classConfig//view:defaultClassification/view:readClassification"></xsl:variable>                                        
+                        <xsl:variable name="defaultClassificationTags" select="$classConfig//view:defaultClassification/view:readClassification"></xsl:variable>                        
+                        <xsl:variable name="defaultClassificationGroup" select="$classConfig//view:classificationGroups/view:classification[view:group=$defaultClassificationTags/view:group]"></xsl:variable>                        
                         <xsl:variable name="defaultAuthResult">
                             <xsl:apply-templates mode="testAuthZ" select="$defaultClassification">
-                                <xsl:with-param name="classificationDefs" select="$defaultClassificationDefs"></xsl:with-param>
+                                <xsl:with-param name="classificationDefs" select="$defaultClassificationGroup"></xsl:with-param>
                                 <xsl:with-param name="userGroupClearance" select="$userGroupClearance"></xsl:with-param>
                             </xsl:apply-templates>
                             <!--<xsl:text>AUTHORISED </xsl:text>-->
@@ -237,7 +239,7 @@
     <xsl:function name="eas:isUserAuthZInstances" as="xs:boolean">
         <xsl:param name="theInstanceList"></xsl:param>
         
-        <xsl:variable name="anInstance" select="$theInstanceList[1]"></xsl:variable>
+        <!--<xsl:variable name="anInstance" select="$theInstanceList[1]"></xsl:variable>
         <xsl:choose>
             <xsl:when test="count($theInstanceList) = 0">
                 <xsl:value-of select="true()"/>                
@@ -251,7 +253,9 @@
             <xsl:otherwise>
                 <xsl:value-of select="false()"/>
             </xsl:otherwise>
-        </xsl:choose>
+        </xsl:choose>-->
+        <xsl:variable name="notAuthZResultList" select="$theInstanceList[not(eas:isUserAuthZ(.))]"></xsl:variable>
+        <xsl:value-of select="count($notAuthZResultList) = 0"></xsl:value-of>
     </xsl:function>
     
     <!-- Test that the user is authorized to access any of the specified classes
@@ -259,7 +263,7 @@
     <xsl:function name="eas:isUserAuthZClasses" as="xs:boolean">
         <xsl:param name="theClassList"></xsl:param>
         
-        <xsl:variable name="aClassName" select="$theClassList[1]"></xsl:variable>
+        <!--<xsl:variable name="aClassName" select="$theClassList[1]"></xsl:variable>
         <xsl:variable name="aClass" select="$theClassSet[name=$aClassName]"></xsl:variable>
         
         <xsl:choose>
@@ -275,7 +279,11 @@
             <xsl:otherwise>
                 <xsl:value-of select="false()"></xsl:value-of>
             </xsl:otherwise>
-        </xsl:choose>            
+        </xsl:choose>-->
+        <xsl:variable name="relevantClassSet" select="$theClassSet[name = $theClassList]"/>
+        <xsl:variable name="notAuthZResultList" select="$relevantClassSet[not(eas:isUserAuthZ(.))]"/>
+        <xsl:value-of select="count($notAuthZResultList) = 0"/>
+        
     </xsl:function>
     
 </xsl:stylesheet>

@@ -426,7 +426,7 @@
 							<div class="pull-left">
 								<span class="right-10"><strong>Supplier Filter</strong>:</span>
 								<select id="pickSuppliers" class="select2">
-									<option name="All">All</option>
+									<option name="All">Choose</option>
 									<xsl:apply-templates select="$supplier" mode="supplierOptions">
 										<xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"/>
 									</xsl:apply-templates>

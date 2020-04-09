@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+    <xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -54,7 +55,9 @@
 
 	<xsl:variable name="businessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="businessProcesses" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $businessCaps/name]"/>
-	<xsl:variable name="businessDomains" select="/node()/simple_instance[name = $businessCaps/own_slot_value[slot_reference = 'belongs_to_business_domain']/value]"/>
+	<xsl:variable name="businessDomains" select="/node()/simple_instance[type='Business_Domain']"/>
+	<xsl:variable name="allRoadmapInstances" select="($businessCaps, $businessProcesses)"/>
+	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 
 	<!-- END CATALOGUE SPECIFIC VARIABLES -->
 
@@ -82,10 +85,25 @@
 					<xsl:value-of select="$pageLabel"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
+                <xsl:call-template name="RenderRoadmapJSLibraries">
+					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
+				</xsl:call-template>
+                 <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
+                <xsl:if test="$isRoadmapEnabled">
+					<xsl:call-template name="RenderRoadmapWidgetButton"/>
+				</xsl:if>
+                <div id="ess-roadmap-content-container">
+					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
+					<xsl:call-template name="RenderCommonRoadmapJavscript">
+						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
+						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
+					</xsl:call-template>
+					<div class="clearfix"></div>
+				</div>
 				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, WHERE REQUIRED -->
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -148,6 +166,15 @@
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
+                <script id="process-name" type="text/x-handlebars-template">
+					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
+					<ul>
+                    {{#each this.processes}}
+                        <li>{{{this.link}}}</li>
+                    {{/each}}
+                    </ul>
+				</script>
+				 
 			</body>
 		</html>
 	</xsl:template>
@@ -155,55 +182,194 @@
 	<xsl:template name="Index">
 
 		<script>
-								$(document).ready(function(){
-									// Setup - add a text input to each footer cell
-								    $('#dt_Processes tfoot th').each( function () {
-								        var title = $(this).text();
-								        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
-								    } );
+            var catalogueTable;
+            var busCaps = {
+							'capabilities': [<xsl:apply-templates select="$businessCaps" mode="getBusCaps"/>]
+							  	};
+        
+            var busProcs=[<xsl:apply-templates select="$businessProcesses" mode="getProcesses"/>];
+            var busDoms=[<xsl:apply-templates select="$businessDomains" mode="getBusDomains"/>]
+           
+            busCaps.capabilities.forEach(function(d){
+            var proc=[];
+            var dom=[];
+                     d.processes.forEach(function(e){
+                             busProcs.forEach(function(f){
+                                if(e==f.id){proc.push(f)};
+                            })
+                        })
+                    var dom=busDoms.find(function(e){
+                                return e.id==d.domain;
+                            })
+            if(dom){
+            d['domain']=dom.link;    
+            }else
+            {d['domain']='Not Set'}
+            
+             if(proc){
+            d['processes']=proc;    
+            }else
+            {d['processes']='Not Set'}
+          
+            });
+            var inscopeBusCaps= {
+							'capabilities': [<xsl:apply-templates select="$businessCaps" mode="getBusCaps"/>]
+							  	};
+            inscopeBusCaps.capabilities.forEach(function(d){
+            var proc=[];
+            var dom=[];
+                     d.processes.forEach(function(e){
+                             busProcs.forEach(function(f){
+                                if(e==f.id){proc.push(f)};
+                            })
+                        })
+                    var dom=busDoms.find(function(e){
+                                return e.id==d.domain;
+                            })
+           if(dom){
+            d['domain']=dom.link;    
+            }else
+            {d['domain']='Not Set'}
+            
+             if(proc){
+            d['processes']=proc;    
+            }else
+            {d['processes']='Not Set'}
+            
+            
+            });
+            var processTemplate;
+            
+            
+            $(document).ready(function(){
+                       
+            
+                        // Setup - add a text input to each footer cell
+                        $('#dt_Processes tfoot th').each( function () {
+                            var title = $(this).text();
+                            $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+                        } );
+
+                        catalogueTable = $('#dt_Processes').DataTable({
+                        paging: false,
+                        deferRender:    true,
+                        scrollY:        350,
+                        scrollCollapse: true,
+                        info: true,
+                        sort: true,
+                        responsive: false,
+                        columns: [
+                            { "width": "15%" },
+                            { "width": "15%" },
+                            { "width": "35%" },
+                            { "width": "35%", "type": "html",}
+                          ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copyHtml5', 
+                            'excelHtml5',
+                            'csvHtml5',
+                            'pdfHtml5',
+                            'print'
+                        ]
+                        });
+
+
+                        // Apply the search
+                        catalogueTable.columns().every( function () {
+                            var that = this;
+
+                            $( 'input', this.footer() ).on( 'keyup change', function () {
+                                if ( that.search() !== this.value ) {
+                                    that
+                                        .search( this.value )
+                                        .draw();
+                                }
+                            } );
+                        } );
+
+                        catalogueTable.columns.adjust();
+
+                        $(window).resize( function () {
+                            catalogueTable.columns.adjust();
+                        });
+
+                        <!-- ***OPTIONAL*** Register the table as having roadmap aware contents -->
+                        if(roadmapEnabled) {
+                            registerRoadmapDatatable(catalogueTable);
+                        }
+               setCatalogueTable();
+           
+                    });
+            
+           function redrawView() {
+									//console.log('Redrawing View');
 									
-									var table = $('#dt_Processes').DataTable({
-									scrollY: "350px",
-									scrollCollapse: true,
-									paging: false,
-									info: false,
-									sort: true,
-									responsive: true,
-									columns: [
-									    { "width": "20%" },
-									    { "width": "25%" },
-									    { "width": "30%" },
-									    { "width": "25%" }
-									  ],
-									dom: 'Bfrtip',
-								    buttons: [
-							            'copyHtml5', 
-							            'excelHtml5',
-							            'csvHtml5',
-							            'pdfHtml5', 'print'
-							        ]
-									});
+									<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
+									if(roadmapEnabled) {
+										//update the roadmap status of the caps passed as an array of arrays
+										rmSetElementListRoadmapStatus([busCaps.capabilities]);
+										
+										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
+										//filter caps to those in scope for the roadmap start and end date
+										inscopeBusCaps.capabilities = rmGetVisibleElements(busCaps.capabilities);
+									}
+									       
+									<!-- VIEW SPECIFIC JS CALLS -->
+									//update the catalogue
+									setCatalogueTable();  
+                        }
+            
+           function renderCatalogueTableData() {
+                    var processFragment   = $("#process-name").html();
+				    var processTemplate = Handlebars.compile(processFragment);
+				
+        
+									var dataTableSet = [];
+									var dataTableRow;
+
+									//Note: The list of applications is based on the "inScopeApplications" variable which ony contains apps visible within the current roadmap time frame
+									for (var i = 0; inscopeBusCaps.capabilities.length > i; i += 1) {
+										dataTableRow = [];
+										//get the current App
+										aCap = inscopeBusCaps.capabilities[i];
+										
+										//Apply handlebars template
+										capLinkHTML = processTemplate(inscopeBusCaps.capabilities[i]);
+										<!--
+										//get the current list of app services provided by the app based on the full list of app provider roles
+										appServiceList = getObjectsByIds(appProviderRoles.appProviderRoles, 'id', anApp.services);
+										appServiceListJSON = {
+											appServices: appServiceList
+										}
+										
+										//Apply handlebars template
+										appServiceListHTML = appServiceListTemplate(appServiceListJSON);-->
+						 
+										dataTableRow.push(aCap.domain);
+										dataTableRow.push(aCap.link);
+										dataTableRow.push(aCap.description);<!-- appServiceListHTML -->
+										dataTableRow.push(capLinkHTML);
+										
+										dataTableSet.push(dataTableRow);
+									}
 									
-									
-									// Apply the search
-								    table.columns().every( function () {
-								        var that = this;
-								 
-								        $( 'input', this.footer() ).on( 'keyup change', function () {
-								            if ( that.search() !== this.value ) {
-								                that
-								                    .search( this.value )
-								                    .draw();
-								            }
-								        } );
-								    } );
-								    
-								    table.columns.adjust();
-								    
-								    $(window).resize( function () {
-									    table.columns.adjust();
-									});
-								});
+									return dataTableSet;
+								}
+            
+           
+								
+         
+             function setCatalogueTable() {					
+									var tableData = renderCatalogueTableData();	
+  
+               catalogueTable = $('#dt_Processes').DataTable();;
+									catalogueTable.clear();
+									catalogueTable.rows.add(tableData);
+			    					catalogueTable.draw();
+            
+    
+								}
 							</script>
 
 
@@ -241,54 +407,69 @@
 				</tr>
 			</tfoot>
 			<tbody>
-				<xsl:apply-templates mode="busCapRoe" select="$businessCaps">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:apply-templates>
+				
 			</tbody>
 		</table>
 
 	</xsl:template>
 
-	<xsl:template match="node()" mode="busCapRoe">
-		<xsl:variable name="thisBusCap" select="current()"/>
-		<xsl:variable name="thisBusinessProcesses" select="$businessProcesses[own_slot_value[slot_reference = 'realises_business_capability']/value = $thisBusCap/name]"/>
-		<xsl:variable name="thisBusinessDomain" select="$businessDomains[name = $thisBusCap/own_slot_value[slot_reference = 'belongs_to_business_domain']/value]"/>
-		<tr>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$thisBusinessDomain"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-					<xsl:with-param name="targetMenu" select="$targetMenu"/>
-					<xsl:with-param name="targetReport" select="$targetReport"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<ul>
-					<xsl:for-each select="$thisBusinessProcesses">
-						<li>
-							<xsl:call-template name="RenderInstanceLink">
-								<xsl:with-param name="theSubjectInstance" select="current()"/>
-								<xsl:with-param name="theXML" select="$reposXML"/>
-							</xsl:call-template>
-						</li>
-					</xsl:for-each>
-				</ul>
-			</td>
-		</tr>
-
-
+	
+<xsl:template match="node()" mode="getBusCaps">
+<xsl:variable name="thisBusinessProcesses" select="current()/own_slot_value[slot_reference='realised_by_business_processes']/value"/>
+		<xsl:variable name="thisBusinessDomain" select="$businessDomains[name = current()/own_slot_value[slot_reference = 'belongs_to_business_domain']/value]"/>
+		
+		{
+			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
+			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+            "link":"<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+            	<xsl:with-param name="targetReport" select="$targetReport"/>
+			</xsl:call-template>",
+            "processes": [<xsl:for-each select="$thisBusinessProcesses">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
+			 "domain": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'belongs_to_business_domain']/value"/>"
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>    
+	
+<xsl:template match="node()" mode="getProcesses">
+		<xsl:variable name="this" select="current()"/>
+		{
+			"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			<xsl:choose>
+				<xsl:when test="$targetReport">
+					"link":"<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="$this"/>
+					</xsl:call-template>"
+				</xsl:when>
+				<xsl:otherwise>
+					"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+						<xsl:with-param name="theSubjectInstance" select="$this"/>
+					</xsl:call-template>"
+				</xsl:otherwise>
+			</xsl:choose>
+	
+   
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
+	</xsl:template>        
+<xsl:template match="node()" mode="getBusDomains">
+	<xsl:variable name="this" select="current()"/>
+		{
+		"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		<xsl:choose>
+			<xsl:when test="$targetReport">
+				"link":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$this"/>
+				</xsl:call-template>"
+			</xsl:when>
+			<xsl:otherwise>
+				"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+					<xsl:with-param name="theSubjectInstance" select="$this"/>
+				</xsl:call-template>"
+			</xsl:otherwise>
+		</xsl:choose>
+   
+		} <xsl:if test="not(position()=last())">,
+		</xsl:if>
 	</xsl:template>
-
 </xsl:stylesheet>

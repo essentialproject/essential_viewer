@@ -1228,9 +1228,13 @@
 			</xsl:otherwise>
 		</xsl:choose>
 		</xsl:variable>
+        <xsl:choose>
+            <xsl:when test="$isRenderAsJSString"><xsl:value-of select="eas:renderJSText($unprotectedText)"/></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$unprotectedText" disable-output-escaping="yes"></xsl:value-of></xsl:otherwise>
+        </xsl:choose>
 		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
 		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:validJSONString($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
-		<xsl:value-of select="$unprotectedText" disable-output-escaping="yes"></xsl:value-of>
+		
 	</xsl:template>
 
 	<!-- TEMPLATE TO CREATE THE QUERY STRING FOR DRILLING DOWN TO A REPORT -->

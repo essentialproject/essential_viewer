@@ -83,116 +83,29 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Technology Risk</title>
+				<title>Application Technology Risk</title> 
             <style>
-                body{font-family:arial}
-                
-                .card-header:first-child {
-                            border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
-                        }
-                        .card-header {
-                            padding: .75rem 1.25rem;
-                            margin-bottom: 0;
-                            background-color: rgba(0,0,0,.03);
-                            border-bottom: 1px solid rgba(0,0,0,.125);
-                        }
-                        .card {
-                            font-weight: bold;
-                            position: relative;
-                            display: -webkit-box;
-                            display: -ms-flexbox;
-                            display: flex;
-                            -webkit-box-orient: vertical;
-                            -webkit-box-direction: normal;
-                            -ms-flex-direction: column;
-                            flex-direction: column;
-                            min-width: 0;
-                            word-wrap: break-word;
-                            background-color: #fff;
-                            background-clip: border-box;
-                            border: 1px solid rgba(0,0,0,.125);
-                            border-radius: .25rem; 
-                            margin-bottom:5px;
-                            vertical-align: top;
-                        }
-                        .card-body {
-                            margin: 0;
-                            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-                            font-size: 1rem;
-                            font-weight: 400;
-                            line-height: 1.5;
-                            color: #212529;
-                            text-align: left;
-                            padding:5px;
-                            background-color: #fff;
-                        }
-                        .card-text {font-weight:bold;padding:3px}
-                        p.card-text {
-                            margin: 0;
-                            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-                            font-size: 1rem;
-                            font-weight: 400;
-                            line-height: 1.5;
-                            color: #212529;
-                            text-align: left;
-                            background-color: #fff;
-                        }
-                           .grid-container {
-                          display: grid;
-                          grid-template-columns: 1fr 1fr 1fr 1fr;
-                          grid-template-rows: 1fr 1fr 1fr;
-                          grid-template-areas: "Focus Focus Focus Card1 ." "Focus Focus Focus Card2 ." "Focus Focus Focus Card3 .";      
-                        }
-
-                        .Focus { grid-area: Focus;-webkit-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        -moz-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        box-shadow: 4px 6px 15px 0px rgba(153,153,153,1); 
-                                    margin:10px;padding:5px}
-
-                        .Card1 { grid-area: Card1;-webkit-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        -moz-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        box-shadow: 4px 6px 15px 0px rgba(153,153,153,1); min-height:60px;margin:10px;padding:5px; }
-
-                        .Card2 { grid-area: Card2;-webkit-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        -moz-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);min-height:60px; margin:10px;padding:5px; }
-
-                        .Card3 { grid-area: Card3;-webkit-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        -moz-box-shadow: 4px 6px 15px 0px rgba(153,153,153,1);
-                        box-shadow: 4px 6px 15px 0px rgba(153,153,153,1); min-height:60px; margin:10px;padding:5px;}
-                
-                        
-                            .verticaltext {
-                                transform: rotate(-90deg);
-                                transform-origin: right, top;
-                                -ms-transform: rotate(-90deg);
-                                -ms-transform-origin:right, top;
-                                -webkit-transform: rotate(-90deg);
-                                -webkit-transform-origin:right, top;
-                                position: absolute; 
-                                padding-top: 0px;
-                                color: #ffffff;
-                            }
+            	text.item:hover {cursor: pointer;}
                 .loader {
-                          border: 6px solid #f3f3f3;
-                          border-radius: 50%;
-                          border-top: 6px solid #3498db;
-                          width: 70px;
-                          height: 70px;
-                          -webkit-animation: spin 2s linear infinite; /* Safari */
-                          animation: spin 2s linear infinite;
-                        }
+                  border: 6px solid #f3f3f3;
+                  border-radius: 50%;
+                  border-top: 6px solid #3498db;
+                  width: 70px;
+                  height: 70px;
+                  -webkit-animation: spin 2s linear infinite; /* Safari */
+                  animation: spin 2s linear infinite;
+                }
 
-                        /* Safari */
-                        @-webkit-keyframes spin {
-                          0% { -webkit-transform: rotate(0deg); }
-                          100% { -webkit-transform: rotate(360deg); }
-                        }
+                /* Safari */
+                @-webkit-keyframes spin {
+                  0% { -webkit-transform: rotate(0deg); }
+                  100% { -webkit-transform: rotate(360deg); }
+                }
 
-                        @keyframes spin {
-                          0% { transform: rotate(0deg); }
-                          100% { transform: rotate(360deg); }
-                        }
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
                 </style>    
 			</head>
 			<body>
@@ -201,108 +114,110 @@
 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
-					<div class="row">
+					<div class="row focus">
 						<div class="col-xs-12">
-							<div class="">
+							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-                                    <span class="text-darkgrey">Technology Product Lifecycles -</span><xsl:text> </xsl:text> <span id="lifeText"></span> 
-                                        
+	                                <span class="text-darkgrey">Technology Product Lifecycles -</span><xsl:text> </xsl:text> <span id="lifeText"></span>          
 								</h1>
 							</div>
-						</div> 
-                    </div>  
-                </div>
-						<!--Setup Description Section-->
-					   <div class="grid-container">
-                           <div class="Focus">  
-                        <div style="border:1pt solid #d3d3d3;padding: 3px;margin-bottom:10px">
-                            <div style="display:inline-block;width:25px;min-height:75px;padding-top:25px;background-color:#000000">
-                                <span class="verticaltext">
-                                    Filter
-                            </span>
-                            </div>
+						</div>
+						<div class="col-xs-12">
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="sel1">Filter By Vendor</label>
+										<!-- <select class="form-control" id="vendorSel"  onchange=" $('#appSel').val(0);  ;filterDate(this.value)">-->
+										<select class="form-control" id="vendorSel" >
+											<option value='all'>All</option>
+											<xsl:apply-templates select="$allSupplier" mode="getOptions">
+												<xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
+											</xsl:apply-templates> 
+										</select>
+		                            </div>
+								</div>
+								<div class="col-md-4">
+									<span>
+		                                <label for="sel1">Filter By Year</label>
+		                                <table>
+		                                	<tbody>
+		                                		<tr>
+				                                	<td>
+				                                		<div class="strong text-right" id="thisYr"/>
+				                                	</td>
+				                                	<td>
+				                                		<input type="range" id="yearsRange" name="years" min="" max="" onchange="filterDate(this.value);$('#currentYr').text(this.value)"/>
+				                                	</td>
+				                                	<td>
+				                                		<div id="endYr"  class="strong text-left"/>
+				                                	</td>
+				                                </tr>
+		                                	</tbody>
+		                                </table>
+		                                <div class="top-10">Products supported in <strong><span id="currentYr"/></strong></div>
+		                            </span>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="sel1">Filter By Lifecycle</label>
+										<select class="form-control" id="lifeSel"  onchange="$('.loader').show()">
+											<option value='Vendor_Lifecycle_Status'>Vendor</option>
+											<option value='Lifecycle_Status'>Internal</option>  
+										</select>
+									</div> 
+								</div>
+								<div class="col-xs-12">
+									<hr class="tight"/>
+								</div>
+							</div>
+							<div class="loader" height="50px"/>
+						</div>
+						<div class="col-xs-9">
+							<div id="lfbox" style="box-shadow: 2px 2px 4px #d3d3d3;" />
+						</div>
+						<div class="col-xs-3">
                             
-                             <div style="margin:0px;display:inline-block;padding-left:5px;border:1pt solid #d3d3d3;border-radius:5px;padding-right:5px;font-size:8pt;vertical-align: top">
-                              <div class="form-group">
-                                <label for="sel1">Filter By Vendor</label>
-                                 <!-- <select class="form-control" id="vendorSel" style="font-size:9pt" onchange=" $('#appSel').val(0);  ;filterDate(this.value)">-->
-                                  <select class="form-control" id="vendorSel" style="font-size:9pt">
-                                    <option value='all'>All</option>
-                                      <xsl:apply-templates select="$allSupplier" mode="getOptions">
-                                        <xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
-                                      </xsl:apply-templates> 
-                                  </select>
-                                </div> 
-                            </div>
-                            <div style="margin:0px;display:inline-block;padding-left:10px;border:1pt solid #d3d3d3;border-radius:5px;padding-right:10px;font-size:8pt;vertical-align: top;min-height:72px">
-                                <label for="sel1">Filter By Year</label>
-                                <table>
-                                <tr><td style="text-align:right;font-weight:bold"><div id="thisYr"/></td><td><input type="range" id="yearsRange" name="years"
-                                     min="" max="" onchange="filterDate(this.value);$('#currentYr').text(this.value)"/></td><td style="text-align:left;font-weight:bold"><div id="endYr"/></td></tr>
-                                </table>
-                                <br/>
-                                <span style="font-size:9pt">Products supported in <b><div id="currentYr" style="display:inline-block"/></b></span>.
-                            </div>
-                            <div style="margin:0px;display:inline-block;padding-left:10px;border:1pt solid #d3d3d3;border-radius:5px;padding-right:10px;font-size:8pt;vertical-align: top;min-height:72px">
-                                <div class="form-group">
-                                <label for="sel1">Filter By Lifecycle</label>
-                                  <select class="form-control" id="lifeSel" style="font-size:9pt" onchange="$('.loader').show()">
-                                     <option value='Vendor_Lifecycle_Status'>Vendor</option>
-                                     <option value='Lifecycle_Status'>Internal</option>  
-                                  </select>
-                                </div> 
-                            </div>
-                             <div style="margin:0px;display:inline-block;padding-left:10px;border:1pt none #d3d3d3;border-radius:5px;padding-right:10px;font-size:8pt;vertical-align: top;min-height:72px;float:right">
-                                   <div class="loader" height="50px"></div>
-                            </div>
-                        </div>
-                 
-                                <div id="lfbox" />
-                            </div> 
-                        
-                         <div class="Card1" style="border:1pt solid #d3d3d3;border-radius:4px">
-                            <h3>Key</h3>
                              <!--<div style="float:left;margin-left:20px;padding-left:0px;width:150px;height:15px;border-left:15px solid #d3d3d3;background-color:#ffffff;color:#000000;font-size:9pt"><xsl:text> </xsl:text> 
                                  Applications Impacting</div>
                              <div style="display:inline-block;"><span style="font-size: 7pt">(click for detail)</span></div>-->
-                             <div class="col-xs-12"> </div>
-                            <div style="float:left;padding-left:20px"><b>Lifecycles</b></div>
-                            <div class="col-xs-12"></div>
-                            <div id="buttons" style="float:left;padding-left:20px" />
-                             <div class="col-xs-12"></div>
-                             <div style="float:left;padding-left:20px"><span style="color:#ac2323;font-size:9pt">* Unsupported </span></div>
-                           <div class="col-xs-12"> </div>
-                            <div style="float:left;padding-left:20px"><b>Standards</b></div>
-                            <div class="col-xs-12"></div>
-                            <div id="buttonsStd" style="float:left;padding-left:20px" />
+
+                            <div class="impact bottom-10">Lifecycles</div>
+                            <div id="buttons" />
+                            <div><span class="xsmall text-danger">* Unsupported </span></div>
+                            <div class="impact top-15 bottom-10">Standards</div>
+                            <div id="buttonsStd" />
                             <!-- <div style="float:left;padding-left:20px;font-size:9pt">Unclassified(Off Strategy) <input type='checkbox' id='' onclick='applyFilter(this.checked,this.id)' checked="true"></input></div>--><br/>
-                            <div class="col-xs-12"> <hr/></div>
-                            
-                        </div>
-                        </div>
+						</div>
+						<div class="col-xs-12">
+							<div class="modal" tabindex="-1" role="dialog" id="appModal">
+								<div class="modal-dialog modal-lg" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h3 class="modal-title">Applications</h3>
+										</div>
+										<div class="modal-body">
+											<div id="modalCards"/>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--Setup Closing Tags-->
+                    </div>  
+                </div>
                         <!-- MODAL -->
                     
-                        <div class="modal" tabindex="-1" role="dialog" id="appModal">
-                              <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h3 class="modal-title">Applications</h3>
-                                  </div>
-                                  <div class="modal-body">
-                                    <div id="modalCards"/>
-                                      
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                        
-     
-                        
-<script>
+				
+						
+				 
+				<!-- ADD THE PAGE FOOTER -->
+				<xsl:call-template name="Footer"/>
+			</body>
+          <script>
             var productJSON=[<xsl:apply-templates select="$products" mode="getProducts"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
                 </xsl:apply-templates>];
 
@@ -384,7 +299,7 @@ function comp(a, b) {
                 stdColourJSON.sort(function(obj1, obj2) {return obj1.order - obj2.order;});
                 for(var i=0;i&lt;stdColourJSON.length;i++){
                 var obj= stdColourJSON[i];
-                var button = "&lt;input type='button' value='' style='font-size:6pt;width:10px;background-color:"+obj.val+";color:"+obj.textcolour+"'>&lt;/input>&lt;span style='font-size:9pt'> "+obj.name+"&lt;/span> &lt;input type='checkbox' id='"+obj.id+"' onclick='applyFilter(this.checked,this.id)' checked='true'>&lt;/input>&lt;br/>  ";
+                var button = "&lt;div class='keySample' style='background-color:"+obj.val+";color:"+obj.textcolour+"'>&lt;/div>&lt;div class='pull-left' style='width: 150px'> "+obj.name+"&lt;/div> &lt;input type='checkbox' id='"+obj.id+"' onclick='applyFilter(this.checked,this.id)' checked='true'>&lt;/input>&lt;br/>  ";
                 containerStd.innerHTML+=button;
                 standards.push(obj.id);
                 }    
@@ -406,7 +321,7 @@ function comp(a, b) {
             $('#endYr').append(thisyear);    
             $('#yearsRange').prop('max',thisyear);  
             /* set svg height */
-            var svgHeight=productJSON.length *30+30;
+            var svgHeight=productJSON.length *20+30;
 
 
             var svg = d3.select("#lfbox").append("svg")
@@ -436,7 +351,7 @@ function comp(a, b) {
                 for(var i=0;i&lt;lifeColourJSON.length;i++){
                 if(lifeColourJSON[i].type===$('#lifeSel').val()){ 
                     var obj= lifeColourJSON[i];
-                    var button = "&lt;input type='button' value='' style='font-size:6pt;width:10px;background-color:"+obj.val+";color:"+obj.textcolour+"'>&lt;/input>&lt;span style='font-size:9pt'>"+obj.name+"&lt;/span>&lt;br/>  ";
+                    var button = "&lt;div class='keySample' style='background-color:"+obj.val+";color:"+obj.textcolour+"'>&lt;/div>&lt;span style='width: 120px'>"+obj.name+"&lt;/span>&lt;br/>  ";
                     container.innerHTML+=button;
                     }
                 }
@@ -808,30 +723,24 @@ function applyFilter(state,type){
                                 
                                
                             </script>
-						
-
-						<!--Setup Closing Tags-->
-				 
-				
-<script id="app-list-template" type="text/x-handlebars-template">
-        {{#each this}}
-            <div class="card bg-light mb-3" style="display:inline-block;max-width: 18rem;">
-                <div class="card-header">{{this.name}}</div>
-                  <div class="card-body">
-                      <p class="card-text" style="font-size:9pt">
-                          <h6>Technology</h6>
-                          {{#each this.products}}
-                          
-                           <i class="fa fa-server" style="color:#8181d9"></i> {{this.name}}<br/>
-                          {{/each}}
-                          </p>
-                  </div>
-            </div>
-           {{/each}}
-</script>
-				<!-- ADD THE PAGE FOOTER -->
-				<xsl:call-template name="Footer"/>
-			</body>
+			<script id="app-list-template" type="text/x-handlebars-template">
+			<div class="row">		
+			{{#each this}}
+			<div class="col-md-4">
+				<div class="panel panel-default">
+				    <div class="panel-heading">{{this.name}}</div>
+				      <div class="panel-body">
+				      	<div class="strong">Technology</div>
+			              {{#each this.products}}
+			              <div class="top-5"><i class="fa fa-server right-5"></i>{{this.name}}</div>
+			              {{/each}}
+				      </div>
+				</div>
+			</div>
+			{{/each}}
+			</div>
+			</script>
+          
           
 		</html> 
 	</xsl:template>
@@ -848,7 +757,7 @@ function applyFilter(state,type){
 <xsl:template match="node()" mode="getLifecycles">
     <xsl:variable name="this" select="current()"/>
     <xsl:variable name="thislifecycleStatusUsages" select="$lifecycleStatusUsages[own_slot_value[slot_reference='used_in_lifecycle_model']/value=$this/name][own_slot_value[slot_reference='lcm_lifecycle_status']/value=$lifecycles/name]"/> 
-    {"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "subject":"<xsl:value-of select="$this/own_slot_value[slot_reference='lifecycle_model_subject']/value"/>"},
+    {"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "subject":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='lifecycle_model_subject']/value)"/>"},
 </xsl:template>     
 
 <xsl:template match="node()" mode="getLifecycleUsages">

@@ -47,7 +47,7 @@
    <xsl:variable name="siteswithActors" select="$sites[name=$actors/own_slot_value[slot_reference='actor_based_at_site']/value]"/>
    <xsl:variable name="actorsWithSites" select="$actors[own_slot_value[slot_reference='actor_based_at_site']/value=$siteswithActors/name]"/> 
    <xsl:variable name="applicationServices" select="/node()/simple_instance[type = 'Application_Service']"/>    
-   <xsl:variable name="applications" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>  
+   <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
     <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"/>  
     <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"/>  
     <xsl:variable name="lifecycle" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>

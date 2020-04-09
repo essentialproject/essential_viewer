@@ -310,7 +310,7 @@
 
 							<xsl:choose>
 
-								<xsl:when test="count($subBusCaps) &gt; 0">
+								<xsl:when test="count($subBusCaps) &gt; 1">
 
 
 									<div class="content-section">
