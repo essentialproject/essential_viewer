@@ -29,6 +29,7 @@
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = 'editor_menu_link_classes']/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
+	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
 	
 	<!-- Get the list of supporting data set APIs -->
 	<xsl:variable name="supportingAPIs" select="$utilitiesAllDataSetAPIs[name = $targetEditor/own_slot_value[slot_reference = 'editor_data_set_apis']/value]"/>
@@ -127,6 +128,10 @@
 					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
 
 					essEnvironment.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
+					essEnvironment.form = {
+						'id': '<xsl:value-of select="$targetEditor/name"/>',
+						'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
+					};
 					
 					var essDataSetAPIs = {
 						<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
@@ -140,6 +145,8 @@
 					var esslinkMenuNames = {
 						<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
 					}
+					
+					var essEditorForClasses = [<xsl:apply-templates mode="RenderClassList" select="$editorForClasses"/>];
 					
 					
 					
@@ -196,7 +203,7 @@
 					</div>
 					<div class="modal-body">
 						{{#each messages}}
-							<p class="lead">{{this}}</p>
+							<p>{{this}}</p>
 						{{/each}}
 					</div>
 					<div class="modal-footer">
@@ -303,6 +310,11 @@
 		
 		"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
 		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template mode="RenderClassList" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		"<xsl:value-of select="$this"/>"<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

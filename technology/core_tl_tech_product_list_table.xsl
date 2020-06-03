@@ -302,6 +302,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter techProducts to those in scope for the roadmap start and end date
 										inScopeTechProducts.techProducts = rmGetVisibleElements(techProducts.techProducts);
+									} else {
+										inScopeTechProducts.techProducts = techProducts.techProducts;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->

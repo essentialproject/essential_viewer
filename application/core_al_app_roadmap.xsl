@@ -201,11 +201,11 @@
 									<xsl:with-param name="theParam4" select="$param4"/> <!-- pass the id of the taxonomy term used for scoping as parameter 4-->
 								</xsl:call-template>
 							</xsl:variable>
-							<xsl:text>{'start': '</xsl:text><xsl:value-of select="$formattedStartDate"/><xsl:text>',</xsl:text>
-							<xsl:text>'title': '</xsl:text><xsl:value-of select="$currentArchStateName"/><xsl:text>',</xsl:text>
-							'description': '<strong>Milestone Summary</strong><br/><xsl:value-of select="$currentStateDescription"/><br/><br/><strong>Target Date: </strong><xsl:value-of select="$displayStartDate"/><xsl:text>',
-								'link': '</xsl:text><xsl:value-of select="$linkURL"/><xsl:text>',
-							caption: '</xsl:text>Architecture State<xsl:text>'
+							<xsl:text>{"start": "</xsl:text><xsl:value-of select="$formattedStartDate"/><xsl:text>",</xsl:text>
+							<xsl:text>"title": "</xsl:text><xsl:value-of select="$currentArchStateName"/><xsl:text>",</xsl:text>
+							"description": "<strong>Milestone Summary</strong><br/><xsl:value-of select="eas:renderJSText($currentStateDescription)"/><br/><br/><strong>Target Date: </strong><xsl:value-of select="$displayStartDate"/><xsl:text>",
+								"link": "</xsl:text><xsl:value-of select="$linkURL"/><xsl:text>",
+							"caption": "</xsl:text>Architecture State<xsl:text>"
 							},
 							
 							</xsl:text>
@@ -248,12 +248,12 @@
 								<xsl:with-param name="theParam4" select="$param4"/> <!-- pass the id of the taxonomy term used for scoping as parameter 4-->
 							</xsl:call-template>
 						</xsl:variable>
-						<xsl:text>{'start': '</xsl:text><xsl:value-of select="$formattedStartDate"/><xsl:text>',
-							'end': '</xsl:text><xsl:value-of select="$formattedEndDate"/><xsl:text>',</xsl:text>
-						<xsl:text>'title': '</xsl:text><xsl:value-of select="$currentPlanName"/><xsl:text>',</xsl:text>
-						'description': '<strong>Strategic Plan Summary</strong><br/><xsl:value-of select="$currentPlanDescription"/><br/><br/><strong>Start Date: </strong><xsl:value-of select="$displayStartDate"/><br/><strong>End Date: </strong><xsl:value-of select="$displayEndDate"/><xsl:text>',
-							'link': '</xsl:text><xsl:value-of select="$linkURL"/><xsl:text>',
-								caption: '</xsl:text>change (Strategic Plan)<xsl:text>'
+						<xsl:text>{"start": "</xsl:text><xsl:value-of select="$formattedStartDate"/><xsl:text>",
+							"end": "</xsl:text><xsl:value-of select="$formattedEndDate"/><xsl:text>",</xsl:text>
+						<xsl:text>"title": "</xsl:text><xsl:value-of select="$currentPlanName"/><xsl:text>",</xsl:text>
+						"description": "<strong>Strategic Plan Summary</strong><br/><xsl:value-of select="eas:renderJSText($currentPlanDescription)"/><br/><br/><strong>Start Date: </strong><xsl:value-of select="$displayStartDate"/><br/><strong>End Date: </strong><xsl:value-of select="$displayEndDate"/><xsl:text>",
+							"link": "</xsl:text><xsl:value-of select="$linkURL"/><xsl:text>",
+								"caption": "</xsl:text>change (Strategic Plan)<xsl:text>"
 									},
 									
 								</xsl:text>

@@ -252,13 +252,17 @@
 									//console.log('Redrawing View');
 									
 									<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
-									//update the roadmap status of the busProcesses and application provider roles passed as an array of arrays
-									rmSetElementListRoadmapStatus([busProcesses.busProcesses, busServices.busServices]);
-									
-									<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
-									//filter busProcesses to those in scope for the roadmap start and end date
-									inScopeBusServices.busServices = rmGetVisibleElements(busServices.busServices);
-									//inScopeBusProcesses.busProcesses = rmGetVisibleElements(busProcesses.busProcesses);
+									if(roadmapEnabled) {
+										//update the roadmap status of the busProcesses and application provider roles passed as an array of arrays
+										rmSetElementListRoadmapStatus([busProcesses.busProcesses, busServices.busServices]);
+										
+										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
+										//filter busProcesses to those in scope for the roadmap start and end date
+										inScopeBusServices.busServices = rmGetVisibleElements(busServices.busServices);
+										//inScopeBusProcesses.busProcesses = rmGetVisibleElements(busProcesses.busProcesses);
+									} else {
+										inScopeBusServices.busServices = busServices.busServices;
+									}	
 									
 									<!-- VIEW SPECIFIC JS CALLS -->
 									//update the catalogue

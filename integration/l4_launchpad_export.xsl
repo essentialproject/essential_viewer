@@ -47,7 +47,8 @@
    <xsl:variable name="siteswithActors" select="$sites[name=$actors/own_slot_value[slot_reference='actor_based_at_site']/value]"/>
    <xsl:variable name="actorsWithSites" select="$actors[own_slot_value[slot_reference='actor_based_at_site']/value=$siteswithActors/name]"/> 
    <xsl:variable name="applicationServices" select="/node()/simple_instance[type = 'Application_Service']"/>    
-   <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
+   <xsl:variable name="allapplications" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/> 
+	 <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
     <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"/>  
     <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"/>  
     <xsl:variable name="lifecycle" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
@@ -79,7 +80,7 @@
   <xsl:variable name="DOA" select="/node()/simple_instance[type='Data_Object_Attribute']"/>
   <xsl:variable name="primitiveDataObjects" select="/node()/simple_instance[type='Primitive_Data_Object']"/>
   <xsl:variable name="dataAttributeCardinality" select="/node()/simple_instance[type='Data_Attribute_Cardinality']"/>
- 
+   <xsl:variable name="physbusApp" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']"/>
   
 	<xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
@@ -2251,9 +2252,15 @@
    </Row>
    <Row ss:Height="20">
     <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Physical Proc 2 App and Service'!A1"><Data
-      ss:Type="String">Physical Process 2 App</Data></Cell>
+      ss:Type="String">Physical Process 2 App via Servuce</Data></Cell>
     <Cell ss:StyleID="s1025"><Data ss:Type="String">Maps the Physical Business Porcess to the Application used and the Sevice it is used to provide</Data></Cell>
    </Row>
+	<Row ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Physical Proc 2 App'!A1"><Data
+      ss:Type="String">Physical Process 2 App</Data></Cell>
+    <Cell ss:StyleID="s1025"><Data ss:Type="String">Maps the Physical Business Process to the Application used directly - only use this sheet if you are unable to use the sheet above to provide the services</Data></Cell>
+   </Row>   
+  
    <Row ss:Height="20">
     <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Technology Domains'!A1"><Data
       ss:Type="String">Technology Domains</Data></Cell>
@@ -3894,7 +3901,9 @@
     <Format Style='color:#9C0006;background:#FFC7CE'/>
    </Condition>
   </ConditionalFormatting>
- </Worksheet>
+ </Worksheet> 
+
+
  <Worksheet ss:Name="Information Exchanged">
   <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16">
@@ -5608,6 +5617,106 @@
    </Condition>
   </ConditionalFormatting>
  </Worksheet>
+
+<Worksheet ss:Name="Physical Proc 2 App">
+  <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
+    x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
+   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="179"/>
+   <Column ss:AutoFitWidth="0" ss:Width="199"/>
+   <Column ss:AutoFitWidth="0" ss:Width="297"/>
+   <Column ss:AutoFitWidth="0" ss:Width="230"/>
+   <Column ss:AutoFitWidth="0" ss:Width="194"/>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row ss:Height="29">
+    <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Business Process to Performing Organisation</Data></Cell>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"><Data ss:Type="String">Map the organisations to the processes they perform - these applications are a direct relationship to process, use the previous worksheet if you can for application relationships</Data></Cell>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s1182"><Data ss:Type="String">Business Process</Data></Cell>
+    <Cell ss:StyleID="s1182"><Data ss:Type="String">Performing Organisation</Data></Cell>
+    <Cell ss:StyleID="s1182"><Data ss:Type="String">Application Used</Data></Cell>
+    <Cell ss:StyleID="s1188"><Data ss:Type="String">Process Check</Data></Cell>
+    <Cell ss:StyleID="s1189"><Data ss:Type="String">Organisation Check</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8">
+    <Cell ss:Index="2" ss:StyleID="s1183"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1184"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1184"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1190"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1190"><Data ss:Type="String">.</Data></Cell>
+   </Row>
+    
+    <xsl:apply-templates select="$phyProc" mode="physappsdirect"></xsl:apply-templates>
+   
+   
+   <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s1223"/>
+    <Cell ss:StyleID="s1223"/>
+    <Cell ss:StyleID="s1185"/>
+    <Cell ss:StyleID="s1191"
+     ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&quot;Business Process must be already defined in Business Processes sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1161"
+     ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],Organisations!C[-3],1,0)),&quot;Organisation must be already defined in Organisations sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+   </Row>
+ 
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>7</ActiveRow>
+     <ActiveCol>3</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+    <Range>R8C4:R4174C4</Range>
+   <Type>List</Type>
+    <Value>'Applications'!R8C3:R5000C3</Value>
+  </DataValidation>	
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C2:R3000C2</Range>
+   <Type>List</Type>
+    <Value>'Business Processes'!R8C3:R5000C3</Value>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C3:R3000C3</Range>
+   <Type>List</Type>
+    <Value>'Organisations'!R8C3:R5000C3</Value>
+  </DataValidation>
+  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C5:R174C6</Range>
+   <Condition>
+    <Value1>ISERROR(SEARCH(&quot;OK&quot;,RC))</Value1>
+    <Format Style='color:#9C0006;background:#FFC7CE'/>
+   </Condition>
+  </ConditionalFormatting>
+ </Worksheet>		
  <Worksheet ss:Name="Technology Domains">
   <Table ss:ExpandedColumnCount="5" x:FullColumns="1"
     x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16">
@@ -6873,11 +6982,12 @@
   </ConditionalFormatting>
  </Worksheet>
  <Worksheet ss:Name="Application Codebases">
-  <Table ss:ExpandedColumnCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
+	    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
@@ -6893,6 +7003,7 @@
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
+	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
@@ -6903,6 +7014,7 @@
     <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase1</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="String">Packaged</Data><NamedCell
       ss:Name="Application_Codebases"/></Cell>
+	<Cell ss:StyleID="s1112"><Data ss:Type="String">Packaged</Data></Cell>  
     <Cell ss:StyleID="s1112"><Data ss:Type="String">#4196D9</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
     <Cell ss:StyleID="s1112"/>
@@ -6912,6 +7024,7 @@
     <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase2</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="String">Bespoke</Data><NamedCell
       ss:Name="Application_Codebases"/></Cell>
+	<Cell ss:StyleID="s1112"><Data ss:Type="String">Bespoke</Data></Cell>     
     <Cell ss:StyleID="s1112"><Data ss:Type="String">#9B53B3</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="Number">6</Data></Cell>
     <Cell ss:StyleID="s1112"/>
@@ -6921,6 +7034,7 @@
     <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase3</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="String">Customised_Package</Data><NamedCell
       ss:Name="Application_Codebases"/></Cell>
+	<Cell ss:StyleID="s1112"><Data ss:Type="String">Customised Package</Data></Cell>     
     <Cell ss:StyleID="s1112"><Data ss:Type="String">#EEC62A</Data></Cell>
     <Cell ss:StyleID="s1112"><Data ss:Type="Number">3</Data></Cell>
     <Cell ss:StyleID="s1112"/>
@@ -13996,7 +14110,9 @@
     <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
     <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
     <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
-    <xsl:variable name="thisapr" select="$aprs[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
+    <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
+	  <xsl:variable name="thisapr" select="$aprs[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]"/>
+	  
     
     <xsl:variable name="thisapp" select="$applications[name=$thisapr/own_slot_value[slot_reference='role_for_application_provider']/value]"/>
     <xsl:variable name="thisservice" select="$applicationServices[name=$thisapr/own_slot_value[slot_reference='implementing_application_service']/value]"/>
@@ -14012,6 +14128,25 @@
         ss:Type="String"></Data></Cell>
   </Row>
   </xsl:template>
+  <xsl:template match="node()" mode="physappsdirect">
+    <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
+    <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+    <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+	  <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/> 
+	    <xsl:variable name="thisapp" select="$applications[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
+    
+  <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s1172"><Data ss:Type="String"><xsl:value-of select="$thisbusproc/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1172"><Data ss:Type="String"><xsl:value-of select="$thisRole/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1185"><Data ss:Type="String"><xsl:value-of select="$thisapp/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1191"
+      ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&quot;Business Process must be already defined in Business Processes sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+        ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1191"
+      ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],Organisations!C[-3],1,0)),&quot;Organisation must be already defined in Organisations sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+        ss:Type="String"></Data></Cell>
+  </Row>
+  </xsl:template>	
   <xsl:template mode="techDomain" match="node()">
     <Row ss:Height="34">
       <Cell ss:Index="2" ss:StyleID="s1063"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>

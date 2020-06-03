@@ -220,7 +220,7 @@
         <xsl:variable name="lifeValue"><xsl:value-of select="$lifecycleStatus[name = $ThisApp]/own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/></xsl:variable>
       {
         quadrant: <xsl:value-of select="position() mod 4"/>,
-        ring: <xsl:choose><xsl:when test="$lifeValue=''"><xsl:value-of select="count($lifecycleStatus)"/></xsl:when><xsl:otherwise><xsl:value-of select="$lifeValue"/></xsl:otherwise></xsl:choose>,
+        ring: <xsl:choose><xsl:when test="$lifeValue=''"><xsl:value-of select="count($lifecycleStatus)-1"/></xsl:when><xsl:otherwise><xsl:value-of select="$lifeValue"/></xsl:otherwise></xsl:choose>,
         label: "<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>",
         active: false,
         link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",

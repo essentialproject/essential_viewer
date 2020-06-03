@@ -27,7 +27,6 @@
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
-	<xsl:include href="../common/datatables_includes.xsl"/>
 
 	<!--<xsl:include href="../information/menus/core_data_object_menu.xsl"></xsl:include>-->
 
@@ -178,7 +177,6 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<xsl:call-template name="dataTablesLibrary"/>
 				<style type="text/css">
 					table.dataTable{
 						margin-top: 0px !important;

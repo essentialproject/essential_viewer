@@ -103,7 +103,7 @@
 		</xsl:variable>
 		<xsl:variable name="thisBusCapDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="false()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
@@ -114,8 +114,8 @@
 		</xsl:variable>
 		{
 		"busCapId": "<xsl:value-of select="current()/name"/>",
-		"busCapName": "<xsl:value-of select="eas:validJSONString($thisBusCapName)"/>",
-		"busCapDescription": "<xsl:value-of select="eas:validJSONString($thisBusCapDescription)"/>",
+		"busCapName": "<xsl:value-of select="$thisBusCapName"/>",
+		"busCapDescription": "<xsl:value-of select="$thisBusCapDescription"/>",
 		"busCapLink": "<xsl:value-of select="$thisBusCapLink"/>",
 		"l2BusCaps": [	
         <xsl:apply-templates select="$L1Caps" mode="l1_caps">
@@ -133,7 +133,7 @@
 		</xsl:variable>
 		<xsl:variable name="thisBusCapDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="false()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
@@ -147,7 +147,7 @@
 		{
 			  "busCapId": "<xsl:value-of select="current()/name"/>",
 		      "busCapName": "<xsl:value-of select="eas:validJSONString($thisBusCapName)"/>",
-		      "busCapDescription": "<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference='description']/value)"/>",
+		      "busCapDescription": "<xsl:value-of select="$thisBusCapDescription"/>",
 		      "busCapLink": "<xsl:value-of select="$thisBusCapLink"/>",
         "debug":"",
         "subCaps":[<xsl:for-each select="$relevantBusCaps"><xsl:if test="current()/name!=$this">{"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:if></xsl:for-each>]

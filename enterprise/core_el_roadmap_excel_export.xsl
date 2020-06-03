@@ -122,7 +122,7 @@
 			   </Row>
 			   <Row ss:AutoFitHeight="0" ss:Height="9"/>
 			   <Row ss:AutoFitHeight="0" ss:Height="17">
-			    <Cell ss:Index="2" ss:StyleID="s66"><Data ss:Type="String">RM1</Data></Cell>
+			    <Cell ss:Index="2" ss:StyleID="s66"><Data ss:Type="String">{{roadmap.extId}}</Data></Cell>
 			    <Cell ss:StyleID="s66"><Data ss:Type="String">{{roadmap.name}}</Data></Cell>
 			    <Cell ss:StyleID="s66"><Data ss:Type="String">{{roadmap.description}}</Data></Cell>
 			   </Row>
@@ -183,7 +183,7 @@
 			   <Row ss:AutoFitHeight="0" ss:Height="9"/>
 			   {{#each strategicPlans}}
 				   <Row ss:AutoFitHeight="0" ss:Height="17">
-				    <Cell ss:Index="2" ss:StyleID="s66"><Data ss:Type="String">SP{{@index}}</Data></Cell>
+				    <Cell ss:Index="2" ss:StyleID="s66"><Data ss:Type="String">{{extId}}</Data></Cell>
 				    <Cell ss:StyleID="s66"><Data ss:Type="String">{{../roadmap.name}}</Data></Cell>
 				    <Cell ss:StyleID="s66"><Data ss:Type="String">{{name}}</Data></Cell>
 				    <Cell ss:StyleID="s69"><Data ss:Type="String">{{description}}</Data></Cell>

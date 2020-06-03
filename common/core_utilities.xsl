@@ -65,7 +65,7 @@
 	<xsl:variable name="utilitiesAllReports" select="/node()/simple_instance[type = 'Report']"/>
 	
 	<!-- Collect all available editors -->
-	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = 'Editor']"/>
+	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor')]"/>
 	
 	<!-- Collect all available editor sections -->
 	<xsl:variable name="utilitiesAllEditorSections" select="/node()/simple_instance[type = 'Editor_Section']"/>
@@ -1157,6 +1157,8 @@
     -->
 	<xsl:template name="RenderMultiLangInstanceName">
 		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="isRenderAsJSString" select="false()"/>
+		
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
 		<!-- First perform user clearance check -->
@@ -1170,15 +1172,32 @@
 				<xsl:value-of>
 					<xsl:choose>
 						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-							<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
-						</xsl:when>
-						<xsl:otherwise>
 							<xsl:choose>
-								<xsl:when test="count($instanceSynonym) > 0">
-									<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+								<xsl:when test="$isRenderAsJSString">
+									<xsl:value-of select="eas:renderJSText($theSubjectInstance/own_slot_value[slot_reference = $slotName]/value)"/>
 								</xsl:when>
 								<xsl:otherwise>
 									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+								</xsl:otherwise>
+							</xsl:choose>							
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:variable name="nameVal">						
+								<xsl:choose>
+									<xsl:when test="count($instanceSynonym) > 0">
+										<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							<xsl:choose>
+								<xsl:when test="$isRenderAsJSString">
+									<xsl:value-of select="eas:renderJSText($nameVal)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$nameVal"/>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:otherwise>
@@ -1873,18 +1892,20 @@
 		<xsl:variable name="escapeOpenBracket">M</xsl:variable>
 		<xsl:variable name="escapeCloseBracket">N</xsl:variable>
 
-		<xsl:variable name="anAposEscapedText" select="replace($theText, $apos, $escapeApos)"/>
-		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($anAposEscapedText, $quote, $escapeQuote)"/>
+		<xsl:variable name="ecsapeBackslashes" select="replace($theText, '\\','\\\\')"/>
+		<!--<xsl:variable name="anAposEscapedText" select="replace($ecsapeBackslashes, $apos, $escapeApos)"/>-->
+		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($ecsapeBackslashes, $quote, $apos)"/>
 		<xsl:variable name="escapeBrackets" select="replace($anQuoteAndAposEscapedText, '(\(|\))', '\\$1')"/>
-		<xsl:variable name="escapeAmpersand" select="replace($escapeBrackets, '&amp;', 'and')"/>
+		<xsl:variable name="escapeAmpersand" select="replace($anQuoteAndAposEscapedText, '&amp;', 'and')"/>
 		<xsl:variable name="escapeSpace" select="replace($escapeAmpersand, '&#160;', ' ')"/>
+		<xsl:variable name="escapeNewline" select="replace($escapeSpace, '\n|&#xA;', '\\n')"/>	
+		<xsl:variable name="escapeCarriageReturn" select="replace($escapeNewline, '\r|&#13;|&#xD;', '\\r')"/>
+		<xsl:variable name="escapeTab" select="replace($escapeCarriageReturn, '&#x9;|\t', '\\t')"/>
 
 		<!-- Escape newlines with <br/> -->
-		<xsl:value-of select="replace($escapeSpace, '&#xA;', ' ')"/>
-
+		<xsl:value-of select="$escapeCarriageReturn"/>
 
 	</xsl:function>
-
 
 	<xsl:template name="GetDisplaySlotForClass">
 		<xsl:param name="theClass"/>
@@ -1909,6 +1930,7 @@
 			<xsl:when test="$theClass = 'Secured_Action'">enumeration_value</xsl:when>
 			<xsl:when test="$theClass = 'Report'">report_label</xsl:when>
 			<xsl:when test="$theClass = 'Editor'">report_label</xsl:when>
+			<xsl:when test="$theClass = 'Simple_Editor'">report_label</xsl:when>
 			<xsl:when test="$theClass = 'Taxonomy_Term'">taxonomy_term_label</xsl:when>
 			<xsl:when test="$theClass = 'Taxonomy'">taxonomy_display_label</xsl:when>
 			<xsl:when test="$theClass = 'Issue_Category'">enumeration_value</xsl:when>
@@ -2537,6 +2559,44 @@
 		<xsl:param name="editorSectionName"/>
 		<xsl:sequence select="$utilitiesAllEditorSections[own_slot_value[slot_reference = 'name']/value = $editorSectionName]"/>
 	</xsl:function>
+	
+	<!-- function to test if a given version number is greater than, or equal to a second verson number -->
+	<xsl:function name="eas:compareVersionNumbers" as="xs:boolean">
+		<xsl:param name="currentVersionNum"/>
+		<xsl:param name="testVersionNum"/>
+		
+		<xsl:variable name="currVersionTokens" select="tokenize($currentVersionNum, '\.')"/>
+		<xsl:variable name="testVersionTokens" select="tokenize($testVersionNum, '\.')"/>
+		
+		<xsl:variable name="compareList">
+			<xsl:for-each select="$currVersionTokens">
+				<xsl:variable name="tokenIndex" select="position()"/>
+				<xsl:variable name="thisToken" select="."/>
+				<xsl:variable name="testToken" select="$testVersionTokens[$tokenIndex]"/>
+				<xsl:sequence select="number($thisToken) >= number($testToken)"/>
+			</xsl:for-each>
+		</xsl:variable>
+		
+		<xsl:value-of select="not(contains($compareList, 'false'))"/>
+		
+	</xsl:function>
+	
+	<!-- function to test if a given version number is greater than, or equal to a second verson number -->
+	<!--<xsl:function name="eas:testCompareVersionNumbers" as="xs:boolean">
+		<xsl:param name="currentVersionNum"/>
+		<xsl:param name="testVersionNum"/>
+		
+		<xsl:variable name="currVersionTokens" select="tokenize($currentVersionNum, '\.')"/>
+		<xsl:variable name="testVersionTokens" select="tokenize($testVersionNum, '\.')"/>
+		
+		<xsl:for-each select="$currVersionTokens">
+			<xsl:variable name="tokenIndex" select="position()"/>
+			<xsl:variable name="thisToken" select="."/>
+			<xsl:variable name="testToken" select="$testVersionTokens[$tokenIndex]"/>
+			<xsl:value-of select="number($thisToken) >= number($testToken)"/>
+		</xsl:for-each>
+		
+	</xsl:function>-->
 	
 
 </xsl:stylesheet>

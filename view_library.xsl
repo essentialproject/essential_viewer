@@ -10,8 +10,8 @@
 	<!-- param4 = the taxonomy term that will be used to scope the organisation model -->
 	<!--<xsl:param name="param4" />-->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = ('Report', 'Editor'))]"/>
-	<xsl:variable name="anyEditors" select="/node()/simple_instance[type='Editor']"/>
+	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = ('Report', 'Editor', 'Simple_Editor'))]"/>
+	<xsl:variable name="anyEditors" select="$anyReports[type=('Editor', 'Simple_Editor')]"/>
 	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>

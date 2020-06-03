@@ -85,12 +85,13 @@
 				<xsl:attribute name="value" select="$latestViewerVersion"/>
 			</input>
 		</footer>
-		<!--Essential Update Check - Comment out the line below to stop checking for updates-->
+		<!--Essential Update Check - Comment out the lines below to stop checking for updates-->
+		<script type="text/javascript" src="js/compareVersions.js"/>
 		<script>
 			$(document).ready(function(){
 				var viewerCurrentVersion =  $('#currentViewerVersion').val();
 				var viewerLatestVersion =  $('#viewerLatestVersion').val();
-				if (viewerCurrentVersion &lt; viewerLatestVersion) {
+				if (compareVersions(viewerCurrentVersion,viewerLatestVersion)) {
 					$('#viewerUpdateText').html(' - <a href="https://www.enterprise-architecture.org/essential_update.php?viewerCurrentVersion='+viewerCurrentVersion+'&amp;viewerLatestVersion='+viewerLatestVersion+'" target="_blank">Update Available</a>');
 				};
 			});

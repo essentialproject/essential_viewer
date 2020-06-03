@@ -111,19 +111,6 @@
 					$(".threeColModel_LogoSection").width(greatestWidth-20);     // Update the elements you were comparing
 					});
 				</script>
-				<script type="text/javascript">
-					$('document').ready(function(){
-						$(".threeColModel_Object").vAlign();
-						$(".buttonLabel").vAlign();
-						$(".threeColModel_ObjectAlt").vAlign();
-//						$(".threeColModel_NumberHeatmap").vAlign();					
-						$(".threeColModel_ObjectDouble").vAlign();
-						//$(".threeColModel_valueChainObject").vAlign();
-						$(".threeColModel_dynamicKeyTitle").vAlign();
-						$(".threeColModel_dynamicKeyObject").vAlign();
-						$(".threeColModel_valueChainObjectDouble").vAlign();
-					});
-				</script>
 				
 				<style type="text/css">
 					.threeColModel_modelContainer *{
@@ -200,8 +187,8 @@
 					
 					.threeColModel_wideRowCapsDivider{
 					    width: 100%;
-					    height: 2px;
-					    border-bottom: 2px solid #aaa;
+					    height: 1px;
+					    border-bottom: 1px solid #aaa;
 					    float: left;
 					    box-sizing: content-box;
 					}
@@ -225,10 +212,16 @@
 					    height: 40px;
 					    margin-bottom: 5px;
 					    text-align: center;
-					    background: url(images/value_chain_arrow_end.png) no-repeat right center;
+					    background-image: url(images/value_chain_arrow_end.png);
+					    background-repeat: no-repeat;
+					    background-position: right center;
 					    position: relative;
 					    box-sizing: content-box;
 					    line-height: 1.1em;
+					    font-weight: 700;
+					    display: flex;
+					    align-items: center;
+					    justify-content: center;
 					}
 					
 					.threeColModel_valueChainColumnContainerDouble{
@@ -249,6 +242,9 @@
 					    position: relative;
 					    box-sizing: content-box;
 					    line-height: 1.1em;
+					    display: flex;
+					    align-items: center;
+					    justify-content: center;
 					}
 					
 					.threeColModel_ObjectContainer{
@@ -302,7 +298,10 @@
 					    box-sizing: content-box;
 					    line-height: 1.1em;
 					    box-sizing: content-box;
-                    box-shadow: 2px 2px 1px #d3d3d3;
+                  		box-shadow: 0px 1px 2px 0px hsla(0, 0%, 0%, 0.15);
+                    	display: flex;
+					    align-items: center;
+					    justify-content: center;
 					}
 					
 					.threeColModel_ObjectDouble{
@@ -447,14 +446,6 @@
 					
 					.heatmapDivider{
 					    border-right: 1px solid #ccc;
-					}
-					
-					.backColour18{
-					    background-color: #c6bd9a;  
-					}
-					
-					.backColour19{
-					    background-color: #e6e0bf;
 					}
 					
 					.backColour20{
@@ -658,7 +649,9 @@
 				<xsl:apply-templates mode="PrintTopLevelManageCap" select="$topLevelManageBusCapRelss">
 					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 				</xsl:apply-templates>
-				<div class="threeColModel_wideRowCapsDivider"/>
+				<xsl:if test="count($topLevelManageBusCapRelss)&gt;0">
+					<div class="threeColModel_wideRowCapsDivider"/>
+				</xsl:if>
 				<xsl:apply-templates mode="PrintTopLevelFrontCap" select="$topLevelFrontBusCapRelss">
 					<xsl:sort select="$topLevelBusCapabilities[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]/own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 				</xsl:apply-templates>
@@ -698,7 +691,7 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				<xsl:with-param name="divClass">threeColModel_Object small backColour19 <xsl:value-of select="name"/></xsl:with-param>
+				<xsl:with-param name="divClass">threeColModel_Object small bg-darkblue-20 <xsl:value-of select="name"/></xsl:with-param>
 				<xsl:with-param name="anchorClass">text-black  <xsl:value-of select="name"/></xsl:with-param>
 			</xsl:call-template>
 
@@ -741,8 +734,8 @@
 		</xsl:variable>
 		<xsl:variable name="chevronDivStyle">
 			<xsl:choose>
-				<xsl:when test="count($childCaps) > $coreCapsMaxDepth">threeColModel_valueChainObjectDouble small backColour18 <xsl:value-of select="name"/></xsl:when>
-				<xsl:otherwise>threeColModel_valueChainObject small backColour18 <xsl:value-of select="name"/></xsl:otherwise>
+				<xsl:when test="count($childCaps) > $coreCapsMaxDepth">threeColModel_valueChainObjectDouble small bg-darkblue-80 <xsl:value-of select="name"/></xsl:when>
+				<xsl:otherwise>threeColModel_valueChainObject small bg-darkblue-80 <xsl:value-of select="name"/></xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		<div class="{$containerDivStyle}">
@@ -757,9 +750,7 @@
 			<xsl:apply-templates mode="PrintGrandChildFrontCap" select="$childCaps">
 				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
-
 		</div>
-    <xsl:if test="position() mod 6 = 0"><div class="col-xs-12" id="break"/></xsl:if>
 
 	</xsl:template>
 
@@ -772,7 +763,7 @@
 		<div class="threeColModel_ObjectContainer">
           
             <xsl:variable name="overlayStyle"> <xsl:value-of select="concat('threeColModel_NumberHeatmap fontBlack text-white alignCentre ', 'blue ')"/> <xsl:value-of select="name"/></xsl:variable>
-			<div class="threeColModel_ObjectBackgroundColour backColour19 {$thisID}"/>
+			<div class="threeColModel_ObjectBackgroundColour bg-darkblue-20 {$thisID}"/>
 			<div>
 				<xsl:attribute name="class" select="$overlayStyle"/>
 	

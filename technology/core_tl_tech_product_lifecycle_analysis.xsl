@@ -321,7 +321,7 @@ function comp(a, b) {
             $('#endYr').append(thisyear);    
             $('#yearsRange').prop('max',thisyear);  
             /* set svg height */
-            var svgHeight=productJSON.length *20+30;
+            var svgHeight=productJSON.length *22+30;
 
 
             var svg = d3.select("#lfbox").append("svg")
@@ -335,7 +335,7 @@ function comp(a, b) {
                 .data(datesJSON)
                 .enter()
                         .append("text")
-                        .attr("x",(function(d){var calcyear= new Date(d+'-1-1').getTime()-startyear;  set=((((((calcyear)/1000)/60)/60)/24)/5);  return set+350}))
+                        .attr("x",(function(d){var calcyear= new Date(d+'-1-1').getTime()-startyear;  set=((((((calcyear)/1000)/60)/60)/24)/5);  return set+358}))
                         .attr("y",10)
                         .attr("class", "headerText")
                         .style('font-size',11)
@@ -446,7 +446,7 @@ function comp(a, b) {
             var stdColour;
             if(stdcolour[0]){stdColour = stdcolour[0].val}else{stdColour ='#e6e6e6' }
      
-                prodList+='{"product":"'+productJSON[i].name+'","id":"'+productJSON[i].id+'", "appsImpacting":'+thisApps.length+',"stdColour":"'+stdColour+'", "standard":"'+productJSON[i].standard+'", "lifecycles":['+lifeVal+'],"apps":'+JSON.stringify(thisApps)+'}';
+                prodList+='{"product":"'+productJSON[i].name+'","id":"'+productJSON[i].id+'", "appsImpacting":'+thisApps.length+',"stdColour":"'+stdColour+'","linkid":"'+productJSON[i].linkid+'", "standard":"'+productJSON[i].standard+'", "lifecycles":['+lifeVal+'],"apps":'+JSON.stringify(thisApps)+'}';
 
              <!--
                 if(i&lt;productJSON.length-1){prodList+=','}-->
@@ -493,8 +493,10 @@ $('.loader').hide();
 
     var producttext =svg.selectAll("#box")
             .data(jsonProd[0].products)
-            .enter().append("svg:a")
-            .attr("xlink:href", function(d){return 'report?XML=reportXML.xml&amp;PMA='+d.id+'&amp;cl=en-gb&amp;XSL=technology/core_tl_tech_prod_summary.xsl';})
+			   
+             .enter().append("svg:a")
+            .attr("xlink:href", function(d){console.log(d.linkid); return 'report?XML=reportXML.xml&amp;PMA='+d.linkid+'&amp;cl=en-gb&amp;XSL=technology/core_tl_tech_prod_summary.xsl';})
+ 
                     .append("text")
                     .attr("y",(function(d,i){return ((i+1)*22)+10}))
                     .attr("x",10)
@@ -511,7 +513,7 @@ $('.loader').hide();
                                 d.lifecycles.filter(function(e){;if(e.date&gt;-1){EOL.push(e.date)}});
                                 if(EOL.length===0){ return '#ac2323'}
                                 else{ return '#000000'};
-                           });
+                           }) ;
 
     var productinfo =svg.selectAll("#box")
             .data(jsonProd[0].products)
@@ -752,7 +754,7 @@ function applyFilter(state,type){
     
 <xsl:template match="node()" mode="getProducts">
     <xsl:variable name="this" select="current()"/>
-    {"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","vendor":"","vendorID":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='supplier_technology_product']/value)"/>", "standardID":"","standard":"","component":"","componentstandard":""},</xsl:template>   
+    {"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","vendor":"","vendorID":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='supplier_technology_product']/value)"/>", "standardID":"","standard":"","component":"","componentstandard":"","linkid":"<xsl:value-of select=" $this/name"/>"},</xsl:template>   
     
 <xsl:template match="node()" mode="getLifecycles">
     <xsl:variable name="this" select="current()"/>

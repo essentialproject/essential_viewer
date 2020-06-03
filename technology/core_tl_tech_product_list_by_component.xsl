@@ -377,6 +377,7 @@
 				
 				<xsl:if test="$isRoadmapEnabled">
 					<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
+					if(roadmapEnabled) {
 					//update the roadmap status of the catalogue instances passed as an array of arrays
 					rmSetElementListRoadmapStatus([instances.instances, orphanInstances.instances]);
 					
@@ -384,6 +385,10 @@
 					//filter instances to those in scope for the roadmap start and end date
 					inScopeInstances.instances = rmGetVisibleElements(instances.instances);
 					inScopeOrphans.instances = rmGetVisibleElements(orphanInstances.instances);
+					} else {
+						inScopeInstances.instances = instances.instances;
+						inScopeOrphans.instances = orphanInstances.instances;
+					}
 				</xsl:if>			
 				
 				<!-- VIEW SPECIFIC JS CALLS -->

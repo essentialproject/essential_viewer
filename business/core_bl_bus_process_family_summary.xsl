@@ -19,7 +19,10 @@
 	<!-- END GENERIC LINK VARIABLES -->
 	<!-- Required View-specific instance -->
 	<xsl:variable name="bpf" select="/node()/simple_instance[type = 'Business_Process_Family'][name = $param1]"/>
-	<xsl:variable name="relevantProcesses" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value]"/>
+	<xsl:variable name="relevantProcessesOld" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value]"/>
+	<xsl:variable name="relevantProcessesNew" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contains_busproctypes']/value]"/>
+	<xsl:variable name="relevantProcesses" select="$relevantProcessesOld union $relevantProcessesNew"/>
+	
 	<xsl:variable name="relevantBusCaps" select="/node()/simple_instance[type = 'Business_Capability'][name = $relevantProcesses/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>
 	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
 	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>
@@ -132,7 +135,7 @@
 								<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
 							</xsl:call-template>
 						</h1>
-					</div>
+					</div>		
 				</div>
 				<!--Setup the Definition section-->
 				<div class="col-xs-6">

@@ -21,7 +21,7 @@
 	<!-- END GENERIC LINK VARIABLES -->
 	
 	<!-- VIEW SPECIFIC VARIABLES -->
-	<xsl:variable name="needEditor" select="/node()/simple_instance[(type = 'Editor') and (own_slot_value[slot_reference = 'name']/value = 'Core: Idea Editor')]"/>
+	<xsl:variable name="needEditor" select="/node()/simple_instance[(type = ('Editor', 'Simple_Editor')) and (own_slot_value[slot_reference = 'name']/value = 'Core: Idea Editor')]"/>
 	
 	<xsl:variable name="needEditorHref">
 		<xsl:call-template name="RenderEditorLinkHref">

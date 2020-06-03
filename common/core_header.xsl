@@ -177,7 +177,7 @@
 								</a>
 							</li>
 							<!-- ONLY SHOW THE FOLLOWING IF IN EIP MODE -->
-							<xsl:if test="($eipMode = 'true') and ($thisRepoVersion >= '6.6')">
+							<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 									<xsl:attribute name="title" select="eas:i18n('Comments')"/>
 									<a href="#" id="commentLink" onclick="toggleComments();setTimeout(initCommentJS,500);">

@@ -13,6 +13,8 @@
 
 	<xsl:variable name="essModalFunctionSuffix">Show</xsl:variable>
 	
+	<xsl:variable name="modalSupportsCollab" select="eas:modalCompareVersionNumbers($modalRepoVersion, '6.6')"/>
+	
 	<xsl:template name="RenderModalReportContent">
 		<xsl:param name="essModalClassNames" select="()"/>
 		
@@ -20,7 +22,7 @@
 		<xsl:variable name="modalIdeationIsOn" select="string-length($modalIdeationConstant)"/>
 		
 		<!-- only add modal content if there is at least one class provided -->
-		<xsl:if test="($modalIdeationIsOn) and (count($essModalClassNames) > 0) and ($eipMode = 'true') and ($modalRepoVersion >= '6.6')">
+		<xsl:if test="($modalIdeationIsOn) and (count($essModalClassNames) > 0) and ($eipMode = 'true') and $modalSupportsCollab">
 			<xsl:variable name="essRelevantModals" select="$essAllModalReports[own_slot_value[slot_reference = 'modal_report_for_classes']/value = $essModalClassNames]"/>
 			<xsl:variable name="essRelevantAPIs" select="$essAllModalDataSetAPIs[name = $essAllModalReports/own_slot_value[slot_reference = 'modal_report_content_apis']/value]"/>
 			
@@ -1133,5 +1135,26 @@
 			</div>
 		</div>
 	</xsl:template>
+	
+	<!-- function to test if a given version number is greater than, or equal to a second verson number -->
+	<xsl:function name="eas:modalCompareVersionNumbers" as="xs:boolean">
+		<xsl:param name="currentVersionNum"/>
+		<xsl:param name="testVersionNum"/>
+		
+		<xsl:variable name="currVersionTokens" select="tokenize($currentVersionNum, '\.')"/>
+		<xsl:variable name="testVersionTokens" select="tokenize($testVersionNum, '\.')"/>
+		
+		<xsl:variable name="compareList">
+			<xsl:for-each select="$currVersionTokens">
+				<xsl:variable name="tokenIndex" select="position()"/>
+				<xsl:variable name="thisToken" select="."/>
+				<xsl:variable name="testToken" select="$testVersionTokens[$tokenIndex]"/>
+				<xsl:sequence select="number($thisToken) >= number($testToken)"/>
+			</xsl:for-each>
+		</xsl:variable>
+		
+		<xsl:value-of select="not(contains($compareList, 'false'))"/>
+		
+	</xsl:function>
 	
 </xsl:stylesheet>

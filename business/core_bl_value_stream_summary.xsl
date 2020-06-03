@@ -62,7 +62,7 @@
 				</xsl:for-each>
 				<title>Value Stream Summary for <xsl:value-of select="$currentValueStream/own_slot_value[slot_reference='name']/value"/></title>
 				<!--<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>-->
-				<script src="ext/apml/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
 				<script src="js/jquery.tools.min.js" type="text/javascript"/>
 

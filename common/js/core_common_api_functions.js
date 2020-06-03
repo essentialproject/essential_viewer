@@ -107,7 +107,10 @@ function essCreateCORSRequest(method, url) {
 		xhr.open(method, url, true);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 		
+
 	} else if (typeof XDomainRequest != "undefined") {
 		
 		// Otherwise, check if XDomainRequest.
@@ -116,12 +119,14 @@ function essCreateCORSRequest(method, url) {
 		xhr.open(method, url);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
-	
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+
 	} else {
 	
-	   // Otherwise, CORS is not supported by the browser.
-	   xhr = null;
-	
+		// Otherwise, CORS is not supported by the browser.
+		xhr = null;
+
 	}
 	return xhr;
 }
@@ -139,6 +144,8 @@ function essCreateRefCORSRequest(method, url) {
 		xhr.open(method, url, true);
 		//xhr.setRequestHeader('Content-type','multipart/form-data');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 		
 	} else if (typeof XDomainRequest != "undefined") {
 		
@@ -148,6 +155,8 @@ function essCreateRefCORSRequest(method, url) {
 		xhr.open(method, url);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 	
 	} else {
 	

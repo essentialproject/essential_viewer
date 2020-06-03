@@ -271,6 +271,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter busProcesses to those in scope for the roadmap start and end date
 										inScopeBusProcesses.busProcesses = rmGetVisibleElements(busProcesses.busProcesses);
+									} else {
+										inScopeBusProcesses.busProcesses = busProcesses.busProcesses;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->

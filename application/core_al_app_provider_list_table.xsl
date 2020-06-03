@@ -241,6 +241,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter applications to those in scope for the roadmap start and end date
 										inScopeApplications.applications = rmGetVisibleElements(applications.applications);
+									} else {
+										inScopeApplications.applications = applications.applications;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->

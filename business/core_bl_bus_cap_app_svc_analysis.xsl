@@ -315,6 +315,18 @@
 							<xsl:with-param name="theXML" select="$reposXML"/>
 							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 						</xsl:call-template>
+						<xsl:if test="current()/own_slot_value[slot_reference = 'synonyms']"><br/>
+							
+							<span style="font-size:0.9em">
+							 (aka <xsl:for-each select="current()/own_slot_value[slot_reference = 'synonyms']/value">
+								<xsl:variable name="this" select="."/>
+							
+								<xsl:variable name="thisSyn" select="/node()/simple_instance[type='Synonym'][name=$this]"/>
+								 
+								<xsl:value-of select="$thisSyn/own_slot_value[slot_reference = 'name']/value"/><xsl:if test="position()!=last()">, </xsl:if>
+								</xsl:for-each>)
+								</span>
+						</xsl:if>
 					</td>
 
 					<!-- Vendor -->

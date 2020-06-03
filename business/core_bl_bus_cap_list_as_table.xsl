@@ -313,6 +313,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter caps to those in scope for the roadmap start and end date
 										inscopeBusCaps.capabilities = rmGetVisibleElements(busCaps.capabilities);
+									} else {
+										inscopeBusCaps.capabilities = busCaps.capabilities;
 									}
 									       
 									<!-- VIEW SPECIFIC JS CALLS -->
@@ -439,6 +441,7 @@
 				<xsl:when test="$targetReport">
 					"link":"<xsl:call-template name="RenderMultiLangInstanceName">
 						<xsl:with-param name="theSubjectInstance" select="$this"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
 					</xsl:call-template>"
 				</xsl:when>
 				<xsl:otherwise>
@@ -452,6 +455,7 @@
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>        
+	
 <xsl:template match="node()" mode="getBusDomains">
 	<xsl:variable name="this" select="current()"/>
 		{
@@ -460,6 +464,7 @@
 			<xsl:when test="$targetReport">
 				"link":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="$this"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>"
 			</xsl:when>
 			<xsl:otherwise>

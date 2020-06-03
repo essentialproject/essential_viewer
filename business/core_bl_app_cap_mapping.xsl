@@ -146,7 +146,10 @@
                     box-shadow: 0px 2px 5px -2px hsla(0, 0%, 0%, 0.25);
                     font-size: 8pt;
                     }
-                
+                a, a:hover, a:focus, a:active {
+      text-decoration: none;
+      color: inherit;
+ }
                 </style>
 			</head>
 			<body>
@@ -211,15 +214,11 @@
 										</table>
 									</div>
 									<div style="float:right;display:none;min-width:360pt" id="appKey">
-									<table style="padding:2px;;font-size:9pt;text-align:center">
-										<tbody>
-											<tr>
+									 
 												<xsl:apply-templates select="$AFValues" mode="legend">
 													<xsl:sort select="own_slot_value[slot_reference='service_quality_value_score']/value" order="descending"/>
 												</xsl:apply-templates>
-											</tr>
-										</tbody>
-									</table>
+											 
 								</div>
 							</div>
 						</div>
@@ -360,10 +359,16 @@ function applySelect(){
                 var thisBus = busscores.filter(function(g){
                     return g.score==busFitscore
                 })
-                 
-            colourToShow=thisBus[0].backgroundcolor;
-            fontToShow=thisBus[0].color;
-    
+	
+			if(thisBus[0]){	
+				colourToShow=thisBus[0].backgroundcolor;
+				fontToShow=thisBus[0].color;
+    			}
+				else
+				{
+				colourToShow =  '#e3e3e3';
+                fontToShow = '#000000';
+			   };
             }else
             {
                 colourToShow =  '#e3e3e3';
@@ -385,9 +390,16 @@ function applySelect(){
                     return g.score==appFitscore;
                 })
                  
-
-            colourToShow=thisApp[0].backgroundcolor;
-            fontToShow=thisApp[0].color;
+			if(thisApp[0]){	
+				 colourToShow=thisApp[0].backgroundcolor;
+            	 fontToShow=thisApp[0].color;
+    			}
+				else
+				{
+				colourToShow =  '#e3e3e3';
+                fontToShow = '#000000';
+			   };
+           
             }else
             {
                 colourToShow =  '#e3e3e3';
@@ -501,10 +513,12 @@ function uniq_fast(a) {
 	                              			<div class="col-xs-4">
 	                              				<div class="app-wrapper bottom-10">
 		                                  			<div>
+														
 		                                  				<xsl:attribute name="class">app xsmall {{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="id">{{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="data-appid">{{this.id}}</xsl:attribute>
-				                                    	{{this.name}}
+														
+														{{{this.link}}}
 		                                  			</div>  
 		                                  			<div class="appLife small">
 		                                  				<xsl:attribute name="style">background-color:{{this.lifecycleColor}};color: {{this.lifecycleText}}</xsl:attribute>
@@ -729,10 +743,14 @@ function uniq_fast(a) {
     </xsl:template>
      <xsl:template match="node()" mode="legend">
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
-         <td style="width:90px"><xsl:attribute name="style">background-color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>;color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/></xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></td>
+         <div class="pull-right"><xsl:attribute name="style">background-color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>;color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>;border-radius:3px;margin-left:2px;padding:2px;width:70px;font-size:8pt;text-align:center</xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></div>
      </xsl:template>
-	<xsl:template match="node()" mode="getApplications">		
-		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+	<xsl:template match="node()" mode="getApplications">	
+		<xsl:variable name="thisLink">
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+		</xsl:variable>
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		"link":"<xsl:value-of select="$thisLink"/>"}<xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
     <xsl:template match="node()" mode="getScores">	
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>

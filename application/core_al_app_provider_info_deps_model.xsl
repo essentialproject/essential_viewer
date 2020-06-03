@@ -409,7 +409,10 @@
 						<tbody>
 							<!-- Middleware dependencies -->
 							<!--<xsl:for-each select="$anInboundList">-->
-							<xsl:for-each-group select="eas:getCompAppList($anInboundList, collection())" group-by="name">
+							<xsl:variable name="emptySequence" as="node()*">
+								<xsl:sequence select="()"></xsl:sequence>
+							</xsl:variable>
+							<xsl:for-each-group select="eas:getCompAppList($anInboundList, $emptySequence)" group-by="name">
 								<xsl:variable name="boxName" select="current-group()[1]"/>
 								<tr>
 									<td class="col-xs-6">
@@ -433,7 +436,10 @@
 
 							<!-- Direct dependencies -->
 							<!--<xsl:for-each select="$aDirectInboundList">-->
-							<xsl:for-each-group select="eas:getCompAppList($aDirectInboundList, collection())" group-by="name">
+							<xsl:variable name="emptySequence" as="node()*">
+								<xsl:sequence select="()"></xsl:sequence>
+							</xsl:variable>
+							<xsl:for-each-group select="eas:getCompAppList($aDirectInboundList, $emptySequence)" group-by="name">
 								<!--<xsl:variable name="boxDirectName" select="eas:getCompApp(current())"/>-->
 								<xsl:variable name="boxDirectName" select="current-group()[1]"/>
 								<tr>
@@ -475,7 +481,10 @@
 					<table class="depModelTable">
 						<tbody>
 							<!-- Middleware dependencies -->
-							<xsl:for-each-group select="eas:getCompAppList($anOutboundList, collection())" group-by="name">
+							<xsl:variable name="emptySequence" as="node()*">
+								<xsl:sequence select="()"></xsl:sequence>
+							</xsl:variable>
+							<xsl:for-each-group select="eas:getCompAppList($anOutboundList, $emptySequence)" group-by="name">
 								<xsl:variable name="boxName" select="current-group()[1]"/>
 								<tr>
 									<td class="col-xs-6">
@@ -498,7 +507,7 @@
 							</xsl:for-each-group>
 
 							<!-- Direct dependencies -->
-							<xsl:for-each-group select="eas:getCompAppList($aDirectOutboundList, collection())" group-by="name">
+							<xsl:for-each-group select="eas:getCompAppList($aDirectOutboundList, $emptySequence)" group-by="name">
 								<!--<xsl:variable name="boxDirectName" select="eas:getCompApp(current())"/>-->
 								<xsl:variable name="boxDirectName" select="current-group()[1]"/>
 								<tr>
@@ -608,14 +617,26 @@
 	<xsl:template name="automated_fiveColModel">
 
 		<!-- Find all the integration top-level applications for inbound side -->
-		<xsl:variable name="anInboundIntBox" select="eas:getCompAppList($anInboundIntegrationList, collection())"/>
-		<xsl:variable name="anOutboundIntBox" select="eas:getCompAppList($anOutboundIntegrationList, collection())"/>
-		<xsl:variable name="aDirectInboundCompAppList" select="eas:getCompAppList($aDirectInboundList, collection())"/>
+		<xsl:variable name="emptySequenceIn" as="node()*">
+			<xsl:sequence select="()"></xsl:sequence>
+		</xsl:variable>
+		<xsl:variable name="emptySequenceOut" as="node()*">
+			<xsl:sequence select="()"></xsl:sequence>
+		</xsl:variable>
+		<xsl:variable name="emptySequenceCompList" as="node()*">
+			<xsl:sequence select="()"></xsl:sequence>
+		</xsl:variable>
+		<xsl:variable name="anInboundIntBox" select="eas:getCompAppList($anInboundIntegrationList, $emptySequenceIn)"/>
+		<xsl:variable name="anOutboundIntBox" select="eas:getCompAppList($anOutboundIntegrationList, $emptySequenceOut)"/>
+		<xsl:variable name="aDirectInboundCompAppList" select="eas:getCompAppList($aDirectInboundList, $emptySequenceCompList)"/>
 		<xsl:variable name="aFromUsageList" select="$allAppUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $inboundApps/name]"/>
 		<xsl:variable name="allFromDependencies" select="$allAppDependencies[own_slot_value[slot_reference = ':FROM']/value = $aFromUsageList/name]"/>
 
 		<!-- Find relevant top-level outbound integrations from the focus application-->
-		<xsl:variable name="aDirectOutboundCompAppList" select="eas:getCompAppList($aDirectOutboundList, collection())"/>
+		<xsl:variable name="emptySequence" as="node()*">
+			<xsl:sequence select="()"></xsl:sequence>
+		</xsl:variable>
+		<xsl:variable name="aDirectOutboundCompAppList" select="eas:getCompAppList($aDirectOutboundList, $emptySequence)"/>
 		<xsl:variable name="aToUsageList" select="$allAppUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $outboundApps/name]"/>
 		<xsl:variable name="allToDependencies" select="$allAppDependencies[own_slot_value[slot_reference = ':TO']/value = $aToUsageList/name]"/>
 

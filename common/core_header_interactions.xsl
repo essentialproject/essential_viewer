@@ -160,7 +160,7 @@
 			const essEssentialCoreApiUri = '/essential-core/v1';
 			const essEssentialReferenceApiUri = '<xsl:value-of select="$noSQLEssentialRefStoreUri"/>';
 			const essEssentialRefBatchApiUri = '<xsl:value-of select="$noSQLEssentialRefBatchStoreUri"/>';
-			
+
 			// define the global object to hold environment variables
 			const essViewer = {};
 			essViewer.repoId = '<xsl:value-of select="repository/repositoryID"/>';
@@ -175,6 +175,18 @@
 				'TEST': '<xsl:value-of select="$userData//user:className"/>',
 				'isApprover': <xsl:value-of select="$sysUserIsApprover"/>
 			};
+
+
+			// define the global object to hold environment variables
+			// note we have to define this script in-line to make use of the xsl values
+			<xsl:variable name="targetReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theCurrentXSL]"/>
+			var essEnvironment = {};
+			essEnvironment.form = {
+				'id': '<xsl:value-of select="$targetReport/name"/>',
+				'name': '<xsl:value-of select="$targetReport/own_slot_value[slot_reference = 'name']/value"/>'
+			};
+
+
 			
 			function showViewSpinner(message) {
 			    $('#view-spinner-text').text(message);                            
@@ -275,7 +287,7 @@
 	</xsl:template>
 	
 	<xsl:template name="RenderInteractiveHeaderBars">
-		<xsl:if test="($eipMode = 'true') and ($thisRepoVersion >= '6.6')">
+		<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 			<div id="view-spinner" class="hidden">
 				
 				<div class="hm-spinner"/>
@@ -303,5 +315,7 @@
 	<xsl:template mode="RenderContentApprovalClass" match="node()">
 		"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
+	
+
 
 </xsl:stylesheet>

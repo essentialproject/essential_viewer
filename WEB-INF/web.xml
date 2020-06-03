@@ -112,6 +112,10 @@
 		<param-value>31535000</param-value>
 	</context-param>
 	<context-param>
+		<param-name>eipMode</param-name>
+		<param-value>false</param-value><!--eipmode-->
+	</context-param>
+	<context-param>
 		<param-name>pageHistoryTracking</param-name>
 		<!-- Set to 'off' to switch off page history tracking and 'on' to enable tracking -->  		
   		<param-value>on</param-value>
@@ -167,6 +171,12 @@
 	<context-param>
 		<param-name>viewerRepositoryIDQuery</param-name>
 		<param-value>/WEB-INF/security/getRepositoryID.xsl</param-value>
+	</context-param>
+	
+	<!-- Location of the Report API cache -->
+	<context-param>
+		<param-name>reportAPICacheLocation</param-name>
+		<param-value>/platform/tmp/reportApiCache/</param-value>
 	</context-param>
 	
 	<servlet>
@@ -335,6 +345,20 @@
   		<servlet-name>essentialAPIPassThru</servlet-name>
   		<servlet-class>com.enterprise_architecture.essential.report.api.EssentialAPIPassThru</servlet-class> 
   	</servlet>
+  	
+  	<!-- ReportAPI Servlet -->
+  	<servlet>
+  		<description>Renders Report APIs and caches them on-demand</description>
+  		<display-name>Essential Report API Service</display-name>
+  		<servlet-name>ReportAPIServlet</servlet-name>
+  		<servlet-class>com.enterprise_architecture.essential.report.ReportAPIServlet</servlet-class>
+  		<!--<servlet-class>com.enterprise_architecture.essential.report.security.SecureReportAPIServlet</servlet-class>-->
+  	</servlet>
+    
+  	<servlet-mapping>
+  		<servlet-name>ReportAPIServlet</servlet-name>
+		<url-pattern>/reportApi</url-pattern>
+	</servlet-mapping>
     
   	<servlet-mapping>
   		<servlet-name>essentialAPIPassThru</servlet-name>
