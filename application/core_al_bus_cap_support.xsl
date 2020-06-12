@@ -889,7 +889,10 @@
 		<xsl:choose>
 			<xsl:when test="count($theParentCap) > 0">
 				<xsl:variable name="childRels" select="$allChildCap2ParentCapRels[(own_slot_value[slot_reference = 'buscap_to_parent_parent_buscap']/value = $theParentCap/name)]"/>
-				<xsl:variable name="aChildList" select="$allBusinessCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListA" select="$allBusinessCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListB" select="$allBusinessCaps[name = $theParentCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
+				<xsl:variable name="aChildList" select="$aChildListA union $aChildListB"/>
+			
 				<xsl:variable name="aNewList" select="$aChildList except $theParentCap"/>
 				<xsl:variable name="aNewChildren" select="$theParentCap union $theChildCaps union $aNewList"/>
 				<xsl:copy-of select="eas:findAllSubCaps($aNewList, $aNewChildren)"/>

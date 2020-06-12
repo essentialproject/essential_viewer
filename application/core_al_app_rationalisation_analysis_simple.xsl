@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>    
+	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>  
+	<xsl:import href="../common/core_js_functions.xsl"/> 
+    <xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -674,7 +676,10 @@
 		</xsl:variable>
 		<xsl:variable name="subSubApps" select="$apps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 		
-        {"application":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "id":"<xsl:value-of select="current()/name"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>","codebase":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/name"/>","statusID":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/name"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>"}, </xsl:template>
+        {"application":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="current()"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template>", "id":"<xsl:value-of select="current()/name"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>", "codebase":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/name"/>","statusID":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/name"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>"}, </xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONservices">
 		<xsl:variable name="this" select="current()/name"/>
@@ -682,16 +687,22 @@
         <xsl:variable name="thisPhysProcessesRel" select="$physicalProcesses[own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value=$this]"/>
         <xsl:variable name="thisPhysProcesses" select="$physProcesses[own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value=$thisPhysProcessesRel/name]"/>
         <xsl:variable name="thisBusProcesses" select="$busProcesses[name=$thisPhysProcesses/own_slot_value[slot_reference='implements_business_process']/value]"/>
-		<xsl:if test="$thisserv/own_slot_value[slot_reference = 'name']/value"> {"service":"<xsl:value-of select="$thisserv/own_slot_value[slot_reference = 'name']/value"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:if test="$thisserv/own_slot_value[slot_reference = 'name']/value"> {"service":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="$thisserv"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template>"}<xsl:if test="not(position() = last())">,</xsl:if>
 		</xsl:if>
 	</xsl:template>
-   
+  
 
 	<xsl:template match="node()" mode="getServJSON"> {"service":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}, </xsl:template>
 	
     <xsl:template match="node()" mode="getServJSONapps">
 		<xsl:variable name="this" select="current()/name"/>
-		<xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference = 'provides_application_services']/value = $this]"/>{"application":"<xsl:value-of select="$thisapp/own_slot_value[slot_reference = 'name']/value"/><xsl:if test="not($thisapp)">Unknown</xsl:if>","id":"<xsl:value-of select="$thisapp/name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference = 'provides_application_services']/value = $this]"/>{"application":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="$thisapp"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template><xsl:if test="not($thisapp)">Unknown</xsl:if>","id":"<xsl:value-of select="$thisapp/name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
     
     <xsl:template match="node()" mode="codeOptions">

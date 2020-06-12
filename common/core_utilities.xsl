@@ -876,7 +876,7 @@
 				</xsl:variable>
 				
 				<!--<xsl:variable name="escapedInstanceName" select="translate($instanceName, $quoteString, '')"/>-->				
-				<xsl:variable name="escapedInstanceName" select="eas:validJSONString($instanceName)"/>
+				<xsl:variable name="escapedInstanceName" select="eas:renderJSText($instanceName)"/>
 				
 				<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
 

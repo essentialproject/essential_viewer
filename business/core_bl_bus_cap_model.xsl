@@ -238,7 +238,9 @@
 					    height: 40px;
 					    margin-bottom: 5px;
 					    text-align: center;
-					    background: url(images/value_chain_arrow_end.png) no-repeat right center;
+					    background-image: url(images/value_chain_arrow_end.png);
+					    background-repeat: no-repeat;
+					    background-position: right center;
 					    position: relative;
 					    box-sizing: content-box;
 					    line-height: 1.1em;

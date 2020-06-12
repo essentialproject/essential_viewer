@@ -361,6 +361,7 @@ function applySelect(){
                 })
 	
 			if(thisBus[0]){	
+
 				colourToShow=thisBus[0].backgroundcolor;
 				fontToShow=thisBus[0].color;
     			}
@@ -391,6 +392,7 @@ function applySelect(){
                 })
                  
 			if(thisApp[0]){	
+	
 				 colourToShow=thisApp[0].backgroundcolor;
             	 fontToShow=thisApp[0].color;
     			}
@@ -719,7 +721,9 @@ function uniq_fast(a) {
 		<xsl:choose>
 			<xsl:when test="count($theParentCap) > 0">
 				<xsl:variable name="childRels" select="$allChildCap2ParentCapRels[(own_slot_value[slot_reference = 'buscap_to_parent_parent_buscap']/value = $theParentCap/name)]"/>
-				<xsl:variable name="aChildList" select="$allBusCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListA" select="$allBusCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListB" select="$allBusCaps[name = $theParentCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
+				<xsl:variable name="aChildList" select="$aChildListA union $aChildListB"/>
 				<xsl:variable name="aNewList" select="$aChildList except $theParentCap"/>
 				<xsl:variable name="aNewChildren" select="$theParentCap union $theChildCaps union $aNewList"/>
 				<xsl:copy-of select="eas:findAllSubCaps($aNewList, $aNewChildren)"/>
@@ -745,6 +749,7 @@ function uniq_fast(a) {
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
          <div class="pull-right"><xsl:attribute name="style">background-color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>;color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>;border-radius:3px;margin-left:2px;padding:2px;width:70px;font-size:8pt;text-align:center</xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></div>
      </xsl:template>
+
 	<xsl:template match="node()" mode="getApplications">	
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
@@ -752,6 +757,11 @@ function uniq_fast(a) {
 		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 		"link":"<xsl:value-of select="$thisLink"/>"}<xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
+
+<!--	<xsl:template match="node()" mode="getApplications">		
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+    </xsl:template>  -->
+
     <xsl:template match="node()" mode="getScores">	
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
         {"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>","score":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_score']/value"/>","backgroundcolor":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>","color":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
