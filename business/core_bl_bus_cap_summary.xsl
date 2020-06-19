@@ -60,6 +60,13 @@
 	<!-- Get all of the required types of instances in the repository -->
 
 	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
+	<!-- Begin Rajaraman's suggestions from  https://www.enterprise-architecture.org/forums/viewtopic.php?f=21&t=2408 -->
+	<xsl:variable name="parentCap1" select="$allBusinessCaps[name = $parentCap/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
+   <xsl:variable name="parentCap2" select="$allBusinessCaps[name = $parentCap1/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
+   <xsl:variable name="parentCap3" select="$allBusinessCaps[name = $parentCap2/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
+   <xsl:variable name="parentCap4" select="$allBusinessCaps[name = $parentCap3/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
+	<!-- END Rajaraman's suggestions from  https://www.enterprise-architecture.org/forums/viewtopic.php?f=21&t=2408 -->
+	
 	<!--<xsl:variable name="allBusProcs" select="/node()/simple_instance[type='Business_Process']" />
 	<xsl:variable name="allApps" select="/node()/simple_instance[(type='Application_Provider') or (type='Composite_Application_Provider')]" />
 	<xsl:variable name="allAppServices" select="/node()/simple_instance[(type='Application_Service') or (type='Composite_Application_Service')]"/>
@@ -251,26 +258,62 @@
 							<hr/>
 						</div>
 
-						<!--Setup Parent Capability Section-->
-
+									<!--Setup Parent Capability Section-->
 						<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-sitemap icon-section icon-color"/>
 							</div>
 							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Parent Business Capability')"/>
+								<xsl:value-of select="eas:i18n('Business Capability Parentage')"/>
 							</h2>
-
 							<div class="content-section">
 								<xsl:choose>
-									<xsl:when test="count($parentCap) = 0">
+									<xsl:when test="count($parentCap4) = 0">
 										<em>
-											<xsl:value-of select="eas:i18n('No parent capability captured')"/>
+											<!--<xsl:value-of select="eas:i18n('No parent capability captured')"/>-->
 										</em>
 									</xsl:when>
-                                    
-									<xsl:when test="count($parentCap) &gt; 1">
-									 <xsl:apply-templates select="$parentCap" mode="renderBusParentCap"/>    
+									<xsl:otherwise>
+                                        <xsl:apply-templates select="$parentCap4" mode="renderBusParentCap"/>  
+									</xsl:otherwise>
+								</xsl:choose>
+							</div>
+							<div class="content-section">
+								<xsl:choose>
+									<xsl:when test="count($parentCap3) = 0">
+										<em>
+											<!--<xsl:value-of select="eas:i18n('No parent capability captured')"/>-->
+										</em>
+									</xsl:when>
+									<xsl:otherwise>
+                                        <xsl:apply-templates select="$parentCap3" mode="renderBusParentCap"/>  
+									</xsl:otherwise>
+								</xsl:choose>
+							</div>
+							<div class="content-section">
+								<xsl:choose>
+									<xsl:when test="count($parentCap2) = 0">
+										<em>
+											<!--<xsl:value-of select="eas:i18n('No parent capability captured')"/>-->
+										</em>
+									</xsl:when>
+									<xsl:otherwise>
+                                        <xsl:apply-templates select="$parentCap2" mode="renderBusParentCap"/>  
+									</xsl:otherwise>
+								</xsl:choose>
+							</div>
+							<div class="content-section">
+								<xsl:choose>
+									<xsl:when test="count($parentCap1) = 0">
+										<em>
+											<!--<xsl:value-of select="eas:i18n('No parent capability captured')"/>-->
+										</em>
+									</xsl:when>
+									<xsl:otherwise>
+                                        <xsl:apply-templates select="$parentCap1" mode="renderBusParentCap"/>  
+									</xsl:otherwise>
+								</xsl:choose>
+							</div>
                                     <!--    
                                         <ul>
 											<xsl:for-each select="$parentCap">
@@ -282,20 +325,7 @@
 													</xsl:call-template>
 												</li>
 											</xsl:for-each>
-										</ul>
--->
-
-
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="$parentCap"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-										</xsl:call-template>
-									</xsl:otherwise>
-								</xsl:choose>
-							</div>
+										</ul>-->							
 							<hr/>
 						</div>
 
@@ -837,7 +867,20 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-
+   
+	<!-- render a Business Capability chain-->
+	<xsl:template match="node()" mode="renderBusParentCap">
+        <xsl:variable name="this" select="current()"/>
+    <li>
+        <xsl:call-template name="RenderInstanceLink">
+		<xsl:with-param name="theSubjectInstance" select="$this"/>
+		<xsl:with-param name="theXML" select="$reposXML"/>
+		<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+		</xsl:call-template>
+    </li>
+    </xsl:template>
+	
+		
 	<!-- render a column of business capabilities -->
 	<xsl:template match="node()" mode="RenderBusinessCapabilityColumn">
 
