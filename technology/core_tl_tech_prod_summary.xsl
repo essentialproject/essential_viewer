@@ -823,7 +823,7 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
 				<xsl:when test="count($allRelevantTechProdStandards) = 0">
 					<td class="alignCentre">
 						<em><xsl:value-of select="eas:i18n('no standards defined')"/></em>
-					</td>oce
+					</td>
 				</xsl:when>
 				<xsl:when test="count($thisTechProdStandard) >0">
 					<td class="alignCentre {$thisStandardStyleClass}">
