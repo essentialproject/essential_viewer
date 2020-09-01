@@ -467,6 +467,66 @@
 
 		<xsl:value-of select="concat('&amp;cl=', $i18n)"/>
 	</xsl:template>
+	
+	
+	<!-- Render a link to an Report API instance -->
+	<xsl:template name="RenderAPILinkText">
+		<xsl:param name="theXML">reportXML.xml</xsl:param>
+		<xsl:param name="theXSL"/>
+		<xsl:param name="theInstanceID"/>
+		<xsl:param name="theHistoryLabel"/>
+		<xsl:param name="theParam2"/>
+		<xsl:param name="theParam3"/>
+		<xsl:param name="theParam4"/>
+		<xsl:param name="theContentType"/>
+		<xsl:param name="theFilename"/>
+		<xsl:param name="theUserParams"/>
+		<xsl:param name="viewScopeTerms" select="()"/>
+		
+		<!-- using the specified parameters, build the HREF attribute for the link -->
+		<xsl:text>reportApi?XML=</xsl:text>
+		<xsl:value-of select="$theXML"/>
+		<xsl:text>&amp;XSL=</xsl:text>
+		<xsl:value-of select="$theXSL"/>
+		
+		<xsl:if test="string-length($theInstanceID) > 0">
+			<xsl:text>&amp;PMA=</xsl:text>
+			<xsl:value-of select="$theInstanceID"/>
+		</xsl:if>
+		
+		<xsl:if test="string-length($theHistoryLabel) > 0">
+			<xsl:text>&amp;LABEL=</xsl:text>
+			<xsl:value-of select="encode-for-uri($theHistoryLabel)"/>
+		</xsl:if>
+		<xsl:if test="string-length($theParam2) > 0">
+			<xsl:text>&amp;PMA2=</xsl:text>
+			<xsl:value-of select="$theParam2"/>
+		</xsl:if>
+		<xsl:if test="string-length($theParam3) > 0">
+			<xsl:text>&amp;PMA3=</xsl:text>
+			<xsl:value-of select="$theParam3"/>
+		</xsl:if>
+		<xsl:if test="string-length($theParam4) > 0">
+			<xsl:text>&amp;PMA4=</xsl:text>
+			<xsl:value-of select="$theParam4"/>
+		</xsl:if>
+		<xsl:if test="(string-length($theContentType) > 0) and (string-length($theFilename) > 0)">
+			<xsl:text>&amp;CT=</xsl:text>
+			<xsl:value-of select="$theContentType"/>
+			<xsl:text>&amp;FILE=</xsl:text>
+			<xsl:value-of select="$theFilename"/>
+		</xsl:if>
+		<xsl:if test="string-length($theUserParams) > 0">
+			<xsl:text>&amp;</xsl:text>
+			<xsl:value-of select="$theUserParams"/>
+		</xsl:if>
+		<xsl:if test="count($viewScopeTerms) > 0">
+			<xsl:text>&amp;viewScopeTermIds=</xsl:text>
+			<xsl:value-of select="eas:queryStringForInstanceIds($viewScopeTerms, '')"/>
+		</xsl:if>
+		
+		<xsl:value-of select="concat('&amp;cl=', $i18n)"/>
+	</xsl:template>
 
 
 
