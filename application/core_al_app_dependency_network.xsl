@@ -204,7 +204,6 @@
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/handlebars-v4.1.2.js"/>
 				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
 				<style>

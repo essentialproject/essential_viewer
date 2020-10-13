@@ -312,7 +312,17 @@
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
-
+<script>
+$( document ).ready(function() {
+	$(document).on("click", ".saveApps", function(){
+		var appLists = $(this).attr('appLists');
+		var carriedApps=appLists.split(',');
+		var apps={};
+		apps['Composite_Application_Provider']=carriedApps;
+		sessionStorage.setItem("context", JSON.stringify(apps));
+	});
+});	
+				</script>
 			</body>
 		</html>
 	</xsl:template>
@@ -474,6 +484,8 @@
 					<xsl:with-param name="divClass" select="'text-white'"/>
 					<xsl:with-param name="anchorClass" select="'noUL'"/>
 				</xsl:call-template>
+				 <div style="display:inline-block">
+					 <i class="fa fa-exchange" style="color:white;cursor:pointer" alt="Rationalisation View" onclick="location.href='report?XML=reportXML.xml&amp;XSL=application/core_al_app_rationalisation_analysis_simple.xsl&amp;PMA=bcm'"><xsl:attribute name="appLists"><xsl:value-of select="$topApp/name"/></xsl:attribute></i> </div>
 			</div>
 
 			<div class="pull-left col-xs-5" id="RightSide">

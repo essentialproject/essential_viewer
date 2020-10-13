@@ -53,82 +53,6 @@
 
 	
 	<xsl:template name="RenderCommonAPIJS">
-		
-		<style>
-			/*Spinner Starts*/
-
-			#view-spinner {
-				height: 100vh;
-				width: 100vw;
-				position: fixed;
-				top: 0;
-				left:0;
-				z-index:999999;
-				background-color: hsla(255,100%,100%,0.5);
-			}
-			
-			#view-spinner-text {
-				width: 100vw;
-				position: fixed;
-				top: 20%;
-				left: 0;
-				z-index:999999;
-			}
-			      
-			.hm-spinner{
-			  height: 115px;
-			  width: 115px;
-			  border: 6px solid transparent;
-			  border-top-color: #000;
-			  border-bottom-color: #000;
-			  border-radius: 50%;
-			  position: relative;
-			  -webkit-animation: spin 3s linear infinite;
-			  animation: spin 3s linear infinite;
-			  top: 25%;
-			  left: calc(50% - 58px);
-			}
-			
-			.hm-spinner::before{
-			  content: "";
-			  position: absolute;
-			  top: 20px;
-			  right: 20px;
-			  bottom: 20px;
-			  left: 20px;
-			  border: 6px solid transparent;
-			  border-top-color: #000;
-			  border-bottom-color: #000;
-			  border-radius: 50%;
-			  -webkit-animation: spin 1.5s linear infinite;
-			  animation: spin 1.5s linear infinite;
-			}
-			
-			@-webkit-keyframes spin {
-			    from {
-			      -webkit-transform: rotate(0deg);
-			      transform: rotate(0deg);
-			    }
-			    to {
-			      -webkit-transform: rotate(360deg);
-			      transform: rotate(360deg);
-			    }
-			}
-			
-			@keyframes spin {
-			    from {
-			      -webkit-transform: rotate(0deg);
-			      transform: rotate(0deg);
-			    }
-			    to {
-			      -webkit-transform: rotate(360deg);
-			      transform: rotate(360deg);
-			    }
-			}
-			
-			/*Spinner Ends*/
-		</style>
-		
 		<!-- Handlebars template to render a list in a drop down box-->
 		<script id="ess-ea-element-list-template" type="text/x-handlebars-template">
 			{{#each this}}
@@ -289,9 +213,14 @@
 	<xsl:template name="RenderInteractiveHeaderBars">
 		<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 			<div id="view-spinner" class="hidden">
-				
-				<div class="hm-spinner"/>
-				<div id="view-spinner-text" class="text-center xlarge strong"/>
+				<div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;">
+					<div class="spin-icon" style="width: 60px; height: 60px;">
+						<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+						<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+						<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+					</div>						
+				</div>
+				<div id="view-spinner-text" class="text-center xlarge strong spin-text2"/>
 			</div>
 			
 			<xsl:call-template name="RenderCommonAPIJS"/>

@@ -64,6 +64,9 @@
 	<!-- Collect all available reports -->
 	<xsl:variable name="utilitiesAllReports" select="/node()/simple_instance[type = 'Report']"/>
 	
+	<!-- Collect all available reports -->
+	<xsl:variable name="utilitiesAllPDFConfigs" select="/node()/simple_instance[type = 'Report_PDF_Configuration']"/>
+	
 	<!-- Collect all available editors -->
 	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor')]"/>
 	
@@ -83,7 +86,7 @@
 	<xsl:variable name="utilitiesAllSynonyms" select="/node()/simple_instance[(type = 'Synonym')]"/>
 
 	<!-- Collect all available commentaries -->
-	<xsl:variable name="utilitiesAllCommentaries" select="/node()/simple_instance[(type = 'Commentary')]"/>
+	<xsl:variable name="utilitiesAllCommentaries" select="/node()/simple_instance[(type = ('Commentary', 'Label'))]"/>
 
 	<!-- Collect all available element style instances -->
 	<xsl:variable name="utilitiesAllElementStyles" select="/node()/simple_instance[type = 'Element_Style']"/>
@@ -1315,6 +1318,44 @@
 		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:validJSONString($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
 		
 	</xsl:template>
+	
+	
+	<xsl:template name="RenderMultiLangInstanceDescriptionForJSON">
+		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
+		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
+		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
+		
+		<!-- First perform user clearance check -->
+		<xsl:variable name="unprotectedText">
+			<xsl:choose>
+				<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
+					<xsl:choose>
+						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+							<xsl:value-of select="replace(normalize-space($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value), '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:choose>
+								<xsl:when test="count($instanceSynonym) > 0">
+									
+									<xsl:value-of select="replace(normalize-space($instanceSynonym[1]/own_slot_value[slot_reference = ('description', 'relation_description')]/value), '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="replace(normalize-space($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value), '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="eas:i18n($theRedactedString)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
+		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:validJSONString($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
+		<xsl:value-of select="$unprotectedText" disable-output-escaping="yes"></xsl:value-of>
+	</xsl:template>
 
 	<!-- TEMPLATE TO CREATE THE QUERY STRING FOR DRILLING DOWN TO A REPORT -->
 	<xsl:template name="ConstructPopUpQueryString">
@@ -1954,7 +1995,7 @@
 
 		<xsl:variable name="ecsapeBackslashes" select="replace($theText, '\\','\\\\')"/>
 		<!--<xsl:variable name="anAposEscapedText" select="replace($ecsapeBackslashes, $apos, $escapeApos)"/>-->
-		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($ecsapeBackslashes, $quote, $apos)"/>
+		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($ecsapeBackslashes, $quote, $escapeQuote)"/>
 		<xsl:variable name="escapeBrackets" select="replace($anQuoteAndAposEscapedText, '(\(|\))', '\\$1')"/>
 		<xsl:variable name="escapeAmpersand" select="replace($anQuoteAndAposEscapedText, '&amp;', 'and')"/>
 		<xsl:variable name="escapeSpace" select="replace($escapeAmpersand, '&#160;', ' ')"/>
@@ -2464,7 +2505,7 @@
 		<xsl:param name="theString"/>		
 		<xsl:variable name="aQuote">"</xsl:variable>
 		<xsl:variable name="anEscapedQuote">\\"</xsl:variable>
-		<xsl:value-of select="replace(normalize-unicode($theString), $aQuote, $anEscapedQuote)"/>
+		<xsl:value-of select="translate(replace(normalize-space($theString), $aQuote, $anEscapedQuote), '&#xA;&#xD;', '')"/>
 	</xsl:function>
 	
 	

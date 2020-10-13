@@ -454,6 +454,9 @@ function applySelect(){
                 });
             });
       $('#capmodel').empty();
+	
+	console.log(bcmData.bcm[0]);
+	
       $('#capmodel').append(capTemplate(bcmData.bcm[0]));  
         applySelect()}
     
@@ -663,7 +666,7 @@ function uniq_fast(a) {
         <xsl:variable name="sthisrelevantApps" select="$relevantApps[name= $sthisdirectProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
         <xsl:variable name="sthisrelevantApps2" select="$relevantApps2[name = $sthisrelevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
         <xsl:variable name="sthisappsWithCaps" select="$sthisrelevantApps union $sthisrelevantApps2"/>
-         <xsl:variable name="allProcs" select="$sthisdirectProcessToAppRel union $sthisrelevantPhysProc2AppProRoles"/>
+        <xsl:variable name="allProcs" select="$sthisdirectProcessToAppRel union $sthisrelevantPhysProc2AppProRoles"/>
        
 
         
@@ -695,21 +698,24 @@ function uniq_fast(a) {
         <xsl:variable name="subthisrelevantAppProRoles" select="$relevantAppProRoles[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
         <xsl:variable name="subthisrelevantApps" select="$relevantApps2[name = $subthisrelevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
         <xsl:variable name="subthisrelevantAppsDirect" select="$relevantApps[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>  
-        <xsl:variable name="appLifecycle" select="$allLifecycleStatus[name = $subthisrelevantApps/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>
+        <xsl:variable name="indirectappLifecycle" select="$allLifecycleStatus[name = $subthisrelevantApps/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>
+		<xsl:variable name="directappLifecycle" select="$allLifecycleStatus[name = $subthisrelevantAppsDirect/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>	
+		  <xsl:variable name="appLifecycle" select="$indirectappLifecycle union $directappLifecycle"/>	
         <xsl:variable name="thisStyle" select="$allElementStyles[name=$appLifecycle/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>   
         <xsl:variable name="allAppPlans" select="$sthisappsWithCaps union subthisrelevantApps" />   
          <xsl:variable name="thisplannedChanges" select="$plannedChanges[own_slot_value[slot_reference='plan_to_element_ea_element']/value=$subthisrelevantApps/name]"/>
         <xsl:variable name="thisstratPlans" select="$stratPlans[own_slot_value[slot_reference='strategic_plan_for_elements']/value=$thisplannedChanges/name]"/>    
-            
-      {    <xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantApps"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantApps"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:when><xsl:otherwise><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:otherwise></xsl:choose>,    
+       <xsl:if test="$subthisrelevantApps union $subthisrelevantAppsDirect">    
+      {<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantApps"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantApps"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:when><xsl:otherwise> <xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:otherwise></xsl:choose>,    
           <!--  "id":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/></xsl:otherwise></xsl:choose>",-->
-            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",-->
+            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",-->
         "debug":"", 
         "busScore":"<xsl:value-of select="$busScore"/>", 
         "busFit":"<xsl:value-of select="$busFit"/>","busFitVal":"<xsl:value-of select="$thisBFValues/name"/>",
         "techFit":"<xsl:value-of select="$appFit"/>",
         "appScore":"<xsl:value-of select="$appScore"/>","techFitVal":"<xsl:value-of select="$thisAFValues/name"/>", "lifecycle":"<xsl:value-of select="$appLifecycle/own_slot_value[slot_reference = 'enumeration_value']/value"/>","lifecycleColor":"<xsl:choose><xsl:when test="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"><xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/></xsl:when><xsl:otherwise>#ebdd8f</xsl:otherwise></xsl:choose>","lifecycleText":"<xsl:choose><xsl:when test="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"><xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/></xsl:when><xsl:otherwise>#000000</xsl:otherwise></xsl:choose>",
         "plans":"<xsl:value-of select="$thisstratPlans/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+			</xsl:if>
         </xsl:for-each> ]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>

@@ -40,6 +40,8 @@ function essRenderUpdateJSON(theObject, attrList) {
     }
 }
 
+
+
 function essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb) {
 	return function() {
 		let response = xhr.responseText;
@@ -118,6 +120,42 @@ function essCreateCORSRequest(method, url) {
 		xhr = new XDomainRequest();
 		xhr.open(method, url);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+
+	} else {
+	
+		// Otherwise, CORS is not supported by the browser.
+		xhr = null;
+
+	}
+	return xhr;
+}
+
+
+//Utility function to create a CORs request
+function essCreateFormCORSRequest(method, url) {
+	var xhr = new XMLHttpRequest();
+	if ("withCredentials" in xhr) {
+	
+		// Check if the XMLHttpRequest object has a "withCredentials" property.
+		// "withCredentials" only exists on XMLHTTPRequest2 objects.
+		
+		xhr.open(method, url, true);
+		/*xhr.setRequestHeader('Content-type','multipart/form-data');*/
+		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+		
+
+	} else if (typeof XDomainRequest != "undefined") {
+		
+		// Otherwise, check if XDomainRequest.
+		// XDomainRequest only exists in IE, and is IE's way of making CORS requests
+		xhr = new XDomainRequest();
+		xhr.open(method, url);
+		/*xhr.setRequestHeader('Content-type','multipart/form-data');*/
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
 		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
 		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);

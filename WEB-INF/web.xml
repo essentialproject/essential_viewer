@@ -197,7 +197,10 @@
 			<param-name>uploadTempStore</param-name>
 			<param-value>/platform/tmp</param-value>
 		</init-param>
-
+		<init-param>
+			<param-name>mergeTransformXSL</param-name>
+			<param-value>/WEB-INF/security/mergeCurrentNew.xsl</param-value>
+		</init-param>
 	</servlet>
 
 	<servlet>
@@ -540,13 +543,18 @@
             <web-resource-name>ViewTemplates</web-resource-name>
             <description>No direct access to view template files.</description>
             <url-pattern>*.xsl</url-pattern>
-            <http-method>POST</http-method>
-            <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>
             <description>No direct browser access to view template files.</description>
             <role-name>NobodyHasThisRole</role-name>
         </auth-constraint>
+    </security-constraint>
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AllowCacheFiles</web-resource-name>
+            <description>Allow access to cache files.</description>
+            <url-pattern>/platform/tmp/reportApiCache/*</url-pattern>
+        </web-resource-collection>
     </security-constraint>
 	
 </web-app>

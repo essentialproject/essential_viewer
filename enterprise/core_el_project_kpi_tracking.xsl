@@ -75,7 +75,6 @@
             </xsl:call-template>
             <link href="js/select2/css/select2.min.css" rel="stylesheet" />
             <script src="js/select2/js/select2.min.js" />
-            <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

@@ -119,17 +119,20 @@
 			    <Cell ss:Index="2" ss:StyleID="s65"><Data ss:Type="String">ID</Data></Cell>
 			    <Cell ss:StyleID="s65"><Data ss:Type="String">Roadmap Name</Data></Cell>
 			    <Cell ss:StyleID="s65"><Data ss:Type="String">Description</Data></Cell>
+			   	<Cell ss:StyleID="s65"><Data ss:Type="String">Business Model</Data></Cell>
 			   </Row>
 			   <Row ss:AutoFitHeight="0" ss:Height="9"/>
 			   <Row ss:AutoFitHeight="0" ss:Height="17">
 			    <Cell ss:Index="2" ss:StyleID="s66"><Data ss:Type="String">{{roadmap.extId}}</Data></Cell>
 			    <Cell ss:StyleID="s66"><Data ss:Type="String">{{roadmap.name}}</Data></Cell>
 			    <Cell ss:StyleID="s66"><Data ss:Type="String">{{roadmap.description}}</Data></Cell>
+			   	<Cell ss:StyleID="s66"><Data ss:Type="String">{{roadmap.businessModel.name}}</Data></Cell>
 			   </Row>
 			   <Row ss:AutoFitHeight="0" ss:Height="17">
 			    <Cell ss:Index="2" ss:StyleID="s66"/>
 			    <Cell ss:StyleID="s66"/>
 			    <Cell ss:StyleID="s66"/>
+			   	<Cell ss:StyleID="s66"/>
 			   </Row>
 			  </Table>
 			  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">

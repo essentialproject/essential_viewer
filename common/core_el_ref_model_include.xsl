@@ -40,7 +40,7 @@
 							{{#l2BusCaps}}
 								<!--<a href="#" class="text-default">-->
 									<div class="busRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{busCapId}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{busCapLink}}}
 										</div>
@@ -60,7 +60,7 @@
 																<th class="cellWidth-140"><xsl:value-of select="eas:i18n('Application Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="busCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_app_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>
@@ -103,7 +103,7 @@
 											</div>
 											{{#childAppCaps}}
 													<div class="appRefModel-blob">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title">
 															{{{link}}}
 														</div>
@@ -123,7 +123,7 @@
 																				<th class="cellWidth-140"><xsl:value-of select="eas:i18n('Application Count')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody  class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -148,7 +148,7 @@
 											</div>
 											{{#childAppCaps}}
 													<div class="appRefModel-blob">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title">
 															{{{link}}}
 														</div>
@@ -168,7 +168,7 @@
 																				<th class="cellWidth-140"><xsl:value-of select="eas:i18n('Application Count')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -197,7 +197,7 @@
 											{{#childAppCaps}}
 												<a href="#" class="text-default">
 													<div class="appRefModel-blob">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title">
 															{{{link}}}
 														</div>
@@ -217,7 +217,7 @@
 																				<th class="cellWidth-140"><xsl:value-of select="eas:i18n('Application Count')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -258,7 +258,7 @@
 											</div>
 											{{#childAppCaps}}
 													<div class="appRefModel-blob noAppColour">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title text-midgrey">
 															{{{link}}}
 														</div>
@@ -279,7 +279,7 @@
 																				<th class="alignCentre small cellWidth-180 rightAppHeading"><xsl:value-of select="eas:i18n('Application 2')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody  class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -304,7 +304,7 @@
 											</div>
 											{{#childAppCaps}}
 													<div class="appRefModel-blob noAppColour">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title">
 															{{{link}}}
 														</div>
@@ -325,7 +325,7 @@
 																				<th class="alignCentre small cellWidth-180 rightAppHeading"><xsl:value-of select="eas:i18n('Application 2')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody  class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -353,7 +353,7 @@
 											</div>
 											{{#childAppCaps}}
 												<div class="appRefModel-blob noAppColour">
-														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+														<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 														<div class="refModel-blob-title">
 															{{{link}}}
 														</div>
@@ -374,7 +374,7 @@
 																				<th class="alignCentre small cellWidth-180 rightAppHeading"><xsl:value-of select="eas:i18n('Application 2')"/></th>
 																			</tr>
 																		</thead>
-																		<tbody>
+																		<tbody class="appCapTableRow">
 																			<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_app_rows</xsl:text></xsl:attribute>
 																		</tbody>
 																	</table>
@@ -418,7 +418,7 @@
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{link}}}
 										</div>
@@ -436,7 +436,7 @@
 																<th class="alignCentre cellWidth-140"><xsl:value-of select="eas:i18n('Product Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="techCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_techprod_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>					
@@ -463,7 +463,7 @@
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{link}}}
 										</div>
@@ -481,7 +481,7 @@
 																<th class="alignCentre cellWidth-140"><xsl:value-of select="eas:i18n('Product Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="techCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_techprod_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>											
@@ -493,6 +493,7 @@
 							</div>
 						</div>
 					</div>
+					<div class="clearfix bottom-10"/>
 				{{/each}}
 			</div>
 			<!--ends-->
@@ -507,7 +508,7 @@
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{link}}}
 										</div>
@@ -525,7 +526,7 @@
 																<th class="alignCentre cellWidth-140"><xsl:value-of select="eas:i18n('Product Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="techCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_techprod_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>											
@@ -554,7 +555,7 @@
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{link}}}
 										</div>
@@ -572,7 +573,7 @@
 																<th class="alignCentre cellWidth-140"><xsl:value-of select="eas:i18n('Product Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="techCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_techprod_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>											
@@ -584,6 +585,7 @@
 							</div>
 						</div>
 					</div>
+					<div class="clearfix bottom-10"/>
 				{{/each}}
 			</div>
 			<!--ends-->
@@ -599,7 +601,7 @@
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
-										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
+										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
 											{{{link}}}
 										</div>
@@ -617,7 +619,7 @@
 																<th class="alignCentre cellWidth-140"><xsl:value-of select="eas:i18n('Product Count')"/></th>
 															</tr>
 														</thead>
-														<tbody>
+														<tbody class="techCapTableRow">
 															<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_techprod_rows</xsl:text></xsl:attribute>
 														</tbody>
 													</table>
@@ -630,6 +632,7 @@
 							</div>
 						</div>
 					</div>
+					<div class="clearfix bottom-10"/>
 				{{/each}}
 			</div>
 			<!--Ends-->
@@ -713,7 +716,7 @@
 											<i class="fa fa-info-circle text-white"/>
 											<div class="hiddenDiv">
 												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
-												<p>{{description}}</p>											
+												<p>{{description}}</p>										
 											</div>
 										</div>
 									</div>				
@@ -858,7 +861,7 @@
 						{{#l2BusCaps}}
 							<div class="L1Cap_Outer">
 								<div class="L1Cap_Box bg-white">
-									<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute>
+									<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{busCapId}}</xsl:text></xsl:attribute>
 									<div class="L1_CapLabel">
 										{{{busCapLink}}}
 										<!--<a>
@@ -929,7 +932,7 @@
 								{{#l2BusCaps}}
 									<div class="L1Cap_Outer">
 										<div class="L1Cap_Box bg-white">
-											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute>
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{busCapId}}</xsl:text></xsl:attribute>
 											<div class="L1_CapLabel">{{{busCapLink}}}</div>
 											{{#if nonCompliantTotal}}
 												<div class="capWarning">
@@ -1046,7 +1049,7 @@
 								{{#l2BusCaps}}
 									<div class="L1Cap_Outer">
 										<div class="L1Cap_Box bg-white">
-											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute>
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{busCapId}}</xsl:text></xsl:attribute>
 											<div class="L1_CapLabel">{{{busCapLink}}}</div>
 										</div>
 										<div class="L1Cap_BottomHeatmapOuter">
@@ -1154,7 +1157,7 @@
 								{{#l2BusCaps}}
 									<div class="L1Cap_Outer">
 										<div class="L1Cap_Box bg-white">
-											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute>
+											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{busCapId}}_blob</xsl:text></xsl:attribute><xsl:attribute name="easid"><xsl:text disable-output-escaping="yes">{{busCapId}}</xsl:text></xsl:attribute>
 											<div class="L1_CapLabel">{{{busCapLink}}}</div>
 										</div>
 										<div class="L1Cap_BottomHeatmapOuter">

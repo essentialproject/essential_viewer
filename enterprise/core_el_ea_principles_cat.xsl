@@ -56,14 +56,23 @@
 	<xsl:variable name="allAppPrinciples" select="/node()/simple_instance[type = 'Application_Architecture_Principle']"/>
 	<xsl:variable name="allInfoPrinciples" select="/node()/simple_instance[type = 'Information_Architecture_Principle']"/>
 	<xsl:variable name="allTechPrinciples" select="/node()/simple_instance[type = 'Technology_Architecture_Principle']"/>
+	<xsl:variable name="allPrinciples" select="$allBusPrinciples union $allAppPrinciples union $allInfoPrinciples union $allTechPrinciples" ></xsl:variable>	
 
 	<xsl:variable name="allBusPrinciplesAssessments" select="/node()/simple_instance[type = 'Business_Principle_Compliance_Assessment']"/>
 	<xsl:variable name="allAppPrinciplesAssessments" select="/node()/simple_instance[type = 'Application_Principle_Compliance_Assessment']"/>
 	<xsl:variable name="allInfoPrinciplesAssessments" select="/node()/simple_instance[type = 'Information_Principle_Compliance_Assessment']"/>
 	<xsl:variable name="allTechPrinciplesAssessments" select="/node()/simple_instance[type = 'Technology_Principle_Compliance_Assessment']"/>
+	<xsl:variable name="allDirectPrinciplesAssessments" select="$allBusPrinciplesAssessments union $allAppPrinciplesAssessments union $allInfoPrinciplesAssessments union $allTechPrinciplesAssessments"/>
+	
+	<xsl:variable name="allPolicy" select="/node()/simple_instance[supertype = 'Policy'][name=$allPrinciples/own_slot_value[slot_reference = 'principle_realisation_policies']/value]"/>
+	<xsl:variable name="allControls" select="/node()/simple_instance[type = 'Control'][name=$allPolicy/own_slot_value[slot_reference = 'policy_controls']/value]"/>
+	<xsl:variable name="allIndirectPrinciplesAssessments" select="/node()/simple_instance[type = 'Control_Assessment'][own_slot_value[slot_reference = 'assessment_control']/value=$allControls/name]"/>
     
     <xsl:variable name="principleLevels" select="/node()/simple_instance[type = 'Principle_Compliance_Level']"/>
-
+	<xsl:variable name="assessmentLevels" select="/node()/simple_instance[type = 'Control_Assessment_Finding']"/>
+	<xsl:variable name="allScoreLevels" select="$principleLevels union $assessmentLevels"/>
+	<xsl:variable name="allassessmentLevelsMax" select="max($assessmentLevels/own_slot_value[slot_reference='enumeration_sequence_number']/value)"/>
+	<xsl:variable name="allprincipleLevelsMax" select="max($principleLevels/own_slot_value[slot_reference='enumeration_sequence_number']/value)"/>
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
 		<xsl:choose>
@@ -100,6 +109,7 @@
 					<xsl:value-of select="$pageLabel"/>
 				</title>
 				<script src="js/showhidediv.js" type="text/javascript"/>
+				
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -221,7 +231,8 @@
 								</h1>
 							</div>
 						</div>
-                        
+ 
+	 
                
             <xsl:variable name="panelID">#collapse<xsl:value-of select="position()"/></xsl:variable>                    
                <div class="panel panel-default">
@@ -238,19 +249,19 @@
       -->
                       <div style="float: left">
                           <span style="font-size:8pt;color:black" id="buts">Business</span><br/>
-                          <a data-toggle="collapse" href="#collapse1" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle" onclick="butFunction('buts')">
+                          <a data-toggle="collapse" href="#collapse1" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle">
                               <i class="fa fa-building-o"></i><span class="indicator-dot"> <xsl:value-of select="count($allBusPrinciples)"/> </span> 
                             </a> 
                           <span style="font-size:8pt;color:black" id="apps">Application</span><br/>
-                              <a data-toggle="collapse" href="#collapse2" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle" onclick="butFunction('apps')">
+                              <a data-toggle="collapse" href="#collapse2" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle" >
                               <i class="fa fa-tablet"></i><span class="indicator-dot"><xsl:value-of select="count($allAppPrinciples)"/> </span> 
                             </a>
                           <span style="font-size:8pt;color:black" id="info">Information</span><br/>
-                          <a data-toggle="collapse" href="#collapse3" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle" onclick="butFunction('info')"><span class="indicator-dot"> <xsl:value-of select="count($allInfoPrinciples)"/></span>
+                          <a data-toggle="collapse" href="#collapse3" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle"><span class="indicator-dot"> <xsl:value-of select="count($allInfoPrinciples)"/></span>
                             <i class="fa fa-file-code-o"></i>
                             </a> 
                           <span style="font-size:8pt;color:black" id="tech">Technology</span><br/>
-                          <a data-toggle="collapse" href="#collapse4" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle" onclick="butFunction('tech')"><span class="indicator-dot"><xsl:value-of select="count($allTechPrinciples)"/></span>
+                          <a data-toggle="collapse" href="#collapse4" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle"><span class="indicator-dot"><xsl:value-of select="count($allTechPrinciples)"/></span>
                             <i class="fa fa-server"></i>
                             </a> 
                           
@@ -261,8 +272,14 @@
                 </div>
                    </div>
                     <div class="col-xs-11">
-                                         
-                     <div id="collapse1" class="panel-collapse collapse">
+                      <ul class="nav nav-tabs">
+						  <li class="active"><a data-toggle="tab" href="#bus">Business</a></li>
+						  <li><a data-toggle="tab" href="#app">Application</a></li>
+						  <li><a data-toggle="tab" href="#techdiv">Technology</a></li>
+						  <li><a data-toggle="tab" href="#infodiv">Information</a></li>						  
+						</ul>   
+					<div class="tab-content">	
+                     <div id="bus" class="tab-pane fade in active">
                        <div class="panel-body">
                            <div class="container">
                                <div class="sectionIcon">
@@ -296,9 +313,8 @@
                                </div>
                            </div>
                        </div>
-                      <div class="panel-footer"> </div>
                     </div>     
-                     <div id="collapse2" class="panel-collapse collapse">
+                     <div id="app" class="tab-pane fade">
                        <div class="panel-body">
                            <div class="container">
                                 <div class="sectionIcon">
@@ -326,12 +342,11 @@
                                 </div>
                            </div>
                        </div>
-                      <div class="panel-footer"> </div>
                     </div>    
-                       <div id="collapse3" class="panel-collapse collapse">
+                     <div id="techdiv" class="tab-pane fade">
                        <div class="panel-body">
                            <div class="container">
-                                            <div class="sectionIcon">
+                                <div class="sectionIcon">
                                     <i class="fa fa-database icon-section icon-color"/>
                                 </div>
 
@@ -358,9 +373,8 @@
                                  </div>    
                            </div>
                        </div>
-                      <div class="panel-footer"> </div>
                     </div>    
-                     <div id="collapse4" class="panel-collapse collapse">
+                     <div id="infodiv" class="tab-pane fade">
                        <div class="panel-body">
                            <div class="container">
                                 <div class="sectionIcon">
@@ -387,10 +401,11 @@
                                 </div>
                            </div>
                        </div>
-                      <div class="panel-footer"> </div>
+                      
                     </div>    
-                    </div>        
-                        </div>   
+                    </div>  
+				   </div>
+                  </div>   
                         
                         
                         
@@ -403,6 +418,42 @@
                 
                 
                   <script>
+					  
+		var principles = [<xsl:apply-templates select="$allPrinciples" mode="principleRatings"/>];	
+					  
+		principles.forEach(function(e){
+			var na=0,p1=0,p2=0,p3=0,p4=0;
+				e.scores.forEach(function(d){
+				if(d.assessmentPos&lt;0.26){
+					  p4=p4+1;
+					  }	 
+				else if(d.assessmentPos&lt;0.51){
+					  p3=p3+1;
+					  }	
+				else if(d.assessmentPos&lt;0.76){
+					  p2=p2+1;
+					  }	 
+				else {
+					  p1=p1+1;
+					  }	 	  
+				
+					 
+					   
+			});		
+					 e["p1"]=p1; 
+					 e["p2"]=p2; 
+					 e["p3"]=p3; 
+					 e["p4"]=p4; 
+		});				  
+			console.log(principles)		
+		principles.forEach(function(d){
+					  console.log(d.principleID)
+					$('.score[easid='+d.principleID+'p1]').text(d.p1);  
+					 $('.score[easid='+d.principleID+'p2]').text(d.p2);  
+					 $('.score[easid='+d.principleID+'p3]').text(d.p3);  
+					 $('.score[easid='+d.principleID+'p4]').text(d.p4);   
+					});			  
+					  
                     $('a').on('click', function() {
                     $('div[id="' + $(this).data('div') + '"]').toggle(); 
                         });
@@ -411,15 +462,7 @@
                      $('.tog').click(function() {
                            $("i", this).toggleClass("fa-toggle-on fa-toggle-off");
                     });
-                      
-                    function myFunction(its) {
-                        var x = document.getElementById(its);
-                        if (x.style.display === 'none') {
-                            x.style.display = 'block';
-                        } else {
-                            x.style.display = 'none';
-                        }
-                    }
+
                       
                     function butFunction(its) {
                         var x = document.getElementById(its);
@@ -475,6 +518,7 @@
 
             <xsl:call-template name="assessementTable">
                         <xsl:with-param name="thisAssessments" select="$thisAssessments"/>
+				<xsl:with-param name="thisPrinciple" select="current()"/>
             </xsl:call-template>    
          <!--   
                 principleLevels
@@ -527,6 +571,7 @@
      
             <xsl:call-template name="assessementTable">
                         <xsl:with-param name="thisAssessments" select="$thisAssessments"/>
+				<xsl:with-param name="thisPrinciple" select="current()"/>
             </xsl:call-template>    
             
 			<div class="ShowHideDivTrigger ShowHideDivOpen">
@@ -574,6 +619,7 @@
             
             <xsl:call-template name="assessementTable">
                         <xsl:with-param name="thisAssessments" select="$thisAssessments"/>
+				<xsl:with-param name="thisPrinciple" select="current()"/>
             </xsl:call-template>    
 
 			<div class="ShowHideDivTrigger ShowHideDivOpen">
@@ -621,6 +667,7 @@
             
             <xsl:call-template name="assessementTable">
                         <xsl:with-param name="thisAssessments" select="$thisAssessments"/>
+						<xsl:with-param name="thisPrinciple" select="current()"/>
             </xsl:call-template>    
 
 			<div class="ShowHideDivTrigger ShowHideDivOpen">
@@ -824,57 +871,46 @@
     
 <xsl:template name="assessementTable">
     <xsl:param name="thisAssessments"/>
+	<xsl:param name="thisPrinciple"/>
             <table width="400px" style="table-layout: fixed;">
             <tr><th width="200px"> </th><th colspan="5" width="120px" style="font-size:8pt">Principle Adherence</th><th></th></tr>
-            <tr><th width="200px">Total Assessments</th><th style="font-size:8pt">N/A</th><th colspan="2" width="120px" style="font-size:8pt">Weak</th><th colspan="2"  width="80px" style="text-align:right;font-size:8pt">Strong</th><th></th></tr>
-            <tr><td style="text-indent:50px;font-weight:bold;"><xsl:value-of select="count($thisAssessments)"/>
-                </td>
-                
-                <td style="background-color:#eeeeee;text-align:center">  
-                  <span  class="info-box">  <xsl:value-of select="count($thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '0'][own_slot_value[slot_reference='name']/value = 'Not Applicable']/name])"/>
+            <tr><th width="200px">Total Assessments</th> <th colspan="2" width="120px" style="font-size:8pt">Weak</th><th colspan="2"  width="80px" style="text-align:right;font-size:8pt">Strong</th><th></th></tr>
+            <tr> 
+                <td style="background-color:#ffffff;text-align:center" class="score">  
+                  <span  class="info-box">  
                     </span>
-                            <xsl:call-template name="dataScopePopoverContent">
-                        <xsl:with-param name="currentObject" select="$thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='name']/value = 'Not Applicable'][own_slot_value[slot_reference='enumeration_value']/value = '0']/name]"/>
-                    </xsl:call-template>
-
-                    
                  </td>
-                <td style="background-color:#fc6868;text-align:center;cursor:pointer"> 
-                 <span  class="info-box">     <xsl:value-of select="count($thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '0'][own_slot_value[slot_reference='name']/value = 'No Compliance']/name])"/>
-                    </span>
-                    <xsl:call-template name="dataScopePopoverContent">
-                        <xsl:with-param name="currentObject" select="$thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='name']/value = 'No Compliance'][own_slot_value[slot_reference='enumeration_value']/value = '0']/name]"/>
-                    </xsl:call-template>
-                
+                <td style="background-color:#fc6868;text-align:center;cursor:pointer" class="score"><xsl:attribute name="easid"><xsl:value-of select="$thisPrinciple/name"/>p1</xsl:attribute> 
+                   
                 </td>
-                <td style="background-color:#ffd23b;text-align:center;cursor:pointer"> 
-                   <span  class="info-box">   <xsl:value-of select="count($thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '1']/name])"/>
-                
-                    </span>
-                    <xsl:call-template name="dataScopePopoverContent">
-                        <xsl:with-param name="currentObject" select="$thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '1']/name]"/>
-                    </xsl:call-template>
-                
-                </td>
-                <td style="background-color:#d8ff00;text-align:center;cursor:pointer">
-                   <span  class="info-box">  <xsl:value-of select="count($thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '2']/name])"/>
-                    </span>
-                    <xsl:call-template name="dataScopePopoverContent">
-                        <xsl:with-param name="currentObject" select="$thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '2']/name]"/>
-                    </xsl:call-template>   
+                <td style="background-color:#ffd23b;text-align:center;cursor:pointer" class="score"><xsl:attribute name="easid"><xsl:value-of select="$thisPrinciple/name"/>p2</xsl:attribute>                 </td>
+                <td style="background-color:#d8ff00;text-align:center;cursor:pointer" class="score"><xsl:attribute name="easid"><xsl:value-of select="$thisPrinciple/name"/>p3</xsl:attribute> 
                        </td>
 
-                <td style="background-color:#99fc51;text-align:center;cursor:pointer">
-                   <span  class="info-box">   <xsl:value-of select="count($thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '3']/name])"/>
-                </span>
-                    <xsl:call-template name="dataScopePopoverContent">
-                        <xsl:with-param name="currentObject" select="$thisAssessments[own_slot_value[slot_reference='pca_compliance_assessment_value']/value=$principleLevels[own_slot_value[slot_reference='enumeration_value']/value = '3']/name]"/>
-                    </xsl:call-template>
-                </td>
+                <td style="background-color:#99fc51;text-align:center;cursor:pointer" class="score">
+					  <xsl:attribute name="easid"><xsl:value-of select="$thisPrinciple/name"/>p4</xsl:attribute>   
+              </td>
                 <td></td>
                 </tr>
             </table>
 
 </xsl:template>
-
+<xsl:template match="node()" mode="principleRatings">
+<xsl:variable name="thisDirectPrinciplesAssessments" select="$allDirectPrinciplesAssessments[own_slot_value[slot_reference = 'pca_principle_assessed']/value=current()/name]"/>
+<xsl:variable name="thisPolicy" select="$allPolicy[name=current()/own_slot_value[slot_reference = 'principle_realisation_policies']/value]"/>
+<xsl:variable name="thisControls" select="$allControls[name=$thisPolicy/own_slot_value[slot_reference = 'policy_controls']/value]"/>
+<xsl:variable name="thisIndirectPrinciplesAssessments" select="$allIndirectPrinciplesAssessments[own_slot_value[slot_reference = 'assessment_control']/value=$thisControls/name]"/>
+	{"principleID":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"scores":[<xsl:apply-templates select="$thisIndirectPrinciplesAssessments union $thisDirectPrinciplesAssessments" mode="assessments"/>]
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="assessments">
+	<xsl:variable name="prinScore" select="$allScoreLevels[name=current()/own_slot_value[slot_reference = 'pca_compliance_assessment_value']/value]"/>
+	<xsl:variable name="assessScore" select="$allScoreLevels[name=current()/own_slot_value[slot_reference = 'assessment_finding']/value]"/>
+	<xsl:variable name="thisScore" select="$prinScore union $assessScore"/>
+{"assessment":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>",
+ "assessmentID":"<xsl:value-of select="eas:getSafeJSString($thisScore/name)"/>",
+ "assessmentScore":"<xsl:value-of select="$thisScore/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>",
+"assessmentPos":"<xsl:choose><xsl:when test="current()/type='Control_Assessment'"><xsl:value-of select="(($thisScore/own_slot_value[slot_reference='enumeration_sequence_number']/value) div $allassessmentLevelsMax)"/></xsl:when><xsl:otherwise><xsl:value-of select="(($thisScore/own_slot_value[slot_reference='enumeration_sequence_number']/value) div $allprincipleLevelsMax)"/></xsl:otherwise></xsl:choose>"	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>	
 </xsl:stylesheet>

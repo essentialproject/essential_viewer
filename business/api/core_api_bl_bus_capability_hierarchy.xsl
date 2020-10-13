@@ -150,7 +150,7 @@
 		      "busCapDescription": "<xsl:value-of select="$thisBusCapDescription"/>",
 		      "busCapLink": "<xsl:value-of select="$thisBusCapLink"/>",
         "debug":"",
-        "subCaps":[<xsl:for-each select="$relevantBusCaps"><xsl:if test="current()/name!=$this">{"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:if></xsl:for-each>]
+        "subCaps":[<xsl:for-each select="$relevantBusCaps"><xsl:if test="current()/name!=$this">{"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>"},</xsl:if></xsl:for-each>{}]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>    

@@ -88,7 +88,6 @@
                 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
 				</xsl:call-template>
-                 <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

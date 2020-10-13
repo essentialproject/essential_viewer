@@ -641,9 +641,26 @@
 								<div class="modal-title xlarge fontLight">Create Plan and Project</div>
 							</div>
 							<div class="modal-body">
-								<div class="alert alert-success">Would you like to create a Strategic Plan and a Project for this idea in the current repository?</div>
-								<p class="large"><strong>Strategic Plan: </strong>Plan Name Here</p>
-								<p class="large"><strong>Project: </strong>Project Name Here</p>
+								<div class="row">
+								<div class="col-md-12">
+									<div class="alert alert-success">Would you like to create a Strategic Plan and a Project for this idea in the current repository?</div>
+								</div>
+								<div class="col-md-12">
+									<input id="ess-create-plan-checkbox" type="checkbox" class="pull-left" checked="checked" disabled="disabled"/>
+									<label for="ess-plan-name" class="fontBold">Strategic Plan Name</label>
+									<input type="text" id="ess-plan-name" class="form-control bottom-10" placeholder="Enter a name"/>
+								</div>
+								<div class="col-md-12">
+									<input id="ess-create-project-checkbox" type="checkbox" class="pull-left" checked="checked"/>
+									<label for="ess-project-name" class="fontBold">Project Name</label>
+									<input type="text" id="ess-project-name" class="form-control bottom-10" placeholder="Enter a name"/>
+								</div>
+								<div class="col-md-12">
+									<span id="ess-create-plan-error" class="textColourRed"/>
+								</div>								
+								<!--<p class="large"><strong>Strategic Plan: </strong><span id="ess-plan-name"/></p>
+								<p class="large"><strong>Project: </strong><span id="ess-project-name"/></p>-->
+								</div>
 							</div>
 							<div class="modal-footer">
 								<div class="pull-right">
@@ -662,11 +679,13 @@
 				
 				<script type="text/javascript">
 					class StrategicPlan {
-					    constructor(anIdea, plannedChanges, aProject) {
-					        this.name = 'Plan for ' + anIdea.name;
+					    constructor(planName, anIdea, plannedChanges, aProject) {
+					        this.name = planName;
 					        this.description = anIdea.description;
 					        this.plannedChanges = plannedChanges;
-					        this.supportingProjects = [aProject];
+					        if(aProject != null) {
+					        	this.supportingProjects = [aProject];
+					       	}
 					        this.meta = {};
 					        this.meta.createdOn = moment().toISOString();
 					        this.meta.createdBy = {};
@@ -1000,45 +1019,66 @@
 					
 					
 					var createProjectFromIdea = function(thisIdea) {
+						let planName = $('#ess-plan-name').val();
+						if((planName == null) || (planName.length == 0)) {
+							$('#ess-create-plan-error').text('The strategic plan must have a name');
+							return;
+						}
+					
+						let promiseList = [];
+						
+						if($('#ess-create-project-checkbox').prop('checked')) {
+							let projectName = $('#ess-project-name').val();
+							if((projectName == null) || (projectName.length == 0)) {
+								$('#ess-create-plan-error').text('The project must have a name');
+								return;
+							}
+							let projectDesc = thisIdea.description;
+							let tempProject = new Project(projectName, projectDesc);
+							promiseList.push(essPromise_createAPIElement(essEssentialCoreApiUri, tempProject, 'projects', 'Project'));
+						}
+						
 						let projectName = 'Project: ' + thisIdea.name;
 						let projectDesc = thisIdea.description;
 						let tempProject = new Project(projectName, projectDesc);
 						
-						essPromise_createAPIElement(essEssentialCoreApiUri, tempProject, 'projects', 'Project')
-						.then(function(response) {
-							newProject = response;
-							if(newProject != null) {
-								let plannedChanges = [];
-								var newChange;
-								thisIdea.changes.forEach(function(aChg) {
-									newChange = new PlannedChange(aChg, newProject);
-									plannedChanges.push(newChange);
-								});
-								
-								let tempPlan = new StrategicPlan(thisIdea, plannedChanges, newProject);
-								essPromise_createAPIElement(essEssentialCoreApiUri, tempPlan, 'strategic-plans', 'Strategic Plan')
-								.then(function(planResponse) {
-									//update the status of the current need to 'In Planning'
-									let needPlanUrl = 'business-needs/' + currentNeed.id + '/plan';
-									essPromise_updateAPIElement(essEssentialCoreApiUri, currentNeed, needPlanUrl, 'Idea')
-										.then(function(needResponse) {
-											currentNeed = needResponse;
-											
-											//update the status of the business need in the view
-											$('#need-dash-status').text(currentNeed.status.label);
-											$('#need-dash-status').attr('class', essGetContentStatusStyle(currentNeed));
-											
-											//remove the create plan/project button
-											$('#show-plan-project-div').addClass('hiddenDiv');
-											
-											//hide the confirmation modal
-											$('#create-plan-project-modal').modal('hide');
-										})								
-								})
-								.catch(function (error) {
-					        	    //console.log('Error creating strategic plan: ' + error.message);
-					            });
+						Promise.all(promiseList)
+						//essPromise_createAPIElement(essEssentialCoreApiUri, tempProject, 'projects', 'Project')
+						.then(function(responses) {
+							let newProject;
+							if(responses.length > 0) {
+								newProject = responses[0];
 							}
+							let plannedChanges = [];
+							var newChange;
+							thisIdea.changes.forEach(function(aChg) {
+								newChange = new PlannedChange(aChg, newProject);
+								plannedChanges.push(newChange);
+							});
+							
+							let tempPlan = new StrategicPlan(planName, thisIdea, plannedChanges, newProject);
+							essPromise_createAPIElement(essEssentialCoreApiUri, tempPlan, 'strategic-plans', 'Strategic Plan')
+							.then(function(planResponse) {
+								//update the status of the current need to 'In Planning'
+								let needPlanUrl = 'business-needs/' + currentNeed.id + '/plan';
+								essPromise_updateAPIElement(essEssentialCoreApiUri, currentNeed, needPlanUrl, 'Idea')
+									.then(function(needResponse) {
+										currentNeed = needResponse;
+										
+										//update the status of the business need in the view
+										$('#need-dash-status').text(currentNeed.status.label);
+										$('#need-dash-status').attr('class', essGetContentStatusStyle(currentNeed));
+										
+										//remove the create plan/project button
+										$('#show-plan-project-div').addClass('hiddenDiv');
+										
+										//hide the confirmation modal
+										$('#create-plan-project-modal').modal('hide');
+									})								
+							})
+							.catch(function (error) {
+				        	    console.log('Error creating strategic plan: ' + error.message);
+				            });
 						})
 						.catch(function (error) {
 			        	    console.log('Error creating project: ' + error.message);
@@ -1164,6 +1204,8 @@
 							approvedIdea = thisIdea;
 							
 							//reject all the other ideas for the business need
+							//console.log('All Ideas Again');
+							//console.log(allIdeas);
 							let otherIdeas = allIdeas['ideas'].filter(function(anIdea) {
 								return anIdea.id != thisIdea.id;
 							});
@@ -1223,6 +1265,13 @@
 								$('#show-plan-project-div').removeClass('hiddenDiv');
 							}
 						}
+						
+						$('#create-plan-project-modal').on('show.bs.modal', function (event) {
+							if(currentNeed != null) {           	      
+								$('#ess-plan-name').val('Plan for ' + currentNeed.name);
+								$('#ess-project-name').val('Project: ' + currentNeed.name);
+							}
+						});
 						
 						let goalListFragment = $("#need-goal-bullet-template").html();
 					    let goalListTemplate = Handlebars.compile(goalListFragment);
@@ -1481,7 +1530,7 @@
 					var currentNeed;
 					var currentIdeas = [];
 					var currentIdeaComments = [];
-					var allIdeas = [];
+					var allIdeas = {};
 					
 					$('document').ready(function(){
 						showViewSpinner('Loading data...');
@@ -1498,7 +1547,7 @@
 							currentIdeaComments = allIdeaComments.filter(function(aCmt) {
 								return (aCmt.decision != ess_APPROVAL_STATII.propose) &amp;&amp; (aCmt.decision != ess_APPROVAL_STATII.draft);
 							});
-							console.log(currentIdeaComments);
+							//console.log(currentIdeaComments);
 							
 							
 							if(currentNeed != null) {
@@ -1506,11 +1555,13 @@
 								essPromise_getAPIElements(essEssentialCoreApiUri, thisIdeasURL, 'Idea')
 								.then(function(response) {
 									removeViewSpinner();
-									let allIdeas = response;
+										allIdeas = response;
 									let visibleIdeas = response['ideas'].filter(function(anIdea) {
 										return (anIdea.meta.contentStatus != null) &amp;&amp; (anIdea.meta.contentStatus.name != 'SYS_CONTENT_IN_DRAFT') &amp;&amp; ((anIdea.meta.visibility == null) || (anIdea.meta.createdBy == null) || (anIdea.meta.visibility.name == 'SYS PUBLIC CONTENT') || ((anIdea.meta.visibility.name == 'SYS PRIVATE CONTENT') &amp;&amp; (anIdea.meta.createdBy.id == essViewer.user.id)));
 									});
-									currentIdeas['ideas'] = visibleIdeas;					
+									currentIdeas['ideas'] = visibleIdeas;
+									//console.log('All Ideas');
+									//console.log(allIdeas['ideas']);
 									initNeedDashboard();								
 								})
 								.catch(function (error) {

@@ -44,7 +44,7 @@
 	<xsl:variable name="allValueStageKPIValues" select="/node()/simple_instance[name = $allValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
 	<xsl:variable name="allValueStageKPIs" select="/node()/simple_instance[name = $allValueStageKPIValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
 	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
-
+	<xsl:variable name="allValueStageBusCaps" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
 
 	<xsl:variable name="DEBUG" select="''"/>
 
@@ -67,7 +67,6 @@
 				<script src="js/jquery.tools.min.js" type="text/javascript"/>
 
 				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.1.2.js"/>
 
 				<style type="text/css">
 					.vs-outer-container{
@@ -334,6 +333,7 @@
 					<div class="vs-header-column pull-left">
 						<div class="vs-arrow-header small">Value Stages</div>
 						<div class="vs-participants vs-detail-header small bg-lightblue-100">Participants</div>
+						<div class="vs-buscaps vs-detail-header small bg-lightblue-100">Supporting Business Capabilities</div>
 						<div class="vs-emotions vs-detail-header small bg-lightblue-100">Target Emotions</div>
 						<div class="vs-entrance-events vs-detail-header small bg-lightgreen-100">Entrance Events</div>
 						<div class="vs-entrance-conditions vs-detail-header small bg-lightgreen-100">Entrance Conditions</div>
@@ -359,6 +359,19 @@
 										</div>				        	
 									{{else}}
 										<div class="vs-participants vs-detail small vs-empty-detail">No Participants</div>				        	
+									{{/if}}
+									
+									<!-- Supporting Bus Caps -->
+									{{#if busCaps.length}}
+										<div class="vs-buscaps vs-detail small bg-lightblue-20">
+											<ul>
+												{{#each busCaps}}
+													<li>{{{link}}}</li>
+												{{/each}}
+											</ul>
+										</div>				        	
+									{{else}}
+										<div class="vs-buscaps vs-detail small vs-empty-detail">No Business Capabilities</div>				        	
 									{{/if}}
 									
 									<!-- Target Emotions -->
@@ -449,7 +462,7 @@
 					
 					var valueStream = <xsl:call-template name="RenderValueStreamJSON"/>;
 					
-					var valueStageDetailsClasses = ['vs-participants', 'vs-emotions', 'vs-entrance-events', 'vs-entrance-conditions', 'vs-exit-events', 'vs-exit-conditions', 'vs-kpis'];
+					var valueStageDetailsClasses = ['vs-participants', 'vs-buscaps', 'vs-emotions', 'vs-entrance-events', 'vs-entrance-conditions', 'vs-exit-events', 'vs-exit-conditions', 'vs-kpis'];
 					
 					function setValueStageDetailsHeights() {
 						var greatestHeight, theHeight, aDetailsClass;
@@ -544,7 +557,7 @@
 		<xsl:variable name="vsTriggerEvents" select="$allBusinessEvents[name = $currentValueStream/own_slot_value[slot_reference = 'vs_trigger_events']/value]"/>
 		<xsl:variable name="vsTriggerConditions" select="$allBusinessConditions[name = $currentValueStream/own_slot_value[slot_reference = 'vs_trigger_conditions']/value]"/>
 		<xsl:variable name="vsOutcomeEvents" select="$allBusinessEvents[name = $currentValueStream/own_slot_value[slot_reference = 'vs_outcome_events']/value]"/>
-		<xsl:variable name="vsOutcomeConditions" select="$allBusinessConditions[name = $currentValueStream/own_slot_value[slot_reference = 'vs_outcome_conditions']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "productTypes": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsProductTypes"/> ], "triggerRoles": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsStakeholderRoles"/> ], "triggerEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsTriggerEvents"/> ], "triggerConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsTriggerConditions"/> ], "outcomeEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsOutcomeEvents"/> ], "outcomeConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsOutcomeConditions"/> ], "valueStages": [ <xsl:apply-templates mode="RenderValueStageJSON" select="$vsValueStages"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
+        <xsl:variable name="vsOutcomeConditions" select="$allBusinessConditions[name = $currentValueStream/own_slot_value[slot_reference = 'vs_outcome_conditions']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "productTypes": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsProductTypes"/> ], "triggerRoles": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsStakeholderRoles"/> ], "triggerEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsTriggerEvents"/> ], "triggerConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsTriggerConditions"/> ], "outcomeEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsOutcomeEvents"/> ], "outcomeConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsOutcomeConditions"/> ], "valueStages": [ <xsl:apply-templates mode="RenderValueStageJSON" select="$vsValueStages"><xsl:sort select="own_slot_value[slot_reference='vsg_index']/value" order="ascending"/></xsl:apply-templates> ] }<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -565,7 +578,8 @@
 		<xsl:variable name="vsgValueStage2EmotionRels" select="$allValueStage2EmotionRels[name = $this/own_slot_value[slot_reference = 'vsg_emotions']/value]"/>
 		<xsl:variable name="vsgEmotions" select="$allEmotions[name = $vsgValueStage2EmotionRels/own_slot_value[slot_reference = 'value_stage_to_emotion_to_emotion']/value]"/>
 		<xsl:variable name="vsgValueStagePerfMeasures" select="$allValueStagePerfMeasures[name = $this/own_slot_value[slot_reference = 'performance_measures']/value]"/>
-		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="vsgBusCaps" select="$allValueStageBusCaps[name = $this/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
+		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "busCaps": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusCaps"/> ], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 

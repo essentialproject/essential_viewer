@@ -51,6 +51,10 @@
 	<xsl:variable name="allTargetReportParameters" select="/node()/simple_instance[name = ($allTargetReports, $allTargetEditors)/own_slot_value[slot_reference = 'report_parameters']/value]"/>
 	<xsl:variable name="allTargetReportParameterInstanceVals" select="/node()/simple_instance[name = $allTargetReportParameters/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
 	<xsl:variable name="allMenuTargetReportTypes" select="/node()/simple_instance[type = 'Report_Implementation_Type']"/>
+	
+	<!--The published repo Name and ID-->
+	<xsl:variable name="repoName" select="/node()/repository/name"/>
+	<xsl:variable name="repoID" select="/node()/repository/repositoryID"/>
 
 	<!-- Define any constant values that are used throughout -->
 	<xsl:variable name="urlNameSuffix" select="'URL'"/>
@@ -58,6 +62,10 @@
 
 	<xsl:variable name="menuIdeationConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Ideation Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
 	<xsl:variable name="menuIdeationIsOn" select="string-length($menuIdeationConstant)"/>
+	
+	<xsl:variable name="menuEdmEditConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Edit in Repository Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
+	<xsl:variable name="menuEdmEditIsOn" select="string-length($menuEdmEditConstant) > 0"/>
+	<!--<xsl:variable name="menuEdmEditIsOn" select="'true'"/>-->
 
 	<xsl:variable name="menuSupportsCollab" select="eas:menuCompareVersionNumbers($menuRepoVersion, '6.6')"/>
 
@@ -78,7 +86,6 @@
         	<xsl:variable name="thisEditorMenuItems" select="$thisMenuItems[name = $allEditorMenuItems/name]"/>
             
         	<xsl:variable name="thisMenuModals" select="$essAllModalReports[own_slot_value[slot_reference = 'modal_report_for_classes']/value = current()/own_slot_value[slot_reference = 'report_menu_class']/value]"/>
-        	
         	<!-- Define the menu intro text -->
         	<xsl:variable name="thisMenuIntro">
                 <xsl:choose>
@@ -99,6 +106,9 @@
         	</xsl:if>-->
         	<xsl:apply-templates mode="RenderEditorMenuItemFunction" select="$thisEditorMenuItems"/>
         	
+        	<!--Build the Edit in EDM Menu Functions-->
+        	<xsl:call-template name="edmEditMenu"/>
+
         	<!-- Render the function that pops up the context menu -->
             $(function(){$.contextMenu({selector: '.context-menu-<xsl:value-of select="$thisMenuShortName"/>',zIndex: 100, trigger: 'left',ignoreRightClick: true,autoHide: false,animation: {duration: 100, show: "fadeIn", hide: "fadeOut"},items: {title:	{type: "html", html: '<span class="uppercase fontBold menuTitle"><xsl:value-of select="$thisMenuIntro"/></span>', icon: "none"}
         		
@@ -106,8 +116,12 @@
         		<xsl:apply-templates mode="RenderMenuGroupEntries" select="$thisMenuGroups"/>
         		<!-- If defined, render the entries for menu items that target Editors -->
         		<xsl:if test="($eipMode = 'true') and $menuSupportsCollab and (count($thisEditorMenuItems) > 0)">, "sep1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
+        		<xsl:if test="($menuEdmEditIsOn) and ($eipMode = 'true')">
+        			, "sep2": "---------"
+        			, edmEditMenu: {name: "Edit in <xsl:value-of select="$repoName"/> Repository",icon: "edit",callback: edmEditURL}
+        		</xsl:if>
         		<xsl:if test="($menuIdeationIsOn) and ($eipMode = 'true') and $menuSupportsCollab and (count($thisMenuModals) > 0)">
-					, "sep2": "---------"
+					, "sep3": "---------"
 	        		<xsl:apply-templates mode="RenderMenuItemModalEntries" select="$thisMenuModals"/>
         		</xsl:if>}});
         	});
@@ -115,14 +129,24 @@
         </script>
 	</xsl:template>
 	
-	
+	<xsl:template name="edmEditMenu">
+        <xsl:variable name="edmEditURL" select="concat('/app/#/Repo/',$repoID,'/EditInstance/')"/>
+        function edmEditURL(key,opt){
+        	var instanceHref= opt.$trigger.attr("href");
+			//console.log(instanceHref);
+			const urlParams = new URLSearchParams(instanceHref);
+			const instanceID = urlParams.get('PMA')
+			//console.log(instanceID);
+			theURL = "<xsl:value-of select="$edmEditURL"/>"+instanceID
+        	window.open(theURL, "edmWindow");
+		}
+	</xsl:template>
 	
 	<xsl:template name="RenderEditorPopUpJavascript">
 		<!-- thisMenu = the menu to be presented -->
 		<xsl:param name="thisMenu"/>
 		<!-- boolean as to whether a new window/tab should be opened -->
 		<xsl:param name="newWindow" select="false()"/>
-		
 		
 		<script type="text/javascript">
         <xsl:for-each select="$thisMenu">

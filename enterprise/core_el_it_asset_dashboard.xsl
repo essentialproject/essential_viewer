@@ -23,13 +23,13 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	 <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BCM List']"/>
     <xsl:variable name="anAPIReportARM" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Capability Model']"/>
-    <xsl:variable name="anAPIReportTRM" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Capability Model API']"/>
-    <xsl:variable name="anAPIReportAppStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Application Stakeholders API']"/>
-    <xsl:variable name="anAPIReportTechStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Stakeholders API']"/>
+    <xsl:variable name="anAPIReportTRM" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Capability Model']"/>
+    <xsl:variable name="anAPIReportAppStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Stakeholders IDs']"/>
+    <xsl:variable name="anAPIReportTechStakeholders" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Stakeholders IDs']"/>
     <xsl:variable name="anAPIReportAllApps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application List']"/>
     <xsl:variable name="anAPIReportAllTechProducts" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Product List API']"/>
-    <xsl:variable name="anAPIReportAllAppCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Application Capability L1 API']"/>
-    <xsl:variable name="anAPIReportAllTechCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Technology Capability L1 API']"/>
+    <xsl:variable name="anAPIReportAllAppCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Capability L1']"/>
+    <xsl:variable name="anAPIReportAllTechCaps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Capability L1']"/>
     
     
 	<!-- END GENERIC LINK VARIABLES -->
@@ -217,7 +217,6 @@
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -600,7 +599,7 @@
 			            var bcmFragment = $("#bcm-template").html();
 			            var bcmTemplate = Handlebars.compile(bcmFragment);
 			            $("#bcm").html(bcmTemplate(viewAPIData.bcm[0]));
-console.log('bcm');   
+console.log('bcm');  
 			        }).then(function() {
                              promise_loadViewerAPIData(viewAPIDataAllAppCaps).then(function(response9) {
                             <!-- *** app caps API -->
@@ -608,7 +607,8 @@ console.log('bcm');
                             
                                 promise_loadViewerAPIData(viewAPIDataAllTechCaps).then(function(response10) {
                             <!-- *** tech caps API -->
-                                techCapDetails2=response10.technology_capabilities;
+                                techCapDetails2=response10.technology_capabilities; 
+                            console.log('techCapDetails2');      console.log(techCapDetails2); 
                             })
                             
                              
@@ -634,7 +634,7 @@ console.log('bcm');
 			            promise_loadViewerAPIData(viewAPIDataAPM).then(function(response2) {
 			                viewAPIDataAPM = response2;
 			                //DO HTML stuff
-
+   console.log('viewAPIDataAPM');   console.log(viewAPIDataAPM);
 			                var armFragment = $("#arm-template").html();
 			                var armTemplate = Handlebars.compile(armFragment);
 			                $("#appRefModelContainer").html(armTemplate(viewAPIDataAPM.arm[0]));
@@ -659,7 +659,7 @@ console.log('bcm');
 			                        viewAPIDataTRM = response3;
 			                        //DO HTML stuff
 
-
+      console.log('viewAPIDataTRM');      console.log('viewAPIDataTRM'); 
 			                        var trmFragment = $("#trm-template").html();
 			                        var trmTemplate = Handlebars.compile(trmFragment);
 
@@ -672,11 +672,11 @@ console.log('bcm');
 			                            var appStakeholders = response4;
 
 			                            stakeH = appStakeholders.appStakeholders;
-
+        console.log('appStakeholders');      console.log(appStakeholders); 
 			                            promise_loadViewerAPIData(viewAPIDataTechStakeholders).then(function(response5) {
 			                                var techStakeholders = response5;
 			                                var stakeHT = techStakeholders.techStakeholders;
-			                                
+			                                            console.log('techStakeholders');      console.log(techStakeholders); 
 			                                for (var i = 0; i &lt; businessUnits.businessUnits.length; i++) {
 			                                    var appList = [];
 			                                    var techList = [];

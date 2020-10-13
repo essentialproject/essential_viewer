@@ -102,7 +102,7 @@
 					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');background-size:100%;'"/>
 					<div class="container-fluid">
 						<div class="row">
-							<div class="col-xs-12 col-sm-9 col-md-6 bg-white" style="opacity:0.6">
+							<div class="col-xs-12 col-sm-9 col-md-9 bg-white" style="opacity:0.75">
 								<h1>
 									<xsl:value-of select="$portalLabel"/>
 								</h1>

@@ -89,7 +89,6 @@
 		<xsl:param name="roadmapEnabled"/>
 		
 		<!-- HANDLEBARS LIBRARY -->
-		<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 		
 		<xsl:if test="$roadmapEnabled">
 			<!-- MONTH PICKER LIBRARIES AND STYLESHEETS -->

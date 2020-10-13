@@ -10,10 +10,10 @@
 	<!-- param4 = the taxonomy term that will be used to scope the organisation model -->
 	<!--<xsl:param name="param4" />-->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[(type = ('Report', 'Editor', 'Simple_Editor'))]"/>
-	<xsl:variable name="anyEditors" select="$anyReports[type=('Editor', 'Simple_Editor')]"/>
-	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
-	<xsl:variable name="allEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
+	<xsl:variable name="anyViews" select="/node()/simple_instance[type='Report']"/>
+	<xsl:variable name="anyEditors" select="/node()/simple_instance[type=('Editor', 'Simple_Editor')]"/>
+	<xsl:variable name="enabledViews" select="$anyViews[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
+	<xsl:variable name="enabledEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
 	<xsl:variable name="allReportConstants" select="/node()/simple_instance[type = 'Report_Constant']"/>
 	<xsl:variable name="eaArchViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Enterprise Architecture Views']"/>
@@ -150,7 +150,7 @@
 											<xsl:value-of select="eas:i18n('Enterprise')"/>
 										</h1>
 										<div class="row">
-											<xsl:apply-templates mode="Enterprise" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Enterprise" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -159,7 +159,7 @@
 											<xsl:value-of select="eas:i18n('Business')"/>
 										</h1>
 										<div class="row">
-											<xsl:apply-templates mode="Business" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Business" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -168,7 +168,7 @@
 											<xsl:value-of select="eas:i18n('Information')"/>
 										</h1>
 										<div class="row">
-											<xsl:apply-templates mode="Information" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Information" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -177,7 +177,7 @@
 											<xsl:value-of select="eas:i18n('Application')"/>
 										</h1>
 										<div class="row">
-											<xsl:apply-templates mode="Application" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Application" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -186,7 +186,7 @@
 											<xsl:value-of select="eas:i18n('Technology')"/>
 										</h1>
 										<div class="row">
-											<xsl:apply-templates mode="Technology" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Technology" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -195,7 +195,7 @@
 											<xsl:value-of select="eas:i18n('Support')"/>
 										</h1>
                                         <div class="row">
-											<xsl:apply-templates mode="Support" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+											<xsl:apply-templates mode="Support" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 											</xsl:apply-templates>
 										</div>
@@ -218,32 +218,32 @@
 										</div>-->
 									</div>
 									<div role="tabpanel" class="tab-pane" id="enterprise">
-										<xsl:apply-templates mode="Enterprise" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Enterprise" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="business">
-										<xsl:apply-templates mode="Business" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Business" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="information">
-										<xsl:apply-templates mode="Information" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Information" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="application">
-										<xsl:apply-templates mode="Application" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Application" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="technology">
-										<xsl:apply-templates mode="Technology" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Technology" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="support">
-										<xsl:apply-templates mode="Support" select="$allReports[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Support" select="$enabledViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
@@ -267,9 +267,9 @@
 						<!--Setup Right Hand Container-->
 						<div class="col-xs-12 col-md-3">
 							<div class=" bg-offwhite portalPanel">
-							<xsl:variable name="catalogueViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name]"/>
-							<xsl:variable name="portalViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $portalViewsTaxonomyTerm/name]"/>
-							<xsl:variable name="dashboardViews" select="$allReports[own_slot_value[slot_reference = 'element_classified_by']/value = $dashboardViewsTaxonomyTerm/name]"/>
+							<xsl:variable name="catalogueViews" select="$enabledViews[own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name]"/>
+							<xsl:variable name="portalViews" select="$enabledViews[own_slot_value[slot_reference = 'element_classified_by']/value = $portalViewsTaxonomyTerm/name]"/>
+							<xsl:variable name="dashboardViews" select="$enabledViews[own_slot_value[slot_reference = 'element_classified_by']/value = $dashboardViewsTaxonomyTerm/name]"/>
 							<xsl:if test="count($catalogueViews) > 0">
 								<h1 class="text-primary">
 									<xsl:value-of select="eas:i18n('Catalogues')"/>
@@ -296,25 +296,27 @@
 						<xsl:if test="$eipMode">
 							<div class="col-xs-12 col-md-3 top-30">
 								<div class="bg-offwhite portalPanel">
-								<xsl:if test="count($allEditors) > 0">
+								<xsl:if test="count($enabledEditors) > 0">
 									<h1 class="text-primary">
 										<xsl:value-of select="eas:i18n('Editors')"/>
 									</h1>
 								</xsl:if>
-								<xsl:if test="count($allEditors) > 0">
+								<xsl:if test="count($enabledEditors) > 0">
 									<ul>
-										<xsl:for-each select="$allEditors">
+										<xsl:for-each select="$enabledEditors">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-											<li class="fontSemi large">
-												<a class="text-darkgrey" target="_blank">
-													<xsl:attribute name="href">
-														<xsl:call-template name="RenderEditorLinkHref">
-															<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
-														</xsl:call-template>
-													</xsl:attribute>
-													<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
-												</a>
-											</li>
+											<xsl:if test="eas:isUserAuthZ(current())">
+												<li class="fontSemi large">
+													<a class="text-darkgrey" target="_blank">
+														<xsl:attribute name="href">
+															<xsl:call-template name="RenderEditorLinkHref">
+																<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+															</xsl:call-template>
+														</xsl:attribute>
+														<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
+													</a>
+												</li>
+											</xsl:if>
 										</xsl:for-each>
 									</ul>
 								</xsl:if>
@@ -399,7 +401,7 @@
 		</xsl:variable>
 
 		<xsl:variable name="qualifyingReportId" select="$aReport/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
-		<xsl:variable name="qualifyingReport" select="$allReports[name=$qualifyingReportId]"/>				
+		<xsl:variable name="qualifyingReport" select="$enabledViews[name=$qualifyingReportId]"/>				
 		<xsl:variable name="reportConstant" select="$allReportConstants[name = $aReport/own_slot_value[slot_reference = 'rp_report_constants']/value]"/>
 		<xsl:variable name="reportHistoryLabelName" select="$aReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 		<xsl:variable name="reportFilename" select="$aReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
@@ -456,7 +458,7 @@
 			
 			<!-- Check that the user is authorised to access the qualifying report -->
 			<xsl:when test="eas:isUserAuthZ($aReport) and eas:isUserAuthZ($qualifyingReport) and string-length($qualifyingReportId) > 0">
-				<xsl:variable name="qualifyingReport" select="$anyReports[name = $qualifyingReportId]"/>
+				<xsl:variable name="qualifyingReport" select="$anyViews[name = $qualifyingReportId]"/>
 				<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
 				<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 				<xsl:variable name="targetReportIdQueryString">

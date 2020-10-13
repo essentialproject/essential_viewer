@@ -74,7 +74,7 @@
 			<xsl:variable name="thisApps" select="$allAppProviders[name = $thisAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	{
 		"busCapId": "<xsl:value-of select="current()/name"/>",
-		"busCapName": "<xsl:value-of select="$rootBusCapName"/>",
+		"busCapName": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
         "appCount": "<xsl:value-of select="count($thisApps)"/>"
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -89,7 +89,8 @@
 			<xsl:when test="count($theParentCap) > 0">
 				<xsl:variable name="childRels" select="$allChildCap2ParentCapRels[(own_slot_value[slot_reference = 'buscap_to_parent_parent_buscap']/value = $theParentCap/name)]"/>
 				<xsl:variable name="aChildList" select="$allBusCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
-				<xsl:variable name="aNewList" select="$aChildList except $theParentCap"/>
+				<xsl:variable name="aDirectChildList" select="$allBusCaps[own_slot_value[slot_reference='supports_business_capabilities']/value = $theParentCap/name]"/>
+				<xsl:variable name="aNewList" select="$aDirectChildList union $aChildList except $theParentCap"/>
 				<xsl:variable name="aNewChildren" select="$theParentCap union $theChildCaps union $aNewList"/>
 				<xsl:copy-of select="eas:findAllSubCaps($aNewList, $aNewChildren)"/>
 			</xsl:when>

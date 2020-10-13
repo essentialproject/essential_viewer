@@ -643,7 +643,17 @@
 				</div>
 
 				<div class="clear"/>
-
+<script>
+$( document ).ready(function() {
+	$(document).on("click", ".saveApps", function(){
+		var appLists = $(this).attr('appLists');
+		var carriedApps=appLists.split(',');
+		var apps={};
+		apps['Composite_Application_Provider']=carriedApps;
+		sessionStorage.setItem("context", JSON.stringify(apps));
+	});
+});	
+				</script>	
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
@@ -759,7 +769,8 @@
 
 	<xsl:template match="node()" mode="PrintGrandChildFrontCap">
 		<xsl:variable name="currentBusCap" select="current()"/>
-		<xsl:variable name="relevantBusCaps" select="eas:findAllSubCaps(current(), ())"/>
+<!--		<xsl:variable name="relevantBusCaps" select="eas:findAllSubCaps(current(), ())"/>
+	-->	<xsl:variable name="relevantBusCaps" select="eas:get_object_descendants(current(), $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
 		<div class="threeColModel_ObjectContainer">
 			<xsl:variable name="thisBusProcs" select="$relevantBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
 			<xsl:variable name="thisPhysProcs" select="$relevantPhysProcs[own_slot_value[slot_reference = 'implements_business_process']/value = $thisBusProcs/name]"/>
@@ -876,6 +887,10 @@
 						</li>
 					</xsl:for-each>
 				</ul>
+				
+				<xsl:variable name="appIDs">[<xsl:for-each select="$inScopeApps">{"id":"<xsl:value-of select="current()/name"/>", "name":""}<xsl:if test="position()!=last()"> , </xsl:if></xsl:for-each>]</xsl:variable>
+				<xsl:variable name="appLists"><xsl:for-each select="$inScopeApps"><xsl:value-of select="current()/name"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each></xsl:variable>
+				 <button class="btn btn-sm saveApps" onclick="location.href='report?XML=reportXML.xml&amp;XSL=application/core_al_app_rationalisation_analysis_simple.xsl&amp;PMA=bcm'"><xsl:attribute name="appVals"><xsl:value-of select="$appIDs"/></xsl:attribute><xsl:attribute name="appLists"><xsl:value-of select="$appLists"/></xsl:attribute>Rationalisation Analysis</button> 
 			</div>
 		</xsl:if>
 	</xsl:template>

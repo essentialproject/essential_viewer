@@ -5641,6 +5641,86 @@
    <Value>'Customer Experience Ratings'!R8C3:R3000C3</Value>
   </DataValidation>
  </Worksheet>    
+<Worksheet ss:Name="CJPs to Value Stages">
+  <Table ss:ExpandedColumnCount="3" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16">
+   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="397"/>
+   <Column ss:AutoFitWidth="0" ss:Width="472"/>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s74"/>
+   </Row>
+   <Row ss:Height="26">
+    <Cell ss:Index="2" ss:StyleID="s78"><Data ss:Type="String">Customer Journey Phase to Value Stage Mappings</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Maps Customer Journey Phases to their associated Value Stages</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s74"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s74"/>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s79"><Data ss:Type="String">Customer Journey Phase</Data></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="String">Value Stage</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="6">
+    <Cell ss:Index="3" ss:StyleID="s74"/>
+   </Row>
+   <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String"> </Data></Cell>
+   </Row>
+   <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String"> </Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="18">
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String"> </Data></Cell>
+   </Row>
+   <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String"> </Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"/>
+    <Cell ss:StyleID="s82"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>14</ActiveRow>
+     <ActiveCol>6</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C3:R240C3</Range>
+   <Type>List</Type>
+   <UseBlank/>
+   <Value>Value_Stages</Value>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C2:R240C2</Range>
+   <Type>List</Type>
+   <UseBlank/>
+   <Value>Customer_Journey_Phases</Value>
+  </DataValidation>
+ </Worksheet>	
  <Worksheet ss:Name="CJPs to Phys Procs">
   <Names>
    <NamedRange ss:Name="Roadmaps" ss:RefersTo="='CJPs to Phys Procs'!R7C2:R8C2"/>

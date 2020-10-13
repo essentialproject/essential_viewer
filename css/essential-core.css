@@ -1773,32 +1773,32 @@ backColourLightRed{
 }
 
 .bg-purple-120{
-	background-color: hsla(265, 85%, 35%, 1);
+	background-color: hsla(265, 65%, 40%, 1);
 	color: #fff;
 }
 
 .bg-purple-100{
-	background-color: hsla(265, 85%, 45%, 1);
+	background-color: hsla(265, 65%, 50%, 1);
 	color: #fff;
 }
 
 .bg-purple-80{
-	background-color: hsla(265, 85%, 55%, 1);
+	background-color: hsla(265, 65%, 60%, 1);
 	color: #fff;
 }
 
 .bg-purple-60{
-	background-color: hsla(265, 85%, 65%, 1);
+	background-color: hsla(265, 65%, 70%, 1);
 	color: #fff;
 }
 
 .bg-purple-40{
-	background-color: hsla(265, 85%, 75%, 1);
+	background-color: hsla(265, 65%, 80%, 1);
 	color: hsla(265, 85%, 25%, 1);
 }
 
 .bg-purple-20{
-	background-color: hsla(265, 85%, 85%, 1);
+	background-color: hsla(265, 65%, 90%, 1);
 	color: hsla(265, 85%, 25%, 1);
 }
 
@@ -3944,6 +3944,150 @@ td.CompImpactLow{
 .image_greenTick{
 	background: url(../images/tick_1.gif) no-repeat center center;
 }
+
+/*EAS LOGO SPINNER*/
+.eas-logo-spinner {
+	display: flex;
+	justify-content: center;
+
+}
+#editor-spinner,#view-spinner{
+	height: 100vh;
+	width: 100vw;
+	position: fixed;
+	top: 0;
+	left:0;
+	z-index:999999;
+	background-color: hsla(255,100%,100%,0.75);
+	text-align: center;
+}
+
+#editor-spinner-text,#view-spinner-text {
+	width: 100vw;
+	z-index:999999;
+	text-align: center;
+}
+.spin-text {
+	font-weight: 700;
+	animation-duration: 1.5s;
+	animation-iteration-count: infinite;
+	animation-name: logo-spinner-text;
+	color: #aaa;
+	float: left;
+}
+.spin-text2 {
+	font-weight: 700;
+	animation-duration: 1.5s;
+	animation-iteration-count: infinite;
+	animation-name: logo-spinner-text2;
+	color: #666;
+	float: left;
+}
+.spin-icon {
+	width: 20px;
+	height: 20px;
+	display: flex;
+	flex-flow: row wrap;
+	float: left;
+	margin-right: 10px;
+}
+.sq {
+	width: 30%;
+	height: 30%;
+	background-color: #aaa;
+	position: relative;
+	animation-duration: 3s;
+	animation-iteration-count: infinite;
+}
+
+.sq1,.sq2,.sq4,.sq5,.sq7,.sq8 {
+	margin-right: 5%;
+}
+
+.sq1,.sq2,.sq3,.sq4,.sq5,.sq6 {
+	margin-bottom: 5%;
+}
+.sq1 {
+	animation-name: sq1;
+}
+.sq2 {
+	animation-name: sq2;
+}
+.sq3 {
+	animation-name: sq3;
+}
+.sq4 {
+	animation-name: sq4;
+}
+.sq5 {
+	animation-name: sq5;
+}
+.sq6 {
+	animation-name: sq6;
+}
+.sq7 {
+	animation-name: sq7;
+}
+.sq8 {
+	animation-name: sq8;
+}
+.sq9 {
+	animation-name: sq9;
+}
+@keyframes logo-spinner-text {
+  0%   {color:#aaa;}
+  50%  {color:#ccc;}
+}
+@keyframes logo-spinner-text2 {
+  0%   {color:#666;}
+  50%  {color:#999;}
+}
+@keyframes sq1 {
+  0%   {background-color:#ccc;}
+  10%  {background-color:#c41e3a;}
+  30%   {background-color:#ccc;}
+}
+@keyframes sq2 {
+  10%   {background-color:#ccc;}
+  20%  {background-color:#c41e3a;}
+  40%   {background-color:#ccc;}
+}
+@keyframes sq3 {
+  20%   {background-color:#ccc;}
+  30%  {background-color:#c41e3a;}
+  50%   {background-color:#ccc;}
+}
+@keyframes sq4 {
+  30%   {background-color:#ccc;}
+  40%  {background-color:#c41e3a;}
+  60%   {background-color:#ccc;}
+}
+@keyframes sq5 {
+  40%   {background-color:#ccc;}
+  50%  {background-color:#c41e3a;}
+  70%   {background-color:#ccc;}
+}
+@keyframes sq6 {
+  50%   {background-color:#ccc;}
+  60%  {background-color:#c41e3a;}
+  80%   {background-color:#ccc;}
+}
+@keyframes sq7 {
+  60%   {background-color:#ccc;}
+  70%  {background-color:#c41e3a;}
+  90%   {background-color:#ccc;}
+}
+@keyframes sq8 {
+  70%   {background-color:#ccc;}
+  80%  {background-color:#c41e3a;}
+  100%   {background-color:#ccc;}
+}
+@keyframes sq9 {
+  80%   {background-color:#ccc;}
+  90%  {background-color:#c41e3a;}
+  100%   {background-color:#ccc;}
+}
+
 /*######### Media Queries to Support Different Screens Sizes #########*/
 
 @media (max-width : 767px){
@@ -4059,4 +4203,11 @@ td.CompImpactLow{
     li > a#ideaLink, li > a#commentLink {
     	display: none;
     }
+}
+
+@media print {
+	#mainHeader, footer, #printOverlay {display: none;}
+}
+@page {
+	margin: 0.5cm;
 }

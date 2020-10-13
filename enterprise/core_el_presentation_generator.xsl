@@ -125,10 +125,7 @@
 				<!-- Start Searchable Select Box Libraries and Styles -->
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
-				
-				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.0.8.js"/>
-				
+								
 				
 				<!-- Start widget template files -->
 				<xsl:apply-templates mode="RenderWidgetTemplateFileImport" select="$allWidgetTemplates"/>

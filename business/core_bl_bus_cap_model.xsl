@@ -244,6 +244,7 @@
 					    position: relative;
 					    box-sizing: content-box;
 					    line-height: 1.1em;
+					    font-weight: 700;
 					    display: flex;
 					    align-items: center;
 					    justify-content: center;

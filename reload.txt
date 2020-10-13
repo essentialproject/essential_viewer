@@ -1,0 +1,5 @@
+# EAS 2020
+# Do not delete
+# Used to allow restart of single Viewer in mutli-Viewer deployments with shared code-base (i.e. Essential Cloud)
+# Update context.xml in Tomcat
+# <WatchedResource>reload.txt</WatchedResource>

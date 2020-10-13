@@ -64,7 +64,6 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

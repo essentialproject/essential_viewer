@@ -211,8 +211,7 @@
                 
 				<script src="js/vis/vis.min.js" type="application/javascript"/>
                 <link href="js/vis/vis.min.css" media="screen" rel="stylesheet" type="text/css"/>
-           
-                <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+
 				<script type="text/javascript">
 				$('document').ready(function(){
 					 $(".compModelContent").vAlign();
@@ -623,11 +622,20 @@
                 
                 
                 var project={"projectID":"<xsl:value-of select="$this/name"/>",
-                         "projectName":"<xsl:value-of select="eas:validJSONString($this/own_slot_value[slot_reference='name']/value)"/>",
-                         "projectDesc":"<xsl:value-of select="eas:validJSONString($this/own_slot_value[slot_reference='description']/value)"/>",
+                         "projectName":"<xsl:call-template name="RenderMultiLangInstanceName">
+										<xsl:with-param name="theSubjectInstance" select="$this"/>
+										<xsl:with-param name="isRenderAsJSString" select="true()"/>
+									</xsl:call-template>",
+                         "projectDesc":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+											<xsl:with-param name="isRenderAsJSString" select="true()"/>
+											<xsl:with-param name="theSubjectInstance" select="$this"/>
+										</xsl:call-template>",
                          "approvalStatus":"<xsl:value-of select="$projectApprovalStatusName"/>",  
 	                     "projectStatus":"<xsl:value-of select="$projectStatusName"/>",  
-	                     "projectParentProgrammeName":"<xsl:choose><xsl:when test="$projectParentProgrammeName"><xsl:value-of select="$projectParentProgrammeName"/></xsl:when><xsl:otherwise>Not Defined</xsl:otherwise></xsl:choose>",  
+	                     "projectParentProgrammeName":"<xsl:choose><xsl:when test="$projectParentProgrammeName"><xsl:call-template name="RenderMultiLangInstanceName">
+										<xsl:with-param name="theSubjectInstance" select="$projectParentProgrammeName"/>
+										<xsl:with-param name="isRenderAsJSString" select="true()"/>
+									</xsl:call-template></xsl:when><xsl:otherwise>Not Defined</xsl:otherwise></xsl:choose>",  
                          "proposedStartDate":"<xsl:value-of select="$jsProposedStartDate"/>",
                          "actualStartDate":"<xsl:value-of select="$jsActualStartDate"/>",
                          "targetEndDate":"<xsl:value-of select="$jsTargetEndDate"/>",

@@ -29,7 +29,9 @@
 		* 
 	-->
 	<!-- 26.03.2020	JWC First implementation -->
-	<xsl:variable name="aDataSetAPIList" select="/node()/simple_instance[type='Data_Set_API' and own_slot_value[slot_reference='is_data_set_api_precached']/value='true']"></xsl:variable>
+	<!-- 30.06.2020 JWC Filter the set of Data_Set_API instances to avoid clash with 'reference' types -->
+	<xsl:variable name="aJsonType" select="/node()/simple_instance[type='Report_Implementation_Type' and own_slot_value[slot_reference='enumeration_value']/value='json']"></xsl:variable>
+	<xsl:variable name="aDataSetAPIList" select="/node()/simple_instance[type='Data_Set_API'and own_slot_value[slot_reference='report_implementation_type']/value=$aJsonType/name and own_slot_value[slot_reference='is_data_set_api_precached']/value='true']"></xsl:variable>
 	
 	<xsl:template match="knowledge_base">
 		{

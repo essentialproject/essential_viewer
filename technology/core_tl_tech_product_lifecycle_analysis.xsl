@@ -76,7 +76,6 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
                 <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
-                <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -220,7 +219,7 @@
           <script>
             var productJSON=[<xsl:apply-templates select="$products" mode="getProducts"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
                 </xsl:apply-templates>];
-
+ 
             var lifecycleModelJSON=[<xsl:apply-templates select="$productLifecycles" mode="getLifecycles"></xsl:apply-templates>];
     
             var lifecycleUsageJSON=[<xsl:apply-templates select="$lifecycleStatusUsages" mode="getLifecycleUsages"></xsl:apply-templates>];
@@ -254,32 +253,36 @@
                     }
                 d['lifecycles']=thisModel;
                   }
+ 		  
                     var aStandard = techStandards.find(function(aStd) {
                       
                         return aStd.id == lifeId;
                     });
+		 
                     if(aStandard != null) {
                         d['standard']=aStandard.standardName;
+			  			d['standardID']=aStandard.standard;
                     }
+			  	 	
                 });  
  
-$('#lifeSel').on('change',function(){
-        $('.loader').css('display','block');console.log('show');
-      createLifeBox();
-    createMap(productJSON);
-    })    
+				$('#lifeSel').on('change',function(){
+						$('.loader').css('display','block'); 
+					  createLifeBox();
+					createMap(productJSON);
+					})    
 
-function comp(a, b) {
-    return new Date(a.dateOf).getTime() - new Date(b.dateOf).getTime();
-}  
-             appJSON=[<xsl:apply-templates select="$apps" mode="appJSON"/>];
-                      
-            $('document').ready(function(){
-                   var appListFragment = $("#app-list-template").html();
-                       appListTemplate = Handlebars.compile(appListFragment);  
+				function comp(a, b) {
+					return new Date(a.dateOf).getTime() - new Date(b.dateOf).getTime();
+				}  
+							 appJSON=[<xsl:apply-templates select="$apps" mode="appJSON"/>];
 
-            
-                })
+							$('document').ready(function(){
+								   var appListFragment = $("#app-list-template").html();
+									   appListTemplate = Handlebars.compile(appListFragment);  
+
+
+								})
             
     
             lifeColourJSON=[<xsl:apply-templates select="$lifecycles" mode="getElementColours"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/></xsl:apply-templates>];
@@ -287,7 +290,7 @@ function comp(a, b) {
       <!--      componentwithStdJSON=[<xsl:apply-templates select="$techComponentsWithStd" mode="getComps"/>];
 -->
             stdColourJSON=[<xsl:apply-templates select="$stdValue" mode="getElementColours"/>]    
-
+stdColourJSON.push({"name":"Not Set","id":"","val":"#ffffff","textcolour":"","order":10,"type":"None"})
             /* Generate buttons  */
 
                 createLifeBox();
@@ -303,6 +306,7 @@ function comp(a, b) {
                 containerStd.innerHTML+=button;
                 standards.push(obj.id);
                 }    
+			  
 
              /*set dates*/
             var datesJSON=[];
@@ -438,13 +442,21 @@ function comp(a, b) {
             if(j&lt;productJSON[i].lifecycle.length-1){lifeVal+=','}
                 
              }
- 
+
             stdcolour=stdColourJSON.filter(function (d){
-              if(productJSON[i].standard){return d.name===productJSON[i].standard}
+              if(productJSON[i].standard){ 
+              if(d.name==productJSON[i].standard){return d.name==productJSON[i].standard}else{
+  
+              var stdstring=productJSON[i].standard.replaceAll('_', ' ')
+              return d.name==stdstring;}
+                }
                });
 
             var stdColour;
-            if(stdcolour[0]){stdColour = stdcolour[0].val}else{stdColour ='#e6e6e6' }
+            if(stdcolour[0]){ ; 
+              stdColour = stdcolour[0].val
+              }else
+              {stdColour ='#e6e6e6' }
      
                 prodList+='{"product":"'+productJSON[i].name+'","id":"'+productJSON[i].id+'", "appsImpacting":'+thisApps.length+',"stdColour":"'+stdColour+'","linkid":"'+productJSON[i].linkid+'", "standard":"'+productJSON[i].standard+'", "lifecycles":['+lifeVal+'],"apps":'+JSON.stringify(thisApps)+'}';
 
@@ -495,7 +507,7 @@ $('.loader').hide();
             .data(jsonProd[0].products)
 			   
              .enter().append("svg:a")
-            .attr("xlink:href", function(d){console.log(d.linkid); return 'report?XML=reportXML.xml&amp;PMA='+d.linkid+'&amp;cl=en-gb&amp;XSL=technology/core_tl_tech_prod_summary.xsl';})
+            .attr("xlink:href", function(d){ return 'report?XML=reportXML.xml&amp;PMA='+d.linkid+'&amp;cl=en-gb&amp;XSL=technology/core_tl_tech_prod_summary.xsl';})
  
                     .append("text")
                     .attr("y",(function(d,i){return ((i+1)*22)+10}))
@@ -543,7 +555,8 @@ $('.loader').hide();
                     .attr("height",(15))
                     .attr("width",8)
             .attr("class"," item")
-                    .style("fill", function(d){if(d.stdColour){return d.stdColour}else{return "#ffffff"}});
+                    .style("fill", function(d){ 
+              if(d.stdColour){return d.stdColour}else{return "#ffffff"}});
 
             productinfo.append("circle")
                     .attr("cx",279)
@@ -585,17 +598,20 @@ function filterDate(year){
     }
                                 if(check){return check}
                                 })
-                 
+               
                              
                             var newArray = thisdata.filter((thisdata, index, self) =>
     index === self.findIndex((t) => (t.save === thisdata.save &amp;&amp; t.name === thisdata.name)))
-                               
-        var thisSet=[];                        
+                              
+        var thisSet=[];        	                   
              for(var j=0;j&lt;standards.length;j++){
+		 
                 var filteredArray = newArray.filter(function(d){
+	 
                                 if(d.standardID===standards[j]){thisSet.push(d)}
                                 });
-                                }  ;                  
+                                }  ;    
+ 
             var sorted = thisSet.sort(function(a, b) {
                     if (a.name > b.name) {
                       return 1;
@@ -700,7 +716,7 @@ function filterApp(app){
                     }                                 
                                 
 function applyFilter(state,type){
-                              
+                            
         if(state){
             standards.push(type);
                         } else
@@ -711,6 +727,7 @@ function applyFilter(state,type){
                            }
                          }
                         }
+	   	  
                 filterDate($('#yearsRange').val())          
                     }  
 
@@ -748,7 +765,7 @@ function applyFilter(state,type){
 	</xsl:template>
 <xsl:template match="node()" mode="getElementColours">
     <xsl:variable name="this" select="current()"/>
-    <xsl:variable name="style" select="$styles[name=$this/own_slot_value[slot_reference='element_styling_classes']/value]"/>{"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>","id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","val":"<xsl:value-of select="$style/own_slot_value[slot_reference='element_style_colour']/value"/>","textcolour":"<xsl:value-of select="$style/own_slot_value[slot_reference='element_style_text_colour']/value"/>","order":<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_sequence_number']/value"/><xsl:if test="not($this/own_slot_value[slot_reference='enumeration_sequence_number']/value)">10</xsl:if>,"type":"<xsl:value-of select="$this/type"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
+    <xsl:variable name="style" select="$styles[name=$this/own_slot_value[slot_reference='element_styling_classes']/value]"/>{"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>","id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","val":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_colour']/value"/>","textcolour":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>","order":<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_sequence_number']/value"/><xsl:if test="not($this/own_slot_value[slot_reference='enumeration_sequence_number']/value)">10</xsl:if>,"type":"<xsl:value-of select="$this/type"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
 </xsl:template>
 
     
