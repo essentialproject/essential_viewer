@@ -41,7 +41,7 @@
     <xsl:variable name="infoPrinciples" select="node()/simple_instance[type='Information_Architecture_Principle']"/>   
 	<xsl:variable name="allPrinciples" select="$busPrinciples union $appPrinciples union $techPrinciples union $infoPrinciples"/>   
     <xsl:variable name="goals" select="node()/simple_instance[type=('Business_Goal','Application_Architecture_Goal','Information_Architecture_Goal','Technology_Architecture_Goal')]"/> 
-    <xsl:variable name="objectives" select="node()/simple_instance[type=('Business_Objective','Application_Architecture_Objective','Information_Architecture_Objective','Technology_Architecture_Objective')][own_slot_value[slot_reference='objective_supports_goals']/value=$goals/name]"/>  	
+    <xsl:variable name="objectives" select="node()/simple_instance[type=('Business_Objective','Application_Architecture_Objective','Information_Architecture_Objective','Technology_Architecture_Objective')][name=$goals/own_slot_value[slot_reference='goal_supported_by_objectives']/value]"/>  	
     <!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -600,7 +600,7 @@
 										<xsl:attribute name="style">color:{{this.colour}}</xsl:attribute>
 									</i>
 									<span>{{this.app}} ({{this.service}})</span>
-									<span class="label label-sm left-5"><xsl:attribute name="style">background-color: {{this.colour}}</xsl:attribute>{{this.status}}</span>
+									<span class="label label-sm left-5"><xsl:attribute name="style">background-color: {{#if this.colour}}{{this.colour}}{{else}}#d3d3d3{{/if}}</xsl:attribute>{{this.status}}</span>
 								</li>
 							{{/each}}
 						</ul>
@@ -620,7 +620,7 @@
 									<xsl:attribute name="style">color:{{this.colour}}</xsl:attribute>
 								</i>
 								<span>{{this.comp}} ({{this.product}})</span>
-								<span class="label label-sm left-5"><xsl:attribute name="style">background-color: {{this.colour}}</xsl:attribute>{{this.status}}</span>
+								<span class="label label-sm left-5"><xsl:attribute name="style">background-color: {{#if this.colour}}{{this.colour}}{{else}}#d3d3d3{{/if}}</xsl:attribute>{{this.status}}</span>
 							</li>					
 						{{/each}}
 						</ul>
@@ -746,7 +746,7 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 
 
 	var goals=[<xsl:apply-templates select="$goals" mode="goals"/>];
-	//console.log(goals)
+	console.log(goals)
 		
 	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
 	//console.log(arg1+":"+arg2)
@@ -789,13 +789,14 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 				});
 				  item_counter=item_counter+1;
 	   			if(techstatusClassFilter.length==0){
-					if(thisstatus.length ==0){thisstatus='Off Strategy';}
+					if(thisstatus.length ==0){thisstatus='Off Strategy'
 						var findstatusClass=styles.filter(function(d){return d.name=='View Styling for Off Strategy'});
 						statusClass='bg-darkred-80';
 						thistechvalue=10;
 						sessionStorage.setItem(list[status].roleid, 'True');
 						offStrategy.push(list[status].roleid);
-						techstatusClassFilter.push({"textColour":"#fff","color":"#d3d3d3","thisstatus":thisstatus});
+                        }
+						techstatusClassFilter.push({"textColour":"#000","color":"#d3d3d3","thisstatus":thisstatus});
 					}
 			if(thisstatus=='Off Strategy'){
 				techstatusClassFilter[0].colour='#d03838';
@@ -837,15 +838,16 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 				var statusClassFilter=styles.filter(function(d){
 						return d.id == applist[appstatus].colour;
 				});
-				 
-			 
+ 
 				if(statusClassFilter.length==0){
-					if(thisappstatus.length ==0){thisappstatus='Off Strategy';}
+					if(thisappstatus.length ==0){thisappstatus='Off Strategy'
 						var findstatusClass=styles.filter(function(d){return d.name=='View Styling for Off Strategy'});
 						statusClass='bg-darkred-80';
-						thistechvalue=10;
+						thisvalue=10;
+
 						offStrategy.push(applist[appstatus].roleid);
-						statusClassFilter.push({"textColour":"#fff","color":"#d3d3d3","thisstatus":thisappstatus});
+                        }
+						statusClassFilter.push({"textColour":"#000","color":"#d3d3d3","thisstatus":thisappstatus});
 					}
 				
 		      	if(thisvalue &gt;4){
@@ -1048,7 +1050,7 @@ function addItem(thisid){
 	                function getScore(){
 	                   	var state;
 	                    var colour;
-console.log(offStrategy)
+console.log('offStrategy');console.log(offStrategy)
 	                    if(offStrategy.length &gt; 0){
 	                        state = 'Waiver Required';colour='#ffc62c';
 	                        }else{
@@ -1249,7 +1251,7 @@ console.log(offStrategy)
 		else{
 		page['colour']='#24b724';}
 	 
-	//console.log(page);
+	 console.log(page);
 	$('#summPage').empty();
 	$('#summPage').append(summaryTemplate(page));
 	$('#printDate').text(today);
@@ -1302,9 +1304,10 @@ console.log(offStrategy)
 	            </script>
 	</xsl:template>
 	<xsl:template match="node()" mode="goals">
-		<xsl:variable name="thisObj" select="$objectives[own_slot_value[slot_reference = 'objective_supports_goals']/value=current()/name]"/>
+		<xsl:variable name="thisObj" select="$objectives[name=current()/own_slot_value[slot_reference = 'goal_supported_by_objectives']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
 	 "name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>",
+    "debug":"<xsl:value-of select="own_slot_value[slot_reference = 'goal_supported_by_objectives']/value"/>",    
 	"objectives":[<xsl:apply-templates select="$thisObj" mode="objectives"/>]	}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
 	<xsl:template match="node()" mode="objectives">

@@ -400,9 +400,18 @@
 		<xsl:variable name="thisFilename" select="$thisAPI/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:variable>
 		<!-- Get the URL path for the data set -->
 		<xsl:variable name="dataSetPath">
-			<xsl:call-template name="RenderAPILinkText">
-				<xsl:with-param name="theXSL" select="$thisFilename"/>
-			</xsl:call-template>			
+			<xsl:choose>
+				<xsl:when test="$thisAPI/own_slot_value[slot_reference='is_data_set_api_precached']/value = 'true'">
+					<xsl:call-template name="RenderAPILinkText">
+						<xsl:with-param name="theXSL" select="$thisFilename"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderLinkText">
+						<xsl:with-param name="theXSL" select="$thisFilename"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>						
 		</xsl:variable>
 		
 		<xsl:variable name="cachedSlotCheckFileName" select="translate($thisFilename,'/','.')"/>

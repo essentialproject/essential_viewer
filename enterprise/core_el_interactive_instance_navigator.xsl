@@ -14,7 +14,7 @@
     <!-- Get an API Report instance using the common list of API Reports already captured by core_utilities.xsl -->
     <xsl:variable name="anAPIReportInstance" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Simple Instance']"/>
 	<xsl:variable name="anAPIClassInstance" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Instances for Class']"/>
-	<xsl:variable name="allClasses" select="/node()/class[type=':ESSENTIAL-CLASS']"/>
+	<xsl:variable name="allClasses" select="/node()/class[supertype=':STANDARD-CLASS'][type=':ESSENTIAL-CLASS'][not(contains(name, ':'))]"/>
 	
     
    	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
@@ -147,7 +147,7 @@
 						</div>
 						<div class="col-md-9">
 							<div id="spinner" class="this-spinner">
-								<div class="xlarge"><i class="fa fa-circle-o-notch fa-spin right-10"></i>Calculating</div>
+								<div class="xlarge"><i class="fa fa-circle-o-notch fa-spin right-10"></i>Calculating<br/><span style="font-size:8pt">This can take some time where lots of relations exist</span></div>
 							</div>
 							<svg id="svg-canvas" width="100px" height="100px"/>
 							

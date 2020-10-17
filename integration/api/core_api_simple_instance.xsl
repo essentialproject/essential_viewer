@@ -43,6 +43,25 @@
         "type": "<xsl:value-of select="../type"/>",
         "slotType": "<xsl:value-of select="value[1]/@value_type"/>",
 		"name": "<xsl:value-of select="slot_reference"/>",
+        "values": [<xsl:for-each select="value"><xsl:variable name="theSubject" select="."/>"<xsl:choose><xsl:when test="eas:isUserAuthZ($theSubject)"><xsl:value-of select="eas:getSafeJSString($theSubject)" disable-output-escaping="yes"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
+        "name_values": [<xsl:for-each select="value">
+        <xsl:variable name="this" select="/node()/simple_instance[name = current()]/supertype"/>    
+        <xsl:choose><xsl:when test="$this='EA_Relation'"> {"id":"<xsl:value-of select="eas:renderJSText(current())"/>","name":"<xsl:value-of select="eas:renderJSText(translate(/node()/simple_instance[name = current()]/own_slot_value[slot_reference='relation_name']/value,'&quot;',''))"/>","type":"<xsl:value-of select="/node()/simple_instance[name=current()]/type"/>"<xsl:choose><xsl:when test="current()/@value_type='simple_instance'">,"slotType":"<xsl:value-of select="current()/@value_type"/>","superclass":[<xsl:for-each select="/node()/simple_instance[name=current()]/supertype">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]</xsl:when><xsl:otherwise>,"slotType":"<xsl:value-of select="current()"/>"</xsl:otherwise></xsl:choose>,"superclass":[<xsl:for-each select="/node()/simple_instance[name=current()]/supertype">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())">,</xsl:if></xsl:when><xsl:otherwise> {"id":"<xsl:value-of select="eas:renderJSText(current())"/>",<xsl:if test="current()/@value_type='simple_instance'">"slotType":"<xsl:value-of select="current()/@value_type"/>","superclass":[<xsl:for-each select="/node()/simple_instance[name=current()]/supertype">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],</xsl:if>
+            <xsl:choose><xsl:when test="not(/node()/simple_instance[name=current()]/type)">"name":"<xsl:choose><xsl:when test="eas:isUserAuthZ(current())"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose>",
+        "type":"<xsl:value-of select="../slot_reference"/>"</xsl:when><xsl:otherwise>
+            <xsl:variable name="thisNode" select="/node()/simple_instance[name = current()]"/>
+        "name":"<xsl:choose><xsl:when test="eas:isUserAuthZ($thisNode)"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisNode"/><xsl:with-param name="isRenderAsJSString" select="true()"/> </xsl:call-template></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose>",
+        "type":"<xsl:value-of select="/node()/simple_instance[name=current()]/type"/>","superclass":[<xsl:for-each select="/node()/simple_instance[name=current()]/supertype">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]</xsl:otherwise></xsl:choose> }<xsl:if test="not(position() = last())">,</xsl:if></xsl:otherwise></xsl:choose>
+       </xsl:for-each>]
+        }<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+<xsl:template mode="RenderSlots2" match="node()">
+ 
+		{
+        "type": "<xsl:value-of select="../type"/>",
+        "slotType": "<xsl:value-of select="value[1]/@value_type"/>",
+		"name": "<xsl:value-of select="slot_reference"/>",
 		"values": [<xsl:for-each select="value"><xsl:variable name="theSubject" select="."/>"<xsl:value-of select="eas:renderJSText($theSubject)" disable-output-escaping="yes"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
         "name_values": [<xsl:for-each select="value">
         <xsl:variable name="this" select="/node()/simple_instance[name = current()]/supertype"/>    

@@ -100,8 +100,8 @@
         
     </xsl:template>-->
     <!-- End of test harness -->
-    
-    
+
+    <!-- New templates to manage security for JSON Views -->
     <xsl:template name="RenderSecurityClassificationsJSONForInstance">
         <xsl:param name="theInstance"/>
         
@@ -124,6 +124,7 @@
 </xsl:if>
     </xsl:template>
     
+    <!-- End of JSON security templates -->
     
     
     <!-- function to test whether user can access specified instance -->

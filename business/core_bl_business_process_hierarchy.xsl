@@ -213,6 +213,11 @@
 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">	
+                             <xsl:if test="count($topBusinessProcesses)=0">
+                                 <div class="col-xs-4" style="border:1pt solid #d3d3d3;border-radius:3px">
+                                <i class="fa fa-warning" style="color:#e8a04d"></i>     
+                                 No sub processes are defined.  This view requires a set of top level processes to have no parents, and to have children defined against the sub processes slot.  Sub processes can themselves have further sub processes defined against them</div>
+                            </xsl:if>
 							<div id="processModel"></div>
 						</div>
 
@@ -253,13 +258,13 @@ var model=[<xsl:apply-templates select="$topBusinessProcesses" mode="model"/>]
 				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 			});
 			
-			console.log(model)
+	 
 			$('#processModel').append(procTemplateFront(model));
 			
 			$('.fa-info-circle').click(function(){
 				var thisId=$(this).attr('easid');
 				var parentId=$(this).attr('parentid');
-				console.log(parentId)
+			 
 			if(parentId){
 				var thisProcess = model.filter(function(d){
 					 return d.id == parentId;
@@ -273,7 +278,7 @@ var model=[<xsl:apply-templates select="$topBusinessProcesses" mode="model"/>]
 					 return d.id == thisId;
 					}) 
 			};
-				console.log(thisProcess)
+				 
 			$('#modalContent').empty();
 			$('#modalContent').append(modalTemplateFront(thisProcess))
 		 $('#processModal').modal('show');

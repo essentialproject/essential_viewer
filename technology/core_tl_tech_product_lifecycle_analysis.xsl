@@ -447,8 +447,8 @@ stdColourJSON.push({"name":"Not Set","id":"","val":"#ffffff","textcolour":"","or
               if(productJSON[i].standard){ 
               if(d.name==productJSON[i].standard){return d.name==productJSON[i].standard}else{
   
-              var stdstring=productJSON[i].standard.replaceAll('_', ' ')
-              return d.name==stdstring;}
+              var stdstring=productJSON[i].standard
+              return d.name==stdstring.replace(/_/g, ' ');}
                 }
                });
 
@@ -568,7 +568,8 @@ $('.loader').hide();
                     .attr("x",277)
             .attr("class"," item")
             .style("font-size","10px")
-                    .text(function(d){if (d.standard){return d.standard}else{return ''}})
+                    .text(function(d){if (d.standard){
+                                return d.standard.replace(/_/g, ' ')}else{return ''}})
                     .style("fill", "#000000");
 
 
