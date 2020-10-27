@@ -1990,7 +1990,7 @@
    ss:RefersTo="='Application Delivery Models'!R7C3:R24C3"/>
   <NamedRange ss:Name="App_Dif_Level"
    ss:RefersTo="='CLASSIFICATION DATA'!R24C3:R24C5"/>
-  <NamedRange ss:Name="App_Type" ss:RefersTo="='REFERENCE DATA'!R46C3:R46C5"/>
+  <NamedRange ss:Name="App_Type" ss:RefersTo="='REFERENCE DATA'!R46C3:R46C8"/>
   <NamedRange ss:Name="Application_Codebases"
    ss:RefersTo="='Application Codebases'!R7C3:R24C3"/>
   <NamedRange ss:Name="Application_Delivery_Model"

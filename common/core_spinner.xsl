@@ -19,6 +19,7 @@
 			}
 			#page-spinner-text {
 				float: none;
+				display: block;
 			}
 		</style>
 		<div id="page-spinner">
