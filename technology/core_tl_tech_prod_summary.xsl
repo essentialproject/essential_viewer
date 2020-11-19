@@ -270,13 +270,16 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
 						<xsl:value-of select="eas:i18n('Maintenance Cost')"/>
 					</h2>
 					<div class="content-section">
-						<xsl:variable name="maintenanceCost" select="own_slot_value[slot_reference = 'maintenance_cost']/value"/>
+						<xsl:variable name="defaultCurrencyConstant" select="eas:get_instance_by_name(/node()/simple_instance, 'Report_Constant', 'Default Currency')"/>
+						<xsl:variable name="defaultCurrency" select="eas:get_instance_slot_values(/node()/simple_instance, $defaultCurrencyConstant, 'report_constant_ea_elements')"/>
+						<xsl:variable name="defaultCurrencySymbol" select="eas:get_string_slot_values($defaultCurrency, 'currency_symbol')"/>
+						<xsl:variable name="maintenanceCost" select="if (count(current()/own_slot_value[slot_reference = 'maintenance_cost']/value) > 0) then concat($defaultCurrencySymbol,format-number(current()/own_slot_value[slot_reference = 'maintenance_cost']/value, '##,###,###')) else ''"/>
 						<xsl:choose>
 							<xsl:when test="not(count($maintenanceCost) > 0)">
 								<p> - </p>
 							</xsl:when>
 							<xsl:otherwise>
-								<p> £<xsl:value-of select="own_slot_value[slot_reference = 'maintenance_cost']/value"/>
+								<p> <xsl:value-of select="eas:getSafeJSString($maintenanceCost)"/>
 								</p>
 							</xsl:otherwise>
 						</xsl:choose>
