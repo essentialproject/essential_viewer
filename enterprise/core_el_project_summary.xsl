@@ -254,9 +254,7 @@
 										</xsl:call-template></span>
 								</h1>
 							</div>
-						</div>
-
-
+						</div> 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
 							<div class="sectionIcon">
@@ -632,10 +630,10 @@
 										</xsl:call-template>",
                          "approvalStatus":"<xsl:value-of select="$projectApprovalStatusName"/>",  
 	                     "projectStatus":"<xsl:value-of select="$projectStatusName"/>",  
-	                     "projectParentProgrammeName":"<xsl:choose><xsl:when test="$projectParentProgrammeName"><xsl:call-template name="RenderMultiLangInstanceName">
-										<xsl:with-param name="theSubjectInstance" select="$projectParentProgrammeName"/>
+	                     "projectParentProgrammeName":"<xsl:call-template name="RenderMultiLangInstanceName">
+										<xsl:with-param name="theSubjectInstance" select="$projectParentProgramme"/>
 										<xsl:with-param name="isRenderAsJSString" select="true()"/>
-									</xsl:call-template></xsl:when><xsl:otherwise>Not Defined</xsl:otherwise></xsl:choose>",  
+									</xsl:call-template>",  
                          "proposedStartDate":"<xsl:value-of select="$jsProposedStartDate"/>",
                          "actualStartDate":"<xsl:value-of select="$jsActualStartDate"/>",
                          "targetEndDate":"<xsl:value-of select="$jsTargetEndDate"/>",
@@ -688,7 +686,7 @@
                 $(function () {
                 $('#datechecker').datepicker();
                     });
-                
+          
                 $('#description').text(project.projectDesc);
                 $('#approval').text(project.approvalStatus);
                 $('#lifecycle').text(project.projectStatus);
@@ -712,7 +710,7 @@
                     var thisList=[];
                      project.impactedElements.forEach(function(e){
                         if(d.id===e.planID){
-                            console.log('match'+e);
+                        
                         thisList.push(e);
                         }
                     });
@@ -815,7 +813,7 @@
                 $("#appimpacts").html(impactTemplate(appI));
                 $("#techimpacts").html(impactTemplate(techI));
                 $("#infoimpacts").html(impactTemplate(infoI));     
-                
+  
                 $("#impactAnalysis").html(stratImpactTemplate(elements));     
                 
                 
@@ -1105,7 +1103,7 @@
         <xsl:if test="current()/name!=$this/name">
             <xsl:variable name="thisP2E" select="$thisPlanEle[own_slot_value[slot_reference='plan_to_element_change_activity']/value=current()/name]"/>
             <xsl:variable name="thisStratPlan" select="$allStrategicPlans[own_slot_value[slot_reference='strategic_plan_for_elements']/value=$thisP2E/name]"/>
-            {"id":"<xsl:value-of select="$thisItem/name"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>", "stratplanid":"<xsl:value-of select="$thisStratPlan/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisStratPlan"/></xsl:call-template>"},
+            {"id":"<xsl:value-of select="$thisItem/name"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisItem"/></xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>", "stratplanid":"<xsl:value-of select="$thisStratPlan/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisStratPlan"/></xsl:call-template>"},
         </xsl:if>
         </xsl:for-each>
     </xsl:template> 

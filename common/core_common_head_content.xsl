@@ -31,6 +31,8 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<!--Setup common content for html head tag	-->
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="pragma" content="no-cache"/>
+		<meta http-equiv="cache-control" content="no-cache"/>
 		<!--<meta http-equiv="expires" content="-1" />-->
 		<!--<meta http-equiv="X-UA-Compatible" content="chrome=1" />-->
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>

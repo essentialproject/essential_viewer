@@ -71,12 +71,15 @@
 						})
 					});
 				</script>
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
+				<script src="js/lightbox-master/ekko-lightbox.js" type="text/javascript"/>
 				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
 					    event.preventDefault();
-					    $(this).ekkoLightbox({always_show_close: false});
+					    $(this).ekkoLightbox({
+					    	always_show_close: false,
+					    	maxHeight: 900
+					    });
 					}); 
 				</script>
 			</head>

@@ -217,7 +217,8 @@
 </script>		
 	<script id="prod-list-bullets" type="text/x-handlebars-template">
 						{{#each this.comp}}
-							- {{{this.link}}} <button><xsl:attribute name="class">btn btn-xs {{this.stdStyle}}</xsl:attribute>{{this.std}}</button><br/>
+                            - {{{this.link}}} {{#if this.stdStyle}}<button><xsl:attribute name="class">btn btn-xs {{this.stdStyle}}</xsl:attribute>{{this.std}}</button><br/>{{else}}
+                            <button class="btn btn-xs"><xsl:attribute name="style">background-color:{{this.stdColour}};color:{{this.stdTextColour}}</xsl:attribute>{{this.std}}</button><br/>{{/if}}
 						{{/each}}
 	</script>	
 	<script id="cap-list-bullets" type="text/x-handlebars-template">

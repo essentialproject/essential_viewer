@@ -82,7 +82,7 @@
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width
 					
-					$("#coreBusServices").each(function() {    // Select the elements you're comparing
+					$(".coreBusServices").each(function() {    // Select the elements you're comparing
 					
 					var theWidth = $(this).width();   // Grab the current width
 					
@@ -705,7 +705,7 @@
 	<xsl:template match="node()" mode="PrintTopLevelFrontCap">
 		<xsl:variable name="thisFrontBusCap" select="$allBusinessCaps[name = current()/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
 		<div class="threeColModel_wideRowCaps">
-			<div class="threeColModel_sectionTitle fontBlack " id="coreBusServices">
+			<div class="threeColModel_sectionTitle fontBlack coreBusServices">
 				<!--<xsl:value-of select="$thisFrontBusCap/own_slot_value[slot_reference = 'name']/value"/>-->
 				<xsl:call-template name="RenderInstanceLink">
 					<xsl:with-param name="theSubjectInstance" select="$thisFrontBusCap"/>
@@ -722,7 +722,9 @@
 				<xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value" data-type="number"/>
 			</xsl:apply-templates>
 		</div>
-		<div class="threeColModel_wideRowCapsDivider"/>
+		<xsl:if test="not(position() = last())">
+			<div class="threeColModel_wideRowCapsDivider"/>
+		</xsl:if>
 
 	</xsl:template>
 

@@ -281,11 +281,24 @@
 					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				</xsl:call-template>
 			</td>
-			<td>
+			<td> 
 				<xsl:choose>
 					<xsl:when test="count($processSites) > 0">
 						<ul class="noMarginBottom">
 							<xsl:for-each select="$processSites">
+								<li>
+									<xsl:call-template name="RenderInstanceLink">
+										<xsl:with-param name="theSubjectInstance" select="current()"/>
+										<xsl:with-param name="theXML" select="$reposXML"/>
+										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+									</xsl:call-template>
+								</li>
+							</xsl:for-each>
+						</ul>
+					</xsl:when>
+					<xsl:when test="count($actorSites) > 0">
+						<ul class="noMarginBottom">
+							<xsl:for-each select="$actorSites">
 								<li>
 									<xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>

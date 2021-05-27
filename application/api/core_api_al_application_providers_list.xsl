@@ -25,7 +25,7 @@
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
 	
-	<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
+	<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 
 	<xsl:template match="knowledge_base">
 		{
@@ -39,10 +39,27 @@
 	
 	
 	<xsl:template mode="RenderApplications" match="node()">
-		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		  "name": "<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>",
-			"description": "<xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/>",
-			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+		<xsl:variable name="this" select="current()"/>
+		
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:variable name="thisDesc">
+			<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		
+		
+		{"id": "<xsl:value-of select="current()/name"/>",
+		  	"name": "<xsl:value-of select="$thisName"/>",
+			"description": "<xsl:value-of select="$thisDesc"/>",
+			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"codebase": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'ap_codebase_status']/value"/>",
 			"delivery": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'ap_delivery_model']/value"/>"
 		} <xsl:if test="not(position()=last())">,

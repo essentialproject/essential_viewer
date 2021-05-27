@@ -611,6 +611,10 @@ $(document).ready(function() {
 	var procFragmentFront   = $("#proc-template").html();
 	procTemplateFront = Handlebars.compile(procFragmentFront);
 	
+	Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+		return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+	});
+
 	$('#processTable').append(procTemplateFront(subProcesses));
 	
 	
@@ -628,20 +632,20 @@ $(document).ready(function() {
 </script>
 <script id="proc-template" type="text/x-handlebars-template">
 {{#each this}}
-<tr style="border-top:1pt solid #d3d3d3"><td style="vertical-align:top;padding:3px">{{{this.link}}}</td>
-	<td  style="vertical-align:top;padding:3px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+<tr style="border-top:1pt solid #d3d3d3"><td style="vertical-align:top;padding:3px">{{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}</td>
+	<td  style="vertical-align:top;padding:3px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 		<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-			<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
 			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
-				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{/each}}</div>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{/each}}</div>
 			</div>
 			{{/each}}
 			</div>
@@ -995,7 +999,8 @@ $(document).ready(function() {
 	 
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
  "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
-"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+ "flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",
+ "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
  "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>]}<xsl:if test="position()!=last()">,</xsl:if>	
 </xsl:template>
@@ -1003,6 +1008,7 @@ $(document).ready(function() {
 <xsl:template match="node()" mode="subProcesses">
 	<xsl:variable name="thissubBusinessProcesses" select="$allBusProcs[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+"flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",
  "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",

@@ -4,8 +4,6 @@
 	<xsl:include href="../common/core_analytics.xsl"/>
 	<xsl:variable name="errorFile" select="document('../platform/errorXML.xml')"/>
 	<xsl:variable name="currentViewerVersion" select="$errorFile//ess:viewerversion"/>
-	<xsl:variable name="updateFile" select="document('https://s3.amazonaws.com/essential-updater/viewerLatestVersion.xml')"/>
-	<xsl:variable name="latestViewerVersion" select="$updateFile//ess:viewerversion"/>
 	
 
 	<!--
@@ -81,22 +79,7 @@
 			<input type="hidden" id="currentViewerVersion">
 				<xsl:attribute name="value" select="$currentViewerVersion"/>
 			</input>
-			<input type="hidden" id="viewerLatestVersion" >
-				<xsl:attribute name="value" select="$latestViewerVersion"/>
-			</input>
 		</footer>
-		<!--Essential Update Check - Comment out the lines below to stop checking for updates-->
-		<script type="text/javascript" src="js/compareVersions.js"/>
-		<script>
-			$(document).ready(function(){
-				var viewerCurrentVersion =  $('#currentViewerVersion').val();
-				var viewerLatestVersion =  $('#viewerLatestVersion').val();
-				if (compareVersions(viewerCurrentVersion,viewerLatestVersion)) {
-					$('#viewerUpdateText').html(' - <a href="https://www.enterprise-architecture.org/essential_update.php?viewerCurrentVersion='+viewerCurrentVersion+'&amp;viewerLatestVersion='+viewerLatestVersion+'" target="_blank">Update Available</a>');
-				};
-			});
-		</script>
-		<!--Essential Update Check End-->
 		<!--Repository Configured Analytics - Use Report_Constant to configure Code-->
 		<xsl:call-template name="analytics"/>
 	</xsl:template>

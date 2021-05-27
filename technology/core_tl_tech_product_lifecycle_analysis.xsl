@@ -361,6 +361,7 @@ stdColourJSON.push({"name":"Not Set","id":"","val":"#ffffff","textcolour":"","or
                 }
     }                             
    function createMap(productJSON){  
+				  
     $('#lifeText').text($('#lifeSel').val().replace(/_/g, " "));
      d3.select('svg').selectAll('.item').remove()
         life2Use=$('#lifeSel').val();
@@ -470,8 +471,9 @@ stdColourJSON.push({"name":"Not Set","id":"","val":"#ffffff","textcolour":"","or
 
     prodList+='{}]}]';
 $('.loader').hide();
-
+  			
     jsonProd=JSON.parse(prodList);
+  			  
             var ll=jsonProd[0].products.length;
             jsonProd[0].products.splice(-1,1);
              var productlines =svg.selectAll("#box")
@@ -528,6 +530,7 @@ $('.loader').hide();
                            }) ;
 
     var productinfo =svg.selectAll("#box")
+  
             .data(jsonProd[0].products)
                     .enter()
                     .append("g").attr("class","item")
@@ -572,9 +575,6 @@ $('.loader').hide();
                                 return d.standard.replace(/_/g, ' ')}else{return ''}})
                     .style("fill", "#000000");
 
-
-
-
             d3.selectAll(".timeitem")
             .transition()
             .duration(500)
@@ -603,7 +603,7 @@ function filterDate(year){
                              
                             var newArray = thisdata.filter((thisdata, index, self) =>
     index === self.findIndex((t) => (t.save === thisdata.save &amp;&amp; t.name === thisdata.name)))
-                              
+                                
         var thisSet=[];        	                   
              for(var j=0;j&lt;standards.length;j++){
 		 
@@ -612,7 +612,7 @@ function filterDate(year){
                                 if(d.standardID===standards[j]){thisSet.push(d)}
                                 });
                                 }  ;    
- 
+
             var sorted = thisSet.sort(function(a, b) {
                     if (a.name > b.name) {
                       return 1;
@@ -621,9 +621,12 @@ function filterDate(year){
                       return -1;
                     }
                     return 0;
-                  });               
-                                
-
+                  });   
+			  
+			let unique = sorted.filter((item, i, ar) => ar.indexOf(item) === i)
+		
+                           
+ 
     var items = d3.select("#lfbox").select('svg').selectAll('.item');
         items.style("opacity", 1)
         .transition()
@@ -638,7 +641,9 @@ function filterDate(year){
         .style("opacity", 0).attr("height", 0)
         .remove();
     
-    createMap(sorted);
+    createMap(unique);
+			  
+			  
                             
                     };          
 
@@ -766,13 +771,19 @@ function applyFilter(state,type){
 	</xsl:template>
 <xsl:template match="node()" mode="getElementColours">
     <xsl:variable name="this" select="current()"/>
-    <xsl:variable name="style" select="$styles[name=$this/own_slot_value[slot_reference='element_styling_classes']/value]"/>{"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>","id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","val":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_colour']/value"/>","textcolour":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>","order":<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_sequence_number']/value"/><xsl:if test="not($this/own_slot_value[slot_reference='enumeration_sequence_number']/value)">10</xsl:if>,"type":"<xsl:value-of select="$this/type"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
+    <xsl:variable name="style" select="$styles[name=$this/own_slot_value[slot_reference='element_styling_classes']/value]"/>{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>","id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","val":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_colour']/value"/>","textcolour":"<xsl:value-of select="$style[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>","order":<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_sequence_number']/value"/><xsl:if test="not($this/own_slot_value[slot_reference='enumeration_sequence_number']/value)">10</xsl:if>,"type":"<xsl:value-of select="$this/type"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
 </xsl:template>
 
     
 <xsl:template match="node()" mode="getProducts">
     <xsl:variable name="this" select="current()"/>
-    {"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","vendor":"","vendorID":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='supplier_technology_product']/value)"/>", "standardID":"","standard":"","component":"","componentstandard":"","linkid":"<xsl:value-of select=" $this/name"/>"},</xsl:template>   
+    {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","vendor":"","vendorID":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='supplier_technology_product']/value)"/>", "standardID":"","standard":"","component":"","componentstandard":"","linkid":"<xsl:value-of select=" $this/name"/>"},</xsl:template>   
     
 <xsl:template match="node()" mode="getLifecycles">
     <xsl:variable name="this" select="current()"/>
@@ -800,7 +811,10 @@ function applyFilter(state,type){
     <xsl:variable name="thisTechProvUsage" select="$allTechProvUsage[name=$thistechBuildArch/own_slot_value[slot_reference='contained_architecture_components']/value]"/>   
     <xsl:variable name="thisTechRoles" select="$allTechProdRoles[name=$thisTechProvUsage/own_slot_value[slot_reference='provider_as_role']/value]"/>
     <xsl:variable name="thisProducts" select="$products[name=$thisTechRoles/own_slot_value[slot_reference='role_for_technology_provider']/value]"/>
-        {"name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "products":[<xsl:apply-templates select="$thisProducts" mode="getAppProducts"/>]}<xsl:if test="not(position()=last())">,</xsl:if> </xsl:template>
+        {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "products":[<xsl:apply-templates select="$thisProducts" mode="getAppProducts"/>]}<xsl:if test="not(position()=last())">,</xsl:if> </xsl:template>
     
     
      
@@ -808,20 +822,32 @@ function applyFilter(state,type){
     
     
     
-<xsl:template match="node()" mode="getAppProducts"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
+<xsl:template match="node()" mode="getAppProducts"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>"}<xsl:if test="not(position()=last())">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="getSupplier">
         <xsl:variable name="this" select="current()"/>
-       {"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+       {"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 
 <xsl:template match="node()" mode="getAppOptions">
         <xsl:variable name="this" select="current()"/>
-        <option value="{eas:getSafeJSString($this/name)}"><xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/></option>
+        <option value="{eas:getSafeJSString($this/name)}"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></option>
 </xsl:template>
  <xsl:template match="node()" mode="getOptions"> 
      <xsl:variable name="this" select="current()"/>
-     <option value="{eas:getSafeJSString($this/name)}"><xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/></option> 
+     <option value="{eas:getSafeJSString($this/name)}"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$this"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></option> 
 </xsl:template>
    <xsl:template match="node()" mode="getComps"> <xsl:variable name="this" select="current()"/>"<xsl:value-of select="eas:getSafeJSString($this/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if> </xsl:template>
 
@@ -832,6 +858,9 @@ function applyFilter(state,type){
 </xsl:template>     
 <xsl:template match="node()" mode="getTechStandardsLine">
     <xsl:param name="tech"/>
-    <xsl:variable name="thisstdValue" select="$stdValue[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]"/><xsl:if test="$thisstdValue">{"id":"<xsl:value-of select="eas:getSafeJSString($tech)"/>","standard":"<xsl:value-of select="eas:getSafeJSString($thisstdValue/name)"/>","standardName":"<xsl:value-of select="eas:getSafeJSString($thisstdValue/own_slot_value[slot_reference='name']/value)"/>"},</xsl:if>
+    <xsl:variable name="thisstdValue" select="$stdValue[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]"/><xsl:if test="$thisstdValue">{"id":"<xsl:value-of select="eas:getSafeJSString($tech)"/>","standard":"<xsl:value-of select="eas:getSafeJSString($thisstdValue/name)"/>","standardName":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$thisstdValue"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>"},</xsl:if>
 </xsl:template>
 </xsl:stylesheet>

@@ -188,7 +188,7 @@
 					
 					
 					var carriedApps = JSON.parse(sessionStorage.getItem("context"));
-			 
+			 if(carriedApps){
 					if(carriedApps.Composite_Application_Provider.length &gt; 0){
 						//if only one don't show basket 
 					
@@ -230,7 +230,7 @@
 					$('#'+$(this).val()).hide();
 					
 					});
-					
+		}
                         });
                         
                         function showFocusType(){
@@ -459,7 +459,7 @@
                             .key(function(d) { return d.service; })
                             .entries(serviceJSON);
                     
-            var statusIDs= $.unique(appJSON.map(function (d) {return d.status;}));      
+           	var focusServices;
             var focusedServices=0;  
             var focusProcesses=[];
             var primeType=false;
@@ -468,15 +468,16 @@
                 $("#appServs").empty();
                 alli=$(".servicesNew").val();
 				var selitems=[];	
+	
 				$('.servicesNew option:selected').each(function(){ selitems.push({"selectId":$(this).attr('name'),"name":$(this).val()}) });	
                 focusServices=selitems;
-			
+				console.log(focusServices)
                 focusedServices=focusServices.length;
             
                 $("#appServs > tbody").empty();          
                                 <![CDATA[ $("#appServs").append("<tbody>");]]>
                                 for(i=0; i &lt; focusServices.length;i++){                                         
-                                 <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+focusServices[i]+"</li>"); ]]>                                        
+                                 <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+focusServices[i].name+"</li>"); ]]>                                        
                                 }
                 getAllApps();
                 }
@@ -514,14 +515,21 @@
             };        
                                  
          
-            var uniqueStatus= $.unique(appJSON.map(function (d) {return d.status;}));   
-            for(i=0;i &lt; uniqueStatus.length; i++){
-                html = '<option id="s'+uniqueStatus[i].replace(/\s/g, '')+'" name="s'+uniqueStatus[i].replace(/\s/g, '')+'" value="'+uniqueStatus[i]+'" onchange="updateCards()">'+uniqueStatus[i]+'</option>';
+            var allStatus=  appJSON.map(function (d) {return d.status;}) ;   
+			let unique = allStatus.filter((item, i, ar) => ar.indexOf(item) === i)
+			unique.sort(function(a, b){
+						if(a &lt; b) { return -1; }
+						if(a > b) { return 1; }
+						return 0;
+					})
+ 
+            for(i=0;i &lt; unique.length; i++){
+                html = '<option id="s'+unique[i].replace(/\s/g, '')+'" name="s'+unique[i].replace(/\s/g, '')+'" value="'+unique[i]+'" onchange="updateCards()">'+unique[i]+'</option>';
                 $( "#SLs" ).append(html);
             }
             
             function getRelevantApps(){
-            
+        
                       Apps=[];
                             for(i=0;i &lt; serviceJSON.length;i++){
                              for(j=0;j &lt; focusServices.length;j++){
@@ -583,7 +591,7 @@
                             for(j=0;j &lt; thisapp[0].services.length;j++)
                                 {for(k=0;k &lt; focusServices.length;k++)
                                     {if(thisapp[0].services[j].serviceId==focusServices[k].selectId)
-                                        {appS.push({"selectId":thisapp[0].services[j].serviceId})} 
+                                        {appS.push({"selectId":thisapp[0].services[j].serviceId,"name":thisapp[0].services[j].service})} 
                                     }
                                 };
                           
@@ -672,10 +680,11 @@
             else{
             thisAppStatus=thisAppCode;
             }
-             
+              
             thisAppServices = thisAppStatus.filter(function (el) {  
                                 num=0;
                                  for(j=0;j &lt; el.services.length;j++){
+										if(focusServices){
                                         for(k=0;k &lt; focusServices.length;k++){
                                             if(el.services[j].serviceId===focusServices[k].selectId){
                                                 num = num+1;                         
@@ -685,7 +694,8 @@
                         
                                     if(num &gt;= servs){
                                         return el;
-                                        }
+                                        };
+										};
                                     });
            
             $('.carddiv').hide(); 
@@ -779,13 +789,19 @@
     
     <xsl:template match="node()" mode="getOptions">
          <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
-        <xsl:variable name="this" select="own_slot_value[slot_reference='name']/value"/>
+        <xsl:variable name="this"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:variable>
         <option name="{$thisid}" value="{$thisid}"><xsl:value-of select="$this"/></option>
     
     </xsl:template>
      <xsl:template match="node()" mode="getServOptions">
          <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
-        <xsl:variable name="this" select="own_slot_value[slot_reference='name']/value"/>
+        <xsl:variable name="this"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:variable>
         <option name="{$thisid}" value="{$this}"><xsl:value-of select="$this"/></option>
     
     </xsl:template>
@@ -834,7 +850,7 @@
 						<div class="text-default small hiddenDiv">
 							<h5>Matched Services</h5>
 							<ul class="small fa-ul">
-								{{#each servicesUsed}}<li><i class="fa fa-li essicon-radialdots"/>{{this}}</li>{{/each}}
+								{{#each servicesUsed}}<li><i class="fa fa-li essicon-radialdots"/>{{this.name}}</li>{{/each}}
 							</ul>
 							
 						</div>	

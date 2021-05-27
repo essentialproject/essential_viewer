@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet exclude-result-prefixes="pro xalan xs functx eas fn easlang" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:easlang="http://www.enterprise-architecture.org/essential/language">
+<xsl:stylesheet exclude-result-prefixes="pro xalan xs functx eas fn easlang" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:easlang="http://www.enterprise-architecture.org/essential/language">
 	<!--
         * Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -743,6 +743,7 @@
 		<xsl:param name="divId"/>
 		<xsl:param name="anchorClass"/>
 		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
+		<xsl:param name="isForJSONAPI" select="false()"/>
 
 		
 		<!-- Create the elements of the query string for a potential link -->
@@ -777,7 +778,19 @@
 				<!--<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference='report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference='report_menu_is_default']/value ='true')]" />-->
 
 				<xsl:variable name="defaultMenu" select="eas:get_default_menu_for_instance($theSubjectInstance)"/>
-				<xsl:variable name="instanceNameAnchor" select="if ($isRenderAsJSString) then eas:renderJSText($instanceName) else $instanceName"/>
+				<xsl:variable name="instanceNameAnchor">
+					<xsl:choose>
+						<xsl:when test="$isForJSONAPI">
+							<xsl:value-of select="eas:renderJSAPIText($instanceName)"/>
+						</xsl:when>
+						<xsl:when test="$isRenderAsJSString">
+							<xsl:value-of select="eas:renderJSText($instanceName)"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$instanceName"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
 				<!-- Render the appropriate link based on the given parameters -->
 				<xsl:choose>
 					<!-- If a target report has been provided, just create a normal link to the specific report -->
@@ -913,6 +926,7 @@
 		<xsl:param name="displayString"/>
 		<xsl:param name="divClass"/>
 		<xsl:param name="anchorClass"/>
+		<xsl:param name="isForJSONAPI" select="false()"/>
 
 
 		<!-- First perform user clearance check -->
@@ -939,7 +953,16 @@
 				</xsl:variable>
 				
 				<!--<xsl:variable name="escapedInstanceName" select="translate($instanceName, $quoteString, '')"/>-->				
-				<xsl:variable name="escapedInstanceName" select="eas:renderJSText($instanceName)"/>
+				<xsl:variable name="escapedInstanceName">
+					<xsl:choose>
+						<xsl:when test="$isForJSONAPI">
+							<xsl:value-of select="eas:renderJSAPIText($instanceName)"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="eas:renderJSText($instanceName)"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
 				
 				<xsl:variable name="defaultMenu" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_class']/value = $theSubjectInstance/type) and (own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true')]"/>
 
@@ -1221,6 +1244,7 @@
 	<xsl:template name="RenderMultiLangInstanceName">
 		<xsl:param name="theSubjectInstance"/>
 		<xsl:param name="isRenderAsJSString" select="false()"/>
+		<xsl:param name="isForJSONAPI" select="false()"/>
 		
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
@@ -1235,12 +1259,16 @@
 				<xsl:value-of>
 					<xsl:choose>
 						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+							<xsl:variable name="thisName" select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
 							<xsl:choose>
+								<xsl:when test="$isForJSONAPI">
+									<xsl:value-of select="eas:renderJSAPIText($thisName)"/>
+								</xsl:when>
 								<xsl:when test="$isRenderAsJSString">
-									<xsl:value-of select="eas:renderJSText($theSubjectInstance/own_slot_value[slot_reference = $slotName]/value)"/>
+									<xsl:value-of select="eas:renderJSText($thisName)"/>
 								</xsl:when>
 								<xsl:otherwise>
-									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $slotName]/value"/>
+									<xsl:value-of select="$thisName"/>
 								</xsl:otherwise>
 							</xsl:choose>							
 						</xsl:when>
@@ -1256,6 +1284,9 @@
 								</xsl:choose>
 							</xsl:variable>
 							<xsl:choose>
+								<xsl:when test="$isForJSONAPI">
+									<xsl:value-of select="eas:renderJSAPIText($nameVal)"/>
+								</xsl:when>
 								<xsl:when test="$isRenderAsJSString">
 									<xsl:value-of select="eas:renderJSText($nameVal)"/>
 								</xsl:when>
@@ -1281,37 +1312,55 @@
 	<xsl:template name="RenderMultiLangInstanceDescription">
 		<xsl:param name="theSubjectInstance"/>
 		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
+		<xsl:param name="isForJSONAPI" as="xs:boolean" select="false()"/>
+		
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
+	
 
 		<!-- First perform user clearance check -->
 		<xsl:variable name="unprotectedText">
-		<xsl:choose>
-			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
-				<xsl:choose>
-					<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-						<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:choose>
-							<xsl:when test="count($instanceSynonym) > 0">
-
-								<xsl:value-of select="replace($instanceSynonym[1]/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="eas:i18n($theRedactedString)"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			<xsl:choose>
+				<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
+					<xsl:choose>
+						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+							<xsl:variable name="theInstance" select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')"/>
+							<xsl:variable name="theInstance" select="replace($theInstance, '&#9;', '&#160;&#160;&#160;&#160;')"/>
+							<xsl:value-of select="$theInstance" disable-output-escaping="yes"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:choose>
+								<xsl:when test="count($instanceSynonym) > 0">
+									<!--NW cascading replace-->
+									<xsl:variable name="theInstance" select="replace($instanceSynonym[1]/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')"/>
+									<xsl:variable name="theInstance" select="replace($theInstance, '&#9;', '&#160;&#160;&#160;&#160;')"/>
+									<xsl:value-of select="$theInstance" disable-output-escaping="yes"/>
+									<!--<xsl:value-of select="replace($instanceSynonym[1]/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>-->
+								</xsl:when>
+								<xsl:otherwise>
+									<!--NW cascading replace-->
+									<xsl:variable name="theInstance" select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')"/>
+									<xsl:variable name="theInstance" select="replace($theInstance, '&#9;', '&#160;&#160;&#160;&#160;')"/>
+									<xsl:value-of select="$theInstance" disable-output-escaping="yes"/>
+									<!--<xsl:value-of select="replace($theSubjectInstance/own_slot_value[slot_reference = ('description', 'relation_description')]/value, '&#xA;', '&lt;br/&gt;')" disable-output-escaping="yes"/>-->
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="eas:i18n($theRedactedString)"/>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
+		
         <xsl:choose>
-            <xsl:when test="$isRenderAsJSString"><xsl:value-of select="eas:renderJSText($unprotectedText)"/></xsl:when>
+        	<xsl:when test="$isForJSONAPI">
+        		<xsl:value-of select="eas:renderJSAPIText($unprotectedText)"/>
+        	</xsl:when>
+			<xsl:when test="$isRenderAsJSString">
+				<xsl:value-of select="eas:renderJSText($unprotectedText)"/>
+			</xsl:when>
             <xsl:otherwise><xsl:value-of select="$unprotectedText" disable-output-escaping="yes"></xsl:value-of></xsl:otherwise>
         </xsl:choose>
 		<!--<xsl:value-of select="if ($isRenderAsJSString) then eas:renderJSText($unprotectedText) else $unprotectedText" disable-output-escaping="yes"/>-->
@@ -1323,6 +1372,8 @@
 	<xsl:template name="RenderMultiLangInstanceDescriptionForJSON">
 		<xsl:param name="theSubjectInstance"/>
 		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
+		
+		
 		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
 		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
 		
@@ -1378,7 +1429,9 @@
 		<xsl:param name="divStyle"/>
 		<xsl:param name="divId"/>
 		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
-		<xsl:variable name="renderedInstanceName" select="if ($isRenderAsJSString) then eas:renderJSText($instanceName) else $instanceName"/>
+		
+		<xsl:variable name="renderedInstanceName" select="$instanceName"/>
+
 		<xsl:choose>
 			<xsl:when test="string-length($divClass) > 0">
 				<div>
@@ -1993,20 +2046,58 @@
 		<xsl:variable name="escapeOpenBracket">M</xsl:variable>
 		<xsl:variable name="escapeCloseBracket">N</xsl:variable>
 
-		<xsl:variable name="ecsapeBackslashes" select="replace($theText, '\\','\\\\')"/>
+		<xsl:variable name="ecsapeBackslashes" select="replace($theText, '\\','')"/>
 		<!--<xsl:variable name="anAposEscapedText" select="replace($ecsapeBackslashes, $apos, $escapeApos)"/>-->
 		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($ecsapeBackslashes, $quote, $escapeQuote)"/>
-		<xsl:variable name="escapeBrackets" select="replace($anQuoteAndAposEscapedText, '(\(|\))', '\\$1')"/>
-		<xsl:variable name="escapeAmpersand" select="replace($anQuoteAndAposEscapedText, '&amp;', 'and')"/>
-		<xsl:variable name="escapeSpace" select="replace($escapeAmpersand, '&#160;', ' ')"/>
+		<!-- <xsl:variable name="escapeBrackets" select="replace($anQuoteAndAposEscapedText, '(\(|\))', '\\$1')"/> -->
+		<!--<xsl:variable name="escapeAmpersand" select="replace($anQuoteAndAposEscapedText, '&amp;', 'and')"/>-->
+		<xsl:variable name="escapeSpace" select="replace($anQuoteAndAposEscapedText, '&#160;', ' ')"/>
 		<xsl:variable name="escapeNewline" select="replace($escapeSpace, '\n|&#xA;', '\\n')"/>	
 		<xsl:variable name="escapeCarriageReturn" select="replace($escapeNewline, '\r|&#13;|&#xD;', '\\r')"/>
-		<xsl:variable name="escapeTab" select="replace($escapeCarriageReturn, '&#x9;|\t', '\\t')"/>
+		<xsl:variable name="escapeTab" select="replace($escapeCarriageReturn, '&#9;|\t', '&#160;&#160;&#160;&#160;')"/>
 
 		<!-- Escape newlines with <br/> -->
-		<xsl:value-of select="$escapeCarriageReturn"/>
+		<xsl:value-of select="$escapeTab"/>
 
 	</xsl:function>
+	
+	
+	
+	<!-- FUNCTION TO RENDER TEXT FOR JAVASCRIPT WITH ESCAPED QUOTES -->
+	<xsl:function name="eas:renderJSAPIText" as="xs:string">
+		<xsl:param name="theText"/>
+		
+		<xsl:variable name="ecsapeBackslash" select="replace($theText, '\\','\\\\')"/>
+		<!--<xsl:variable name="ecsapeBackslashP" select="replace($theText, '\\p','\\\\p')"/>-->
+		<xsl:variable name="escapeCR" select="replace($ecsapeBackslash, '\r|&#13;|&#xD;', '\\r')"/>
+		<xsl:variable name="escapeQuoteAndApos">
+			<xsl:call-template name="escapeQuote"><xsl:with-param name="pText" select="$escapeCR"/></xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="escapeTab" select="replace($escapeQuoteAndApos, '&#9;|\t', '&#160;&#160;&#160;&#160;')"/>
+		
+		
+		<!-- Escape newlines with <br/> -->
+		<xsl:value-of select="$escapeTab"/>
+		
+	</xsl:function>
+	
+	<xsl:template name="escapeQuote">
+		<xsl:param name="pText" select="."/>
+		
+		<xsl:if test="string-length($pText) >0">
+			<xsl:value-of select=
+				"substring-before(concat($pText, '&quot;'), '&quot;')"/>
+			
+			<xsl:if test="contains($pText, '&quot;')">
+				<xsl:text>\"</xsl:text>
+				
+				<xsl:call-template name="escapeQuote">
+					<xsl:with-param name="pText" select=
+						"substring-after($pText, '&quot;')"/>
+				</xsl:call-template>
+			</xsl:if>
+		</xsl:if>
+	</xsl:template>
 
 	<xsl:template name="GetDisplaySlotForClass">
 		<xsl:param name="theClass"/>

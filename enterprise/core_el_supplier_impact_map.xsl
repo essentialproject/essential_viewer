@@ -35,11 +35,13 @@
 
 	<xsl:variable name="allAppDeps" select="/node()/simple_instance[type = ('Application_Deployment')][own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $allTPB/name]"/>
 	<xsl:variable name="allTechApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'deployments_of_application_provider']/value = $allAppDeps/name]"/>
-
-
-	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_supplier']/value = $supplier/name] union $allTechApps"/>
+    <xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_supplier']/value = $supplier/name] union $allTechApps"/>
+ 
 	<xsl:variable name="allAPRs" select="/node()/simple_instance[type = 'Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>
-	<xsl:variable name="allAPRstoProcs" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $allAPRs/name]"/>
+	<xsl:variable name="allApptoProcsDirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $allApps/name]"/>
+	<xsl:variable name="allAPRstoProcsIndirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $allAPRs/name]"/>
+	<xsl:variable name="allAPRstoProcs" select="$allAPRstoProcsIndirect union $allApptoProcsDirect"/>
+	
 	<xsl:variable name="allPhysProcsBase" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="allPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $allAPRstoProcs/name]"/>
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $allPhysProcs/name]"/>
@@ -432,6 +434,8 @@
 								</select>
 							</div>
 						</div>
+						
+										
 						<div class="col-xs-3">
 							<div class="pull-right">
 								<div id="supplierName" class="suppName bg-darkgrey text-white alignCentre"/>
@@ -510,13 +514,15 @@
         d['boxHeight']=((Math.floor(d.subCaps.length / 7)+1) * 55)+20;
       })
       
+	//console.log(capabilityJSON);
+ 
       capabilityJSON.forEach(function(d){
       
         $("#capabilitiesDiv").append(capTemplate(d));
         })
       
       $('#pickSuppliers').change(function(){
-        $("#supplierDiv").empty();$("#supplierName").empty();
+       $("#supplierDiv").empty();$("#supplierName").empty();
        $("#supplierDiv2").empty();$("#supplierName").empty();
       $('.key').show();
         clearHighlight();
@@ -524,6 +530,8 @@
         var thisSupplier=supplierJSON.filter(function(d){
                 return d.id===$('#pickSuppliers').find(':selected').data('easid');
             })
+	
+//console.log(thisSupplier);	
         $("#supplierName").append(thisSupplier[0].name)
         $("#supplierDiv").append(suppTemplate(thisSupplier[0]));
         $("#supplierDiv2").append(suppTemplate(thisSupplier[0]));
@@ -542,7 +550,7 @@
                                         })
                                     })
                             })
-console.log(thisSupplier[0]);
+
                 thisSupplier[0].technologies.forEach(function(d){
         
                  d.impacted.forEach(function(im){  
@@ -569,6 +577,8 @@ console.log(thisSupplier[0]);
                     var thisApp=thisSupplier[0].apps.filter(function(d){
                             return d.id===focusCap
                         })
+	//console.log('thisApp')
+	//console.log(thisApp)
        if( thisApp[0]){}else{ var thisTech=thisSupplier[0].technologies.filter(function(d){
                             d.impacted.filter(function(e){
                                  if(e.caps){   
@@ -701,7 +711,7 @@ console.log(thisSupplier[0]);
             plans.push(supLicencePlans) 
       })
         
-        console.log(plans)
+        //console.log(plans)
         let plans_array_tech = plans.filter(function(elem, index, self) {
                 return index == self.indexOf(elem);
             });
@@ -802,6 +812,8 @@ console.log(thisSupplier[0]);
               
         </script>
 	</xsl:template>
+
+
 	<xsl:template name="capHandlebarsTemplate">
 		<script id="capability-template" type="text/x-handlebars-template">
             <div><xsl:attribute name="class">col-xs-12 capBox</xsl:attribute><div class="refModel-l0-title fontBlack large">{{name}}</div>
@@ -823,7 +835,7 @@ console.log(thisSupplier[0]);
 		<xsl:variable name="thisgeoCode" select="$geoCode[name = $thisgeoLocation/own_slot_value[slot_reference = 'gl_geocode']/value]"/>
 		<xsl:variable name="lat" select="$thisgeoCode/own_slot_value[slot_reference = 'geocode_latitude']/value"/>
 		<xsl:variable name="long" select="$thisgeoCode/own_slot_value[slot_reference = 'geocode_longitude']/value"/>
-		<xsl:if test="$lat"> {latLng: [<xsl:value-of select="$lat"/>,<xsl:value-of select="$long"/>], name: '<xsl:value-of select="$thisgeoLocation//own_slot_value[slot_reference = 'name']/value"/>', style: {fill: '#faa053'}, id:'<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference = 'gl_identifier']/value"/>'},</xsl:if>
+		<xsl:if test="$lat"> {latLng: [<xsl:value-of select="$lat"/>,<xsl:value-of select="$long"/>], name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisgeoLocation"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>', style: {fill: '#faa053'}, id:'<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference = 'gl_identifier']/value"/>'},</xsl:if>
 	</xsl:template>
 	<xsl:template match="node()" mode="getApps">
 		<xsl:variable name="this" select="current()"/>
@@ -834,7 +846,13 @@ console.log(thisSupplier[0]);
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'deployments_of_application_provider']/value = current()/name]"/>
 		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = $thisApps/name]"/>
-		<xsl:variable name="thisAPRstoProcs" select="$allAPRstoProcs[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
+		
+		<xsl:variable name="thisApptoProcsDirect" select="$allApptoProcsDirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $thisApps/name]"/>
+ 
+	 
+		<xsl:variable name="thisAPRstoProcsIndirect" select="$allAPRstoProcsIndirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
+		<xsl:variable name="thisAPRstoProcs" select="$thisAPRstoProcsIndirect union $thisApptoProcsDirect"/>
+		
 		<xsl:variable name="thisPhysProcs" select="$allPhysProcs[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
 		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
 		<xsl:apply-templates select="$thisBusProcs" mode="getProcesses"/>
@@ -845,16 +863,16 @@ console.log(thisSupplier[0]);
 		<xsl:variable name="thisOrgs" select="$allOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 		<xsl:variable name="thisdirectOrg" select="$directOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 		<xsl:variable name="thisviaActors" select="$allviaActors[own_slot_value[slot_reference = 'actor_plays_role']/value = $thisOrgs/name]"/>
-		<xsl:variable name="thisIsActors" select="$thisviaActors | $thisdirectOrg"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "teams":[ <xsl:apply-templates select="$thisIsActors" mode="Teams"/>]}, </xsl:template>
+		<xsl:variable name="thisIsActors" select="$thisviaActors | $thisdirectOrg"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "teams":[ <xsl:apply-templates select="$thisIsActors" mode="Teams"/>]}, </xsl:template>
 	<xsl:template match="node()" mode="appList"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
 		</xsl:call-template>"}, </xsl:template>
-	<xsl:template match="node()" mode="Teams"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "teams":[]}, </xsl:template>
+	<xsl:template match="node()" mode="Teams"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "teams":[]}, </xsl:template>
 	<xsl:template match="node()" mode="options">
 		<xsl:variable name="this" select="current()"/>
 		<option value="{$this/name}">
-			<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
 		</option>
 	</xsl:template>
 	<xsl:template match="node()" mode="supplierOptions">
@@ -864,25 +882,25 @@ console.log(thisSupplier[0]);
 			<xsl:attribute name="data-easid">
 				<xsl:value-of select="translate($this/name, '.', '')"/>
 			</xsl:attribute>
-			<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
 		</option>a
 	</xsl:template>
 	<xsl:template match="node()" mode="busCaps">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="subCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","subCaps":[ <xsl:apply-templates select="$subCaps" mode="subCaps"/>]}, </xsl:template>
+		<xsl:variable name="subCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","subCaps":[ <xsl:apply-templates select="$subCaps" mode="subCaps"/>]}, </xsl:template>
 	<xsl:template match="node()" mode="subCaps">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="relatedCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","relatedCaps":[ <xsl:apply-templates select="$relatedCaps" mode="relatedCaps"/>] }, </xsl:template>
+		<xsl:variable name="relatedCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","relatedCaps":[ <xsl:apply-templates select="$relatedCaps" mode="relatedCaps"/>] }, </xsl:template>
 	<xsl:template match="node()" mode="relatedCaps">
 		<xsl:param name="num" select="1"/>
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="relatedCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","num":<xsl:value-of select="$num"/>}, <xsl:if test="$num &lt; 10"><xsl:apply-templates select="$relatedCaps" mode="relatedCaps"><xsl:with-param name="num" select="$num + 1"/></xsl:apply-templates></xsl:if>
+		<xsl:variable name="relatedCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","num":<xsl:value-of select="$num"/>}, <xsl:if test="$num &lt; 10"><xsl:apply-templates select="$relatedCaps" mode="relatedCaps"><xsl:with-param name="num" select="$num + 1"/></xsl:apply-templates></xsl:if>
 	</xsl:template>
 
 	<xsl:template match="node()" mode="supplier">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisTechProds" select="$allTechProds[own_slot_value[slot_reference = 'supplier_technology_product']/value = $this/name]"/>
-		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'ap_supplier']/value = $this/name]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>", "technologies":[<xsl:apply-templates select="$thisTechProds" mode="supplierTech"/>], "apps":[<xsl:apply-templates select="$thisApps" mode="supplierApp"/>],"licences":[<xsl:if test="$thisApps"><xsl:apply-templates select="$thisApps" mode="productList"/></xsl:if><xsl:if test="$thisTechProds"><xsl:apply-templates select="$thisTechProds" mode="productList"/></xsl:if>]}, </xsl:template>
+		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'ap_supplier']/value = $this/name]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "technologies":[<xsl:apply-templates select="$thisTechProds" mode="supplierTech"/>], "apps":[<xsl:apply-templates select="$thisApps" mode="supplierApp"/>],"licences":[<xsl:if test="$thisApps"><xsl:apply-templates select="$thisApps" mode="productList"/></xsl:if><xsl:if test="$thisTechProds"><xsl:apply-templates select="$thisTechProds" mode="productList"/></xsl:if>]}, </xsl:template>
 
 
 	<xsl:template match="node()" mode="supplierTech"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
@@ -905,22 +923,30 @@ console.log(thisSupplier[0]);
 
 
 	<xsl:template match="node()" mode="supplierApp"><xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = $this/name]"/>
-		<xsl:variable name="thisAPRstoProcs" select="$allAPRstoProcs[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
+		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = current()/name]"/>
+		<xsl:variable name="thisApptoProcsDirect" select="$allApptoProcsDirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = current()/name]"/>
+ 
+	 
+		<xsl:variable name="thisAPRstoProcsIndirect" select="$allAPRstoProcsIndirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
+		<xsl:variable name="thisAPRstoProcs" select="$thisAPRstoProcsIndirect union $thisApptoProcsDirect"/>
+		
+		 
 		<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
 		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
-		<xsl:variable name="thisBusCaps" select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
+		<xsl:variable name="thisBusCaps" select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>","license":"tbc","capabilitiesImpacted":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>],"debug":" "},</xsl:template>
+		</xsl:call-template>","license":"tbc","capabilitiesImpacted":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>],
+		"debugD":"<xsl:value-of select="$thisApptoProcsDirect/own_slot_value[slot_reference = 'relation_name']/value"/>",
+		"debugI":"<xsl:value-of select="$thisAPRstoProcsIndirect/own_slot_value[slot_reference = 'relation_name']/value"/>" },</xsl:template>
 
 	<xsl:template match="node()" mode="stratPlans"><xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisStratPlans" select="$allObjectives[name = $this/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value]"/>
-		<xsl:variable name="thisPlannedElements" select="$allPlannedElements[name = $this/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>", "fromDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", "endDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>", "impacts":[<xsl:apply-templates select="$thisPlannedElements" mode="planImpact"/>], "objectives":[<xsl:apply-templates select="$thisStratPlans" mode="stdImpact"/>] }, </xsl:template>
+		<xsl:variable name="thisPlannedElements" select="$allPlannedElements[name = $this/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "fromDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", "endDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>", "impacts":[<xsl:apply-templates select="$thisPlannedElements" mode="planImpact"/>], "objectives":[<xsl:apply-templates select="$thisStratPlans" mode="stdImpact"/>] }, </xsl:template>
 
-	<xsl:template match="node()" mode="planImpact"><xsl:variable name="this" select="current()"/><xsl:variable name="thisPlannedActions" select="$allPlannedActions[name = $this/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","impacted_element":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"/>","planned_action":"<xsl:value-of select="$thisPlannedActions/own_slot_value[slot_reference = 'name']/value"/>"},</xsl:template>
+	<xsl:template match="node()" mode="planImpact"><xsl:variable name="this" select="current()"/><xsl:variable name="thisPlannedActions" select="$allPlannedActions[name = $this/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","impacted_element":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"/>","planned_action":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlannedActions"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>"},</xsl:template>
 
-	<xsl:template match="node()" mode="stdImpact"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
+	<xsl:template match="node()" mode="stdImpact"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
 		</xsl:call-template>"},</xsl:template>
@@ -944,10 +970,10 @@ console.log(thisSupplier[0]);
     <xsl:variable name="Year" select="year-from-date(xs:date($endYear))"/> 
     <xsl:variable name="Month" select="month-from-date(xs:date($endYear))"/> 
     <xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/> -->
-				<xsl:if test="$thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value"> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","productSimple":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","product": "<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:if test="$thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value"> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","productSimple":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","product": "<xsl:call-template name="RenderInstanceLinkForJS">
 						<xsl:with-param name="theSubjectInstance" select="current()"/>
 						<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-					</xsl:call-template>","oid":"<xsl:value-of select="$this/name"/>","debug":"<xsl:value-of select="$this/name"/>", "Contract":"<xsl:value-of select="$thisContracts/own_slot_value[slot_reference = 'name']/value"/>","Licence":"<xsl:value-of select="$thisLicenses/own_slot_value[slot_reference = 'name']/value"/>","LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value"/>",<!--"YearsOnContract":"<xsl:value-of select="($thisLicenses/own_slot_value[slot_reference='license_months_to_renewal']/value)div 12"/>","licenseCostContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_deal_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_unit_cost']/value, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor":
+					</xsl:call-template>","oid":"<xsl:value-of select="$this/name"/>","debug":"<xsl:value-of select="$this/name"/>", "Contract":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisContracts"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","Licence":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisLicenses"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value"/>",<!--"YearsOnContract":"<xsl:value-of select="($thisLicenses/own_slot_value[slot_reference='license_months_to_renewal']/value)div 12"/>","licenseCostContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_deal_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_unit_cost']/value, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor":
     "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
     <xsl:when test="$remaining > 0 and $remaining &lt; 180">#f4c96a</xsl:when>
     <xsl:otherwise>#98d193</xsl:otherwise></xsl:choose>"-->"debug2":"", "dateISO":"<xsl:value-of select="$endYear"/>"}, </xsl:if>

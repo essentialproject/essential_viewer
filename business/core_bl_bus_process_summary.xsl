@@ -58,6 +58,9 @@
     <xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
 	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
 
+	<xsl:variable name="maxDepth" select="10"/>
+
+	<xsl:variable name="currentBusinessCapability" select="$businessCapability[name=$currentProcess/own_slot_value[slot_reference='realises_business_capability']/value]"/>	
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -114,7 +117,7 @@
 				
 				<script id="caps-template" type="text/x-handlebars-template">
 					{{#each this}}
-						{{#each this.capsSupporting}}<li>{{{this.link}}}</li>{{/each}}
+					<li>{{{this.link}}} {{#if this.type}}{{else}}<span style="font-size:0.8em">(via a parent)</span>{{/if}}</li>
 					{{/each}}
 				</script>
 			
@@ -179,7 +182,7 @@
 
 				<!--Setup the Definition section-->
 
-				<div class="col-xs-12">
+				<div class="col-xs-12"> 
 					<div class="sectionIcon">
 						<i class="fa fa-list-ul icon-section icon-color"/>
 					</div>
@@ -445,8 +448,26 @@
 					var subProcesses=[<xsl:apply-templates select="$currentProcess" mode="processModel"/>];
 					var parentProcesses=[<xsl:apply-templates select="$thisparentProcesses" mode="parents"/>]
 					
-					console.log(subProcesses)
-					console.log(parentProcesses)
+					var thisCapsList= [<xsl:for-each select="$currentBusinessCapability">{"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"direct"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+	
+					var parentCapsList=[]
+					
+					parentProcesses.forEach(function(d){
+					 
+						d.capsSupporting.forEach(function(e){
+							parentCapsList.push(e);
+						});
+					});
+			 		
+					parentCapsList.forEach(function(d){
+						var match = thisCapsList.filter(function(e){
+							return e.link ==d.link;
+						})
+				 
+					if(match.length &gt;0){}else{ thisCapsList.push(d)}
+					})  
+ 					
+				
 					var capsFragmentFront   = $("#caps-template").html();
 					capsTemplateFront = Handlebars.compile(capsFragmentFront);
 					var procFragmentFront   = $("#proc-template").html();
@@ -454,9 +475,11 @@
 	
 					$('#processTable').append(procTemplateFront(subProcesses));
 					
-					$('#busCaps').append(capsTemplateFront(parentProcesses))
+					$('#busCaps').append(capsTemplateFront(thisCapsList)) 
 					
+					if(parentProcesses[0]){
 					$('#parentName').html(parentProcesses[0].link)
+					}
 					
 					$("span[easid='but']").click(function() {
 						console.log(this)
@@ -694,7 +717,7 @@
 		<xsl:variable name="supportingInfoApps" select="$allPhysProcSupportingInfoApps[name = $supportingApp2Infos/own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value]"/>
 
 		<xsl:variable name="allSupportingApps" select="$supportingApps union $supportingAppRoleApps union $supportingInfoApps"/>
-		
+		<xsl:variable name="appSvs" select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$supportingApp2Roles/name]"/>
 		<tr>
 			<td>
 				<xsl:call-template name="RenderInstanceLink">
@@ -704,7 +727,16 @@
 				</xsl:call-template>
 			</td>
             <td>
-            <xsl:value-of select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$supportingApp2Roles/name]/own_slot_value[slot_reference='name']/value"/>
+       
+				<ul>
+				<xsl:for-each select="$appSvs">
+				 <li><xsl:call-template name="RenderInstanceLink">
+										<xsl:with-param name="theSubjectInstance" select="current()"/>
+										<xsl:with-param name="theXML" select="$reposXML"/>
+										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+									</xsl:call-template></li>
+				</xsl:for-each>
+				</ul>
             </td>
 			<td>
 				<xsl:choose>
@@ -751,12 +783,30 @@
 					<xsl:when test="count($supportingAppRoleApps) > 0">
 						<ul class="noMarginBottom">
 							<xsl:for-each select="$supportingAppRoleApps">
+								 
+								<xsl:variable name="supportingAPR" select="$supportingApp2Roles[name=current()/own_slot_value[slot_reference='provides_application_services']/value]"/>
+								
+								<xsl:variable name="thissupportingSvc" select="$appSvs[name=$supportingAPR/own_slot_value[slot_reference='implementing_application_service']/value]"/>
 								<li>
 									<xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>
 										<xsl:with-param name="theXML" select="$reposXML"/>
 										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 									</xsl:call-template>
+									
+									<br/>
+										<xsl:for-each select="$thissupportingSvc">
+											<span style="font-size:9pt; ">
+										
+												- <xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											</xsl:call-template>
+											</span><br/>	
+										</xsl:for-each>
+								 
+									 
 								</li>
 							</xsl:for-each>
 						</ul>
@@ -942,13 +992,16 @@
 </xsl:template>
 
 <xsl:template match="node()" mode="subProcesses">
+	<xsl:param name="depth" select="0"/>
 	<xsl:variable name="thissubBusinessProcesses" select="$allProcesses[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
  "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 <xsl:if test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">"flow":"yes",</xsl:if>	
- "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>]}<xsl:if test="position()!=last()">,</xsl:if>	
+ "subProcess":[
+	<xsl:if test="$depth &lt;= $maxDepth"><xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"><xsl:with-param name="depth" select="$depth + 1"/></xsl:apply-templates></xsl:if>
+	]}<xsl:if test="position()!=last()">,</xsl:if>	
 	
 </xsl:template>		
 </xsl:stylesheet>

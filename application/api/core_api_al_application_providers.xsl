@@ -72,6 +72,7 @@
 			"delivery": "<xsl:value-of select="eas:getSafeJSString($thisAppDeliveryModel/name)"/>",
             "service":[<xsl:for-each select="$thisAppProviderRoles"><xsl:variable name="thisSvc" select="$thisAppServices[own_slot_value[slot_reference='provided_by_application_provider_roles']/value=current()/name]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisSvc"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
             "appOrgUsers": [<xsl:for-each select="$thsAppUsersIn"><xsl:variable name="thisActors" select="$thisallActors[name=current()]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>","name":"<xsl:value-of select="$thisActors/own_slot_value[slot_reference = 'name']/value"/>","link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisActors"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

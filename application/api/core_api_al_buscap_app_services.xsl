@@ -62,12 +62,23 @@
 	<xsl:template mode="RenderAppServiceJSON" match="node()">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisAPRs" select="$APRs[own_slot_value[slot_reference='implementing_application_service']/value = $this/name]"/>
+		<!--<xsl:variable name="thisAPRs" select="$APRs[own_slot_value[slot_reference='implementing_application_service']/value = $this/name]"/>-->
+		<xsl:variable name="thisAppCap" select="$applicationCaps[name = $this/own_slot_value[slot_reference='realises_application_capabilities']/value]"/>
+		<xsl:variable name="thisBusCap" select="$businessCaps[name = $thisAppCap/own_slot_value[slot_reference='app_cap_supports_bus_cap']/value]"/>
+		<xsl:variable name="thisBusCapIdx" select="$thisBusCap[1]/own_slot_value[slot_reference='business_capability_index']/value"/>
+		
+		<xsl:variable name="thisIndex">
+			<xsl:choose>
+				<xsl:when test="$thisBusCapIdx"><xsl:value-of select="$thisBusCapIdx"/></xsl:when>
+				<xsl:otherwise>1</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
 			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"index": <xsl:value-of select="$thisIndex"/>,
 			"meta": {
 				"anchorClass": "<xsl:value-of select="$this/type"/>"
 			}

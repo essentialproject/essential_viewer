@@ -26,6 +26,7 @@
 	<!-- 01.04.2011 NJW	updated for viewer3 -->
 	<!-- 15.11.2016 JWC Apply sort by portal_sequence to links in drop-down nav-bar -->
 
+	<xsl:import href="../common/user-settings/core_user_view_settings_templates.xsl"/>
 	<xsl:import href="../common/core_header_interactions.xsl"/>
 	<xsl:include href="../common/core_utilities.xsl"/>
 	<xsl:include href="../common/core_page_history.xsl"/>
@@ -113,9 +114,23 @@
 					$('.closeHeaderOverlay').click(function(){
 						$(this).parent().slideUp();
 					});
+					$('#shareLink').click(function(evt) {
+						$('[role="tooltip"]').remove();
+						evt.stopPropagation();
+					});
+					$('#shareLink').popover({
+						container: 'body',
+						html: true,
+						trigger: 'click',
+						placement: 'bottom',
+						sanitize: false,
+						content: function(){
+							return $(this).next().html();
+						}
+					});
+					
 				});				
 			</script>
-		
 		<style>
 			.headerOverlay {position: relative}
 			.closeHeaderOverlay{position:absolute;top: 10px; right: 10px;}
@@ -182,11 +197,22 @@
 				</div>
 
 				<div class="row">
-
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="nav-collapse">
 
 						<ul class="nav navbar-nav navbar-right">
+							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+								<xsl:attribute name="title" select="eas:i18n('Share')"/>
+								<a href="#" id="shareLink">
+									<i class="fa fa-share-alt"/>
+								</a>
+								<div class="popover">
+									<div class="small strong"><xsl:value-of select="eas:i18n('Copy link to this page')"/></div>
+									<div class="top-10"><input id="ess-page-link-url" type="text" readonly="readonly" style="width: 300px;" class="form-control input-sm" value="https://example.com"/></div>
+									<div class="top-10 pull-right"><button class="btn btn-sm btn-default right-10 closeSharePopover" style="width: 80px;">Cancel</button><button class="btn btn-sm btn-success" id="ess-copy-page-link" style="width: 80px;"><i class="fa fa-copy right-5"/><span><xsl:value-of select="eas:i18n('Copy')"/></span></button></div>
+									<div class="clearfix"/>
+								</div>
+							</li>
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Search')"/>
 								<a href="#" id="searchLink">
@@ -279,7 +305,7 @@
 											<span>Spreadsheet Templates</span>
 										</a>
 									</li>-->
-									<li>
+									<!--<li>
 										<a>
 											<xsl:call-template name="CommonRenderLinkHref">
 												<xsl:with-param name="theXSL" select="'essential_utilities.xsl'"/>
@@ -287,7 +313,7 @@
 											</xsl:call-template>
 											<span><xsl:value-of select="eas:i18n('Integration Examples')"/></span>
 										</a>
-									</li>
+									</li>-->
 									<!--<xsl:if test="$eipMode">
 										<li>
 											<a>
@@ -651,6 +677,7 @@
 			</div>
 			<xsl:call-template name="portalBar"/>
 			<xsl:call-template name="RenderInteractiveHeaderBars"/>
+			<xsl:call-template name="ViewUserSettingsUI"/>
 		</div>
 		
 	</xsl:template>

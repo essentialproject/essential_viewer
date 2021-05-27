@@ -90,7 +90,6 @@
 			essViewer.repoId = '<xsl:value-of select="repository/repositoryID"/>';
 			essViewer.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';	
 			essViewer.currentXSL = '<xsl:value-of select="translate($theCurrentXSL, '/', '-')"/>';
-			essViewer.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
 			essViewer.user = {
 				'id': '<xsl:value-of select="$userData//user:email"/>',
 				'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
@@ -205,6 +204,9 @@
 			});
 			
 		</script>
+		
+		<!-- Call the JS script to load the CSRF token -->
+		<script defer="defer" src="common/js/ess-csrf.js"></script>
 		
 		<!--Include library containing common API platform functions for retrieving and updating repository data-->
 		<script type="text/javascript" src="common/js/core_common_api_functions.js"/>

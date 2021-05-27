@@ -50,6 +50,8 @@
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
 
 
+	<xsl:variable name="maxDepth" select="10"/>
+
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<html>
@@ -421,18 +423,21 @@ var model=[<xsl:apply-templates select="$topBusinessProcesses" mode="model"/>]
  "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
  "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>],
-"capsSupporting":[<xsl:for-each select="$thisbusinessCapability">{"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]	}<xsl:if test="position()!=last()">,</xsl:if>	
+"capsSupporting":[<xsl:for-each select="$thisbusinessCapability">{"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>	
 	
 </xsl:template>
 
 <xsl:template match="node()" mode="subProcesses">
+	<xsl:param name="depth" select="0"/>
 	<xsl:variable name="thissubBusinessProcesses" select="$businessProcesses[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>
 	<xsl:variable name="subBusinessProcesses" select="$businessProcesses[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>	
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
  "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
 <xsl:if test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">"flow":"yes",</xsl:if>	
- "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>]}<xsl:if test="position()!=last()">,</xsl:if>	
+	"subProcess":[
+		<xsl:if test="$depth &lt;= $maxDepth"><xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"><xsl:with-param name="depth" select="$depth + 1"/></xsl:apply-templates></xsl:if>
+	]}<xsl:if test="position()!=last()">,</xsl:if>	
 	
 </xsl:template>	
 </xsl:stylesheet>

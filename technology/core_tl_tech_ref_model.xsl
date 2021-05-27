@@ -1302,7 +1302,7 @@
 				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
-		
+
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:value-of select="$techProdName"/>",

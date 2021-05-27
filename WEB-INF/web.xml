@@ -38,6 +38,18 @@
 	
 	<display-name>Essential Viewer</display-name>
 	
+	<!-- Filter for evaluating "If-None-Match" request header 
+	     This filter MUST be first! -->
+	<filter-mapping>
+		<filter-name>ViewerETagFilter</filter-name>
+		<url-pattern>/report</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>SetLoggingContext</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+	
 	<filter-mapping>
 		<filter-name>ValidateSession</filter-name>
 		<url-pattern>/api/*</url-pattern>

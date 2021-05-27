@@ -528,3 +528,35 @@ function essPromise_deleteNoSQLElement(apiURL, resourcePath, resourceId, resourc
     );
 };
 
+
+/********************************************************
+RULE DNGINE API FUNCTIONS
+*********************************************************/
+
+
+// create create advice using the given Rule set and Facts
+function essPromise_createAdviceFromRules(ruleSetName, facts) {
+	return new Promise(
+		function (resolve, reject) {
+			let resource = {
+				"ruleSet": ruleSetName,
+				"facts": facts
+			}
+			var resourceJSONString = JSON.stringify(resource);
+			apiUri = '/essential-system/v1';
+			let resourcePath = 'rules/advice';
+			let url = essBuildSystemApiPath(apiUri) + resourcePath;
+			var xhr = essCreateCORSRequest('POST', url);
+			if (!xhr) {
+				corsError = new Error('CORS not supported by browser. Unable to create the advice using the ruleset:' + ruleSetName);
+				reject(corsError);
+			} else {
+				// Response handlers.
+				let errorMessageVerb = 'creating';
+				xhr.onload = essOnXhrLoad(xhr, resolve, reject, 'Advice', errorMessageVerb);
+				xhr.onerror = essOnXhrError(reject, 'Advice', errorMessageVerb);
+				xhr.send(resourceJSONString);
+			}
+		}
+	);
+};

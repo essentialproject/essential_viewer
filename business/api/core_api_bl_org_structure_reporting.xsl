@@ -136,10 +136,10 @@
 						"headOfDep" : {
 							<xsl:if test="count($orgHeadofDepJobs) > 0 and count($orgDirecHeadofDepIndivs) = 0">
 								"jobName": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$orgHeadofDepJobs[1]"/></xsl:call-template>",
-								"jobTreelink": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$orgHeadofDepJobs[1]"/></xsl:call-template>",
+								"jobTreelink": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$orgHeadofDepJobs[1]"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
 							</xsl:if>							
 							"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$allOrgHeadOfDepIndivs[1]"/></xsl:call-template>",
-							"treelink": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$allOrgHeadOfDepIndivs[1]"/></xsl:call-template>"
+							"treelink": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$allOrgHeadOfDepIndivs[1]"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>"
 						},
 					</xsl:when>
 					<xsl:otherwise>
@@ -212,7 +212,7 @@
 						"parentOrg" : null,
 					</xsl:otherwise>
 				</xsl:choose>
-				"jobTitle": <xsl:choose><xsl:when test="count($thisIndivJobs) > 0">"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisIndivJobs[1]"/></xsl:call-template>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
+				"jobTitle": <xsl:choose><xsl:when test="count($thisIndivJobs) > 0">"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisIndivJobs[1]"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
 				"link" : {
 					"name" : "",
 					"nodeName" : "",

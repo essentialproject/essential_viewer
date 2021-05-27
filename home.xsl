@@ -78,7 +78,7 @@
 				<xsl:call-template name="Heading"/>
 				<!--ADD THE CONTENT-->
 				<div class="jumbotron bg-primary">
-					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');'"/>
+					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');background-size: 100%;'"/>
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-xs-12 col-sm-9 col-md-9 bg-white" style="opacity:0.75">
@@ -144,7 +144,7 @@
 								<xsl:with-param name="theInstanceID" select="current()/name"/>
 								<xsl:with-param name="theHistoryLabel" select="$portalHistoryLabel"/>
 							</xsl:call-template>
-							<img alt="portal image">
+							<img alt="portal image" style="width:100%;">
 								<xsl:attribute name="src" select="current()/own_slot_value[slot_reference = 'portal_image_path']/value"/>
 							</img>
 						</a>
@@ -191,7 +191,7 @@
 								<xsl:with-param name="theXSL" select="$viewLibraryXSL"/>
 								<xsl:with-param name="theHistoryLabel" select="$viewLibraryHistoryLabel"/>
 							</xsl:call-template>
-							<img alt="screenshot">
+							<img alt="screenshot" style="width:100%;">
 								<xsl:attribute name="src" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_screenshot_filename']/value"/>
 							</img>
 						</a>

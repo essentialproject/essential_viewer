@@ -92,6 +92,16 @@
 					</div>
 					<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 				</div>
+				<div id="editor-update-spinner" class="hidden">
+					<div class="eas-logo-spinner" style="display: inline-block;">
+						<div class="spin-icon" style="width: 18px; height: 18px; margin-right: 5px;">
+							<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+							<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+							<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+						</div>						
+					</div>
+					<div id="editor-update-spinner-text" class="">Processing</div>
+				</div>
 				
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading">
