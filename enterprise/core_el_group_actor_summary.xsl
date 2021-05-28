@@ -3,7 +3,7 @@
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:easlang="http://www.enterprise-architecture.org/essential/language">
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
-		* This file is part of Essential Architecture Manager, 
+		* This file is part of Essential Architecture Manager,
 		* the Essential Architecture Meta Model and The Essential Project.
 		*
 		* Essential Architecture Manager is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 		*
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
-		* 
+		*
 	-->
 	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
@@ -37,6 +37,7 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+  <xsl:include href="../common/core_external_doc_ref.xsl"/>
 
 	<!--<xsl:include href="../business/menus/core_product_type_menu.xsl" />-->
 
@@ -82,14 +83,17 @@
 	<xsl:variable name="parentActor" select="$allActors[name = $rootOrgID]"/>
 	<xsl:variable name="inScopeActors" select="eas:get_org_descendants($parentActor, $allActors, 0)"/>
 	<xsl:variable name="parentActorName" select="$parentActor/own_slot_value[slot_reference = 'name']/value"/>
-    
+
     <xsl:variable name="actor2role" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][own_slot_value[slot_reference='act_to_role_from_actor']/value=$param1]"/>
  <!-- <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][(own_slot_value[slot_reference='process_performed_by_actor_role']/value=$param1)  or (own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name)]"/> -->
     <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name]"/>
     <xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
+
+    <xsl:variable name="allExternalRefs" select="/node()/simple_instance[name = $currentActor/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
-	 	* This file is part of Essential Architecture Manager, 
+	 	* This file is part of Essential Architecture Manager,
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
 		* Essential Architecture Manager is free software: you can redistribute it and/or modify
@@ -104,7 +108,7 @@
 		*
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
-		* 
+		*
 	-->
 	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
 	<!-- 06.11.2008 JWC	Migrated to XSL v2 -->
@@ -139,13 +143,13 @@
 					.text{
 						margin: 7px;
 					}
-					
+
 					#inner-details{
 						font-size: 0.8em;
 						list-style: none;
 						margin: 7px;
 					}
-					
+
 					#infovis{
 						position: relative;
 						width: 100%;
@@ -154,7 +158,7 @@
 						margin: 0 auto;
 					}
 					/*TOOLTIPS*/
-					
+
 					.tip{
 						color: #111;
 						width: 139px;
@@ -166,7 +170,7 @@
 						box-shadow: #555 2px 2px 8px;
 						opacity: 0.9;
 						filter: alpha(opacity=90)
-					
+
 					;
 						font-size: 10px;
 						font-family: Helvetica, Arial, sans-serif;
@@ -212,40 +216,40 @@
 						color: '#eeeeee', // When switching between nodes this highlights the previous node temporarily. This is the default style if overrideable - below - is set to false
 						overridable: true
 						},
-						
+
 						Edge: {
 						type: 'bezier',
 						overridable: true
 						},
-						
+
 						//	onBeforeCompute: function(node){
 						//	Log.write("loading " + node.name);
 						//	},
-						
+
 						//	onAfterCompute: function(){
 						//	Log.write("done");
 						//	},
-						
+
 						//This method is called on DOM label creation.
 						//Use this method to add event handlers and styles to
 						//your node.
 						onCreateLabel: function(label, node){
-						label.id = node.id;            
+						label.id = node.id;
 						label.innerHTML = node.name;
-						label.onclick = function(){						
-						st.onClick(node.id);						
+						label.onclick = function(){
+						st.onClick(node.id);
 							};
 							//set label styles
 							var style = label.style;
 							style.width = 80 + 'px';
-							style.height = 80 + 'px';            
+							style.height = 80 + 'px';
 							style.cursor = 'pointer';
 							style.color = '#333';
 							style.fontSize = '0.8em';
 							style.textAlign= 'center';
 							style.paddingTop = '5px';
 							},
-							
+
 							//This method is called right before plotting
 							//a node. It's useful for changing an individual node
 							//style properties before plotting it.
@@ -269,11 +273,11 @@
 									node.eachSubnode(function(n) { count++; });
 									//assign a node color based on
 									//how many children it has
-									//node.data.$color = ['#eee', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb' ][count];     // By setting all to fixed colour this removes intensity. first one as Pale Grey highlights no children               
+									//node.data.$color = ['#eee', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb' ][count];     // By setting all to fixed colour this removes intensity. first one as Pale Grey highlights no children
 								}
 							}-->
 							},
-							
+
 							//This method is called right before plotting
 							//an edge. It's useful for changing an individual edge
 							//style properties before plotting it.
@@ -300,7 +304,7 @@
 							st.onClick(st.root);
 							//end
 
-							
+
 							}
 						</xsl:text>
 				</script>
@@ -313,7 +317,7 @@
 				</xsl:for-each>
 			</head>
 			<body onload="tree();">
-                
+
 				<!-- ADD SCRIPTS FOR CONTEXT POP-UP MENUS -->
 				<!--<xsl:call-template name="RenderProductTypePopUpScript" />-->
 
@@ -420,7 +424,7 @@
 									<tbody>
 										<xsl:apply-templates select="$physicalProcess" mode="addProcesses"/>
 									</tbody>
-                                     
+
                                 </table>
 							</div>
 							<hr/>
@@ -451,6 +455,27 @@
 							</div>
 							<hr/>
 						</div>
+
+            <!--Setup SupportingDocs Section-->
+            <div class="col-xs-12">
+              <div class="sectionIcon">
+                <i class="fa fa-file-text-o icon-section icon-color"/>
+              </div>
+              <div>
+                <h2 class="text-primary">
+                  <xsl:value-of select="eas:i18n('Supporting Documentation')"/>
+                </h2>
+              </div>
+              <div class="content-section">
+                <xsl:call-template name="RenderExternalDocRefList">
+                  <xsl:with-param name="extDocRefs" select="$allExternalRefs"/>
+                  <xsl:with-param name="emptyMessage">-</xsl:with-param>
+                </xsl:call-template>
+
+              </div>
+              <hr/>
+            </div>
+
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
@@ -558,7 +583,7 @@
 			        var title = $(this).text();
 			        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
 			    } );
-				
+
 				var table = $('#dt_orgs').DataTable({
 				scrollY: "350px",
 				scrollCollapse: true,
@@ -574,19 +599,19 @@
 				  ],
 				dom: 'Bfrtip',
 			    buttons: [
-		            'copyHtml5',	            
+		            'copyHtml5',
 		            'excelHtml5',
 		            'csvHtml5',
 		            'pdfHtml5',
 		            'print'
 		        ]
 				});
-				
-				
+
+
 				// Apply the search
 			    table.columns().every( function () {
 			        var that = this;
-			 
+
 			        $( 'input', this.footer() ).on( 'keyup change', function () {
 			            if ( that.search() !== this.value ) {
 			                that
@@ -595,9 +620,9 @@
 			            }
 			        } );
 			    } );
-			    
+
 			    table.columns.adjust();
-			    
+
 			    $(window).resize( function () {
 			        table.columns.adjust();
 			    });
@@ -662,8 +687,8 @@
        			<xsl:with-param name="theSubjectInstance" select="$thisBusProc"></xsl:with-param>
        		</xsl:call-template>
        	</td>
-       </tr> 
-    
+       </tr>
+
     </xsl:template>
 
 
