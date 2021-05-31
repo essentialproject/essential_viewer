@@ -85,8 +85,8 @@
 	<xsl:variable name="parentActorName" select="$parentActor/own_slot_value[slot_reference = 'name']/value"/>
 
     <xsl:variable name="actor2role" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][own_slot_value[slot_reference='act_to_role_from_actor']/value=$param1]"/>
- <!-- <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][(own_slot_value[slot_reference='process_performed_by_actor_role']/value=$param1)  or (own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name)]"/> -->
-    <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name]"/>
+ <!-- <xsl:variable name="physicalProcesses" select="/node()/simple_instance[type = 'Physical_Process'][(own_slot_value[slot_reference='process_performed_by_actor_role']/value=$param1)  or (own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name)]"/> -->
+    <xsl:variable name="physicalProcesses" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name]"/>
     <xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
 
     <xsl:variable name="allExternalRefs" select="/node()/simple_instance[name = $currentActor/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
@@ -363,7 +363,6 @@
 							<hr/>
 						</div>
 
-
 						<!--Setup Model Section-->
 						<div class="col-xs-12">
 							<div class="sectionIcon">
@@ -380,7 +379,6 @@
 							</div>
 							<hr/>
 						</div>
-
 
 						<div class="col-xs-12">
 							<div class="sectionIcon">
@@ -403,32 +401,41 @@
 											</li>
 										</xsl:for-each>
 									</ul>
-
 								</p>
 							</div>
 							<hr/>
 						</div>
-                        <div class="col-xs-12">
+            <div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-user icon-section icon-color"/>
 							</div>
 							<h2 class="text-primary">Processes Performed</h2>
-							<div class="content-section">
-								<table class="table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>Process</th>
-											<th>Description</th>
-										</tr>
-									</thead>
-									<tbody>
-										<xsl:apply-templates select="$physicalProcess" mode="addProcesses"/>
-									</tbody>
-
-                                </table>
-							</div>
-							<hr/>
-                        </div>
+              <xsl:choose>
+                <xsl:when test="count($physicalProcesses) = 0">
+                  <p>
+                    <em>
+                      <xsl:value-of select="eas:i18n('No Physical Processes have been captured for this Actor')"/>
+                    </em>
+                  </p>
+                </xsl:when>
+                <xsl:otherwise>
+                  <div class="content-section">
+                    <table class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Process</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <xsl:apply-templates select="$physicalProcesses" mode="addProcesses"/>
+                      </tbody>
+                    </table>
+                  </div>
+                </xsl:otherwise>
+              </xsl:choose>
+              <hr/>
+            </div>
 						<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-user icon-section icon-color"/>
@@ -485,8 +492,6 @@
 		</html>
 	</xsl:template>
 
-
-
 	<!-- TEMPLATE TO DRAW THE ORGANISATION AS A HIERARCHICAL TREE STRUCTURE (USING INVIVIS JAVASCRIPT LIBRARY)-->
 	<xsl:template name="infoVis">
 		<script>
@@ -536,10 +541,6 @@
 
 	</xsl:template>
 
-
-
-
-
 	<!-- TEMPLATE TO PRINT OUT THE JSON DATA FOR A GIVEN ACTOR AND ITS SUB-ACTORS -->
 	<xsl:template name="PrintActorTreeDataNamed">
 		<xsl:param name="parentNode"/>
@@ -570,7 +571,6 @@
 		</xsl:if>
 		<xsl:text>]}</xsl:text>
 	</xsl:template>
-
 
 	<!-- TEMPLATE TO PRINT OUT A TABLE LISTING THE ORGANISATIONS IN SCOPE,  THE PRODUCTS (OR SERVICES) THAT THEY PRODUCE AND THEIR LOCATIONS -->
 	<xsl:template name="OrganisationCatalogue">
@@ -690,9 +690,6 @@
        </tr>
 
     </xsl:template>
-
-
-
 
 	<!-- FUNCTION TO RETRIEVE THE LIST OF CHILD ORGS FOR A GIVEN ORG, INCLUDING THE GIVEN ORG ITSELF -->
 	<xsl:function name="eas:get_org_descendants" as="node()*">
