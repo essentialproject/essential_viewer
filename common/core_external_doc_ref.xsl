@@ -3,8 +3,8 @@
 	<xsl:import href="../common/core_utilities.xsl"/>
 	<!--
         * Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
-	 	* This file is part of Essential Architecture Manager, 
-	 	* the Essential Architecture Meta Model and The Essential Project.
+        * This file is part of Essential Architecture Manager,
+        * the Essential Architecture Meta Model and The Essential Project.
         *
         * Essential Architecture Manager is free software: you can redistribute it and/or modify
         * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
         *
         * You should have received a copy of the GNU General Public License
         * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
-        * 
-    -->
+        *
+		-->
 	<!-- Receive an instance node and report any external repository references
-    that are defined against it in a table -->
+		that are defined against it in a table -->
 	<!-- 04.11.2008	JWC	Added to new report servlet -->
 
 	<xsl:variable name="imageSuffixes" select="('png', 'jpg', 'jpeg','jpg, jpeg', 'bmp', 'gif')"/>
@@ -29,6 +29,7 @@
 	<xsl:variable name="extRefLinkTypes" select="/node()/simple_instance[type='Document_File_Type']"/>
 	<xsl:variable name="imageExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $imageSuffixes)]"/>
 	<xsl:variable name="videoExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $videoSuffixes)]"/>
+	<xsl:variable name="extDocRefsInNewWindow" select="/node()/simple_instance[type = 'Report_Constant' and own_slot_value[slot_reference = 'report_constant_short_name']/value = 'extDocRefInNewWindow']/own_slot_value[slot_reference = 'report_constant_value']/value = 'yes'"/>
 
 	<xsl:template match="node()" mode="ReportExternalDocRef">
 		<xsl:param name="emptyMessage">
@@ -46,6 +47,7 @@
 						<xsl:variable name="anExternalReposInst" select="$anExternalDocRef/own_slot_value[slot_reference = 'external_reference_links']/value"/>
 						<li>
 							<a>
+								<xsl:if test="$extDocRefsInNewWindow = true()"><xsl:attribute name="target">_blank</xsl:attribute></xsl:if>
 								<xsl:attribute name="href">
 									<xsl:value-of select="$anExternalDocRef/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 								</xsl:attribute>
@@ -73,7 +75,6 @@
 		</xsl:param>
 		<xsl:param name="extDocRefs" select="()"/>
 
-
 		<xsl:choose>
 			<xsl:when test="count($extDocRefs) > 0">
 				<!-- Create an image slider for image-based external documents -->
@@ -85,7 +86,7 @@
 					<script>
 						$(document).ready(function(){
 							$('.carousel').carousel({
-							  interval: false
+								interval: false
 							})
 						});
 					</script>
@@ -135,10 +136,10 @@
 							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 							<span class="sr-only">Next</span>
 						</a>
-					</div>					
+					</div>
 				</xsl:if>
-				
-				<xsl:if test="count($videoDocRefs) > 0">		
+
+				<xsl:if test="count($videoDocRefs) > 0">
 					<h2>External Videos</h2>
 					<div id="videos">
 						<xsl:for-each select="$videoDocRefs">
@@ -166,7 +167,8 @@
 						<xsl:for-each select="$docRefList">
 							<xsl:variable name="anExternalDocRef" select="current()"/>
 							<li>
-								<a target="_blank">
+								<a>
+									<xsl:if test="$extDocRefsInNewWindow = true()"><xsl:attribute name="target">_blank</xsl:attribute></xsl:if>
 									<xsl:attribute name="href">
 										<xsl:value-of select="$anExternalDocRef/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 									</xsl:attribute>
@@ -195,6 +197,7 @@
 		<xsl:param name="urlPrefix"/>
 
 		<a>
+			<xsl:if test="$extDocRefsInNewWindow = true()"><xsl:attribute name="target">_blank</xsl:attribute></xsl:if>
 			<xsl:attribute name="href">
 				<xsl:value-of select="$extDocRef/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 			</xsl:attribute>
