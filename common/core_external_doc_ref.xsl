@@ -29,7 +29,9 @@
 	<xsl:variable name="extRefLinkTypes" select="/node()/simple_instance[type='Document_File_Type']"/>
 	<xsl:variable name="imageExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $imageSuffixes)]"/>
 	<xsl:variable name="videoExtRefLinkTypes" select="$extRefLinkTypes[functx:contains-any-of(own_slot_value[slot_reference = 'extension_mime_type']/value, $videoSuffixes)]"/>
-	<xsl:variable name="extDocRefsInNewWindow" select="/node()/simple_instance[type = 'Report_Constant' and own_slot_value[slot_reference = 'report_constant_short_name']/value = 'extDocRefInNewWindow']/own_slot_value[slot_reference = 'report_constant_value']/value = 'yes'"/>
+	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[(type = 'Taxonomy_Term')]"/>
+	<xsl:variable name="rcExtDocRefsInNewWindow" select="/node()/simple_instance[type = 'Report_Constant' and own_slot_value[slot_reference = 'report_constant_short_name']/value = 'extDocRefInNewWindow']"/>
+	<xsl:variable name="extDocRefsInNewWindow" select="$rcExtDocRefsInNewWindow/own_slot_value[slot_reference = 'report_constant_value']/value = 'yes'"/>
 
 	<xsl:template match="node()" mode="ReportExternalDocRef">
 		<xsl:param name="emptyMessage">
@@ -66,6 +68,7 @@
 
 	</xsl:template>
 
+	<!-- Render refs in an unstructured list (bullets) -->
 	<xsl:template name="renderDocRefListUL">
     <xsl:param name="docRefList"/>
     <xsl:param name="toNewWindow" select="true()"/>
@@ -88,6 +91,7 @@
 			<span>-</span>
 		</xsl:param>
 		<xsl:param name="extDocRefs" select="()"/>
+		<xsl:param name="exceptClassifications"/>
 
 		<xsl:choose>
 			<xsl:when test="count($extDocRefs) > 0">
@@ -176,21 +180,22 @@
 
 				<!-- Create a new unordered list to report any external references -->
 				<xsl:if test="count($docRefList) > 0">
-					<h2>External Documents</h2>
-					<ul>
-						<xsl:for-each select="$docRefList">
-							<xsl:variable name="anExternalDocRef" select="current()"/>
-							<li>
-								<a>
-									<xsl:if test="$extDocRefsInNewWindow = true()"><xsl:attribute name="target">_blank</xsl:attribute></xsl:if>
-									<xsl:attribute name="href">
-										<xsl:value-of select="$anExternalDocRef/own_slot_value[slot_reference = 'external_reference_url']/value"/>
-									</xsl:attribute>
-									<xsl:value-of select="$anExternalDocRef/own_slot_value[slot_reference = 'name']/value"/>
-								</a>
-							</li>
-						</xsl:for-each>
-					</ul>
+					<xsl:variable name="classifiedDocRefs" select="$docRefList[own_slot_value[slot_reference = 'element_classified_by']/value != '']"/>
+					<xsl:variable name="unClassifiedDocRefs" select="$docRefList except $classifiedDocRefs"/>
+					<xsl:variable name="docRefClassifications" select="distinct-values($allTaxonomyTerms[name = $classifiedDocRefs/own_slot_value[slot_reference = 'element_classified_by']/value]/name)"/>
+					<xsl:for-each select="$allTaxonomyTerms[name = $docRefClassifications]">
+						<xsl:sort select="current()/own_slot_value[slot_reference = 'name']/value"/>
+						<h2><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/></h2>
+						<xsl:call-template name="renderDocRefListUL">
+							<xsl:with-param name="docRefList" select="$classifiedDocRefs[own_slot_value[slot_reference = 'element_classified_by']/value = current()/name]"/>
+						</xsl:call-template>
+					</xsl:for-each>
+					<xsl:if test="count($unClassifiedDocRefs) > 0">
+						<h2>Not Classified</h2>
+						<xsl:call-template name="renderDocRefListUL">
+							<xsl:with-param name="docRefList" select="$unClassifiedDocRefs"/>
+						</xsl:call-template>
+					</xsl:if>
 				</xsl:if>
 			</xsl:when>
 			<xsl:otherwise>
