@@ -66,6 +66,20 @@
 
 	</xsl:template>
 
+	<xsl:template name="renderDocRefListUL">
+    <xsl:param name="docRefList"/>
+    <xsl:param name="toNewWindow" select="true()"/>
+    <ul>
+      <xsl:for-each select="$docRefList">
+        <xsl:variable name="anExternalDocRef" select="current()"/>
+        <li>
+					<xsl:call-template name="RenderExternalDocRef">
+						<xsl:with-param name="extDocRef" select="current()"/>
+					</xsl:call-template>
+        </li>
+      </xsl:for-each>
+    </ul>
+  </xsl:template>
 
 	<!-- Receive a list of external doc references and display them as required -->
 	<!-- 26.09.2016	JP Created -->
