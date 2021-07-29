@@ -37,6 +37,7 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 
 	<!--<xsl:include href="../business/menus/core_product_type_menu.xsl" />-->
 
@@ -71,6 +72,7 @@
 	<xsl:variable name="allActor2RoleRelations" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"/>
 	<xsl:variable name="allA2RForActor" select="$allActor2RoleRelations[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = $currentActor/name]"/>
 	<xsl:variable name="allRolesForActor" select="$allRoles[name = $allA2RForActor/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
+	<xsl:variable name="allExternalRefs" select="/node()/simple_instance[name = $currentActor/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
 
 	<xsl:variable name="maxDepth" select="6"/>
 
@@ -451,6 +453,27 @@
 							</div>
 							<hr/>
 						</div>
+
+						<!--Setup SupportingDocs Section-->
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-file-text-o icon-section icon-color"/>
+							</div>
+							<div>
+								<h2 class="text-primary">
+									<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
+								</h2>
+							</div>
+							<div class="content-section">
+								<xsl:call-template name="RenderExternalDocRefList">
+									<xsl:with-param name="extDocRefs" select="$allExternalRefs"/>
+									<xsl:with-param name="emptyMessage">-</xsl:with-param>
+								</xsl:call-template>
+
+							</div>
+							<hr/>
+						</div>
+
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
