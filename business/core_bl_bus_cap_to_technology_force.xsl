@@ -102,13 +102,13 @@
                         <span class="right-15"><i class="fa fa-circle right-5" style="color:#fac769"/>Application</span>
                         <span class="right-15"><i class="fa fa-circle right-5" style="color:#e27878"/>Application Deployments</span>
 						<div class="simple-scroller">
-							<svg id="model" height="800px" width="400px"/>
+							<svg id="model" height="100%" width="100%"/>
 						</div>
                                               
 				        
 
                         <script>
-                        var width = 1000;
+                        var width = screen.width;
                         var height = 600;
                         var color = d3.scaleOrdinal(d3.schemeCategory10);
                            var links = [<xsl:apply-templates select="$thisBusCap" mode="buscaps"/>];

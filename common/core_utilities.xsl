@@ -68,7 +68,7 @@
 	<xsl:variable name="utilitiesAllPDFConfigs" select="/node()/simple_instance[type = 'Report_PDF_Configuration']"/>
 	
 	<!-- Collect all available editors -->
-	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor')]"/>
+	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor', 'Configured_Editor')]"/>
 	
 	<!-- Collect all available editor sections -->
 	<xsl:variable name="utilitiesAllEditorSections" select="/node()/simple_instance[type = 'Editor_Section']"/>
@@ -2610,8 +2610,14 @@
 		
 		<xsl:variable name="theEditorId" select="$theEditor/name"/>
 		<xsl:variable name="theEditorLabel" select="$theEditor/own_slot_value[slot_reference = 'report_label']/value"/>
+		<xsl:variable name="editorXSL">
+			<xsl:choose>
+				<xsl:when test="$theEditor/type = 'Configured_Editor'">ess_configured_editor.xsl</xsl:when>
+				<xsl:otherwise>ess_editor.xsl</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
-		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:if test="string-length($theInstanceId) > 0">&amp;PMA=<xsl:value-of select="$theInstanceId"/></xsl:if></xsl:variable>
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;cl=en-gb&amp;XSL=<xsl:value-of select="$editorXSL"/>&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:if test="string-length($theInstanceId) > 0">&amp;PMA=<xsl:value-of select="$theInstanceId"/></xsl:if></xsl:variable>
 		<xsl:value-of select="$theEditorLinkHref"/>
 	</xsl:template>
 	
@@ -2694,7 +2700,14 @@
 			</xsl:choose>
 		</xsl:variable>
 		
-		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
+		<xsl:variable name="editorXSL">
+			<xsl:choose>
+				<xsl:when test="$theEditor/type = 'Configured_Editor'">ess_configured_editor.xsl</xsl:when>
+				<xsl:otherwise>ess_editor.xsl</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=<xsl:value-of select="$editorXSL"/>&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
 		<div class="view-editor-entry">
 			<a href="{$theEditorLinkHref}" target="_blank">
 				<i class="view-editor-entry-icon fa fa-pencil right-10"/><span class="view-editor-entry-label"><xsl:value-of select="$theEditorLinkLabel"/></span>
@@ -2724,7 +2737,14 @@
 			</xsl:choose>
 		</xsl:variable>
 		
-		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
+		<xsl:variable name="editorXSL">
+			<xsl:choose>
+				<xsl:when test="$theEditor/type = 'Configured_Editor'">ess_configured_editor.xsl</xsl:when>
+				<xsl:otherwise>ess_editor.xsl</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$theInstanceId"/>&amp;cl=en-gb&amp;XSL=<xsl:value-of select="$editorXSL"/>&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/>&amp;SECTION=<xsl:value-of select="$theEditorSectionAnchorId"/></xsl:variable>
 		<div class="view-editor-entry">
 			<a href="{$theEditorLinkHref}" target="_blank">
 				<i class="view-editor-entry-icon fa fa-pencil right-10"/><span class="view-editor-entry-label"><xsl:value-of select="$theEditorLinkLabel"/></span>

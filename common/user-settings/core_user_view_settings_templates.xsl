@@ -123,6 +123,13 @@
     			color: <xsl:value-of select="$defaultScopeColour"/>;
 			}
 			.eas-label{background-color:#c41e3a; padding: 1px 3px;}
+			.ess-filters-summary {
+				position:relative;
+				bottom:0px;
+				right:10px;
+				font-size:8pt;
+				text-align:right;
+			}
 		</style>
 
 		<script>
@@ -182,7 +189,7 @@
 						<select id="ess-scoping-category-list" style="width:100%" class="inputStyle"/>
 					</div>
 					<div class="col-sm-6 col-md-4 col-lg-3">
-						<label for="ess-scoping-value-list" class="fontBold">Select a <span id="ess-scope-value-label">Geography</span></label>
+						<label for="ess-scoping-value-list" class="fontBold">Select a <span id="ess-scope-value-label">Value</span></label>
 						<select id="ess-scoping-value-list" style="width:100%" class="inputStyle" disabled="true"/>
 					</div>
 					<div class="col-sm-6 col-md-4 col-lg-3">
@@ -197,6 +204,12 @@
 					<div class="col-md-12 top-10">
 						<label for="ess-scoping-scope" class="fontBold">Current Scope</label>
 						<div id="ess-scoping-scope"/>
+					</div>
+					<div class="col-md-12 top-5">
+						<div class="ess-filters-summary">
+							<span><strong>Available Filters: </strong></span>
+							<span id="ess-filter-scope-summary"></span>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -66,7 +66,12 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
-
+	<xsl:variable name="isEIPMode">
+			<xsl:choose>
+				<xsl:when test="$eipMode = 'true'">true</xsl:when>
+				<xsl:otherwise>false</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
@@ -263,14 +268,14 @@
 								                            <label>Application</label>
 								                            <div class="form-group" >
 								                                <div>
-									                            	<select id="application" onchange="setService(this.value);document.getElementById('serv').style.display='block';" class="form-control" style="width:100%">
+									                            	<select id="application" onchange="document.getElementById('serv').style.display='block';" class="form-control" style="width:100%">
 									                                	<option></option>
 									                                </select>
 								                                </div>
 								                                <div id="serv" class="top-10 hiddenDiv">
 								                                    <label>Application Service</label>
 								                                	<div>
-								                                		<select id="appservice" class="form-control"  style="width:100%">
+								                                		<select id="appservice" class="form-control appService"  style="width:100%">
 								                                		<option></option>
 								                                	</select>
 								                                	</div>
@@ -640,6 +645,11 @@
 					<xsl:attribute name="style">background-color: {{this.colour}}</xsl:attribute>
 					{{this.overall}}
 				</div>
+			<!--	<xsl:if test="$isEIPMode = 'true'"> -->
+					<xsl:text> </xsl:text>
+					<button class="btn btn-sm btn-success pull-right left-20" id="setDecision">Submit Decision
+					</button> <xsl:text> </xsl:text>
+			<!--	</xsl:if> -->
 				<button class="btn btn-sm btn-info pull-right" id="genExcel"><i class="fa fa-file-excel-o right-5"/>Download Excel Summary</button>
 			</div>
 		</div>
@@ -802,6 +812,7 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 				techstatusClassFilter[0].colour='#d03838';
 				techstatusClassFilter[0].textColour='#ffffff';
 				};
+				daAPIList.push({"id":list[status].roleid, "className":"Technology_Provider_Role"}); 
 			summaryTech.push({"comp":comp,"product":product,"status":thisstatus,"id":list[status].roleid, "class":statusClass,"colour":techstatusClassFilter[0].colour,"textcolour":techstatusClassFilter[0].textColour})
 	
 				console.log(summaryTech)
@@ -819,9 +830,12 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
             		'</tr>';
 	            
             	$("#productsToBeUsed").append(productRowHTML);
-	                                    
+										
+				
+				
+
 	            };
-	            
+	      var daAPIList=[];      
 	            function addApp(){
 	              var app= document.getElementById('application').value;
 	              var service=document.getElementById('appservice').value;
@@ -845,7 +859,6 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 						statusClass='bg-darkred-80';
 						thisvalue=10;
 
-						offStrategy.push(applist[appstatus].roleid);
                         }
 						statusClassFilter.push({"textColour":"#000","color":"#d3d3d3","thisstatus":thisappstatus});
 					}
@@ -858,6 +871,8 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 					statusClassFilter[0].colour='#d03838';
 					statusClassFilter[0].textColour='#ffffff';
 				};
+
+				daAPIList.push({"id":applist[appstatus].roleid, "className":"Application_Provider_Role"}); 
 	          	summaryApp.push({"app":app,"service":service,"status":thisappstatus,"id":applist[appstatus].roleid,"class":statusClass,"colour":statusClassFilter[0].colour,"textcolour":statusClassFilter[0].textColour})  
 	            
 	            item_counter=item_counter+1;
@@ -904,6 +919,8 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	            
 	             $(document).on('click', 'i.removebutton', function () {
 					 removeItem($(this).attr('easid'));
+
+
 					 getScore();
 	                 $(this).closest('tr').remove();
 				item_counter=item_counter-1;
@@ -911,14 +928,20 @@ var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	             });
 	             
 function removeItem(thisid){
-				//console.log('remove'+thisid)
+				console.log('remove'+thisid)
 				const index = offStrategy.indexOf(thisid);
 					if (index > -1) {
 					  offStrategy.splice(index, 1);
 					};
-				
+					console.log(offStrategy)
 			
-				
+					daAPIList.indexOf(thisid);
+					if (index > -1) {
+						daAPIList.splice(index, 1);
+					};
+					console.log(daAPIList)
+
+
 				summaryTech=summaryTech.filter(function(d){
 						//console.log(d.id+":"+thisid)
 					return d.id!==thisid;	
@@ -1009,37 +1032,51 @@ function addItem(thisid){
 	                            return el.component == comp
 	                                            });
 	
-	                    $('#technologyProducts')
-	                        .empty()
-	                
-	             list.forEach(function(item){
-	                        var opt = document.createElement("option");
-	                        opt.value = item.product;
-	                        opt.textContent = item.product;
-	                        opt.id = item.status;
-	                        opt.title = item.roleid;
-	                        techbox.appendChild(opt);
-	                
-	                        })    
-	                    };
+	                    $('#technologyProducts').empty()
+						let str='';
+						list.forEach(function(item){
+						str=str+'<option value="'+item.product+'" id="'+item.status+'" title="'+item.roleid+'" >'+item.product+'</option>';
+	
+							});
+							console.log(str)
+							$('#technologyProducts').append(str);   
+						};
+						
+					 	
 	              function setService(app){
+					$(".appService").empty();
+		 
+ 
 	                    var appbox = document.getElementById("appservice");
-	                
-	                var servicelist= appJSON.filter(function (el) {
+						console.log(app);     
+	                let servicelist;    
+					let getSelect = new Promise(function(myResolve, myReject) {
+					// "Producing Code" (May take some time)
+					servicelist= appJSON.filter(function (el) {
 	                            return el.application == app
 	                                            });
 	
-	                    $('#appservice')
-	                        .empty()
+						console.log(servicelist);
+					myResolve(); // when successful
+					myReject();  // when error
+					});
+
+					// "Consuming Code" (Must wait for a fulfilled Promise)
+					getSelect.then(
+					function(value) { 
+						let str='';
+						servicelist.forEach(function(item){
+						str=str+'<option value="'+item.service+'" id="'+item.status+'" >'+item.service+'</option>';
+	
+							});
+							console.log(str)
+							$('.appService').append(str);   
+						},
+					function(error) { /* code if some error */ }
+					);        
+												
+
 	                
-	                servicelist.forEach(function(item){
-	                        var opt = document.createElement("option");
-	                        opt.value = item.service;
-	                        opt.textContent = item.service;
-	                        opt.id = item.status;
-	                        appbox.appendChild(opt);
-	                
-	                        })    
 	                    };                              
 	                SortList('#technologyComponents');
 	                $("#technologyComponents").val($("#technologyComponents option:first").val());
@@ -1050,7 +1087,7 @@ function addItem(thisid){
 	                function getScore(){
 	                   	var state;
 	                    var colour;
-console.log('offStrategy');console.log(offStrategy)
+						console.log(offStrategy)
 	                    if(offStrategy.length &gt; 0){
 	                        state = 'Waiver Required';colour='#ffc62c';
 	                        }else{
@@ -1146,18 +1183,7 @@ console.log('offStrategy');console.log(offStrategy)
 	                }
 	            );
 	
-	$(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-	    $('#application').select2();
-		$('#technologyComponents').select2();
-	});
 	
-	$('#application').change(function(){
-		$('#appservice').select2();
-	});
-	
-	$('#application').change(function(){
-		$('#technologyProducts').select2();
-	});
 	
 	$(document).ready(function() {                    
 		var goalsPanel   = $("#goals-template").html();
@@ -1166,9 +1192,16 @@ console.log('offStrategy');console.log(offStrategy)
 		summaryTemplate = Handlebars.compile(summaryPanel);
 		var excelPanel   = $("#table-template").html();
 		excelTemplate = Handlebars.compile(excelPanel);
-	
+		$('#application').select2();
+		$('#technologyComponents').select2();
+	//	$('#appservice').select2();
+	//	$('#technologyProducts').select2();
 		//console.log(today)
+$('#application').on('change',function(){
+	console.log($(this).val());
+setService($(this).val());
 
+})
 	
         $('.fa-info-circle').click(function() {
             $('[role="tooltip"]').remove();
@@ -1218,7 +1251,7 @@ console.log('offStrategy');console.log(offStrategy)
 
 	});
 	
-	$('.goalTick').change(function(){
+	$('.goalTick').on('change',function(){
 	var thisgl =$(this).attr('easid');
 	if($(this).is(':checked')){
 		var thisgoal=goals.filter(function(d){
@@ -1226,11 +1259,17 @@ console.log('offStrategy');console.log(offStrategy)
 			return d.id == thisgl;
 		});
  
-      	goalsList.push(thisgoal[0])
+		  goalsList.push(thisgoal[0])
+		  daAPIList.push({"id":thisgoal[0].id,"className":thisgoal[0].type})
       }else
 	{   goalsList=goalsList.filter(function(d){
 			return d.id !== thisgl;
 		})
+		daAPIList=daAPIList.filter(function(d){
+			return d.id !== thisgl;
+		})
+		console.log('gl')
+		console.log(daAPIList)
 	}
  
 	});
@@ -1281,7 +1320,48 @@ console.log('offStrategy');console.log(offStrategy)
 	  });
 		});
 	});
-	
+
+	$(document).on('click', '#setDecision',function(){
+							console.log('setdec')
+				let projName=$('#title').val()
+				let statusName=$('#answer').text()	
+				let narrative=$('#narrative').text()	
+				let decdate=moment().format('YYYY-MM-DD')	
+				let idStr= projName.substring(0,3)+'-'+decdate.substring(2,4)+	decdate.substring(5,8)+decdate.substring(8,11)
+				
+				console.log(daAPIList)
+				
+				let decision = {"name":projName,
+								"className": "Enterprise_Decision",
+								"decision_result": {
+									"className": "Decision_Result",
+									"name": statusName},
+								"description":narrative,	
+								"decision_date_iso_8601":decdate,
+								"governance_reference":idStr.replace(/\s/g, ''),
+								"decision_elements":daAPIList
+								};
+				 
+				console.log(decision);
+				$('#setDecision').text('Submitting...');
+				$('#setDecision').removeClass('btn-success');
+				$('#setDecision').addClass('btn-primary');
+				$('#setDecision').prop('disabled', true);
+			 //essPromise_createAPIElement('/essential-utility/v2',decision,'v3/instances','Decision')
+			 essPromise_createAPIElement('/essential-utility/v3',decision,'instances','Decision')
+			 .then(function(response){
+				 $('#setDecision').text('Submit Decision');
+				 $('#setDecision').removeClass('btn-primary');
+				$('#setDecision').addClass('btn-success');
+				$('#setDecision').prop('disabled', false);
+				 console.log('Decision Created with elements');
+				 console.log(response);
+			 });
+			 //essPromise_createAPIElement(' /essential-utility/v2/instance',decision,'/v3/instances','Decision')
+			
+				});
+
+ 
                     });	
 	
 	var getXML = function promise_getExcelXML(excelXML_URL) {
@@ -1306,24 +1386,33 @@ console.log('offStrategy');console.log(offStrategy)
 	<xsl:template match="node()" mode="goals">
 		<xsl:variable name="thisObj" select="$objectives[name=current()/own_slot_value[slot_reference = 'goal_supported_by_objectives']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
-	 "name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>",
-    "debug":"<xsl:value-of select="own_slot_value[slot_reference = 'goal_supported_by_objectives']/value"/>",    
+	 "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
+			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+		</xsl:call-template>",
+	"type":"<xsl:value-of select="current()/type"/>",	   
 	"objectives":[<xsl:apply-templates select="$thisObj" mode="objectives"/>]	}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
 	<xsl:template match="node()" mode="objectives">
 	 
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
-	 "name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+	 "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
+			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+		</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
     <xsl:template match="node()" mode="getOptions">
         <xsl:variable name="this" select="current()"/>
         <xsl:variable name="thislifecycle" select="current()/own_slot_value[slot_reference='strategic_lifecycle_status']/value"/>
-        <xsl:variable name="thisproduct" select="$products[own_slot_value[slot_reference='implements_technology_components']/value=$this/name]/own_slot_value[slot_reference='name']/value"/>
+        <xsl:variable name="thisproduct" select="$products[own_slot_value[slot_reference='implements_technology_components']/value=$this/name]"/>
         <xsl:variable name="thisstatus" select="$lifecycleStatus[name=$thislifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/>
 		<xsl:variable name="thisStandard" select="$techStandard[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=$this/name]"/> 
 		<xsl:variable name="thisStandardStrength" select="$standardStrength[name=$thisStandard/own_slot_value[slot_reference='sm_standard_strength']/value]"/>  
         <xsl:if test="$thisproduct">
-     {"product":"<xsl:value-of select="$thisproduct"/>", "component":"<xsl:value-of select="$roles[own_slot_value[slot_reference='realised_by_technology_products']/value=$this/name]/own_slot_value[slot_reference='name']/value"/>", "roleid":"<xsl:value-of select="$this/name"/>", "status":"<xsl:value-of select="$thisstatus"/><xsl:if test="not($thisstatus)">Not Known</xsl:if>","standard":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='name']/value"></xsl:value-of>","colour":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='element_styling_classes']/value"/>",
+     {"product":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$thisproduct"></xsl:with-param>
+			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+		</xsl:call-template>", "component":"<xsl:value-of select="$roles[own_slot_value[slot_reference='realised_by_technology_products']/value=$this/name]/own_slot_value[slot_reference='name']/value"/>", "roleid":"<xsl:value-of select="$this/name"/>", "status":"<xsl:value-of select="$thisstatus"/><xsl:if test="not($thisstatus)">Not Known</xsl:if>","standard":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='name']/value"></xsl:value-of>","colour":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='element_styling_classes']/value"/>",
 	 "value":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>"},
           </xsl:if>
     </xsl:template>
@@ -1332,7 +1421,7 @@ console.log('offStrategy');console.log(offStrategy)
         <xsl:variable name="this" select="current()"/>
         <xsl:variable name="thislifecycle" select="current()/own_slot_value[slot_reference='apr_lifecycle_status']/value"/>
         <xsl:variable name="thisstatus" select="$lifecycleStatus[name=$thislifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/>
-        <xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference='provides_application_services']/value=$this/name]/own_slot_value[slot_reference='name']/value"/>
+        <xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference='provides_application_services']/value=$this/name]"/>
         <xsl:variable name="thisappnode" select="$apps[own_slot_value[slot_reference='provides_application_services']/value=$this/name]"/>
         <xsl:variable name="thisservice" select="$appservices[own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$this/name]/own_slot_value[slot_reference='name']/value"/>   
 		<xsl:variable name="thisStandard" select="$appStandard[own_slot_value[slot_reference='aps_standard_app_provider_role']/value=$this/name]"/> 
@@ -1340,7 +1429,10 @@ console.log('offStrategy');console.log(offStrategy)
         <xsl:if test="$thisapp">	
 			
 			
-     {"application":"<xsl:value-of select="$thisapp"/>", "roleid":"<xsl:value-of select="current()/name"/>", "service":"<xsl:value-of select="$thisservice"/><xsl:if test="not($thisservice)">Unnamed Service</xsl:if>", <xsl:apply-templates select="$thisappnode" mode="interfaces"/>, "status":"<xsl:value-of select="$thisstatus"/><xsl:if test="not($thisstatus)">Not Known</xsl:if>","standard":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='name']/value"></xsl:value-of>","colour":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='element_styling_classes']/value"/>",
+     {"application":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisapp"></xsl:with-param>
+					<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+				</xsl:call-template>", "roleid":"<xsl:value-of select="current()/name"/>", "service":"<xsl:value-of select="$thisservice"/><xsl:if test="not($thisservice)">Unnamed Service</xsl:if>", <xsl:apply-templates select="$thisappnode" mode="interfaces"/>, "status":"<xsl:value-of select="$thisstatus"/><xsl:if test="not($thisstatus)">Not Known</xsl:if>","standard":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='name']/value"></xsl:value-of>","colour":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='element_styling_classes']/value"/>",
 	 "value":"<xsl:value-of select="$thisStandardStrength/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>"},
           </xsl:if>
     </xsl:template>
@@ -1383,8 +1475,12 @@ console.log('offStrategy');console.log(offStrategy)
         <xsl:variable name="thisprods" select="$products[own_slot_value[slot_reference='implements_technology_components']/value=$this/name]"/>
 	    <xsl:if test="$thisstatus='Production'">
 	        <li>
-	        	<i class="fa fa-li fa-caret-right"></i>
-	    		<xsl:value-of select="$thisprods/own_slot_value[slot_reference='name']/value"/>
+				<i class="fa fa-li fa-caret-right"></i>
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisprods"></xsl:with-param>
+					<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+				</xsl:call-template>
+	    		 
 	        </li>
 	    </xsl:if>
        
@@ -1424,6 +1520,10 @@ console.log('offStrategy');console.log(offStrategy)
  	</tr>
 </xsl:template>  
 <xsl:template match="node()" mode="getStyles">
-{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>", "colour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_colour']/value"/>","textColour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_text_colour']/value"/>","classColour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_class']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
+			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+		</xsl:call-template>", "colour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_colour']/value"/>","textColour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_text_colour']/value"/>","classColour":"<xsl:value-of select="current()/own_slot_value[slot_reference='element_style_class']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>	
 </xsl:stylesheet>

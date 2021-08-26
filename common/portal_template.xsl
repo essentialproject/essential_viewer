@@ -19,7 +19,7 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Simple_Editor', 'Editor', 'Report')]"/>
+	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Configured_Editor', 'Simple_Editor', 'Editor', 'Report')]"/>
 	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
 	<xsl:variable name="allPortalSections" select="/node()/simple_instance[type = 'Portal_Section']"/>
@@ -203,6 +203,19 @@
 									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
 									<li class="fontSemi large">
 										<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
+											<xsl:value-of select="$theEditorLabel"/>
+										</a>
+									</li>
+								</xsl:when>
+								<xsl:when test="($eipMode) and (current()/type = 'Configured_Editor')">
+									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+									<li class="fontSemi large">
+										<a class="text-darkgrey" target="_blank">
+											<xsl:attribute name="href">
+												<xsl:call-template name="RenderEditorLinkHref">
+													<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+												</xsl:call-template>
+											</xsl:attribute>
 											<xsl:value-of select="$theEditorLabel"/>
 										</a>
 									</li>

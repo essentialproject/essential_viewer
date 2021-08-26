@@ -240,7 +240,7 @@
 				<xsl:with-param name="theXSL" select="$dataObjectModelReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:value-of select="translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', '')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, position: { x: 0, y: 0 }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:value-of select="translate(translate(translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, position: { x: 0, y: 0 }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 			
 		</xsl:text>
@@ -277,7 +277,7 @@
 		<xsl:variable name="targetDataObjectName">
 			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$targetDataObject"/></xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsTargetDataObjectName" select="eas:get_js_name_for_data_object($targetDataObjectName)"/> new uml.Association({ source: { id: classes.<xsl:value-of select="translate(translate(translate($jsSourceDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate($jsTargetDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, labels: [ { position: -20, attrs: { text: { text: '<xsl:value-of select="$cardinalitySymbol"/>' } }}, { position: .2, attrs: { text: { text: '<xsl:value-of select="lower-case($attName)"/>' } } } ]})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:variable name="jsTargetDataObjectName" select="eas:get_js_name_for_data_object($targetDataObjectName)"/> new uml.Association({ source: { id: classes.<xsl:value-of select="translate(translate(translate(translate(translate($jsSourceDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate(translate(translate($jsTargetDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>.id }, labels: [ { position: -20, attrs: { text: { text: '<xsl:value-of select="$cardinalitySymbol"/>' } }}, { position: .2, attrs: { text: { text: '<xsl:value-of select="lower-case($attName)"/>' } } } ]})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
 	</xsl:template>
@@ -294,7 +294,7 @@
 		<xsl:variable name="parentDataObjectName">
 			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parentDataObject"/></xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="jsParentDataObjectName" select="eas:get_js_name_for_data_object($parentDataObjectName)"/> new uml.Generalization({ source: { id: classes.<xsl:value-of select="translate(translate(translate($jsChildDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate($jsParentDataObjectName, '-', ''), ' ', ''), ',', '')"/>.id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+		<xsl:variable name="jsParentDataObjectName" select="eas:get_js_name_for_data_object($parentDataObjectName)"/> new uml.Generalization({ source: { id: classes.<xsl:value-of select="translate(translate(translate(translate(translate($jsChildDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>.id }, target: { id: classes.<xsl:value-of select="translate(translate(translate(translate(translate($jsParentDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>.id }})<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 		</xsl:text>
 	</xsl:template>

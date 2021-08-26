@@ -99,9 +99,12 @@
 	<xsl:variable name="appsForRolesCap" select="/node()/simple_instance[name = $appRolesForCap/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="appsForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 	<xsl:variable name="allAppsForCap" select="$appsForRolesCap union $appsForCap union $relevantApps"/>
-
-
-	<xsl:variable name="relevantServiceQualityValues" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+	<xsl:variable name="performanceMeasures" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'performance_measures']/value]"/>
+	<xsl:variable name="relevantServiceQualityValuesbyPM" select="/node()/simple_instance[name = $performanceMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
+	<xsl:variable name="relevantServiceQualityValuesOld" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+	
+	
+	<xsl:variable name="relevantServiceQualityValues" select="$relevantServiceQualityValuesbyPM union $relevantServiceQualityValuesOld"/>
 	<xsl:variable name="relevantServiceQualities" select="/node()/simple_instance[name = $relevantServiceQualityValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
 	<xsl:variable name="allDrivers" select="/node()/simple_instance[type = 'Business_Driver']"/>
 
@@ -790,7 +793,10 @@ $(document).ready(function() {
 							<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
 							<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
 							<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-							<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+							<xsl:variable name="thisperformanceMeasures" select="$performanceMeasures[name = $currentObj/own_slot_value[slot_reference = 'performance_measures']/value]"/>
+							<xsl:variable name="thisrelevantServiceQualityValuesbyPM" select="$relevantServiceQualityValuesbyPM[name = $thisperformanceMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
+							<xsl:variable name="thisrelevantServiceQualityValuesOld" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+							<xsl:variable name="measureValues" select="$thisrelevantServiceQualityValuesOld union $thisrelevantServiceQualityValuesbyPM"/>
 							<tr>
 								<td>
 									<!--<xsl:value-of select="$objectiveName" />-->
@@ -863,6 +869,11 @@ $(document).ready(function() {
 							<xsl:variable name="projectName" select="own_slot_value[slot_reference = 'name']/value"/>
 							<xsl:variable name="projectDesc" select="own_slot_value[slot_reference = 'description']/value"/>
 							<xsl:variable name="projectStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
+							<xsl:variable name="projectStartDateISO" select="current()/own_slot_value[slot_reference = 'ca_actual_start_date_iso_8601']/value"/>
+							<xsl:variable name="projectEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_target_end_date']/value]"/>
+							<xsl:variable name="projectEndDateISO" select="current()/own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value"/>
+				
+							<xsl:variable name="projectStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
 							<xsl:variable name="displayProjStartDate">
 								<xsl:call-template name="FullFormatDate">
 									<xsl:with-param name="theDate" select="eas:get_start_date_for_essential_time($projectStartDate)"/>
@@ -892,9 +903,12 @@ $(document).ready(function() {
 										<xsl:when test="count($projectStartDate) > 0">
 											<xsl:value-of select="$displayProjStartDate"/>
 										</xsl:when>
+										<xsl:when test="$projectStartDateISO">
+											<xsl:value-of select="$projectStartDateISO"/>
+										</xsl:when>
 										<xsl:otherwise>
 											<em>
-												<xsl:value-of select="eas:i18n('undefined')"/>
+												<xsl:value-of select="eas:i18n('Not Set')"/>
 											</em>
 										</xsl:otherwise>
 									</xsl:choose>
@@ -904,9 +918,12 @@ $(document).ready(function() {
 										<xsl:when test="count($projectEndDate) > 0">
 											<xsl:value-of select="$displayProjEndDate"/>
 										</xsl:when>
+										<xsl:when test="$projectEndDateISO">
+											<xsl:value-of select="$projectEndDateISO"/>
+										</xsl:when>
 										<xsl:otherwise>
 											<em>
-												<xsl:value-of select="eas:i18n('undefined')"/>
+												<xsl:value-of select="eas:i18n('Not Set')"/>
 											</em>
 										</xsl:otherwise>
 									</xsl:choose>

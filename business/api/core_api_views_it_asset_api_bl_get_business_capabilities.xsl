@@ -33,6 +33,10 @@
     <xsl:variable name="allAppServices" select="/node()/simple_instance[type = 'Application_Service']"/>
 	<xsl:variable name="allAppCaps" select="/node()/simple_instance[type = 'Application_Capability']"/>
 	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type=('Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')]"/>
+	<xsl:variable name="allStakeholders" select="/node()/simple_instance[name = $allApps/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+	<xsl:variable name="allAppSHRoles" select="/node()/simple_instance[(name = $allStakeholders/own_slot_value[slot_reference = 'act_to_role_to_role']/value) and (own_slot_value[slot_reference = 'role_for_classes']/value = ('Composite_Application_Provider', 'Application_Provider'))]"/>
+	<xsl:variable name="relevantSHs" select="$allStakeholders[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $allAppSHRoles/name]"/>
 
 	<!-- ROADMAP VARIABLES 	-->
  	
@@ -62,15 +66,37 @@
  
 	</xsl:template>
  
-<xsl:template match="node()" mode="RenderAppServices">
+	<xsl:template match="node()" mode="RenderAppServices">
 		<xsl:variable name="thisAppProRoles" select="$allAppProRoles[own_slot_value[slot_reference = 'implementing_application_service']/value = current()/name]"/>
 
-		<xsl:variable name="thisAppsIn" select="$thisAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
-        
 		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-        "apps": [<xsl:for-each select="$thisAppsIn">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+        "appDetails": [
+		<xsl:apply-templates select="$thisAppProRoles" mode="RenderApp"/> 
+        ]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if> 
+	</xsl:template>
+	
+	
+	<xsl:template match="node()" mode="RenderApp">
+		<xsl:variable name="this" select="current()"/>
+		
+		<xsl:variable name="thisApp" select="$allApps[name = $this/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="thisAppSHs" select="$relevantSHs[name = $thisApp/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+		<xsl:variable name="missingSHRoles" select="$allAppSHRoles[not(name = $thisAppSHs/own_slot_value[slot_reference = 'act_to_role_to_role']/value)]"/>
+		<xsl:variable name="thisSHIds" select="$thisAppSHs/name"/>
+		
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$thisApp"/><xsl:with-param name="theDisplayInstance" select="$thisApp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		"stakeholders": [<xsl:for-each select="$thisSHIds">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
+		<xsl:if test="(count($thisSHIds) > 0) and (count($missingSHRoles) > 0)">,</xsl:if><xsl:apply-templates select="$missingSHRoles" mode="MissingStakeholder"/>
+		]
+		}<xsl:if test="not(position() = last())"><xsl:text>,
+		</xsl:text></xsl:if> 
+	</xsl:template>
+
+	<xsl:template match="node()" mode="MissingStakeholder">
+		<xsl:variable name="this" select="current()"/>		
+		"NONE_<xsl:value-of select="$this/name"/>"<xsl:if test="not(position() = last())">,</xsl:if> 
 	</xsl:template>
  
 </xsl:stylesheet>

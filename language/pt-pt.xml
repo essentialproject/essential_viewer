@@ -2972,6 +2972,10 @@
 			<value>Plano do Programa</value>
 		</message>
 		<message>
+			<name>Programme Plan for</name>
+			<value>Plano do Programa por</value>
+		</message>
+		<message>
 			<name>Programme Summary</name>
 			<value>Resumo do Programa</value>
 		</message>

@@ -59,6 +59,7 @@
 	<!-- Define any constant values that are used throughout -->
 	<xsl:variable name="urlNameSuffix" select="'URL'"/>
 	<xsl:variable name="editorXSLPath" select="'ess_editor.xsl'"/>
+	<xsl:variable name="configuredEditorXSLPath" select="'ess_configured_editor.xsl'"/>
 
 	<xsl:variable name="menuIdeationConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Ideation Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
 	<xsl:variable name="menuIdeationIsOn" select="string-length($menuIdeationConstant)"/>
@@ -222,13 +223,13 @@
 		</xsl:variable>
 		<xsl:choose>
 			<xsl:when test="$fromEditor">
-				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")), "viewerWindow"); }
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURIComponent(opt.$trigger.attr("id")), "viewerWindow"); }
 			</xsl:when>
 			<xsl:when test="$newWindow">
-				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")), "_blank"); }
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURIComponent(opt.$trigger.attr("id")), "_blank"); }
 			</xsl:when>
 			<xsl:otherwise>
-				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.location="<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURI(opt.$trigger.attr("id")); }
+				function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.location="<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemTargetXSLPath"/>&amp;PAGEXSL=<xsl:value-of select="$menuItemTargetContextXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>" + encodeURIComponent(opt.$trigger.attr("id")); }
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -253,7 +254,14 @@
 		
 		<xsl:variable name="pathPrefix">report</xsl:variable>
 		
-		function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$editorXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>&amp;EDITOR=<xsl:value-of select="$menuItemTargetEditor/name"/>&amp;SECTION=<xsl:value-of select="$menuItemTargetEditorSectionId"/>", "_blank"); }
+		<xsl:variable name="menuItemEditorXSLPath">
+			<xsl:choose>
+				<xsl:when test="$menuItemTargetEditor/type = 'Configured_Editor'"><xsl:value-of select="$configuredEditorXSLPath"/></xsl:when>
+				<xsl:otherwise><xsl:value-of select="$editorXSLPath"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		function <xsl:value-of select="$menuItemFunctionName"/>(key,opt) { window.open("<xsl:value-of select="$pathPrefix"/>" + opt.$trigger.attr("href") + "&amp;XSL=<xsl:value-of select="$menuItemEditorXSLPath"/><xsl:value-of select="$menuItemParamString"/>&amp;LABEL=<xsl:value-of select="$menuItemTargetHistoryLabel"/>&amp;EDITOR=<xsl:value-of select="$menuItemTargetEditor/name"/>&amp;SECTION=<xsl:value-of select="$menuItemTargetEditorSectionId"/>", "_blank"); }
 	</xsl:template>
 
 

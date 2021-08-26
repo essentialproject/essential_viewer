@@ -24,10 +24,17 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	
+	<!-- Condigurable Editor Variables -->
+	<xsl:variable name="configEditorComponents" select="/node()/simple_instance[name = $targetEditor/own_slot_value[slot_reference = 'ce_editor_components']/value]"/>
+	<xsl:variable name="hasConfigEditorComps" select="count($configEditorComponents) > 0"/>
+	<xsl:variable name="configEditorComponentFragments" select="$configEditorComponents/own_slot_value[slot_reference = 'editor_component_execution_html_path']/value"/>
+	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = $configEditorComponents/own_slot_value[slot_reference = 'viewer_code_libraries']/value]"/>
+	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
+
 	<xsl:variable name="targetEditor" select="$utilitiesAllEditors[name = $EDITOR]"/>
 	<xsl:variable name="targetEditorLabel" select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = 'editor_menu_link_classes']/value"/>
+	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class')]/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
 	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
 	<xsl:variable name="editorHeadContent" select="$targetEditor/own_slot_value[slot_reference = 'editor_included_head_content']/value"/>
@@ -135,6 +142,14 @@
 				<!-- setup editor environment -->
 				<script type="text/javascript">
 					'use strict';
+					
+					const essEditorId = '<xsl:value-of select="$targetEditor/name"/>';
+					<xsl:if test="$hasConfigEditorComps">
+						function compileFragmentTemplate(templateId) {
+							let thisFragment = $("#" + templateId).html();
+							return Handlebars.compile(thisFragment);
+						}
+					</xsl:if>
 
 					// define the global object to hold environment variables
 					// note we have to define this script in-line to make use of the xsl values
@@ -158,9 +173,7 @@
 					essEnvironment.form = {
 						'id': '<xsl:value-of select="$targetEditor/name"/>',
 						'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
-					};
-					
-					
+					};				
 					
 					var essDataSetAPIs = {
 						<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
@@ -284,6 +297,17 @@
 		    		});
 				</script>
 
+				<xsl:if test="$hasConfigEditorComps">
+					<script type="module">
+						<xsl:attribute name="src">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$targetEditor/name"/>&amp;XSL=editors/configurable/configurable_editor_js.xsl&amp;CT=text/javascript</xsl:attribute>
+					</script>
+
+					<!-- EDITOR CONFIG JSON -->
+					<script type="text/javascript">
+						<xsl:attribute name="src"><xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/></xsl:attribute>
+					</script>
+				</xsl:if>
+
 				<!-- main script -->
 				<script type="module" src="./editors/assets/js/ess_editor.js" />
 				
@@ -376,6 +400,19 @@
 						<div class="modal-content" id="essErrorModalContent"/>				
 					</div>
 				</div>
+				
+				<!-- Add the handlebars templates for the Editor Components in scope for this Configurable Editor -->
+				<xsl:for-each select="$configEditorComponentFragments">
+					<xsl:if test="doc-available(.)">
+						<xsl:copy-of select="document(.)"/>
+					</xsl:if>
+				</xsl:for-each>
+
+				<xsl:for-each select="$configEditorJSLibPaths">
+					<xsl:if test="doc-available(.)">
+						<xsl:copy-of select="document(.)"/>
+					</xsl:if>
+				</xsl:for-each>
 				
 			</body>
 		</html>

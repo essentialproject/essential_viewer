@@ -642,7 +642,7 @@
 			"planningActionId": <xsl:choose><xsl:when test="string-length($thisPlanningActionId) > 0">"<xsl:value-of select="$thisPlanningActionId"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
 			"changedElement": {
 				"id": "<xsl:value-of select="eas:getSafeJSString($thisChangedElement/name)"/>",
-				"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisChangedElement"/></xsl:call-template>",
+				"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisChangedElement"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisChangedElement"/></xsl:call-template>",
 				"meta": {
 					"anchorClass": "<xsl:value-of select="$thisChangedElement/type"/>"

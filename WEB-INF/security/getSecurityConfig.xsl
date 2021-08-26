@@ -6,7 +6,7 @@
     version="2.0">
     
     <!--
-		* Copyright ©2015-2018 Enterprise Architecture Solutions Limited.
+		* Copyright ©2015-2021 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -29,6 +29,7 @@
     -->
     <!-- 23.01.2015	JWC First implementation	 -->
     <!-- 26.03.2018 JWC Extended to support default classification -->
+    <!-- 05.07.2021 JWC Expand search criteria for Views to include Report and sub-classes -->
     
     <xsl:output method="xml" indent="yes"/>
     
@@ -43,7 +44,7 @@
     
     
     <!-- Get all the View specifications -->
-    <xsl:variable name="viewDefinitions" select="/node()/simple_instance[type='Report']"></xsl:variable>
+    <xsl:variable name="viewDefinitions" select="/node()/simple_instance[type='Report' or supertype='Report']"></xsl:variable>
     
     <xsl:template match="knowledge_base">
         

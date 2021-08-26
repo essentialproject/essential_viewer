@@ -78,8 +78,13 @@ class ResourceScope {
 class ScopingValue {
     constructor(category, value, isExcludes) {
         this.id = value.id;
-        this.name = value.name;
+        this.name = value.name; 
+        if(category.name.length > 24){
+            this.category = category.name.replace(/\b(\S{1,6})\S*/g, '$1').replace(/ /g, '.. ');
+        }else
+        {
         this.category = category.name;
+        }
         this.icon = category.icon;
         this.color = category.color;
         this.valueClass = category.valueClass;
@@ -91,12 +96,17 @@ class ScopingValue {
     }
 }
 
+var essFilterClassList = [];
+var essFilterLabelList = '';
 
 //Function call by Views/Editors to initialise the scoping capability and then call the callback function
-function essInitViewScoping(callback) {
+function essInitViewScoping(callback, initfilterClassList) {
 
     scopeInitialised = true;
     
+    if(initfilterClassList) {
+        essFilterClassList = initfilterClassList;
+    }
     
     //call the callback to refresh the view/editor
     //essRefreshScopeCallback();
@@ -133,17 +143,19 @@ function essInitViewScoping(callback) {
 
     //if the timestamp is earlier than the latest publish, call the common scoping API and replace local storage scoping lists
     if(essUserScopeSettings.timestamp && essUserScopeSettings.timestamp >= essUserSettingsPublishTimestamp) {
-        console.log('Found local scoping lists');
+     //   console.log('Found local scoping lists');
         essScopingLists = essUserScopeSettings.scopingLists;
         essSetScopingDropdowns();
     } else {
-        console.log('Getting new scoping lists');
+     //   console.log('Getting new scoping lists');
         //call the common scoping API and replace local storage scoping lists
         promise_loadViewerAPIScopeData(essScopeViewAPIURL)
-        .then(function(response) {           
+        .then(function(response) {    
+                   
             essUserScopeSettings.scopingLists = response.scopingLists;
             essScopingLists = essUserScopeSettings.scopingLists;
-            console.log(essScopingLists);
+            //console.log('Returned scoping list:');
+            //console.log(essScopingLists);
 
             //save local scoping data with updated timestamp
             essUserScopeSettings.timestamp = essUserSettingsPublishTimestamp;
@@ -162,7 +174,21 @@ function essIsViewScopingReady() {
 // Function to populate the scoping category drop down list with nothing selected (first dropsown is enabled)
 function essSetScopingDropdowns() {
     if(essScopingLists && essScopingLists.length > 0) {
-        $('#ess-scoping-category-list').html(essScopingDDTemplate(essScopingLists));
+
+        let inScopeList = essScopingLists;
+        if(essFilterClassList.length > 0) {
+            inScopeList = essScopingLists.filter(scope => essFilterClassList.indexOf(scope.valueClass) >= 0);
+        }
+
+        inScopeList.forEach(function(scope,idx){
+            if(idx > 0) {
+                essFilterLabelList = essFilterLabelList + ', ';
+            }
+            essFilterLabelList = essFilterLabelList + scope.name;
+        }); 
+        $('#ess-filter-scope-summary').text(essFilterLabelList);
+        
+        $('#ess-scoping-category-list').html(essScopingDDTemplate(inScopeList));
         $('#ess-scoping-category-list').prop('disabled', false);
         
         //add the scoping event listeners
@@ -287,7 +313,7 @@ function essRefreshScopeSummary() {
 
 //function to retrieve the current list of scoping objects of a given class - including flattening scoping groups - returns a Set object containing id values
 function essGetScopeForMetaClass(aClass) {
-    let scopeForMetaClass = [];
+    let scopeForMetaClass = {};
     
     let includesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && !scope.isExcludes);
     let includesScopeValues = [];
@@ -350,7 +376,7 @@ function essScopeResources(resourceList, scopingPropertyList) {
     let scopedResources = resourceList;
     scopingPropertyList.forEach(function(aSP) {
         let scopeForProperty = essGetScopeForMetaClass(aSP.metaClass);
-        if(scopeForProperty != null) {
+        if(scopeForProperty.includes || scopeForProperty.excludes) {
             scopedResources = essFilterResources(scopedResources, scopeForProperty, aSP.property);
         }        
     });
@@ -361,13 +387,13 @@ function essScopeResources(resourceList, scopingPropertyList) {
 //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data   
 var promise_loadViewerAPIScopeData = function(dataSetURL) {   
     return new Promise(function (resolve, reject) {
-        console.log('Loading Scoping Lists');
+      //  console.log('Loading Scoping Lists');
         if (dataSetURL != null) {
             let xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     let viewerData = JSON.parse(this.responseText);
-                    console.log(viewerData);
+                 //   console.log(viewerData);
                     resolve(viewerData);
                 }
             };
@@ -479,8 +505,8 @@ function essGetLocalEssentialViewState() {
 function essSaveLocalEssentialViewState(viewState) {
     let viewStateKey = ESS_LOCAL_VIEW_STATE_SETTINGS_KEY + '.' + essUserSettingsRepoId + '.' + essViewId;
     if(viewState != null) {
-        console.log('Saving View State');
-        console.log(viewState);
+     //   console.log('Saving View State');
+     //   console.log(viewState);
         let settingsString = JSON.stringify(viewState);
         localStorage.setItem(viewStateKey, settingsString);         
     }

@@ -205,6 +205,15 @@
 								<h2 class="text-primary">Cost by Differentiation Level</h2>
 								<div class="pieChart" id="diffLevelPieChart"/>
 							</div>
+							<div class="clearfix"/>
+							<hr/>
+							<div class="pull-right">
+							<button class="btn btn-primary tops" easid="10">Show Top 10</button>
+							<xsl:text> </xsl:text>
+							<button class="btn btn-primary tops" easid="20">Show Top 20</button>
+							<xsl:text> </xsl:text>
+							<button class="btn btn-primary tops" easid="all">Show All</button>
+							</div>
 							<xsl:call-template name="applicationTable"/>
 						</div>
 						
@@ -299,7 +308,7 @@
 			    });
 			});
 		</script>-->
-		<div class="verticalSpacer_30px"/>
+		<div class="verticalSpacer_5px"/>
 
 		<table id="dt_apps" class="table table-striped table-bordered">
 			<thead>
@@ -384,7 +393,7 @@
 
 		
 					//function to get the total costs of the in scope processes
-					function setOverallAppCosts() {
+						function setOverallAppCosts() {
 						appCostTotal = inScopeApplications.applications.map(function(anApp) {
 							var anAmount = anApp['totalCost'];
 							if(anAmount != null) {
@@ -398,7 +407,7 @@
 					}
 					
 					
-					//function to initialise the total costs for applications
+					//function to initialise the total costs for applications 
 					function setAppCostTotal(anApp) {
  
 						costTotal = 0;
@@ -528,7 +537,8 @@
 					
 					
 					//funtion to set contents of the Application catalogue table
-					function drawApplicationsTable() {		
+
+			function drawApplicationsTable() {		
  
 						if(catalogueTable == null) {
 							initAppsTable();
@@ -538,10 +548,8 @@
 	    					catalogueTable.draw();
 	    				}
 					}
-					
-					
-					//function to initialise the applications table
-					function initAppsTable() {
+	//function to calculate the columns required for the app table
+									function initAppsTable() {
 					
 					    
 					    var appColumns = [];
@@ -676,21 +684,48 @@
 					    //END INITIALISE UP THE CATALOGUE TABLE
 					}
 					
+
+					
 					
 					<!-- ***REQUIRED*** JAVASCRIPT FUNCTION TO REDRAW THE VIEW WHEN THE ANY SCOPING ACTION IS TAKEN BY THE USER -->
 				  	//function to redraw the view based on the current scope
-					function redrawView() {
-						<!--<xsl:if test="$isRoadmapEnabled">
-							 console.log('Redrawing View');
+					function redrawView(appsList) { 
+
+						inScopeApplications.applications=applications;
+
+						if(appsList===undefined){
+						appsList=inScopeApplications.applications}
+						 
+						 <xsl:if test="$isRoadmapEnabled"> 
 							 
 							//update the roadmap status of the applications and application provider roles passed as an array of arrays
                              
 							rmSetElementListRoadmapStatus([applications]);
 							
 							 	//filter applications to those in scope for the roadmap start and end date
-							inScopeApplications.applications = rmGetVisibleElements(applications);
-						</xsl:if>-->
-					
+							inScopeApplications.applications = rmGetVisibleElements(applications);			 
+
+						let inScopeAppsList=[];
+						if(appsList){
+							appsList.forEach((app)=>{
+								let thisApp=inScopeApplications.applications.filter((a)=>{
+										return a.id==app.id;
+								});
+								if(thisApp.length&gt;0){
+									inScopeAppsList.push(thisApp[0]);
+								}
+							});
+							inScopeApplications.applications = inScopeAppsList;
+						}else{
+						}
+						</xsl:if> 
+						let rmVal = $('#rmEnabledCheckbox').is(":checked");
+					 	if( rmVal == false){
+							console.log('no tick'); 
+						}
+						 
+					console.log(inScopeApplications)
+					 
 						setOverallAppCosts();				
 						drawCostTypePieChart();
 						drawDiffLevelPieChart();
@@ -721,16 +756,16 @@
 				        appLinkFragment   = $("#app-link").html();
 						appLinkTemplate = Handlebars.compile(appLinkFragment);
 						
-						
+			
 						applications.map(function(anApp) { 
 							setAppCostTotal(anApp);
 				            return anApp;
 				         });		
 				         $('#main-cost-section').removeClass('hiddenDiv');
-				         
+				   			console.log(inScopeApplications)      
 					         
 					    //DRAW THE VIEW
-					    redrawView();
+					    redrawView(inScopeApplications.applications);
         				$('#page-spinner').hide();
                   
                                
@@ -743,8 +778,34 @@
         }
         
 
-   
-        
+   $('.tops').on('click',function(){
+	    inScopeApplications = {
+	 		applications: applications
+	 		  	}
+
+	  let counter=$(this).attr('easid');
+	  	if(counter=='all'){counter=applications.length}
+
+		let apps=inScopeApplications.applications;
+		apps.sort((a, b) => parseInt(b.totalCost) > parseInt(a.totalCost) &amp;&amp; 1 || -1)
+
+		let newApps=[];
+			for(let i=0; i &lt; counter; i++){
+				newApps.push(apps[i])
+			}
+
+	   inScopeApplications = {
+	 		applications: newApps
+	 		  	}
+				   			  		
+	console.log(newApps)
+	
+	redrawView(newApps);
+
+
+   })
+
+	   
     });
         
     </xsl:template>
@@ -772,8 +833,7 @@
         <xsl:variable name="thissite" select="$site[name = $appUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
         <xsl:variable name="thislocation" select="$location[name = $thissite/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 		    
-    {"id": "<xsl:value-of select="current()/name"/>",
-		"name": "<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference='name']/value)"/>",
+    {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
         "description": "<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference='description']/value)"/>",
         "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
         "differentiation": <xsl:choose><xsl:when test="$appDiffLevel/name"><xsl:apply-templates mode="RenderViewEnumerationJSONList" select="$appDiffLevel"/></xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,<xsl:apply-templates mode="RenderApplicationCostsJSON" select="$inScopeCostTypes"><xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence']/value"/><xsl:with-param name="thisCostComps" select="$appCostComponents"/></xsl:apply-templates>,"countries":[<xsl:for-each select="$thislocation">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]

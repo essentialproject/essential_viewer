@@ -212,6 +212,10 @@
 				<script src="js/vis/vis.min.js" type="application/javascript"/>
                 <link href="js/vis/vis.min.css" media="screen" rel="stylesheet" type="text/css"/>
 
+				<!-- Add bootstrap datepicker libraries -->
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
+
 				<script type="text/javascript">
 				$('document').ready(function(){
 					 $(".compModelContent").vAlign();
@@ -687,7 +691,7 @@
                 $('#datechecker').datepicker();
                     });
           
-                $('#description').text(project.projectDesc);
+                $('#description').html(project.projectDesc);
                 $('#approval').text(project.approvalStatus);
                 $('#lifecycle').text(project.projectStatus);
                 $('#parent').text(project.projectParentProgrammeName);

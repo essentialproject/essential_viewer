@@ -46,8 +46,16 @@
 	<xsl:variable name="allPhysProcActorSites" select="$allSites[name = $allPhysProcessActors/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
 	<xsl:variable name="allPhysProcAppRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $phys_process_list/name]"/>
 	<xsl:variable name="allPhysProcAppProRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $phys_process_list/name]"/>
+	
 	<xsl:variable name="allPhysProcApp2Roles" select="/node()/simple_instance[name = $allPhysProcAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
-	<xsl:variable name="allPhysProcSupportingApps" select="$allApps[name = $allPhysProcApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+	<xsl:variable name="directApps" select="/node()/simple_instance[name = $allPhysProcAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+	<xsl:variable name="indirectApps" select="/node()/simple_instance[name = $allPhysProcApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+	<xsl:variable name="allPhysProcSupportingApps" select="$directApps union $indirectApps"/>
+	
+	<xsl:variable name="appSvs" select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$allPhysProcApp2Roles/name]"/>
+	
+	<!--<xsl:variable name="allPhysProcApp2Roles" select="/node()/simple_instance[name = $allPhysProcAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+	<xsl:variable name="allPhysProcSupportingApps" select="$allApps[name = $allPhysProcApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>-->
 	
 
 	<xsl:variable name="allPhysProcApp2InfoRelations" select="/node()/simple_instance[own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value = $phys_process_list/name]"/>
@@ -706,18 +714,24 @@
 		<xsl:variable name="actorSites" select="$allSites[name = $processActor/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
 		<xsl:variable name="processManagerActor2Role" select="$allActor2Roles[(name = current()/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $processManagerRole/name)]"/>
 		<xsl:variable name="processManager" select="$allIndividualActors[name = $processManagerActor2Role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-		<xsl:variable name="supportingAppRelations" select="$allPhysProcAppRelations[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = current()/name]"/>
-		<xsl:variable name="supportingApps" select="$allApps[name = $supportingAppRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+		<!--<xsl:variable name="supportingAppRelations" select="$allPhysProcAppRelations[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = current()/name]"/>
+		<xsl:variable name="supportingApps" select="$allApps[name = $supportingAppRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>-->
 		<xsl:variable name="supportingAppProRelations" select="$allPhysProcAppProRelations[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = current()/name]"/>
+		
 		<xsl:variable name="supportingApp2Roles" select="$allPhysProcApp2Roles[name = $supportingAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
-		<xsl:variable name="supportingAppRoleApps" select="$allApps[name = $supportingApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="supportingDirectApps" select="$directApps[name = $supportingAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+		<xsl:variable name="supportingIndirectApps" select="$indirectApps[name = $supportingApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="supportingApps" select="$supportingDirectApps union $supportingIndirectApps"/>
+		
+		<!--<xsl:variable name="supportingApp2Roles" select="$allPhysProcApp2Roles[name = $supportingAppProRelations/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+		<xsl:variable name="supportingApps" select="$allApps[name = $supportingApp2Roles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>-->
 
 		<xsl:variable name="supportingApp2InfoRelations" select="$allPhysProcApp2InfoRelations[own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value = current()/name]"/>
 		<xsl:variable name="supportingApp2Infos" select="$allPhysProcApp2Infos[name = $supportingApp2InfoRelations/own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value]"/>
 		<xsl:variable name="supportingInfoApps" select="$allPhysProcSupportingInfoApps[name = $supportingApp2Infos/own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value]"/>
 
-		<xsl:variable name="allSupportingApps" select="$supportingApps union $supportingAppRoleApps union $supportingInfoApps"/>
-		<xsl:variable name="appSvs" select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$supportingApp2Roles/name]"/>
+		<xsl:variable name="allSupportingApps" select="$supportingApps union $supportingInfoApps"/>
+		
 		<tr>
 			<td>
 				<xsl:call-template name="RenderInstanceLink">
@@ -780,9 +794,9 @@
 			</td>
 			<td>
 				<xsl:choose>
-					<xsl:when test="count($supportingAppRoleApps) > 0">
+					<xsl:when test="count($supportingApps) > 0">
 						<ul class="noMarginBottom">
-							<xsl:for-each select="$supportingAppRoleApps">
+							<xsl:for-each select="$supportingApps">
 								 
 								<xsl:variable name="supportingAPR" select="$supportingApp2Roles[name=current()/own_slot_value[slot_reference='provides_application_services']/value]"/>
 								
@@ -793,8 +807,8 @@
 										<xsl:with-param name="theXML" select="$reposXML"/>
 										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 									</xsl:call-template>
-									
-									<br/>
+									<xsl:if test="count($thissupportingSvc) > 0">
+										<br/>
 										<xsl:for-each select="$thissupportingSvc">
 											<span style="font-size:9pt; ">
 										
@@ -805,13 +819,12 @@
 											</xsl:call-template>
 											</span><br/>	
 										</xsl:for-each>
-								 
-									 
+									</xsl:if>
 								</li>
 							</xsl:for-each>
 						</ul>
 					</xsl:when>
-					<xsl:when test="count($allSupportingApps) > 0">
+					<!--<xsl:when test="count($allSupportingApps) > 0">
 						<ul class="noMarginBottom">
 							<xsl:for-each select="$allSupportingApps">
 								<li>
@@ -823,7 +836,7 @@
 								</li>
 							</xsl:for-each>
 						</ul>
-					</xsl:when>
+					</xsl:when>-->
 					<xsl:otherwise>-</xsl:otherwise>
 				</xsl:choose>
 			</td>
