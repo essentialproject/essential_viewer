@@ -41,7 +41,7 @@
 	<!-- ySize = an optional height of the resulting model in pixels -->
 	<xsl:param name="ySize"/>
 
-	<xsl:variable name="allAppProviders" select="/node()/simple_instance[((type = 'Application_Provider') or (type = 'Composite_Application_Provider'))]"/>
+	<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider', 'Application_Provider_Interface')]"/>
 	<xsl:variable name="allAppPro2InfoReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value = $allAppProviders/name]"/>
 	<xsl:variable name="allAppPro2Info2DataReps" select="/node()/simple_instance[name = $allAppPro2InfoReps/own_slot_value[slot_reference = 'operated_data_reps']/value]"/>
 	<xsl:variable name="allDataObjects" select="/node()/simple_instance[(type = 'Data_Object')]"/>

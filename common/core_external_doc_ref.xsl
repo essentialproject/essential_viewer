@@ -81,37 +81,61 @@
 				<xsl:variable name="videoDocRefs" select="$extDocRefs[own_slot_value[slot_reference = 'external_link_type']/value = $videoExtRefLinkTypes/name]"/>
 				<xsl:variable name="docRefList" select="($extDocRefs except ($imageDocRefs union $videoDocRefs))"/>
 				<xsl:if test="count($imageDocRefs) > 0">
-					<script src="js/flux/flux.min.js" type="text/javascript" charset="utf-8"/>
-					<script type="text/javascript" charset="utf-8">
-             			$(function(){
-             				if(!flux.browser.supportsTransitions)
-             					alert("Flux Slider image renderer requires a browser that supports CSS3 transitions");
-             					
-             				window.f = new flux.slider('#slider', {
-             					autoplay: false,
-             					captions: false,
-             					<xsl:if test="count($imageDocRefs) > 1">
-             					<!--pagination: true,-->
-             					controls: true,
-             					</xsl:if>
-             					transitions: ['turn']
-             				});
-             			});
-             		</script>
 					<h2>External Diagrams</h2>
-					<div id="slider">
-						<xsl:for-each select="$imageDocRefs">
-							<xsl:variable name="currentImgLink" select="current()"/>
-							<xsl:variable name="imgURL" select="$currentImgLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
-							<xsl:variable name="imgCaption" select="$currentImgLink/own_slot_value[slot_reference = 'name']/value"/>
-							<xsl:variable name="imgAltText" select="$currentImgLink/own_slot_value[slot_reference = 'description']/value"/>
-							<xsl:if test="string-length($imgURL) > 0">
-								<a target="_blank" href="{$imgURL}">
-									<img src="{$imgURL}" alt="{$imgAltText}" title="{$imgCaption}"/>
-								</a>
-							</xsl:if>
-						</xsl:for-each>
-					</div>
+					<script>
+						$(document).ready(function(){
+							$('.carousel').carousel({
+							  interval: false
+							})
+						});
+					</script>
+					<style>
+						.carousel-control.left {
+							background-image: none;
+						}
+						.carousel-control.right {
+							background-image: none;
+						}
+						.carousel-control {
+							text-shadow: 0 1px 2px rgba(0,0,0,1);
+						}
+					</style>
+					<div id="externalRefImages" class="carousel slide" data-ride="carousel">
+						<ol class="carousel-indicators">
+							<xsl:for-each select="$imageDocRefs">
+								<li data-target="#externalRefImages">
+									<xsl:attribute name="data-slide-to"><xsl:value-of select="position()-1"/></xsl:attribute>
+									<xsl:if test="position()=1">
+										<xsl:attribute name="class">active</xsl:attribute>
+									</xsl:if>
+								</li>
+							</xsl:for-each>
+						</ol>
+						<div class="carousel-inner">
+							<xsl:for-each select="$imageDocRefs">
+								<xsl:variable name="currentImgLink" select="current()"/>
+								<xsl:variable name="imgURL" select="$currentImgLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
+								<xsl:variable name="imgCaption" select="$currentImgLink/own_slot_value[slot_reference = 'name']/value"/>
+								<xsl:variable name="imgAltText" select="$currentImgLink/own_slot_value[slot_reference = 'description']/value"/>
+								<xsl:if test="string-length($imgURL) > 0">
+									<div class="item">
+										<xsl:if test="position()=1">
+											<xsl:attribute name="class">item active</xsl:attribute>
+										</xsl:if>
+										<a target="_blank" href="{$imgURL}"><img class="d-block w-100" src="{$imgURL}" alt="{$imgAltText}" title="{$imgCaption}"/></a>
+									</div>
+								</xsl:if>
+							</xsl:for-each>
+						</div>
+						<a class="left carousel-control" href="#externalRefImages" role="button" data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="right carousel-control" href="#externalRefImages" role="button" data-slide="next">
+							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					</div>					
 				</xsl:if>
 				
 				<xsl:if test="count($videoDocRefs) > 0">		

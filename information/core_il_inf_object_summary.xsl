@@ -38,7 +38,7 @@
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="allDataCategories" select="/node()/simple_instance[type = 'Data_Category']"/>
-	<xsl:variable name="relevantActor2Roles" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = 'information_view_stakeholders']/value]"/>
+	<xsl:variable name="relevantActor2Roles" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = ('information_view_stakeholders', 'stakeholders')]/value]"/>
 	<xsl:variable name="allActors" select="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]"/>
 	<xsl:variable name="allRoles" select="/node()/simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]"/>
 	<xsl:variable name="dataStakeholderRoleType" select="/node()/simple_instance[(type = 'Business_Role_Type') and (own_slot_value[slot_reference = 'name']/value = 'Data Stakeholder')]"/>

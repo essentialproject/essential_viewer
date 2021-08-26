@@ -51,11 +51,21 @@
 	<xsl:variable name="allRoles" select="/node()/simple_instance[name = $allStakeholders/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
 
 	<xsl:variable name="allPhysicalProcs" select="/node()/simple_instance[supertype = 'Physical_Process_Type']"/>
-	<xsl:variable name="allPhysicalProcRels" select="/node()/simple_instance[name = $allAppProRoles/own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value]"/>
+	<xsl:variable name="allPhysicalProcRelsIndirect" select="/node()/simple_instance[name = $allAppProRoles/own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value]"/>
+        
+    <xsl:variable name="allPhysicalProcRelsDirect" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value=$currentApp/name]"/>
+    
+    
+    <xsl:variable name="allPhysicalProcRels" select="$allPhysicalProcRelsDirect union $allPhysicalProcRelsIndirect"/>
+    
+    <xsl:variable name="directProcessToAppRel" select="$allPhysicalProcRelsDirect[name=$allPhysicalProcs/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
+    <xsl:variable name="directProcessToApp" select="$allAppPros[name=$directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+    
+    
 	<xsl:variable name="supportedProcs" select="$allPhysicalProcs[name = $allPhysicalProcRels/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"/>
 	<xsl:variable name="supportedLogProcs" select="/node()/simple_instance[name = $supportedProcs/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
 	<xsl:variable name="supportedBus" select="/node()/simple_instance[name = $supportedProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-	<xsl:variable name="supoprtedProcActors" select="/node()/simple_instance[name = $supportedBus/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:variable name="supoprtedProcActors" select="/node()/simple_instance[name = $supportedBus/own_slot_value[slot_reference = 'actor_plays_role']/value]"/>
 	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>
 
 	<xsl:variable name="allStrategicPlans" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = $param1]"/>
@@ -75,7 +85,7 @@
 	<xsl:variable name="allTechBuilds" select="/node()/simple_instance[name = $allAppDeployments/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
 	<xsl:variable name="allTechBuildArchs" select="/node()/simple_instance[name = $allTechBuilds/own_slot_value[slot_reference = 'technology_provider_architecture']/value]"/>
 	<xsl:variable name="allTechProRoles" select="/node()/simple_instance[supertype = 'Technology_Provider_Role']"/>
-	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component' or supertype = 'Technology_Composite']"/>
+	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component' or supertype = 'Technology_Component']"/>
 	<xsl:variable name="allTechProvs" select="/node()/simple_instance[supertype = 'Technology_Provider']"/>
 	<xsl:variable name="allTechProvRoleUsages" select="/node()/simple_instance[(name = $allTechBuildArchs/own_slot_value[slot_reference = 'contained_architecture_components']/value) and (type = 'Technology_Provider_Usage')]"/>
 	<xsl:variable name="allTechProdArchRelations" select="/node()/simple_instance[(type = ':TPU-TO-TPU-RELATION') and (name = $allTechBuildArchs/own_slot_value[slot_reference = 'contained_provider_architecture_relations']/value)]"/>
@@ -422,6 +432,7 @@
 							<div class="content-section">
 								<ul>
 									<xsl:for-each select="$services">
+										<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 										<xsl:variable name="asName" select="own_slot_value[slot_reference = 'name']/value"/>
 										<li>
 											<xsl:call-template name="GenericInstanceLink">
@@ -862,7 +873,8 @@
 									<xsl:value-of select="eas:i18n('Supported Physical Processes')"/>
 								</h2>
 							</div>
-							<div class="content-section">
+							<div class="content-section">              
+                     
 								<xsl:choose>
 									<xsl:when test="count($allPhysicalProcRels) &gt; 0">
 										<script>
@@ -944,9 +956,12 @@
 													<xsl:variable name="aLogProc" select="$supportedLogProcs[name = $aPhysProc/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
                                                     <xsl:variable name="aServiceRel" select="$allAppProRoles[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
                                                     <xsl:variable name="aService" select="$allAppSvcs[name = $aServiceRel/own_slot_value[slot_reference = 'implementing_application_service']/value]"/>
+                                                       
+                                                    <xsl:variable name="aService" select="$allAppSvcs[name = $aServiceRel/own_slot_value[slot_reference = 'implementing_application_service']/value]"/>
                                                    
 													<xsl:variable name="aUnitRole" select="$supportedBus[name = $aPhysProc/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-													<xsl:variable name="aUnit" select="$supoprtedProcActors[name = $aUnitRole/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+													<xsl:variable name="aUnit" select="$supoprtedProcActors[name = $aUnitRole/own_slot_value[slot_reference = 'actor_plays_role']/value]"/>
+												 
 													<xsl:variable name="aLocationList" select="$allSites[name = $aPhysProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
 													<xsl:variable name="aCriticality" select="$allEnums[name = current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>
 													<tr>
@@ -958,15 +973,25 @@
 															</xsl:call-template>
 														</td>
                                                         <td>
-															<xsl:call-template name="RenderInstanceLink">
+                                                        <xsl:choose>
+                                                        <xsl:when test="$aService">
+                                                             <xsl:call-template name="RenderInstanceLink">
 																<xsl:with-param name="theSubjectInstance" select="$aService"/>
 																<xsl:with-param name="theXML" select="$reposXML"/>
 																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 															</xsl:call-template>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                            Not Defined
+                                                        </xsl:otherwise>
+                                                        </xsl:choose>
+															
 														</td>
 														<td>
+															<!-- <xsl:value-of select="$aUnitRole"/><hr/>
+															 <xsl:value-of select="$aUnit"/> -->
 															<xsl:call-template name="RenderInstanceLink">
-																<xsl:with-param name="theSubjectInstance" select="$aUnit"/>
+																<xsl:with-param name="theSubjectInstance" select="$aUnitRole"/>
 																<xsl:with-param name="theXML" select="$reposXML"/>
 																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 															</xsl:call-template>
@@ -1032,10 +1057,10 @@
 
 
 						<!-- Setup the related issues table -->
-						<xsl:call-template name="RenderIssuesTable">
+			<!--			<xsl:call-template name="RenderIssuesTable">
 							<xsl:with-param name="relatedElement" select="$currentApp"/>
 						</xsl:call-template>
-
+-->
 
 						<!--Setup AppDependencies Section-->
 						<!--<div class="col-xs-12">

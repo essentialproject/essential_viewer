@@ -19,7 +19,7 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Editor', 'Report')]"/>
+	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Simple_Editor', 'Editor', 'Report')]"/>
 	<xsl:variable name="allReports" select="$anyReports[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
 	<xsl:variable name="allPortalSections" select="/node()/simple_instance[type = 'Portal_Section']"/>
@@ -102,7 +102,7 @@
 					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');background-size:100%;'"/>
 					<div class="container-fluid">
 						<div class="row">
-							<div class="col-xs-12 col-sm-9 col-md-6 bg-white" style="opacity:0.6">
+							<div class="col-xs-12 col-sm-9 col-md-9 bg-white" style="opacity:0.75">
 								<h1>
 									<xsl:value-of select="$portalLabel"/>
 								</h1>
@@ -197,7 +197,7 @@
 						<!-- Only render if user is authorised -->
 						<xsl:if test="eas:isUserAuthZ(current())">
 							<xsl:choose>
-								<xsl:when test="($eipMode) and (current()/type = 'Editor')">
+								<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
 									<xsl:variable name="theEditorId" select="current()/name"/>
 									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
 									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
@@ -452,7 +452,7 @@
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
 					<xsl:choose>
-						<xsl:when test="($eipMode) and ($aReport/type = 'Editor')">
+						<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor'))">
 							<xsl:variable name="thisEditorPath">
 								<xsl:call-template name="RenderEditorLinkText">
 									<xsl:with-param name="theEditor" select="$aReport"/>

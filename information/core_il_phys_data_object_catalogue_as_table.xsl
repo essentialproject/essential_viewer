@@ -150,8 +150,9 @@
 				responsive: true,
 				columns: [
 				    { "width": "20%" },
-				    { "width": "40%" },
-				    { "width": "40%" }
+				    { "width": "30%" },
+				    { "width": "30%" },
+				    { "width": "20%" }
 				  ],
 				dom: 'Bfrtip',
 			    buttons: [

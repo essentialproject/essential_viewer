@@ -2,7 +2,7 @@
 
 <xsl:stylesheet version="2.0" xmlns:fn="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:eas="http://www.enterprise-architecture.org/essential">
 
-	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="iso-8859-1"/>
+	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
 
 
 	<!--
@@ -47,7 +47,8 @@
    <xsl:variable name="siteswithActors" select="$sites[name=$actors/own_slot_value[slot_reference='actor_based_at_site']/value]"/>
    <xsl:variable name="actorsWithSites" select="$actors[own_slot_value[slot_reference='actor_based_at_site']/value=$siteswithActors/name]"/> 
    <xsl:variable name="applicationServices" select="/node()/simple_instance[type = 'Application_Service']"/>    
-   <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
+   <xsl:variable name="allapplications" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/> 
+	 <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
     <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"/>  
     <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"/>  
     <xsl:variable name="lifecycle" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
@@ -79,8 +80,8 @@
   <xsl:variable name="DOA" select="/node()/simple_instance[type='Data_Object_Attribute']"/>
   <xsl:variable name="primitiveDataObjects" select="/node()/simple_instance[type='Primitive_Data_Object']"/>
   <xsl:variable name="dataAttributeCardinality" select="/node()/simple_instance[type='Data_Attribute_Cardinality']"/>
- 
-  
+  <xsl:variable name="physbusApp" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']"/>
+  <xsl:variable name="elemStyles" select="/node()/simple_instance[type='Element_Style']"/>
 	<xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -1989,7 +1990,7 @@
    ss:RefersTo="='Application Delivery Models'!R7C3:R24C3"/>
   <NamedRange ss:Name="App_Dif_Level"
    ss:RefersTo="='CLASSIFICATION DATA'!R24C3:R24C5"/>
-  <NamedRange ss:Name="App_Type" ss:RefersTo="='REFERENCE DATA'!R46C3:R46C5"/>
+  <NamedRange ss:Name="App_Type" ss:RefersTo="='REFERENCE DATA'!R46C3:R46C8"/>
   <NamedRange ss:Name="Application_Codebases"
    ss:RefersTo="='Application Codebases'!R7C3:R24C3"/>
   <NamedRange ss:Name="Application_Delivery_Model"
@@ -2251,9 +2252,15 @@
    </Row>
    <Row ss:Height="20">
     <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Physical Proc 2 App and Service'!A1"><Data
-      ss:Type="String">Physical Process 2 App</Data></Cell>
+      ss:Type="String">Physical Process 2 App via Servuce</Data></Cell>
     <Cell ss:StyleID="s1025"><Data ss:Type="String">Maps the Physical Business Porcess to the Application used and the Sevice it is used to provide</Data></Cell>
    </Row>
+	<Row ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Physical Proc 2 App'!A1"><Data
+      ss:Type="String">Physical Process 2 App</Data></Cell>
+    <Cell ss:StyleID="s1025"><Data ss:Type="String">Maps the Physical Business Process to the Application used directly - only use this sheet if you are unable to use the sheet above to provide the services</Data></Cell>
+   </Row>   
+  
    <Row ss:Height="20">
     <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Technology Domains'!A1"><Data
       ss:Type="String">Technology Domains</Data></Cell>
@@ -2674,15 +2681,15 @@
     <Cell ss:StyleID="s1159"><Data ss:Type="String">Business Domain Check</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="6">
-    <Cell ss:Index="2" ss:StyleID="s1051"><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
-    <Cell><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s1051"><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
     <Cell ss:StyleID="s1158"
      ss:Formula="=IF(RC[-6]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-6],'Business Capabilities'!C[-8],1,0)),&quot;Parent Capability must be already defined in Column C&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
       ss:Type="String">OK</Data></Cell>
@@ -3894,7 +3901,9 @@
     <Format Style='color:#9C0006;background:#FFC7CE'/>
    </Condition>
   </ConditionalFormatting>
- </Worksheet>
+ </Worksheet> 
+
+
  <Worksheet ss:Name="Information Exchanged">
   <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16">
@@ -5608,6 +5617,106 @@
    </Condition>
   </ConditionalFormatting>
  </Worksheet>
+
+<Worksheet ss:Name="Physical Proc 2 App">
+  <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
+    x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
+   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="179"/>
+   <Column ss:AutoFitWidth="0" ss:Width="199"/>
+   <Column ss:AutoFitWidth="0" ss:Width="297"/>
+   <Column ss:AutoFitWidth="0" ss:Width="230"/>
+   <Column ss:AutoFitWidth="0" ss:Width="194"/>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row ss:Height="29">
+    <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Business Process to Performing Organisation</Data></Cell>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"><Data ss:Type="String">Map the organisations to the processes they perform - these applications are a direct relationship to process, use the previous worksheet if you can for application relationships</Data></Cell>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1110"/>
+    <Cell ss:StyleID="s1110"/>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s1182"><Data ss:Type="String">Business Process</Data></Cell>
+    <Cell ss:StyleID="s1182"><Data ss:Type="String">Performing Organisation</Data></Cell>
+    <Cell ss:StyleID="s1182"><Data ss:Type="String">Application Used</Data></Cell>
+    <Cell ss:StyleID="s1188"><Data ss:Type="String">Process Check</Data></Cell>
+    <Cell ss:StyleID="s1189"><Data ss:Type="String">Organisation Check</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8">
+    <Cell ss:Index="2" ss:StyleID="s1183"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1184"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1184"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1190"><Data ss:Type="String">.</Data></Cell>
+    <Cell ss:StyleID="s1190"><Data ss:Type="String">.</Data></Cell>
+   </Row>
+    
+    <xsl:apply-templates select="$phyProc" mode="physappsdirect"></xsl:apply-templates>
+   
+   
+   <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s1223"/>
+    <Cell ss:StyleID="s1223"/>
+    <Cell ss:StyleID="s1185"/>
+    <Cell ss:StyleID="s1191"
+     ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&quot;Business Process must be already defined in Business Processes sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1161"
+     ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],Organisations!C[-3],1,0)),&quot;Organisation must be already defined in Organisations sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+   </Row>
+ 
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>7</ActiveRow>
+     <ActiveCol>3</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+    <Range>R8C4:R4174C4</Range>
+   <Type>List</Type>
+    <Value>'Applications'!R8C3:R5000C3</Value>
+  </DataValidation>	
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C2:R3000C2</Range>
+   <Type>List</Type>
+    <Value>'Business Processes'!R8C3:R5000C3</Value>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C3:R3000C3</Range>
+   <Type>List</Type>
+    <Value>'Organisations'!R8C3:R5000C3</Value>
+  </DataValidation>
+  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C5:R174C6</Range>
+   <Condition>
+    <Value1>ISERROR(SEARCH(&quot;OK&quot;,RC))</Value1>
+    <Format Style='color:#9C0006;background:#FFC7CE'/>
+   </Condition>
+  </ConditionalFormatting>
+ </Worksheet>		
  <Worksheet ss:Name="Technology Domains">
   <Table ss:ExpandedColumnCount="5" x:FullColumns="1"
     x:FullRows="1" ss:DefaultColumnWidth="66" ss:DefaultRowHeight="16">
@@ -6873,11 +6982,12 @@
   </ConditionalFormatting>
  </Worksheet>
  <Worksheet ss:Name="Application Codebases">
-  <Table ss:ExpandedColumnCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
+	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
@@ -6885,159 +6995,24 @@
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Application Codebases</Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2"><Data ss:Type="String">Captures the types of Application Codebase relevant to the enteprise and their relative score (1 - 10)</Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String">Captures the types of Application Codebase relevant to the enterprise and their relative score (1 - 10)</Data></Cell>
    </Row>
    <Row ss:Index="5">
     <Cell ss:Index="3"><Data ss:Type="String">DO NOT EDIT</Data></Cell>
    </Row>
+	
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
+	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="8"/>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase1</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Packaged</Data><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#4196D9</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase2</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Bespoke</Data><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#9B53B3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">6</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Customised_Package</Data><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#EEC62A</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">3</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase4</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase5</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase6</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase7</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase8</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase9</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase10</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase11</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase12</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase13</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase14</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase15</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase16</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ACBase17</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8"/> 
+	   <xsl:apply-templates select="$codebase" mode="cdbase"></xsl:apply-templates> 
+
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -7064,11 +7039,12 @@
   </DataValidation>
  </Worksheet>
  <Worksheet ss:Name="Application Delivery Models">
-  <Table ss:ExpandedColumnCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
+	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
@@ -7076,163 +7052,24 @@
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Application Delivery Models</Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2"><Data ss:Type="String">Captures the the different ways in which Applications are delivered and their relative score (1 - 10)</Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String">Captures the types of Application Delivery Model relevant to the enterprise and their relative score (1 - 10)</Data></Cell>
    </Row>
    <Row ss:Index="5">
     <Cell ss:Index="3"><Data ss:Type="String">DO NOT EDIT</Data></Cell>
    </Row>
+	
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
+	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="8"/>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod1</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Managed Service</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#4196D9</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">8</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod2</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Public Cloud Service</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#9B53B3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Private Cloud Service</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#EEC62A</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod4</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Hybrid Cloud Service</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#E37F2C</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">8</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod5</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">SaaS</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#1FA185</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">9</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod6</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Desktop</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#EF3F4A</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">3</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod7</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Hosted</Data><NamedCell
-      ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#89DDFF</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">4</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod8</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod9</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod10</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod11</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod12</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod13</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod14</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod15</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod16</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">ADMod17</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="App_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8"/> 
+	   <xsl:apply-templates select="$delivery" mode="cdbase"></xsl:apply-templates> 
+
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -7240,11 +7077,6 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
-   <Print>
-    <ValidPrinterInfo/>
-    <PaperSizeIndex>9</PaperSizeIndex>
-    <VerticalResolution>0</VerticalResolution>
-   </Print>
    <TabColorIndex>54</TabColorIndex>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
@@ -7262,17 +7094,17 @@
    <UseBlank/>
    <Value>Languages</Value>
   </DataValidation>
- </Worksheet>
+ </Worksheet>	
  <Worksheet ss:Name="Technology Delivery Models">
-  <Table ss:ExpandedColumnCount="9" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
-   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="177"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
+	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
-   <Column ss:Index="9" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Technology Delivery Models</Data></Cell>
    </Row>
@@ -7282,1513 +7114,19 @@
    <Row ss:Index="5">
     <Cell ss:Index="3"><Data ss:Type="String">DO NOT EDIT</Data></Cell>
    </Row>
+	
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
+	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="8"/>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod1</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Installed Technology</Data><NamedCell
-      ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#4196D9</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">3</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="19">
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod2</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Cloud Technology Service</Data><NamedCell
-      ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#9B53B3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Hybrid Cloud Technology Service</Data><NamedCell
-      ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#EEC62A</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">6</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod4</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">Managed Technology Service</Data><NamedCell
-      ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#E37F2C</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">8</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1046"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod5</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod6</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod7</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod8</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod9</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod10</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod11</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod12</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod13</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod14</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod15</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod16</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">TDMod17</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Delivery_Models"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8"/> 
+	   <xsl:apply-templates select="$techDeliveryModel" mode="cdbase"></xsl:apply-templates> 
+
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -8813,17 +7151,17 @@
    <UseBlank/>
    <Value>Languages</Value>
   </DataValidation>
- </Worksheet>
+ </Worksheet>	
  <Worksheet ss:Name="Tech Vendor Release Statii">
-  <Table ss:ExpandedColumnCount="9" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
-   <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="43"/>
+   <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
+	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
-   <Column ss:Index="9" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Technology Vendor Release Statii</Data></Cell>
    </Row>
@@ -8833,1513 +7171,19 @@
    <Row ss:Index="5">
     <Cell ss:Index="3"><Data ss:Type="String">DO NOT EDIT</Data></Cell>
    </Row>
+	
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
+	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="8"/>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS1</Data></Cell>
-    <Cell ss:StyleID="s1063"><Data ss:Type="String">Beta</Data><NamedCell
-      ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#4196D9</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">5</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="19">
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS2</Data></Cell>
-    <Cell ss:StyleID="s1063"><Data ss:Type="String">End of Life</Data><NamedCell
-      ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#9B53B3</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">0</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS3</Data></Cell>
-    <Cell ss:StyleID="s1063"><Data ss:Type="String">Extended Support</Data><NamedCell
-      ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#EEC62A</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">1</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1036"/>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS4</Data></Cell>
-    <Cell ss:StyleID="s1063"><Data ss:Type="String">General Availability</Data><NamedCell
-      ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String">#E37F2C</Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="Number">10</Data></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="s1046"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS5</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS6</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS7</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS8</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS9</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS10</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS11</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS12</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS13</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS14</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS15</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS16</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String">VLS17</Data></Cell>
-    <Cell ss:StyleID="s1112"><NamedCell ss:Name="Tech_Vendor_Release_Statii"/></Cell>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:StyleID="s1112"/>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
-   <Row>
-    <Cell ss:Index="9" ss:StyleID="Default"/>
-   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="8"/> 
+	   <xsl:apply-templates select="$techlifecycle" mode="cdbase"></xsl:apply-templates> 
+
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -10347,19 +7191,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
-   <Print>
-    <ValidPrinterInfo/>
-    <PaperSizeIndex>9</PaperSizeIndex>
-    <VerticalResolution>0</VerticalResolution>
-   </Print>
    <TabColorIndex>54</TabColorIndex>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-     <ActiveRow>4</ActiveRow>
-     <ActiveCol>2</ActiveCol>
-    </Pane>
-   </Panes>
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
@@ -10376,7 +7208,8 @@
    <UseBlank/>
    <Value>Languages</Value>
   </DataValidation>
- </Worksheet>
+ </Worksheet>	
+
  <Worksheet ss:Name="Standards Compliance Levels">
   <Names>
    <NamedRange ss:Name="Application_Codebases"
@@ -13597,7 +10430,7 @@
     <Cell ss:StyleID="s1050"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/></Data></Cell>
     <Cell ss:StyleID="s1050"/>
     <Cell ss:StyleID="s1071"><Data ss:Type="String"><xsl:value-of select="$busDomain/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:Index="10" ss:StyleID="s1050"/>
+    <Cell ss:StyleID="s1071"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_level']/value"/></Data></Cell>
     <Cell ss:StyleID="s1191"
      ss:Formula="=IF(RC[-6]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-6],'Business Capabilities'!C[-8],1,0)),&quot;Parent Capability must be already defined in Column C&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
       ss:Type="String"></Data></Cell>
@@ -13620,7 +10453,7 @@
     <Cell ss:StyleID="s1050"><Data ss:Type="String"><xsl:value-of select="$businessCap/own_slot_value[slot_reference='business_capability_index']/value"/></Data></Cell>
     <Cell ss:StyleID="s1050"/>
     <Cell ss:StyleID="s1071"><Data ss:Type="String"><xsl:value-of select="$busDomain/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-        <Cell ss:Index="10" ss:StyleID="s1050"><Data ss:Type="String">xxx</Data></Cell>
+        <Cell ss:StyleID="s1071"> <Data ss:Type="String"><xsl:value-of select="$businessCap/own_slot_value[slot_reference='business_capability_level']/value"/></Data></Cell>
     <Cell ss:StyleID="s1191"
      ss:Formula="=IF(RC[-6]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-6],'Business Capabilities'!C[-8],1,0)),&quot;Parent Capability must be already defined in Column C&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
       ss:Type="String"></Data></Cell>
@@ -13996,7 +10829,9 @@
     <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
     <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
     <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
-    <xsl:variable name="thisapr" select="$aprs[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
+    <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
+	  <xsl:variable name="thisapr" select="$aprs[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]"/>
+	  
     
     <xsl:variable name="thisapp" select="$applications[name=$thisapr/own_slot_value[slot_reference='role_for_application_provider']/value]"/>
     <xsl:variable name="thisservice" select="$applicationServices[name=$thisapr/own_slot_value[slot_reference='implementing_application_service']/value]"/>
@@ -14012,6 +10847,25 @@
         ss:Type="String"></Data></Cell>
   </Row>
   </xsl:template>
+  <xsl:template match="node()" mode="physappsdirect">
+    <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
+    <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+    <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+	  <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/> 
+	    <xsl:variable name="thisapp" select="$applications[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
+    
+  <Row ss:Height="17">
+    <Cell ss:Index="2" ss:StyleID="s1172"><Data ss:Type="String"><xsl:value-of select="$thisbusproc/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1172"><Data ss:Type="String"><xsl:value-of select="$thisRole/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1185"><Data ss:Type="String"><xsl:value-of select="$thisapp/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1191"
+      ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&quot;Business Process must be already defined in Business Processes sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+        ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1191"
+      ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],Organisations!C[-3],1,0)),&quot;Organisation must be already defined in Organisations sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+        ss:Type="String"></Data></Cell>
+  </Row>
+  </xsl:template>	
   <xsl:template mode="techDomain" match="node()">
     <Row ss:Height="34">
       <Cell ss:Index="2" ss:StyleID="s1063"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
@@ -14271,4 +11125,18 @@
       </Cell>
     </Row>
   </xsl:template>
+	
+<xsl:template match="node()" mode="cdbase">
+ <xsl:variable name="thiselemStyles" select="$elemStyles[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
+    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data><NamedCell
+      ss:Name="Application_Codebases"/></Cell>
+	<Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></Data></Cell>  
+    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="$thiselemStyles[1]/own_slot_value[slot_reference='element_style_colour']/value"/></Data></Cell>
+	   <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_score']/value"/></Data></Cell>
+	<Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='synonyms']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1112"/>
+   </Row>	
+</xsl:template>		
 </xsl:stylesheet>

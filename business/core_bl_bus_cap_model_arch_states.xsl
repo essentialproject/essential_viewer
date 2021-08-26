@@ -71,7 +71,6 @@
 				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
 	 			<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<script type="text/javascript">
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width

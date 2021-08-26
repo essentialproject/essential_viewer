@@ -5,7 +5,6 @@
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
-	<xsl:include href="../common/datatables_includes.xsl"/>
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
@@ -77,7 +76,6 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<xsl:call-template name="dataTablesLibrary"/>
 			</head>
 			<body>
 				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, WHERE REQUIRED -->
@@ -149,8 +147,9 @@
 				responsive: true,
 				columns: [
 				    { "width": "20%" },
-				    { "width": "40%" },
-				    { "width": "40%" }
+				    { "width": "30%" },
+				    { "width": "30%" },
+				    { "width": "20%" }
 				  ],
 				dom: 'Bfrtip',
 			    buttons: [

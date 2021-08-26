@@ -63,7 +63,7 @@
 	<xsl:variable name="allDeliveryModels" select="/node()/simple_instance[(type = 'Application_Delivery_Model')]"/>
 	<xsl:variable name="allCodebaseStatus" select="/node()/simple_instance[type = 'Codebase_Status']"/>
     <xsl:variable name="allLifecycleStatus" select="/node()/simple_instance[(type = 'Lifecycle_Status')]"/>
-	<xsl:variable name="allRoadmapInstances" select="$thisApps union $allBusinessCaps union $org"/>
+	<xsl:variable name="allRoadmapInstances" select="$allBusinessCaps"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
 	

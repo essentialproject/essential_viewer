@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xmlns:fn="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:eas="http://www.enterprise-architecture.org/essential">
-
+<xsl:include href="../common/core_utilities.xsl"/>
 <xsl:variable name="apps" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
 <xsl:variable name="appProPhyBus" select="/node()/simple_instance[type = ('APP_PRO_TO_PHYS_BUS_RELATION')]"/>    <xsl:variable name="appPRs" select="/node()/simple_instance[type = ('Application_Provider_Role')]"/>   
 <xsl:variable name="vendorLife" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>    
@@ -14,16 +14,19 @@
 <xsl:variable name="busCap" select="/node()/simple_instance[type = ('Business_Capability')][name=$busProc/own_slot_value[slot_reference='realises_business_capability']/value]"/>   
 <xsl:variable name="busPerf" select="/node()/simple_instance[type = ('Business_Performance_Measure')][name=$appProPhyBus/own_slot_value[slot_reference='performance_measures']/value]"/> 
 <xsl:variable name="busPerfScore" select="/node()/simple_instance[type = ('Business_Service_Quality_Value')][name=$busPerf/own_slot_value[slot_reference='pm_performance_value']/value]"/>       
-   
+  
+<xsl:variable name="busPerfScoreTable" select="/node()/simple_instance[type = ('Business_Service_Quality_Value')]"/>   	
+<xsl:variable name="techPerfScoreTable" select="/node()/simple_instance[type = ('Technology_Service_Quality_Value')]"/>	
+	
 <xsl:variable name="techPerf" select="/node()/simple_instance[type = ('Technology_Performance_Measure')][name=$appProPhyBus/own_slot_value[slot_reference='performance_measures']/value]"/>      
 <xsl:variable name="techPerfScore" select="/node()/simple_instance[type = ('Technology_Service_Quality_Value')][name=$techPerf/own_slot_value[slot_reference='pm_performance_value']/value]"/>     
  <xsl:variable name="busFitQual" select="/node()/simple_instance[type = ('Business_Service_Quality')][own_slot_value[slot_reference='name']/value='Business Fit']"/>   
 <xsl:variable name="techFitQual" select="/node()/simple_instance[type = ('Technology_Service_Quality')][own_slot_value[slot_reference='name']/value='Technical Fit']"/>    
     
-<xsl:variable name="BSQ" select="$busPerfScore[own_slot_value[slot_reference='usage_of_service_quality']/value=$busFitQual/name]"/>
-<xsl:variable name="TSQ" select="$techPerfScore[own_slot_value[slot_reference='usage_of_service_quality']/value=$techFitQual/name]"/>   
+<xsl:variable name="BSQ" select="$busPerfScoreTable[own_slot_value[slot_reference='usage_of_service_quality']/value=$busFitQual/name]"/>
+<xsl:variable name="TSQ" select="$techPerfScoreTable[own_slot_value[slot_reference='usage_of_service_quality']/value=$techFitQual/name]"/>   
  <xsl:variable name="styles" select="/node()/simple_instance[type = 'Element_Style']"/>    
-<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="iso-8859-1"/>
+<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
 <xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -477,14 +480,19 @@
 <xsl:variable name="thisSupplier" select="$supplier[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>
     
  <Row ss:Height="16">
-    <Cell ss:Index="2"><Data ss:Type="String"><xsl:value-of select="$thisSupplier/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$thisSupplier"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></Data></Cell>
      
      <Cell><Data ss:Type="String"></Data></Cell>
      <Cell><Data ss:Type="String"></Data></Cell>
     <Cell><Data ss:Type="String"></Data></Cell>
     <Cell><Data ss:Type="String"></Data></Cell>
-
  </Row>    
 </xsl:template>
     
@@ -492,8 +500,14 @@
 <xsl:variable name="thisSupplier" select="$supplier[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>
 
  <Row ss:Height="16">
-    <Cell ss:Index="2"><Data ss:Type="String"><xsl:value-of select="$thisSupplier/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$thisSupplier"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template></Data></Cell>
      
      <Cell><Data ss:Type="String"></Data></Cell>
      <Cell><Data ss:Type="String"></Data></Cell>
@@ -505,20 +519,18 @@
 
 <Row>
     <Cell ss:Index="2" ss:StyleID="s21"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data><NamedCell
-      ss:Name="Internal_Lifecycle"/></Cell>
-    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data><NamedCell ss:Name="Internal_Lifecycle"/></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceSlot"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="displaySlot" select="enumeration_value"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s21"><Data ss:Type="Number"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/></Data></Cell>
     <Cell ss:StyleID="s30"><Data ss:Type="String"><xsl:value-of select="$thisElement/own_slot_value[slot_reference='element_style_colour']/value"/></Data></Cell>
    </Row>   
 </xsl:template>  
  <xsl:template match="node()" mode="appLife">  
      <xsl:variable name="thisLife" select="$internalLife[name=current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value]"/>
-
 <Row>
-    <Cell ss:Index="2" ss:StyleID="s27"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="$thisLife/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s27"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisLife"/> <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>    
 </xsl:template>    
     
@@ -538,13 +550,23 @@
 <xsl:variable name="thistechPerfScore" select="$techPerfScore[name=$thistechPerf/own_slot_value[slot_reference='pm_performance_value']/value]"/>    
      
 <Row>
-    <Cell ss:Index="2" ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="$thisbusCap/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s24"><Data ss:Type="String"><xsl:value-of select="$appAll/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s24"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s18"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusCap"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s24">
+		<Data ss:Type="String">
+			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$appAll"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
+		</Data></Cell>
+    <Cell ss:StyleID="s24">
+		<Data ss:Type="String">
+			<xsl:value-of select="current()/own_slot_value[slot_reference='relation_name']/value" disable-output-escaping="no"/>
+		</Data>
+	</Cell>
     <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="$thisbusPerfScore/own_slot_value[slot_reference='service_quality_value_value']/value"/></Data></Cell>
-    <Cell ss:StyleID="s24"><Data ss:Type="String"><xsl:value-of select="$thisbusPerf/own_slot_value[slot_reference='pm_comments']/value"/></Data></Cell>
+    <Cell ss:StyleID="s24"><Data ss:Type="String"><!--<xsl:call-template name="RenderMultiLangInstanceSlot">
+                <xsl:with-param name="theSubjectInstance" select="$thisbusPerf"/>
+                <xsl:with-param name="displaySlot" select="pm_comments"/>
+            </xsl:call-template>--></Data></Cell>
     <Cell ss:StyleID="s18"><Data ss:Type="String"><xsl:value-of select="$thistechPerfScore/own_slot_value[slot_reference='service_quality_value_value']/value"/></Data></Cell>
-    <Cell ss:StyleID="s24"><Data ss:Type="String"><xsl:value-of select="$thistechPerf/own_slot_value[slot_reference='pm_comments']/value"/></Data></Cell>
+    <Cell ss:StyleID="s24"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceSlot"><xsl:with-param name="theSubjectInstance" select="$thistechPerf"/><xsl:with-param name="displaySlot" select="pm_comments"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s28"><Data ss:Type="String"><xsl:if test="$thistechPerf/own_slot_value[slot_reference='pm_measure_data_iso_8601']/value"><xsl:value-of select="$thistechPerf/own_slot_value[slot_reference='pm_measure_data_iso_8601']/value"/></xsl:if></Data></Cell>
    </Row>    
     </xsl:template>  
@@ -578,4 +600,61 @@
         <Cell ss:StyleID="s35"><Data ss:Type="String"><xsl:value-of select="$colours/own_slot_value[slot_reference='element_style_colour']/value"/></Data></Cell>
    </Row>
     </xsl:template>
+	
+<xsl:template name="RenderMultiLangInstanceRelName">
+		<xsl:param name="theSubjectInstance"/>
+		<xsl:param name="isRenderAsJSString" select="false()"/>
+		
+		<xsl:variable name="synForInstance" select="$utilitiesAllSynonyms[name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value]"/>
+		<xsl:variable name="instanceSynonym" select="$synForInstance[own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name]"/>
+		<!-- First perform user clearance check -->
+		<xsl:choose>
+			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
+				<xsl:variable name="slotName">
+					<xsl:call-template name="GetDisplaySlotForClass">
+						<xsl:with-param name="theClass" select="$theSubjectInstance/type"/>
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:value-of>
+					<xsl:choose>
+						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
+							<xsl:choose>
+								<xsl:when test="$isRenderAsJSString">
+									<xsl:value-of select="eas:renderJSText($theSubjectInstance/own_slot_value[slot_reference = 'relation_name']/value)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = 'relation_name']/value"/>
+								</xsl:otherwise>
+							</xsl:choose>							
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:variable name="nameVal">						
+								<xsl:choose>
+									<xsl:when test="count($instanceSynonym) > 0">
+										<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = 'relation_name']/value"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = 'relation_name']/value"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							<xsl:choose>
+								<xsl:when test="$isRenderAsJSString">
+									<xsl:value-of select="eas:renderJSText($nameVal)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$nameVal"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:value-of>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="eas:i18n($theRedactedString)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	
 </xsl:stylesheet>

@@ -144,10 +144,10 @@
 	<xsl:variable name="compApps" select="$allCompApps[own_slot_value[slot_reference = 'contained_application_providers']/value = $allAppProviders/name]"/>
 	<xsl:variable name="allRenderedAppProviders" select="$allAppProviders union $compApps"/>
 	
-	<xsl:variable name="appCodeBases" select="/node()/simple_instance[name = $compApps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
+	<xsl:variable name="appCodeBases" select="/node()/simple_instance[name = $allRenderedAppProviders/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
 	<xsl:variable name="appCodebaseStyles" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $appCodeBases/name]"/>
 	
-	<xsl:variable name="appDeliveryModels" select="/node()/simple_instance[name = $compApps/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
+	<xsl:variable name="appDeliveryModels" select="/node()/simple_instance[name = $allRenderedAppProviders/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 	<xsl:variable name="appDeliveruModelStyles" select="$utilitiesAllElementStyles[own_slot_value[slot_reference = 'style_for_elements']/value = $appDeliveryModels/name]"/>
 
 
@@ -204,7 +204,6 @@
 				<script src="js/graphlib/graphlib.core.js"/>
 				<script src="js/dagre/dagre.core.js"/>
 				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/handlebars-v4.1.2.js"/>
 				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
 				<style>
@@ -797,14 +796,7 @@
 							</svg>
 						</td>
 						{{/enumerationValues}}
-						<td>
-							<svg class="event_legend" width="80px" height="30px" viewBox="0 0 80 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-								<g stroke="none" stroke-width="1" fill="none">
-									<rect width="80px" height="30px" rx="10" ry="10" fill="lightgray" stroke="#333333" stroke-width="1"/>
-								</g>
-								
-							</svg>
-						</td>
+						
 					</tr>
 					<tr class="small">
 						{{#enumerationValues}}
@@ -814,11 +806,7 @@
 							</strong>
 						</td>
 						{{/enumerationValues}}
-						<td>
-							<strong>
-								<xsl:value-of select="eas:i18n('Undefined')"/>
-							</strong>
-						</td>
+						
 					</tr>
 				</tbody>
 			</script>

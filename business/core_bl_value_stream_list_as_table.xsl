@@ -245,6 +245,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter value streams to those in scope for the roadmap start and end date
 										inScopeValStreams.valStreams = rmGetVisibleElements(valStreams.valStreams);
+									} else {
+										inScopeValStreams.valStreams = valStreams.valStreams;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->

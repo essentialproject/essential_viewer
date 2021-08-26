@@ -55,6 +55,7 @@
 
 	<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
 	<xsl:variable name="allBusDomains" select="/node()/simple_instance[type = 'Business_Domain']"/>
+	<xsl:variable name="allInfoDomains" select="/node()/simple_instance[type = 'Information_Domain']"/>
 	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
 
 	<xsl:template match="knowledge_base">
@@ -136,10 +137,19 @@
 								</h2>
 							</div>
 							<p><xsl:value-of select="eas:i18n('The following diagram describes the different types of information that are in use across')"/>&#160;<xsl:value-of select="$orgName"/></p>
-							<xsl:call-template name="referenceModel">
-								<xsl:with-param name="busDomains" select="$inScopeDomains"/>
-								<xsl:with-param name="infoConcepts" select="$inScopeConcepts"/>
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="count($allInfoDomains) > 0">
+									<xsl:call-template name="infoReferenceModel">
+										<xsl:with-param name="infoConcepts" select="$inScopeConcepts"/>
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:call-template name="referenceModel">
+										<xsl:with-param name="busDomains" select="$inScopeDomains"/>
+										<xsl:with-param name="infoConcepts" select="$inScopeConcepts"/>
+									</xsl:call-template>
+								</xsl:otherwise>
+							</xsl:choose>							
 						</div>
 
 						<!--Setup Closing Tags-->
@@ -149,6 +159,46 @@
 				<xsl:call-template name="Footer"/>
 			</body>
 		</html>
+	</xsl:template>
+	
+	
+	<xsl:template name="infoReferenceModel">
+		<xsl:param name="infoConcepts"/>
+		<script type="text/javascript">
+				$('document').ready(function(){
+					 $(".gridModel_layerTitleContainerLabel").vAlign();
+					 $(".gridModel_object").vAlign();
+					 $(".gridModel_objectInactive").vAlign();
+				});
+		</script>
+		<xsl:for-each select="$allInfoDomains">
+			<xsl:sort select="own_slot_value[slot_reference = 'sequence_number']/value"/>
+			<xsl:variable name="thisInfoDomain" select="current()"/>
+			<xsl:variable name="infoDomainLabel">
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisInfoDomain"/>
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:variable name="relevantInfoConcepts" select="$infoConcepts[own_slot_value[slot_reference = 'info_concept_info_domain']/value = $thisInfoDomain/name]"/>
+			<xsl:choose>
+				<xsl:when test="(position() = 1)">
+					<xsl:call-template name="PrintFirstBusinessDomain">
+						<xsl:with-param name="busDomainLabel" select="$infoDomainLabel"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="(position() &gt; 1)">
+					<xsl:call-template name="PrintOtherBusinessDomain">
+						<xsl:with-param name="busDomainLabel" select="$infoDomainLabel"/>
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+			<div class="gridModel_layerContentContainer backColour11 col-xs-12">
+				<xsl:apply-templates mode="PrintInfoConcept" select="$relevantInfoConcepts">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+				</xsl:apply-templates>
+			</div>
+			<div class="verticalSpacer_10px"/>
+		</xsl:for-each>
 	</xsl:template>
 
 

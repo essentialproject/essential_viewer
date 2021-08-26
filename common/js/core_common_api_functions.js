@@ -40,6 +40,8 @@ function essRenderUpdateJSON(theObject, attrList) {
     }
 }
 
+
+
 function essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb) {
 	return function() {
 		let response = xhr.responseText;
@@ -107,7 +109,10 @@ function essCreateCORSRequest(method, url) {
 		xhr.open(method, url, true);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 		
+
 	} else if (typeof XDomainRequest != "undefined") {
 		
 		// Otherwise, check if XDomainRequest.
@@ -116,12 +121,50 @@ function essCreateCORSRequest(method, url) {
 		xhr.open(method, url);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
-	
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+
 	} else {
 	
-	   // Otherwise, CORS is not supported by the browser.
-	   xhr = null;
+		// Otherwise, CORS is not supported by the browser.
+		xhr = null;
+
+	}
+	return xhr;
+}
+
+
+//Utility function to create a CORs request
+function essCreateFormCORSRequest(method, url) {
+	var xhr = new XMLHttpRequest();
+	if ("withCredentials" in xhr) {
 	
+		// Check if the XMLHttpRequest object has a "withCredentials" property.
+		// "withCredentials" only exists on XMLHTTPRequest2 objects.
+		
+		xhr.open(method, url, true);
+		/*xhr.setRequestHeader('Content-type','multipart/form-data');*/
+		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+		
+
+	} else if (typeof XDomainRequest != "undefined") {
+		
+		// Otherwise, check if XDomainRequest.
+		// XDomainRequest only exists in IE, and is IE's way of making CORS requests
+		xhr = new XDomainRequest();
+		xhr.open(method, url);
+		/*xhr.setRequestHeader('Content-type','multipart/form-data');*/
+		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
+
+	} else {
+	
+		// Otherwise, CORS is not supported by the browser.
+		xhr = null;
+
 	}
 	return xhr;
 }
@@ -139,6 +182,8 @@ function essCreateRefCORSRequest(method, url) {
 		xhr.open(method, url, true);
 		//xhr.setRequestHeader('Content-type','multipart/form-data');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 		
 	} else if (typeof XDomainRequest != "undefined") {
 		
@@ -148,6 +193,8 @@ function essCreateRefCORSRequest(method, url) {
 		xhr.open(method, url);
 		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
 		xhr.setRequestHeader('x-csrf-token', essViewer.csrfToken);
+		xhr.setRequestHeader('x-form-id', essEnvironment.form.id);
+		xhr.setRequestHeader('x-form-name', essEnvironment.form.name);
 	
 	} else {
 	
@@ -481,3 +528,35 @@ function essPromise_deleteNoSQLElement(apiURL, resourcePath, resourceId, resourc
     );
 };
 
+
+/********************************************************
+RULE DNGINE API FUNCTIONS
+*********************************************************/
+
+
+// create create advice using the given Rule set and Facts
+function essPromise_createAdviceFromRules(ruleSetName, facts) {
+	return new Promise(
+		function (resolve, reject) {
+			let resource = {
+				"ruleSet": ruleSetName,
+				"facts": facts
+			}
+			var resourceJSONString = JSON.stringify(resource);
+			apiUri = '/essential-system/v1';
+			let resourcePath = 'rules/advice';
+			let url = essBuildSystemApiPath(apiUri) + resourcePath;
+			var xhr = essCreateCORSRequest('POST', url);
+			if (!xhr) {
+				corsError = new Error('CORS not supported by browser. Unable to create the advice using the ruleset:' + ruleSetName);
+				reject(corsError);
+			} else {
+				// Response handlers.
+				let errorMessageVerb = 'creating';
+				xhr.onload = essOnXhrLoad(xhr, resolve, reject, 'Advice', errorMessageVerb);
+				xhr.onerror = essOnXhrError(reject, 'Advice', errorMessageVerb);
+				xhr.send(resourceJSONString);
+			}
+		}
+	);
+};

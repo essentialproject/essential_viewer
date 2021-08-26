@@ -53,82 +53,6 @@
 
 	
 	<xsl:template name="RenderCommonAPIJS">
-		
-		<style>
-			/*Spinner Starts*/
-
-			#view-spinner {
-				height: 100vh;
-				width: 100vw;
-				position: fixed;
-				top: 0;
-				left:0;
-				z-index:999999;
-				background-color: hsla(255,100%,100%,0.5);
-			}
-			
-			#view-spinner-text {
-				width: 100vw;
-				position: fixed;
-				top: 20%;
-				left: 0;
-				z-index:999999;
-			}
-			      
-			.hm-spinner{
-			  height: 115px;
-			  width: 115px;
-			  border: 6px solid transparent;
-			  border-top-color: #000;
-			  border-bottom-color: #000;
-			  border-radius: 50%;
-			  position: relative;
-			  -webkit-animation: spin 3s linear infinite;
-			  animation: spin 3s linear infinite;
-			  top: 25%;
-			  left: calc(50% - 58px);
-			}
-			
-			.hm-spinner::before{
-			  content: "";
-			  position: absolute;
-			  top: 20px;
-			  right: 20px;
-			  bottom: 20px;
-			  left: 20px;
-			  border: 6px solid transparent;
-			  border-top-color: #000;
-			  border-bottom-color: #000;
-			  border-radius: 50%;
-			  -webkit-animation: spin 1.5s linear infinite;
-			  animation: spin 1.5s linear infinite;
-			}
-			
-			@-webkit-keyframes spin {
-			    from {
-			      -webkit-transform: rotate(0deg);
-			      transform: rotate(0deg);
-			    }
-			    to {
-			      -webkit-transform: rotate(360deg);
-			      transform: rotate(360deg);
-			    }
-			}
-			
-			@keyframes spin {
-			    from {
-			      -webkit-transform: rotate(0deg);
-			      transform: rotate(0deg);
-			    }
-			    to {
-			      -webkit-transform: rotate(360deg);
-			      transform: rotate(360deg);
-			    }
-			}
-			
-			/*Spinner Ends*/
-		</style>
-		
 		<!-- Handlebars template to render a list in a drop down box-->
 		<script id="ess-ea-element-list-template" type="text/x-handlebars-template">
 			{{#each this}}
@@ -160,13 +84,12 @@
 			const essEssentialCoreApiUri = '/essential-core/v1';
 			const essEssentialReferenceApiUri = '<xsl:value-of select="$noSQLEssentialRefStoreUri"/>';
 			const essEssentialRefBatchApiUri = '<xsl:value-of select="$noSQLEssentialRefBatchStoreUri"/>';
-			
+
 			// define the global object to hold environment variables
 			const essViewer = {};
 			essViewer.repoId = '<xsl:value-of select="repository/repositoryID"/>';
 			essViewer.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';	
 			essViewer.currentXSL = '<xsl:value-of select="translate($theCurrentXSL, '/', '-')"/>';
-			essViewer.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
 			essViewer.user = {
 				'id': '<xsl:value-of select="$userData//user:email"/>',
 				'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
@@ -175,6 +98,18 @@
 				'TEST': '<xsl:value-of select="$userData//user:className"/>',
 				'isApprover': <xsl:value-of select="$sysUserIsApprover"/>
 			};
+
+
+			// define the global object to hold environment variables
+			// note we have to define this script in-line to make use of the xsl values
+			<xsl:variable name="targetReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theCurrentXSL]"/>
+			var essEnvironment = {};
+			essEnvironment.form = {
+				'id': '<xsl:value-of select="$targetReport/name"/>',
+				'name': '<xsl:value-of select="$targetReport/own_slot_value[slot_reference = 'name']/value"/>'
+			};
+
+
 			
 			function showViewSpinner(message) {
 			    $('#view-spinner-text').text(message);                            
@@ -270,16 +205,24 @@
 			
 		</script>
 		
+		<!-- Call the JS script to load the CSRF token -->
+		<script defer="defer" src="common/js/ess-csrf.js"></script>
+		
 		<!--Include library containing common API platform functions for retrieving and updating repository data-->
 		<script type="text/javascript" src="common/js/core_common_api_functions.js"/>
 	</xsl:template>
 	
 	<xsl:template name="RenderInteractiveHeaderBars">
-		<xsl:if test="($eipMode = 'true') and ($thisRepoVersion >= '6.6')">
+		<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 			<div id="view-spinner" class="hidden">
-				
-				<div class="hm-spinner"/>
-				<div id="view-spinner-text" class="text-center xlarge strong"/>
+				<div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;">
+					<div class="spin-icon" style="width: 60px; height: 60px;">
+						<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+						<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+						<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+					</div>						
+				</div>
+				<div id="view-spinner-text" class="text-center xlarge strong spin-text2"/>
 			</div>
 			
 			<xsl:call-template name="RenderCommonAPIJS"/>
@@ -303,5 +246,7 @@
 	<xsl:template mode="RenderContentApprovalClass" match="node()">
 		"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
+	
+
 
 </xsl:stylesheet>

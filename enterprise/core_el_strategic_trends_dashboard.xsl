@@ -92,7 +92,6 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>

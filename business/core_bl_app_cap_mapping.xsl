@@ -146,7 +146,10 @@
                     box-shadow: 0px 2px 5px -2px hsla(0, 0%, 0%, 0.25);
                     font-size: 8pt;
                     }
-                
+                a, a:hover, a:focus, a:active {
+      text-decoration: none;
+      color: inherit;
+ }
                 </style>
 			</head>
 			<body>
@@ -211,15 +214,11 @@
 										</table>
 									</div>
 									<div style="float:right;display:none;min-width:360pt" id="appKey">
-									<table style="padding:2px;;font-size:9pt;text-align:center">
-										<tbody>
-											<tr>
+									 
 												<xsl:apply-templates select="$AFValues" mode="legend">
 													<xsl:sort select="own_slot_value[slot_reference='service_quality_value_score']/value" order="descending"/>
 												</xsl:apply-templates>
-											</tr>
-										</tbody>
-									</table>
+											 
 								</div>
 							</div>
 						</div>
@@ -360,10 +359,17 @@ function applySelect(){
                 var thisBus = busscores.filter(function(g){
                     return g.score==busFitscore
                 })
-                 
-            colourToShow=thisBus[0].backgroundcolor;
-            fontToShow=thisBus[0].color;
-    
+	
+			if(thisBus[0]){	
+
+				colourToShow=thisBus[0].backgroundcolor;
+				fontToShow=thisBus[0].color;
+    			}
+				else
+				{
+				colourToShow =  '#e3e3e3';
+                fontToShow = '#000000';
+			   };
             }else
             {
                 colourToShow =  '#e3e3e3';
@@ -385,9 +391,17 @@ function applySelect(){
                     return g.score==appFitscore;
                 })
                  
-
-            colourToShow=thisApp[0].backgroundcolor;
-            fontToShow=thisApp[0].color;
+			if(thisApp[0]){	
+	
+				 colourToShow=thisApp[0].backgroundcolor;
+            	 fontToShow=thisApp[0].color;
+    			}
+				else
+				{
+				colourToShow =  '#e3e3e3';
+                fontToShow = '#000000';
+			   };
+           
             }else
             {
                 colourToShow =  '#e3e3e3';
@@ -440,6 +454,9 @@ function applySelect(){
                 });
             });
       $('#capmodel').empty();
+	
+	console.log(bcmData.bcm[0]);
+	
       $('#capmodel').append(capTemplate(bcmData.bcm[0]));  
         applySelect()}
     
@@ -501,10 +518,12 @@ function uniq_fast(a) {
 	                              			<div class="col-xs-4">
 	                              				<div class="app-wrapper bottom-10">
 		                                  			<div>
+														
 		                                  				<xsl:attribute name="class">app xsmall {{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="id">{{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="data-appid">{{this.id}}</xsl:attribute>
-				                                    	{{this.name}}
+														
+														{{{this.link}}}
 		                                  			</div>  
 		                                  			<div class="appLife small">
 		                                  				<xsl:attribute name="style">background-color:{{this.lifecycleColor}};color: {{this.lifecycleText}}</xsl:attribute>
@@ -647,7 +666,7 @@ function uniq_fast(a) {
         <xsl:variable name="sthisrelevantApps" select="$relevantApps[name= $sthisdirectProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
         <xsl:variable name="sthisrelevantApps2" select="$relevantApps2[name = $sthisrelevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
         <xsl:variable name="sthisappsWithCaps" select="$sthisrelevantApps union $sthisrelevantApps2"/>
-         <xsl:variable name="allProcs" select="$sthisdirectProcessToAppRel union $sthisrelevantPhysProc2AppProRoles"/>
+        <xsl:variable name="allProcs" select="$sthisdirectProcessToAppRel union $sthisrelevantPhysProc2AppProRoles"/>
        
 
         
@@ -679,21 +698,24 @@ function uniq_fast(a) {
         <xsl:variable name="subthisrelevantAppProRoles" select="$relevantAppProRoles[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
         <xsl:variable name="subthisrelevantApps" select="$relevantApps2[name = $subthisrelevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
         <xsl:variable name="subthisrelevantAppsDirect" select="$relevantApps[name = current()/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>  
-        <xsl:variable name="appLifecycle" select="$allLifecycleStatus[name = $subthisrelevantApps/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>
+        <xsl:variable name="indirectappLifecycle" select="$allLifecycleStatus[name = $subthisrelevantApps/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>
+		<xsl:variable name="directappLifecycle" select="$allLifecycleStatus[name = $subthisrelevantAppsDirect/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value]"/>	
+		  <xsl:variable name="appLifecycle" select="$indirectappLifecycle union $directappLifecycle"/>	
         <xsl:variable name="thisStyle" select="$allElementStyles[name=$appLifecycle/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>   
         <xsl:variable name="allAppPlans" select="$sthisappsWithCaps union subthisrelevantApps" />   
          <xsl:variable name="thisplannedChanges" select="$plannedChanges[own_slot_value[slot_reference='plan_to_element_ea_element']/value=$subthisrelevantApps/name]"/>
         <xsl:variable name="thisstratPlans" select="$stratPlans[own_slot_value[slot_reference='strategic_plan_for_elements']/value=$thisplannedChanges/name]"/>    
-            
-      {    <xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantApps"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantApps"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:when><xsl:otherwise><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:otherwise></xsl:choose>,    
+       <xsl:if test="$subthisrelevantApps union $subthisrelevantAppsDirect">    
+      {<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantApps"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantApps"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:when><xsl:otherwise> <xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:otherwise></xsl:choose>,    
           <!--  "id":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/></xsl:otherwise></xsl:choose>",-->
-            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",-->
+            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",-->
         "debug":"", 
         "busScore":"<xsl:value-of select="$busScore"/>", 
         "busFit":"<xsl:value-of select="$busFit"/>","busFitVal":"<xsl:value-of select="$thisBFValues/name"/>",
         "techFit":"<xsl:value-of select="$appFit"/>",
         "appScore":"<xsl:value-of select="$appScore"/>","techFitVal":"<xsl:value-of select="$thisAFValues/name"/>", "lifecycle":"<xsl:value-of select="$appLifecycle/own_slot_value[slot_reference = 'enumeration_value']/value"/>","lifecycleColor":"<xsl:choose><xsl:when test="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"><xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/></xsl:when><xsl:otherwise>#ebdd8f</xsl:otherwise></xsl:choose>","lifecycleText":"<xsl:choose><xsl:when test="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"><xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/></xsl:when><xsl:otherwise>#000000</xsl:otherwise></xsl:choose>",
         "plans":"<xsl:value-of select="$thisstratPlans/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+			</xsl:if>
         </xsl:for-each> ]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -705,7 +727,9 @@ function uniq_fast(a) {
 		<xsl:choose>
 			<xsl:when test="count($theParentCap) > 0">
 				<xsl:variable name="childRels" select="$allChildCap2ParentCapRels[(own_slot_value[slot_reference = 'buscap_to_parent_parent_buscap']/value = $theParentCap/name)]"/>
-				<xsl:variable name="aChildList" select="$allBusCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListA" select="$allBusCaps[name = $childRels/own_slot_value[slot_reference = 'buscap_to_parent_child_buscap']/value]"/>
+				<xsl:variable name="aChildListB" select="$allBusCaps[name = $theParentCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
+				<xsl:variable name="aChildList" select="$aChildListA union $aChildListB"/>
 				<xsl:variable name="aNewList" select="$aChildList except $theParentCap"/>
 				<xsl:variable name="aNewChildren" select="$theParentCap union $theChildCaps union $aNewList"/>
 				<xsl:copy-of select="eas:findAllSubCaps($aNewList, $aNewChildren)"/>
@@ -729,11 +753,21 @@ function uniq_fast(a) {
     </xsl:template>
      <xsl:template match="node()" mode="legend">
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
-         <td style="width:90px"><xsl:attribute name="style">background-color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>;color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/></xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></td>
+         <div class="pull-right"><xsl:attribute name="style">background-color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>;color:<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>;border-radius:3px;margin-left:2px;padding:2px;width:70px;font-size:8pt;text-align:center</xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></div>
      </xsl:template>
-	<xsl:template match="node()" mode="getApplications">		
-		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+
+	<xsl:template match="node()" mode="getApplications">	
+		<xsl:variable name="thisLink">
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+		</xsl:variable>
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		"link":"<xsl:value-of select="$thisLink"/>"}<xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
+
+<!--	<xsl:template match="node()" mode="getApplications">		
+		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+    </xsl:template>  -->
+
     <xsl:template match="node()" mode="getScores">	
          <xsl:variable name="thiscolourElements" select="$colourElements[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
         {"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>","score":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_score']/value"/>","backgroundcolor":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>","color":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>

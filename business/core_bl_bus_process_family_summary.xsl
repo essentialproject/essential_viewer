@@ -19,7 +19,10 @@
 	<!-- END GENERIC LINK VARIABLES -->
 	<!-- Required View-specific instance -->
 	<xsl:variable name="bpf" select="/node()/simple_instance[type = 'Business_Process_Family'][name = $param1]"/>
-	<xsl:variable name="relevantProcesses" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value]"/>
+	<xsl:variable name="relevantProcessesOld" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value]"/>
+	<xsl:variable name="relevantProcessesNew" select="/node()/simple_instance[type = 'Business_Process'][name = $bpf/own_slot_value[slot_reference = 'bpf_contains_busproctypes']/value]"/>
+	<xsl:variable name="relevantProcesses" select="$relevantProcessesOld union $relevantProcessesNew"/>
+	
 	<xsl:variable name="relevantBusCaps" select="/node()/simple_instance[type = 'Business_Capability'][name = $relevantProcesses/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>
 	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
 	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>
@@ -132,7 +135,7 @@
 								<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
 							</xsl:call-template>
 						</h1>
-					</div>
+					</div>		
 				</div>
 				<!--Setup the Definition section-->
 				<div class="col-xs-6">
@@ -278,11 +281,24 @@
 					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				</xsl:call-template>
 			</td>
-			<td>
+			<td> 
 				<xsl:choose>
 					<xsl:when test="count($processSites) > 0">
 						<ul class="noMarginBottom">
 							<xsl:for-each select="$processSites">
+								<li>
+									<xsl:call-template name="RenderInstanceLink">
+										<xsl:with-param name="theSubjectInstance" select="current()"/>
+										<xsl:with-param name="theXML" select="$reposXML"/>
+										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+									</xsl:call-template>
+								</li>
+							</xsl:for-each>
+						</ul>
+					</xsl:when>
+					<xsl:when test="count($actorSites) > 0">
+						<ul class="noMarginBottom">
+							<xsl:for-each select="$actorSites">
 								<li>
 									<xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>

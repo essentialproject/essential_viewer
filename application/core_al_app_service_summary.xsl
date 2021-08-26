@@ -253,6 +253,7 @@
 									</thead>
 									<tbody>
 										<xsl:for-each select="$function_list">
+											<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 											<tr>
 												<td>
 													<strong>
@@ -315,7 +316,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										<xsl:apply-templates select="$inScopeAppSvc2BusProcs" mode="Supported_Process"/>
+										<xsl:apply-templates select="$inScopeAppSvc2BusProcs" mode="Supported_Process">
+											
+										</xsl:apply-templates>
 									</tbody>
 								</table>
 							</xsl:otherwise>

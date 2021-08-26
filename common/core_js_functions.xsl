@@ -93,7 +93,7 @@
 		function getUniqueArrayVals(arrayList) {
 			var values = [];
 			var currentVal, currentArray;
-console.log(arrayList[[0]]);
+			//console.log(arrayList[[0]]);
             if(arrayList[0]){
 			for (i = 0; arrayList.length > i; i += 1) {
 				currentArray = arrayList[i];
@@ -170,7 +170,7 @@ console.log(arrayList[[0]]);
 					//console.log('Not Found ' + valList[j] + ' in ' + currentValList);
 				}
 			}
-			console.log("Matching Obj Count: " + objects.length);
+			//console.log("Matching Obj Count: " + objects.length);
 			return objects;
 		}
 		
@@ -451,7 +451,7 @@ console.log(arrayList[[0]]);
 			var infoButtonId = '#' + theAppCap.id + '_info';
 			
 			if(theAppCap.id == 'Nov Update 1601_Class30004') {
-				console.log('Risk Management Details: ' + appCapBlobId);
+				//console.log('Risk Management Details: ' + appCapBlobId);
 			}
 			
 			for( var i = 0; i &lt; appServices.length; i++ ){

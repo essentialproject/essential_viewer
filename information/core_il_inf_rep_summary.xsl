@@ -37,11 +37,20 @@
 	<xsl:variable name="currentReportName" select="$currentReport/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = 'Application_Provider' or type = 'Composite_Application_Provider']"/>
 
+	<xsl:variable name="allServiceQuals" select="/node()/simple_instance[supertype = 'Service_Quality' or type = 'Service_Quality']"/>
+	<xsl:variable name="allServiceQualVals" select="/node()/simple_instance[type = 'Information_Service_Quality_Value']"/>
+	<xsl:variable name="timelinessQualityType" select="/node()/simple_instance[(type = 'Information_Service_Quality') and (own_slot_value[slot_reference = 'name']/value = 'Timeliness')]"/>
 	<!-- Get the physical process that produces this report -->
 	<xsl:variable name="currentApp2InfoReps" select="/node()/simple_instance[(own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value = $currentReport/name)]"/>
 	<xsl:variable name="currentApp2InfoRep2PhysProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value = $currentApp2InfoReps/name]"/>
 	<xsl:variable name="producingPhysProcs" select="/node()/simple_instance[name = $currentApp2InfoRep2PhysProcs/own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value]"/>
 	<xsl:variable name="supportedApps" select="$allApps[name = $currentApp2InfoReps/own_slot_value[slot_reference = 'app_pro_to_inforep_from_app']/value]"/>
+	
+	 <xsl:variable name="irex" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_EXCHANGE_RELATION'][own_slot_value[slot_reference='atire_app_pro_to_inforep']/value=$currentApp2InfoReps/name]"/>
+	<xsl:variable name="apex" select="$irex union $currentApp2InfoReps"/>
+	
+	
+	<xsl:variable name="apu2apu" select="/node()/simple_instance[type = ':APU-TO-APU-STATIC-RELATION'][own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value = $apex/name]"/>
 
 	<!-- Get the individual that is the business owner of the report -->
 	<xsl:variable name="infoBusOwnerRole" select="/node()/simple_instance[(type = 'Individual_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Information Business Owner')]"/>
@@ -55,7 +64,7 @@
 	<xsl:variable name="directStakeholders" select="$allGroupActors[name = $directStakeholderRoleRels/own_slot_value[slot_reference = 'act_to_role_from_actor']/value] union $allIndivActors[name = $directStakeholderRoleRels/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	<xsl:variable name="reportBusStakeholders" select="($reportBusStakeholdersSec union $directStakeholders) except $reportBusOwnerActor"/>
 	<xsl:variable name="secAccessDescs" select="$reportSecPolicies/own_slot_value[slot_reference = 'description']/value"/>
-
+	<xsl:variable name="allAppUsages" select="/node()/simple_instance[type = 'Static_Application_Provider_Usage']"/>
 	<!-- Get the triggering events by accessing the logical process flow of the physical process that produces the report -->
 	<xsl:variable name="producingLogicalProcs" select="/node()/simple_instance[name = $producingPhysProcs/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
 	<xsl:variable name="logicalActivs" select="/node()/simple_instance[name = $producingPhysProcs/own_slot_value[slot_reference = 'instance_of_business_activity']/value]"/>
@@ -64,8 +73,8 @@
 	<xsl:variable name="producingProcessUsages" select="/node()/simple_instance[own_slot_value[slot_reference = 'used_in_process_flow']/value = $producingProcessFlows/name]"/>
 	<xsl:variable name="reportTriggerEventUsages" select="$producingProcessUsages[type = 'Initiating_Business_Event_Usage_In_Process']"/>
 	<xsl:variable name="reportTriggerEvents" select="/node()/simple_instance[name = $reportTriggerEventUsages/own_slot_value[slot_reference = 'usage_of_business_event_in_process']/value]"/>
-
-
+<xsl:variable name="uom" select="/node()/simple_instance[type = 'Unit_Of_Measure']"/>
+<xsl:variable name="dam" select="/node()/simple_instance[type = 'Data_Acquisition_Method']"/>
 	<!-- Get the technical format of the report -->
 	<xsl:variable name="reportTechnicalFormatRole" select="/node()/simple_instance[name = $currentReport/own_slot_value[slot_reference = 'representation_technology']/value]"/>
 	<xsl:variable name="reportTechnicalFormat" select="/node()/simple_instance[name = $reportTechnicalFormatRole/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
@@ -465,7 +474,7 @@
 
 						<!--Setup Frequency Section-->
 
-						<div class="col-xs-12 col-md-6">
+						<div class="col-xs-12 col-md-9">
 							<div class="sectionIcon">
 								<i class="fa fa-clock-o icon-section icon-color"/>
 							</div>
@@ -494,9 +503,23 @@
 										<p><xsl:value-of select="$reportTriggerEvents/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="$reportTriggerEvents/own_slot_value[slot_reference = 'description']/value"/></p>
 									</xsl:when>
 									<xsl:otherwise>
+										<xsl:if test="not($apex)">
 										<em><xsl:value-of select="eas:i18n('No timing/frequency information has been captured for the')"/> &#160;<strong><xsl:value-of select="$currentReportName"/></strong></em>
+											</xsl:if>
 									</xsl:otherwise>
 								</xsl:choose>
+								
+									
+								<table>
+									<tr>
+									<th width="25%">From</th>
+									<th width="25%">To</th>
+									<th width="25%"><i class="fa fa-clock-o"></i> Frequency</th>
+									<th width="25%"><i class="fa fa-truck"></i> Method</th>
+									</tr>
+ 									<xsl:apply-templates mode="frequencyContent" select="$apex"/>
+								</table>
+ 
 							</div>
 							<hr/>
 						</div>
@@ -505,7 +528,7 @@
 
 						<!--Setup Output Format Section-->
 
-						<div class="col-xs-12 col-md-6">
+						<div class="col-xs-12 col-md-12">
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
@@ -549,7 +572,7 @@
 
 
 						<!--Setup Delivery Method Section-->
-						<div class="col-xs-12">
+					<!--	<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-truck icon-section icon-color"/>
 							</div>
@@ -582,7 +605,7 @@
 								</xsl:choose>
 							</div>
 							<hr/>
-						</div>
+						</div> -->
 
 
 
@@ -825,6 +848,63 @@
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 			</xsl:call-template>
 		</li>
+	</xsl:template>
+
+	<xsl:template mode="frequencyContent" match="node()">
+		<xsl:variable name="appDepRelation" select="current()"/>
+ 		<xsl:variable name="thisapu2apu" select="$apu2apu[own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value = current()/name]"/>
+		
+		<xsl:variable name="thisFrom" select="$allAppUsages[name=$thisapu2apu/own_slot_value[slot_reference = ':FROM']/value]"/>
+		<xsl:variable name="thisTo" select="$allAppUsages[name=$thisapu2apu/own_slot_value[slot_reference = ':TO']/value]"/>
+		<xsl:variable name="thisFromApp" select="$allApps[name=$thisFrom/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
+		<xsl:variable name="thisToApp" select="$allApps[name=$thisTo/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
+		 
+		<!--<xsl:variable name="inboundAcquisitionMethod" select="$allAcquisitionMethods[name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>-->
+		<xsl:variable name="currencyIRex" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
+		<xsl:variable name="currencythisapu2apu" select="$allServiceQualVals[(name = $thisapu2apu/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
+		<xsl:variable name="currency" select="$currencythisapu2apu union $currencyIRex"/>
+		
+		<xsl:variable name="anSqvListIRex" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
+		<xsl:variable name="anSqvListAPU" select="$allServiceQualVals[(name = $thisapu2apu/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
+		<xsl:variable name="anSqvList" select="$anSqvListIRex union $anSqvListAPU"/>
+	 
+		
+		
+<xsl:if test="$thisapu2apu">
+ 
+			<tr width="100%" style="border-bottom: 1pt solid #d3d3d3">
+				<td width="25%"><xsl:value-of select="$thisToApp/own_slot_value[slot_reference = 'name']/value"/></td>
+				<td width="25%"><xsl:value-of select="$thisFromApp/own_slot_value[slot_reference = 'name']/value"/></td>
+				<td width="25%">
+			<xsl:variable name="aServQual" select="$allServiceQuals[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+			<xsl:if test="$aServQual/name != $timelinessQualityType/name">
+				<!-- Use i18n template -->
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$aServQual"/>
+				</xsl:call-template>:&#160; 
+				<xsl:value-of select="$currency/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>  <xsl:text> </xsl:text> 
+				<xsl:value-of select="$uom[name=$currency/own_slot_value[slot_reference = 'service_quality_value_uom']/value]/own_slot_value[slot_reference = 'name']/value"/>
+			</xsl:if>
+			
+	 
+		 
+		<xsl:choose>
+			<xsl:when test="count($currency) > 0">
+				<xsl:value-of select="$currency/own_slot_value[slot_reference = 'service_quality_value_value']/value"/><xsl:text> </xsl:text> 
+				<xsl:value-of select="$uom[name=$currency/own_slot_value[slot_reference = 'service_quality_value_uom']/value]/own_slot_value[slot_reference = 'name']/value"/>
+				<!--<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$currency"/>
+				</xsl:call-template>-->
+			</xsl:when>
+			<xsl:otherwise>&#160;Not Set</xsl:otherwise>
+		</xsl:choose>
+		</td>
+				<td>
+				<xsl:value-of select="$dam[name=$thisapu2apu/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]/own_slot_value[slot_reference = 'name']/value"/>
+				</td>
+				</tr>
+	</xsl:if>	
+		
 	</xsl:template>
 
 </xsl:stylesheet>

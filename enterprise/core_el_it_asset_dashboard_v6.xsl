@@ -125,7 +125,6 @@
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
 				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				
 				<xsl:call-template name="RenderInitDataScopeMap"/>
 				<xsl:call-template name="refModelLegendInclude"/>

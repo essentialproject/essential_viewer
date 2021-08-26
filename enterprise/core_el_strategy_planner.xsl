@@ -214,8 +214,6 @@
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				
-				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.1.2.js"/>
 				
 				<style type="text/css">
 					
@@ -1515,6 +1513,7 @@
 					<!-- function to create a new Roadmap -->
 					function newRoadmap() {	
 						var aNewRoadmap = {
+							"extId": 'RM' + (+new Date).toString(36),
 							"name": null,
 							"description": null
 						};
@@ -1541,7 +1540,7 @@
 					function newStrategicPlan() {	
 						var todaysDate = new Date();
 						var newStratgegicPlan = {
-							"id": tempUserData.newStratPlanId.toString(),
+							"id": 'SP' + (+new Date).toString(36),
 							"name": "",
 							"description": "",
 							"startDate": todaysDate,
@@ -1561,7 +1560,7 @@
 						formatStratPlanDates(newStratgegicPlan);
 						formatExcelStratPlanDates(newStratgegicPlan);
 						
-						tempUserData.newStratPlanId = tempUserData.newStratPlanId + 1;
+						//tempUserData.newStratPlanId = tempUserData.newStratPlanId + 1;
 						
 						return newStratgegicPlan;		
 					}
@@ -3733,6 +3732,8 @@
 							
 							//if validation is passed, add the current plan to the list of plans and reset the current plan
 							if(thisErrors.length == 0) {
+							
+								currentPlan['extId'] = 'SP' + (+new Date).toString(36); 
 							
 								//save the elements that are part of the current plan as well as the planned change
 								saveElementsToPlan(currentPlan);

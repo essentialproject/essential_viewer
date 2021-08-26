@@ -83,67 +83,292 @@
 				<title>Application Current State Model</title>
 				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
 				<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<link href="ext/shared/custom.css" type="text/css" rel="stylesheet" />
-				<!--<script>
-					function setEqualHeight1(columns)  
-					{  
-					var tallestcolumn = 0;  
-					columns.each(  
-					function()  
-					{  
-					currentHeight = $(this).height();  
-					if(currentHeight > tallestcolumn)  
-					{  
-					tallestcolumn  = currentHeight;  
-					}  
-					}  
-					);  
-					columns.height(tallestcolumn);  
-					}  
-					$(document).ready(function() {  
-					setEqualHeight1($(".appRef_WideColCap_Half"));
-					});
-				</script>
-				<script>
-					function setEqualHeight2(columns)  
-					{  
-					var tallestcolumn = 0;  
-					columns.each(  
-					function()  
-					{  
-					currentHeight = $(this).height();  
-					if(currentHeight > tallestcolumn)  
-					{  
-					tallestcolumn  = currentHeight;  
-					}  
-					}  
-					);  
-					columns.height(tallestcolumn);  
-					}  
-					$(document).ready(function() {  
-					setEqualHeight2($(".appRef_WideColCap_Third"));
-					});
-				</script>
-				<script>
-					function setEqualHeight3(columns)  
-					{  
-					var tallestcolumn = 0;  
-					columns.each(  
-					function()  
-					{  
-					currentHeight = $(".appRef_WideColContainer").height()-50;  
-					if(currentHeight > tallestcolumn)  
-					{  
-					tallestcolumn  = currentHeight;  
-					}  
-					}  
-					);  
-					columns.height(tallestcolumn);  
-					}  
-					$(document).ready(function() {  
-					setEqualHeight3($(".appRef_NarrowColCap"));
-					});
-				</script>-->
+				<style>
+					.appRef_container{
+					    padding-bottom: 20px;
+					    float: left;
+					    box-sizing: content-box;
+					}
+					
+					.appRef_NarrowColContainer{
+					    float: left;
+					}
+					
+					.appRef_NarrowColCap{
+					    width: 100%;
+					    min-height: 100px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    padding: 10px 10px 10px 10px;
+					    float: left;
+					    position: relative;
+					}
+					
+					.appRef_NarrowColSubCap{
+					    min-height: 50px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    background-color: #fff;
+					    padding: 10px 0 0 10px;
+					    margin: 0 10px 10px 0;
+					    float: left;
+					    clear: both;
+					    position: relative;
+					    width: 100%;
+					}
+					
+					.appRef_WideColContainer{
+					    float: left;
+					}
+					
+					.appRef_WideColCap{
+					    width: 100%;
+					    min-height: 100px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    padding: 10px 10px 0 10px;
+					    float: left;
+					    clear: both;
+					    position: relative;
+					}
+					
+					.appRef_WideColCap_Half{
+					    width: 100%;
+					    min-height: 100px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    padding: 10px 0 0 10px;
+					    float: left;
+					    margin: 0 20px 10px 0;
+					    position: relative;
+					}
+					
+					.appRef_WideColCap_Third{
+					    width: 100%;
+					    min-height: 100px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    padding: 10px 0 0 10px;
+					    float: left;
+					    margin: 0 20px 10px 0;
+					    position: relative;
+					}
+					
+					.appRef_WideColSubCap_Full{
+					    width: 100%;
+					    min-height: 80px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    background-color: #fff;
+					    padding: 10px 0 0 10px;
+					    margin: 0 10px 10px 0;
+					    float: left;
+					    position: relative;
+					}
+					
+					.appRef_WideColSubCap_Half{
+					    width: 100%;
+					    min-height: 80px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    background-color: #fff;
+					    padding: 10px 0 0 10px;
+					    float: left;
+					    margin: 0 10px 10px 0;
+					    position: relative;
+					}
+					
+					.appRef_WideColSubCap_Third{
+					    width: 100%;
+					    min-height: 80px;
+					    border-radius: 10px;
+					    border: 1px solid #aaa;
+					    background-color: #fff;
+					    padding: 10px 0 0 10px;
+					    float: left;
+					    margin: 0 10px 10px 0;
+					    position: relative;
+					}
+					
+					.appRef_WideColCap_ThirdsContainer{
+					    float: left;
+					    padding: 10px 0 0px 10px;
+					    float: left;
+					    border-radius: 10px;
+					    margin: 0 20px 0px 0;
+					    position: relative;
+					}
+					
+					.appRef_AppContainer{
+					    width: 100%;
+					    height: 40px;
+					    float: left;
+					    padding: 5px;
+					    border: 1px solid #aaa;
+					    text-align: center;
+					    margin: 0 5px 5px 0;
+					    display: flex;
+					    align-items: center;
+					    justify-content: center;
+					}
+					
+					.appRef_CapTitle{
+					    margin-bottom: 8px;
+					}
+					
+					.threeColModel_ObjectContainer{
+					    width: 122px;
+					    float: left;
+					    margin: 0 5px 5px 0;
+					    box-sizing: content-box;
+					    line-height: 1.1em;
+					}
+					
+					.threeColModel_NumberHeatmap,
+					.threeColModel_NumberHeatmapAlt{
+					    position: absolute;
+					    width: 122px;
+					    height: 52px;
+					    max-height: 52px;
+					    font-size: 36px;
+					    z-index: 0;
+					    box-sizing: content-box;
+					    display: flex;
+					    align-items: center;
+					    justify-content: center;
+					}
+					
+					.threeColModel_NumberHeatmap{
+					    opacity: 0.6;
+					}
+					
+					.noOpacity{
+					    opacity: 1.0;
+					}
+					
+					.threeColModel_ObjectBackgroundColour{
+					    position: absolute;
+					    width: 122px;
+					    height: 52px;
+					    max-height: 52px;
+					    font-size: 36px;
+					    z-index: 0;
+					    opacity: 1.0;
+					    box-sizing: content-box;
+					}
+					
+					.threeColModel_Object{
+					    position: relative;
+					    width: 110px;
+					    height: 40px;
+					    max-height: 40px;
+					    overflow: hidden;
+					    border: 1px solid #ccc;
+					    padding: 5px;
+					    float: left;
+					    text-align: center;
+					    opacity: 1.0;
+					    box-sizing: content-box;
+					    line-height: 1.1em;
+					    display: flex;
+					    align-items: center;
+					    justify-content: center;
+					}
+					
+					.threeColModel_ObjectDouble{
+					    width: 220px;
+					    height: 40px;
+					    max-height: 40px;
+					    overflow: hidden;
+					    border: 1px solid #ccc;
+					    padding: 5px;
+					    margin: 0 5px 5px 0;
+					    float: left;
+					    text-align: center;
+					    box-sizing: content-box;
+					}
+					
+					.threeColModel_ObjectAlt{
+					    width: 180px;
+					    height: 20px;
+					    max-height: 20px;
+					    overflow: hidden;
+					    border: 1px solid #ccc;
+					    padding: 5px;
+					    margin: 0 20px 5px 0;
+					    float: left;
+					    text-align: center;
+					    border-radius: 5px;
+					    position: relative;
+					    box-sizing: content-box;
+					}
+					
+					.ess-tooltip{
+					    background-color: #fff;
+					    border: 2px solid #eee;
+					    padding: 5px;
+					    min-width: 30px;
+					    display: none;
+					    border-radius: 3px;
+					    box-shadow: 0px 3px 5px #ccc;
+					    z-index: 5000;
+					    text-align: left;
+					}
+					
+					.circleButton{
+					    box-sizing: content-box;
+					    font-size: 11px;
+						border-radius:12px;
+						width:16px;
+						height:16px;
+						padding:2px;
+						text-align:center;
+						text-align:center;
+						border:2px solid #fff;
+						position:relative;
+						-moz-box-shadow:0px 2px 3px #ccc;
+						-webkit-box-shadow:0px 2px 3px #ccc;
+						box-shadow:0px 2px 3px #ccc;
+						left:3px;
+						position:relative; /*required to enable PIE to function*/
+						clear:both;
+					}
+					
+					.circleButtonSmall{
+					    border-radius: 10px;
+					    /*width:20px;*/
+					    height: 20px;
+					    padding: 4px;
+					    text-align: center;
+					    border: 2px solid #fff;
+					    position: relative;
+					    -moz-box-shadow: 0px 2px 3px #ccc;
+					    -webkit-box-shadow: 0px 2px 3px #ccc;
+					    box-shadow: 0px 2px 3px #ccc;
+					    left: 3px;
+					    position: relative;
+					    clear: both;
+					    line-height: 0.8em;
+					}
+					.buttonLabel{
+						height:20px;
+						float:left;
+						margin-left:10px;
+						position:relative;
+						top:2px;
+						margin-bottom:10px;
+					}
+					
+					.buttonLabelSmall{
+					    height: 16px;
+					    float: left;
+					    margin-left: 10px;
+					    position: relative;
+					    margin-bottom: 10px;
+					    top: 4px;
+					}
+				</style>
+				
 
 				<script type="text/javascript">
 					$('document').ready(function(){

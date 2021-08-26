@@ -29,6 +29,8 @@
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = 'editor_menu_link_classes']/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
+	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
+	<xsl:variable name="editorHeadContent" select="$targetEditor/own_slot_value[slot_reference = 'editor_included_head_content']/value"/>
 	
 	<!-- Get the list of supporting data set APIs -->
 	<xsl:variable name="supportingAPIs" select="$utilitiesAllDataSetAPIs[name = $targetEditor/own_slot_value[slot_reference = 'editor_data_set_apis']/value]"/>
@@ -72,30 +74,55 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="$targetEditorLabel"/></title>
-				<!--<script src="js/rocket-loader/js/loader.min.js"/>
-				<link href="js/rocket-loader/css/loader.min.css" rel="stylesheet"/>	-->	
+				<xsl:for-each select="$editorHeadContent">
+					<xsl:if test="doc-available(.)">
+						<xsl:copy-of select="document(.)"/>
+					</xsl:if>
+				</xsl:for-each>
 			</head>
 			<body id="main_section">
 				<!-- Loader -->
 				<div id="editor-spinner" class="hidden">
-					
-					<div class="hm-spinner"/>
-					<div id="editor-spinner-text" class="text-center xlarge strong"/>
+					<div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;">
+						<div class="spin-icon" style="width: 60px; height: 60px;">
+							<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+							<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+							<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+						</div>						
+					</div>
+					<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
+				</div>
+				<div id="editor-update-spinner" class="hidden">
+					<div class="eas-logo-spinner" style="display: inline-block;">
+						<div class="spin-icon" style="width: 18px; height: 18px; margin-right: 5px;">
+							<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+							<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+							<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+						</div>						
+					</div>
+					<div id="editor-update-spinner-text" class="">Processing</div>
 				</div>
 				
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading">
 					<xsl:with-param name="mode">EDIT</xsl:with-param>
 				</xsl:call-template>
-					<xsl:choose>
-						<xsl:when test="doc-available($targetEditorContent)">
-							<xsl:copy-of select="document($targetEditorContent)"/>
-						</xsl:when>
-						<xsl:otherwise>			
-							<xsl:copy-of select="document('editors/platform/editor_not_found_error.html')"/>
-							<p><xsl:value-of select="$targetEditorContent"/></p>
-						</xsl:otherwise>
-					</xsl:choose>
+				<xsl:choose>
+					<xsl:when test="eas:isUserAuthZ($targetEditor)">
+						<xsl:choose>
+							<xsl:when test="doc-available($targetEditorContent)">
+								<xsl:copy-of select="document($targetEditorContent)"/>
+							</xsl:when>
+							<xsl:otherwise>			
+								<xsl:copy-of select="document('editors/platform/editor_not_found_error.html')"/>
+								<p><xsl:value-of select="$targetEditorContent"/></p>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:when>
+					<xsl:otherwise>
+						<h3>Access Denied</h3>
+					</xsl:otherwise>
+				</xsl:choose>				
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 				<!-- modal javascript library -->
@@ -104,9 +131,6 @@
 				
 				<!-- Lodash utility functions -->
 				<script type="text/javascript" src="js/lodash.js"/>
-				
-				<!-- Handlebars UI Templating Libraries -->
-				<script src="js/handlebars-v4.1.2.js"/>
 				
 				<!-- setup editor environment -->
 				<script type="text/javascript">
@@ -124,22 +148,94 @@
 					};
 
 					essEnvironment.repoId = '<xsl:value-of select="repository/repositoryID"/>';
+					essEnvironment.repoName = '<xsl:value-of select="repository/name"/>';
+					essEnvironment.targetEditorID = '<xsl:value-of select="$targetEditor/name"/>';
+					essEnvironment.targetEditorPath = '<xsl:value-of select="$targetEditorContent"/>';
+					essEnvironment.targetEditorLabel = '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>';
 					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
 
 					essEnvironment.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
+					essEnvironment.form = {
+						'id': '<xsl:value-of select="$targetEditor/name"/>',
+						'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
+					};
+					
+					
 					
 					var essDataSetAPIs = {
 						<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
 					};
 					
 					function essGetDataSetAPIUrl(dataSetLabel) {
-						var apiURL = essDataSetAPIs[dataSetLabel];
+						let apiURL = essDataSetAPIs[dataSetLabel].url;
 						return apiURL;
 					}
+					
+					function essGetDataSetAPICachePath(dataSetLabel) {
+						let path = essDataSetAPIs[dataSetLabel].cachePath;
+						return path;
+					}
+					
+					function essIsDataSetAPIPreCached(dataSetLabel) {
+						let isPrecached = essDataSetAPIs[dataSetLabel].isPreCached;
+						return isPrecached;
+					}
+					
+					
+					var promise_essCheckPreCachedDataSetAPIsCompleted = function(successCallBack, failCallback) {
+					    return new Promise((resolve) => {
+					    	let preCachedDataSets = Object.values(essDataSetAPIs).filter(aDS => aDS.isPreCached);
+							if(preCachedDataSets.length > 0) {
+								let apiCheckList = [];
+								preCachedDataSets.forEach(aDS => apiCheckList.push(promise_essCheckPreCachedDataSetAPI(aDS)));
+								Promise.all(apiCheckList)
+							    .then(function (responses) {
+							    	if(responses.filter(aResp => !aResp).length == 0) {
+							    		successCallBack();
+							    		resolve(true);
+							    	} else {
+							    		failCallback();
+							    		resolve(false);
+							    	}
+						    	})
+						    	.catch (function (error) {
+						    		failCallback();
+						    		resolve(false);
+							    });
+							} else {
+								resolve(true);
+							}					   	
+					   	});
+					};
+					
+					
+					
+					var promise_essCheckPreCachedDataSetAPI = function(apiDetails) {
+					    return new Promise((resolve) => {
+					    	var xmlhttp = new XMLHttpRequest();
+					        xmlhttp.onreadystatechange = function () {
+					            if (this.readyState == 4) {
+					            	if (this.status == 200) {
+						            	resolve(true);
+						            } else {
+						            	resolve(false);
+						            }
+					            }
+					        };
+					        xmlhttp.onerror = function () {
+					            resolve(false);
+					        };
+					        xmlhttp.open("HEAD", apiDetails.cachePath, true);
+					        xmlhttp.send();
+						  })
+					};
+					
 					
 					var esslinkMenuNames = {
 						<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
 					}
+					
+					var essEditorForClasses = [<xsl:apply-templates mode="RenderClassList" select="$editorForClasses"/>];
 					
 					
 					
@@ -147,6 +243,8 @@
 						let menuName = null;
 						if((instance != null) &amp;&amp; (instance.meta != null) &amp;&amp; (instance.meta.anchorClass != null)) {
 							menuName = esslinkMenuNames[instance.meta.anchorClass];
+						} else if(instance.class != null) {
+							menuName = esslinkMenuNames[instance.class];
 						}
 						return menuName;
 					}
@@ -196,7 +294,7 @@
 					</div>
 					<div class="modal-body">
 						{{#each messages}}
-							<p class="lead">{{this}}</p>
+							<p>{{this}}</p>
 						{{/each}}
 					</div>
 					<div class="modal-footer">
@@ -283,17 +381,61 @@
 		</html>
 	</xsl:template>
 	
+	<!--<xsl:template mode="RenderDataSetAPIDetails" match="node()">
+		<!-\- Get the URL path for the data set -\->
+		<xsl:variable name="dataSetPath">
+			<xsl:choose>
+				<xsl:when test="current()/own_slot_value[slot_reference = 'is_data_set_api_precached']/value = 'true'">
+					<xsl:call-template name="RenderAPILinkText">
+						<xsl:with-param name="theXSL" select="current()/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderLinkText">
+						<xsl:with-param name="theXSL" select="current()/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+		</xsl:variable>
+		
+		<!-\- Get the property label to be used for accessing the data set details -\->
+		<xsl:variable name="dataSetLabel" select="current()/own_slot_value[slot_reference = 'dsa_data_label']/value"/>
+		"<xsl:value-of select="$dataSetLabel"/>": "<xsl:value-of select="$dataSetPath"/>"<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>-->
+	
 	<xsl:template mode="RenderDataSetAPIDetails" match="node()">
+		<xsl:variable name="thisAPI" select="current()"/>
+		<xsl:variable name="thisFilename" select="$thisAPI/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:variable>
 		<!-- Get the URL path for the data set -->
 		<xsl:variable name="dataSetPath">
-			<xsl:call-template name="RenderLinkText">
-				<xsl:with-param name="theXSL" select="current()/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-			</xsl:call-template>
+			<xsl:choose>
+				<xsl:when test="$thisAPI/own_slot_value[slot_reference='is_data_set_api_precached']/value = 'true'">
+					<xsl:call-template name="RenderAPILinkText">
+						<xsl:with-param name="theXSL" select="$thisFilename"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderLinkText">
+						<xsl:with-param name="theXSL" select="$thisFilename"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>						
+		</xsl:variable>
+		
+		<xsl:variable name="cachedSlotCheckFileName" select="translate($thisFilename,'/','.')"/>
+		<xsl:variable name="cachedSlotCheckFilePath">platform/tmp/reportApiCache/<xsl:value-of select="$cachedSlotCheckFileName"/></xsl:variable>
+		<xsl:variable name="isPreCached">
+			<xsl:choose>
+				<xsl:when test="$thisAPI/own_slot_value[slot_reference='is_data_set_api_precached']/value = 'true'">true</xsl:when>
+				<xsl:otherwise>false</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 		
 		<!-- Get the property label to be used for accessing the data set details -->
 		<xsl:variable name="dataSetLabel" select="current()/own_slot_value[slot_reference = 'dsa_data_label']/value"/>
-		"<xsl:value-of select="$dataSetLabel"/>": "<xsl:value-of select="$dataSetPath"/>"<xsl:if test="not(position() = last())">,
+		"<xsl:value-of select="$dataSetLabel"/>": {"url": "<xsl:value-of select="$dataSetPath"/>", "cachePath": "<xsl:value-of select="$cachedSlotCheckFilePath"/>", "isPreCached": <xsl:value-of select="$isPreCached"/>}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
 	
@@ -303,6 +445,11 @@
 		
 		"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
 		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template mode="RenderClassList" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		"<xsl:value-of select="$this"/>"<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

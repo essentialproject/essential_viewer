@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>    
+	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>  
+	<xsl:import href="../common/core_js_functions.xsl"/> 
+    <xsl:include href="../common/core_roadmap_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -161,10 +163,9 @@
                 <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<script src="js/d3/d3_4-11/d3.min.js"/>
-			    <script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
                 <script>
                         var appCardTemplate;
-
+						var sourceReport='<xsl:value-of select="$param1"/>';
                         $(document).ready(function() {
                             $('select').select2({
                             	theme: "bootstrap"
@@ -184,7 +185,52 @@
                      Handlebars.registerHelper('nameSubString', function(name) {
 								return name.substring(0, 14);
 							});
-							
+					
+					
+					var carriedApps = JSON.parse(sessionStorage.getItem("context"));
+			 if(carriedApps){
+					if(carriedApps.Composite_Application_Provider.length &gt; 0){
+						//if only one don't show basket 
+					
+						if(carriedApps.Composite_Application_Provider.length==1){ 
+					
+						$('#application').val(carriedApps.Composite_Application_Provider[0]); // Select the option 
+						$('#application').trigger('change');
+						}else{
+					 
+							$('#carriedApps').show()
+							var selectArray=[];
+
+								carriedApps.Composite_Application_Provider.forEach(function(d){
+
+									var thisApp=appJSON.filter(function(e){
+										return e.id==d;
+									});
+							selectArray.push({val : thisApp[0].id, text: thisApp[0].application});
+
+								});
+
+							selectArray.sort(function(a, b){
+								if(a.text &lt; b.text) { return -1; }
+								if(a.text > b.text) { return 1; }
+								return 0;
+							})
+							selectArray.unshift({val : '', text: 'choose'});
+							var sel = $('&lt;select id="carriedSelect">').appendTo('#selPlace');
+							$(selectArray).each(function() {
+							 sel.append($("&lt;option>").attr('value',this.val).text(this.text));
+							});
+							};
+							};
+					
+					$('#carriedSelect').change(function(){
+						selectApp($(this).val());
+						getAllApps();
+						showInfoTooltips()
+					$('#'+$(this).val()).hide();
+					
+					});
+		}
                         });
                         
                         function showFocusType(){
@@ -217,7 +263,9 @@
 								}
 							});
                         };
-                            
+					function goBack() {
+						  window.history.back();
+						};  
                 </script>
 			</head>
 			<body>
@@ -272,6 +320,14 @@
 								<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default">Hide</button>
 								<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default">Show</button>
 							</div>
+							<div id="carriedApps" style="display:none;border:1pt solid #d3d3d3;border-radius:3px;padding:3px" class="top-15"> 
+								<h3>Applications Basket</h3>
+								<div id="selPlace"></div>
+								<br/>
+								<button class="btn btn-primary btn-sm" onclick="goBack()">Back to Previous</button>
+							</div>
+							
+							
                         </div>	
                         <div class="col-xs-10">
                             <div id="filters">
@@ -403,7 +459,7 @@
                             .key(function(d) { return d.service; })
                             .entries(serviceJSON);
                     
-            var statusIDs= $.unique(appJSON.map(function (d) {return d.status;}));      
+           	var focusServices;
             var focusedServices=0;  
             var focusProcesses=[];
             var primeType=false;
@@ -411,14 +467,17 @@
              function selectNewApp(){
                 $("#appServs").empty();
                 alli=$(".servicesNew").val();
-
-                focusServices=alli;
+				var selitems=[];	
+	
+				$('.servicesNew option:selected').each(function(){ selitems.push({"selectId":$(this).attr('name'),"name":$(this).val()}) });	
+                focusServices=selitems;
+				console.log(focusServices)
                 focusedServices=focusServices.length;
             
                 $("#appServs > tbody").empty();          
                                 <![CDATA[ $("#appServs").append("<tbody>");]]>
                                 for(i=0; i &lt; focusServices.length;i++){                                         
-                                 <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+focusServices[i]+"</li>"); ]]>                                        
+                                 <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+focusServices[i].name+"</li>"); ]]>                                        
                                 }
                 getAllApps();
                 }
@@ -437,9 +496,9 @@
                                 appSelected.forEach(function(item) {
                                     services= item.values[0].services;     
                                     services.forEach(function(item){
-                                        focusServices.push(item.service);
+                                         focusServices.push({"selectId":item.serviceId});   
                                         var servSelectedApps = serviceJSON.filter(function(d) {
-                                        return d.service === item.service;
+                                        return d.serviceId === item.serviceId;
                                     });
                               
                                 var appsUsingService = servSelectedApps[0].applications;
@@ -456,18 +515,25 @@
             };        
                                  
          
-            var uniqueStatus= $.unique(appJSON.map(function (d) {return d.status;}));   
-            for(i=0;i &lt; uniqueStatus.length; i++){
-                html = '<option id="s'+uniqueStatus[i].replace(/\s/g, '')+'" name="s'+uniqueStatus[i].replace(/\s/g, '')+'" value="'+uniqueStatus[i]+'" onchange="updateCards()">'+uniqueStatus[i]+'</option>';
+            var allStatus=  appJSON.map(function (d) {return d.status;}) ;   
+			let unique = allStatus.filter((item, i, ar) => ar.indexOf(item) === i)
+			unique.sort(function(a, b){
+						if(a &lt; b) { return -1; }
+						if(a > b) { return 1; }
+						return 0;
+					})
+ 
+            for(i=0;i &lt; unique.length; i++){
+                html = '<option id="s'+unique[i].replace(/\s/g, '')+'" name="s'+unique[i].replace(/\s/g, '')+'" value="'+unique[i]+'" onchange="updateCards()">'+unique[i]+'</option>';
                 $( "#SLs" ).append(html);
             }
             
             function getRelevantApps(){
-            
+        
                       Apps=[];
                             for(i=0;i &lt; serviceJSON.length;i++){
                              for(j=0;j &lt; focusServices.length;j++){
-                               if(serviceJSON[i].service===focusServices[j]){
+                               if(serviceJSON[i].serviceId==focusServices[j].selectId){
                                     for(k=0;k &lt; serviceJSON[i].applications.length;k++){
                                         Apps.push(serviceJSON[i].applications[k]);
                                         }
@@ -510,7 +576,7 @@
             
                             for(j=0;j &lt; thisapp[0].services.length;j++){
                                 for(k=0;k &lt; focusServices.length;k++){
-                                    if(thisapp[0].services[j].service===focusServices[k]){
+                                    if(thisapp[0].services[j].serviceId==focusServices[k].selectId){
                                             num = num+1;   
                                             }
                                         }
@@ -524,8 +590,8 @@
                             appS=[];                    
                             for(j=0;j &lt; thisapp[0].services.length;j++)
                                 {for(k=0;k &lt; focusServices.length;k++)
-                                    {if(thisapp[0].services[j].service===focusServices[k])
-                                        {appS.push(thisapp[0].services[j].service)} 
+                                    {if(thisapp[0].services[j].serviceId==focusServices[k].selectId)
+                                        {appS.push({"selectId":thisapp[0].services[j].serviceId,"name":thisapp[0].services[j].service})} 
                                     }
                                 };
                           
@@ -589,6 +655,7 @@
             thisAppCode = appJSON.filter(function (el) {  
                            
                                 for(var i=0;i &lt; codebase.length; i++){  
+			
                                     if(codebase[i] === el.codebaseID){
                                         return el;
                                         }
@@ -613,12 +680,13 @@
             else{
             thisAppStatus=thisAppCode;
             }
-             
+              
             thisAppServices = thisAppStatus.filter(function (el) {  
                                 num=0;
                                  for(j=0;j &lt; el.services.length;j++){
+										if(focusServices){
                                         for(k=0;k &lt; focusServices.length;k++){
-                                            if(el.services[j].service===focusServices[k]){
+                                            if(el.services[j].serviceId===focusServices[k].selectId){
                                                 num = num+1;                         
                                                 }
                                                }
@@ -626,7 +694,8 @@
                         
                                     if(num &gt;= servs){
                                         return el;
-                                        }
+                                        };
+										};
                                     });
            
             $('.carddiv').hide(); 
@@ -674,29 +743,36 @@
 		</xsl:variable>
 		<xsl:variable name="subSubApps" select="$apps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 		
-        {"application":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "id":"<xsl:value-of select="current()/name"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>","codebase":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/name"/>","statusID":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/name"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>"}, </xsl:template>
+        {"application":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="current()"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>", "codebase":"<xsl:value-of select="$codebaseStatus[name=$codeBase]/own_slot_value[slot_reference='name']/value"/><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="eas:getSafeJSString($codebaseStatus[name=$codeBase]/name)"/>","statusID":"<xsl:value-of select="eas:getSafeJSString($lifecycleStatus[name=$lifecycle]/name)"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>"}, </xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONservices">
 		<xsl:variable name="this" select="current()/name"/>
 		<xsl:variable name="thisserv" select="$appservices[own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value = $this]"/>
-        <xsl:variable name="thisPhysProcessesRel" select="$physicalProcesses[own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value=$this]"/>
-        <xsl:variable name="thisPhysProcesses" select="$physProcesses[own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value=$thisPhysProcessesRel/name]"/>
-        <xsl:variable name="thisBusProcesses" select="$busProcesses[name=$thisPhysProcesses/own_slot_value[slot_reference='implements_business_process']/value]"/>
-		<xsl:if test="$thisserv/own_slot_value[slot_reference = 'name']/value"> {"service":"<xsl:value-of select="$thisserv/own_slot_value[slot_reference = 'name']/value"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+
+		<xsl:if test="$thisserv/own_slot_value[slot_reference = 'name']/value"> {"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisserv/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="$thisserv"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template>"}<xsl:if test="not(position() = last())">,</xsl:if>
 		</xsl:if>
 	</xsl:template>
-   
+  
 
-	<xsl:template match="node()" mode="getServJSON"> {"service":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}, </xsl:template>
+	<xsl:template match="node()" mode="getServJSON"> {"serviceId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}, </xsl:template>
 	
     <xsl:template match="node()" mode="getServJSONapps">
-		<xsl:variable name="this" select="current()/name"/>
-		<xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference = 'provides_application_services']/value = $this]"/>{"application":"<xsl:value-of select="$thisapp/own_slot_value[slot_reference = 'name']/value"/><xsl:if test="not($thisapp)">Unknown</xsl:if>","id":"<xsl:value-of select="$thisapp/name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>
+		<xsl:variable name="thisapp" select="$apps[own_slot_value[slot_reference = 'provides_application_services']/value = $this]"/>{"application":"<xsl:call-template name="RenderMultiLangInstanceName">
+  <xsl:with-param name="theSubjectInstance" select="$thisapp"/>
+  <xsl:with-param name="isRenderAsJSString" select="true()"/>
+</xsl:call-template><xsl:if test="not($thisapp)">Unknown</xsl:if>","id":"<xsl:value-of select="eas:getSafeJSString($thisapp/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
     
     <xsl:template match="node()" mode="codeOptions">
         <xsl:variable name="this" select="translate(current()/own_slot_value[slot_reference='enumeration_value']/value,' ','')"/>
-        <xsl:variable name="thisid" select="current()/name"/>
+        <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
         <div style="display: inline-block;">
           <input type="checkbox" id="{$this}" name="{$this}" value="{$thisid}" onchange="updateCards()" checked="true"></input>
         <label for="{$this}"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></label>
@@ -705,22 +781,27 @@
 	
 	<xsl:template match="node()" mode="codebase_select">
 		<xsl:variable name="this" select="translate(current()/own_slot_value[slot_reference='enumeration_value']/value,' ','')"/>
-        <xsl:variable name="thisid" select="current()/name"/>
+        <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
 		<option id="{$this}" name="{$this}" value="{$thisid}" onchange="updateCards()">			
 			<xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/>
         </option>
 	</xsl:template>
-	
     
     <xsl:template match="node()" mode="getOptions">
-         <xsl:variable name="thisid" select="name"/>
-        <xsl:variable name="this" select="own_slot_value[slot_reference='name']/value"/>
+         <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
+        <xsl:variable name="this"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:variable>
         <option name="{$thisid}" value="{$thisid}"><xsl:value-of select="$this"/></option>
     
     </xsl:template>
      <xsl:template match="node()" mode="getServOptions">
-         <xsl:variable name="thisid" select="name"/>
-        <xsl:variable name="this" select="own_slot_value[slot_reference='name']/value"/>
+         <xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
+        <xsl:variable name="this"><xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:variable>
         <option name="{$thisid}" value="{$this}"><xsl:value-of select="$this"/></option>
     
     </xsl:template>
@@ -769,7 +850,7 @@
 						<div class="text-default small hiddenDiv">
 							<h5>Matched Services</h5>
 							<ul class="small fa-ul">
-								{{#each servicesUsed}}<li><i class="fa fa-li essicon-radialdots"/>{{this}}</li>{{/each}}
+								{{#each servicesUsed}}<li><i class="fa fa-li essicon-radialdots"/>{{this.name}}</li>{{/each}}
 							</ul>
 							
 						</div>	

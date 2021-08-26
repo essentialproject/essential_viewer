@@ -243,11 +243,11 @@ var ringcount=config.rings.length;
     if (config.print_layout) {
       grid.append("text")
         .text(config.rings[i].name)
-        .attr("y", -rings[i].radius + 32)
+        .attr("y", -rings[i].radius -5)
         .attr("text-anchor", "middle")
         .style("fill", "#e5e5e5")
         .style("font-family", "Arial, Helvetica")
-        .style("font-size", 18)
+        .style("font-size", 14)
         .style("font-weight", "bold")
         .style("pointer-events", "none")
         .style("user-select", "none");
@@ -260,7 +260,7 @@ var ringcount=config.rings.length;
     var dy = (index == null ? -16 : index * 12);
      
     if (ring % 2 === 1) {
-      dy = dy + 48 + segmented[quadrant][ring-1].length * 12;
+      dy = dy + 48 + segmented[quadrant][ring].length * 12;
             
     }
 

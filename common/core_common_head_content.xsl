@@ -31,6 +31,8 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<!--Setup common content for html head tag	-->
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="pragma" content="no-cache"/>
+		<meta http-equiv="cache-control" content="no-cache"/>
 		<!--<meta http-equiv="expires" content="-1" />-->
 		<!--<meta http-equiv="X-UA-Compatible" content="chrome=1" />-->
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -53,7 +55,7 @@
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery-3.4.1.min.js"/>
+		<script type="text/javascript" src="js/jquery-3.5.1.min.js"/>
 		<!--Custom JQuery UI library to support various visual effects-->
 		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>
 		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->
@@ -61,6 +63,8 @@
 		$.widget.bridge('uibutton', $.ui.button);
 		$.widget.bridge('uitooltip', $.ui.tooltip);
 		</script>
+		<!-- file saver library -->
+		<script type="text/javascript" src="js/FileSaver.min.js"/>
 		<!--JQuery plugin to support popup menus for link navigation-->
 		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js"/>
 		<!--script to support the feedback page-->
@@ -73,7 +77,7 @@
 		<script src="js/jquery.matchHeight.js" type="text/javascript"/>
 		<script src="js/select2/js/select2.min.js"/>
 		<!-- Handlebars templating library -->
-		<script src="js/handlebars-v4.1.2.js"/>
+		<script src="js/handlebars.min-v4.7.6.js"/>
 		<!-- Date formatting library -->
 		<script src="js/moment/moment.js"/>
 		<!--Help text and tour library-->

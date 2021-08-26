@@ -78,7 +78,7 @@
 				<xsl:call-template name="Heading"/>
 				<!--ADD THE CONTENT-->
 				<div class="jumbotron bg-primary">
-					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');'"/>
+					<xsl:attribute name="style" select="concat('background-image: url(', $currentPortal/own_slot_value[slot_reference = 'portal_image_path']/value), ');background-size: 100%;'"/>
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-xs-12 col-sm-9 col-md-9 bg-white" style="opacity:0.75">
@@ -103,7 +103,6 @@
 							<div class="row">
 								<xsl:call-template name="viewLibrary"/>
 							</div>
-
 						</div>
 						<xsl:apply-templates mode="portalPanels" select="$portalPanels">
 							<xsl:sort select="current()/own_slot_value[slot_reference = 'portal_panel_sequence']/value"/>
@@ -118,10 +117,11 @@
 		</html>
 	</xsl:template>
 
-	<xsl:template mode="portals" match="node()">
+	<xsl:template mode="portals" match="node()">		
+		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="portalXSL" select="own_slot_value[slot_reference = 'portal_xsl_filename']/value"/>
 		<xsl:variable name="portalHistoryLabel" select="own_slot_value[slot_reference = 'report_history_label']/value"/>
-		<xsl:if test="current()/own_slot_value[slot_reference = 'portal_is_enabled']/value = 'true'">
+		<xsl:if test="eas:isUserAuthZ($this) and ($this/own_slot_value[slot_reference = 'portal_is_enabled']/value = 'true')">
 			<div>
 				<xsl:attribute name="class">
 					<xsl:choose>
@@ -144,7 +144,7 @@
 								<xsl:with-param name="theInstanceID" select="current()/name"/>
 								<xsl:with-param name="theHistoryLabel" select="$portalHistoryLabel"/>
 							</xsl:call-template>
-							<img alt="portal image">
+							<img alt="portal image" style="width:100%;">
 								<xsl:attribute name="src" select="current()/own_slot_value[slot_reference = 'portal_image_path']/value"/>
 							</img>
 						</a>
@@ -191,7 +191,7 @@
 								<xsl:with-param name="theXSL" select="$viewLibraryXSL"/>
 								<xsl:with-param name="theHistoryLabel" select="$viewLibraryHistoryLabel"/>
 							</xsl:call-template>
-							<img alt="screenshot">
+							<img alt="screenshot" style="width:100%;">
 								<xsl:attribute name="src" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_screenshot_filename']/value"/>
 							</img>
 						</a>
@@ -219,85 +219,91 @@
 	</xsl:template>
 
 	<xsl:template mode="portalPanels" match="node()">
-		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>
-		<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
-		<div class="col-xs-12 col-sm-4 bg-offwhite">
-			<h1 class="text-primary">
-				<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_label']/value"/>
-			</h1>
-			<p>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-			</p>
-			<div class="verticalSpacer_5px"/>
-			<ul>
-				<xsl:for-each select="$panelReports">
-					<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-					<li>
-						<!--<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>-->
-						<xsl:call-template name="RenderCatalogueLink">
-							<xsl:with-param name="theCatalogue" select="current()"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-							<xsl:with-param name="targetReport" select="()"/>
-							<xsl:with-param name="targetMenu" select="()"/>
-						</xsl:call-template>
-					</li>
-				</xsl:for-each>
-			</ul>
-			<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections"/>
-			<br/>
-		</div>
-		<div class="col-xs-12 col-sm-4"> &#160; </div>
+		<xsl:variable name="this" select="current()"/>
+		<xsl:if test="eas:isUserAuthZ($this)">
+			<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>
+			<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
+			<div class="col-xs-12 col-sm-4 bg-offwhite">
+				<h1 class="text-primary">
+					<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_label']/value"/>
+				</h1>
+				<p>
+					<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+					</xsl:call-template>
+				</p>
+				<div class="verticalSpacer_5px"/>
+				<ul>
+					<xsl:for-each select="$panelReports">
+						<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+						<li>
+							<!--<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>-->
+							<xsl:call-template name="RenderCatalogueLink">
+								<xsl:with-param name="theCatalogue" select="current()"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+								<xsl:with-param name="targetReport" select="()"/>
+								<xsl:with-param name="targetMenu" select="()"/>
+							</xsl:call-template>
+						</li>
+					</xsl:for-each>
+				</ul>
+				<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections"/>
+				<br/>
+			</div>
+			<div class="col-xs-12 col-sm-4"> &#160; </div>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="portalPanelSections" match="node()">
-		<xsl:variable name="sectionReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'portal_panel_section_reports']/value]"/>
-		<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
-		<xsl:variable name="sectionActors" select="$allActors[name = current()/own_slot_value[slot_reference = 'portal_panel_actors']/value]"/>
-		<h2>
-			<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_section_label']/value"/>
-		</h2>
-		<ul>
-			<xsl:for-each select="$sectionReports">
-				<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-				<li>
-					<a>
-						<xsl:value-of select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
-					</a>
-				</li>
-			</xsl:for-each>
-		</ul>
-		<ul>
-			<xsl:for-each select="$sectionActors">
-				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				<li>
-					<xsl:choose>
-						<xsl:when test="string-length(current()/own_slot_value[slot_reference = 'email']/value) > 0">
-							<a target="_blank">
-								<xsl:attribute name="href" select="concat('mailto:', current()/own_slot_value[slot_reference = 'email']/value)"/>
+		<xsl:variable name="this" select="current()"/>
+		<xsl:if test="eas:isUserAuthZ($this)">
+			<xsl:variable name="sectionReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'portal_panel_section_reports']/value]"/>
+			<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+			<xsl:variable name="sectionActors" select="$allActors[name = current()/own_slot_value[slot_reference = 'portal_panel_actors']/value]"/>
+			<h2>
+				<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_section_label']/value"/>
+			</h2>
+			<ul>
+				<xsl:for-each select="$sectionReports">
+					<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+					<li>
+						<a>
+							<xsl:value-of select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+						</a>
+					</li>
+				</xsl:for-each>
+			</ul>
+			<ul>
+				<xsl:for-each select="$sectionActors">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+					<li>
+						<xsl:choose>
+							<xsl:when test="string-length(current()/own_slot_value[slot_reference = 'email']/value) > 0">
+								<a target="_blank">
+									<xsl:attribute name="href" select="concat('mailto:', current()/own_slot_value[slot_reference = 'email']/value)"/>
+									<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
+								</a>
+							</xsl:when>
+							<xsl:otherwise>
 								<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-							</a>
-						</xsl:when>
-						<xsl:otherwise>
+							</xsl:otherwise>
+						</xsl:choose>
+					</li>
+				</xsl:for-each>
+			</ul>
+			<ul>
+				<xsl:for-each select="$sectionExtRefs">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+					<li>
+						<a target="_blank">
+							<xsl:attribute name="href" select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 							<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</li>
-			</xsl:for-each>
-		</ul>
-		<ul>
-			<xsl:for-each select="$sectionExtRefs">
-				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				<li>
-					<a target="_blank">
-						<xsl:attribute name="href" select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>
-						<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-					</a>
-				</li>
-			</xsl:for-each>
-		</ul>
-		<br/>
+						</a>
+					</li>
+				</xsl:for-each>
+			</ul>
+			<br/>
+		</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

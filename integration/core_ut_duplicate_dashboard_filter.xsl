@@ -620,7 +620,10 @@
 		</html>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>","id":"<xsl:value-of select="name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>","id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getOptions">

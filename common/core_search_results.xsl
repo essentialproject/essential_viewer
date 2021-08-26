@@ -23,10 +23,17 @@
 
 	<!-- END GENERIC LINK VARIABLES -->
 
+	<xsl:variable name="searchClassWhiteListConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Viewer Search Class Inclusion List')]"/>
+	<xsl:variable name="searchClassWhiteList" select="$searchClassWhiteListConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value"/>
+	<xsl:variable name="searchClassBlackListConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Viewer Search Class Exclusion List')]"/>
+	<xsl:variable name="searchClassBlackList" select="$searchClassBlackListConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value"/>
+
+
 	<xsl:variable name="currentSearch" select="replace(replace($SearchQuery, '[^\c]', ' '), ':', '')"/>
-	<xsl:variable name="allValues" select="//node()/simple_instance[type = $linkClasses]/*/value"/>
+	<xsl:variable name="allInstances" select="//node()/simple_instance"/>
+	<xsl:variable name="allValues" select="eas:getAllValues($allInstances)"/>
 	<xsl:variable name="matchingInstances" select="$allValues[matches(., $currentSearch, 'i')]/../.."/>
-	<xsl:variable name="matchingClasses" select="$matchingInstances/type"/>
+	<!-- <xsl:variable name="matchingClasses" select="$matchingInstances/type"/> -->
 
 	<!-- Get extended search matches -->
 	<xsl:variable name="allSWComponentValues" select="//node()/simple_instance[type = 'Software_Component']/*/value"/>
@@ -327,5 +334,20 @@
 			</td>
 		</tr>
 	</xsl:template>
+
+	<xsl:function name="eas:getAllValues" as="node()*">
+		<xsl:param name="inScopeInstances"/>
+		<xsl:choose>
+			<xsl:when test="$searchClassWhiteList">
+				<xsl:sequence select="$inScopeInstances[type = $searchClassWhiteList]/*/value"/>
+			</xsl:when>
+			<xsl:when test="$searchClassBlackList">
+				<xsl:sequence select="$inScopeInstances[(type = $linkClasses) and not(type = $searchClassBlackList)]/*/value"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:sequence select="$inScopeInstances[type = $linkClasses]/*/value"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:function>
 
 </xsl:stylesheet>

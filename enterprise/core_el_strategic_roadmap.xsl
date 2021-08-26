@@ -53,9 +53,9 @@
 	<xsl:variable name="allStrategicPlanRels" select="/node()/simple_instance[name = $allStrategicPlans/own_slot_value[slot_reference = ('strategic_plan_for_elements', 'strategic_plan_for_element')]/value]"/>
 	<xsl:variable name="allPlanningActions" select="/node()/simple_instance[name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
 	<xsl:variable name="allMilestones" select="/node()/simple_instance[(type = 'Roadmap_Milestone') and (name = $currentRoadmap/own_slot_value[slot_reference = 'contained_roadmap_model_elements']/value)]"/>
-	<xsl:variable name="allArchStates" select="/node()/simple_instance[name = ($allMilestones, $currentRoadmap)/own_slot_value[slot_reference = ('milestone_architecture_state', 'roadmap_architecture_states')]/value][count(own_slot_value[slot_reference='end_date_iso_8601']/value)&gt;0]"/>
-	<xsl:variable name="allDirectProjects" select="/node()/simple_instance[(type = 'Project') and (name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value)][own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value]"/>
-	<xsl:variable name="allProjectsViaPlanRels" select="/node()/simple_instance[name = $allStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value][own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value]"/>
+	<xsl:variable name="allArchStates" select="/node()/simple_instance[name = ($allMilestones, $currentRoadmap)/own_slot_value[slot_reference = ('milestone_architecture_state', 'roadmap_architecture_states')]/value][count(own_slot_value[slot_reference='end_date_iso_8601']/value) > 0]"/>
+	<xsl:variable name="allDirectProjects" select="/node()/simple_instance[(type = 'Project') and (name = $allStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value)][own_slot_value[slot_reference = ('ca_target_end_date_iso_8601', 'ca_forecast_end_date_iso_8601')]/value]"/>
+	<xsl:variable name="allProjectsViaPlanRels" select="/node()/simple_instance[name = $allStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value][own_slot_value[slot_reference = ('ca_target_end_date_iso_8601', 'ca_forecast_end_date_iso_8601')]/value]"/>
 	<xsl:variable name="allProjects" select="$allDirectProjects union $allProjectsViaPlanRels"/>
 	<xsl:variable name="allProjectStatii" select="/node()/simple_instance[type = 'Project_Lifecycle_Status']"/>
 
@@ -562,10 +562,10 @@
 		<!--<xsl:variable name="projectName">
 			<xsl:value-of select="$project/own_slot_value[slot_reference = 'name']/value"/><xsl:value-of select="$jsPlannedStartDate"/>
 		</xsl:variable>-->
-		
+		<!--		allProjectsViaPlanRels--> 	
 		<xsl:variable name="projectStatus" select="$allProjectStatii[name = $project/own_slot_value[slot_reference = 'project_lifecycle_status']/value]"/>
 		<xsl:variable name="projectStatusClass" select="lower-case(replace($projectStatus/own_slot_value[slot_reference = 'name']/value, ' ', '-'))"/>
-		{id: '<xsl:value-of select="$projectId"/>', content: '<span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span>'<xsl:choose><xsl:when test="($jsStartDate) and ($jsEndDate)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentRoadmapId"/>', className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$jsPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$jsActualStartDate"/><xsl:with-param name="targetEndDate" select="$jsTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$jsForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
+		{id: '<xsl:value-of select="$projectId"/>', content: '<xsl:if test="$allProjectsViaPlanRels[name=$project/name][not(name=$allDirectProjects/name)]"><xsl:text> </xsl:text><i class="fa fa-circle-o" style="color:#d3cfcf"></i></xsl:if><span class="popupTrigger"><xsl:attribute name="id" select="concat('trigger', $projectId)"/><xsl:value-of select="eas:renderJSText($projectName)"/></span> '<xsl:choose><xsl:when test="($jsStartDate) and ($jsEndDate)">, start: '<xsl:value-of select="$jsStartDate"/>', end: '<xsl:value-of select="$jsEndDate"/>'</xsl:when><xsl:otherwise>, start: new Date(), end: new Date()</xsl:otherwise></xsl:choose>,group:'<xsl:value-of select="$parentRoadmapId"/>', className: '<xsl:value-of select="$projectStatusClass"/>', projectStatus: '<xsl:value-of select="$projectStatus/name"/>', popupContent:'<xsl:call-template name="projectPopupDiv"><xsl:with-param name="project" select="$project"/><xsl:with-param name="projectId" select="$projectId"/><xsl:with-param name="lifecycleStatus" select="$projectStatus"/><xsl:with-param name="plannedStartDate" select="$jsPlannedStartDate"/><xsl:with-param name="actualStartDate" select="$jsActualStartDate"/><xsl:with-param name="targetEndDate" select="$jsTargetEndDate"/><xsl:with-param name="forecastEndDate" select="$jsForecastEndDate"/></xsl:call-template>'}<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="RenderArchStates" match="node()">
@@ -686,6 +686,7 @@
 						</div>
 					</div>
 				</xsl:for-each>
+				<div class="pull-left"><i class="fa fa-circle-o" style="color:#d3cfcf"></i> Indirect</div>
 			</div>
 		</div>
 	</xsl:template>

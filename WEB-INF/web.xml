@@ -38,6 +38,18 @@
 	
 	<display-name>Essential Viewer</display-name>
 	
+	<!-- Filter for evaluating "If-None-Match" request header 
+	     This filter MUST be first! -->
+	<filter-mapping>
+		<filter-name>ViewerETagFilter</filter-name>
+		<url-pattern>/report</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>SetLoggingContext</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+	
 	<filter-mapping>
 		<filter-name>ValidateSession</filter-name>
 		<url-pattern>/api/*</url-pattern>
@@ -112,6 +124,10 @@
 		<param-value>31535000</param-value>
 	</context-param>
 	<context-param>
+		<param-name>eipMode</param-name>
+		<param-value>false</param-value><!--eipmode-->
+	</context-param>
+	<context-param>
 		<param-name>pageHistoryTracking</param-name>
 		<!-- Set to 'off' to switch off page history tracking and 'on' to enable tracking -->  		
   		<param-value>on</param-value>
@@ -169,6 +185,12 @@
 		<param-value>/WEB-INF/security/getRepositoryID.xsl</param-value>
 	</context-param>
 	
+	<!-- Location of the Report API cache -->
+	<context-param>
+		<param-name>reportAPICacheLocation</param-name>
+		<param-value>/platform/tmp/reportApiCache/</param-value>
+	</context-param>
+	
 	<servlet>
 		<description>Servlet for receiving the Essential repository snapshots</description>
 		<display-name>EssentialReportService</display-name>
@@ -187,7 +209,10 @@
 			<param-name>uploadTempStore</param-name>
 			<param-value>/platform/tmp</param-value>
 		</init-param>
-
+		<init-param>
+			<param-name>mergeTransformXSL</param-name>
+			<param-value>/WEB-INF/security/mergeCurrentNew.xsl</param-value>
+		</init-param>
 	</servlet>
 
 	<servlet>
@@ -335,6 +360,20 @@
   		<servlet-name>essentialAPIPassThru</servlet-name>
   		<servlet-class>com.enterprise_architecture.essential.report.api.EssentialAPIPassThru</servlet-class> 
   	</servlet>
+  	
+  	<!-- ReportAPI Servlet -->
+  	<servlet>
+  		<description>Renders Report APIs and caches them on-demand</description>
+  		<display-name>Essential Report API Service</display-name>
+  		<servlet-name>ReportAPIServlet</servlet-name>
+  		<servlet-class>com.enterprise_architecture.essential.report.ReportAPIServlet</servlet-class>
+  		<!--<servlet-class>com.enterprise_architecture.essential.report.security.SecureReportAPIServlet</servlet-class>-->
+  	</servlet>
+    
+  	<servlet-mapping>
+  		<servlet-name>ReportAPIServlet</servlet-name>
+		<url-pattern>/reportApi</url-pattern>
+	</servlet-mapping>
     
   	<servlet-mapping>
   		<servlet-name>essentialAPIPassThru</servlet-name>
@@ -516,13 +555,18 @@
             <web-resource-name>ViewTemplates</web-resource-name>
             <description>No direct access to view template files.</description>
             <url-pattern>*.xsl</url-pattern>
-            <http-method>POST</http-method>
-            <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>
             <description>No direct browser access to view template files.</description>
             <role-name>NobodyHasThisRole</role-name>
         </auth-constraint>
+    </security-constraint>
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AllowCacheFiles</web-resource-name>
+            <description>Allow access to cache files.</description>
+            <url-pattern>/platform/tmp/reportApiCache/*</url-pattern>
+        </web-resource-collection>
     </security-constraint>
 	
 </web-app>

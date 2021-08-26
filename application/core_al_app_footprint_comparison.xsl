@@ -87,7 +87,6 @@
 				<title>Application Footprint Comparison</title>
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				
 				<xsl:call-template name="refModelLegendInclude"/>
 				<xsl:call-template name="appRefModelComparisonInclude"/>
@@ -577,9 +576,9 @@
 		
 		{
 		id: "<xsl:value-of select="name"/>",
-		name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 		description: "<xsl:value-of select="eas:renderJSText(own_slot_value[slot_reference='description']/value)"/>",
-		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>", 
 		codebase: "<xsl:value-of select="$thisAppCodebase/name"/>",
 		delivery: "<xsl:value-of select="$thisAppDeliveryModel/name"/>"
 		} <xsl:if test="not(position()=last())">,

@@ -6,10 +6,10 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 
-
+	
 	<xsl:include href="../common/core_external_repos_ref.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
-	<!--	<xsl:include href="../information/menus/core_info_view_menu.xsl" />
+	<!--<xsl:include href="../information/menus/core_info_view_menu.xsl" />
 	<xsl:include href="../information/menus/core_data_subject_menu.xsl" />-->
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
@@ -83,7 +83,10 @@
 
 
 	<xsl:variable name="relevantBusCaps" select="$currentBusCap union $subBusCaps"/>
-	<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
+	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type='Business_Process']"/>
+	<xsl:variable name="relevantBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
+	
+
 	<xsl:variable name="currentBusProcs" select="$relevantBusProcs"/>
 	<xsl:variable name="relevantBusProc2AppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $relevantBusProcs/name]"/>
 	<xsl:variable name="relevantAppSvcs" select="/node()/simple_instance[name = $relevantBusProc2AppSvcs/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
@@ -163,7 +166,17 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-
+			<style>
+			.arrow-toggle .icon-arrow-down,
+			.arrow-toggle.collapsed .icon-arrow-up {
+				display: inline-block;
+			}
+			.arrow-toggle.collapsed .icon-arrow-down,
+			.arrow-toggle .icon-arrow-up {
+				display: none;
+			}	
+				
+			</style>
 			</head>
 			<body>
 
@@ -380,27 +393,36 @@
 								<xsl:choose>
 									<xsl:when test="count($currentBusProcs) = 0">
 										<p>
-											<em>No Sub-Processes for this capability</em>
+											<em>No processes for this capability</em>
 										</p>
 									</xsl:when>
 									<xsl:otherwise>
 										<p>The following Business Processes implement the <strong><xsl:value-of select="$currentBusCapName"/></strong> Business Capability</p>
 										<br/>
-										<table class="table table-bordered table-striped">
+										<table class="table table-bordered table-striped" id="processTable">
 											<thead>
 												<tr>
-													<th class="cellWidth-40pc">Process Name</th>
+													<th class="cellWidth-20pc">Process Name</th>
+													<th class="cellWidth-20pc">Sub Processes</th>
 													<th class="cellWidth-60pc">Description</th>
 												</tr>
 											</thead>
 											<tbody>
-												<xsl:for-each select="$currentBusProcs">
+													<!--<xsl:for-each select="$currentBusProcs">
 													<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-													<tr>
+														<xsl:variable name="relevantsubBusProcs" select="eas:get_object_descendants(current(), $allBusProcs, 0, 6, 'bp_sub_business_processes')"/>
+								
+														<xsl:variable name="relevantsubBusProcNodes" select="$allBusProcs[name=$relevantsubBusProcs]"/>
+													
+												<tr>
 														<td>
 															<xsl:call-template name="RenderInstanceLink">
 																<xsl:with-param name="theSubjectInstance" select="current()"/>
 															</xsl:call-template>
+														</td>
+														<td>
+															 
+													
 														</td>
 														<td>
 															<xsl:call-template name="RenderMultiLangInstanceDescription">
@@ -408,7 +430,7 @@
 															</xsl:call-template>
 														</td>
 													</tr>
-												</xsl:for-each>
+												</xsl:for-each>-->
 											</tbody>
 										</table>
 									</xsl:otherwise>
@@ -499,7 +521,8 @@
 												</tr>
 											</thead>
 											<tbody>
-												<xsl:apply-templates select="$allAppsForCap" mode="RenderAppRow">
+											
+												<xsl:apply-templates select="$appsForRolesCap union $appsForCap" mode="RenderAppRow">
 													<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 												</xsl:apply-templates>
 											</tbody>
@@ -580,6 +603,69 @@
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
+<script>
+	
+var subProcesses=[<xsl:apply-templates select="$currentBusProcs" mode="processModel"/>];
+	
+$(document).ready(function() {                    
+	var procFragmentFront   = $("#proc-template").html();
+	procTemplateFront = Handlebars.compile(procFragmentFront);
+	
+	Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+		return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+	});
+
+	$('#processTable').append(procTemplateFront(subProcesses));
+	
+	
+	$("span[easid='but']").click(function() {
+	console.log(this)
+    $(this).children().toggleClass("fa-caret-up fa-caret-down");
+	});
+	
+	
+	$("button[easid='but']").click(function() {
+    $(this).children().toggleClass("fa-caret-up fa-caret-down");
+	});
+});
+
+</script>
+<script id="proc-template" type="text/x-handlebars-template">
+{{#each this}}
+<tr style="border-top:1pt solid #d3d3d3"><td style="vertical-align:top;padding:3px">{{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}</td>
+	<td  style="vertical-align:top;padding:3px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+		<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+			<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{#if this.subProcess}}<button style="height:20px; border:none; background-color:#ffffff" easid="but" data-toggle="collapse"><xsl:attribute name="data-target">#{{this.id}}</xsl:attribute><i class="fa fa-caret-up"></i></button>{{/if}}<br/>
+			<div class="collapse"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
+				<div style="padding-left:15px">{{#each this.subProcess}}- {{{this.link}}}{{#ifEquals this.flow  'Y'}}<xsl:text> </xsl:text><i class="fa fa-random"></i>{{/ifEquals}}{{/each}}</div>
+			</div>
+			{{/each}}
+			</div>
+			</div>
+			{{/each}}
+			</div>
+			</div>
+			{{/each}}
+			</div>
+			</div>
+			{{/each}}
+			</div>
+			</div>
+			{{/each}}
+			</div>
+		</div>
+		{{/each}}</td>
+	<td  style="vertical-align:top;padding:3px">{{this.description}}</td></tr>
+{{/each}}
+</script>				
 			</body>
 		</html>
 	</xsl:template>
@@ -850,6 +936,7 @@
 					<xsl:with-param name="divClass" select="'compModelContent backColour19 text-black small impact tabTop'"/>
 					<xsl:with-param name="anchorClass" select="'text-white small'"/>
 				</xsl:call-template>
+				
 			</div>
 			<xsl:variable name="supportingBusCaps" select="$allBusinessCaps[own_slot_value[slot_reference = 'supports_business_capabilities']/value = current()/name]"/>
 			<xsl:choose>
@@ -882,7 +969,17 @@
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				<xsl:with-param name="divClass" select="'compModelContent small'"/>
 			</xsl:call-template>
+		 
+ <xsl:if test="current()/own_slot_value[slot_reference='contained_business_capabilities']/value">
+ <div style="position:relative;top:-15px;left:5px">	 
+  <span data-toggle="collapse"><xsl:attribute name="data-target">#<xsl:value-of select="current()/name"/></xsl:attribute><span class="icon-arrow-down" easid='but'><i class="fa fa-caret-up"></i></span></span>
+  <div class="collapse"><xsl:attribute name="id"><xsl:value-of select="current()/name"/></xsl:attribute>
+    <xsl:apply-templates select="$allBusinessCaps[name=current()/own_slot_value[slot_reference='contained_business_capabilities']/value]" mode="RenderBusinessCapabilityCell"/>
+</div>
+		 </div>
+	 </xsl:if>
 		</div>
+			
 	</xsl:template>
     <xsl:template match="node()" mode="renderBusParentCap">
         <xsl:variable name="this" select="current()"/>
@@ -892,8 +989,32 @@
 		<xsl:with-param name="theXML" select="$reposXML"/>
 		<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 		</xsl:call-template>
+																				
+
     </li>
     </xsl:template>
+	
+<xsl:template match="node()" mode="processModel">
+	<xsl:variable name="thissubBusinessProcesses" select="$allBusProcs[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>
+	 
+{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+ "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+ "flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",
+ "link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
+ "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>]}<xsl:if test="position()!=last()">,</xsl:if>	
+</xsl:template>
 
+<xsl:template match="node()" mode="subProcesses">
+	<xsl:variable name="thissubBusinessProcesses" select="$allBusProcs[name=current()/own_slot_value[slot_reference='bp_sub_business_processes']/value]"/>
+{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+"flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",
+ "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",	
+"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+<xsl:if test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">"flow":"yes",</xsl:if>	
+ "subProcess":[<xsl:apply-templates select="$thissubBusinessProcesses" mode="subProcesses"/>]}<xsl:if test="position()!=last()">,</xsl:if>	
+	
+</xsl:template>	
 
 </xsl:stylesheet>

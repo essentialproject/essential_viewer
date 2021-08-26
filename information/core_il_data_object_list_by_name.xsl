@@ -74,7 +74,7 @@
 				<!--script to support smooth scroll back to top of page-->
 				<script type="text/javascript">
 					$(document).ready(function() {
-					    $('a[href=#top]').click(function(){
+					    $('a.topLink').click(function(){
 					        $('html, body').animate({scrollTop:0}, 'slow');
 					        return false;
 					    });
@@ -258,7 +258,7 @@
 		<!-- DATA SUBJECTS END HERE -->
 		<br/>
 		<div class="jumpToTopLink">
-			<a href="#top">
+			<a href="#top" class="topLink">
 				<xsl:value-of select="eas:i18n('Back to Top')"/>
 			</a>
 		</div>

@@ -38,7 +38,6 @@
 		  			}
 		  		});
 		  		sectionLabels.sort();
-            console.log(sectionLabels);
 		  	}
 		  	
 		  	//function to create the list of relevant sections for the current scope
@@ -79,6 +78,7 @@
 				//console.log('Redrawing View');
 				
 				<xsl:if test="$isRoadmapEnabled">
+				if(roadmapEnabled) {
 					<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
 					//update the roadmap status of the catalogue instances passed as an array of arrays
 					rmSetElementListRoadmapStatus([instances.instances]);
@@ -86,6 +86,9 @@
 					<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 					//filter instances to those in scope for the roadmap start and end date
 					inScopeInstances.instances = rmGetVisibleElements(instances.instances);
+				} else {
+					inScopeInstances.instances = instances.instances;
+				}
 				</xsl:if>			
 				
 				<!-- VIEW SPECIFIC JS CALLS -->
@@ -277,6 +280,7 @@
 				//console.log('Redrawing View');
 				
 				<xsl:if test="$isRoadmapEnabled">
+					if(roadmapEnabled) {
 					<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
 					//update the roadmap status of the catalogue instances passed as an array of arrays
 					rmSetElementListRoadmapStatus([instances.instances, orphanInstances.instances]);
@@ -285,6 +289,10 @@
 					//filter instances to those in scope for the roadmap start and end date
 					inScopeInstances.instances = rmGetVisibleElements(instances.instances);
 					inScopeOrphans.instances = rmGetVisibleElements(orphanInstances.instances);
+					} else {
+						inScopeInstances.instances = instances.instances;
+						inScopeOrphans.instances = orphanInstances.instances;
+					}
 				</xsl:if>			
 				
 				<!-- VIEW SPECIFIC JS CALLS -->

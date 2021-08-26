@@ -85,7 +85,6 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<!-- Searchable Select Box Libraries and Styles -->
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>

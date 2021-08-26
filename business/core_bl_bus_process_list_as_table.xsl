@@ -173,6 +173,7 @@
 							<h2 class="text-primary">
 								<xsl:value-of select="eas:i18n('Catalogue')"/>
 							</h2>
+							<div class="pull-right"><i class="fa fa-random"></i> - Has associated Business Process Flow</div> 
 
 
 							<p><xsl:value-of select="eas:i18n('This table lists all the Business Processes in use and allows search as well as copy to spreadsheet')"/>.</p>
@@ -219,6 +220,7 @@
 										//get the current Bus Proc
 										var aBusProc = inScopeBusProcesses.busProcesses[i];
 										//Apply handlebars template
+										
 										var busProcLinkHTML = busProcNameTemplate(aBusProc);
 										
 										//get the business process family
@@ -271,6 +273,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter busProcesses to those in scope for the roadmap start and end date
 										inScopeBusProcesses.busProcesses = rmGetVisibleElements(busProcesses.busProcesses);
+									} else {
+										inScopeBusProcesses.busProcesses = busProcesses.busProcesses;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->
@@ -291,6 +295,10 @@
 								
 								$(document).ready(function(){
 								
+									Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+										return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+									});
+				
 									//START COMPILE HANDLEBARS TEMPLATES
 									
 									//Set up the html templates for technology products, components and capabilities
@@ -429,7 +437,7 @@
 				<!-- Handlebars template to render an individual application as text-->
 				<script id="bus-process-name" type="text/x-handlebars-template">
 					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
-					<xsl:call-template name="RenderHandlebarsRoadmapSpan"/>
+					<xsl:call-template name="RenderHandlebarsRoadmapSpan"/> {{#ifEquals this.flow  'Y'}}<i class="fa fa-random"></i>{{/ifEquals}}
 				</script>
 				<!-- END HANDLEBARS TEMPLATES -->
 				
@@ -474,10 +482,9 @@
 		{
 			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
 			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-        "debugi":"<xsl:value-of select="$indirectBusProcFamilies/name"/>",
-        "debugd":"<xsl:value-of select="$directBusProcFamilies/name"/>",
-			familyId: '<xsl:value-of select="eas:getSafeJSString($thisBusProcFamilies[1]/name)"/>', 
-			capabilities: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusCaps"/>]
+			"flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",
+			"familyId": "<xsl:value-of select="eas:getSafeJSString($thisBusProcFamilies[1]/name)"/>", 
+			"capabilities": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusCaps"/>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

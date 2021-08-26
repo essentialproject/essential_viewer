@@ -100,6 +100,32 @@
         
     </xsl:template>-->
     <!-- End of test harness -->
+
+    <!-- New templates to manage security for JSON Views -->
+    <xsl:template name="RenderSecurityClassificationsJSONForInstance">
+        <xsl:param name="theInstance"/>
+        
+        <xsl:variable name="thisSecClassifications" select="$classifications[name = $theInstance/own_slot_value[slot_reference='system_security_read_classification']/value]"/>       
+        "securityClassifications":[<xsl:apply-templates mode="RenderSecurityClassificationJSON" select="$thisSecClassifications"/>]     
+    </xsl:template>
+    
+    
+    <xsl:template mode="RenderSecurityClassificationJSON" match="node()">
+        <xsl:variable name="this" select="current()"/>
+        <xsl:variable name="thisSecClassGroup" select="$classificationGroups[name = $this/own_slot_value[slot_reference='contained_in_content_classification_group']/value]"/>
+        <xsl:variable name="thisName" select="$this/own_slot_value[slot_reference='name']/value"/>
+        <xsl:variable name="thisIndex" select="$this/own_slot_value[slot_reference='security_classification_index']/value"/>
+        <xsl:variable name="thisSecGroup" select="$thisSecClassGroup/own_slot_value[slot_reference='name']/value"/>
+{
+"group": "<xsl:value-of select="$thisSecGroup"/>",
+"level": "<xsl:value-of select="$thisName"/>",
+"index": "<xsl:value-of select="$thisIndex"/>"        
+}<xsl:if test="not(position() = last())">,
+</xsl:if>
+    </xsl:template>
+    
+    <!-- End of JSON security templates -->
+    
     
     <!-- function to test whether user can access specified instance -->
     <xsl:function name="eas:isUserAuthZ" as="xs:boolean">

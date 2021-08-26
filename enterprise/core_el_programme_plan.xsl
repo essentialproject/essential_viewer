@@ -589,6 +589,7 @@ var today = new Date();
 			<div class="verticalSpacer_5px"/>
 			<div class="col-xs-10">
 				<xsl:for-each select="$allProjectStatii">
+					<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
 					<xsl:variable name="lifecycleStatusColour" select="eas:get_element_style_colour(current())"/>
 					<div class="pull-left">
 						<div class="keySampleWide">

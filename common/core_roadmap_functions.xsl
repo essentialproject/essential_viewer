@@ -89,7 +89,6 @@
 		<xsl:param name="roadmapEnabled"/>
 		
 		<!-- HANDLEBARS LIBRARY -->
-		<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 		
 		<xsl:if test="$roadmapEnabled">
 			<!-- MONTH PICKER LIBRARIES AND STYLESHEETS -->
@@ -130,6 +129,7 @@
 				<xsl:otherwise>
 					<xsl:call-template name="RenderMultiLangInstanceName">
 						<xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -142,7 +142,7 @@
 				<xsl:with-param name="targetReport" select="$theTargetReport"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="thisDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="thisDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/></xsl:call-template></xsl:variable>
 		
 		<xsl:variable name="createPlansForElement" select="$rmCreatePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
 		<xsl:variable name="enhancePlansForElement" select="$rmEnhancePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
@@ -161,9 +161,9 @@
 		<xsl:variable name="allThisRoadmapInstanceArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $theRoadmapInstance/name]"/>
 		
 		"id": "<xsl:value-of select="$thisId"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
 		"link": "<xsl:value-of select="$thisLink"/>",
-		"description": "<xsl:value-of select="eas:validJSONString($thisDescription)"/>"<xsl:if test="$isRoadmapEnabled">,
+		"description": "<xsl:value-of select="$thisDescription"/>"<xsl:if test="$isRoadmapEnabled">,
 		<xsl:if test="count($theTargetReport) = 0">"menu": "<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>",</xsl:if>
 		"roadmap": {
 			"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
@@ -279,7 +279,7 @@
 		
 		{
 			"id": "<xsl:value-of select="$planId"/>",
-			"description": "<xsl:value-of select="eas:validJSONString($planDesc)"/>",
+			"description": "<xsl:value-of select="$planDesc"/>",
 			"changeLabel": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlanningAction"/></xsl:call-template>",
 			"startDate": "<xsl:value-of select="$planStartDate"/>",
 			"endDate": "<xsl:value-of select="$planEndDate"/>",
@@ -366,6 +366,7 @@
 		<xsl:variable name="planName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisPlan"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
@@ -379,9 +380,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$planId"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($planName)"/>",
+		"name": "<xsl:value-of select="$planName"/>",
 		"link": "<xsl:value-of select="$planLink"/>",
-		"description": "<xsl:value-of select="eas:validJSONString($planDesc)"/>",
+		"description": "<xsl:value-of select="$planDesc"/>",
 		"startDate": "<xsl:value-of select="$planStartDate"/>",
 		"endDate": "<xsl:value-of select="$planEndDate"/>",
 		"roadmaps": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$planRoadmaps"/>],
@@ -406,6 +407,7 @@
 		<xsl:variable name="archStateName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$archStateId"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
@@ -419,9 +421,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$archStateId"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($archStateName)"/>",
+		"name": "<xsl:value-of select="$archStateName"/>",
 		"link": "<xsl:value-of select="$archStateLink"/>",
-		"description": "<xsl:value-of select="eas:validJSONString($archStateDesc)"/>",
+		"description": "<xsl:value-of select="$archStateDesc"/>",
 		"startDate": "<xsl:value-of select="$archStateStartDate"/>",
 		"endDate": "<xsl:value-of select="$archStateEndDate"/>",
 		"roadmaps": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$archStateRoadmaps"/>],
@@ -457,11 +459,11 @@
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"ref": <xsl:value-of select="$thisRef"/>,
-		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
 		"type": "<xsl:value-of select="$metaClassLabel"/>",
 		"icon": "<xsl:value-of select="$metaClassStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"description": "<xsl:value-of select="$thisDesc"/>",
 		"targetDate": "<xsl:value-of select="current()/own_slot_value[slot_reference = ('bo_target_date_iso_8601', 'ao_target_date_iso_8601', 'io_target_date_iso_8601', 'tao_target_date_iso_8601')]/value"/>"
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -473,6 +475,7 @@
 		<xsl:variable name="thisName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
@@ -485,9 +488,9 @@
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-		"description": "<xsl:value-of select="eas:validJSONString($thisDesc)"/>",
+		"description": "<xsl:value-of select="$thisDesc"/>",
 		}<xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1994,6 +1997,7 @@
 				<xsl:otherwise>
 					<xsl:call-template name="RenderMultiLangInstanceName">
 						<xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -2006,7 +2010,7 @@
 				<xsl:with-param name="targetReport" select="$theTargetReport"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="thisDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="thisDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/></xsl:call-template></xsl:variable>
 		
 		<xsl:variable name="createPlansForElement" select="$rmCreatePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
 		<xsl:variable name="enhancePlansForElement" select="$rmEnhancePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
@@ -2025,9 +2029,9 @@
 		<xsl:variable name="allThisRoadmapInstanceArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $theRoadmapInstance/name]"/>
 		
 		"id": "<xsl:value-of select="$thisId"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
 		"link": "<xsl:value-of select="$thisLink"/>",
-		"description": "<xsl:value-of select="eas:validJSONString($thisDescription)"/>"<xsl:if test="$isRoadmapEnabled">,
+		"description": "<xsl:value-of select="$thisDescription"/>"<xsl:if test="$isRoadmapEnabled">,
 		<xsl:if test="count($theTargetReport) = 0">"menu": "<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>",</xsl:if>
 		"roadmap": {
 			"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",

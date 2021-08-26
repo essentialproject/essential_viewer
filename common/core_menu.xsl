@@ -42,14 +42,19 @@
 	
 	<xsl:variable name="allMenuItemTargets" select="/node()/simple_instance[name = $allMenuItems/own_slot_value[slot_reference = 'report_menu_item_target_report']/value]"/>
 	<xsl:variable name="allTargetEditorSections" select="$allMenuItemTargets[type = 'Editor_Section']"/>
-	<xsl:variable name="allTargetEditors" select="/node()/simple_instance[name = $allTargetEditorSections/own_slot_value[slot_reference = 'editor_section_parent']/value]"/>
+	<xsl:variable name="allTargetSimpleEditors" select="$allMenuItemTargets[type = 'Simple_Editor']"/>
+	<xsl:variable name="allTargetEditors" select="($allTargetSimpleEditors, /node()/simple_instance[name = $allTargetEditorSections/own_slot_value[slot_reference = 'editor_section_parent']/value])"/>
 	<xsl:variable name="allTargetReports" select="$allMenuItemTargets[type = 'Report']"/>
 	<xsl:variable name="allReportMenuItems" select="$allMenuItems[own_slot_value[slot_reference = 'report_menu_item_target_report']/value = $allTargetReports/name]"/>
-	<xsl:variable name="allEditorMenuItems" select="$allMenuItems[own_slot_value[slot_reference = 'report_menu_item_target_report']/value = $allTargetEditorSections/name]"/>
+	<xsl:variable name="allEditorMenuItems" select="$allMenuItems[own_slot_value[slot_reference = 'report_menu_item_target_report']/value = ($allTargetEditorSections, $allTargetSimpleEditors)/name]"/>
 	
 	<xsl:variable name="allTargetReportParameters" select="/node()/simple_instance[name = ($allTargetReports, $allTargetEditors)/own_slot_value[slot_reference = 'report_parameters']/value]"/>
 	<xsl:variable name="allTargetReportParameterInstanceVals" select="/node()/simple_instance[name = $allTargetReportParameters/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
 	<xsl:variable name="allMenuTargetReportTypes" select="/node()/simple_instance[type = 'Report_Implementation_Type']"/>
+	
+	<!--The published repo Name and ID-->
+	<xsl:variable name="repoName" select="/node()/repository/name"/>
+	<xsl:variable name="repoID" select="/node()/repository/repositoryID"/>
 
 	<!-- Define any constant values that are used throughout -->
 	<xsl:variable name="urlNameSuffix" select="'URL'"/>
@@ -57,6 +62,12 @@
 
 	<xsl:variable name="menuIdeationConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Ideation Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
 	<xsl:variable name="menuIdeationIsOn" select="string-length($menuIdeationConstant)"/>
+	
+	<xsl:variable name="menuEdmEditConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Edit in Repository Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
+	<xsl:variable name="menuEdmEditIsOn" select="string-length($menuEdmEditConstant) > 0"/>
+	<!--<xsl:variable name="menuEdmEditIsOn" select="'true'"/>-->
+
+	<xsl:variable name="menuSupportsCollab" select="eas:menuCompareVersionNumbers($menuRepoVersion, '6.6')"/>
 
 	<xsl:template name="RenderPopUpJavascript">
 		<!-- thisMenu = the menu to be presented -->
@@ -75,7 +86,6 @@
         	<xsl:variable name="thisEditorMenuItems" select="$thisMenuItems[name = $allEditorMenuItems/name]"/>
             
         	<xsl:variable name="thisMenuModals" select="$essAllModalReports[own_slot_value[slot_reference = 'modal_report_for_classes']/value = current()/own_slot_value[slot_reference = 'report_menu_class']/value]"/>
-        	
         	<!-- Define the menu intro text -->
         	<xsl:variable name="thisMenuIntro">
                 <xsl:choose>
@@ -96,15 +106,22 @@
         	</xsl:if>-->
         	<xsl:apply-templates mode="RenderEditorMenuItemFunction" select="$thisEditorMenuItems"/>
         	
+        	<!--Build the Edit in EDM Menu Functions-->
+        	<xsl:call-template name="edmEditMenu"/>
+
         	<!-- Render the function that pops up the context menu -->
             $(function(){$.contextMenu({selector: '.context-menu-<xsl:value-of select="$thisMenuShortName"/>',zIndex: 100, trigger: 'left',ignoreRightClick: true,autoHide: false,animation: {duration: 100, show: "fadeIn", hide: "fadeOut"},items: {title:	{type: "html", html: '<span class="uppercase fontBold menuTitle"><xsl:value-of select="$thisMenuIntro"/></span>', icon: "none"}
         		
         		<!-- Render the entries for menu items that target Reports -->
         		<xsl:apply-templates mode="RenderMenuGroupEntries" select="$thisMenuGroups"/>
         		<!-- If defined, render the entries for menu items that target Editors -->
-        		<xsl:if test="($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisEditorMenuItems) > 0)">, "sep1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
-        		<xsl:if test="($menuIdeationIsOn) and ($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisMenuModals) > 0)">
-					, "sep2": "---------"
+        		<xsl:if test="($eipMode = 'true') and $menuSupportsCollab and (count($thisEditorMenuItems) > 0)">, "sep1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
+        		<xsl:if test="($menuEdmEditIsOn) and ($eipMode = 'true')">
+        			, "sep2": "---------"
+        			, edmEditMenu: {name: "Edit in <xsl:value-of select="$repoName"/> Repository",icon: "edit",callback: edmEditURL}
+        		</xsl:if>
+        		<xsl:if test="($menuIdeationIsOn) and ($eipMode = 'true') and $menuSupportsCollab and (count($thisMenuModals) > 0)">
+					, "sep3": "---------"
 	        		<xsl:apply-templates mode="RenderMenuItemModalEntries" select="$thisMenuModals"/>
         		</xsl:if>}});
         	});
@@ -112,14 +129,24 @@
         </script>
 	</xsl:template>
 	
-	
+	<xsl:template name="edmEditMenu">
+        <xsl:variable name="edmEditURL" select="concat('/app/#/Repo/',$repoID,'/EditInstance/')"/>
+        function edmEditURL(key,opt){
+        	var instanceHref= opt.$trigger.attr("href");
+			//console.log(instanceHref);
+			const urlParams = new URLSearchParams(instanceHref);
+			const instanceID = urlParams.get('PMA')
+			//console.log(instanceID);
+			theURL = "<xsl:value-of select="$edmEditURL"/>"+instanceID
+        	window.open(theURL, "edmWindow");
+		}
+	</xsl:template>
 	
 	<xsl:template name="RenderEditorPopUpJavascript">
 		<!-- thisMenu = the menu to be presented -->
 		<xsl:param name="thisMenu"/>
 		<!-- boolean as to whether a new window/tab should be opened -->
 		<xsl:param name="newWindow" select="false()"/>
-		
 		
 		<script type="text/javascript">
         <xsl:for-each select="$thisMenu">
@@ -151,7 +178,7 @@
         		<!-- Render the entries for menu items that target Reports -->
         		<xsl:apply-templates mode="RenderMenuGroupEntries" select="$thisMenuGroups"/>
         		<!-- If defined, render the entries for menu items that target Editors -->
-        		<xsl:if test="($eipMode = 'true') and ($menuRepoVersion >= '6.6') and (count($thisEditorMenuItems) > 0)">, "1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
+        		<xsl:if test="($eipMode = 'true') and $menuSupportsCollab and (count($thisEditorMenuItems) > 0)">, "1": "---------"<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisEditorMenuItems"/></xsl:if>
         		}});
         	});
         </xsl:for-each>
@@ -209,11 +236,12 @@
 	<xsl:template mode="RenderEditorMenuItemFunction" match="node()">
 		<!-- boolean as to whether a new window/tab should be opened -->
 		
+		<xsl:variable name="thisMenuItem" select="current()"/>
 		<xsl:variable name="menuItemShortName" select="current()/own_slot_value[slot_reference = 'menu_item_short_name']/value"/>
 		<xsl:variable name="menuItemFunctionName" select="concat($menuItemShortName, $urlNameSuffix)"/>
-		<xsl:variable name="menuItemTargetEditorSection" select="$allTargetEditorSections[name = current()/own_slot_value[slot_reference = 'report_menu_item_target_report']/value]"/>
+		<xsl:variable name="menuItemTargetEditorSection" select="$allTargetEditorSections[name = $thisMenuItem/own_slot_value[slot_reference = 'report_menu_item_target_report']/value]"/>
 		<xsl:variable name="menuItemTargetEditorSectionId" select="$menuItemTargetEditorSection/own_slot_value[slot_reference = 'editor_section_anchor_id']/value"/>
-		<xsl:variable name="menuItemTargetEditor" select="$allTargetEditors[name = $menuItemTargetEditorSection/own_slot_value[slot_reference = 'editor_section_parent']/value]"/>
+		<xsl:variable name="menuItemTargetEditor" select="$allTargetEditors[name = ($menuItemTargetEditorSection, $thisMenuItem)/own_slot_value[slot_reference = ('editor_section_parent', 'report_menu_item_target_report')]/value]"/>
 		<xsl:variable name="menuItemTargetHistoryLabel" select="$menuItemTargetEditor/own_slot_value[slot_reference = 'report_history_label']/value"/>
 		<xsl:variable name="menuItemTargetReportType" select="$allMenuTargetReportTypes[name = $menuItemTargetEditor/own_slot_value[slot_reference = 'report_implementation_type']/value]"/>
 		<xsl:variable name="menuItemTargetReportParameters" select="$allTargetReportParameters[name = $menuItemTargetEditor/own_slot_value[slot_reference = 'report_parameters']/value]"/>
@@ -301,30 +329,6 @@
 		
 	</xsl:template>
 
-
-	<xsl:template mode="RenderMenuItemParameters" match="node()">
-		<xsl:param name="paramInstanceVals" select="()"/>
-		
-		<xsl:variable name="thisParam" select="current()"/>
-		<xsl:variable name="thisParamInstanceVal" select="$paramInstanceVals[name = $thisParam/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
-		
-		<xsl:variable name="thisParamName" select="$thisParam/own_slot_value[slot_reference = 'report_parameter_name']/value"/>
-		<xsl:variable name="thisParamValue">
-			<xsl:choose>
-				<xsl:when test="count($thisParamInstanceVal) > 0">
-					<xsl:value-of select="$thisParamInstanceVal/name"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$thisParam/own_slot_value[slot_reference = 'report_parameter_string_value']/value"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		
-		<xsl:if test="(string-length($thisParamName) > 0) and (string-length($thisParamValue) > 0)">&amp;<xsl:value-of select="$thisParamName"/>=<xsl:value-of select="$thisParamValue"/></xsl:if>
-		
-	</xsl:template>
-
-
 	<xsl:template name="RenderMenuItemEntriesOLD">
 		<xsl:param name="menuItems"/>
 
@@ -358,6 +362,27 @@
         <xsl:param name="menuPassed"/>
         <xsl:text>&amp;menuId=</xsl:text><xsl:value-of select="$menuPassed/name"/>
     </xsl:template>-->
+	
+	<!-- function to test if a given version number is greater than, or equal to a second verson number -->
+	<xsl:function name="eas:menuCompareVersionNumbers" as="xs:boolean">
+		<xsl:param name="currentVersionNum"/>
+		<xsl:param name="testVersionNum"/>
+		
+		<xsl:variable name="currVersionTokens" select="tokenize($currentVersionNum, '\.')"/>
+		<xsl:variable name="testVersionTokens" select="tokenize($testVersionNum, '\.')"/>
+		
+		<xsl:variable name="compareList">
+			<xsl:for-each select="$currVersionTokens">
+				<xsl:variable name="tokenIndex" select="position()"/>
+				<xsl:variable name="thisToken" select="."/>
+				<xsl:variable name="testToken" select="$testVersionTokens[$tokenIndex]"/>
+				<xsl:sequence select="number($thisToken) >= number($testToken)"/>
+			</xsl:for-each>
+		</xsl:variable>
+		
+		<xsl:value-of select="not(contains($compareList, 'false'))"/>
+		
+	</xsl:function>
 
 
 </xsl:stylesheet>

@@ -104,7 +104,6 @@
 				<xsl:call-template name="RenderModalReportContent">
 					<xsl:with-param name="essModalClassNames" select="$linkClasses"/>
 				</xsl:call-template>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
@@ -455,6 +454,13 @@
 						
 						
 						$('#nothingToSee').hide();
+                    
+                    
+                    var cveLog = 'user/cvefile.json';
+                 $.get(cveLog)
+    .done(function() { 
+     console.log('found')
+   
 						$.getJSON("user/cvefile.json", function (cveJSONset) {
 							
 							return cveJSONset;
@@ -471,12 +477,19 @@
 								$('.S' + $(this).val()).show();
 							}
 						})
+                     }).fail(function() { 
+                 $('#loader1').hide();
+                    $('#prodCards').text('No cvefile.json found in user folder, please download a cve file and put in user folder');
+          console.log('not found')
+            })
 					});
 					
 					$("#showCVE").click(function () {
 						$("#cvetab").toggle();
 						$('span',this).text(function(i,txt) {return txt === "Show" ? "Hide" : "Show";});
 					});
+                    
+                    
 					
 					function doCompare() {
 						var prodlist =[];
@@ -627,6 +640,7 @@
 													prodsAll =[];
 													prodsAll[ 'cpematch'] = cpematch;
 													prodsAll[ 'id'] = fulllist[0].vendorId;
+													prodsAll[ 'prdid'] = fulllist[0].vendorId;
 													prodsAll[ 'vendor'] = fulllist[0].vendor;
 													prodsAll[ 'product'] = vendorProduct;
 													prodsAll[ 'version'] = productVersion;
@@ -690,7 +704,7 @@
 						$('#prodCards').append(techListTemplate(toShow));
 						
 						$('#allVendors').append(techListTemplate(alltoShow));
-						
+		console.log(alltoShow);					
 	console.log(toShow);
 						$('#allCVEVendors > tbody').append(allListTemplate(nvdlist));
 						$('#loader1').hide();

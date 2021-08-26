@@ -75,11 +75,11 @@
                 {
                     $.ajax(
                     {
-                        type: 'POST',
-                        url: 'viewHistory',
+                        type: "POST",
+                        url: "viewHistory",
                         data:
                         {
-                            label: '<xsl:value-of select="eas:renderJSText($reportHistoryLabel)"/>', url: '<xsl:value-of select="$theCurrentURL"/>'
+                            label: "<xsl:value-of select="eas:renderJSText($reportHistoryLabel)"/>", url: "<xsl:value-of select="$theCurrentURL"/>"
                         },
                         success: function (data)
                         {

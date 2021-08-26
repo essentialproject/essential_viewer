@@ -415,16 +415,17 @@
 						</tfoot>
 						<tbody>
 							<xsl:for-each select="$dataAttributes">
-								<xsl:variable name="dataAttName" select="./own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataAttDesc" select="./own_slot_value[slot_reference = 'description']/value"/>
-								<xsl:variable name="dataType" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'type_for_data_attribute']/value]"/>
+								<xsl:variable name="thisDataAtt" select="current()"/>
+								<xsl:variable name="dataAttName" select="$thisDataAtt/own_slot_value[slot_reference = 'name']/value"/>
+								<xsl:variable name="dataAttDesc" select="$thisDataAtt/own_slot_value[slot_reference = 'description']/value"/>
+								<xsl:variable name="dataType" select="/node()/simple_instance[name = $thisDataAtt/own_slot_value[slot_reference = 'type_for_data_attribute']/value]"/>
 								<xsl:variable name="dataTypeName" select="$dataType/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataAttrLabel" select="current()/own_slot_value[slot_reference = 'data_attribute_label']/value"/>
+								<xsl:variable name="dataAttrLabel" select="$thisDataAtt/own_slot_value[slot_reference = 'data_attribute_label']/value"/>
 								<tr>
 									<td>
 										<!--<xsl:value-of select="$dataAttName" />-->
 										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="current()"/>
+											<xsl:with-param name="theSubjectInstance" select="$thisDataAtt"/>
 											<xsl:with-param name="theXML" select="$reposXML"/>
 											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											<xsl:with-param name="displayString" select="$dataAttrLabel"/>
@@ -562,8 +563,8 @@
 						<tbody>
 							<xsl:for-each select="$dataReps">
 								<xsl:variable name="this" select="current()"/>
-								<xsl:variable name="dataRepName" select="./own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataRepDesc" select="./own_slot_value[slot_reference = 'description']/value"/>
+								<xsl:variable name="dataRepName" select="$this/own_slot_value[slot_reference = 'name']/value"/>
+								<xsl:variable name="dataRepDesc" select="$this/own_slot_value[slot_reference = 'description']/value"/>
 							
 								<xsl:variable name="dataRepTechnical" select="./own_slot_value[slot_reference = 'dr_technical_name']/value"/>
 								
@@ -577,12 +578,12 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:variable>
-								<xsl:variable name="dataRepAttr" select="$allDataRepAttr[name = current()/own_slot_value[slot_reference = 'contained_data_representation_attributes']/value]"/>
+								<xsl:variable name="dataRepAttr" select="$allDataRepAttr[name = $this/own_slot_value[slot_reference = 'contained_data_representation_attributes']/value]"/>
 								
 								<tr>
 									<td>
 										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="current()"/>
+											<xsl:with-param name="theSubjectInstance" select="$this"/>
 											<xsl:with-param name="theXML" select="$reposXML"/>
 											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											<xsl:with-param name="displayString" select="$dataRepLabel"/>
@@ -604,10 +605,11 @@
 											<xsl:otherwise>
 												<ul>
 													<xsl:for-each select="$dataRepAttr">
-														<xsl:variable name="dataRepAttrTechnical" select="current()/own_slot_value[slot_reference = 'dra_technical_name']/value"/>
+														<xsl:variable name="thisDRAtt" select="current()"/>
+														<xsl:variable name="dataRepAttrTechnical" select="$thisDRAtt/own_slot_value[slot_reference = 'dra_technical_name']/value"/>
 														<li>
 															<xsl:call-template name="RenderInstanceLink">
-																<xsl:with-param name="theSubjectInstance" select="current()"/>
+																<xsl:with-param name="theSubjectInstance" select="$thisDRAtt"/>
 																<xsl:with-param name="theXML" select="$reposXML"/>
 																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 																<xsl:with-param name="displayString" select="$dataRepAttrTechnical"/>
@@ -650,11 +652,12 @@
 					<xsl:value-of select="$sourceOfTruthApp/own_slot_value[slot_reference='name']/value" />
 				</a>-->
 				<xsl:for-each select="$sourceOfTruthApp">
+					<xsl:variable name="this" select="current()"/>
 					<xsl:if test="position() > 1">
 						<xsl:text>, </xsl:text>
 					</xsl:if>
 					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
+						<xsl:with-param name="theSubjectInstance" select="$this"/>
 						<xsl:with-param name="theXML" select="$reposXML"/>
 						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 					</xsl:call-template>
@@ -688,9 +691,10 @@
 				<div id="impactedOrgs">
 					<ul>
 						<xsl:for-each select="$actors">
+							<xsl:variable name="this" select="current()"/>
 							<li>
 								<xsl:call-template name="RenderInstanceLink">
-									<xsl:with-param name="theSubjectInstance" select="current()"/>
+									<xsl:with-param name="theSubjectInstance" select="$this"/>
 									<xsl:with-param name="theXML" select="$reposXML"/>
 									<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 								</xsl:call-template>
@@ -731,10 +735,11 @@
 								<xsl:variable name="busProcsCREATE" select="$allBusProcs[name = $info2BusProcRelsCREATE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
 								<ul>
 									<xsl:for-each select="$busProcsCREATE">
+										<xsl:variable name="this" select="current()"/>
 										<li>
 											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
 											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theSubjectInstance" select="$this"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											</xsl:call-template>
@@ -748,10 +753,11 @@
 								<xsl:variable name="busProcsREAD" select="$allBusProcs[name = $info2BusProcRelsREAD/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
 								<ul>
 									<xsl:for-each select="$busProcsREAD">
+										<xsl:variable name="this" select="current()"/>
 										<li>
 											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
 											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theSubjectInstance" select="$this"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											</xsl:call-template>
@@ -780,10 +786,11 @@
 								<xsl:variable name="busProcsUPDATE" select="$allBusProcs[name = $info2BusProcRelsUPDATE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
 								<ul>
 									<xsl:for-each select="$busProcsUPDATE">
+										<xsl:variable name="this" select="current()"/>
 										<li>
 											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
 											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theSubjectInstance" select="$this"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											</xsl:call-template>
@@ -797,10 +804,11 @@
 								<xsl:variable name="busProcsDELETE" select="$allBusProcs[name = $info2BusProcRelsDELETE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
 								<ul>
 									<xsl:for-each select="$busProcsDELETE">
+										<xsl:variable name="this" select="current()"/>
 										<li>
 											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
 											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theSubjectInstance" select="$this"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 											</xsl:call-template>
@@ -927,11 +935,13 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	
 	<xsl:template match="node()" mode="App_Provider_CRUD_Entry">
-		<xsl:variable name="appName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="appName" select="$this/own_slot_value[slot_reference = 'name']/value"/>
 		<li>
 			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 			</xsl:call-template>

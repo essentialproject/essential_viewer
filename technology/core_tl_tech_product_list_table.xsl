@@ -302,6 +302,8 @@
 										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
 										//filter techProducts to those in scope for the roadmap start and end date
 										inScopeTechProducts.techProducts = rmGetVisibleElements(techProducts.techProducts);
+									} else {
+										inScopeTechProducts.techProducts = techProducts.techProducts;
 									}
 									
 									<!-- VIEW SPECIFIC JS CALLS -->
@@ -541,10 +543,29 @@
 					<xsl:variable name="thisStandardStyle" select="$allStandardStyles[name = $thisStandardStrength/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 					<xsl:variable name="thisStandardStyleIcon" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_icon']/value"/>
 					<xsl:variable name="thisStandardStyleClass" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_class']/value"/>
-					<div class="standardBadge left-5 {$thisStandardStyleClass}"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></div>
+					<xsl:variable name="thisStandardStyleColour" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>
+
+					<xsl:variable name="thisStandardStyleTextColour" select="$thisStandardStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>
+					<xsl:choose>
+						<xsl:when test="$thisStandardStyleClass">
+							<button>
+									<xsl:attribute name="class">btn btn-small standardBadge left-5 <xsl:value-of select="$thisStandardStyleClass"/></xsl:attribute>
+									<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template>
+							</button>
+						</xsl:when>
+						<xsl:otherwise>
+							<button class="btn btn-small">
+								<xsl:attribute name="style">background-color:<xsl:value-of select="$thisStandardStyleColour"/>;color:<xsl:value-of select="$thisStandardStyleTextColour"/></xsl:attribute><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></button>
+							<!--
+							<div class="standardBadge left-5"><xsl:attribute name="style">background-color:<xsl:value-of select="$thisStandardStyleColour"/>;color:<xsl:value-of select="$thisStandardStyleTextColour"/></xsl:attribute><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisStandardStrength"></xsl:with-param></xsl:call-template></div>
+							-->
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
 				<xsl:otherwise>
-					<div class="standardBadge left-5 {$offStrategyStyle}"><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of></div>
+						<button>
+								<xsl:attribute name="class">btn btn-small standardBadge left-5 <xsl:value-of select="$offStrategyStyle"/></xsl:attribute><xsl:value-of select="eas:i18n('Off Strategy')"></xsl:value-of>
+							</button>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>

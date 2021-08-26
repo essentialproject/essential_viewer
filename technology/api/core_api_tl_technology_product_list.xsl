@@ -25,16 +25,18 @@
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
    
-    
-<xsl:variable name="techOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Technology Organisation User')]"/>
-<xsl:variable name="techOrgUser2Roles" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $techOrgUserRole/name]"/>
-<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type = 'Technology_Delivery_Model']"/>
-<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>    
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
-	
 
-<xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>
-	
+<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type = 'Technology_Delivery_Model']"/>
+<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>   
+<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
+<!--<xsl:variable name="allTechSuppliers" select="/node()/simple_instance[type='Supplier']"/>	
+<xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>-->
+<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
+<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>	
+<xsl:variable name="allTechComponents" select="/node()/simple_instance[type = 'Technology_Component'][name=$allTechProdRoles/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>	
+<!--<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>	-->
 <xsl:variable name="allRoadmapInstances" select="$allTechProds"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
@@ -50,35 +52,33 @@
 	</xsl:template>
 	
 	<xsl:template mode="RenderTechProducts" match="node()">
-        <xsl:variable name="thisTechOrgUser2Roles" select="$techOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-		<xsl:variable name="thsTechUsers" select="$thisTechOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
+
 		<xsl:variable name="theLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'vendor_product_lifecycle_status']/value]"/>
 		<xsl:variable name="theDeliveryModel" select="$allTechProdDeliveryTypes[name = current()/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
-		<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value"/>
-		<xsl:variable name="thisTechProdName">
+	<!--	<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value"/>-->
+		<xsl:variable name="thisTPR" select="$allTechProdRoles[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>
+	 <xsl:variable name="thisTechComp" select="$allTechComponents[name=$thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/> 
+		 
+		
+		
+	<!--	<xsl:variable name="theSupplier" select="$allTechSuppliers[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>-->
+		<xsl:variable name="thisName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="thisTechProdDescription">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="false()"/>
+		</xsl:variable><!--<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->{"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="displayString" select="$thisName"/> 
+			</xsl:call-template>","supplier":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='supplier_technology_product']/value)"/>",	 <!--		"caps":[<xsl:for-each select="$thisTechCap">{<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->"comp":[<xsl:for-each select="$thisTPR"> 
+				<xsl:variable name="thisTechComp" select="$allTechComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/> 
+		<xsl:for-each select="$thisTechComp"><xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
-		</xsl:variable>	
-		
-	{
-			<!--id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="$thisTechProdName"/>",
-			description: "<xsl:value-of select="$thisTechProdDescription"/>",
-			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",-->
-			<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			"status": "<xsl:value-of select="translate($theLifecycleStatus/name, '.', '_')"/>",
-			"statusScore": <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
-			"delivery": "<xsl:value-of select="translate($theDeliveryModel/name, '.', '_')"/>",
-			"techOrgUsers": [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
+		</xsl:variable>{"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="displayString" select="$thisName"/> 
+			</xsl:call-template>"<!--,<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>-->}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
 	
 </xsl:stylesheet>
