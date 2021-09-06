@@ -11,7 +11,7 @@
 		<xsl:param name="theUserId"/>
 		<xsl:param name="theUserIsApprover"/>
 		
-		<xsl:variable name="userIdParam">essuser=jason.powell@e-asolutions.com</xsl:variable>
+		<xsl:variable name="userIdParam">essuser=user@example.com</xsl:variable>
 		
 		<xsl:variable name="approvalsSummaryAPIURL">
 			<xsl:call-template name="RenderLinkText">

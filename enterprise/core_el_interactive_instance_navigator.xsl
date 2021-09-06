@@ -35,7 +35,7 @@
             <head>
             	<xsl:call-template name="commonHeadContent"/>
 				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-            	<script src="https://d3js.org/d3.v4.min.js"></script>
+            	<script src="js/d3_4-11/d3.min.js"></script>
 			 	<script src="js/dagre/dagre.min.js"></script>
                 <script src="js/dagre/dagre-d3.min.js"></script>	
 				<xsl:for-each select="$linkClasses">

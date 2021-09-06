@@ -104,7 +104,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Business Capability to Applications to Plans - </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability to Applications to Plans')"/> - </span>
 									<span class="text-primary"><xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/></span>
 								</h1>
 							</div>
@@ -112,7 +112,7 @@
 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-							<i class="fa fa-circle" style="color:red"/> Business Capability <i class="fa fa-circle" style="color:#a2a2aa"/> Business Process <i class="fa fa-circle" style="color:green"/>  Application Service <i class="fa fa-circle" style="color:orange"/>  Application <i class="fa fa-circle" style="color:#e27878"/> Plans <i class="fa fa-circle" style="color:#78dae2"/> Project<br/><br/>
+							<i class="fa fa-circle" style="color:red"/> <xsl:value-of select="eas:i18n('Business Capability')"/> <i class="fa fa-circle" style="color:#a2a2aa"/> <xsl:value-of select="eas:i18n('Business Process')"/> <i class="fa fa-circle" style="color:green"/>  <xsl:value-of select="eas:i18n('Application Service')"/> <i class="fa fa-circle" style="color:orange"/>  <xsl:value-of select="eas:i18n('Application')"/> <i class="fa fa-circle" style="color:#e27878"/> <xsl:value-of select="eas:i18n('Plans')"/> <i class="fa fa-circle" style="color:#78dae2"/> <xsl:value-of select="eas:i18n('Project')"/><br/><br/>
 						
 							<div class="simple-scroller">
 								<div id="model"/>

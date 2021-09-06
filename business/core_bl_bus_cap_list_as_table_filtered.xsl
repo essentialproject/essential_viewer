@@ -541,8 +541,9 @@ showEditorSpinner('Fetching Data...');
 		        let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 		        let prodConceptScopingDef = new ScopingProperty('prodConIds', 'Product_Concept');
 		        let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
+				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 
-		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef]);
+		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef]);
 
 		        let showCaps = scopedCaps.resources;
 

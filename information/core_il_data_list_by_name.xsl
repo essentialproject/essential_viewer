@@ -139,7 +139,8 @@
 							<div class="AlphabetQuickJumpLinks hidden-xs">
 								
 								<!-- Build a list of the names of the elements to be sorted -->
-								<xsl:variable name="anInFocusInstances" select="$allDataObjects"></xsl:variable>
+								<!-- <xsl:variable name="anInFocusInstances" select="$allDataObjects"></xsl:variable> -->
+								<xsl:variable name="anInFocusInstances" select="$allDataSubjects"></xsl:variable>
 								
 								<!-- Get the names of the in-focus instances -->
 								<xsl:variable name="anIndexList" select="$anInFocusInstances/own_slot_value[slot_reference='name']/value"></xsl:variable>																		

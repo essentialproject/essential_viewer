@@ -256,8 +256,8 @@
 						border-radius: 10px;
 						border: 1px solid #ccc;
 						position: absolute;
-						right: 5px;
-						top: 5px;
+						right: -5px;
+						top: -5px;
 					}
 					
 					.app-circle:hover {
@@ -529,6 +529,9 @@
    						 height: 12pt;
 							padding:3px;
 					}
+					.capCircle{
+						color:#8c8c8c;
+					}
 				</style>
 				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -640,7 +643,7 @@
 		         	<div class="capModel">
 						{{#each this}}
 							<div class="l0-cap"><xsl:attribute name="level">{{this.level}}</xsl:attribute>
-								<span class="cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
+								<span class="cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}} </span>
 							<br/>	{{#getApps this}}{{this}}{{/getApps}} 
 							<!--	<span class="app-circle "> <xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
 							-->

@@ -13,8 +13,10 @@
     <xsl:variable name="allRoles" select="/node()/simple_instance[type = 'Group_Business_Role']"/>
 	<xsl:variable name="allActor2RoleRelations" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"/>
  
+	<xsl:variable name="physicalProcessA2s" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$allActors/name]"/>
 
-    <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$allActor2RoleRelations/name]"/>
+    <xsl:variable name="physicalProcessDirect" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$allActor2RoleRelations/name]"/>
+	<xsl:variable name="physicalProcess" select="$physicalProcessA2s union $physicalProcessDirect"/>
 	<xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
 	
 	<xsl:variable name="applicationsUsedMapping" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"/>
@@ -83,10 +85,11 @@
 		<xsl:variable name="thisinScopeActors" select="eas:get_org_descendants($thisparentActor, $allActors, 0)"/>
 		<xsl:variable name="parentActorName" select="$thisparentActor/own_slot_value[slot_reference = 'name']/value"/>
 
-		<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>
-		
+		<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>		
 	
-		<xsl:variable name="thisphysicalProcess" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisactor2role/name]"/>
+		<xsl:variable name="thisphysicalProcessA2R" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisactor2role/name]"/>
+		<xsl:variable name="thisphysicalProcessDirect" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisinScopeActors/name]"/>
+		<xsl:variable name="thisphysicalProcess" select="$thisphysicalProcessA2R union $thisphysicalProcessDirect"/>
 
 		<xsl:variable name="thisapplicationsUsedMapping" select="$applicationsUsedMapping[name=$thisphysicalProcess/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
 		

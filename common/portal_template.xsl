@@ -379,15 +379,31 @@
 		<xsl:choose>
 			<!-- Go straight to the report if the report constant value is set -->
 			<!-- But only if the user is authorised -->
-			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">				
-
+			<xsl:when test="eas:isUserAuthZ($aReport) and count($reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) > 0">
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="viewElementContainer {$nameStyleSetting}">
 						<a class="noUL">
-							<xsl:call-template name="RenderLinkHref">
-								<xsl:with-param name="theXSL" select="$reportFilename"/>
-								<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+									<xsl:variable name="theEditorId" select="current()/name"/>
+									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
+									<xsl:attribute name="href" select="$theEditorLinkHref"/>
+								</xsl:when>
+								<xsl:when test="($eipMode) and (current()/type = 'Configured_Editor')">
+									<xsl:attribute name="href">
+										<xsl:call-template name="RenderEditorLinkHref">
+											<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+										</xsl:call-template>
+									</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:call-template name="RenderLinkHref">
+										<xsl:with-param name="theXSL" select="$reportFilename"/>
+										<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
+									</xsl:call-template>
+								</xsl:otherwise>
+							</xsl:choose>
 							<div class=" viewElement">
 								<div class="viewElementName fontBold large">
 									<xsl:value-of select="$reportLabelName"/>
@@ -428,11 +444,27 @@
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="viewElementContainer {$nameStyleSetting}">
 						<a class="noUL">
-							<xsl:call-template name="RenderLinkHref">
-								<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
-								<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
-								<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
-							</xsl:call-template>
+							<xsl:choose>
+								<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor'))">
+									<xsl:variable name="theEditorId" select="$aReport/name"/>
+									<xsl:variable name="theEditorLabel" select="$aReport/own_slot_value[slot_reference = 'report_label']/value"/>
+									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
+									<xsl:attribute name="href" select="$theEditorLinkHref"/>
+								</xsl:when>
+								<xsl:when test="($eipMode) and ($aReport/type = 'Configured_Editor')">
+									<xsl:attribute name="href">
+										<xsl:call-template name="RenderEditorLinkHref">
+											<xsl:with-param name="theEditor" select="$aReport"></xsl:with-param>
+										</xsl:call-template>
+									</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:call-template name="RenderLinkHref">
+										<xsl:with-param name="theXSL" select="$reportFilename"/>
+										<xsl:with-param name="theHistoryLabel" select="$reportHistoryLabelName"/>
+									</xsl:call-template>
+								</xsl:otherwise>
+							</xsl:choose>
 							<div class=" viewElement">
 
 								<div class="viewElementName fontBold large">
@@ -465,10 +497,10 @@
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
 					<xsl:choose>
-						<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor'))">
+						<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor', 'Configured_Editor'))">
 							<xsl:variable name="thisEditorPath">
-								<xsl:call-template name="RenderEditorLinkText">
-									<xsl:with-param name="theEditor" select="$aReport"/>
+								<xsl:call-template name="RenderEditorLinkHref">
+									<xsl:with-param name="theEditor" select="$aReport"></xsl:with-param>
 								</xsl:call-template>
 							</xsl:variable>
 							<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">

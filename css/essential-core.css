@@ -4206,8 +4206,9 @@ td.CompImpactLow{
 }
 
 @media print {
-	#mainHeader, footer, #printOverlay {display: none;}
+	#mainHeader, footer, .portalBarRow, #printOverlay {display: none!important;}
 }
+
 @page {
 	margin: 0.5cm;
 }

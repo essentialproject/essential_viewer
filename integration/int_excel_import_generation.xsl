@@ -94,8 +94,8 @@
 	<xsl:template match="knowledge_base">
 		<Workbook>
 			<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-				<Author>Jason Powell</Author>
-				<LastAuthor>Jason Powell</LastAuthor>
+				<Author>Essential Development Team</Author>
+				<LastAuthor>Essential Development Team</LastAuthor>
 				<Created>2011-10-13T14:06:02Z</Created>
 				<LastSaved>2011-10-31T19:37:15Z</LastSaved>
 				<Company>EAS Ltd</Company>

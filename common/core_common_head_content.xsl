@@ -42,9 +42,9 @@
 		<link rel="manifest" href="manifest.json"/>
 		<link rel="mask-icon" href="safari-pinned-tab.svg" color="#c3193c"/>
 		<meta name="theme-color" content="#ffffff"/>
-		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css" type="text/css"/>
 		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css" type="text/css"/>
-		<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css"/>
+		<link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css" type="text/css"/>
 		<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 		<link href="js/select2/css/select2-bootstrap.min.css" rel="stylesheet"/>
 		<link href="js/hopscotch/css/ess-hopscotch.css" rel="stylesheet"/>
@@ -55,7 +55,7 @@
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery-3.5.1.min.js"/>
+		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js"/>
 		<!--Custom JQuery UI library to support various visual effects-->
 		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>
 		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->
@@ -72,12 +72,12 @@
 		<!--JQuery plugin to support vertical align within divs-->
 		<script type="text/javascript" src="js/jquery.verticalalign.js"/>
 		<!--Bootstrap JS library-->
-		<script type="text/javascript" src="js/bootstrap.min.js"/>
+		<script type="text/javascript" src="js/bootstrap-3.4.1-dist/js/bootstrap.min.js"/>
 		<!--Match Height Library-->
 		<script src="js/jquery.matchHeight.js" type="text/javascript"/>
 		<script src="js/select2/js/select2.min.js"/>
 		<!-- Handlebars templating library -->
-		<script src="js/handlebars.min-v4.7.6.js"/>
+		<script src="js/handlebars.min-v4.7.7.js"/>
 		<!-- Date formatting library -->
 		<script src="js/moment/moment.js"/>
 		<!--Help text and tour library-->
