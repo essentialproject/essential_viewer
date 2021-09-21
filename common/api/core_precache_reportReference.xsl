@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" exclude-result-prefixes="pro xalan xs functx eas ess" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<!--<xsl:import href="../common/core_utilities.xsl"/>
-	<xsl:include href="../common/core_analytics.xsl"/>
-	<xsl:variable name="errorFile" select="document('../platform/errorXML.xml')"/>
-	<xsl:variable name="currentViewerVersion" select="$errorFile//ess:viewerversion"/>
-	<xsl:variable name="updateFile" select="document('https://s3.amazonaws.com/essential-updater/viewerLatestVersion.xml')"/>
-	<xsl:variable name="latestViewerVersion" select="$updateFile//ess:viewerversion"/>
-	-->
 	<xsl:output method="text" encoding="UTF-8"/>
 	
 	<!--

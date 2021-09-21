@@ -48,6 +48,7 @@
 		"codebase":"<xsl:value-of select="$thiscodebase/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"delivery":"<xsl:value-of select="$thisdelivery/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"lifecycle":"<xsl:value-of select="$thislifecycle/own_slot_value[slot_reference='enumeration_value']/value"/>",
+		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 		"lifecycle_name":"<xsl:value-of select="$thislifecycle/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

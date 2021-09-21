@@ -26,11 +26,12 @@
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
 
-
-	<xsl:include href="../common/core_doctype.xsl" />
-	<xsl:include href="../common/core_common_head_content.xsl" />
-	<xsl:include href="../common/core_header.xsl" />
-	<xsl:include href="../common/core_footer.xsl" />
+	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
+	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
+	<xsl:include href="../common/core_header.xsl"></xsl:include>
+	<xsl:include href="../common/core_footer.xsl"></xsl:include>
+	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes" />
 
@@ -559,7 +560,7 @@
 				});
 
 				principles.forEach(function(d) {
-						console.log('principle');console.log(d)
+						 
 					$('.score[easid=' + d.principleID + 'p1]').text(d.p1);
 					$('.score[easid=' + d.principleID + 'p2]').text(d.p2);
 					$('.score[easid=' + d.principleID + 'p3]').text(d.p3);
@@ -1010,14 +1011,15 @@
 	<xsl:template match="node()" mode="list">
 		<xsl:variable name="this" select="current()" />
 		<xsl:variable name="focusObject" select="/node()/simple_instance[name = $this/own_slot_value[slot_reference='pca_element_assessed']/value]" />
-		<li>
-			<xsl:value-of select="$focusObject/own_slot_value[slot_reference='name']/value"></xsl:value-of><span style="font-size:8pt">(<xsl:value-of select="translate($focusObject/type,'_',' ')"></xsl:value-of>)</span>
+		<li><xsl:call-template name="RenderMultiLangInstanceName"> <xsl:with-param name="theSubjectInstance" select="$focusObject"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
+			<span style="font-size:8pt">(<xsl:value-of select="translate($focusObject/type,'_',' ')"></xsl:value-of>)</span>
 		</li>
 	</xsl:template>
 
 	<xsl:template name="assessementTable">
 		<xsl:param name="thisAssessments" />
 		<xsl:param name="thisPrinciple" />
+		<xsl:if test="$thisAssessments">
 		<table width="400px" style="table-layout: fixed;">
 			<tr>
 				<th width="200px"> </th>
@@ -1056,6 +1058,7 @@
 				<td></td>
 			</tr>
 		</table>
+	</xsl:if>
 
 	</xsl:template>
 	<xsl:template match="node()" mode="principleRatings">
@@ -1071,9 +1074,12 @@
 		<xsl:variable name="prinScore" select="$allScoreLevels[name=current()/own_slot_value[slot_reference = 'pca_compliance_assessment_value']/value]" />
 		<xsl:variable name="assessScore" select="$allScoreLevels[name=current()/own_slot_value[slot_reference = 'assessment_finding']/value]" />
 		<xsl:variable name="thisScore" select="$prinScore union $assessScore" />
+		<xsl:variable name="thisassess" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='pca_element_assessed']/value]" />
 		
-		{"debug":"<xsl:value-of select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='pca_element_assessed']/value]/own_slot_value[slot_reference='name']/value"/>",
-		"assessment":"<xsl:value-of select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='pca_element_assessed']/value]/own_slot_value[slot_reference='name']/value"/>",
+		{ "assessment":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$thisassess"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>",
 		"assessmentID":"<xsl:value-of select="eas:getSafeJSString($thisScore/name)" />",
 		"assessmentScore":"<xsl:value-of select="$thisScore/own_slot_value[slot_reference='enumeration_value']/value" />",
 		"assessmentPos":"<xsl:choose><xsl:when test="current()/type='Control_Assessment'">

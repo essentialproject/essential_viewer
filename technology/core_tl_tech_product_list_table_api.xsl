@@ -158,7 +158,8 @@
 										<xsl:value-of select="eas:i18n('Table')"/>
 									</span>
 	   --></div>
-						<table id="dt_products" class="table table-striped table-bordered">
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
+								<table id="dt_products" class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>
@@ -261,6 +262,7 @@
 
                       var viewerData = JSON.parse(this.responseText);
                       resolve(viewerData);
+                      $('#ess-data-gen-alert').hide();
 
                   }
               };

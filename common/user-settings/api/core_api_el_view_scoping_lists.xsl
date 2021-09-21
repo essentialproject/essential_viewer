@@ -8,7 +8,18 @@
 	<xsl:variable name="allCountries" select="/node()/simple_instance[own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name]"/>
 
  	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor']"/>
- 	
+ 
+	 <xsl:variable name="allProdConcepts" select="/node()/simple_instance[type='Product_Concept']"/>
+	 <xsl:variable name="allDomains" select="/node()/simple_instance[type='Business_Domain']"/>
+ 
+	 <xsl:variable name="scopedClassNames" select="('Business_Capability', 'Composite_Application_Provider', 'Application_Provider', 'Technology_Product')"/>
+	 <xsl:variable name="allActor2Roles" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>
+	 <xsl:variable name="relevantRoles" select="/node()/simple_instance[(name = $allActor2Roles/own_slot_value[slot_reference = 'act_to_role_to_role']/value) and (own_slot_value[slot_reference = 'role_for_classes']/value = $scopedClassNames)]"/>
+	 <xsl:variable name="relevantActor2Roles" select="$allActor2Roles[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $relevantRoles/name]"/>
+	 <xsl:variable name="relevantActors" select="/node()/simple_instance[name = $relevantActor2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	 <xsl:variable name="contentStatus" select="/node()/simple_instance[type='SYS_CONTENT_APPROVAL_STATUS']"/>
+	 
+ 
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -61,20 +72,115 @@
 							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 						</xsl:apply-templates>
 					]
-				}
+				},
+				{
+					"id": "Product_Concept",
+					"name": "Product Concept",
+					"valueClass": "Product_Concept",
+					"description": "The product concepts used in the organisation",
+					"isGroup": false,
+					"icon": "fa-archive",
+					"color":"hsla(201, 100%, 37%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderBasicScopeJSON" select="$allProdConcepts">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				},
+				{
+					"id": "SYS_CONTENT_APPROVAL_STATUS",
+					"name": "Content Status",
+					"valueClass": "SYS_CONTENT_APPROVAL_STATUS",
+					"description": "The status of an instance in the repository",
+					"isGroup": false,
+					"icon": "fa-certificate",
+					"color":"hsla(300, 76%, 72%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderBasicScopeJSONEnum" select="$contentStatus">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				},
+				{
+					"id": "Business_Domain",
+					"name": "Business Domain",
+					"valueClass": "Business_Domain",
+					"description": "The business domains in the organisation",
+					"isGroup": false,
+					"icon": "fa-map-o",
+					"color":"hsla(19, 100%, 37%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderBasicScopeJSON" select="$allDomains">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				}<xsl:if test="$relevantRoles">,
+				<xsl:apply-templates mode="RenderStakeholderListJSON" select="$relevantRoles">
+					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+				</xsl:apply-templates>
+			</xsl:if>
 			]
 		}
 	</xsl:template>
 
 	
 	<xsl:template mode="RenderBasicScopeJSON" match="node()">
-		<xsl:variable name="this" select="current()"/>
-		
-		{
-			"id": "<xsl:value-of select="$this/name"/>",
+		<xsl:variable name="this" select="current()"/>{
+			"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
 			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
-		
+	<xsl:template mode="RenderBasicScopeJSONEnum" match="node()">
+			<xsl:variable name="this" select="current()"/>{
+				"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+				"name": "<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_value']/value"/>"
+				<!--"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"-->			
+			}<xsl:if test="not(position() = last())">,
+			</xsl:if>
+		</xsl:template>
+	
+
+	<xsl:template mode="RenderStakeholderListJSON" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="thisActor2Roles" select="$relevantActor2Roles[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $this/name]"/>
+		<xsl:variable name="thisName">
+			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
+		</xsl:variable>
+		{
+		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
+		"valueClass": "ACTOR_TO_ROLE_RELATION",
+		"description": "The list of individuals or organisations that play the role of <xsl:value-of select="$thisName"/>",
+		"isGroup": false,
+		"icon": "fa-users",
+		"color":"hsla(170, 65%, 15%, 1)",
+		"values": [
+			<xsl:apply-templates mode="RenderActor2RoleScopeJSON" select="$thisActor2Roles">
+				<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+			</xsl:apply-templates>
+		]
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+
+	<xsl:template mode="RenderActor2RoleScopeJSON" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="thisActor" select="$relevantActors[name = $this/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		{
+		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisActor"/></xsl:call-template>"			
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+
+	
+	<xsl:template mode="RenderBasicScopeJSON" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		{
+			"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>	
 </xsl:stylesheet>

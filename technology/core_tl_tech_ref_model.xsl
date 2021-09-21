@@ -164,17 +164,26 @@
 				    	]
 				  	};
 
-                    var tpr = techProdRoles.techProdRoles; 
+					var tpr = techProdRoles.techProdRoles; 
+					console.log(tpr) 
                     for(var i=0; i &lt; techComponents.techComponents.length;i++) {
-                    var techprodslist=[];
+					var techprodslist=[];
+					console.log(techComponents.techComponents[i].name) 
+					console.log('techComponents.techComponents[i].techProdRoles') 
+					console.log(techComponents.techComponents[i].techProdRoles) 
                        for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
                          
                             var thistpr = tpr.filter(function(d){
-                            if(techComponents.techComponents[i].techProdRoles[j] === d.id){  techprodslist.push(d.techProdid);}
+							if(techComponents.techComponents[i].techProdRoles[j] === d.id){ 
+								techprodslist.push(d.techProdid);
+							}
                 
                         })
                     }
-                    let unique = [...new Set(techprodslist)];      
+					let unique = [...new Set(techprodslist)];   
+					console.log('techprodslist')   
+					console.log(techprodslist) 
+					console.log(unique) 
                     techComponents.techComponents[i]['techProds']=unique;
                     
                      <!--   d.techProdRoles.forEach(function(e){
@@ -503,7 +512,8 @@
 					
 					//function to draw the full TRM
 					function drawTRM() {
-					
+						console.log('trmData');	
+						console.log(trmData)
 						$("#techRefModelContainer").html(trmTemplate(trmData)).promise().done(function(){
 					        $('.tech-domain-drill').click(function(){
 								var techDomainId = $(this).attr('eas-id');
@@ -1117,7 +1127,8 @@
 			description: "<xsl:value-of select="own_slot_value[slot_reference='description']/value"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 			country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",
-			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
+			techProda:"debug"
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
@@ -1246,7 +1257,7 @@
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
 	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
 	<!--	techProdRoles: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
-        techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
+        techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 		<!--<xsl:apply-templates select="$thisTechProdRoles" mode="RenderTechProdRoleJSON">

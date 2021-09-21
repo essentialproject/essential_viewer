@@ -11,7 +11,7 @@
 	<!--<xsl:param name="param4" />-->
 
 	<xsl:variable name="anyViews" select="/node()/simple_instance[type='Report']"/>
-	<xsl:variable name="anyEditors" select="/node()/simple_instance[type=('Editor', 'Simple_Editor')]"/>
+	<xsl:variable name="anyEditors" select="/node()/simple_instance[type=('Editor', 'Simple_Editor', 'Configured_Editor')]"/>
 	<xsl:variable name="enabledViews" select="$anyViews[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="enabledEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>

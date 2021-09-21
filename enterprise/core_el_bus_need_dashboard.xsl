@@ -464,71 +464,12 @@
 																	<div class="col-xs-6"><strong>{{createdBy.name}}</strong></div>
 																	<div class="col-xs-6">
 																		{{{renderRating rating}}}
-																		<!--<i class="fa fa-star"/>
-																		<i class="fa fa-star"/>
-																		<i class="fa fa-star"/>
-																		<i class="fa fa-star"/>
-																		<i class="fa fa-star-o"/>-->
 																	</div>
 																	<div class="col-xs-12">
 																		{{comment}}
 																	</div>
 																</div>
 															{{/each}}								
-														<!--<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Jason Powell</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks really great
-															</div>
-														</div>
-														<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Neil Walsh</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks rubbish
-															</div>
-														</div>
-														<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Jason Powell</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks really great
-															</div>
-														</div>
-														<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Neil Walsh</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks rubbish
-															</div>
-														</div>
-														<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Jason Powell</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks really great
-															</div>
-														</div>
-														<div class="row small bottom-10">
-															<div class="col-xs-8"><strong>Neil Walsh</strong></div>
-															<div class="col-xs-4">
-																<i class="fa fa-star"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/><i class="fa fa-star-o"/>
-															</div>
-															<div class="col-xs-12">
-																This looks rubbish
-															</div>
-														</div>-->
 													</div>
 												</div>
 											{{else}}

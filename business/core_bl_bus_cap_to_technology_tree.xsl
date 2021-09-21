@@ -111,13 +111,14 @@
 								<script>
 									var treeData =
 									  { "name": "<xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/>","colour":"red",
-									    "children": [<xsl:apply-templates select="$thisBusCap" mode="buscaps"/>]};
+										"children": [<xsl:apply-templates select="$thisBusCap" mode="buscaps"/>],
+										"children1":[]};
 									    
 									
 									// Set the dimensions and margins of the diagram
 									var margin = {top: 20, right: 90, bottom: 30, left: 120},
-									    width = 960 - margin.left - margin.right,
-									    height = 500 - margin.top - margin.bottom;
+									    width = $(window).width() - margin.left - margin.right,
+									    height = 700 - margin.top - margin.bottom;
 									
 									// append the svg object to the body of the page
 									// appends a 'group' element to 'svg'
@@ -194,17 +195,15 @@
 									
 									
 									  // Add labels for the nodes
-									  nodeEnter.append('text')
-									      .attr("dy", "-15")
-									      .attr("x", function(d) {
-									          return d.children || d._children ? -1 : 1;
-									      })
-									      .attr("text-anchor", function(d) {
-									          return d.children || d._children ? "end" : "start";
-									      })
-									      .text(function(d) { return d.data.name; })
-									      .on("mouseover", handleMouseOver)
-									      .on("mouseout", handleMouseOut);
+									  nodeEnter.append("foreignObject")
+											.attr("x", -30)
+											.attr("y", 10)
+											.attr("width", 150)
+											.attr("height", 200) 
+											.style("font", "10px 'Helvetica Neue'")
+											.html(function(d) { return d.data.name})
+									      	.on("mouseover", handleMouseOver)
+									      	.on("mouseout", handleMouseOut);
 									    ;
 									
 									  // UPDATE
@@ -228,7 +227,7 @@
 									   // handle mouse events
 									    function handleMouseOver(d, i) {  // Add interactivity
 									              d3.select(this).attr("dy", -35)
-									              d3.select(this).style("font-size","20px");
+									              d3.select(this).style("font-size","12px");
 									          }
 									
 									      function handleMouseOut(d, i) {

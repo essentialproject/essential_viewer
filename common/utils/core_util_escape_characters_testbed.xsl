@@ -96,6 +96,7 @@
 							if (this.readyState == 4 &amp;&amp; this.status == 200) {
 							var viewerData = JSON.parse(this.responseText);
 							resolve(viewerData);
+							$('#ess-data-gen-alert').hide();
 							}
 							};
 							xmlhttp.onerror = function () {
@@ -274,8 +275,9 @@
 									<span class="text-darkgrey">Escape Characters Test</span>
 								</h1>
 							</div>
-						
-						
+						</div>
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
+						<div class="col-xs-12">
 						<!-- Nav tabs -->
 						<ul class="nav nav-tabs" role="tablist" id="pageTabs">
 							<li role="presentation" class="active"><a href="#tabTextInHTML" aria-controls="textInHtml" role="tab" data-toggle="tab">Text In HTML</a></li>

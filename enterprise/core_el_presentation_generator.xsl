@@ -347,7 +347,7 @@
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment.min.js"/>
+				<script type="text/javascript" src="js/moment/moment.js"/>
 				
 				<!-- zip library -->
 				<script type="text/javascript" src="js/jszip.min.js"/>

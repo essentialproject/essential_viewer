@@ -461,6 +461,7 @@
                         </h1>
                      </div>
                   </div>
+               	<!--<xsl:call-template name="RenderDataSetAPIWarning"/>-->
                   <div class="col-xs-12">
                      <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#coach">Playbook</a></li>
@@ -627,13 +628,13 @@
                               
                               
                               
-                              <div style="overflow:auto;">
+                              <div>
                                  <div style="float:right;" class="top-10">
                                     <button type="button" id="prevBtn" class="btn btn-danger right-10" style="width: 100px" onclick="nextPrev(-1)">Previous</button>
                                     <button type="button" id="nextBtn" class="btn btn-success" style="width: 100px" onclick="nextPrev(1)">Next</button>
                                  </div>
                               </div>
-                              
+                              <div class="clearfix"/>
                               <!-- Circles which indicates the steps of the form: -->
                               <div style="text-align:center;margin-top:40px;">
                                  <span class="step"></span>
@@ -9285,6 +9286,7 @@
       if (this.readyState == 4 &amp;&amp; this.status == 200) {
       var viewerData = JSON.parse(this.responseText);
       resolve(viewerData);
+      <!--$('#ess-data-gen-alert').hide();-->
       }
       };
       xmlhttp.onerror = function () {

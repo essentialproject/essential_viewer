@@ -89,6 +89,7 @@
 								</h1>
 							</div>
 						</div>
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
 
 						<!--Setup Description Section-->
 						<div id="slotViewSpinner" class="spinner alignCentre hiddenDiv">
@@ -169,6 +170,7 @@
 	                        if (this.readyState == 4 &amp;&amp; this.status == 200) { 
 	                            var viewerData = JSON.parse(this.responseText);
 	                            resolve(viewerData);
+	                            $('#ess-data-gen-alert').hide();
 	                        }
 	                    };
 	                    xmlhttp.onerror = function () {

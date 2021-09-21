@@ -35,7 +35,7 @@
             <head>
             	<xsl:call-template name="commonHeadContent"/>
 				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-            	<script src="https://d3js.org/d3.v4.min.js"></script>
+            	<script src="js/d3/d3_4-11/d3.min.js"></script>
 			 	<script src="js/dagre/dagre.min.js"></script>
                 <script src="js/dagre/dagre-d3.min.js"></script>	
 				<xsl:for-each select="$linkClasses">
@@ -119,6 +119,7 @@
 								</h1>
 							</div>
 						</div>
+						<!--<xsl:call-template name="RenderDataSetAPIWarning"/>-->
 						<div class="col-md-3">
 							
 							<div class="form-group">
@@ -297,6 +298,7 @@
                         if (this.readyState == 4 &amp;&amp; this.status == 200) {
                             var viewerData = JSON.parse(this.responseText);
                             resolve(viewerData);
+                            <!--$('#ess-data-gen-alert').hide();-->
                         }
                     };
                     xmlhttp.onerror = function () {

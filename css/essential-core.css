@@ -225,6 +225,23 @@ hr.tight {
 	float: left;
 	margin: 0 20px 10px 0;
 }
+
+#ess-data-gen-alert > .alert
+{
+	color: #333;
+	background-color: #f6f6f6;
+	border-color: #aaa;
+}
+
+#ess-data-gen-alert {
+	animation: 2s ease-in ess-data-gen-alert-fadein;
+}
+
+@keyframes ess-data-gen-alert-fadein {
+    from { opacity: 0;}
+    to   { opacity: 1;display: block;}
+}
+
 /* ######### Essential Core Styles #########*/
 
 .text-black{
@@ -4206,8 +4223,10 @@ td.CompImpactLow{
 }
 
 @media print {
-	#mainHeader, footer, #printOverlay {display: none;}
+	#mainHeader, footer, .portalBarRow, #printOverlay {display: none!important;}
+	a[href]::after {content: none !important;}
 }
+
 @page {
 	margin: 0.5cm;
 }

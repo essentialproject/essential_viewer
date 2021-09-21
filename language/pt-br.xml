@@ -1,7 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<language xmlns="http://www.enterprise-architecture.org/essential/language"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="pt-br"
-	xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<language xmlns="http://www.enterprise-architecture.org/essential/language" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="pt-br" xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
 
 	<!--
         * Copyright (c)2012 Enterprise Architecture Solutions ltd.
@@ -89,10 +87,6 @@
 		</message>
 		<message>
 			<name>Application</name>
-			<value>Aplicação</value>
-		</message>
-		<message>
-			<name>application</name>
 			<value>Aplicação</value>
 		</message>
 		<message>
@@ -286,10 +280,6 @@
 		<message>
 			<name>Application Service</name>
 			<value>Serviço da Aplicação</value>
-		</message>
-		<message>
-			<name>application service</name>
-			<value>serviço da aplicação</value>
 		</message>
 		<message>
 			<name>Application Service Catalogue</name>
@@ -532,10 +522,6 @@
 			<value>Objetivo de Negócio</value>
 		</message>
 		<message>
-			<name>business objective</name>
-			<value>objetivo de negócio</value>
-		</message>
-		<message>
 			<name>Business Objective Footprint</name>
 			<value>Rastro do Objetivo de Negócio</value>
 		</message>
@@ -670,10 +656,6 @@
 		<message>
 			<name>Business Service</name>
 			<value>Serviço de Negócio</value>
-		</message>
-		<message>
-			<name>business service</name>
-			<value>serviço de negócio</value>
 		</message>
 		<message>
 			<name>Business Service Catalogue</name>
@@ -1412,10 +1394,6 @@
 			<value>Serviços de Aplicação Impactados</value>
 		</message>
 		<message>
-			<name>Impacted Application Services</name>
-			<value>Serviços de Aplicação Impactados</value>
-		</message>
-		<message>
 			<name>Impacted Business Drivers</name>
 			<value>Direcionadores de Negócio Impactados</value>
 		</message>
@@ -2068,10 +2046,6 @@
 			<value>Nenhum Processo de Negócio mapeado</value>
 		</message>
 		<message>
-			<name>No Business Processes mapped</name>
-			<value>Nenhum Processo de Negócio mapeado</value>
-		</message>
-		<message>
 			<name>No business roles defined for</name>
 			<value>Nenhum papel de negócio definido para</value>
 		</message>
@@ -2488,10 +2462,6 @@
 			<value>Nenhum Componente de Tecnologia Definido</value>
 		</message>
 		<message>
-			<name>No Technology Component defined</name>
-			<value>Nenhum Componente de Tecnologia definido</value>
-		</message>
-		<message>
 			<name>No Technology Components defined for this milestone</name>
 			<value>Nenhum Componente de Tecnologia definido para este marco</value>
 		</message>
@@ -2574,10 +2544,6 @@
 		<message>
 			<name>Organisation</name>
 			<value>Organização</value>
-		</message>
-		<message>
-			<name>organisation</name>
-			<value>organização</value>
 		</message>
 		<message>
 			<name>Organisation Roles</name>
@@ -2900,10 +2866,6 @@
 			<value>Processo</value>
 		</message>
 		<message>
-			<name>process</name>
-			<value>processo</value>
-		</message>
-		<message>
 			<name> process</name>
 			<value> processo</value>
 		</message>
@@ -2970,6 +2932,10 @@
 		<message>
 			<name>Programme Plan</name>
 			<value>Plano do Programa</value>
+		</message>
+		<message>
+			<name>Programme Plan for</name>
+			<value>Plano do Programa por</value>
 		</message>
 		<message>
 			<name>Programme Summary</name>
@@ -3161,16 +3127,13 @@
 		</message>
 		<message>
 			<name>Role</name>
-			<value>Papel</value>
+			<value>Cargos</value>
 		</message>
 		<message>
 			<name>Roles</name>
-			<value>Papéis</value>
+			<value>Cargos</value>
 		</message>
-		<message>
-			<name>Roles &amp; People</name>
-			<value>Papéis &amp; Pessoas</value>
-		</message>
+ 
 		<message>
 			<name>Runtime Status</name>
 			<value>Situação do Tempo de Execução</value>
@@ -4496,10 +4459,6 @@
 			<value>Não definido</value>
 		</message>
 		<message>
-			<name>undefined</name>
-			<value>não definido</value>
-		</message>
-		<message>
 			<name>Unknown</name>
 			<value>Desconhecido</value>
 		</message>
@@ -4541,10 +4500,6 @@
 		</message>
 		<message>
 			<name>Used In Technology Architectures</name>
-			<value>Usado em Arquiteturas de Tecnologia</value>
-		</message>
-		<message>
-			<name>Used in Technology Architectures</name>
 			<value>Usado em Arquiteturas de Tecnologia</value>
 		</message>
 		<message>
@@ -4623,5 +4578,1882 @@
 			<name>Z</name>
 			<value>Z</value>
 		</message>
+		<message>
+			<name>Application Diversity and Duplication Analysis</name>
+			<value>Analise de diversidade e duplicidade de aplicações</value>
+		</message>
+		<message>
+			<name>Information Representation Summary for</name>
+			<value>Sumário representativo de informações para</value>
+		</message>
+		<message>
+			<name>Information Views &amp; Concepts</name>
+			<value>Visualização e conceitos de informação</value>
+		</message>
+		<message>
+			<name>It is a model that defines the organisational structure (hierarchical decomposition), the functions/service performed by each organisational unit, the geographic location where these organisation unit reside, and the responsible authority (owner) of these organisation units</name>
+			<value>É um modelo que define a estrutura organizacional (decomposição hierárquica), as funções/serviços realizadas por cada unidade organizacional,a localização geográfica onde essas unidades organizacionais residem, e a autoridade responsável (Dono) dessas unidades organizacionais</value>
+		</message>
+		<message>
+			<name>It is a model that defines the relationships between objectives / imperatives as derived from Policy, Act, Regulation and requirements, and the responsible organisation to achieve the objectives, and the measures or key performance indicators (KPI) by which to measure achievements of such objectives</name>
+			<value>É um modelo que define os relacionamentos entre objetivos / imperativos de acordo com políticas, atos, regulações e requerimentos, e a organização responsável em conquistar os objetivos, e as métricas ou indicativos chave de performance (KPI) pelos quais medir a progresso de conquistas em tais objetivos</value>
+		</message>
+		<message>
+			<name>Roles &amp; People</name>
+			<value>Cargos e Pessoas</value>
+		</message>
+		<message>
+			<name>Show/Hide Information Views &amp; Representations</name>
+			<value>Mostra/Esconde visualizações de informação &amp; representações</value>
+		</message>
+		<message>
+			<name>Technology Platform Model</name>
+			<value>Modelo de plataforma de tecnologia</value>
+		</message>
+		<message>
+			<name>The following table describes the Business Capabilities that are mapped to this business area, the Business Processes that realise each capability and the applications that are being used to implement the each process. Information about the supplier and the technology products used is also shown</name>
+			<value>A seguinte tabela descreve capacidades de negócio que foram mapeadas nesta área de negócios, os processos de negócios que realizam cada capacidade e as aplicações que estão sendo usadas para implementar cada processo. Informação sobre o fornecedor e a produtos de tecnologia utilizados também são mostradas</value>
+		</message>
+		<message>
+			<name>The following tables describe the Application Instances that are dependant on this Technology Instance</name>
+			<value>As seguintes tabelas descrevem as instâncias de aplicações que são dependentes dessa instância de tecnologia</value>
+		</message>
+		<message>
+			<name>The following tables describe the Business Capabilities that are mapped to this business area, the Application Services that support each capability and the applications that are being used to implement the each service. Information about the supplier and the technology products used is also shown</name>
+			<value>As seguintes tabelas descrevem as capacidades de negócios que são mapeadas para esta área de negócios, os serviços de aplicação que suportam cada capacidade e as aplicações que estão sendo usadas para implementar cada serviço. Informação sobre o fornecedor e os produtos de tecnologia também são exibidos</value>
+		</message>
+		<message>
+			<name>The logical Information Views that are refinements of this Information Concept</name>
+			<value>As visualizações de informação lógica que são refinamentos desse conceito de informação</value>
+		</message>
+		<message>
+			<name>The Principles catalogue captures principles of the business and architecture principles that describe what a "good" solution or architecture should look like. Principles are used to evaluate and agree an outcome for architecture decision points. Principles are also used as a tool to assist in architectural governance of change initiatives</name>
+			<value>O catálogo de princípios captura princípios do negócio e princípios de arquitetura que descrevem com uma boa solução ou arquitetura deve parecer. princípios são usados para avaliar e concordar com um resultado de pontos de decisão de arquitetura. principios também são utilizados como uma ferramenta para auxiliar a mudança na iniciativa de governança de arquitetura </value>
+		</message>
+		<message>
+			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between Data Subjects and applications in an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
+			<value>O propósito do modelo de dados-para-aplicação é o de informar os stakeholders sobre a afinidade (ou relacionamento) entre tópicos de dados e aplicação em um empreendimento que necessita informar o desenvolvimento, integraçao e implantação de soluções de software</value>
+		</message>
+		<message>
+			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between logical Data Objects and application services in use across an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
+			<value>O propósito do modelo de aplicação para dados é de informar os stakeholders sobre a afinidade (ou relacionamento) entre objetos de dados lógicos e serviços de aplicação em uso através do empreendimento que necessitam informar o desenvolvimento, integração e implantação de solução de softwares</value>
+		</message>
+		<message>
+			<name>The purpose of the Organisation Structure Model is to inform stakeholders regarding the accountability and responsibility towards the services that are routinely rendered by an enterprise – be it an internal service or external service; and the business footprint to inform capacity and network design</name>
+			<value>o propósito do modelo de estrutura organizacional é de informar os stakeholders sobre a prestação de contas e responsabilidade para os serviços que são rotineiramente realizados pelo empreendimento - seja ele um serviço interno ou externo; e a pegada do negócio para informar a capacidade e resign de rede </value>
+		</message>
+		<message>
+			<name>The purpose of this view is to define the distribution of technology components for a distributed operating environment that will reduce duplication and optimise the re-use of shared infrastructure whilst providing optimal access channels to information intensive services to the intended users</name>
+			<value>o propósito desta view é de definir a distribuição dos componentes de tecnologia para um ambiente de operação distribuido que vai reduzir duplicação em otimizar o re-uso de infraestrutura compartilhada enquanto provê acesso otimizado a canais para serviços de informação intensivos para os respectivos usuários</value>
+		</message>
+		<message>
+			<name>The Technology Reference Model informs stakeholders regarding the major kinds of technologies and standards that are needed as a common infrastructure to enable the integration, execution, distribution and management of Information Management systems (data and applications) of an enterprise</name>
+			<value>O modelo de referencia de tecnologia informa os stakeholders sobre os maiores tipos de tecnologia e os padrões que são necessários como infraestrutura para permitir a integração, execução, distribuição e gerência de sistema de gestão de informação (dados e aplicações) de um empreendimento</value>
+		</message>
+		<message>
+			<name>to the Application Services in use across</name>
+			<value>para os serviços de aplicações em uso através </value>
+		</message>
+		<message>
+			<name>Application Technology Alignment</name>
+			<value>Alinhamento de tecnologia de aplicação </value>
+		</message>
+		<message>
+			<name>Information Change Analysis - Data Availability</name>
+			<value>Análise de mudanças de informação - Disponibilidade de dados</value>
+		</message>
+		<message>
+			<name>Information Change Analysis - Data Security</name>
+			<value>Análise de mudanças de informação - Segurança de dados</value>
+		</message>
+		<message>
+			<name>Information Change Analysis - Data Subject Scarcity/Redundancy</name>
+			<value>Análise de mudanças de informação - Escassez de dados de sujeito/Redundancia </value>
+		</message>
+		<message>
+			<name>Application Provider Catalogue by Name</name>
+			<value>Catálogo de provedor de aplicação por nome</value>
+		</message>
+		<message>
+			<name>Data Catalogue by Data Category</name>
+			<value>Catálogo de dados por categoria de dados</value>
+		</message>
+		<message>
+			<name>EA Principles Catalogue</name>
+			<value>Catálogo de princípios da EA</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Information</name>
+			<value>Análise de mudanças de negócio - Informação</value>
+		</message>
+		<message>
+			<name>Information Change Analysis - Data Scarcity/Redundancy</name>
+			<value>Análise de mudanças de informação - Escassez de dados / Redundancias</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Business Process</name>
+			<value>Análise de mudanças de negócio - Processos de Negócios</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Function/Service</name>
+			<value>Análise de mudanças de negócio - Função/Serviço</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Supporting Applications</name>
+			<value>Análise de mudanças de negócio - Aplicações de Suporte</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Location</name>
+			<value>Análise de mudanças de negócio - Localização</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Organisation Performance</name>
+			<value>Análise de mudanças de negócio - Performance da Organização</value>
+		</message>
+		<message>
+			<name>Business Change Analysis - Organisation Structure</name>
+			<value>Análise de mudanças de negócio - Estrutura da Organização</value>
+		</message>
+		<message>
+			<name>Application Provider Catalogue by Application Family</name>
+			<value>Catálogo de provedor de aplicação por familia de aplicação</value>
+		</message>
+		<message>
+			<name>Information Catalogue by Information Concept</name>
+			<value>Catálogo de informação por conceito de informação</value>
+		</message>
+		<message>
+			<name>Technology Node Product Catalogue by Vendor</name>
+			<value>Catálogo de nós de produto de tecnologia por vendedor</value>
+		</message>
+		<message>
+			<name>Integration Application Provider XML Extract</name>
+			<value>Extrator de XML de provedor de integração de aplicação</value>
+		</message>
+		<message>
+			<name>Integration Application Provider CSV Ext</name>
+			<value>Extrator de CSV de provedor de integração de aplicação</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Technology Component</name>
+			<value>Catálogo de produto de tecnologia por componente de tecnologia</value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Technology Capability</name>
+			<value>Catálogo de produto de tecnologia por capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>Business Organisation Structure Model</name>
+			<value>Modelo de estrutura de negócios da organização</value>
+		</message>
+		<message>
+			<name>Physical Process Catalogue by Domain</name>
+			<value>Catálogo de processos físicos por domínio</value>
+		</message>
+		<message>
+			<name>Application Provider Catalogue as Table</name>
+			<value>Catálogo de provedor de aplicação como tabela </value>
+		</message>
+		<message>
+			<name>Application Service Catalogue as Table</name>
+			<value>Catálogo de aplicações de serviço como tabela</value>
+		</message>
+		<message>
+			<name>Business Process Catalogue as Table</name>
+			<value>Catálogo de processos de negócio como tabela</value>
+		</message>
+		<message>
+			<name>Technology Product Cataloigue as Table</name>
+			<value>Catálogo de produtos de tecnologia como tabela</value>
+		</message>
+		<message>
+			<name>Data Object Catalogue by Name</name>
+			<value>Catálogo de objetos de dados por nome</value>
+		</message>
+		<message>
+			<name>Data Subject Model</name>
+			<value>Modelo de tópico de dados</value>
+		</message>
+		<message>
+			<name>Technology Domain Summary</name>
+			<value>Sumário de domíno de tecnologia </value>
+		</message>
+		<message>
+			<name>Technology Capability Summary</name>
+			<value>Sumário de capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>Data Representation Summary</name>
+			<value>Sumário de representação de dados </value>
+		</message>
+		<message>
+			<name>Data Representation Catalogue as Table</name>
+			<value>Catálogo de representação de dados como tabela</value>
+		</message>
+		<message>
+			<name>Information Store Summary</name>
+			<value>Sumário de armazenamento de informação</value>
+		</message>
+		<message>
+			<name>Information Store Catalogue as Table</name>
+			<value>Catálogo de armazenamento de informação como tabela</value>
+		</message>
+		<message>
+			<name>Physical Data Object Summary</name>
+			<value>Sumário de objetos de dados físicos </value>
+		</message>
+		<message>
+			<name>Physical Data Object Catalogue as Table</name>
+			<value>Catálogo de objetos de dados físicos por tabela</value>
+		</message>
+		<message>
+			<name>Data Object Model</name>
+			<value>Modelo de objeto de dados</value>
+		</message>
+		<message>
+			<name>Business Objective Catalogue by Name</name>
+			<value>Catálogo de Objetivos de negócio por nome </value>
+		</message>
+		<message>
+			<name>Applications Status by Business Capability</name>
+			<value>Estado de aplicação por capacidade de negócios </value>
+		</message>
+		<message>
+			<name>Application Function Implementation Summary</name>
+			<value>Sumário de implementação de funções de aplicativo</value>
+		</message>
+		<message>
+			<name>Application Deployment Summary</name>
+			<value>Sumário de implementação de aplicação</value>
+		</message>
+		<message>
+			<name>Business Strategic Goals Model</name>
+			<value>Modelo de metas estratégicas de negócios</value>
+		</message>
+		<message>
+			<name>Group Actor Catalogue by Name</name>
+			<value>Catálogo de grupo de atores por nome</value>
+		</message>
+		<message>
+			<name>Import Spreadsheet List</name>
+			<value>Importar lista de planilhas</value>
+		</message>
+		<message>
+			<name>Business Organisation Reporting Structure Model</name>
+			<value>Modelo estrutura de relatório de organizacional de negócios </value>
+		</message>
+		<message>
+			<name>Technology Node Catalogue as Table</name>
+			<value>Catálogo de nós de tecnologia como tabela</value>
+		</message>
+		<message>
+			<name>Application Function Implementation Catalogue by Name</name>
+			<value>Catálogo de implementação de funções de aplicações por nome</value>
+		</message>
+		<message>
+			<name>All Instances by Class</name>
+			<value>Todas as instâncias por classe </value>
+		</message>
+		<message>
+			<name>Class Overview</name>
+			<value>Visualização geral de classe</value>
+		</message>
+		<message>
+			<name>Duplicate Dashboard</name>
+			<value>Duplicar Painel</value>
+		</message>
+		<message>
+			<name>Instance Overview by ID</name>
+			<value>Visão geral de instâncias por ID</value>
+		</message>
+		<message>
+			<name>Instance Relationships as Tree</name>
+			<value>Relacionamento de instâncias como árvore </value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard View Checker</name>
+			<value>Painel de visualização de checagem de ativos de TI</value>
+		</message>
+		<message>
+			<name>Repository Completeness Check</name>
+			<value>Verificação de completude de repositórios</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard</name>
+			<value>Painel de ativos de TI</value>
+		</message>
+		<message>
+			<name>Application Footprint Comparison</name>
+			<value>Comparativo de pegada de aplicação</value>
+		</message>
+		<message>
+			<name>Business Process Family Summary</name>
+			<value>Sumário de família de processos de negócios </value>
+		</message>
+		<message>
+			<name>Strategic Technology Product Selector</name>
+			<value>Seletor de produtos estratégicos de tecnologia</value>
+		</message>
+		<message>
+			<name>Application Rationalisation Analysis</name>
+			<value>Análise de racionalização de aplicação</value>
+		</message>
+		<message>
+			<name>UTIL-VC: IT Asset Dashboard View Checker</name>
+			<value>UTIL-VC: Painel de visualização e verificação de ativos de TI</value>
+		</message>
+		<message>
+			<name>Business Capability Catalogue as Table</name>
+			<value>Catálogo de capacidade do negócio como tabela</value>
+		</message>
+		<message>
+			<name>Strategy Planner</name>
+			<value>Planejamento de estratégia</value>
+		</message>
+		<message>
+			<name>Business Process Location Map</name>
+			<value>Mapa de localização de processos de negócio</value>
+		</message>
+		<message>
+			<name>Location Summary</name>
+			<value>Sumário de localização</value>
+		</message>
+		<message>
+			<name>Enterprise Application Dependency Network</name>
+			<value>Rede de dependências de aplicações de empreendimento</value>
+		</message>
+		<message>
+			<name>Value Stream Catalogue as Table</name>
+			<value>Catálogo de fluxo de valores como tabela</value>
+		</message>
+		<message>
+			<name>Value Stream Summary</name>
+			<value>Sumário de fluxo de valores</value>
+		</message>
+		<message>
+			<name>Technology Component Catalogue as Table</name>
+			<value>Catálogo de componentes de tecnologia como tabela</value>
+		</message>
+		<message>
+			<name>Application Dependency Network</name>
+			<value>Rede de dependências de aplicações</value>
+		</message>
+		<message>
+			<name>Application Architecture Principles Catalogue</name>
+			<value>Catálogo de princípios de arquitetura de aplicação</value>
+		</message>
+		<message>
+			<name>Application Business Fit Analysis</name>
+			<value>Analise de encaixe de aplicações de negócios</value>
+		</message>
+		<message>
+			<name>Application Cost Analysis</name>
+			<value>Analise de custo de aplicação</value>
+		</message>
+		<message>
+			<name>Application Cost Summary</name>
+			<value>Resumo de custos de aplicação</value>
+		</message>
+		<message>
+			<name>Application Duplication Analysis</name>
+			<value>Analise de aplicações duplicadas </value>
+		</message>
+		<message>
+			<name>Application Information Dependency Model</name>
+			<value>Modelo de dependências de aplicações de informação</value>
+		</message>
+		<message>
+			<name>Application Provider Catalogue as Table</name>
+			<value>Catálogo de provedores de aplicações como tabela</value>
+		</message>
+		<message>
+			<name>Application Service Cost vs Supported Revenue Analysis</name>
+			<value>Analise de custo de serviço de aplicação vs receita suportada</value>
+		</message>
+		<message>
+			<name>Application Service Rationalisation Analysis</name>
+			<value>Analise de serviços de racionalização de aplicações</value>
+		</message>
+		<message>
+			<name>Application Organisation Usage</name>
+			<value>Uso organizacional de aplicações</value>
+		</message>
+		<message>
+			<name>Application Reference Model</name>
+			<value>Modelo de referência de aplicações</value>
+		</message>
+		<message>
+			<name>Application to Business Capability Analysis</name>
+			<value>Analise de capacidade de aplicações de negócios </value>
+		</message>
+		<message>
+			<name>Application Technical Health Analysis</name>
+			<value>Analise de saúde técnica de aplicações </value>
+		</message>
+		<message>
+			<name>Applications by Host Country</name>
+			<value>Aplicações por país de origem</value>
+		</message>
+		<message>
+			<name>Business Capability Summary</name>
+			<value>Resumo da capacidade de negócios</value>
+		</message>
+		<message>
+			<name>Applications by User Country</name>
+			<value>Aplicações por país de usuário</value>
+		</message>
+		<message>
+			<name>Business Strategy Footprint</name>
+			<value>Pegada da estratégia de negócios</value>
+		</message>
+		<message>
+			<name>Business Process Summary</name>
+			<value>Sumário de processos de negócios</value>
+		</message>
+		<message>
+			<name>NIST</name>
+			<value>NIST</value>
+		</message>
+		<message>
+			<name>Business Capability to Technology as Force</name>
+			<value>Capacidade de negócios para tecnologia como força</value>
+		</message>
+		<message>
+			<name>Business Capability to Technology as Tree</name>
+			<value>Capacidade de negócios para tecnologia como árvore</value>
+		</message>
+		<message>
+			<name>Business Process Model v5</name>
+			<value>Modelo v5 de processos de negócios</value>
+		</message>
+		<message>
+			<name>Application Software Architecture</name>
+			<value>Arquitetura de software de aplicação</value>
+		</message>
+		<message>
+			<name>Application Cost Analysis</name>
+			<value>Analise de custo da aplicação</value>
+		</message>
+		<message>
+			<name>Application Cost Summary</name>
+			<value>Sumário de custo da aplicação</value>
+		</message>
+		<message>
+			<name>Instances for Class</name>
+			<value>Instâncias por Classe</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Application Capability L1</name>
+			<value>Painel de ativos de TI e capacidades de aplicações L1</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get Business Units</name>
+			<value>Painel de ativos de TI receber unidades de negócios</value>
+		</message>
+		<message>
+			<name>Business Scenario Scope API</name>
+			<value>API de escopo de cenário de negócios</value>
+		</message>
+		<message>
+			<name>Business Scenario Impact API</name>
+			<value>API de impactos de cenário de negócios</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get All Tech Capability Info</name>
+			<value>Painel de ativos de TI receber todas as informações de capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get All Tech Product Roles</name>
+			<value>Painel de ativos de TI receber todos os funções de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get All Business Capabilities</name>
+			<value>Painel de ativos de TI receber todas as capacidades de negócios</value>
+		</message>
+		<message>
+			<name>Technology Capability Model</name>
+			<value>Modelo de capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>Application Stakeholders IDs</name>
+			<value>ID s dos stakeholders de aplicações</value>
+		</message>
+		<message>
+			<name>Technology Stakeholders IDs</name>
+			<value>ID s dos stakeholders de tecnologia </value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get App Pie Data</name>
+			<value>Painel de ativos de TI receber todos os dados de aplicativo por setores</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard Get Tech Pie Data</name>
+			<value>Painel de ativos de TI receber todas os dados de tecnologia por setores</value>
+		</message>
+		<message>
+			<name>Technology Product List</name>
+			<value>Lista de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>Application Capability L1</name>
+			<value>Capacidade de aplicação L1</value>
+		</message>
+		<message>
+			<name>Technology Capability L1</name>
+			<value>Capacidade de tecnológica L1</value>
+		</message>
+		<message>
+			<name>Slot Value Checker</name>
+			<value>Verificador de valores de slot</value>
+		</message>
+		<message>
+			<name>Get Tech Nodes</name>
+			<value>Receber nós de tecnologia</value>
+		</message>
+		<message>
+			<name>Technology Products and Suppliers</name>
+			<value>Produtos de tecnologia e fornecedores</value>
+		</message>
+		<message>
+			<name>Class Info</name>
+			<value>Informações de Classe</value>
+		</message>
+		<message>
+			<name>TRM Get Technology Business Units</name>
+			<value>TRM receber unidades de tecnologia de negócios</value>
+		</message>
+		<message>
+			<name>TRM Get All Tech Product Details</name>
+			<value>TRM receber todos os detalhes de produtos de tecnologia </value>
+		</message>
+		<message>
+			<name>TRM Get All Tech Product Roles</name>
+			<value>TRM receber todas as funções de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>TRM Technology Reference Model Summary Data</name>
+			<value>TRM Sumário de dados de modelos de referência tecnológica</value>
+		</message>
+		<message>
+			<name>Application Design Authority</name>
+			<value>Autoridade de Design de aplicação</value>
+		</message>
+		<message>
+			<name>Business Process Hierarchy</name>
+			<value>Hierarquia de processos de negócios</value>
+		</message>
+		<message>
+			<name>Enterprise Architecture Navigator</name>
+			<value>Navegador de arquitetura de empreendimento</value>
+		</message>
+		<message>
+			<name>IT Asset Dashboard - Optimised</name>
+			<value>Painel de ativos de TI – Otimizado</value>
+		</message>
+		<message>
+			<name>Technology Reference Model - Optimised</name>
+			<value>Modelo de referência tecnológica – Otimizado </value>
+		</message>
+		<message>
+			<name>Business Process Family Catalogue as Table</name>
+			<value>Catálogo de família de processos de negócio como tabela</value>
+		</message>
+		<message>
+			<name>Business Application Footprint</name>
+			<value>Pegada da aplicação de negócios</value>
+		</message>
+		<message>
+			<name>Business Capability to Projects Tree</name>
+			<value>Capacidade de negócios para árvore de projetos</value>
+		</message>
+		<message>
+			<name>Application List</name>
+			<value>Lista de aplicações</value>
+		</message>
+		<message>
+			<name>Simple Instance</name>
+			<value>Instância simples</value>
+		</message>
+		<message>
+			<name>BCM List</name>
+			<value>Lista de BCM</value>
+		</message>
+		<message>
+			<name>Application Capability Model</name>
+			<value>Modelo de capacidade de aplicação</value>
+		</message>
+		<message>
+			<name>Technology Capability Model API</name>
+			<value>Modelo de API em capacidade tecnológica </value>
+		</message>
+		<message>
+			<name>Application Stakeholders API</name>
+			<value>API de aplicação dos Stakeholders</value>
+		</message>
+		<message>
+			<name>Technology Stakeholders API</name>
+			<value>API de tecnologia dos Stakeholders</value>
+		</message>
+		<message>
+			<name>Technology Product List API</name>
+			<value>API lista de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>Application Capability L1 API</name>
+			<value>API L1 de capacidade de aplicação</value>
+		</message>
+		<message>
+			<name>Technology Capability L1 API</name>
+			<value>API L1 de Capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>BCM Counts</name>
+			<value>Contagem de BCM</value>
+		</message>
+		<message>
+			<name>Business Capability Summary API</name>
+			<value>API Sumário de Capacidade de negócios </value>
+		</message>
+		<message>
+			<name>Application Change</name>
+			<value>Mudança de aplicação</value>
+		</message>
+		<message>
+			<name>Strategic Data</name>
+			<value>Dados estratégicos</value>
+		</message>
+		<message>
+			<name>Application Service Summary API</name>
+			<value>API de sumário de serviço de aplicação</value>
+		</message>
+		<message>
+			<name>Application Provider Service Summary API</name>
+			<value>API de sumário de provedor de serviço de aplicação</value>
+		</message>
+		<message>
+			<name>Planned Elements</name>
+			<value>Elementos planejados</value>
+		</message>
+		<message>
+			<name>Application Cost</name>
+			<value>Custo de Applicação</value>
+		</message>
+		<message>
+			<name>Application Info/Data Summary</name>
+			<value>Informação de aplicação/Resumo de dados </value>
+		</message>
+		<message>
+			<name>Application to Data Matrix</name>
+			<value>Aplicação para matriz de dados</value>
+		</message>
+		<message>
+			<name>Data Object Lifecycle</name>
+			<value>Ciclo de vidade dos objetos de dados</value>
+		</message>
+		<message>
+			<name>Data Object Model</name>
+			<value>Modelo de objetos de dados</value>
+		</message>
+		<message>
+			<name>Data Object Summary</name>
+			<value>Sumário de objetos de dados</value>
+		</message>
+		<message>
+			<name>Data Quality Analysis</name>
+			<value>Analise de qualidade de dados</value>
+		</message>
+		<message>
+			<name>Data Quality Dashboard</name>
+			<value>Painel de qualidade de dados</value>
+		</message>
+		<message>
+			<name>Data Repository Catalogue</name>
+			<value>Catálogo de repositório de dados</value>
+		</message>
+		<message>
+			<name>Data Repository Dashboard</name>
+			<value>Painel de repositórios de dados</value>
+		</message>
+		<message>
+			<name>Data Subject and Object Mapping by Application</name>
+			<value>Tópico de dados e mapeamento de objetos por aplicação</value>
+		</message>
+		<message>
+			<name>Data Subject Catalogue by Name</name>
+			<value>Catálogo de tópicos de dados por nome</value>
+		</message>
+		<message>
+			<name>Global Data Map</name>
+			<value>Mapa de dados globais</value>
+		</message>
+		<message>
+			<name>Information Catalogue by Information Concept</name>
+			<value>Catálogo de informação por conceito de informação</value>
+		</message>
+		<message>
+			<name>Process to Data Matrix</name>
+			<value>Processar para Matriz de Dados</value>
+		</message>
+		<message>
+			<name>Business Issues Register</name>
+			<value>Registro de problemas de negócio</value>
+		</message>
+		<message>
+			<name>Business Capability Application Fit</name>
+			<value>Ajuste de capacidade de aplicação de negócio</value>
+		</message>
+		<message>
+			<name>Application Cost Dashboard</name>
+			<value>Painel de custo de aplicação</value>
+		</message>
+		<message>
+			<name>Application Rationalisation Analysis</name>
+			<value>Analise de racionalização de aplicação </value>
+		</message>
+		<message>
+			<name>Launchpad Plus Loaders</name>
+			<value>Carregadores do Launchped Plus</value>
+		</message>
+		<message>
+			<name>Supplier Licenses</name>
+			<value>Fornecedor de licenças</value>
+		</message>
+		<message>
+			<name>Supplier Impact</name>
+			<value>Impacto de fornecedor</value>
+		</message>
+		<message>
+			<name>Security Impact</name>
+			<value>Impacto de segurança</value>
+		</message>
+		<message>
+			<name>Project KPI Tracking</name>
+			<value>Monitoramento de KPI do projeto</value>
+		</message>
+		<message>
+			<name>Business Capability Modal API</name>
+			<value>API Modal de capacidade de negócios</value>
+		</message>
+		<message>
+			<name>Business Process Modal API</name>
+			<value>API Modal de processos de negócios</value>
+		</message>
+		<message>
+			<name>Organisation Modal API</name>
+			<value>API Modal da organização</value>
+		</message>
+		<message>
+			<name>Site Modal API</name>
+			<value>API Modal do site</value>
+		</message>
+		<message>
+			<name>Application Capability Modal API</name>
+			<value>API Modal de capacidade de aplicação</value>
+		</message>
+		<message>
+			<name>Application Service Modal API</name>
+			<value>API modal de serviços de aplicação</value>
+		</message>
+		<message>
+			<name>Application Provider Modal API</name>
+			<value>API modal de provedor de aplicação</value>
+		</message>
+		<message>
+			<name>Technology Capability Modal API</name>
+			<value>API modal de capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>Technology Component Modal API</name>
+			<value>API modal de componentes de tecnologia</value>
+		</message>
+		<message>
+			<name>Technology Product Modal API</name>
+			<value>API modal de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>System: Content Approvals Summary</name>
+			<value>Sistema: Sumário de conteúdo aprovado</value>
+		</message>
+		<message>
+			<name>Business Layer Impacts API</name>
+			<value>API de impactos de camadas de negócios </value>
+		</message>
+		<message>
+			<name>Business Model Canvas</name>
+			<value>Quadro de modelo de negócios</value>
+		</message>
+		<message>
+			<name>Application Delivery Model Breakdown</name>
+			<value>Passo a passo do modelo de entrega de aplicação</value>
+		</message>
+		<message>
+			<name>Application Codebase Breakdown</name>
+			<value>Passo a passo de código base de aplicação</value>
+		</message>
+		<message>
+			<name>Technology Product Lifecycle Analysis</name>
+			<value>Analise de ciclo de vida de produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>Executive Presentation Manager</name>
+			<value>Apresentação gerencial executiva</value>
+		</message>
+		<message>
+			<name>Idea Dashboard</name>
+			<value>Painel de Ideias </value>
+		</message>
+		<message>
+			<name>Strategic Trends Radar</name>
+			<value>Radar de Tendencias estratégicas </value>
+		</message>
+		<message>
+			<name>Supplier Impact Map</name>
+			<value>Mapa de impacto de fornecedores</value>
+		</message>
+		<message>
+			<name>Supplier License Management</name>
+			<value>Gerenciamento de fornecedor de licenças</value>
+		</message>
+		<message>
+			<name>Technology Security Vulnerability Analysis</name>
+			<value>Analise de vulnerabilidade de segurança tecnológica </value>
+		</message>
+		<message>
+			<name>Strategic Implication Dashboard</name>
+			<value>Painel de implicações estratégicas</value>
+		</message>
+		<message>
+			<name>Graphically represents the exchange of a given Data Object between applications</name>
+			<value>Representa graficamente a troca de determinado objeto de dados entre aplicações</value>
+		</message>
+		<message>
+			<name>Maps the Data Objects of a given Data Subject to the Application Services that create, read, update or delete them.</name>
+			<value>Mapeia os objetos de dados de determinado Assunto de dados para os serviços de aplicação que criam, leem, atualizam ou os apaga.</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key details and relationships that exist for an Application Capability</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos detalhes chave e relacionamentos que existem para a capacidade de uma aplicação</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for an Application Service</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos relacionamentos chave que existem para um serviço de aplicação</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a physical Technology Node</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos relacionamentos chave que existem para um nó de tecnologia física</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a physical Technology Instance</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos relacionamentos chave que existem para uma instância de tecnologia física</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a logical Technology Component</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos relacionamentos chave que existem para um componente de tecnologia lógica </value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a Strategic Plan</name>
+			<value>Disponibiliza um sumário de ponta a ponta dos relacionamentos chave que existem para um plano estratégico</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Project</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave para um determinado projeto</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Programme</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave para um determinado programa</value>
+		</message>
+		<message>
+			<name>Graphically displays the network of people (Individual Actors) and Projects, with a given project at its centre</name>
+			<value>Mostra graficamente uma rede de pessoas (atores individuais) e projetos, com um determinado projeto no centro</value>
+		</message>
+		<message>
+			<name>Provides a high view of the timing of Projects that comprise a given Programme.</name>
+			<value>Disponibiliza uma visão alta do timing de projetos que fazem parte de um determinado programa</value>
+		</message>
+		<message>
+			<name>Graphically represents the inbound and outbound exchanges of Information for a given Application</name>
+			<value>Representa graficamente o recebimento e envio de informações para uma determinada aplicação</value>
+		</message>
+		<message>
+			<name>Provides a generic graphical view of a Strategic Roadmap which outlines a list of individual increments of change over a timeline to show progression from a Baseline Architecture State to a Target Architecture State</name>
+			<value>Disponibiliza uma visualização gráfica genérica de um roteiro estratégico o qual esboça uma lista de incrementos de mudança individuais ao longo de uma linha do tempo para mostrar progressão do patamar do estado da arquitetura para um estado alvo de arquitetura</value>
+		</message>
+		<message>
+			<name>Defines the interaction between logical Application Services and Business Roles.</name>
+			<value>Define a interação entre serviços de aplicações lógicas e regras de negócio</value>
+		</message>
+		<message>
+			<name>Graphically describes the logical Technology Components that are needed to support a given Application.</name>
+			<value>Descreve graficamente os componentes lógicos de tecnologia que são necessários para o suporte de uma determinada aplicação</value>
+		</message>
+		<message>
+			<name>Performs an analysis of a given Application to evaluate its Technology Architecture against agreed product standards.</name>
+			<value>Executa uma analise de determinada aplicação para avaliar a arquitetura tecnológica contra padrões de produtos estabelecidos </value>
+		</message>
+		<message>
+			<name>Graphically represents the inbound and outbound dependencies of a given Business Service (Product Type) on other Business Services.</name>
+			<value>Representa graficamente a entrada e saída de dependências de um determinado serviço de negócios (tipo de produto) em outros serviços de negócios. </value>
+		</message>
+		<message>
+			<name>Provides an analysis of the Applications Services, Applications and Technology Products that support the Business Capabilities of a given Business Domain.</name>
+			<value>Disponibiliza uma analise dos serviços de aplicação ,aplicação e produtos de tecnologia que suportam capacidades de negócios de um determinado domínio de negócios. </value>
+		</message>
+		<message>
+			<name>Provides a graphical view of the inter-application data dependencies that exist for a selected application.</name>
+			<value>Disponibiliza uma visualização gráfica da inter dependência de dados de aplicação que existem para uma aplicação selecionada</value>
+		</message>
+		<message>
+			<name>For a given Data Subject, defines the access control policies defined for the associated Data Objects as well as any business roles that have been assigned specific data management responsibilities.</name>
+			<value>Para um determinado tópico de dados, define as politicas de controle e acesso definidas por objetos de dados associados assim como qualquer papel de negócios que foi designado responsabilidades de gestão de dados específicos </value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the Data managed by Applications that will occur between the Baseline Info/Data Architecture and the Target Info/Data Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas os dados gerenciados por aplicações que vão ocorrer entre o patamar da informação/arquitetura de dados e o alvo de informação/arquitetura de dados de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the security policies associated with a given Data Subject that will occur between the Baseline Info/Data Architecture and the Target Info/Data Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para as políticas de segurança associadas com um tópico de dados que vai ocorrer entre o patamar de informação/ arquitetura de dados e o alvo de informação/arquitetura de dados de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to logical Data Objects of a givenData Subjects that will occur between the Baseline Info/Data Architecture and the Target Info/Data Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para objetos de dados lógicos de determinados tópicos de dados que vão ocorrer entre o patamar de informação/arquitetura de dados e a informação alvo/ arquitetura de dados de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Provides an analysis of the Business Processes that are performed to deliver the Business Capabilities of a given Business Domain.</name>
+			<value>Disponibiliza uma analise dos processos de negócio que são executados para entregar as capacidades de negócio de um determinado domínio de negócio</value>
+		</message>
+		<message>
+			<name>Describes the Application Services that are defined for a given capability and the applications that are being used to implement each service togther with the technology products that are used to deliver the application.</name>
+			<value>Descreve os serviços que são definidos para uma determinada capacidade e as aplicações que estão sendo usadas para implementar cada serviço junto com produtos de tecnologia que são usados para entregar a aplicação.</value>
+		</message>
+		<message>
+			<name>Lists the Application Capabilities contained in the repository by name in alphabetical order.</name>
+			<value>Lista de capacidades de aplicações contidas no repositório por nome e alfabéticamente</value>
+		</message>
+		<message>
+			<name>Lists the applications, business processes and business teams that would be impacted by changes to, or removal of a given application</name>
+			<value>Lista de aplicações, processos negócios e times de negócios que seriam impactados por mudanças,ou remoção de determinada aplicação </value>
+		</message>
+		<message>
+			<name>Provides a list of the Applications in use across the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de aplicações em uso dentro do empreendimento, organizado por nome e alfabéticamente</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business DOmains in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de domínios de negócios no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of the Information Concepts and Views in scope for the enterprise, organised by Business Domain.</name>
+			<value>Disponibiliza uma lista de conceitos de informação e visualizações no escopo do empreendimento, organizado por domínio de negócio</value>
+		</message>
+		<message>
+			<name>Provides a list of logical Data Objects in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de objetos de dados lógicos no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of conceptual Data Subjects in scope for the enterprise, organised by category (e.g. master, reference, transactional).</name>
+			<value>Disponibiliza uma lista de tópicos de dados conceituais no escopo do empreendimento, organizado por categoria (ex: principal, referência, transacional).</value>
+		</message>
+		<message>
+			<name>Provides a list of the strategic roadmaps that have been defined, organised by architecture layer.</name>
+			<value>Disponibiliza uma lista de roteiros estratégicos que foram definidos, organizados por camada de arquitetura</value>
+		</message>
+		<message>
+			<name>Defines a standard, layered view of the Application Capabilities in scope for the enterprise.</name>
+			<value>Define um padrão, visualização em camadas das capacidades da aplicação no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a list of the logical applications services in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de serviços de aplicações lógicas no escopo do empreendimento, organizado alfabeticamente por nome.</value>
+		</message>
+		<message>
+			<name>Provides a list of the logical Business Services (Product Types) that are delivered by the enterprise, the applications that support their delivery, and the logical Busines Roles that participate.</name>
+			<value>Disponibiliza uma lista de serviços de negócios lógicos (tipos de produtos) que são entregues pelo empreendimento, as aplicações que suportam as suas entregas, e os papeis lógicos de negócios que participam.</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Services (Product Types) in scope for the enterprise, organised alphabetically by name.</name>
+			<value>disponibiliza uma lista de serviços de negócios (tipos de produtos) no escopo do empreendimento, organizado alfabeticamente por nome </value>
+		</message>
+		<message>
+			<name>Defines the relationships between business drivers, business objectives and the measures or key performance indicators (KPI) used to measure achievement of the objectives.</name>
+			<value>Define os relacionamentos entre motivadores de negócios, objetivos e medidas de negócios ou indicadores chaves de performance (KPI) usados para medir conquistas dos objetivos. </value>
+		</message>
+		<message>
+			<name>Defines a standard, layered view of the Information Concepts in scope for the enterprise.</name>
+			<value>Define um padrão, visualização em camadas dos conceitos de informação no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Defines the access control policies defined for the conceptual Data Subjects in scope for the enterprise as well as any business roles that have been assigned specific data management responsibilities.</name>
+			<value>Define o acesso as politicas de controle definidas para os tópicos de dados conceituais no escopo do empreendimento assim como qualquer papel de negócio que foram especificadas responsabilidades de gerência de dados.</value>
+		</message>
+		<message>
+			<name>Defines the interaction (e.g. create, read, update, delete) between application services and all data subjects in scope for the enterprise.</name>
+			<value>Define a interação (ex: criar, ler, alterar, apagar) entre serviços de aplicações e todos os tópicos de dados no escopo do empreendimento.</value>
+		</message>
+		<message>
+			<name>Provides a list of the architecture principles that have been defined, organised by architecture layer.</name>
+			<value>Disponibiliza uma lista de princípios definidos de arquitetura, organizados por camadas de arquitetura</value>
+		</message>
+		<message>
+			<name>Defines a standard, layered view of the logical Technology Components in scope for the enterprise.</name>
+			<value>Define um padrão, visualização em camadas dos componentes de tecnologia no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to where Applications are used that will occur between the Baseline Application Architecture and the Target Application Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para onde aplicações são usadas que vão ocorrer entre o patamar de arquitetura de aplicação e o alvo da arquitetura de aplicação de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Applications interfaces that will occur between the Baseline Application Architecture and the Target Application Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para interfaces de aplicação que vão ocorrer entre o patamar de arquitetura de aplicação e o alvo da arquitetura de aplicação de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the Application landscape that will occur between the Baseline Application Architecture and the Target Application Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para o panorama de aplicação que vão ocorrer entre o panorama de arquitetura de aplicação e o alvo da arquitetura de aplicativo de um um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Outlines a list of individual increments of change over a timeline to show progression from a Baseline Application Architecture to a Target Application Architecture.</name>
+			<value>Esboça uma lista de incrementos individuais de mudança ao longo de uma linha do tempo para mostrar progresso a partir de uma patamar de arquitetura de aplicação para uma aplicação de arquitetura alvo.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Information used by the business that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para a informação usada pelo negócio que vão ocorrer entre o patamar de arquitetura de negócios e o alvo de arquitetura de negócio de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Provides a list of the strategic roadmaps that have been defined, organised by name in alphabetical order.</name>
+			<value>Disponibiliza uma lista de roteiros estratégicos que foram definidos, organizados alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Outlines a list of individual increments of change over a timeline to show progression from a Baseline Business Architecture to a Target Business Architecture.</name>
+			<value>Esboça uma lista de incrementos individuais de mudança ao longo de uma linha do tempo para mostrar progresso a partir de uma patamar de arquitetura de negócios para uma arquitetura alvo de negócios.</value>
+		</message>
+		<message>
+			<name>Outlines a list of individual increments of change over a timeline to show progression from a Baseline Info/Data Architecture to a Target Info/Data Architecture.</name>
+			<value>Esboça uma lista de incrementos individuais de mudança ao longo de uma linha do tempo para mostrar progresso a partir de uma patamar informativo/arquitetura de dados para uma informação alvo/arquitetura de dados. </value>
+		</message>
+		<message>
+			<name>Provides a list of concpetual Data Subjects, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de tópicos de dados conceituais , organizados alfabeticamente por nome </value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Data Subjects that will occur between the Baseline Info/Data Architecture and the Target Info/Data Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para os tópicos de dados que vão ocorrer entre o patamar de informação/arquitetura de dados e o alvo da informação/arquitetura de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to logical Technology Components that will occur between the Baseline Technology Architecture and the Target Technology Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para os componentes de tecnologia lógicos que vão acontecer entre o patamar de arquitetura tecnológica e a arquitetura de tecnologia alvo de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the location of Technology Components that will occur between the Baseline Technology Architecture and the Target Technology Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para o local de componentes de tecnologia que vão ocorrer entre o patamar de arquitetura tecnológica e a arquitetura de tecnologia alvo de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the interoperability standards defined for Technology Components that will occur between the Baseline Technology Architecture and the Target Technology Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve mudanças planejadas para os padrões de interoperabilidade definidos por componentes de tecnologia que vão ocorrer entre o patamar de arquitetura tecnológica e o alvo de arquitetura tecnológica de um determinado roteiro estratégico. </value>
+		</message>
+		<message>
+			<name>Outlines a list of individual increments of change over a timeline to show progression from a Baseline Technology Architecture to a Target Technology Architecture.</name>
+			<value>Esboça uma lista de incrementos individuais de mudança ao longo de uma linha do tempo para mostrar progresso a partir de uma patamar de arquitetura tecnológica para uma meta de arquitetura de tecnologia. </value>
+		</message>
+		<message>
+			<name>Describes the applications, the locations from where they are used and the interfaces between them.</name>
+			<value>Descreve as aplicações, as localizações de onde elas são usadas e as interfaces entre elas</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Business Processes that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para os processos de negócios que vão ocorrer entre o patamar de arquitetura de negócios e o alvo da arquitetura de negócios de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Business Services that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para os serviços de negócios que vão ocorrer entre o patamar de arquitetura de negócios e o alvo da arquitetura de negócios de um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to application support for Business Processes that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para processos de negócios e suporte de aplicação que vão ocorrer entre o patamar de arquitetura de negócios e os alvos de negócios arquitetura de um determinado roteiro estratégico</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the Locations where Business Processes are performed that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve as mudanças planejadas para os locais onde os processos de negócio são executados que vão ocorrer entre o patamar de arquitetura de negócios e os alvos de negócios arquitetura de um determinado roteiro estratégico</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to Business Drivers, Objectives or Targets that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve mudanças planejadas nos motivadores de negócios ,objetivos e metas que vão ocorrer entre o patamar de arquitetura de negócios e o foco da arquitetura de negócios segundo um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Describes the planned changes to the Organisation (roles or actors) that will occur between the Baseline Business Architecture and the Target Business Architecture of a given Strategic Roadmap.</name>
+			<value>Descreve mudanças na organização planejadas (papeis e atores) que vão ocorrer entre o patamar de arquitetura de negócios e o foco da arquitetura de negócios segundo um determinado roteiro estratégico.</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Processes in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de processos de negócios no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a logical view of the technology deployment environments in scope for the enteprise.</name>
+			<value>Disponibiliza uma visualização lógica dos ambientes de implementação de tecnologia no escopo do empreendimento.</value>
+		</message>
+		<message>
+			<name>Provides a list of the applications in use across the enterprise, organised by Application Family.</name>
+			<value>Disponibiliza uma lista de aplicações in uso através do empreendimento, organizado por família da aplicação</value>
+		</message>
+		<message>
+			<name>Provides a list of the Information Concepts, the Views and Representations in scope for the enterprise, organised alphabetically by name.</name>
+			<value>disponibiliza uma lista de conceitos de informação, as visualizações e representações no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of the physical Technology Nodes in scope for the enterprise, organised by product vendor.</name>
+			<value>Disponibiliza uma lista de nós físicos de tecnologia no escopo do empreendimento, organizado por fornecedor de produto</value>
+		</message>
+		<message>
+			<name>Provides a list of the products used to implement physical Technology Nodes, organised by vendor.</name>
+			<value>Disponibiliza uma lista de produtos usados para implementar nós físicos de tecnologia, organizado por forncedor</value>
+		</message>
+		<message>
+			<name>Provides a computer-readable, XML extract providing the list of all applications that are in the architecture repository. This extract lists the name and the description of each application.</name>
+			<value>Disponibiliza um extrato XML para leitura em computador listando todas as aplicações que estão no repositório da arquitetura. Esse extrato lista o nome e a descrição de cada aplicação</value>
+		</message>
+		<message>
+			<name>Provides a comma-separated (CSV) extract providing the list of all applications that are in the architecture repository. This extract lists the name and the description of each application.</name>
+			<value>Disponibiliza um extração (CSV) separado por virgulas que prove a lista de todas as aplicações que estão no repositório de arquitetura.Essa extração lista o nome e a descrição de cada aplicação</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Products in use across the enterprise, organised by product vendor.</name>
+			<value>Disponibiliza uma lista de produtos de tecnologia em uso através do empreendimento, organizado pelo vendedor do produto</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Processes in scope for the enterprise, organised by the Business Services that they deliver.</name>
+			<value>Disponibiliza uma lista de processos de negócios no escopo do empreendimento organizado, pelos serviços de negócios que eles entregam</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Processes in scope for the enterprise, organised by business domain.</name>
+			<value>Disponibiliza uma lista de processos de negócios no escopo do empreendimento, organizado por domínio de negócios</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Capabilities in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de capacidades de negócios no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of the physical Technology Nodes in scope for the enterprise, organised by name in alphabetical order.</name>
+			<value>Disponibiliza uma lista de nós físicos de tecnologia no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of Projects in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de projetos no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of Programmes in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de programas no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Products in use across the enterprise, organised by logical Technology Component.</name>
+			<value>Disponibiliza uma lista de produtos de tecnologia em uso através do empreendimento, organizado por componente lógico de tecnologia</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Products in use across the enterprise, organised by conceptual Technology Capability.</name>
+			<value>Disponibiliza uma lista de produtos de tecnologia em uso através do empreendimento, organizado por capacidade conceitual da tecnologia</value>
+		</message>
+		<message>
+			<name>Provides a list of the physical Technology Nodes in scope for the enterprise, organised by product.</name>
+			<value>Disponibiliza uma lista de nós físicos de tecnologia no escopo do empreendimento, organizado por produto</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Components in scope for the enterprise, organised by name in alphabetical order.</name>
+			<value>Disponibiliza uma lista de componentes de tecnologia no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>A model that provides a overall reference model of the business capabilities in scope for an enterprise.</name>
+			<value>Modelo que provê um modelo de referência geral das capacidades de negócio no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Stakeholder</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um determinado stakeholder </value>
+		</message>
+		<message>
+			<name>Graphically describes the process steps involved in the execution of a given Business Process.</name>
+			<value>Descreve graficamente as etapas de processos envolvidos na execução de um determinado processo de negócios </value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for an application.</name>
+			<value>Disponibiliza um resumo de ponta a ponta dos principais relacionamentos que existem para uma aplicação</value>
+		</message>
+		<message>
+			<name>Summarises the information and data that is managed by a given application.</name>
+			<value>Sumariza a informação e dados que são gerenciados por uma determinada aplicação</value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a Technology Product</name>
+			<value>Disponibiliza um sumário de ponta a ponta de relacionamentos chave que existem para um produto de tecnologia </value>
+		</message>
+		<message>
+			<name>Defines the Organisational structure (hierarchical decomposition) as well as the Business Services delivered by each organisational unit and the site where these organisation units are located.</name>
+			<value>Define a estrutura organizacional (decomposição hierárquica) assim como os serviços de negócios entregues por cada unidade organizacional e o local onde essas unidades organizacionais estão localizadas. </value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a Business Service (Product Type)</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um Serviço de negócios (tipo de produto)</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a Business Capability</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de uma capacidade de negócios</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given logical Business Process</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um determinado processo lógico de negócios</value>
+		</message>
+		<message>
+			<name>Provides details of the issues associated with a given a Business Capability.</name>
+			<value>Disponibiliza detalhes de problemas associados com uma determinada capacidade de negócios</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given logical Data Object</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um determinado objeto de dados lógicos </value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given conceptual Data Subject</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um determinado tópico de dados conceitual</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Information Concept</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de um determinado conceito de informação</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given logical Information Views</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de uma determinada visualização de informação lógica </value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given logical Information Representation</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave de uma determinada representação de informação lógica </value>
+		</message>
+		<message>
+			<name>Provides a graphical timeline view of the lifecycle of an application alongside those of the technology products that support it.</name>
+			<value>Disponibiliza uma visualização de linha do tempo gráfica do ciclo de vida de uma aplicação junto disso os produtos de tecnologia que a suportam </value>
+		</message>
+		<message>
+			<name>Provides a list of the Physical Business Processes in scope for the enterprise, organised by business domain.</name>
+			<value>Disponibiliza uma lista de processos físicos de negócio no escopo do empreendimento, organizado por domínio</value>
+		</message>
+		<message>
+			<name>Graphically describes the process steps involved in the execution of a given Physical Process.</name>
+			<value>Descreve graficamente as etapas de processos envolvidos na execução de um determinado processo físico.</value>
+		</message>
+		<message>
+			<name>Provides a list of the Applications in use across the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de aplicações em uso através do empreendimento, exibido como tabela</value>
+		</message>
+		<message>
+			<name>Provides a list of the logical applications services in scope for the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de serviços de aplicações lógicas no escopo do empreendimento, exibido como tabela.</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Processes in scope for the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de processos de negócios no escopo do empreendimento, exibido como tabela.</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Products in use across the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de produtos de tecnologia em uso através do empreendimento, exibido como tabela.</value>
+		</message>
+		<message>
+			<name>Compares the footprint of current change activities (i.e. programmes/projects) in terms of business capabilities against the business objectives that have been defined.</name>
+			<value>Compara a pegada da atual mudança de atividades (ex: programas/projetos) em termos de capacidades de negócio contra os objetivos do negócio que já foram definidos</value>
+		</message>
+		<message>
+			<name>Provides a list of concpetual Data Object, organised alphabetically by Data Subject.</name>
+			<value>Disponibiliza uma lista de objetos de dados conceituais, organizados alfabeticamente por tópico de dados</value>
+		</message>
+		<message>
+			<name>Provides a graphical overview of the relationships of a given conceptual Data Subject</name>
+			<value>Disponibiliza uma visão geral dos relacionamentos de um determinado tópico conceitual de dados </value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a Technology Domain</name>
+			<value>Disponibiliza um sumário de ponta a ponta de relacionamentos chave que existem para um domínio de tecnologia </value>
+		</message>
+		<message>
+			<name>Provides an end to end summary of the key relationships that exist for a Technology Capability</name>
+			<value>Disponibiliza um sumário de ponta a ponta de relacionamentos chave que existem para uma capacidade tecnológica</value>
+		</message>
+		<message>
+			<name>Shows the key relationships for a given Data Representation.</name>
+			<value>Mostra os relacionamentos chave para uma determinada representação de dados</value>
+		</message>
+		<message>
+			<name>Provides a list of the Data Representations in scope for the enterprise, in a searchable table</name>
+			<value>Disponibiliza uma lista de representações de dados no escopo do empreendimento em uma tabela buscável</value>
+		</message>
+		<message>
+			<name>Shows the key relationships for a given Information Store.</name>
+			<value>Mostra os relacionamentos chave para um determinado armazenamento de dados</value>
+		</message>
+		<message>
+			<name>Provides a list of the Information Stores in scope for the enterprise, in a searchable table</name>
+			<value>Disponibiliza uma lista de Armazenamentos de informação no escopo do empreendimento, em uma tabela procurável </value>
+		</message>
+		<message>
+			<name>Shows the key relationships for a given Physical Data Object.</name>
+			<value>Mostra os relacionamentos chave para um determinado objeto físico de dados</value>
+		</message>
+		<message>
+			<name>Provides a list of the Physical Data Objects in scope for the enterprise, in a searchable table</name>
+			<value>Disponibiliza uma lista de objetos de dados físicos no escopo do empreendimento, em uma tabela procurável </value>
+		</message>
+		<message>
+			<name>Provides a overview of the relationships of a given logical Data Object</name>
+			<value>Disponibiliza uma visão alta dos relacionamentos de um determinado objeto de dados</value>
+		</message>
+		<message>
+			<name>A list of Business Objectives organised alphabetically.</name>
+			<value>Lista de Objetivos de negócio organizado alfabeticamente.</value>
+		</message>
+		<message>
+			<name>A summary of the key relationships of a given Strategic Milestone.</name>
+			<value>Um sumário de relacionamentos chave de determinada meta estratégica</value>
+		</message>
+		<message>
+			<name>Provides details of the key relationships in a selected Application Milestone.</name>
+			<value>Disponibiliza detalhes de relacionamentos chave em uma meta de aplicação</value>
+		</message>
+		<message>
+			<name>Provides details of the key relationships in a selected Business Milestone.</name>
+			<value>Disponibiliza detalhes de relacionamentos chave em um objetivo de negócios</value>
+		</message>
+		<message>
+			<name>Provides a summary of the key relationships of a Business Objective.</name>
+			<value>Disponibiliza um sumário de relacionamentos chave de objetivos de negócios</value>
+		</message>
+		<message>
+			<name>Shows the lifecycle status for all Applications that support a given Business Capability</name>
+			<value>Mostra o estado do ciclo de vida para todas as aplicações que suportam determinada capacidade de negócios </value>
+		</message>
+		<message>
+			<name>Provides a summary of the details for an application function implementation.</name>
+			<value>Disponibiliza um sumário de detalhes de implementação de uma função de aplicação</value>
+		</message>
+		<message>
+			<name>Provides a summary of the deployment details for an application.</name>
+			<value>Disponibiliza um sumário de detalhes de implementação de uma aplicação</value>
+		</message>
+		<message>
+			<name>Explore all views available to Essential Viewer organised by layer.</name>
+			<value>Explora todas as visualizações disponíveis para o Essential Viewer organizado por camada</value>
+		</message>
+		<message>
+			<name>Defines the relationships between business drivers, business objectives and the measures or key performance indicators (KPI) used to measure achievement of the objectives.</name>
+			<value>Define o relacionamento entre motivadores de negócios, objetivos de negócios e as medidas ou indicadores chave de performance (KPI) usado para medir a conquista de objetivos</value>
+		</message>
+		<message>
+			<name>Lists the Individual Actors contained in the repository by name in alphabetical order.</name>
+			<value>Lista de atores individuais contidos no repositório por nome e em ordem alfabética</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Group Actor</name>
+			<value>Disponibiliza um sumário de detalhes e relacionamentos chave para um determinado grupo de atores</value>
+		</message>
+		<message>
+			<name>This instance is used only to set the history label for the default Essential home page. Do not delete this instance even if the home page is changed.</name>
+			<value>Esta instância é usada somente para definir o rótulo de historia para a home page padrão do Essential. Não apague esta instância mesmo se a home page for modificada </value>
+		</message>
+		<message>
+			<name>Provides a list of empty or pre-populated spreadsheet templates for importing data into Essential</name>
+			<value>Disponibiliza uma lista templates de planilhas vazias ou pre-populadas para importar dados para o Essential</value>
+		</message>
+		<message>
+			<name>Defines the reporting structure of the people that are contained within a given organisation</name>
+			<value>Define uma estrutura de relatórios das pessoas que estão inseridas dentro de uma determina organização</value>
+		</message>
+		<message>
+			<name>Provides a list of the physical Technology Nodes in scope for the enterprise, in a searchable table</name>
+			<value>Disponibiliza uma lista de nós físicos de tecnologia no escopo do empreendimento, em uma tabela procurável</value>
+		</message>
+		<message>
+			<name>Lists the Application Function Implementation contained in the repository by name in alphabetical order.</name>
+			<value>Lista de implementação de funções de aplicações contidas no repositório por nome e ordem alfabetica</value>
+		</message>
+		<message>
+			<name>Provides a list or table of all instances for a selected class</name>
+			<value>Disponibiliza uma lista ou tabela de todas as instâncias de uma classe selecionada</value>
+		</message>
+		<message>
+			<name>Provides a summary of the slots associated with a selected class</name>
+			<value>Disponibiliza um sumário dos slots associados com a classe selecionada</value>
+		</message>
+		<message>
+			<name>Provides a dashboard summary of the level of possible duplication for the key classes in the repository</name>
+			<value>Disponibiliza um painel de sumário do nível de possível duplicação classes chave no repositório</value>
+		</message>
+		<message>
+			<name>Provides a slot level summary for an instance identified by an ID</name>
+			<value>Disponibiliza um slot de nível sumário para uma instância identificada por ID</value>
+		</message>
+		<message>
+			<name>Provides a visual tree representation of the slot relationships for a selected instance</name>
+			<value>Disponibiliza uma representação visual de árvore dos slots de relacionamento de uma instância selecionada</value>
+		</message>
+		<message>
+			<name>Provides a visual indication of the completeness of the modelling required to populate the IT Asset Dashboard view</name>
+			<value>Disponibiliza uma indicação visual da completude da modelagem necessária para popular o painel de visualização de ativos de TI</value>
+		</message>
+		<message>
+			<name>Provides a dashboard summary of the level of completeness for a selected class</name>
+			<value>Disponibiliza um painel sumário de nível de completude para a classe selecionada</value>
+		</message>
+		<message>
+			<name>Defines a standard, layered view of the logical Technology Components in scope for the enterprise.</name>
+			<value>Define um padrão, visualização em camadas dos componentes lógicos de tecnologia no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a high level overview and analysis of the IT assets supporting the enterprise</name>
+			<value>Disponibiliza uma visão alta e analítica dos ativos de TI que mantém o empreendimento</value>
+		</message>
+		<message>
+			<name>Supports comparison of the functional footprint of two applications</name>
+			<value>Suporta uma comparação da pegada funcional de duas aplicações</value>
+		</message>
+		<message>
+			<name>Provides a summary of the Business Processes that are part of a given Business Process Family</name>
+			<value>Disponibiliza um sumário dos processos de negócios que são parte de uma determinada família de processos de negócios</value>
+		</message>
+		<message>
+			<name>An interactive view that can be used to select Technology Products for an IT solution that are in line with agreed standards</name>
+			<value>Uma visão interativa que pode ser usada para selecionar produtos de tecnologia para uma solução de TI que está alinhada com padrões estabelecidos</value>
+		</message>
+		<message>
+			<name>Provides an interactive view than can be used to identify applications from the portfolio that implement common services and have the potential to replace a given application</name>
+			<value>Disponibiliza uma visão interativa que pode ser usada para identificar aplicações a partir de portifólio que implementem serviços comuns e tem o potencial para substituir determinada aplicação </value>
+		</message>
+		<message>
+			<name>Provides a visual indication of the completeness of the modelling required to populate the IT Asset Dashboard view</name>
+			<value>Disponibiliza uma indicação visual da completude da modelagem requerida para popular o painel de visualização de ativos de TI</value>
+		</message>
+		<message>
+			<name>Provides a list of the Business Capabilities in scope for the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de capacidades de negócios no escopo do empreendimento, exibido como tabela</value>
+		</message>
+		<message>
+			<name>Provides an interactive view to analyse strategic objectives, value stream metrics and business capabilities to define strategic roadmaps</name>
+			<value>Disponibiliza uma visualização interativa para analisar objetivos estratégicos, métricas de corrente de valor e capacidades de negócios para definir roteiros estratégicos </value>
+		</message>
+		<message>
+			<name>Provides an interactive view of the business processes performed across the locations in scope for the enterprise</name>
+			<value>Disponibiliza uma visualização interativa dos processos de negócios executados através de localizações no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a view of the business processes performed, and organisations located at a specific location.</name>
+			<value>Disponibiliza uma visualização de processos de negócios executados, e organizações localizadas em uma localização específica.</value>
+		</message>
+		<message>
+			<name>Provides a graphical view of the dependencies that exist between applications across the enterprise.</name>
+			<value>Disponibiliza uma visualização gráfica das dependências que existem entre aplicações através do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a list of the Value Streams in scope for the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de correntes de valor no escopo do empreendimento apresentado como tabela.</value>
+		</message>
+		<message>
+			<name>Provides graphical view of the details for a given Value Stream</name>
+			<value>Disponibiliza uma visualização gráfica dos detalhes de uma determinada corrente de valor</value>
+		</message>
+		<message>
+			<name>Provides a list of the Technology Components for the enterprise, organised as a table.</name>
+			<value>Disponibiliza uma lista de componentes de tecnologia para o empreendimento, organizado como tabela</value>
+		</message>
+		<message>
+			<name>Defines a graphical view of the dependencies that exist between all applications in scope for the enterprise</name>
+			<value>Define uma visão gráfica das dependências que existem entre todas as aplicações no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a list of the application architecture principles that have been defined</name>
+			<value>Disponibiliza uma lista de princípios de arquitetura de aplicação que foram definidas </value>
+		</message>
+		<message>
+			<name>Provides a matrix view that maps the application landscape against a set of well defined business fit criteria</name>
+			<value>Disponibiliza uma visualização de matriz que mapeia o panorama de aplicações em comparação com um conjunto de critérios bem definidos e ajustados de negócios</value>
+		</message>
+		<message>
+			<name>Provides an overview of the key costs associated with the application landscape</name>
+			<value>Disponibiliza uma visão alta dos custos chave associados com o panorama de aplicações</value>
+		</message>
+		<message>
+			<name>Provides summary of the key types of cost associated with an Application</name>
+			<value>Disponibiliza um sumário de tipos de custos chave associados com a aplicação</value>
+		</message>
+		<message>
+			<name>Provides a matrix view that supports analysis of where multiple applications provide the same service</name>
+			<value>Disponibiliza uma visualização de matriz que suporta analise onde múltiplas aplicações disponibilizam o mesmo serviço</value>
+		</message>
+		<message>
+			<name>Graphically represents the inbound and outbound exchanges of Information for a given Application</name>
+			<value>Exibe graficamente trocas de entrada e saída para determinada aplicação</value>
+		</message>
+		<message>
+			<name>Provides a list of the Applications in use across the enterprise, presented as a table.</name>
+			<value>Disponibiliza uma lista de aplicações em uso no empreendimento, exibido como tabela</value>
+		</message>
+		<message>
+			<name>Supports analysis of how the costs of the applications providing a given service compare to the revenues that they directly support</name>
+			<value>Suporta a analise de comparação de custos de aplicações que provem um determinado serviço, em comparação com as receitas que elas suportam diretamente</value>
+		</message>
+		<message>
+			<name>Provides a means to analyse the opportunities to rationalise the applications providing a given service, based upon a number of factors (e.g. usage, dependencies, lifecycle status, business fit, technical health)</name>
+			<value>Disponibiliza meios para analisar as oportunidades para racionalizar aplicações provendo um determinado serviço, baseado em diversos fatores (ex uso, dependências, ciclo de vida status, integridade do negócio, saúde técnica)</value>
+		</message>
+		<message>
+			<name>Defines a graphical view of the dependencies that exist between all applications in scope for the enterprise</name>
+			<value>Define uma visualização gráfica das dependências que existem entre todas as aplicações no escopo para o empreendimento</value>
+		</message>
+		<message>
+			<name>Defines a geographic view of the deployment of application instances.</name>
+			<value>Define uma visualização geográfica da implementação de instancias de aplicação</value>
+		</message>
+		<message>
+			<name>Defines the organisations that use a given Applications.</name>
+			<value>Define as organizações que usam uma determinada aplicação</value>
+		</message>
+		<message>
+			<name>Defines a standard, layered view of the Application Capabilities in scope for the enterprise.</name>
+			<value>Define um padrão, visualização em camadas das capacidades de aplicação no escopo do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a graphical view of how applications support the business capabilities in scope for the enterprise</name>
+			<value>Disponibiliza uma visualização gráfica de qual aplicações suportam as capacidades do negócio no escopo do empreendimento </value>
+		</message>
+		<message>
+			<name>Provides a matrix view that maps the application landscape against a set of well defined technical health criteria</name>
+			<value>Disponibiliza uma visualização de matriz que mapeia o panorama de aplicações em comparação com um conjunto de critérios bem definidos, saúde tecnica</value>
+		</message>
+		<message>
+			<name>Defines a geographic view of the the countries that host the applications in scope for a given organisation</name>
+			<value>Define uma visualização geográfica dos países que hospedam aplicações no escopo de uma determinada organização</value>
+		</message>
+		<message>
+			<name>Defines a geographic view of the applications accessed by organisations based in a given country</name>
+			<value>Define em uma visão geográfica as aplicações acessadas por organizações baseadas em um determinado país</value>
+		</message>
+		<message>
+			<name>A model that maps strategic goals, objectives and projects to the business capabilities that they impact</name>
+			<value>Um modelo que mapeia objetivos estratégicos, objetivos e projetos para as capacidades de negócio que eles impactam</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given logical Business Process</name>
+			<value>Disponibiliza um sumário dos detalhes e relacionamentos chave, de um determinado processo de negócio</value>
+		</message>
+		<message>
+			<name>Provides a Controls Mapping across all layers for frameworks.</name>
+			<value>Disponibiliza mapeamento de controles através de todas as camadas de framewoks</value>
+		</message>
+		<message>
+			<name>Shows the relationship between Business Capabilities and Technology via Applications using a force graph model</name>
+			<value>Mostra o relacionamento entre capacidades de negócios e tecnologia através de aplicações usando um modelo de gráfico force</value>
+		</message>
+		<message>
+			<name>Shows the relationship between Business Capabilities and Technology via Applications using a tree graph model</name>
+			<value>Mostra o relacionamento entre capacidades de negócios e tecnologia através de aplicações usando um modelo de gráfico de árvore</value>
+		</message>
+		<message>
+			<name>Essential version 5.0. Graphically describes the process steps involved in the execution of a given Business Process.</name>
+			<value>Essential versão 5.0 descreve graficamente as etapas de processos envolvidos na execução de determinado processo de negócio</value>
+		</message>
+		<message>
+			<name>Software architecture of the selected application</name>
+			<value>Arquitetura de software da aplicação selecionada</value>
+		</message>
+		<message>
+			<name>Provides a view of costs associated with the enterprise application portfolio</name>
+			<value>Disponibiliza uma visão de custos associados com o portifólio de aplicações do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a view of costs associated with the enterprise application portfolio</name>
+			<value>Disponibiliza uma visualização dos custos associados com o portifólio de aplicações do empreendimento</value>
+		</message>
+		<message>
+			<name>A model that maps strategic goals, objectives and projects to the business capabilities that they impact</name>
+			<value>Modelo que mapeia metas estratégicas, objetivos e projetos para as capacidades de negócios que eles impactam </value>
+		</message>
+		<message>
+			<name>Returns all instance for a given class</name>
+			<value>Retorna todas as instâncias de uma determinada classe</value>
+		</message>
+		<message>
+			<name>Returns Level 1 application capabilities with related application services and associated app IDs</name>
+			<value>Retorna capacidades de aplicação de nível 1 com serviços de aplicação relacionados e associado com Ids de apps</value>
+		</message>
+		<message>
+			<name>Get all business units in scope of the IT Asset Dashboard</name>
+			<value>Recebe todas as unidades de negócio no escopo dos painéis de ativos de TI </value>
+		</message>
+		<message>
+			<name>Provides a JSON structure containing the palette of conceptual and logical elements used to scope the impact of business scenarios</name>
+			<value>Disponibiliza uma estrutura JSON contendo a paleta de elementos conceituais e lógicos usado para saber o escopo do impacto de cenários de negócios </value>
+		</message>
+		<message>
+			<name>Provides a JSON structure containing a dictionary of ids of conceptual and logical elements mapped to the elements that they impact</name>
+			<value>Disponibiliza uma estrutura JSON contendo um dicionário de Ids conceitual e lógico de elementos mapeados para elementos que eles impactam </value>
+		</message>
+		<message>
+			<name>Tech capabilities linked to components and number of products supporting. Includes users</name>
+			<value>Capacidades tecnológicas ligadas a componentes e numero de produtos suportados. Inclui usuários </value>
+		</message>
+		<message>
+			<name>Gets all tech products roles as IDs and related products</name>
+			<value>Recebe todos os papeis de produtos de tecnologia como ID s e produtos relacionados</value>
+		</message>
+		<message>
+			<name>Get details for Business Capabilities in support of the IT Asset Dashboard view</name>
+			<value>Recebe detalhes de capacidades de negócios em auxílio ao painel de visualização de ativos de TI</value>
+		</message>
+		<message>
+			<name>Returns a hierachy of technology capabilities in a top, left, right, middle, back structure</name>
+			<value>Retorna uma hierarquia de capacidades tecnológicas em uma estrutura de cima, esquerda, direita, meio e atrás</value>
+		</message>
+		<message>
+			<name>Returns a list of stakeholder Ids for the set of application IDs</name>
+			<value>Retorna uma lista de Ids de stakeholders para o conjunto de Ids de aplicações </value>
+		</message>
+		<message>
+			<name>Returns a list of stakeholder Ids for the set of technology IDs</name>
+			<value>Retorna uma lista de Ids de stakeholders para o conjunto de Ids de tecnologia</value>
+		</message>
+		<message>
+			<name>Returns the pie chart data for the application section of the IT asset Dashboard</name>
+			<value>Retorna um gráfico de setores para o painel de ativos de Ti na seção de aplicações</value>
+		</message>
+		<message>
+			<name>Returns the pie chart data for the technology section of the IT asset Dashboard</name>
+			<value>Retorna um gráfico de setores para o painel de ativos de Ti na seção de tecnologias</value>
+		</message>
+		<message>
+			<name>Returns product link, supplier and components supports</name>
+			<value>Retorna uma ligação de produto, fornecedor e componentes de suporte</value>
+		</message>
+		<message>
+			<name>Returns level 1 Technology Capabilities with related components ands associated tprs</name>
+			<value>Retorna tecnologia de nível 1 Capacidades com componentes relacionados e tprs associados </value>
+		</message>
+		<message>
+			<name>Checks the slots for correct classes being assigned - switch off caching when not using</name>
+			<value>Verifique os slots para que as classes corretas sejam atribuídas – desligue o caching quando não estiver sendo usado</value>
+		</message>
+		<message>
+			<name>Node information with associated applications</name>
+			<value>Nós de informação com aplicações associadas</value>
+		</message>
+		<message>
+			<name>Returns products with supported capabailities, components and supplier info</name>
+			<value>Retorna produtos com capacidades suportadas, componentes e informação de fornecedor</value>
+		</message>
+		<message>
+			<name>Returns a count of instances for a class</name>
+			<value>Retorna uma contagem de instâncias para uma classe</value>
+		</message>
+		<message>
+			<name>Returns business units with basic info and IDs of technology products they use</name>
+			<value>Retorna unidades de negócios com informação básica e ID s de produtos de tecnologia que elas usam</value>
+		</message>
+		<message>
+			<name>Returns basic information for tech products</name>
+			<value>Retorna informação básica para produtos de tecnologia </value>
+		</message>
+		<message>
+			<name>Returns IDs for tech product roles and associated products, components and standards</name>
+			<value>Retorna Ids para funções de produtos de tecnologia e produtos associados, componentes e padrões</value>
+		</message>
+		<message>
+			<name>Returns Technologygy Domains, Capabilities, Services and Product counts for the Technology Reference Model Summary view</name>
+			<value>Retorna domínios de tecnologia , capacidades, serviços e contagem de produtos para a tecnologia e visualização de um sumário do modelo de referencia </value>
+		</message>
+		<message>
+			<name>Supports the Design Authority process with self-validation and printable output for use in the Design Authority process.</name>
+			<value>Suporta o processo de autoridade de design com uma saída de dados imprimível e que se auto valida para uso em processos de autoridade de design.</value>
+		</message>
+		<message>
+			<name>Provides a process hierarchy where a process has sub-processes defined, e.g. APQC process models</name>
+			<value>Disponibiliza uma hierarquia de processos onde um processo tem sub-processos definidos, ex APQC modelos de processo</value>
+		</message>
+		<message>
+			<name>Allows dynamic navigation between published instances in the repository</name>
+			<value>Permite a navegação dinâmica entre instâncias publicadas no repositório</value>
+		</message>
+		<message>
+			<name>Provides a high level overview and analysis of the IT assets supporting the enterprise</name>
+			<value>Disponibiliza uma visão alta e de alto nível para analise de ativos de TI suportando o empreendimento</value>
+		</message>
+		<message>
+			<name>Provides a list of Business Process Families in scope for the enterprise, presented as a table</name>
+			<value>Disponibiliza uma lista de famílias de processos de negócios no escopo do empreendimento, exibido como uma tabela</value>
+		</message>
+		<message>
+			<name>Provides a graphical view of how applications support the business capabilities in scope for the enterprise</name>
+			<value>Disponibiliza uma visualização gráfica de como aplicações suportam as capacidades de negócios no escopo do empreedimento</value>
+		</message>
+		<message>
+			<name>Provides a graphical view of the projects that are impacting a given Business Capability</name>
+			<value>Disponibiliza uma visão gráfica dos projetos que impactam uma determinada capacidade de negócios</value>
+		</message>
+		<message>
+			<name>All applications with basic data plus services and users</name>
+			<value>Todas as aplicações com dados básicos mais serviços e usuários </value>
+		</message>
+		<message>
+			<name>Returns a simple instance and it's slots data</name>
+			<value>Retorna uma simples instância e todos os seus slots de dados</value>
+		</message>
+		<message>
+			<name>Returns a hierarchy of business capabilities</name>
+			<value>Retorna a hierarquia de capacidades do negócio</value>
+		</message>
+		<message>
+			<name>Returns a hierachy of application capabilities in a left, middle, right structure</name>
+			<value>Retorna a hierarquia de capacidades da aplicação em uma estrutura de esquerda, meio, direita </value>
+		</message>
+		<message>
+			<name>Returns a flat list of Technology Product names with associated Supplier and Tech Product Role Ids</name>
+			<value>Retorna uma lista de nomes de produtos de tecnologia com fornecedor associado e papeis de produtos de tecnologia e IDS </value>
+		</message>
+		<message>
+			<name>Returns counts against business capabilities for use in views</name>
+			<value>Retorna contagem contra capacidades de negócios para uso em visualizações</value>
+		</message>
+		<message>
+			<name>Returns a summary for aguven business capability</name>
+			<value>Retorna um sumário para uma determinada capacidade de negócio</value>
+		</message>
+		<message>
+			<name>Returns all changes to Applications</name>
+			<value>Retorna todas as mudanças para aplicações </value>
+		</message>
+		<message>
+			<name>Returns strategic drivers, goals, objectives</name>
+			<value>Retorna motivadores estratégicos, metas e objetivos</value>
+		</message>
+		<message>
+			<name>Summary of application service with could do processes, actual processes supporting and activities supporting</name>
+			<value>Sumario de serviços de aplicações com processos poderia fazer, processos realmente suportando e atividades suportando</value>
+		</message>
+		<message>
+			<name>Return a summary of services provided by a given Application Provider</name>
+			<value>Retorna um sumário de serviços providos por um determinado provedor de aplicações</value>
+		</message>
+		<message>
+			<name>Elements with planning actions</name>
+			<value>Elementos com ações de planejamento</value>
+		</message>
+		<message>
+			<name>Returns costs for an application</name>
+			<value>Retorna os custos para um aplicação</value>
+		</message>
+		<message>
+			<name>Summarises and allows a comparision of the data held in selected applications</name>
+			<value>Sumariza e permite a comparação dos dados mantidos em aplicações selecionadas</value>
+		</message>
+		<message>
+			<name>Provides a list of logical Data Objects in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de Objetos de dados lógicos no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Lifecycle of a data object through the applications, showing if the data object can created, read, updated or deleted in the applications</name>
+			<value>Ciclo de vida de um objeto de dados através de aplicações, mostrando se os ojetos podem se criados, lidos, alterados, ou apagados nas aplicações </value>
+		</message>
+		<message>
+			<name>The data model for the selected Data Object</name>
+			<value>Modelo de dados para o Objeto de dados selecionado</value>
+		</message>
+		<message>
+			<name>Provides a summary of the details and key relationships of a given Data Object</name>
+			<value>Disponibiliza um sumário dos detalhes e relacionamentos chaves de um determinado objeto de dados</value>
+		</message>
+		<message>
+			<name>Provides a means to analyse the quality of a given set of data elements</name>
+			<value>Disponibiliza meios para analisar a qualidade de um determinado conjunto de elementos de dados</value>
+		</message>
+		<message>
+			<name>Provides a high level dashboard of the overall data quality for an organisation</name>
+			<value>Disponibiliza um painel de alto nível da qualidade geral de uma organização</value>
+		</message>
+		<message>
+			<name>A Dashboard of the overall data quality for an organisation</name>
+			<value>É um painel da qualidade geral dos dados da organização</value>
+		</message>
+		<message>
+			<name>Displays the locations of the databases holding selected Data Objects on a map</name>
+			<value>Mostra as localizações das bases de dados mantendo objetos de dados selecionados em um mapa</value>
+		</message>
+		<message>
+			<name>Provides a list of the Information Concepts, the Views and Representations in scope for the enterprise, organised alphabetically by name.</name>
+			<value>Disponibiliza uma lista de conceitos de informação, visualizações e representações no escopo do empreendimento, organizado alfabeticamente por nome</value>
+		</message>
+		<message>
+			<name>Summarises the data used in a selected business process, by application</name>
+			<value>Sumariza os dados usados em processos de negócios selecionados, por aplicação </value>
+		</message>
+		<message>
+			<name>Provides a register of data issues and their impact on the elements within the business</name>
+			<value>Disponibiliza um registro de problemas de dados e os seus impactos nos elementos internos do negócio</value>
+		</message>
+		<message>
+			<name>Provides a high level graphical view of how effective the application portfolio is in supporting business capabilities across the enterprise</name>
+			<value>Disponibiliza uma visualização de alto nível de quão efetivo o portifólio de aplicações é em suportar as capacidades de negócios através do empreendimento</value>
+		</message>
+		<message>
+			<name>Provides an analysis of the key costs associated with the application landscape</name>
+			<value>Disponibiliza uma analise dos custos chave associados com o panorama da aplicação</value>
+		</message>
+		<message>
+			<name>Provides a means to analyse the opportunities to rationalise the applications based upon a number of factors that can be filtered on</name>
+			<value>Disponibiliza meios para analisar as oportunidades para racionalizar aplicações baseados no numero de fatores que podem ser filtrados </value>
+		</message>
+		<message>
+			<name>Pre-populates files for Launchpad Plus spreadsheets</name>
+			<value>Pré carrega arquivos para as planilhas do Launchpad Plus</value>
+		</message>
+		<message>
+			<name>Supplier licenses overview with options analysis</name>
+			<value>Visão alta de fornecedor de licenças com opções de analise</value>
+		</message>
+		<message>
+			<name>Supplier usage within the business and impacts of stratgeic plans</name>
+			<value>Uso de fornecedores dentro do negócio e impactos em planos estratégicos</value>
+		</message>
+		<message>
+			<name>Vulnerability analysis of the architecture based on the NIST NVD database</name>
+			<value>Analise de vulnerabilidade de arquitetura baseado na base de dados NIST NVD</value>
+		</message>
+		<message>
+			<name>Tracking of Project targets against actuals</name>
+			<value>Acompanhamento de metas de projetos em comparação a resultados atuais</value>
+		</message>
+		<message>
+			<name>Returns a list of elements awaiting approval for a given user</name>
+			<value>Retorna uma lista de elementos aguardando aprovação para um determinado usuário</value>
+		</message>
+		<message>
+			<name>Provides data describing the breakdown % of Applications according to their delivery model</name>
+			<value>Disponibiliza dados descrevendo a desconstrução % de aplicações de acordo com modelo de entrega delas</value>
+		</message>
+		<message>
+			<name>Provides data describing the breakdown % of Applications according to their codebase</name>
+			<value>Disponibiliza dados descrevendo a desconstrução % de aplicações de acordo com o código base delas</value>
+		</message>
+		<message>
+			<name>Supports the analysis of vendor and internal deployment lifecycles for Technology Products</name>
+			<value>Suporta a analise de fornecedores e ciclos de vida internos para produtos de tecnologia</value>
+		</message>
+		<message>
+			<name>Provides a means to define and dynamically generate high level presentations in Microsoft PowerPoint format</name>
+			<value>Disponibiliza meios para definir e gerar dinamicamente apresentações de alto nível no formato Microsoft PowerPoint</value>
+		</message>
+		<message>
+			<name>Provides a view of an idea and associated options to deliver them</name>
+			<value>Disponibiliza uma visualização de ideia e as opções associadas para as entregar</value>
+		</message>
+		<message>
+			<name>Provides a view of long term strategic trends</name>
+			<value>Disponibiliza uma visualização de tendencias estratégicas de longo prazo</value>
+		</message>
+		<message>
+			<name>Vulnerability analysis of the technology architecture based on the NIST NVD database</name>
+			<value>Analise de vulnerabilidade da arquitetura de tecnologia baseada na base de dados NIST NVD </value>
+		</message>
+		<message>
+			<name>Provides a summary of the impacts and dependencies of a Strategic Implication of a Strategic Trend</name>
+			<value>Disponibiliza um sumário dos impactos e dependências de uma implicação estratégica de uma tendência estratégica</value>
+		</message>
+
 	</strings>
 </language>

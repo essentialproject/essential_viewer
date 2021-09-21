@@ -91,7 +91,20 @@
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
 
-	<xsl:template match="knowledge_base">
+    <xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
+	<xsl:variable name="capsSimpleData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
+    <xsl:template match="knowledge_base">
+		<xsl:call-template name="docType"></xsl:call-template>
+		<xsl:variable name="apiBCM">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$busCapData"></xsl:with-param>
+			</xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiCaps">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$capsSimpleData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
@@ -576,7 +589,13 @@ function uniq_fast(a) {
         </div>
 	</script>
             
-			</body>
+            </body>
+            <script>			
+                    <xsl:call-template name="RenderViewerAPIJSFunction">
+                            <xsl:with-param name="viewerAPIPath" select="$apiBCM"></xsl:with-param> 
+                            <xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param> 
+                    </xsl:call-template>   
+                </script>
 		</html>
 	</xsl:template>
 <xsl:template mode="RenderCaps" match="node()">
@@ -816,5 +835,133 @@ function uniq_fast(a) {
         {"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>","score":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_score']/value"/>","backgroundcolor":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_colour']/value"/>","color":"<xsl:value-of select="$thiscolourElements/own_slot_value[slot_reference='element_style_text_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
     
     </xsl:template>    
+    <xsl:template name="GetViewerAPIPath">
+		<xsl:param name="apiReport"></xsl:param>
+
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderAPILinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+    </xsl:template>
+    <xsl:template match="node()" mode="roadmapCaps">
+            {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,
+          </xsl:text></xsl:if> 
+    </xsl:template>
+    <xsl:template name="RenderViewerAPIJSFunction">
+            <xsl:param name="viewerAPIPath"></xsl:param> 
+            <xsl:param name="viewerAPIPathCaps"></xsl:param>
+            //a global variable that holds the data returned by an Viewer API Report
+            var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
+            var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>';
+            //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+            
+            var promise_loadViewerAPIData = function (apiDataSetURL)
+            {
+                return new Promise(function (resolve, reject)
+                {
+                    if (apiDataSetURL != null)
+                    {
+                        var xmlhttp = new XMLHttpRequest();
+                        xmlhttp.onreadystatechange = function ()
+                        {
+                            if (this.readyState == 4 &amp;&amp; this.status == 200)
+                            {
+                                
+                                var viewerData = JSON.parse(this.responseText);
+                                resolve(viewerData);
+                            }
+                        };
+                        xmlhttp.onerror = function ()
+                        {
+                            reject(false);
+                        };
+                        
+                        xmlhttp.open("GET", apiDataSetURL, true);
+                        xmlhttp.send();
+                    } else
+                    {
+                        reject(false);
+                    }
+                });
+            }; 
+   
+
+            $('document').ready(function () {
+                
+                const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
     
+                function essGetMenuName(instance) {
+                    let menuName = null;
+                    if ((instance != null) &amp;&amp;
+                        (instance.meta != null) &amp;&amp;
+                        (instance.meta.classes != null)) {
+                        menuName = instance.meta.menuId;
+                    } else if (instance.classes != null) {
+                        menuName = instance.meta.classes;
+                    }
+                    return menuName;
+                }
+                
+                Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
+    
+                    let thisMeta = meta.filter((d) => {
+                        return d.classes.includes(type)
+                    });
+                    instance['meta'] = thisMeta[0]
+                    let linkMenuName = essGetMenuName(instance);
+                    let instanceLink = instance.name;
+                    if (linkMenuName != null) {
+                        let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+                        let linkClass = 'context-menu-' + linkMenuName;
+                        let linkId = instance.id + 'Link';
+                        instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+    
+                        return instanceLink;
+                    }
+                });
+                let busCapArr = [];
+                Promise.all([
+                    promise_loadViewerAPIData(viewAPIData),
+                    promise_loadViewerAPIData(viewAPIDataCaps)
+                ]).then(function (responses) {
+                    meta = responses[0].meta;
+                    busCapArr = responses[0].busCaptoAppDetails;
+                    busCapInfo = responses[1]
+                    
+                    console.log(responses[0])
+    
+                    busCapArr.forEach((d) => {
+                        var thisCap = busCapInfo.businessCapabilities.filter((e) => {
+                            return d.id == e.id;
+                        });
+                        <!--required for roadmap
+                        var thisRoadmap = roadmapCaps.filter((rm) => {
+                            return d.id == rm.id;
+                        });
+    
+                        if(thisRoadmap[0]){
+                            d['roadmap'] = thisRoadmap[0].roadmap;
+                            }else{
+                                d['roadmap'] = [];
+                            } 
+                         end required	for roadmap-->
+                        d['desc'] = thisCap[0].description;
+                        d['domain'] = {
+                            'name': thisCap[0].businessDomain,
+                            'id': d.domainIds[0]
+                        };
+                        d['meta'] = meta.filter((d) => {
+                            return d.classes.includes('Business_Capability')
+                        })
+                    });
+    
+                });
+    
+            });
+      
+        </xsl:template>   
 </xsl:stylesheet>

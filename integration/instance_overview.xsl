@@ -96,6 +96,7 @@
 							<div class="content-section">
 								<h3><strong>Selected Object</strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/own_slot_value[slot_reference = 'name']/value"/></h3>
 								<h3><strong>Object Type</strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/type"/></h3>
+								<h3><strong>ID: <xsl:value-of select="$param1"/></strong></h3>
 								<table class="table table-bordered table-striped">
 									<th>Slot Name</th>
 									<th>Slot Value</th>

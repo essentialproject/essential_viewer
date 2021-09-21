@@ -2946,6 +2946,10 @@
          <name>Programme Plan</name>
          <value>Programmplan</value>
       </message>
+	   <message>
+         <name>Programme Plan for</name>
+         <value>Programmplan für</value>
+      </message>
       <message>
          <name>Programme Summary</name>
          <value>Programmzusammenfassung</value>

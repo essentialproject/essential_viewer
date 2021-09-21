@@ -739,6 +739,7 @@
 								</h1>
 							</div>
 						</div>
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
 						<xsl:call-template name="RenderDashboardBusUnitFilter"/>
 						<xsl:call-template name="techSection"/>
 						
@@ -1386,6 +1387,7 @@
 //console.log(this.responseText);  
                             var viewerData = JSON.parse(this.responseText);
                             resolve(viewerData);
+                            $('#ess-data-gen-alert').hide();
                         }
                     };
                     xmlhttp.onerror = function () {

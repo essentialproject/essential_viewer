@@ -22,7 +22,7 @@
     
     <xsl:variable name="allTechSvcQuals" select="/node()/simple_instance[name = $allTechSvcQualVals/own_slot_value[slot_reference='usage_of_service_quality']/value][own_slot_value[slot_reference='sq_for_classes']/value=('Application_Provider','Composite_Application_Provider')]"/>
     <xsl:variable name="allAppSvcQuals" select="/node()/simple_instance[name = $allAppSvcQualVals/own_slot_value[slot_reference='usage_of_service_quality']/value]"/>
-    <xsl:variable name="allBusSvcQuals" select="/node()/simple_instance[name = $allBusSvcQualVals/own_slot_value[slot_reference='usage_of_service_quality']/value][own_slot_value[slot_reference='sq_for_classes']/value='Application_Provider_Role']"/>
+    <xsl:variable name="allBusSvcQuals" select="/node()/simple_instance[name = $allBusSvcQualVals/own_slot_value[slot_reference='usage_of_service_quality']/value][own_slot_value[slot_reference='sq_for_classes']/value=('Application_Provider_Role', 'Application_Provider', 'Composite_Application_Provider')]"/>
     <xsl:variable name="allSvcQuals" select="$allAppSvcQuals union $allTechSvcQuals union $allBusSvcQuals"/>
 
     <!--<xsl:variable name="allTechSvcQuals" select="/node()/simple_instance[(type='Technology_Service_Quality')]"/>

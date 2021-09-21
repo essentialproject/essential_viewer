@@ -32,7 +32,7 @@
 	<xsl:variable name="acquisition" select="/node()/simple_instance[type = 'Data_Acquisition_Method']"/>
 	<xsl:variable name="environment" select="/node()/simple_instance[type = 'Deployment_Role']"/>
 		<!-- END GENERIC LINK VARIABLES -->
- 	 <xsl:variable name="apiPathBusinessCapsRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"/>
+ 	<xsl:variable name="apiPathBusinessCapsRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"/>
 	<xsl:variable name="apiPathBusinessDomainsRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Domains']"/>
 	<xsl:variable name="apiPathBusinessProcessRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"/>
 	<xsl:variable name="apiPathBusinessProcessFamilyRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Process Families']"/>
@@ -252,8 +252,7 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Launchpad Exporter</title>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<title>Launchpad Exporter</title> 
 				<script src="js/FileSaver.min.js"/>
 				<style>
 				.minText {font-size:0.8em;
@@ -293,10 +292,18 @@
 				}
 				.playSteps{
 					display: none;
-				}
+            }
+           
 				.playSteps > ul {
 					<!--columns: 2;-->
 				}
+
+            .additional {
+               color: #32a8a8;
+            }
+            .additionalShow {
+               color: #32a8a8;
+            }
 				</style>
 			</head>
 			<body>
@@ -314,6 +321,7 @@
 								</h1>
 							</div>
 						</div>
+						<!--<xsl:call-template name="RenderDataSetAPIWarning"/>-->
 						<div class="col-md-6  ">
 							<div class="keyTitle">Legend:</div>
 							<div class="pull-left right-15"><i class="fa fa-circle right-5"/>Data not fetched</div>
@@ -324,7 +332,11 @@
 						</div>
 						<div class="col-md-12 bottom-15">
 							<div class=" notesBlob">
-								Check a box to load a sheet, to load the sheets that a view needs or to select elements in playbook to load the sheets for that play.<br/>  <b>Note</b>: the data will load dynamically when a box is checked and the circle will go green once the data is loaded.  
+                        <p>
+								Check a box to load a sheet, to load the sheets that a view needs or to select elements in playbook to load the sheets for that play.<br/>  
+                        <b>Note</b>: the data will load dynamically when a box is checked and the circle will go green once the data is loaded.  <br/>
+                        <i class="fa fa-cloud-download additionalShow"></i> Indicates a sheet that will be required for drop downs to work in other selected sheets.
+                        </p>
 							</div>
 						</div>
 						<div class="clearfix"/>
@@ -332,34 +344,35 @@
 							
 							<h3 class="text-primary">Worksheets</h3>
 							<ul class="list-unstyled">
-								<li><i class="fa fa-circle right-5" id="bc"/><input type="checkbox" id="busCapsWorksheetCheck" easid="4" name="busCapsWorksheetCheck" value="false"/>Business Capabilities</li>
-								<li><i class="fa fa-circle right-5" id="bd"/><input type="checkbox" id="busDomWorksheetCheck" easid="2" name="busDomWorksheetCheck" value="false"/>Business Domains</li>
-								<li><i class="fa fa-circle right-5" id="bp"/><input type="checkbox" id="busProcsWorksheetCheck" easid="5" name="busProcsWorksheet" value="false"/>Business Processes</li>
+								<li><i class="fa fa-circle right-5" id="bc"/><input type="checkbox" id="busCapsWorksheetCheck" easid="4" name="busCapsWorksheetCheck" value="false"/>Business Capabilities <i class="fa fa-cloud-download additional" id="busCapsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="bd"/><input type="checkbox" id="busDomWorksheetCheck" easid="2" name="busDomWorksheetCheck" value="false"/>Business Domains <i class="fa fa-cloud-download additional" id="busDomi"></i></li>
+								<li><i class="fa fa-circle right-5" id="bp"/><input type="checkbox" id="busProcsWorksheetCheck" easid="5" name="busProcsWorksheet" value="false"/>Business Processes  <i class="fa fa-cloud-download additional" id="busProcsi"></i></li>
 								<li><i class="fa fa-circle right-5" id="bpf"/><input type="checkbox" id="busProcsFamilyWorksheetCheck" easid="7" name="busProcsFamilyWorksheetCheck" value="false"/>Business Process Families</li>
-								<li><i class="fa fa-circle right-5" id="st"/><input type="checkbox" id="sitesCheck" easid="7" name="sitesCheck" value="false"/>Sites</li>
-								<li><i class="fa fa-circle right-5" id="or"/><input type="checkbox" id="orgsCheck" easid="7" name="orgsCheck" value="false"/>Organisations</li>
-								<li><i class="fa fa-circle right-5" id="ors"/><input type="checkbox" id="orgs2sitesCheck" easid="7" name="orgs2sitesCheck" value="false"/>Orgs to Sites</li>
-								<li><i class="fa fa-circle right-5" id="ac"/><input type="checkbox" id="appCapsCheck" easid="7" name="appCapsCheck" value="false"/>Application Capabilities</li>
-								<li><i class="fa fa-circle right-5" id="as"/><input type="checkbox" id="appSvcsCheck" easid="7" name="appSvcsCheck" value="false"/>Application Services</li>
+								<li><i class="fa fa-circle right-5" id="st"/><input type="checkbox" id="sitesCheck" easid="7" name="sitesCheck" value="false"/>Sites  <i class="fa fa-cloud-download additional" id="sitesi"></i></li>
+								<li><i class="fa fa-circle right-5" id="or"/><input type="checkbox" id="orgsCheck" easid="7" name="orgsCheck" value="false"/>Organisations  <i class="fa fa-cloud-download additional" id="orgsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="ors"/><input type="checkbox" id="orgs2sitesCheck" easid="7" name="orgs2sitesCheck" value="false"/>Orgs to Sites </li>
+								<li><i class="fa fa-circle right-5" id="ac"/><input type="checkbox" id="appCapsCheck" easid="7" name="appCapsCheck" value="false"/>Application Capabilities  <i class="fa fa-cloud-download additional" id="appCapsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="as"/><input type="checkbox" id="appSvcsCheck" easid="7" name="appSvcsCheck" value="false"/>Application Services  <i class="fa fa-cloud-download additional" id="appSvcsi"></i></li>
 								<li><i class="fa fa-circle right-5" id="ac2s"/><input type="checkbox" id="appCaps2SvcsCheck" easid="7" name="appCaps2SvcsCheck" value="false"/>Application Caps 2 Services</li>
-								<li><i class="fa fa-circle right-5" id="aps"/><input type="checkbox" id="appsCheck" easid="7" name="appsCheck" value="false"/>Applications</li>
-								<li><i class="fa fa-circle right-5" id="aps2sv"/><input type="checkbox" id="apps2svcsCheck" easid="7" name="apps2svcsCheck" value="false"/>Applications to Service</li>
+								<li><i class="fa fa-circle right-5" id="aps"/><input type="checkbox" id="appsCheck" easid="7" name="appsCheck" value="false"/>Applications  <i class="fa fa-cloud-download additional" id="appsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="aps2sv"/><input type="checkbox" id="apps2svcsCheck" easid="7" name="apps2svcsCheck" value="false"/>Applications to Service <i class="fa fa-cloud-download additional" id="apps2svcsi"></i></li>
 								<li><i class="fa fa-circle right-5" id="aps2or"/><input type="checkbox" id="apps2orgsCheck" easid="7" name="apps2orgsCheck" value="false"/>Applications to Orgs</li>
 								<li><i class="fa fa-circle right-5" id="bp2srvs"/><input type="checkbox" id="busProc2SvcsCheck" easid="7" name="appsCheck" value="false"/>Bus Processes to App Services</li>
 								<li><i class="fa fa-circle right-5" id="phyp2appsv"/><input type="checkbox" id="physProc2AppVsCheck" easid="7" name="physProc2AppVsCheck" value="false"/>Physical Process to Apps via Services</li>
 								<li><i class="fa fa-circle right-5" id="phyp2appdirect"/><input type="checkbox" id="physProc2AppCheck" easid="7" name="physProc2AppCheck" value="false"/>Physical Process to Apps</li>
-								<li><i class="fa fa-circle right-5" id="infex"/><input type="checkbox" id="infoExchangedCheck" easid="7" name="infoExchangedCheck" value="false"/>Information Exchanged</li>
-								<li><i class="fa fa-circle right-5" id="nodes"/><input type="checkbox" id="nodesCheck" easid="7" name="nodesCheck" value="false"/>Servers</li>
+								<li><i class="fa fa-circle right-5" id="infex"/><input type="checkbox" id="infoExchangedCheck" easid="7" name="infoExchangedCheck" value="false"/>Information Exchanged  <i class="fa fa-cloud-download additional" id="infoXi"></i>
+                        </li>
+								<li><i class="fa fa-circle right-5" id="nodes"/><input type="checkbox" id="nodesCheck" easid="7" name="nodesCheck" value="false"/>Servers  <i class="fa fa-cloud-download additional" id="nodesi"></i></li>
 								<li><i class="fa fa-circle right-5" id="ap2servs"/><input type="checkbox" id="apps2serverCheck" easid="7" name="apps2serverCheck" value="false"/>Application to Server</li>
-								<li><i class="fa fa-circle right-5" id="tds"/><input type="checkbox" id="techDomsCheck" easid="7" name="techDomsCheck" value="false"/>Technology Domains</li>
-								<li><i class="fa fa-circle right-5" id="tcaps"/><input type="checkbox" id="techCapsCheck" easid="7" name="techCapsCheck" value="false"/>Technology Capabilities</li>
-								<li><i class="fa fa-circle right-5" id="tcomps"/><input type="checkbox" id="techCompsCheck" easid="7" name="techCompsCheck" value="false"/>Technology Components</li>
-								<li><i class="fa fa-circle right-5" id="tsups"/><input type="checkbox" id="techSuppliersCheck" easid="7" name="techSuppliersCheck" value="false"/>Technology Suppliers</li>
-								<li><i class="fa fa-circle right-5" id="tprods"/><input type="checkbox" id="techProductsCheck" easid="7" name="techProductsCheck" value="false"/>Technology Products</li>
-								<li><i class="fa fa-circle right-5" id="tprodfams"/><input type="checkbox" id="techProductFamiliesCheck" easid="7" name="techProductFamiliesCheck" value="false"/>Technology Product Families</li>
+								<li><i class="fa fa-circle right-5" id="tds"/><input type="checkbox" id="techDomsCheck" easid="7" name="techDomsCheck" value="false"/>Technology Domains  <i class="fa fa-cloud-download additional" id="techDomsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="tcaps"/><input type="checkbox" id="techCapsCheck" easid="7" name="techCapsCheck" value="false"/>Technology Capabilities  <i class="fa fa-cloud-download additional" id="techCapsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="tcomps"/><input type="checkbox" id="techCompsCheck" easid="7" name="techCompsCheck" value="false"/>Technology Components  <i class="fa fa-cloud-download additional" id="techCompsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="tsups"/><input type="checkbox" id="techSuppliersCheck" easid="7" name="techSuppliersCheck" value="false"/>Technology Suppliers  <i class="fa fa-cloud-download additional" id="techSuppi"></i></li>
+								<li><i class="fa fa-circle right-5" id="tprods"/><input type="checkbox" id="techProductsCheck" easid="7" name="techProductsCheck" value="false"/>Technology Products  <i class="fa fa-cloud-download additional" id="techProdsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="tprodfams"/><input type="checkbox" id="techProductFamiliesCheck" easid="7" name="techProductFamiliesCheck" value="false"/>Technology Product Families <i class="fa fa-cloud-download additional" id="techFami"></i></li>
 								<li><i class="fa fa-circle right-5" id="tprodors"/><input type="checkbox" id="techProducttoOrgsCheck" easid="7" name="techProducttoOrgsCheck" value="false"/>Technology Products to Orgs</li>
-								<li><i class="fa fa-circle right-5" id="dsubjs"/><input type="checkbox" id="dataSubjectCheck" easid="7" name="dataSubjectCheck" value="false"/>Data Subjects</li>
-								<li><i class="fa fa-circle right-5" id="dObjs"/><input type="checkbox" id="dataObjectCheck" easid="7" name="dataObjectCheck" value="false"/>Data Objects</li>
+								<li><i class="fa fa-circle right-5" id="dsubjs"/><input type="checkbox" id="dataSubjectCheck" easid="7" name="dataSubjectCheck" value="false"/>Data Subjects  <i class="fa fa-cloud-download additional" id="dataSubjsi"></i></li>
+								<li><i class="fa fa-circle right-5" id="dObjs"/><input type="checkbox" id="dataObjectCheck" easid="7" name="dataObjectCheck" value="false"/>Data Objects  <i class="fa fa-cloud-download additional" id="dataObjsi"></i></li>
 								<li><i class="fa fa-circle right-5" id="dObjins"/><input type="checkbox" id="dataObjectInheritCheck" easid="7" name="dataObjectInheritCheck" value="false"/>Data Object Inheritance</li>
 								<li><i class="fa fa-circle right-5" id="dObjAts"/><input type="checkbox" id="dataObjectAttributeCheck" easid="7" name="dataObjectAttributeCheck" value="false"/>Data Object Attributes</li>
 								<li><i class="fa fa-circle right-5" id="appDps"/><input type="checkbox" id="appDependencyCheck" easid="7" name="appDependencyCheck" value="false"/>Application Dependencies</li>
@@ -1081,7 +1094,7 @@ $("#bctfi").on("change", function()
 	})
 	
 	$("#itasi").on("change", function()
-		{var arr=['busDomain','busCap','busProcess','org','appCapability','appService','app2service','app','appCapability2service','app2org','busProcess2appService','techDoms','techCaps','techComp','techProducts','techProductsOrg'];	
+		{var arr=['busDomain','busCap','busProcess','org','org2site','appCapability','appService','app2service','app','appCapability2service','app2org','busProcess2appService','techDoms','techCaps','techComp','techProducts','techProductsOrg'];	
 		var boxState = $(this).prop("checked");
 		setCounts(boxState,arr);
 		setSheets()
@@ -1181,6 +1194,7 @@ function setSheets(){
 	var managedService={"managedService":[<xsl:apply-templates select="$managedService" mode="managedService"/>]}; -->
 		 
     $('document').ready(function () {
+      $('.additional').hide();
 	 	$('.edit').click(function(){
 		$(this).parent().parent().find('.playSteps').slideToggle();
 		$(this).toggleClass('fa-caret-right');
@@ -3397,19 +3411,19 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Value>'Data Objects'!R8C3:R5000C3</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C10:R66C10</Range>
+         <Range>R8C10:R1066C10</Range>
          <Type>List</Type>
          <CellRangeList/>
          <Value>"Multiple, One, One To Many, Single, Zero to One, Zero to Many"</Value>
       </DataValidation>
 	  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-	   <Range>R8C9:R66C9</Range>
+	   <Range>R8C9:R1066C9</Range>
 	   <Type>List</Type>
 	   <CellRangeList/>
 	   <Value>&quot;Boolean, Date, Decimal, Integer, Text&quot;</Value>
 	  </DataValidation>
       <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C12:R66C13</Range>
+         <Range>R8C12:R1066C13</Range>
          <Condition>
             <Value1>ISERROR(SEARCH("OK",RC))</Value1>
             <Format Style="color:#9C0006;background:#FFC7CE"/>
@@ -3866,15 +3880,15 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <ProtectScenarios>False</ProtectScenarios>
       </WorksheetOptions>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C7:R88C7</Range>
+         <Range>R8C7:R1088C7</Range>
          <Type>List</Type>
          <Value>Valid_Data_Categories</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C8:R88C8</Range>
+         <Range>R8C8:R1088C8</Range>
          <Type>List</Type>
          <UseBlank/>
-         <Value>INDIRECT("Orgs[Name]")</Value>
+         <Value>'Organisations'!R8C3:R5000C3</Value>
       </DataValidation>
    </Worksheet>
 </script> 				
@@ -4036,14 +4050,14 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <ProtectScenarios>False</ProtectScenarios>
       </WorksheetOptions>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C3:R11C3</Range>
+         <Range>R8C3:R2001C3</Range>
          <Type>List</Type>
          <Value>Servers</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C4:R11C4</Range>
+         <Range>R8C4:R2100C4</Range>
          <Type>List</Type>
-         <Value>Valid_Environments</Value>
+         <Value>'Environment'!R8C2:R40C2</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C2:R10000C2</Range>
@@ -4865,6 +4879,122 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                <Data ss:Type="String">Issues</Data>
             </Cell>
          </Row>
+         <Row ss:Height="51">
+            <Cell ss:Index="2" ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1112">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1110">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1110">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1194">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1110">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell ss:StyleID="s1110">
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell>
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell>
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell>
+               <Data ss:Type="String"> </Data>
+            </Cell>
+            <Cell>
+               <Data ss:Type="String"></Data>
+            </Cell>
+         </Row>
           {{#each this}}
           {{#if this.usages}}
               {{#each this.usages}}
@@ -5134,23 +5264,18 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <ProtectObjects>False</ProtectObjects>
          <ProtectScenarios>False</ProtectScenarios>
       </WorksheetOptions>
-      <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R488C10:R753C11,R488C13:R753C14,R8C9:R753C9</Range>
-         <Type>List</Type>
-         <UseBlank/>
-         <Value>Technology_Components</Value>
-      </DataValidation>
-      <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
- 		<Range>R488C11:R753C11,R488C13:R753C14,R8C16:R753C16,R488C19:R753C20,R8C13:R487C13,R8C10:R753C10,R8C19:R487C19</Range>
-         <Type>List</Type>
-         <UseBlank/>
-         <Value>Tech_Compliance_Levels</Value>
-      </DataValidation>
+     
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C19:R487C20,R8C13:R487C14,R8C10:R487C11,R8C16:R753C17</Range>
          <Type>List</Type>
          <UseBlank/>
          <Value>Usage_Lifecycle_Statii</Value>
+      </DataValidation>
+      <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+         <Range>R8C9:R487C9</Range>
+         <Type>List</Type>
+         <UseBlank/>
+         <Value>'Technology Components'!R8C3:R2900C3</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C7:R753C7</Range>
@@ -5171,18 +5296,18 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Value>Technology_Product_Suppliers</Value>
       </DataValidation>
        <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R8C10:R11C10,R7C10</Range>
+   <Range>R8C10:R5000C10</Range>
    <Type>List</Type>
    <UseBlank/>
    <Value>'Standards Compliance Levels'!R8C3:R29C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R7C11</Range>
+   <Range>R7C11:R5000C11</Range>
    <Type>List</Type>
    <Value>'Lifecycle Status'!R8C3:R43C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R7C6</Range>
+   <Range>R7C6:R2000C6</Range>
    <Type>List</Type>
    <Value>'Technology Product Families'!R8C3:R14C3</Value>
   </DataValidation>
@@ -5334,7 +5459,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Range>R8C5:R3900C5</Range>
          <Type>List</Type>
          <UseBlank/>
-         <Value>'Technology Domains'!R8C3:R5000C3</Value>
+         <Value>'Technology Components'!R8C3:R5000C3</Value>
       </DataValidation>
       <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C6:R3900C6</Range>
@@ -5612,6 +5737,11 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Value>'Application Services'!R8C3:R5000C3</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+         <Range>R8C4:R4500C4</Range>
+         <Type>List</Type>
+         <Value>&quot;High,Medium,Low&quot;</Value>
+      </DataValidation>
+      <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C2:R4500C2</Range>
          <Type>List</Type>
          <Value>'Business Processes'!R8C3:R5000C3</Value>
@@ -5641,6 +5771,9 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 </script>	
 <script id="pp2appviasvc-name" type="text/x-handlebars-template">
 <Worksheet ss:Name="Physical Proc 2 App and Service">
+      <Names>
+            <NamedRange ss:Name="AppProRole" ss:RefersTo="='App Service 2 Apps'!R8C8:R2000C8"/>
+      </Names>
       <Table ss:ExpandedColumnCount="6" x:FullColumns="1" x:FullRows="1"
              ss:DefaultColumnWidth="65"
              ss:DefaultRowHeight="16">
@@ -5759,6 +5892,11 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Type>List</Type>
          <Value>'Organisations'!R8C3:R5000C3</Value>
       </DataValidation>
+      <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+            <Range>R8C4:R3000C4</Range>
+            <Type>List</Type>
+            <Value>'App Service 2 Apps'!R8C8:R5000C8</Value>
+         </DataValidation>
       <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C5:R174C6</Range>
          <Condition>
@@ -6039,7 +6177,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 </script>					
 <script id="app2svc-name" type="text/x-handlebars-template">
 <Worksheet ss:Name="App Service 2 Apps">
-      <Table ss:ExpandedColumnCount="5" x:FullColumns="1" x:FullRows="1" ss:StyleID="s1045"
+      <Table ss:ExpandedColumnCount="8" x:FullColumns="1" x:FullRows="1" ss:StyleID="s1045"
              ss:DefaultColumnWidth="66"
              ss:DefaultRowHeight="16">
          <Column ss:StyleID="s1045" ss:AutoFitWidth="0" ss:Width="35"/>
@@ -6074,12 +6212,10 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <Row ss:AutoFitHeight="0" ss:Height="8">
             <Cell ss:Index="2" ss:StyleID="s1170"/>
             <Cell ss:StyleID="s1171"/>
-            <Cell ss:StyleID="s1177"
-                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+            <Cell ss:StyleID="s1177">
                <Data ss:Type="String"/>
             </Cell>
-            <Cell ss:StyleID="s1177"
-                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+            <Cell ss:StyleID="s1177">
                <Data ss:Type="String"/>
             </Cell>
          </Row>
@@ -6101,6 +6237,8 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                   ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
                <Data ss:Type="String"/>
             </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String">{{../this.name}} as {{this.name}}</Data></Cell>
          </Row>
 		  {{/each}}
 		  {{/if}}
@@ -6115,7 +6253,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          <FreezePanes/>
          <FrozenNoSplit/>
          <SplitHorizontal>6</SplitHorizontal>
-         <TopRowBottomPane>66</TopRowBottomPane>
+         <TopRowBottomPane>6</TopRowBottomPane>
          <ActivePane>2</ActivePane>
          <Panes>
             <Pane>
@@ -6921,7 +7059,7 @@ Enabling - Bottom middle</Data>
          <FreezePanes/>
          <FrozenNoSplit/>
          <SplitHorizontal>6</SplitHorizontal>
-         <TopRowBottomPane>56</TopRowBottomPane>
+         <TopRowBottomPane>6</TopRowBottomPane>
          <SplitVertical>3</SplitVertical>
          <LeftColumnRightPane>3</LeftColumnRightPane>
          <ActivePane>0</ActivePane>
@@ -7114,7 +7252,7 @@ Enabling - Bottom middle</Data>
          <FreezePanes/>
          <FrozenNoSplit/>
          <SplitHorizontal>6</SplitHorizontal>
-         <TopRowBottomPane>52</TopRowBottomPane>
+         <TopRowBottomPane>6</TopRowBottomPane>
          <ActivePane>2</ActivePane>
          <Panes>
             <Pane>
@@ -7185,6 +7323,27 @@ Enabling - Bottom middle</Data>
             </Cell>
             <Cell ss:StyleID="s1159">
                <Data ss:Type="String">Parent Organisation Check</Data>
+            </Cell>
+         </Row>
+         <Row ss:Height="17">
+            <Cell ss:Index="2" ss:StyleID="s1142">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1142">
+               <Data ss:Type="String"></Data>
+				 <NamedCell ss:Name="Organisations"/>
+            </Cell>
+            <Cell ss:StyleID="s1142">
+				<Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1142">
+               <Data ss:Type="String"></Data>
+            </Cell>
+		  	<Cell ss:StyleID="s1142">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1142">
+               <Data ss:Type="String"></Data>
             </Cell>
          </Row>
 		{{#each this}}
@@ -7259,18 +7418,18 @@ Enabling - Bottom middle</Data>
          <ProtectScenarios>False</ProtectScenarios>
       </WorksheetOptions>
 	   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C6:R79C6</Range>
+         <Range>R8C6:R1079C6</Range>
          <Type>List</Type>
          <UseBlank/>
          <Value>Valid_True_or_False</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C5:R790C5</Range>
+         <Range>R8C5:R1079C5</Range>
          <Type>List</Type>
          <Value>'Organisations'!R8C3:R790C3</Value>
       </DataValidation>
       <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C7:R79C7</Range>
+         <Range>R8C7:R1079C7</Range>
          <Condition>
             <Value1>ISERROR(SEARCH("OK",RC))</Value1>
             <Format Style="color:#9C0006;background:#FFC7CE"/>
@@ -7888,12 +8047,12 @@ Enabling - Bottom middle</Data>
          <ProtectScenarios>False</ProtectScenarios>
       </WorksheetOptions>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R8C5:R27C5</Range>
+         <Range>R8C5:R2007C5</Range>
          <Type>List</Type>
          <Value>'Business Domains'!R8C3:R400C3</Value>
       </DataValidation>
       <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-         <Range>R6C3,R6C5</Range>
+         <Range>R6C3,R6000C5</Range>
          <Condition>
             <Value1>AND(COUNTIF(R6C3:R6C3, RC)+COUNTIF(R6C5:R6C5, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
             <Format Style="color:#9C0006;background:#FFC7CE"/>
@@ -7997,6 +8156,23 @@ Enabling - Bottom middle</Data>
                <Data ss:Type="String">Business Domain Check</Data>
             </Cell>
          </Row>
+         <Row ss:Height="20" ss:StyleID="s1051">
+    <Cell ss:Index="2" ss:StyleID="s1025"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data><NamedCell ss:Name="Bus_Caps"/></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+	<Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1050"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1191"
+     ss:Formula="=IF(RC[-6]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-6],'Business Capabilities'!C[-8],1,0)),&quot;Parent Capability must be already defined in Column C&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1191"
+     ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Domains'!C[-9],1,0)),&quot;Business Domain must be already defined in Business Domains sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+   </Row>
 	{{#each this}}
 	{{#if this.parentBusinessCapability}}
 			{{#each this.parentBusinessCapability}}
@@ -8080,7 +8256,7 @@ Enabling - Bottom middle</Data>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C6:R127C6</Range>
          <Type>List</Type>
-         <Value>Valid_Position_in_Parent</Value>
+         <Value>&quot;Front, Manage, Back&quot;</Value>
       </DataValidation>
       <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C9:R1270C9</Range>
@@ -8273,6 +8449,7 @@ Enabling - Bottom middle</Data>
                         if (this.readyState == 4 &amp;&amp; this.status == 200) {
                             var viewerData = JSON.parse(this.responseText);
                             resolve(viewerData);
+                            <!--$('#ess-data-gen-alert').hide();-->
                         }
                     };
                     xmlhttp.onerror = function () {
@@ -8289,16 +8466,19 @@ Enabling - Bottom middle</Data>
         
         
   $('document').ready(function () {
-         
+     
 $('#busCapsWorksheetCheck').on("change", function() {
 	var boxState = $(this).prop("checked");
 	if (boxState == false) {
 		var workingWL = worksheetList.filter(function(d) {
 			return d.id != 4;
 		})
-		worksheetList = workingWL;
-	} else {
-		if ($.isEmptyObject(businessCapabilities)) {
+      worksheetList = workingWL;
+      $('#busDomi').hide(); 
+   } else {
+      $('#busDomi').show(); 
+      if ($.isEmptyObject(businessCapabilities)) {    
+      
 		 if(viewAPIDataBusCaps==viewCheck){
 			 businessCapabilities = [{'description': '', 'name': ''}];
 		     worksheetList.push({"id":2,"name":buscaptableTemplate(businessCapabilities)});
@@ -8377,16 +8557,19 @@ $('#busDomWorksheetCheck').on("change", function() {
 ////console.log(worksheetList)		 
 })		 
 		 
-
+   
 $('#busProcsWorksheetCheck').on("change", function() {
 	var boxState = $(this).prop("checked");
 	if (boxState == false) {
 		var workingWL = worksheetList.filter(function(d) {
 			return d.id != 5;
 		})
-		worksheetList = workingWL;
-	} else {
-		if ($.isEmptyObject(businessProcesses)) {
+      worksheetList = workingWL;
+      $('#busCapsi').hide();       
+   } else {
+      $('#busCapsi').show();       
+      if ($.isEmptyObject(businessProcesses)) {
+      
 		 if(viewAPIDataBusProcs==viewCheck){
 			 businessProcesses = [{'description': '', 'name': '', parentDomain: [], subDomain: []}];
 		 
@@ -8414,8 +8597,7 @@ $('#busProcsWorksheetCheck').on("change", function() {
 		}
 	}
 //console.log(worksheetList)		 
-})			 
-		 
+}); 
 
 $('#busProcsFamilyWorksheetCheck').on("change", function() {
 	var boxState = $(this).prop("checked");
@@ -8423,9 +8605,12 @@ $('#busProcsFamilyWorksheetCheck').on("change", function() {
 		var workingWL = worksheetList.filter(function(d) {
 			return d.id != 7;
 		})
-		worksheetList = workingWL;
-	} else {
-		if ($.isEmptyObject(businessProcessFamilies)) {
+      worksheetList = workingWL;
+      $('#busProcsi').hide();    
+   } else {
+      $('#busProcsi').show(); 
+      if ($.isEmptyObject(businessProcessFamilies)) {
+         
 		  if(viewAPIDataBusProcFams==viewCheck){
 			 businessProcessFamilies = [{'description': '', 'name': '', parentDomain: [], subDomain: []}];
 		 
@@ -8491,7 +8676,7 @@ $('#sitesCheck').on("change", function() {
 //console.log(worksheetList)		 
 })		 
 		 
-		 
+
 $('#orgsCheck').on("change", function() {
 	var boxState = $(this).prop("checked");
 	if (boxState == false) {
@@ -8529,13 +8714,19 @@ $('#orgsCheck').on("change", function() {
 })			
 		 
 $('#orgs2sitesCheck').on("change", function() {
-	var boxState = $(this).prop("checked");
+   var boxState = $(this).prop("checked");
+
+
 	if (boxState == false) {
 		var workingWL = worksheetList.filter(function(d) {
 			return d.id != 12;
 		})
-		worksheetList = workingWL;
-	} else {
+      worksheetList = workingWL;
+      $('#sitesi').hide(); 
+      $('#orgsi').hide() ;
+   } else {
+      $('#sitesi').show();
+      $('#orgsi').show();
 		if ($.isEmptyObject(orgs)) {
 		 if(viewAPIDataOrgs==viewCheck){
 			 orgs = [{'description': '', 'name': ''}];
@@ -8572,9 +8763,11 @@ $('#appCapsCheck').on("change", function() {
 		var workingWL = worksheetList.filter(function(d) {
 			return d.id != 15;
 		})
-		worksheetList = workingWL;
-	} else {
-		if ($.isEmptyObject(appCaps)) {
+      worksheetList = workingWL;
+      $('#busCapsi').hide();
+   } else {
+      $('#busCapsi').show();   
+      if ($.isEmptyObject(appCaps)) {
 		  if(viewAPIDataAppCaps==viewCheck){
 			 appcap = [{'description': '', 'name': ''}];
 		     worksheetList.push({"id":15,"name":appCaptableTemplate(appcap)});
@@ -8652,7 +8845,11 @@ $('#appCaps2SvcsCheck').on("change", function() {
 			return d.id != 18;
 		})
 		worksheetList = workingWL;
+      $('#appSvcsi').hide(); 
+      $('#appCapsi').hide(); 
 	} else {
+      $('#appSvcsi').show(); 
+      $('#appCapsi').show(); 
 		if ($.isEmptyObject(appCap2Service)) {
 		 if(viewAPIDataAppCap2Svcs==viewCheck){
 			 appCap2Service = [{'description': '', 'name': ''}];
@@ -8724,7 +8921,11 @@ $('#apps2svcsCheck').on("change", function() {
 			return d.id != 23;
 		})
 		worksheetList = workingWL;
+      $('#appSvcsi').hide(); 
+      $('#appsi').hide(); 
 	} else {
+      $('#appSvcsi').show(); 
+      $('#appsi').show(); 
 		if ($.isEmptyObject(app2svcs)) {
 		  if(viewAPIDataApps2Svcs==viewCheck){
 			 app2svcs = [{'description': '', 'name': ''}];
@@ -8761,7 +8962,11 @@ $('#apps2orgsCheck').on("change", function() {
 			return d.id != 25;
 		})
 		worksheetList = workingWL;
+      $('#orgsi').hide(); 
+      $('#appsi').hide(); 
 	} else {
+      $('#orgsi').show(); 
+      $('#appsi').show(); 
 		if ($.isEmptyObject(app2org)) {
 		 if(viewAPIDataApps2orgs==viewCheck){
 			 app2org = [{'description': '', 'name': ''}];
@@ -8798,7 +9003,11 @@ $('#busProc2SvcsCheck').on("change", function() {
 			return d.id != 27;
 		})
 		worksheetList = workingWL;
+      $('#busProcsi').hide(); 
+      $('#appsi').hide(); 
 	} else {
+      $('#busProcsi').show(); 
+      $('#appsi').show(); 
 		if ($.isEmptyObject(processtoservice)) {
 		 if(viewAPIDataBPtoAppsSvc==viewCheck){
 			 processtoservice = [{'description': '', 'name': ''}];
@@ -8834,7 +9043,13 @@ $('#physProc2AppVsCheck').on("change", function() {
 			return d.id != 30;
 		})
 		worksheetList = workingWL;
+      $('#busProcsi').hide(); 
+      $('#orgsi').hide(); 
+      $('#apps2svcsi').hide();
 	} else {
+      $('#busProcsi').show(); 
+      $('#orgsi').show(); 
+      $('#apps2svcsi').show();
 		if ($.isEmptyObject(processtoapps)) {
 		 if(viewAPIDataBPtoAppsSvc==viewCheck){
 			 processtoapps = [{'description': '', 'name': ''}];
@@ -8870,7 +9085,12 @@ $('#physProc2AppCheck').on("change", function() {
 			return d.id != 32;
 		})
 		worksheetList = workingWL;
+      $('#busProcsi').hide(); 
+      $('#orgsi').hide(); 
+      $('#appsi').hide();
 	} else {
+      $('#busProcsi').show(); 
+      $('#orgsi').show(); 
 		if ($.isEmptyObject(processtoapps)) {
 		 if(viewAPIDataPPtoAppsViaSvc==viewCheck){
 			 processtoapps = [{'description': '', 'name': ''}];
@@ -8944,7 +9164,10 @@ $('#techCapsCheck').on("change", function() {
 			return d.id != 45;
 		})
 		worksheetList = workingWL;
+      $('#techDomsi').hide(); 
+       
 	} else {
+      $('#techDomsi').show(); 
 		if ($.isEmptyObject(techCaps)) {
 		 if(viewAPIDataTechCap==viewCheck){
 			 techCaps = [{'description': '', 'name': ''}];
@@ -9017,7 +9240,11 @@ $('#apps2serverCheck').on("change", function() {
 			return d.id != 37;
 		})
 		worksheetList = workingWL;
+      $('#appsi').hide(); 
+      $('#nodesi').hide(); 
 	} else {
+      $('#appsi').show(); 
+      $('#nodesi').show(); 
 		if ($.isEmptyObject(app2server)) {
 		  if(viewAPIDataApptoServer==viewCheck){
 			 app2server = [{'description': '', 'name': ''}];
@@ -9089,7 +9316,9 @@ $('#techCompsCheck').on("change", function() {
 			return d.id != 40;
 		})
 		worksheetList = workingWL;
+      $('#techCapsi').hide();  
 	} else {
+      $('#techCapsi').show(); 
 		if ($.isEmptyObject(techComponents)) {
 		 if(viewAPIDataTechComp==viewCheck){
 			 techComponents = [{'description': '', 'name': ''}];
@@ -9163,7 +9392,13 @@ $('#techProductsCheck').on("change", function() {
 			return d.id != 47;
 		})
 		worksheetList = workingWL;
+      $('#techSuppi').hide();  
+      $('#techFami').hide();  
+      $('#techCompsi').hide();  
 	} else {
+      $('#techSuppi').show();  
+      $('#techFami').show();  
+      $('#techCompsi').show();  
 		if ($.isEmptyObject(techProducts)) {
 		  if(viewAPIDataTechProd==viewCheck){
 			 techProducts = [{'description': '', 'name': ''}];
@@ -9236,7 +9471,11 @@ $('#techProducttoOrgsCheck').on("change", function() {
 			return d.id != 50;
 		})
 		worksheetList = workingWL;
+      $('#techProdsi').hide();  
+      $('#orgsi').hide();  
 	} else {
+      $('#techProdsi').show();  
+      $('#orgsi').show(); 
 		if ($.isEmptyObject(techProductOrg)) {
 		 if(viewAPIDataTechProdOrg==viewCheck){
 			 techProductOrg = [{'description': '', 'name': ''}];
@@ -9272,6 +9511,7 @@ $('#dataSubjectCheck').on("change", function() {
 			return d.id != 55;
 		})
 		worksheetList = workingWL;
+     
 	} else {
 		if ($.isEmptyObject(dataSubjects)) {
 		  if(viewAPIDataDataSubject==viewCheck){
@@ -9308,7 +9548,9 @@ $('#dataObjectCheck').on("change", function() {
 			return d.id != 56;
 		})
 		worksheetList = workingWL;
+      $('#dataSubjsi').hide();   
 	} else {
+      $('#dataSubjsi').show();   
 		if ($.isEmptyObject(dataObjects)) {
 		 if(viewAPIDataDataObject==viewCheck){
 			 dataObjects = [{'description': '', 'name': ''}];
@@ -9345,7 +9587,9 @@ $('#dataObjectInheritCheck').on("change", function() {
 			return d.id != 60;
 		})
 		worksheetList = workingWL;
+      $('#dataObjsi').hide();   
 	} else {
+      $('#dataObjsi').show();   
 		if ($.isEmptyObject(dataObjectInheritance)) {
 		 if(viewAPIDataDataObject==viewCheck){
 			 dataObjectInheritance = [{'description': '', 'name': ''}];
@@ -9381,7 +9625,9 @@ $('#dataObjectAttributeCheck').on("change", function() {
 			return d.id != 65;
 		})
 		worksheetList = workingWL;
+      $('#dataObjsi').hide();  
 	} else {
+      $('#dataObjsi').show();  
 		if ($.isEmptyObject(dataObjectAttributes)) {
 		 if(viewAPIDataDataObjectAttribute==viewCheck){
 			 dataObjectAttributes = [{'description': '', 'name': ''}];
@@ -9419,7 +9665,11 @@ $('#appDependencyCheck').on("change", function() {
 			return d.id != 70;
 		})
 		worksheetList = workingWL;
+      $('#appsi').hide();  
+      $('#infoXi').hide();  
 	} else {
+      $('#appsi').show();  
+      $('#infoXi').show();  
 		if ($.isEmptyObject(applicationDependencies)) {
 		 if(viewAPIDataAppDependency==viewCheck){
 			 applicationDependencies = [{'description': '', 'name': ''}];
@@ -9455,7 +9705,14 @@ $('#apptotechCheck').on("change", function() {
 			return d.id != 75;
 		})
 		worksheetList = workingWL;
+      $('#appsi').hide();  
+      $('#techProdsi').hide();  
+      $('#techCompsi').hide();  
+
 	} else {
+      $('#appsi').show();  
+      $('#techProdsi').show();  
+      $('#techCompsi').show(); 
 		if ($.isEmptyObject(applicationTechArch)) {
 		 if(viewAPIPathApptoTech==viewCheck){
 			 applicationTechArch = [{'description': '', 'name': ''}];

@@ -153,9 +153,9 @@
 										</xsl:call-template>
 									</span>-->
 								</div>
-
+<xsl:call-template name="RenderDataSetAPIWarning"/>
 							</div>
-
+							
 							<!--Setup the Catalogue section-->
 							<div class="row">
 								<div class="col-xs-12">
@@ -267,7 +267,7 @@ var inScopeNodes
 
                             var viewerData = JSON.parse(this.responseText);
                             resolve(viewerData);
-				 
+				 			$('#ess-data-gen-alert').hide();
                         }
                     };
                     xmlhttp.onerror = function () {

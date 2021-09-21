@@ -18,7 +18,7 @@
 <!-- Essential Publishing Login Form -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css" type="text/css"/>
 		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css" type="text/css"/>
 		<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css"/>
 		<link rel="stylesheet" href="css/essential-core.css" type="text/css"/>

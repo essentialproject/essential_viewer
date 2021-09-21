@@ -50,7 +50,7 @@
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:html="http://www.w3.org/TR/REC-html40">
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-  <Author>Jason Powell</Author>
+  <Author>Essential Development Team</Author>
   <LastAuthor>Microsoft Office User</LastAuthor>
   <Created>2018-07-02T09:12:33Z</Created>
   <LastSaved>2019-06-20T19:51:18Z</LastSaved>

@@ -19,6 +19,11 @@
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Technology_Product', 'Site', 'Technology_Node', 'Application_Deployment', 'Application_Provider', 'Application_Software_Instance', 'Infrastructure_Software_Instance', 'Information_Store_Instance', 'Technology_Product', 'Technology_Component', 'Individual_Actor', 'Group_Actor', 'Information_Representation', 'Business_Strategic_Plan', 'Information_Strategic_Plan', 'Application_Strategic_Plan', 'Technology_Strategic_Plan', 'Security_Strategic_Plan')"/>
+
+	<xsl:variable name="techTPR" select="/node()/simple_instance[type='Technology_Product_Role'][name=$currentNode/own_slot_value[slot_reference='technology_node_platform_stack']/value]"/>
+	<xsl:variable name="techProducts" select="/node()/simple_instance[type='Technology_Product'][name=$techTPR/own_slot_value[slot_reference='role_for_technology_provider']/value]"/>
+	
+	<xsl:variable name="techComponents" select="/node()/simple_instance[type='Technology_Component'][name=$techTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 	<xsl:param name="param1"/>
@@ -211,6 +216,39 @@
 					</div>
 					<hr/>
 				</div>
+				<!--Setup Technology Stack Section-->
+				<div class="col-xs-12">
+						<div class="sectionIcon">
+							<i class="fa fa-server icon-section icon-color"/>
+						</div>
+						<h2 class="text-primary">
+							<xsl:value-of select="eas:i18n('Technology Stack')"/>
+						</h2>
+						<div class="content-section">
+								<table width="75%" class="table table-striped">
+									<tr><th>Product</th><th>Usage</th></tr>
+							<xsl:for-each select="$techTPR">
+									<xsl:variable name="thisProd" select="$techProducts[name=current()/own_slot_value[slot_reference='role_for_technology_provider']/value]"/>
+									<xsl:variable name="thisComp" select="$techComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/>
+									<tr>
+										<td width="35%">
+												<xsl:call-template name="RenderInstanceLink">
+													<xsl:with-param name="theSubjectInstance" select="$thisProd"/>
+												</xsl:call-template>
+										</td>
+										<td>
+												<xsl:call-template name="RenderInstanceLink">
+													<xsl:with-param name="theSubjectInstance" select="$thisComp"/>
+												</xsl:call-template>
+										</td>
+									</tr>
+							</xsl:for-each>
+						</table>
+							 
+						</div>
+						<hr/>
+				</div>
+
 
 				<!--Setup Deploy Node Section-->
 				<xsl:variable name="aContainingNodeInst" select="own_slot_value[slot_reference = 'inverse_of_contained_technology_nodes']/value"/>
@@ -218,8 +256,8 @@
 				<xsl:variable name="aNodeName" select="own_slot_value[slot_reference = 'name']/value"/>
 				<xsl:variable name="anAttributeValue" select="/node()/simple_instance[name = current()]"/>
 				<xsl:variable name="attribute_type" select="/node()/simple_instance[name = $anAttributeValue/own_slot_value[slot_reference = 'attribute_value_of']/value]"/>
-
-				<div class="col-xs-12">
+				<xsl:if test="$aContaininNode">
+					<div class="col-xs-12">
 					<div class="sectionIcon">
 						<i class="fa essicon-server icon-section icon-color"/>
 					</div>
@@ -277,8 +315,8 @@
 						</xsl:choose>
 					</div>
 					<hr/>
-				</div>
-
+					</div>
+				</xsl:if>
 				<!--Setup the Strategic Plans section-->
 
 				<div class="col-xs-12">

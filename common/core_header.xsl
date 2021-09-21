@@ -190,7 +190,7 @@
 						</div>
 					</a>
 					<button class="pull-right navbar-toggle collapsed">
-						<span class="sr-only">Toggle navigation</span>
+						<span class="sr-only"><xsl:value-of select="eas:i18n('Toggle navigation')"/></span>
 						<i class="fa fa-bars collapsed text-white" style="font-size:28px;" data-toggle="collapse" data-target="#nav-collapse"/>
 					</button>
 
@@ -745,7 +745,7 @@
 				<div class="portalBar text-white fontSemi">
 					<a>
 						<xsl:attribute name="href" select="$homeHref"/>
-						<span>Home</span>
+						<span><xsl:value-of select="eas:i18n('Home')"/></span>
 					</a>
 					<span>&#160;&#160;&#160;|&#160;&#160;&#160;</span>
 					<xsl:for-each select="$allEnabledPortals">
@@ -772,7 +772,7 @@
 								<xsl:with-param name="theXSL" select="$viewLibraryXSL"/>
 								<xsl:with-param name="theHistoryLabel" select="$viewLibraryHistoryLabel"/>
 							</xsl:call-template>
-							<span>View Library</span>
+							<span><xsl:value-of select="$viewLibraryLabel"/></span>
 						</a>
 					</xsl:if>
 				</div>
