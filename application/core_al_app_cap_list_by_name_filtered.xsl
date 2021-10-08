@@ -128,12 +128,12 @@
                             } 
                     .list {padding-left:10px}   
 
-                    .caps {
-                        padding:3px;
-                        border-left: 3pt solid #3fceb9;
+					.caps {
+                        padding:1px;
+                        border-left: 2pt solid #3fceb9;
                         font-size:1.1em;
-                        border-bottom: 2pt solid #ffffff;
-                    }            
+                        border-bottom:1pt solid #ffffff;
+                    }               
                                    
 				</style>
 				 	 <xsl:call-template name="RenderRoadmapJSLibraries">
@@ -255,13 +255,20 @@
 		}
 
 		let createNavigationList = _ => {
-			const abcChars = createArrayAtoZ();
+			let abcChars = createArrayAtoZ();
+			let rest=["1","2","3","4","5","6","7","8","9","."]
+	 
+			abcChars=abcChars.concat(rest); 
 			const navigationEntries = abcChars.reduce(createDivForCharElement, '');
 			$('#nav').append(navigationEntries);
 		}
-
 		let createDivForCharElement = (block, charToAdd) => {
-			return block + "&lt;div id='CharacterElement' class='CharacterElement Inactive " + charToAdd + "'>" + charToAdd + "&lt;/div>";
+			if(charToAdd=='.'){
+				return block + "&lt;div id='CharacterElement' class='CharacterElement Inactive dot'>" + charToAdd + "&lt;/div>";
+			}else
+			{
+				return block + "&lt;div id='CharacterElement' class='CharacterElement Inactive " + charToAdd + "'>" + charToAdd + "&lt;/div>";
+			}
 		}
 
 		var characterToShow = 'A';		
@@ -499,6 +506,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 				});
 				uniq.forEach((ch) => {
 					if(ch !=""){
+						if(ch=='.'){ch='dot'}
 						$('.' + ch).css({
 							"border-bottom": "2pt solid red",
 							"width": "15px"

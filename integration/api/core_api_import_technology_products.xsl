@@ -39,7 +39,8 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_products":[<xsl:apply-templates select="$techProducts" mode="techProducts"></xsl:apply-templates>]}
+    {"technology_products":[<xsl:apply-templates select="$techProducts" mode="techProducts"></xsl:apply-templates>],
+     "tprStandards":[<xsl:apply-templates select="$tprs" mode="techStds"></xsl:apply-templates>]}
 	</xsl:template>
 
 
@@ -61,10 +62,22 @@
         "vendor":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisvendor"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "delivery":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisdelivery"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "usages":[<xsl:for-each select="$thisusages">
-        <xsl:variable name="componentsUsed" select="$techComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/>{"id":"<xsl:value-of select="eas:getSafeJSString($componentsUsed/name)"/>",
+        <xsl:variable name="componentsUsed" select="$techComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/>{"id":"<xsl:value-of select="eas:getSafeJSString($componentsUsed/name)"/>","tprid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$componentsUsed"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "compliance":"<xsl:value-of select="$enumsStandards[name=$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='name']/value"/>",
         "adoption":"<xsl:value-of select="$lifecycle[name=$thisusages[1]/own_slot_value[slot_reference='strategic_lifecycle_status']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
         }<xsl:if test="position()!=last()">,</xsl:if>
-  </xsl:template>     
+  </xsl:template> 
+  <xsl:template mode="techStds" match="node()">
+      {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+      "compliance2":[<xsl:for-each select="$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]">
+      {"id":"<xsl:value-of select="eas:getSafeJSString($enumsStandards[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]/name)"/>",
+      "name":"<xsl:value-of select="$enumsStandards[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
+      "geos":[<xsl:for-each select="current()/own_slot_value[slot_reference='sm_geographic_scope']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+      "orgs":[<xsl:for-each select="current()/own_slot_value[slot_reference='sm_organisational_scope']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+    }<xsl:if test="position()!=last()">,</xsl:if>
+      </xsl:for-each>],
+      "compliance":"<xsl:value-of select="$enumsStandards[name=$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='name']/value"/>",
+        "adoption":{"id": "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='strategic_lifecycle_status']/value)"/>","name":"<xsl:value-of select="$lifecycle[name=current()/own_slot_value[slot_reference='strategic_lifecycle_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>"}}<xsl:if test="position()!=last()">,</xsl:if>
+  </xsl:template>      
 </xsl:stylesheet>

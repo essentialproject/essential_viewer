@@ -83,6 +83,7 @@
 		<xsl:variable name="rootOrgID" select="$allActors[own_slot_value[slot_reference = 'contained_sub_actors']/value = current()/name]/name"/>
 		<xsl:variable name="thisparentActor" select="$allActors[name = $rootOrgID]"/>
 		<xsl:variable name="thisinScopeActors" select="eas:get_org_descendants($thisparentActor, $allActors, 0)"/>
+		<xsl:variable name="thisinScopeChildActors" select="eas:get_org_descendants(current(), $allActors, 0)"/>
 		<xsl:variable name="parentActorName" select="$thisparentActor/own_slot_value[slot_reference = 'name']/value"/>
 
 		<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>		
@@ -110,6 +111,7 @@
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
+		"childOrgs":[<xsl:for-each select="$thisinScopeChildActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],		
     	"data":[{"vis":[<xsl:call-template name="PrintOrgChart"><xsl:with-param name="rootNode" select="$thisparentActor"/><xsl:with-param name="parentNode" select="current()"/><xsl:with-param name="inScopeActors" select="$thisinScopeActors"/><xsl:with-param name="level" select="1"/></xsl:call-template>]}],
 	    "site":[<xsl:apply-templates select="$thisbaseSites" mode="getSiteJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 		"orgUsers":[<xsl:apply-templates select="$thisRolesForActor" mode="getSiteJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
@@ -161,10 +163,7 @@
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"codebase":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$thisStatus"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>"
+		"codebase":"<xsl:value-of select="eas:getSafeJSString($thisStatus/name)"/>"
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
 	

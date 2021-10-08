@@ -56,7 +56,7 @@
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="instanceClassName" select="('Application_Provider', 'Composite_Application_Provider')"/>
-	<xsl:variable name="allInstances" select="/node()/simple_instance[supertype = $instanceClassName or type = $instanceClassName]"/>
+	<xsl:variable name="allInstances" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]"/>
 	<xsl:variable name="linkClasses" select="('Application_Provider', 'Composite_Application_Provider')"/>
 	
 	<xsl:variable name="catalogueTitle" select="eas:i18n('Application Catalogue by Name')"/>

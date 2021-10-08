@@ -989,7 +989,7 @@
 			promise_loadViewerAPIData(viewAPIDataAppCapSvcs)
 			]).then(function (responses)
 			{
-				let lifeListFragment = $("#life-list-template").html();
+			let lifeListFragment = $("#life-list-template").html();
 			techJSON=responses[1].technology_lifecycles;
 			appJSON=responses[3].application_lifecycles;
 			appDetailJSON=responses[0].applications;
@@ -1000,8 +1000,7 @@
 			standardsJSON=responses[1].standardsJSON;
 			processJSON=responses[4].process_to_apps;
 			appCapsJSON=responses[5];
- 
-
+  
 			let capToSvs=[];
 			appCapsJSON.application_capabilities_services.forEach((d)=>{
 				d.services.forEach((e)=>{
@@ -1043,7 +1042,7 @@ capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
 				lifeByType = d3.nest()
 				.key(function(d) { return d.type; })
 				.entries(lifecycleJSON);
-	
+ 
 				setChart();
 	
 				$('.filter').on('change',function(){
@@ -1166,15 +1165,25 @@ else{
 		yearArr.push({"yr":parseInt(startYear)+i, "date":dy, "pos":getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy)});
 	}
 
-				workingArr.forEach((d)=>{
+				workingArr.forEach((d)=>{ 
 								let thislifeByType = d3.nest()
 									.key(function(d) { return d.type; })
 									.entries(d.allDates);
-
+ 
 								thislifeByType.forEach((life)=>{
 								 
+									for(let i=0;i&lt;life.values.length;i++){
+									 
+										let sequ = lifecycleJSON.find((lf)=>{
+											return lf.id == life.values[i].id;
+										}) ;
+										life.values[i]['seq']=sequ.seq; 
+									}
+									
+								life.values.sort((a, b) => parseFloat(a.seq) - parseFloat(b.seq));	
+
 								for(let i=0;i&lt;life.values.length;i++){  
-								 
+		
 									if(typeof life.values[i+1]!= 'undefined'){
 										life.values[i]['endDate']=life.values[i+1].dateOf;
 										life.values[i]['startPos']= getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i].dateOf);
@@ -1190,10 +1199,9 @@ else{
 										
 									}	
 								 });
-
-									
+ 							
 								d['lifecycles']=thislifeByType;
-							})
+							});
  
 	let thisLife=$('#lifecycleOptions').val();
 

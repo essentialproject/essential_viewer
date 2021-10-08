@@ -12,10 +12,21 @@
 	<xsl:variable name="thisBusCaps" select="$currentBusCapDescendants union $currentBusCapAncestors"/>
 	
 	<xsl:variable name="applicationCaps" select="/node()/simple_instance[own_slot_value[slot_reference='app_cap_supports_bus_cap']/value=$thisBusCaps/name]"/>
-	<xsl:variable name="appServices" select="/node()/simple_instance[own_slot_value[slot_reference='realises_application_capabilities']/value=$applicationCaps/name]"/>
-	<xsl:variable name="APRs" select="/node()/simple_instance[own_slot_value[slot_reference='implementing_application_service']/value=$appServices/name]"/>
-	<xsl:variable name="apps" select="/node()/simple_instance[own_slot_value[slot_reference='provides_application_services']/value=$APRs/name]"/>
- 	
+	<xsl:variable name="acappServices" select="/node()/simple_instance[own_slot_value[slot_reference='realises_application_capabilities']/value=$applicationCaps/name]"/>
+	<xsl:variable name="acAPRs" select="/node()/simple_instance[own_slot_value[slot_reference='implementing_application_service']/value=$acappServices/name]"/>
+	<xsl:variable name="acapps" select="/node()/simple_instance[own_slot_value[slot_reference='provides_application_services']/value=$acAPRs/name]"/>
+	 <!-- via process -->
+	<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $thisBusCaps/name]"></xsl:variable>
+	<xsl:variable name="relevantPhysProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_business_process']/value = $relevantBusProcs/name]"></xsl:variable>
+	<xsl:variable name="relevantPhysProc2AppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relevantPhysProcs/name]"></xsl:variable>
+	<xsl:variable name="relevantAppProRoles" select="/node()/simple_instance[name = $relevantPhysProc2AppProRoles/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"></xsl:variable>
+	<xsl:variable name="relevantServices" select="/node()/simple_instance[name=$relevantAppProRoles/own_slot_value[slot_reference='implementing_application_service']/value]"/>
+	<xsl:variable name="relevantapps" select="/node()/simple_instance[own_slot_value[slot_reference='provides_application_services']/value=$relevantAppProRoles/name]"/>
+
+	<xsl:variable name="appServices" select="$acappServices union $relevantServices"/>
+	<xsl:variable name="APRs" select="$acAPRs union $relevantAppProRoles"/>
+	<xsl:variable name="apps" select="$relevantapps union $acapps"/>
+	
  	
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.

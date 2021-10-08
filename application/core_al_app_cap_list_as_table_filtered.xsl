@@ -353,10 +353,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 				appCapMap = responses[1].application_capabilities;
 				appCapApps = responses[2].applications;
 				meta=responses[2].meta;
-
-				console.log(appCapArr)
-				console.log(appCapMap)
-				console.log(appCapApps)
+ 
 				let serviceList=[];
  
 				appCapMap.forEach((d)=>{

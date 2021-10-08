@@ -51,6 +51,8 @@
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="capsListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
+	<xsl:variable name="orgData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Org Summmary']"></xsl:variable>
+
 <!--	<xsl:variable name="scoreData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
 -->
 	<xsl:template match="knowledge_base">
@@ -70,6 +72,13 @@
 				<xsl:with-param name="apiReport" select="$capsListData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="apiOrgs">
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$orgData"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+
+	 
 <!--		<xsl:variable name="apiScores">
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$scoreData"></xsl:with-param>
@@ -165,6 +174,14 @@
 						border:1pt solid #d3d3d3;
 						background-color:#fff;
 						margin:2px;
+
+					}
+
+					.off-cap{
+						border: 1pt solid #ccc;
+						border-left: 3px solid rgb(125, 174, 198);					
+						background-color: rgb(237, 237, 237);
+						color:#d3d3d3;  
 
 					}
 					
@@ -585,7 +602,7 @@
 								<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 							</div>	
 							<div id="blobLevel" ></div>
-							<div class="pull-right Key"><b>Application Usage Key</b>: <i class="fa fa-square shigh"></i> - High<xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - Medium <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - Low</div>
+							<div class="pull-right Key"><b>Caps:</b><button class="btn btn-xs btn-secondary" id="hideCaps">Hide</button><xsl:text> </xsl:text><xsl:text> </xsl:text><b>Application Usage Key</b>: <i class="fa fa-square shigh"></i> - High<xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - Medium <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - Low</div>
 							<div class="pull-right showApps Key right-30" id="pmKey">Ratings:<input type="checkbox" id="fit" name="fit"></input></div>
 						</div>
 						<div class="col-xs-12" id="keyHolder">
@@ -770,9 +787,9 @@
 								<div class="clearfix"/>
 								<div class="mini-details">
 									<div class="small pull-left text-white">
-										<div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{caps.length}} Supported Business Capabilities</div>
+										<div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{capsList.length}} Supported Business Capabilities</div>
 										<div class="left-5 bottom-5"><i class="fa fa-users right-5"></i>{{orgUserIds.length}} Supported Organisations</div>
-										<div class="left-5 bottom-5"><i class="fa essicon-boxesdiagonal right-5"></i>{{processes.length}} Supported Processes</div>
+										<div class="left-5 bottom-5"><i class="fa essicon-boxesdiagonal right-5"></i>{{processList.length}} Supported Processes</div>
 										<div class="left-5 bottom-5"><i class="fa essicon-radialdots right-5"></i>{{services.length}} Services Provided</div>
 									</div>
 
@@ -835,7 +852,7 @@
 											<i class="fa fa-desktop right-5"/>{{delivery}}</div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#A884E9;color:#ffffff</xsl:attribute>
-												<i class="fa fa-users right-5"/>{{processes.length}} Processes Supported</div>
+												<i class="fa fa-users right-5"/>{{processList.length}} Processes Supported</div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#6849D0;color:#ffffff</xsl:attribute>
 												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inI}} in / {{outI}} out)</div>
@@ -854,7 +871,7 @@
 									</div>
 								</div> 
 								<div id="processes" class="tab-pane fade">
-									<p class="strong">This application supports the following Business Processes, supporting {{processes.length}} physical processes:</p>
+									<p class="strong">This application supports the following Business Processes, supporting {{processList.length}} processes:</p>
 									<div>
 									{{#if processes}}
 									{{#each processList}}
@@ -939,7 +956,7 @@
 					<xsl:with-param name="viewerAPIPath" select="$apiBCM"></xsl:with-param> 
 					<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
 					<xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param> 
-					
+					<xsl:with-param name="viewerAPIPathOrg" select="$apiOrgs"></xsl:with-param> 
 				<!--	<xsl:with-param name="viewerAPIPathScores" select="$apiScores"></xsl:with-param>-->
 					
 				</xsl:call-template>  
@@ -952,6 +969,7 @@
 		<xsl:param name="viewerAPIPath"></xsl:param>
 		<xsl:param name="viewerAPIPathApps"></xsl:param>
 		<xsl:param name="viewerAPIPathCaps"></xsl:param>
+		<xsl:param name="viewerAPIPathOrg"></xsl:param>
 		
 	<!--	<xsl:param name="viewerAPIPathScores"></xsl:param>-->
 		
@@ -959,6 +977,8 @@
 		var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
 		var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>';
+		var viewAPIDataOrgs = '<xsl:value-of select="$viewerAPIPathOrg"/>';
+		
 <!--		var viewAPIScores= '<xsl:value-of select="$viewerAPIPathScores"/>';-->
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
@@ -1207,17 +1227,33 @@
 		    });
 			 
 
+	$('#hideCaps').on('click',function(){
+		let capState=$('#hideCaps').text()
+		console.log(capState)
+		if(capState=='Hide'){
+			$('#hideCaps').text('Show')
+			redrawView()
+		}
+		else
+		{
+			$('#hideCaps').text('Hide')
+			redrawView()
+		}
+	});
+
 			$('.appPanel').hide();
 			var appArray;
 			var workingArrayCaps;
 			var workingArrayAppsCaps;
 			var appToCap=[];
 			var processMap=[];
+			var orgDat=[];
 			var scores=[];
 			Promise.all([
 			promise_loadViewerAPIData(viewAPIData),
 			promise_loadViewerAPIData(viewAPIDataApps),
-			promise_loadViewerAPIData(viewAPIDataCaps) 
+			promise_loadViewerAPIData(viewAPIDataCaps),
+			promise_loadViewerAPIData(viewAPIDataOrgs) 	 
 		//	promise_loadViewerAPIData(viewAPIScores)
 			]).then(function (responses)
 			{
@@ -1226,7 +1262,8 @@
 				console.log(workingArray); 
 				meta = responses[1].meta; 
 				console.log('cap',responses[2]); 
-
+				orgDat=responses[3].orgData;
+				console.log('orgDat',orgDat)
 				workingArray.busCapHierarchy.forEach((d)=>{
 			 
 					let capArr=responses[2].businessCapabilities.find((e)=>{
@@ -1348,6 +1385,7 @@
 				codebase=appArray.codebase;
 				delivery=appArray.delivery;
 				lifecycles=appArray.lifecycles;
+	console.log('appArray',appArray)			
 				 appArray.applications.forEach((d)=>{
 
 					let thisCode=codebase.find((e)=>{
@@ -1395,7 +1433,22 @@
 							d['delivery']="Not Set";
 							d['deliveryColor']="#d3d3d3";
 							d['deliveryText']="#000";
-						}		
+						}	
+						
+					newOrgChildren=[];	
+					d.orgUserIds.forEach((e)=>{
+						//newOrgChildren.push(e);
+						let children=orgDat.find((f)=>{
+							return f.id == e;
+						})
+						console.log('children',children)
+						children.orgUsers.forEach((ch)=>{
+							newOrgChildren.push(ch);
+						})
+					})
+					console.log(newOrgChildren)	
+					d['neworgUserIds']=newOrgChildren;
+					console.log('d',d)	
 				 });
 		
 
@@ -1463,14 +1516,27 @@ var redrawView=function(){
 	inScopeCapsApp=scopedCaps.resources; 
 
 	console.log('inScopeCapsApp',inScopeCapsApp)
+
+	
+	let capSelectStyle= $('#hideCaps').text(); 
+	if(capSelectStyle=='Hide'){
+		console.log('capSelectStyle is hide')
 	$('.buscap').hide();
- 
 	inScopeCapsApp.forEach((d)=>{
-	 
 		$('div[eascapid="'+d.id+'"]').parents().show();
 		$('div[eascapid="'+d.id+'"]').show();
 	 
-	});
+		});
+	}else
+	{	console.log('capSelectStyle is show')
+		$('.buscap').show(); 
+		$('.buscap').addClass("off-cap")
+		inScopeCapsApp.forEach((d)=>{
+		 console.log(d)
+			 $('div[eascapid="'+d.id+'"]').removeClass("off-cap");
+		 
+			});
+	}
 
 	let appMod = new Promise(function(resolve, reject) { 
 	 	resolve(appsToShow['applications']=scopedApps.resources);
@@ -1644,6 +1710,10 @@ function getApps(capid){
 
 
 	
+}
+
+function redrawView() {
+	essRefreshScopingValues()
 }
 });
 
