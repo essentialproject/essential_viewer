@@ -162,11 +162,10 @@
 				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js" />-->
 				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<script type="text/javascript">
-					<xsl:text>function tree(dataset){
+					<xsl:text>function tree(dataset, parentID){
     					//initialise the data
                         var json=dataset[0]
-                        console.log('json')
-                        console.log(json)
+                          
 						//init OrgTree
 						//Create a new ST instance
 						var st = new $jit.ST({
@@ -219,7 +218,18 @@
 						label.id = node.id;            
 						label.innerHTML = node.name;
 						label.onclick = function(){						
-						st.onClick(node.id);						
+						st.onClick(node.id);	 
+
+							if(node.id=='ROOT')
+							{
+								$('.selectOrgBox').val(parentID);  }
+							else
+							{
+								$('.selectOrgBox').val(node.id); 
+								} 
+						$('.selectOrgBox').trigger('change');
+					 
+
 							};
 							//set label styles
 							var style = label.style;
@@ -263,12 +273,14 @@
 							});
 							//load json data
 							st.loadJSON(json);
+							
 							//compute node positions and layout
 							st.compute();
 							//optional: make a translation of the tree
 							st.geom.translate(new $jit.Complex(-200, 0), "current");
 							//emulate a click on the root node.
 							st.onClick(st.root);
+							
 							//end
  
 							
@@ -398,7 +410,7 @@
                             <div class="content-section">
                                 <table id="applications" class="table table-striped">
                                     <thead>
-                                    <tr><th>Application</th></tr>
+                                    <tr><th>Application</th><th>Description</th></tr>
                                     </thead>
                                 </table> 
 							</div>
@@ -433,9 +445,9 @@
 <script id="apps-template" type="text/x-handlebars-template"> 
     {{#if this}} 
     <table id="applications" class="table table-striped"> 
-        <tr><th width="90%">Applications Used</th><th></th></tr>
+        <tr><th width="20%">Applications Used</th><th>Description</th></tr>
         {{#each this}}
-        <tr><td> {{{this.link}}} <i class="fa fa-circle appcircle"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></td></tr>
+        <tr><td> {{{this.link}}} <i class="fa fa-circle appcircle"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></td><td>{{this.description}}</td></tr>
         {{/each}} 
     </table>  
     {{else}}
@@ -512,7 +524,7 @@
         //a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
        
-        console.log(viewAPIData); 
+ 
         //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
        
        var promise_loadViewerAPIData = function(apiDataSetURL) {
@@ -581,8 +593,7 @@
             .then(function(response1) {
                     
                orgData=response1.orgData; 
-               console.log('orgData')
-			   console.log(orgData)
+       
 			   orgData.forEach((d)=>{
 			   		$('.selectOrgBox').append('&lt;option value='+d.id+' >'+d.name+'&lt;option>');
 				});
@@ -597,7 +608,7 @@
 						let app = appsData.filter(function(e){
 							return e.id ==dapp.id;
 						});
-						 
+						dapp['description']=app[0].description;
 						dapp['name']=app[0].name;
 						dapp['link']=app[0].link;
 						dapp['info']='&lt;i class="fa fa-circle appcircle" id="'+app[0].id+'">&lt;/i>';
@@ -633,11 +644,11 @@ $('.table').on( 'order.dt',  function () {
   })
 
 $('.dataTables_length').on('change', function(){
-	console.log('click')
+	 
 	setColours();
 });
 $('.input-sm').on('keypress', function(){
-	console.log('src')
+ 
 	setColours();
 });
 
@@ -670,8 +681,8 @@ function drawView(){
 	let selectedOrg=orgData.filter((d)=>{
 					return d.id==focusID
 				});
-	 console.log(selectedOrg)
-	 
+ 
+selectedOrg[0]['physicalProcess']=selectedOrg[0].physicalProcess.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
                setOrg(selectedOrg[0]);
                setPanel(selectedOrg[0]);
 }		
@@ -680,8 +691,7 @@ function drawView(){
 function updateView(){
 	let selectedOrg=orgData.filter((d)=>{
 					return d.id==focusID
-				});
-	 console.log(selectedOrg)
+				}); 
 	 
                setOrg(selectedOrg[0]); 
 			   updatePanel(selectedOrg[0]);
@@ -753,12 +763,22 @@ function setColours(){
 -->
 }
 
-function setOrg(focus){
-            console.log(focus)
+function setOrg(focus){ 
             
             $('#focusOrg').html(focus.name)
-            $('#description').html(focus.description)
-            tree(focus.data[0].vis)
+            $('#description').html(focus.description) 
+			let parentOrg;
+			orgData.forEach((d)=>{
+				letParent=d.childOrgs.find((s)=>{
+					return s == focus.id;
+					})
+				if(letParent){
+					parentOrg=d.id
+				}
+				 	
+			});
+	 
+            tree(focus.data[0].vis, parentOrg)
       }  
 
 
@@ -767,7 +787,7 @@ function setOrg(focus){
 
 
       function setPanel(focus){
-console.log(focus)
+ 
 
 let processReport = $("#processes");
 let rolesReport = $("#roles");
@@ -800,14 +820,15 @@ let applicationsReport = $("#applications");
 		"dom": '&lt;"top"f>rt&lt;"bottom"ilp>&lt;"clear">',
         "data" : focus.applicationsUsed,
         "columns" : [
-			{ "data" : "link" }
+			{ "data" : "link"},
+			{"data":"description" }
         ] 
     });     
 
     }
 
 	function updatePanel(focus){
-console.log(focus)
+ 
 
 let processReport = $("#processes");
 let rolesReport = $("#roles");
@@ -854,7 +875,8 @@ if(focus.applicationsUsed.length&gt;0){
 		"dom": '&lt;"top"f>rt&lt;"bottom"ilp>&lt;"clear">',
         "data" : focus.applicationsUsed,
         "columns" : [
-			{ "data" : "link" }
+			{ "data" : "link" },
+			{ "data" : "description" }
         ] 
     });     
 }

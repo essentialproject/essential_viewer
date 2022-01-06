@@ -5,7 +5,7 @@
 	
 	<xsl:variable name="geoTypeTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Region Type')]"/>
 	<xsl:variable name="countryType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Country')]"/>
-	<xsl:variable name="allCountries" select="/node()/simple_instance[own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name]"/>
+	<xsl:variable name="allCountries" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name)]"/>
 
  	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor']"/>
  
@@ -18,7 +18,7 @@
 	 <xsl:variable name="relevantActor2Roles" select="$allActor2Roles[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $relevantRoles/name]"/>
 	 <xsl:variable name="relevantActors" select="/node()/simple_instance[name = $relevantActor2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	 <xsl:variable name="contentStatus" select="/node()/simple_instance[type='SYS_CONTENT_APPROVAL_STATUS']"/>
-	 
+	 <xsl:variable name="maxDepth" select="6"/>
  
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
@@ -59,7 +59,7 @@
 						</xsl:apply-templates>
 					]
 				},
-				{
+			<!--	{
 					"id": "Group_Actor",
 					"name": "Business Unit",
 					"valueClass": "Group_Actor",
@@ -69,6 +69,20 @@
 					"color":"hsla(175, 60%, 40%, 1)",
 					"values": [
 						<xsl:apply-templates mode="RenderBasicScopeJSON" select="$allOrgs">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				},-->
+				{
+					"id": "Group_Actor",
+					"name": "Business Unit Hierarchy",
+					"valueClass": "Group_Actor",
+					"description": "The list of business units and their children",
+					"isGroup": true,
+					"icon": "fa-users",
+					"color":"hsla(175, 60%, 40%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderOrgGroupScopeJSON" select="$allOrgs">
 							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 						</xsl:apply-templates>
 					]
@@ -177,10 +191,35 @@
 	
 	<xsl:template mode="RenderBasicScopeJSON" match="node()">
 		<xsl:variable name="this" select="current()"/>
-		{
-			"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
+		{"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>	
+
+	<xsl:template mode="RenderOrgGroupScopeJSON" match="node()">
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="thisinScopeChildActors" select="eas:get_org_descendants(current(), $allOrgs, 0)"/>
+		{
+			"id": "<xsl:value-of select="$this/name"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",                 
+			"group": [<xsl:apply-templates mode="RenderBasicScopeJSON" select="$thisinScopeChildActors">
+					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+				</xsl:apply-templates>]
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+
+	<xsl:function name="eas:get_org_descendants" as="node()*">
+	<xsl:param name="parentNode"/> 
+	<xsl:param name="inScopeActors"/>
+	<xsl:param name="level"/>
+	<xsl:copy-of select="$parentNode"/>
+	<xsl:if test="$level &lt; $maxDepth">
+		<xsl:variable name="childOrgs" select="$allOrgs[name = $parentNode/own_slot_value[slot_reference = 'contained_sub_actors']/value]" as="node()*"/>
+			<xsl:for-each select="$childOrgs">
+		      <xsl:copy-of select="eas:get_org_descendants(current(), $allOrgs, $level + 1)"/> 
+		</xsl:for-each>
+	</xsl:if>
+</xsl:function>
 </xsl:stylesheet>

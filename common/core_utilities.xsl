@@ -820,7 +820,7 @@
 								<xsl:with-param name="theXSL" select="$reportXSLPath"/>
 								<xsl:with-param name="reportType" select="$reportType"/>
 								<xsl:with-param name="thePageXSL" select="$pageXSL"/>
-								<xsl:with-param name="theHistoryLabel" select="concat($reportHistoryLabel, ' ', $instanceName)"/>
+								<xsl:with-param name="theHistoryLabel" select="concat($reportHistoryLabel, ' ', $instanceNameAnchor)"/>
 								<xsl:with-param name="theUserParams" select="$userParams"/>
 								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 							</xsl:call-template>
@@ -1429,9 +1429,17 @@
 		<xsl:param name="divStyle"/>
 		<xsl:param name="divId"/>
 		<xsl:param name="isRenderAsJSString" as="xs:boolean" select="false()"/>
-		
-		<xsl:variable name="renderedInstanceName" select="$instanceName"/>
-
+		 
+		<xsl:variable name="renderedInstanceName">
+				<xsl:choose>
+					<xsl:when test="$isRenderAsJSString">
+						<xsl:value-of select="eas:renderJSText($instanceName)"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$instanceName"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
 		<xsl:choose>
 			<xsl:when test="string-length($divClass) > 0">
 				<div>
@@ -2047,8 +2055,8 @@
 		<xsl:variable name="escapeCloseBracket">N</xsl:variable>
 
 		<xsl:variable name="ecsapeBackslashes" select="replace($theText, '\\','')"/>
-		<!--<xsl:variable name="anAposEscapedText" select="replace($ecsapeBackslashes, $apos, $escapeApos)"/>-->
-		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($ecsapeBackslashes, $quote, $escapeQuote)"/>
+		<xsl:variable name="anAposEscapedText" select="replace($ecsapeBackslashes, $apos, $escapeApos)"/>
+		<xsl:variable name="anQuoteAndAposEscapedText" select="replace($anAposEscapedText, $quote, $escapeQuote)"/>
 		<!-- <xsl:variable name="escapeBrackets" select="replace($anQuoteAndAposEscapedText, '(\(|\))', '\\$1')"/> -->
 		<!--<xsl:variable name="escapeAmpersand" select="replace($anQuoteAndAposEscapedText, '&amp;', 'and')"/>-->
 		<xsl:variable name="escapeSpace" select="replace($anQuoteAndAposEscapedText, '&#160;', ' ')"/>
@@ -2074,10 +2082,12 @@
 			<xsl:call-template name="escapeQuote"><xsl:with-param name="pText" select="$escapeCR"/></xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="escapeTab" select="replace($escapeQuoteAndApos, '&#9;|\t', '&#160;&#160;&#160;&#160;')"/>
-		
+		<xsl:variable name="newLine" select="'&lt;br/&gt;'"/>
+		<xsl:variable name="escapeLF" select="replace($escapeTab,$newLine,'\\r')"/>
+		<xsl:variable name="escapeNewline" select="replace($escapeLF, '\n|&#xA;', '\\n')"/>	
 		
 		<!-- Escape newlines with <br/> -->
-		<xsl:value-of select="$escapeTab"/>
+		<xsl:value-of select="$escapeNewline"/>
 		
 	</xsl:function>
 	

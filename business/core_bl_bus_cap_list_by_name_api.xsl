@@ -235,7 +235,7 @@
 
 		let createNavigationList = _ => {
 			let abcChars = createArrayAtoZ();
-			let rest=["1","2","3","4","5","6","7","8","9","."]
+			let rest=["0","1","2","3","4","5","6","7","8","9","."]
 	 
 			abcChars=abcChars.concat(rest); 
 			const navigationEntries = abcChars.reduce(createDivForCharElement, '');

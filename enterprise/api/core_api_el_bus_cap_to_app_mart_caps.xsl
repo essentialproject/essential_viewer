@@ -79,7 +79,8 @@
 	 "busCapHierarchy":[<xsl:apply-templates select="$L0BusCaps" mode="busCapDetails"><xsl:with-param name="depth" select="0"/></xsl:apply-templates>],
  	 "busCaptoAppDetails":[<xsl:apply-templates select="$allBusCaps[count(own_slot_value[slot_reference = 'supports_business_capabilities']/value)&gt;0]" mode="busCapDetailsApps"> </xsl:apply-templates>],
 	"rootCap":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$rootBusCap"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	"physicalProcessToProcess":[<xsl:apply-templates select="$relevantPhysProcs" mode="processPairs"></xsl:apply-templates>]		
+	"physicalProcessToProcess":[<xsl:apply-templates select="$relevantPhysProcs" mode="processPairs"></xsl:apply-templates>],
+	"version":"614"		
 	 }
 </xsl:template>
 
@@ -136,7 +137,7 @@
 	"physP":[<xsl:for-each select="$thisProcessrelevantPhysProcs">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	"physP":[<xsl:for-each select="$thisrelevantPhysProcs">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	"orgUserIds": [<xsl:for-each select="$allActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
-	"domainIds":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='belongs_to_business_domain']/value)"/>"],
+	"domainIds":[<xsl:for-each select="current()/own_slot_value[slot_reference='belongs_to_business_domain']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 	"prodConIds": [<xsl:for-each select="$thisProductConcepts">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 	"geoIds": [<xsl:for-each select="$allGeos">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 	"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],

@@ -46,8 +46,10 @@
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
     <xsl:variable name="rationalAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App Rationalisation API']"/>
- 
-
+    <xsl:variable name="appData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
+    <xsl:variable name="app2ServiceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: APRs']"></xsl:variable>
+  
+    
 	<xsl:template match="knowledge_base">
         <xsl:call-template name="docType"/>
         <xsl:variable name="apiPath">
@@ -55,6 +57,16 @@
                 <xsl:with-param name="apiReport" select="$rationalAPIReport"/>
             </xsl:call-template>
         </xsl:variable>
+        <xsl:variable name="apiAppsPath">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$appData"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiApp2SvcPath">
+                <xsl:call-template name="GetViewerAPIPath">
+                    <xsl:with-param name="apiReport" select="$app2ServiceData"/>
+                </xsl:call-template>
+            </xsl:variable>
 		<html>
 			<head>
               <script src="js/d3/d3_4-11/d3.min.js"/>
@@ -69,6 +81,10 @@
 				</xsl:for-each>
 				<title>Application Rationalisation Analysis</title>
                		<style>
+               			#cardsBlock {
+               				display: flex;
+               				flex-wrap: wrap;
+               			}
                     .appCard_Container{
                         width:216px;
                         float: left;
@@ -98,8 +114,8 @@
                     .appCard_TopLeft {
                         width: 75%;
                         color:#fff;
-                        height: 32px;
-                        max-height: 32px;
+                        height: 64px;
+                        max-height: 64px;
                         overflow: hidden;
                         position: relative;
                         padding: 3px;
@@ -110,8 +126,8 @@
                     }
                     .appCard_TopRight {
                         width: 25%;
-                        height: 32px;
-                        max-height: 32px;
+                        height: 64px;
+                        max-height: 64px;
                         color:#333;
                         position: relative;
                         padding: 3px;
@@ -221,7 +237,45 @@
                             var appCardFragment   = $("#app-card-template").html();
                             appCardTemplate = Handlebars.compile(appCardFragment);
  
-                    
+                            const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+                            function essGetMenuName(instance) {
+                                let menuName = null;
+                                if ((instance != null) &amp;&amp;
+                                    (instance.meta != null) &amp;&amp;
+                                    (instance.meta.classes != null)) {
+                                    menuName = instance.meta.menuId;
+                                } else if (instance.classes != null) {
+                                    menuName = instance.meta.classes;
+                                }
+                                return menuName;
+                            }
+     // bespoke for this view do not reuse the below elsewhere   
+                            Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
+         
+                                meta = [{
+                                    "classes": [
+                                        "Application_Provider","Composite_Application_Provider"
+                                    ],
+                                    "menuId": "appProviderGenMenu"
+                                }];
+                                
+                                let thisMeta = meta.filter((d) => {
+                                    return d.classes.includes(type)
+                                });
+                                  
+                                instance['meta'] = thisMeta[0]
+                      
+                                let linkMenuName = essGetMenuName(instance);
+                                let instanceLink = instance.application;              
+                                if (linkMenuName != null) {
+                                    let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+                                    let linkClass = 'context-menu-' + linkMenuName;
+                                    let linkId = instance.id + 'Link';
+                                    instanceLink = '<a href="' + linkHref + '" class="' + linkClass + ' dark" id="' + linkId + '" style="color:rgb(237, 237, 237)">' + instance.application + '</a>';
+                
+                                    return instanceLink;
+                                }
+                            });
                     
 	                        Handlebars.registerHelper('getScore', function(score, options) {
 								if (score != null){
@@ -249,7 +303,14 @@
 							$(".ticks").on('change',function(){
 								  updateCards();
 								});		
-					
+    $('#application').on('change', function(){
+        
+        let thisApp=$(this).val();
+
+        selectApp(thisApp);
+        getAllApps();
+        showInfoTooltips();
+    });
 					
             });
 
@@ -422,7 +483,10 @@
 				<xsl:call-template name="Footer"/> -->
                 <script>      
                     <xsl:call-template name="RenderViewerAPIJSFunction">
-                        <xsl:with-param name="viewerAPIPath" select="$apiPath"/> 
+                        <xsl:with-param name="viewerAPIPath" select="$apiPath"/>
+                        <xsl:with-param name="viewerAPIPathApps" select="$apiAppsPath"/> 
+                        <xsl:with-param name="viewerAPIPathAppSvc" select="$apiApp2SvcPath"/> 
+                        
                     </xsl:call-template>
                 </script>     
             </body>
@@ -434,7 +498,7 @@
                
                 <div class="appCard_Top">
                     <div class="appCard_TopLeft small bg-midgrey fontBold">
-                        <div class="appCard_Label">{{{link}}}</div>
+                        <div class="appCard_Label">{{{link}}}{{#essRenderInstanceLinkMenuOnly this 'Composite_Application_Provider'}}{{/essRenderInstanceLinkMenuOnly}}</div>
                     </div>
                     <div class="appCard_TopRight">
                         <div class="appCard_Label alignCentre"> {{#switch}}
@@ -510,454 +574,558 @@
     </xsl:template>
     <xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPath"/> 
+        <xsl:param name="viewerAPIPathApps"/> 
+        <xsl:param name="viewerAPIPathAppSvc"/> 
         //a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
- 
-        //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
-       
-       var promise_loadViewerAPIData = function(apiDataSetURL) {
-            return new Promise(function (resolve, reject) {
-                if (apiDataSetURL != null) {
-                    var xmlhttp = new XMLHttpRequest();
-//console.log(apiDataSetURL);    
-                    xmlhttp.onreadystatechange = function () {
-                        if (this.readyState == 4 &amp;&amp; this.status == 200) {
-//console.log(this.responseText);  
-                            var viewerData = JSON.parse(this.responseText);
-                            resolve(viewerData);
-                            $('#ess-data-gen-alert').hide();
-                        }
-                    };
-                    xmlhttp.onerror = function () {
-                        reject(false);
-                    };
-                    xmlhttp.open("GET", apiDataSetURL, true);
-                    xmlhttp.send();
-                } else {
-                    reject(false);
-                }
-            });
-        };
-       
-        $('#show').hide();
-           
-           var currency
-              var appJSON=[];
-              var serviceJSON=[]
-              var allStatus
-  
-              var appoptions  
-              
-              var services 
-              var focusServices;       
-              var focusedServices=0;  
-              var focusProcesses=[];
-              var clickedArray=[]; 
-              
-               function selectNewApp(){
-                  $("#appServs").empty();
-                  alli=$(".servicesNew").val();
-                  var selitems=[];	
-                  $('.servicesNew option:selected').each(function(){ selitems.push({"selectId":$(this).attr('name'),"name":$(this).text()}) });	
-                  focusServices=selitems;
-                  focusedServices=focusServices.length;
-              
-                  $("#appServs > tbody").empty();          
-                                  <![CDATA[ $("#appServs").append("<tbody>");]]>
-                                  for(i=0; i &lt; focusServices.length;i++){                                         
-                                   <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+focusServices[i].name+"</li>"); ]]>                                        
-                                  }
-                  getAllApps();
-                  }
-                       
-               function selectApp(appl){
-                  $("#appServs").empty();
-                              focusServices=[];  
-                              
-                              count=0;
-                                  var appSelected = appoptions.filter(function(d) {
-                                          return d.key === appl;
-                                      });
-  
-                              $("#appServs > tbody").empty();          
-                                  <![CDATA[ $("#appServs").append("<ul>");]]>
-                                  appSelected.forEach(function(item) {
-                                      services= item.values[0].services;     
-                                      services.forEach(function(item){
-                                          focusServices.push({"selectId":item.serviceId});     
-                                          var servSelectedApps = serviceJSON.filter(function(d) {
-  
-                                          return d.serviceId === item.serviceId;
-                                      });
-               
-                                  var appsUsingService = servSelectedApps[0].applications;
-                                
-                                  var appsCount = (appsUsingService.length)-1;
-                                  count=count+1;        
-                                                                                             
-                                   <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+item.service+"</li>"); ]]>                      
-            
-                                  });
-  
-                                  });
-                              focusedServices=count; 
-   
-                   
-              };        
-                                   
-             
-              function getRelevantApps(){
- 
-                        Apps=[];
-          
-                              for(i=0;i &lt; serviceJSON.length;i++){
-                              if(focusServices){
-                               for(j=0;j &lt; focusServices.length;j++){
-                                 if(serviceJSON[i].serviceId==focusServices[j].selectId){
-                                      for(k=0;k &lt; serviceJSON[i].applications.length;k++){
-                                          Apps.push(serviceJSON[i].applications[k]);
-                                          }
-                                      }
-                                  }
-                                }
-                             }
-                      }
-              
-              
-              
-              function getAllApps(){
- 
-                      $('#key').show();
-                              d3.selectAll('.carddiv')
-                              .remove()
-                              var html=''; 
-                
-                           getRelevantApps();
- 
-                          var temp=[];
-                          var uniqueApps=Apps.filter((x, i)=> {
-                            if (temp.indexOf(x.id) &lt; 0) {
-                              temp.push(x.id);
-                              return true;
-                            }
-                            return false;
-                          });
-    console.log(uniqueApps)
-                            for(i=0;i &lt; uniqueApps.length;i++){
-                      
-                              var num=0;
-                              var numsOfServs='';
-                              if(uniqueApps[i] === 'Unknown'){}else{
-              
-                              var thisapp = appJSON.filter(function (el) {   
-           
-                                    return el.application ===uniqueApps[i].application;
-  
-                                      });
-                               
-                              var servicesHTML=''; 
-                              var switchApp = '';                        
-           
-                              for(j=0;j &lt; thisapp[0].services.length;j++){
-                                  for(k=0;k &lt; focusServices.length;k++){
-      
-                                      if(thisapp[0].services[j].serviceId==focusServices[k].selectId){
-                                              num = num+1;         
-                                          
-                                              }
-                                          }
-                                      }                                          
-                                  }  
-                           
-                              appid = thisapp[0].id;
-                              score=((num/thisapp[0].services.length)*100);
-                              console.log(score)
-                              var colour;
-                              if(score &lt; 25){colour='#f5a5a5'}else if(score &gt; 75){colour='#97f0bd'} else {colour='#f5d79d'};
-                              appS=[];                    
-                              for(j=0;j &lt; thisapp[0].services.length;j++)
-                                  {for(k=0;k &lt; focusServices.length;k++)
-                                      {
-                                          if(thisapp[0].services[j].serviceId==focusServices[k].selectId)
-                                          {appS.push({"selectId":thisapp[0].services[j].serviceId,"name":thisapp[0].services[j].service})} 
-                                      }  
-                                  };
-              
-                              if(thisapp[0].services.length &lt;= num){
-                              thisapp[0]['switch']=true}else{thisapp[0]['switch']=false} 
-                              thisapp[0]['servicesUsed']=appS;
-                              thisapp[0]['num']=num; 
-                              thisapp[0]['numServices']=thisapp[0].services.length; 
-                              thisapp[0]['serviceMatch']=appS;  
-                              thisapp[0]['score']=score;
-
-                              thisapp[0]['colour']=colour;
-                              console.log(thisapp[0])
-                              $("#cardsBlock").append(appCardTemplate(thisapp[0]));
-              
-                              clickedArray.forEach(function(d){
-                                    $('.clicked'+d).css('color','green');
-                                  });
-                              }
-                              
-                            
-                              //$( "#cardsBlock" ).append(html);          
-                              focusApp=$("#application").val(); 
-                              $('#'+focusApp).hide()
-                             
-                      
-                              var $wrapper = $('#cardsBlock');
-  
-                                  $wrapper.find('.carddiv').sort(function(a, b) {
-                                      return +b.dataset.num - +a.dataset.num;
-                                  })
-                                  .appendTo($wrapper);
-                      
-                              <!-- set sliders --> 
-  
-                              var highestNum = $(".carddiv").map(function() {
-                                  return $(this).data('num');
-                              }).get();//get all data values in an array
-  
-                              var highest = Math.max.apply(Math, highestNum);//find the highest value from them
-                              $('.carddiv').filter(function(){
-                                  return $(this).data('num') == highest;//return the highest div
-                              });
-  
-                             output.innerHTML = 0;
-  
-                              $('#myRange').attr("max", highest);
-   
-  
-                             var highestInterfaceVal = $(".carddiv").map(function() {
-                                  return $(this).data('interface');
-                              }).get();//get all data values in an array
-  
-                              var highestinterface = Math.max.apply(Math, highestInterfaceVal);//find the highest value from them
-                              $('.carddiv').filter(function(){
-                                  return $(this).data('interface') == highestinterface;//return the highest div
-                              });
-    
-              
-                      };
- 
-            
-              
-                
-              function ResetAll(){
-            
-              $('#myRange').attr('value',1);;
-              $('#ticks').val(null).trigger('change');
-              $('#SLs').val(null).trigger('change');
-              updateCards();
-              }
-              
-              $('.inverse').on('change',function(){
-                updateCards();
-              })
-           
-              
-              function updateCards(){
- 
-              servs= ($('#myRange').val());
-              codebase= ($('#ticks').val());
-              interfaces=($('#myInterfaceRange').val());
-              statusVals=($('#SLs').val());
-              
-              thisAppCost = appJSON 
-              
-              if(codebase.length &gt; 0){
-              thisAppCode = thisAppCost.filter(function (el) {  
-                              
-                                   for(var i=0;i &lt; codebase.length; i++){  
-                                      if(codebase[i] === el.codebaseID){
-                                          return el;
-                                          }
-                                      else if(codebase[i]==='Not Defined' &amp;&amp; el.codebase ==='Not Defined'){     return el;}
-                                       }
-                                      });
-                      }
-                      else
-                      {
-                          thisAppCode = thisAppCost;
-                      }
-                          
-                      if(statusVals.length &gt; 0){
-                      thisAppStatus = thisAppCode.filter(function (el) {  
-                                      
-                  
-                                              for(var i=0;i &lt; statusVals.length; i++){  
-                                              if(statusVals[i] === el.status){
-                                                  return el;
-                                                  }
-                                              }
-                                              });
-                          }
-                      else{
-                      thisAppStatus=thisAppCode;
-                      }
-                      
-                      thisAppServices = thisAppStatus.filter(function (el) {  
-                                          num=0;
-                                          for(j=0;j &lt; el.services.length;j++){
-                                              if(focusServices){
-                                                  for(k=0;k &lt; focusServices.length;k++){
-                                                      if(el.services[j].serviceId==focusServices[k].selectId){
-                                                          num = num+1;       
-                                                          }
-                                                      }
-                                                      }  
-                                                  }
-                                              if(num &gt;= servs){
-                                                  return el;
-                                                  }
-                                              });
-                     
-                      $('.carddiv').hide(); 
-              
-                      for(var i=0; i &lt; thisAppServices.length; i++){
-                              $('#'+thisAppServices[i].id).show();
-                              
-                              }
-                      focusApp=$("#application").val();; 
-                          $('#'+focusApp).hide();
-                          
-                      showInfoTooltips()
-                   
-              }
-             
-              
-               function hideClass(thisVal){ 
-                  $('.'+thisVal).hide();            
-                      }
-              
-               function showClass(thisVal){ ;
-                  $('.'+thisVal).show();
-                      }
-  
-        $('document').ready(function () {
-    
-              Promise.all([
-                promise_loadViewerAPIData(viewAPIData) 
-            ])
-            .then(function(responses) {
-                  let viewAPIData = responses[0];
-               
-              appJSON=viewAPIData.applications;
-              serviceJSON=viewAPIData.services;
-              codebaseJSON=viewAPIData.codebase;
- 
-
-            appoptions = d3.nest()
-                            .key(function(d) { return d.id; })
-                            .entries(appJSON);
-            
-            services =d3.nest()
-                            .key(function(d) { return d.service; })
-                            .entries(serviceJSON);
-
-            allStatus=  appJSON.map(function (d) {return d.status;}) ;   
-			let unique = allStatus.filter((item, i, ar) => ar.indexOf(item) === i)
-       
-			unique=sortList(unique);
- 
-            for(i=0;i &lt; unique.length; i++){
-                $('#SLs').append('<option id="s'+unique[i].replace(/\s/g, '')+'" name="s'+unique[i].replace(/\s/g, '')+'" value="'+unique[i]+'">'+unique[i]+'</option>');
-            }
-
-
-            $('#SLs').on('change',function(){
-                updateCards();
-            });
-            $('#ticks').on('change',function(){
-                updateCards();
-            });
-
-            for(i=0;i&lt; appJSON.length; i++){
-                $('#application').append('<option name="'+appJSON[i].id+'" value="'+appJSON[i].id+'">'+appJSON[i].application+'</option>');
-            }
-            
-            for(i=0;i&lt; serviceJSON.length; i++){
-                $('#selBox').append('<option name="'+serviceJSON[i].serviceId+'" value="'+serviceJSON[i].serviceId+'">'+serviceJSON[i].service+'</option>');
-            }
-
-            for(i=0;i&lt; codebaseJSON.length; i++){
-                $('#ticks').append('<option name="'+codebaseJSON[i].id+'" value="'+codebaseJSON[i].id+'">'+codebaseJSON[i].name+'</option>');
-            }
-            
-            
-
-  function sortList(arr){
-            arr.sort(function(a, b){
-						if(a &lt; b) { return -1; }
-						if(a > b) { return 1; }
-						ret;
-            });
-            return arr
-  }          
-
-    $('#application').on('change', function(){
-        let thisApp=$(this).val();
-    
-        selectApp(thisApp);
-        getAllApps();
-        showInfoTooltips();
-    });
-var carriedApps = JSON.parse(sessionStorage.getItem("context"));
-                    if(carriedApps){
-                        if(carriedApps.Composite_Application_Provider.length &gt; 0){
-                            //if only one don't show basket 
-                            if(carriedApps.Composite_Application_Provider.length==1){ 
-                        
-                            $('#application').val(carriedApps.Composite_Application_Provider[0]); // Select the option 
-                            $('#application').trigger('change');
-                            }else{
-                            $('#carriedApps').show()
-                            var selectArray=[];
-                            
-						carriedApps.Composite_Application_Provider.forEach(function(d){
+        var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>'; 
+        var viewAPIPathAppSvc = '<xsl:value-of select="$viewerAPIPathAppSvc"/>';
+		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+		
+		var promise_loadViewerAPIData = function (apiDataSetURL) {
+			return new Promise(function (resolve, reject) {
+				if (apiDataSetURL != null) {
+					var xmlhttp = new XMLHttpRequest();
+					//console.log(apiDataSetURL);
+					xmlhttp.onreadystatechange = function () {
+						if (this.readyState == 4 &amp;&amp; this.status == 200) {
+							//console.log(this.responseText);
+							var viewerData = JSON.parse(this.responseText);
+							resolve(viewerData);
+							$('#ess-data-gen-alert').hide();
+						}
+					};
+					xmlhttp.onerror = function () {
+						reject(false);
+					};
+					xmlhttp.open("GET", apiDataSetURL, true);
+					xmlhttp.send();
+				} else {
+					reject(false);
+				}
+			});
+		};
+		
+		$('#show').hide();
+		
+		var currency
+		var appJSON =[];
+		var serviceJSON =[]
+		var allStatus
+		
+		var appoptions
+		
+		var services
+		var focusServices;
+		var focusedServices = 0;
+		var focusProcesses =[];
+		var clickedArray =[];
+		
+		function selectNewApp() {
+			$("#appServs").empty();
+			alli = $(".servicesNew").val();
+			var selitems =[];
+			$('.servicesNew option:selected').each(function () {
+				selitems.push({
+					"selectId": $(this).attr('name'), "name": $(this).text()
+				})
+			});
+			focusServices = selitems;
+			focusedServices = focusServices.length;
+			
+			$("#appServs > tbody").empty();
+			<![CDATA[$("#appServs").append("<tbody>");
+			]]>
+			for (i = 0; i &lt; focusServices.length; i++) {
+				<![CDATA[$("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> " + focusServices[i].name + "</li>");
+				]]>
+			}
+			getAllApps();
+		}
+		
+		function selectApp(appl) {
+			$("#appServs").empty();
+			focusServices =[];
+			
+			count = 0;
+			var appSelected = appoptions.filter(function (d) {
+				return d.key === appl;
+			});
+			
+			$("#appServs > tbody").empty();
+			<![CDATA[$("#appServs").append("<ul>");
+			]]>
+			appSelected.forEach(function (item) {
+				services = item.values[0].services;
+				services.forEach(function (item) {
+					focusServices.push({
+						"selectId": item.serviceId
+					});
+					var servSelectedApps = serviceJSON.filter(function (d) {
+						
+						return d.serviceId === item.serviceId;
+					});
+					//     console.log('servSelectedApps',servSelectedApps)
+					var appsUsingService = servSelectedApps[0].newapplications;
 					
-							var thisApp=appJSON.filter(function(e){
-								return e.id==d;
-							});
-					    selectArray.push({val : thisApp[0].id, text: thisApp[0].application});
-					 
-						});
-					 
-					selectArray.sort(function(a, b){
-						if(a.text &lt; b.text) { return -1; }
-						if(a.text > b.text) { return 1; }
-						return 0;
-					})
-					selectArray.unshift({val : '', text: 'choose'});
-					var sel = $('&lt;select id="carriedSelect">').appendTo('#selPlace');
-					$(selectArray).each(function() {
-					 sel.append($("&lt;option>").attr('value',this.val).text(this.text));
+					var appsCount = (appsUsingService.length) -1;
+					count = count + 1;
+					
+					<![CDATA[$("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> " + item.service + "</li>");
+					]]>
+				});
+			});
+			focusedServices = count;
+		};
+		
+		
+		function getRelevantApps() {
+			
+			Apps =[];
+			//    console.log('serviceJSON',serviceJSON)
+			//     console.log('focusServices',focusServices)
+			
+			// add the apps to the service JSON
+			for (i = 0; i &lt; serviceJSON.length; i++) {
+				if (focusServices) {
+					for (j = 0; j &lt; focusServices.length; j++) {
+						if (serviceJSON[i].serviceId == focusServices[j].selectId) {
+							for (k = 0; k &lt; serviceJSON[i].newapplications.length; k++) {
+								Apps.push(serviceJSON[i].newapplications[k]);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		function getAllApps() {
+			
+			$('#key').show();
+			d3.selectAll('.carddiv').remove()
+			var html = '';
+			
+			getRelevantApps();
+			//console.log('Apps',Apps)
+			<!-- var temp =[];
+			var uniqueApps = Apps.filter((x, i) => {
+				if (temp.indexOf(x.id) &lt; 0) {
+					temp.push(x.id);
+					return true;
+				}
+				return false;
+			});
+			-->
+			let uniqueApps = Apps.filter((elem, index, self) => self.findIndex((t) => {
+				return (t.appid === elem.appid)
+			}) === index)
+			// console.log('uniqueApps',uniqueApps)
+			for (i = 0; i &lt; uniqueApps.length; i++) {
+				
+				var num = 0;
+				var numsOfServs = '';
+				if (uniqueApps[i] === 'Unknown') {
+				} else {
+					
+					var thisapp = appJSON.filter(function (el) {
+						
+						return el.application === uniqueApps[i].application;
 					});
 					
-							};
 					
-					$('#carriedSelect').change(function(){
-						selectApp($(this).val());
-						getAllApps();
-						showInfoTooltips()
-					$('#'+$(this).val()).hide();
+					var servicesHTML = '';
+					var switchApp = '';
 					
-					});	
-                    };	
-                    $('#carriedSelect').select2();
-					};
-
-
+					for (j = 0; j &lt; thisapp[0].services.length; j++) {
+						for (k = 0; k &lt; focusServices.length; k++) {
+							
+							if (thisapp[0].services[j].serviceId == focusServices[k].selectId) {
+								num = num + 1;
+							}
+						}
+					}
+				}
+				
+				appid = thisapp[0].id;
+				score =((num / thisapp[0].services.length) * 100);
+				//   console.log(score)
+				var colour;
+				if (score &lt; 25) {
+					colour = '#f5a5a5'
+				} else if (score &gt; 75) {
+					colour = '#97f0bd'
+				} else {
+					colour = '#f5d79d'
+				};
+				appS =[];
+				for (j = 0; j &lt; thisapp[0].services.length; j++) {
+					for (k = 0; k &lt; focusServices.length; k++) {
+						if (thisapp[0].services[j].serviceId == focusServices[k].selectId) {
+							appS.push({
+								"selectId": thisapp[0].services[j].serviceId, "name": thisapp[0].services[j].service
+							})
+						}
+					}
+				};
+				
+				if (thisapp[0].services.length &lt;= num) {
+					thisapp[0][ 'switch'] = true
+				} else {
+					thisapp[0][ 'switch'] = false
+				}
+				thisapp[0][ 'servicesUsed'] = appS;
+				thisapp[0][ 'num'] = num;
+				thisapp[0][ 'numServices'] = thisapp[0].services.length;
+				thisapp[0][ 'serviceMatch'] = appS;
+				thisapp[0][ 'score'] = score;
+				
+				thisapp[0][ 'colour'] = colour;
+				//    console.log('thisapp[0]',thisapp[0])
+				$("#cardsBlock").append(appCardTemplate(thisapp[0]));
+				
+				clickedArray.forEach(function (d) {
+					$('.clicked' + d).css('color', 'green');
+				});
+			}
+			
+			
+			//$( "#cardsBlock" ).append(html);
+			focusApp = $("#application").val();
+			$('#' + focusApp).hide()
+			
+			
+			var $wrapper = $('#cardsBlock');
+			
+			$wrapper.find('.carddiv').sort(function (a, b) {
+				return + b.dataset.num - + a.dataset.num;
+			}).appendTo($wrapper);
+			
+			<!-- set sliders -->
+			
+			var highestNum = $(".carddiv").map(function () {
+				return $(this).data('num');
+			}).get();
+			//get all data values in an array
+			
+			var highest = Math.max.apply(Math, highestNum);
+			//find the highest value from them
+			$('.carddiv').filter(function () {
+				return $(this).data('num') == highest;//return the highest div
+			});
+			
+			output.innerHTML = 0;
+			
+			$('#myRange').attr("max", highest);
+			
+			
+			var highestInterfaceVal = $(".carddiv").map(function () {
+				return $(this).data('interface');
+			}).get();
+			//get all data values in an array
+			
+			var highestinterface = Math.max.apply(Math, highestInterfaceVal);
+			//find the highest value from them
+			$('.carddiv').filter(function () {
+				return $(this).data('interface') == highestinterface;//return the highest div
+			});
+		};
 		
-            })
-            .catch (function (error) {
-                //display an error somewhere on the page   
-            });
-      
-          
-        
-        });
+		
+		
+		
+		function ResetAll() {
+			
+			$('#myRange').attr('value', 1);;
+			$('#ticks').val(null).trigger('change');
+			$('#SLs').val(null).trigger('change');
+			updateCards();
+		}
+		
+		$('.inverse').on('change', function () {
+			updateCards();
+		})
+		
+		
+		function updateCards() {
+			
+			servs = ($('#myRange').val());
+			codebase = ($('#ticks').val());
+			interfaces =($('#myInterfaceRange').val());
+			statusVals =($('#SLs').val());
+			
+			thisAppCost = appJSON
+			
+			if (codebase.length &gt; 0) {
+				thisAppCode = thisAppCost.filter(function (el) {
+					
+					for (var i = 0; i &lt; codebase.length; i++) {
+						if (codebase[i] === el.codebaseID) {
+							return el;
+						} else if (codebase[i] === 'Not Defined' &amp;&amp; el.codebase === 'Not Defined') {
+							return el;
+						}
+					}
+				});
+			} else {
+				thisAppCode = thisAppCost;
+			}
+			
+			if (statusVals.length &gt; 0) {
+				thisAppStatus = thisAppCode.filter(function (el) {
+					
+					
+					for (var i = 0; i &lt; statusVals.length; i++) {
+						if (statusVals[i] === el.status) {
+							return el;
+						}
+					}
+				});
+			} else {
+				thisAppStatus = thisAppCode;
+			}
+			
+			thisAppServices = thisAppStatus.filter(function (el) {
+				num = 0;
+				for (j = 0; j &lt; el.services.length; j++) {
+					if (focusServices) {
+						for (k = 0; k &lt; focusServices.length; k++) {
+							if (el.services[j].serviceId == focusServices[k].selectId) {
+								num = num + 1;
+							}
+						}
+					}
+				}
+				if (num >= servs) {
+					return el;
+				}
+			});
+			
+			$('.carddiv').hide();
+			
+			for (var i = 0; i &lt; thisAppServices.length; i++) {
+				$('#' + thisAppServices[i].id).show();
+			}
+			focusApp = $("#application").val();;
+			$('#' + focusApp).hide();
+			
+			showInfoTooltips()
+		}
+		
+		
+		function hideClass(thisVal) {
+			$('.' + thisVal).hide();
+		}
+		
+		function showClass(thisVal) {;
+			$('.' + thisVal).show();
+		}
+		
+		$('document').ready(function () {
+			
+			Promise.all([
+			promise_loadViewerAPIData(viewAPIData),
+			promise_loadViewerAPIData(viewAPIDataApps),
+			promise_loadViewerAPIData(viewAPIPathAppSvc)]).then(function (responses) {
+				let viewAPIData = responses[0];
+				let viewAPIDataApps = responses[1];
+				let app2svc = responses[2];
+				let codebaseJSON = viewAPIDataApps.codebase;
+				serviceJSON = viewAPIData.services;
+				
+				//         console.log('viewAPIData',viewAPIData)
+				//          console.log('viewAPIDataApps',viewAPIDataApps)
+				///         console.log('app2svc',app2svc)
+				//           console.log('codebaseJSON',codebaseJSON)
+				//console.log('serviceJSON',serviceJSON)
+				appJSON = viewAPIData.applications;
+				
+				appJSON.forEach((d) => {
+					
+					let thisApp = viewAPIDataApps.applications.find((e) => {
+						return e.id == d.id;
+					})
+					let thisLife = viewAPIDataApps.lifecycles.find((e) => {
+						return e.id == thisApp.lifecycle;
+					})
+					
+					if (thisLife) {
+					} else {
+						thisLife = {
+						};
+						thisLife[ 'shortname'] = 'Not Set';
+					}
+					
+					let thisCode = viewAPIDataApps.codebase.find((e) => {
+						return e.id == thisApp.codebaseID;
+					})
+					if (thisCode) {
+					} else {
+						thisCode = {
+						};
+						thisCode[ 'shortname'] = 'Not Set'
+					}
+					
+					let thisSvc =[];
+					thisApp.allServices.forEach((ap) => {
+						let thisService = app2svc.apr.find((sv) => {
+							return sv.aprId == ap.id;
+						})
+						
+						let svName = serviceJSON.find((sn) => {
+							return sn.serviceId == thisService.serviceId
+						})
+						thisSvc.push({
+							"serviceId": thisService?.serviceId, "service": thisService?.aprId, "service": svName?.service
+						})
+					})
+					
+					d[ "application"] = thisApp.name;
+					d[ "services"] = thisSvc;
+					if (thisCode) {
+						d[ "codebase"] = thisCode.shortname;
+						if (thisApp.codebaseID) {
+							d[ "codebaseID"] = thisApp.codebaseID;
+						}
+					} else {
+						d[ "codebase"] = 'Not Set';
+					}
+					
+					d[ "status"] = thisLife.shortname;
+				})
+				
+				serviceJSON.forEach((d) => {
+					
+					let newAppArr =[];
+					d.applications.forEach((e) => {
+						let theApr = app2svc.apr.find((ap) => {
+							return ap.aprId == e;
+						});
+						
+						let theApp = appJSON.find((app) => {
+							return app.id == theApr.appId
+						})
+						
+						if (theApp) {
+							newAppArr.push({
+								"application": theApp.application, "id": e, "appid": theApp.id
+							})
+						}
+					})
+					d[ 'newapplications'] = newAppArr;
+				})
+				
+				appoptions = d3.nest().key(function (d) {
+					return d.id;
+				}).entries(appJSON);
+				
+				services = d3.nest().key(function (d) {
+					return d.service;
+				}).entries(serviceJSON);
+				
+				allStatus = appJSON.map(function (d) {
+					return d.status;
+				});
+				let unique = allStatus.filter((item, i, ar) => ar.indexOf(item) === i)
+				
+				unique = sortList(unique);
+				
+				for (i = 0; i &lt; unique.length; i++) {
+					$('#SLs').append('<option id="s' + unique[i].replace(/\s/g, '') + '" name="s' + unique[i].replace(/\s/g, '') + '" value="' + unique[i] + '">' + unique[i] + '</option>');
+				}
+				
+				
+				$('#SLs').on('change', function () {
+					updateCards();
+				});
+				$('#ticks').on('change', function () {
+					updateCards();
+				});
+				
+				for (i = 0; i &lt; appJSON.length; i++) {
+					$('#application').append('<option name="' + appJSON[i].id + '" value="' + appJSON[i].id + '">' + appJSON[i].application + '</option>');
+				}
+				
+				for (i = 0; i &lt; serviceJSON.length; i++) {
+					$('#selBox').append('<option name="' + serviceJSON[i].serviceId + '" value="' + serviceJSON[i].serviceId + '">' + serviceJSON[i].service + '</option>');
+				}
+				
+				for (i = 0; i &lt; codebaseJSON.length; i++) {
+					$('#ticks').append('<option name="' + codebaseJSON[i].id + '" value="' + codebaseJSON[i].id + '">' + codebaseJSON[i].shortname + '</option>');
+				}
+				
+				
+				
+				function sortList(arr) {
+					arr.sort(function (a, b) {
+						if (a &lt; b) {
+							return -1;
+						}
+						if (a > b) {
+							return 1;
+						}
+						ret;
+					});
+					return arr
+				}
+				
+				
+				var carriedApps = JSON.parse(sessionStorage.getItem("context"));
+				if (carriedApps) {
+					if (carriedApps.Composite_Application_Provider.length &gt; 0) {
+						//if only one don't show basket
+						if (carriedApps.Composite_Application_Provider.length == 1) {
+							
+							$('#application').val(carriedApps.Composite_Application_Provider[0]);
+							// Select the option
+							$('#application').trigger('change');
+						} else {
+							$('#carriedApps').show()
+							var selectArray =[];
+							
+							carriedApps.Composite_Application_Provider.forEach(function (d) {
+								
+								var thisApp = appJSON.filter(function (e) {
+									return e.id == d;
+								});
+								selectArray.push({
+									val: thisApp[0].id, text: thisApp[0].application
+								});
+							});
+							
+							selectArray.sort(function (a, b) {
+								if (a.text &lt; b.text) {
+									return -1;
+								}
+								if (a.text > b.text) {
+									return 1;
+								}
+								return 0;
+							})
+							selectArray.unshift({
+								val: '', text: 'choose'
+							});
+							var sel = $('&lt;select id="carriedSelect">').appendTo('#selPlace');
+							$(selectArray).each(function () {
+								sel.append($("&lt;option>").attr('value', this.val).text(this.text));
+							});
+						};
+						
+						$('#carriedSelect').change(function () {
+							selectApp($(this).val());
+							getAllApps();
+							showInfoTooltips()
+							$('#' + $(this).val()).hide();
+						});
+					};
+					$('#carriedSelect').select2();
+				};
+			}).catch (function (error) {
+				//display an error somewhere on the page
+				console.log(error);
+			});
+		});
         
     </xsl:template>  
     

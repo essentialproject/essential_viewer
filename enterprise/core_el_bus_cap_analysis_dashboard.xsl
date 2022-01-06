@@ -51,7 +51,7 @@
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="capsListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
-	<xsl:variable name="orgData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Org Summmary']"></xsl:variable>
+	<xsl:variable name="servicesListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Application Services']"></xsl:variable>
 
 <!--	<xsl:variable name="scoreData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
 -->
@@ -72,12 +72,12 @@
 				<xsl:with-param name="apiReport" select="$capsListData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="apiOrgs">
-				<xsl:call-template name="GetViewerAPIPath">
-					<xsl:with-param name="apiReport" select="$orgData"></xsl:with-param>
-				</xsl:call-template>
-			</xsl:variable>
-
+		<xsl:variable name="apiSvcs">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$servicesListData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+		
 	 
 <!--		<xsl:variable name="apiScores">
 			<xsl:call-template name="GetViewerAPIPath">
@@ -582,7 +582,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Model')"></xsl:value-of> - </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Dashboard')"></xsl:value-of> - </span>
 									<span class="text-primary">
 										<span id="rootCap"></span>
 									</span>
@@ -602,8 +602,11 @@
 								<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 							</div>	
 							<div id="blobLevel" ></div>
-							<div class="pull-right Key"><b>Caps:</b><button class="btn btn-xs btn-secondary" id="hideCaps">Hide</button><xsl:text> </xsl:text><xsl:text> </xsl:text><b>Application Usage Key</b>: <i class="fa fa-square shigh"></i> - High<xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - Medium <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - Low</div>
-							<div class="pull-right showApps Key right-30" id="pmKey">Ratings:<input type="checkbox" id="fit" name="fit"></input></div>
+							<div class="pull-right Key"><b><xsl:value-of select="eas:i18n('Caps Style')"></xsl:value-of>:</b><button class="btn btn-xs btn-secondary" id="hideCaps">Show</button><xsl:text> </xsl:text><xsl:text> </xsl:text>
+								<b><xsl:value-of select="eas:i18n('Show Retired')"></xsl:value-of>	</b><input type="checkbox" id="retired" name="retired"/>
+								<xsl:text> </xsl:text>
+							<b><xsl:value-of select="eas:i18n('Application Usage Key')"></xsl:value-of></b>: <i class="fa fa-square shigh"></i> - <xsl:value-of select="eas:i18n('High')"/><xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - <xsl:value-of select="eas:i18n('Medium')"/> <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - <xsl:value-of select="eas:i18n('Low')"/></div>
+							<div class="pull-right showApps Key right-30" id="pmKey"><xsl:value-of select="eas:i18n('Ratings')"></xsl:value-of>:<input type="checkbox" id="fit" name="fit"></input></div>
 						</div>
 						<div class="col-xs-12" id="keyHolder">
 
@@ -790,7 +793,7 @@
 										<div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{capsList.length}} Supported Business Capabilities</div>
 										<div class="left-5 bottom-5"><i class="fa fa-users right-5"></i>{{orgUserIds.length}} Supported Organisations</div>
 										<div class="left-5 bottom-5"><i class="fa essicon-boxesdiagonal right-5"></i>{{processList.length}} Supported Processes</div>
-										<div class="left-5 bottom-5"><i class="fa essicon-radialdots right-5"></i>{{services.length}} Services Provided</div>
+										<div class="left-5 bottom-5"><i class="fa essicon-radialdots right-5"></i>{{services.length}} Services Used</div>
 									</div>
 
 										<button class="btn btn-default btn-xs appInfoButton pull-right"><xsl:attribute name="easid">{{id}}</xsl:attribute>Show Details</button>
@@ -829,18 +832,18 @@
 	                	<div class="col-sm-12">
 							<ul class="nav nav-tabs ess-small-tabs">
 								<li class="active"><a data-toggle="tab" href="#summary">Summary</a></li>
-								<li><a data-toggle="tab" href="#capabilities">Capabilities<span class="badge dark">{{capabilitiesSupporting}}</span></a></li>
-								<li><a data-toggle="tab" href="#processes">Processes<span class="badge dark">{{processesSupporting}}</span></a></li>
-								<li><a data-toggle="tab" href="#integrations">Integrations<span class="badge dark">{{totalIntegrations}}</span></a></li>
-			                 	<li><a data-toggle="tab" href="#services">Services</a></li>
+								<li><a data-toggle="tab" href="#capabilities"><xsl:value-of select="eas:i18n('Capabilities')"/><span class="badge dark">{{capabilitiesSupporting}}</span></a></li>
+								<li><a data-toggle="tab" href="#processes"><xsl:value-of select="eas:i18n('Processes')"/><span class="badge dark">{{processesSupporting}}</span></a></li>
+								<li><a data-toggle="tab" href="#integrations"><xsl:value-of select="eas:i18n('Integrations')"/><span class="badge dark">{{totalIntegrations}}</span></a></li>
+			                 	<li><a data-toggle="tab" href="#services"><xsl:value-of select="eas:i18n('Services')"/></a></li>
 								<li></li>
 							</ul>
-
+							
 					
 							<div class="tab-content">
 								<div id="summary" class="tab-pane fade in active">
 									<div>
-				                    	<strong>Description</strong>
+				                    	<strong><xsl:value-of select="eas:i18n('Description')"/></strong>
 				                    	<br/>
 				                        {{description}}    
 				                    </div>
@@ -852,59 +855,69 @@
 											<i class="fa fa-desktop right-5"/>{{delivery}}</div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#A884E9;color:#ffffff</xsl:attribute>
-												<i class="fa fa-users right-5"/>{{processList.length}} Processes Supported</div>
+												<i class="fa fa-users right-5"/>{{processList.length}} <xsl:value-of select="eas:i18n('Processes Supported')"/></div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#6849D0;color:#ffffff</xsl:attribute>
-												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inI}} in / {{outI}} out)</div>
+												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} <xsl:value-of select="eas:i18n('Integrations')"/> ({{inI}} in / {{outI}} out)</div>
 		                			</div>
 								</div>
 								<div id="capabilities" class="tab-pane fade">
-									<p class="strong">This application supports the following Business Capabilities:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Business Capabilities')"/>:</p>
 									<div>
 									{{#if capList}} 
 									{{#each capList}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#f5ffa1;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}}
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/></p>
 									{{/if}}
 									</div>
 								</div> 
 								<div id="processes" class="tab-pane fade">
-									<p class="strong">This application supports the following Business Processes, supporting {{processList.length}} processes:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Business Processes, supporting')"/> {{processList.length}} <xsl:value-of select="eas:i18n('processes')"/>:</p>
 									<div>
 									{{#if processes}}
 									{{#each processList}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Process'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/></p>
 									{{/if}}
 									</div>
 								</div>
 								<div id="services" class="tab-pane fade">
-									<p class="strong">This application supports the following Services:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application provide the following services, i.e. could be used')"/>:</p>
+									<div>
+									{{#if allservList}}
+									{{#each allservList}}
+										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#c1d0db;color:#ffffff</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Application_Service'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+									{{/each}} 
+									{{else}}
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/></p>
+									{{/if}}
+								</div>
+									<p class="strong"><xsl:value-of select="eas:i18n('The following services are actually used in business processes')"/>:</p>
 									<div>
 									{{#if services}}
 									{{#each servList}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#73B9EE;color:#ffffff</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Application_Service'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/></p>
 									{{/if}}
 									</div>
 								</div>
 								<div id="integrations" class="tab-pane fade">
-			                    <p class="strong">This application has the following integrations:</p>
+			                    <p class="strong"><xsl:value-of select="eas:i18n('This application has the following integrations')"/>:</p>
 			                	<div class="row">
 			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Inbound</div>
+			                			<div class="impact bottom-10"><xsl:value-of select="eas:i18n('Inbound')"/></div>
 			                				{{#each inIList}}
 			                                <div class="ess-tag bg-lightblue-100">{{name}}</div>
 			                            	{{/each}}
 			                		</div>
 			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Outbound</div>
+			                			<div class="impact bottom-10"><xsl:value-of select="eas:i18n('Outbound')"/></div>
 			                				{{#each outIList}}
 			                                <div class="ess-tag bg-pink-100">{{name}}</div>
 			                            	{{/each}}
@@ -955,8 +968,9 @@
 				<xsl:call-template name="RenderViewerAPIJSFunction">
 					<xsl:with-param name="viewerAPIPath" select="$apiBCM"></xsl:with-param> 
 					<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
-					<xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param> 
-					<xsl:with-param name="viewerAPIPathOrg" select="$apiOrgs"></xsl:with-param> 
+					<xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param>  
+					<xsl:with-param name="viewerAPIPathSvcs" select="$apiSvcs"></xsl:with-param>  
+					
 				<!--	<xsl:with-param name="viewerAPIPathScores" select="$apiScores"></xsl:with-param>-->
 					
 				</xsl:call-template>  
@@ -968,16 +982,18 @@
 	<xsl:template name="RenderViewerAPIJSFunction">
 		<xsl:param name="viewerAPIPath"></xsl:param>
 		<xsl:param name="viewerAPIPathApps"></xsl:param>
-		<xsl:param name="viewerAPIPathCaps"></xsl:param>
-		<xsl:param name="viewerAPIPathOrg"></xsl:param>
+		<xsl:param name="viewerAPIPathCaps"></xsl:param> 
+		<xsl:param name="viewerAPIPathSvcs"></xsl:param> 
+		
 		
 	<!--	<xsl:param name="viewerAPIPathScores"></xsl:param>-->
 		
 		//a global variable that holds the data returned by an Viewer API Report
 		var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
-		var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>';
-		var viewAPIDataOrgs = '<xsl:value-of select="$viewerAPIPathOrg"/>';
+		var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>'; 
+		var viewAPIDataSvcs = '<xsl:value-of select="$viewerAPIPathSvcs"/>'; 
+		
 		
 <!--		var viewAPIScores= '<xsl:value-of select="$viewerAPIPathScores"/>';-->
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
@@ -1225,45 +1241,53 @@
 		            return instanceLink;
 		        }
 		    });
-			 
+			
+			let selectCapStyle=localStorage.getItem("essentialhideCaps");
+			if(selectCapStyle){
+				document.getElementById("hideCaps").innerHTML = localStorage.getItem("essentialhideCaps");
+			}
 
 	$('#hideCaps').on('click',function(){
-		let capState=$('#hideCaps').text()
-		console.log(capState)
-		if(capState=='Hide'){
-			$('#hideCaps').text('Show')
+		let capState=$('#hideCaps').text() 
+		if(capState=='Hiding'){
+			$('#hideCaps').text('Showing')
 			redrawView()
 		}
 		else
 		{
-			$('#hideCaps').text('Hide')
+			$('#hideCaps').text('Hiding')
 			redrawView()
 		}
 	});
+
+	$('#retired').on('change',function(){
+			
+			redrawView()
+	})
 
 			$('.appPanel').hide();
 			var appArray;
 			var workingArrayCaps;
 			var workingArrayAppsCaps;
 			var appToCap=[];
-			var processMap=[];
-			var orgDat=[];
+			var processMap=[]; 
+			let svsArray=[];
 			var scores=[];
 			Promise.all([
 			promise_loadViewerAPIData(viewAPIData),
 			promise_loadViewerAPIData(viewAPIDataApps),
-			promise_loadViewerAPIData(viewAPIDataCaps),
-			promise_loadViewerAPIData(viewAPIDataOrgs) 	 
-		//	promise_loadViewerAPIData(viewAPIScores)
+			promise_loadViewerAPIData(viewAPIDataCaps), 
+	 		promise_loadViewerAPIData(viewAPIDataSvcs)
 			]).then(function (responses)
 			{
-				
+				console.log('viewAPIData',responses[0]);
+				console.log('viewAPIDataApps',responses[1]);
+				console.log('viewAPIDataCaps',responses[2]);
+				console.log('viewAPIDataSvcs',responses[3]);
 				let workingArray = responses[0];
-				console.log(workingArray); 
+				svsArray = responses[3]
 				meta = responses[1].meta; 
-				console.log('cap',responses[2]); 
-				orgDat=responses[3].orgData;
-				console.log('orgDat',orgDat)
+		 
 				workingArray.busCapHierarchy.forEach((d)=>{
 			 
 					let capArr=responses[2].businessCapabilities.find((e)=>{
@@ -1287,7 +1311,7 @@
 					return a.position - b.position || a.order - b.order;
 				});
 				
-				console.log(workingArray);
+		 
 				rationReport=responses[1].reports.filter((d)=>{return d.name=='appRat'});
 			//	scores = responses[2];
 			//	console.log(scores); 
@@ -1380,12 +1404,12 @@
 						}
 					}
 */
-					$('#rootCap').text(workingArray.rootCap);	
+				$('#rootCap').text(workingArray.rootCap);	
 				
 				codebase=appArray.codebase;
 				delivery=appArray.delivery;
 				lifecycles=appArray.lifecycles;
-	console.log('appArray',appArray)			
+	 			
 				 appArray.applications.forEach((d)=>{
 
 					let thisCode=codebase.find((e)=>{
@@ -1408,10 +1432,11 @@
 					let thisLife=lifecycles.find((e)=>{
 						return e.id == d.lifecycle;
 					})
-					if(d.lifecycle.length&gt;0){
-					d['lifecycle']=thisLife.shortname;
-					d['lifecycleColor']=thisLife.colour;
-					d['lifecycleText']=thisLife.colourText;
+					
+					if(d.lifecycle.length != 0){
+						d['lifecycle']=thisLife?.shortname;
+						d['lifecycleColor']=thisLife?.colour;
+						d['lifecycleText']=thisLife?.colourText;
 					}
 					else
 					{
@@ -1434,24 +1459,11 @@
 							d['deliveryColor']="#d3d3d3";
 							d['deliveryText']="#000";
 						}	
-						
-					newOrgChildren=[];	
-					d.orgUserIds.forEach((e)=>{
-						//newOrgChildren.push(e);
-						let children=orgDat.find((f)=>{
-							return f.id == e;
-						})
-						console.log('children',children)
-						children.orgUsers.forEach((ch)=>{
-							newOrgChildren.push(ch);
-						})
-					})
-					console.log(newOrgChildren)	
-					d['neworgUserIds']=newOrgChildren;
-					console.log('d',d)	
+					
+						d.orgUserIds = d.orgUserIds.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
 				 });
 		
-
+	
 				//create paired arrays
 				
 				workingArray.busCaptoAppDetails.forEach((bc)=>{
@@ -1471,7 +1483,7 @@
 					});
 
 				});
-		  
+			   
 				let capMod = new Promise(function(resolve, reject) { 
 					resolve($('#capModelHolder').html(l0CapTemplate(workingArray.busCapHierarchy)));
 					reject();
@@ -1480,7 +1492,7 @@
 		
 			   capMod.then((d)=>{
 				workingArray=[];
-				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept']);
+				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain']);
 			   });
 			   removeEditorSpinner()
 			   $('.appInDivBoxL0').hide();
@@ -1500,27 +1512,33 @@
 			let scopedCaps=[];
 
 var redrawView=function(){
+ 
 	workingCapId=0;
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
+	let busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
+	
 	
 	let apps=appArray.applications;
+
+	if($('#retired').is(":checked")==false){
+		apps= apps.filter((d)=>{
+			return d.lifecycle != "Retired";
+		})
+	}
  
 	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef]);
+	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef]);
 	let appsToShow=[]; 
-
+ 
 	inScopeCapsApp=scopedCaps.resources; 
-
-	console.log('inScopeCapsApp',inScopeCapsApp)
-
-	
+ 
 	let capSelectStyle= $('#hideCaps').text(); 
-	if(capSelectStyle=='Hide'){
-		console.log('capSelectStyle is hide')
+	if(capSelectStyle=='Hiding'){
+	 	localStorage.setItem("essentialhideCaps", "Hiding");
 	$('.buscap').hide();
 	inScopeCapsApp.forEach((d)=>{
 		$('div[eascapid="'+d.id+'"]').parents().show();
@@ -1528,11 +1546,12 @@ var redrawView=function(){
 	 
 		});
 	}else
-	{	console.log('capSelectStyle is show')
+	{	 
+		localStorage.setItem("essentialhideCaps", "Showing");
 		$('.buscap').show(); 
 		$('.buscap').addClass("off-cap")
 		inScopeCapsApp.forEach((d)=>{
-		 console.log(d)
+		 
 			 $('div[eascapid="'+d.id+'"]').removeClass("off-cap");
 		 
 			});
@@ -1611,11 +1630,34 @@ var redrawView=function(){
 					let thisProcesses = appToShow[0].processes.filter((elem, index, self) => self.findIndex(
 									(t) => {return (t.id === elem.id)}) === index);
 					let thisServs = appToShow[0].services.filter((elem, index, self) => self.findIndex(
-										(t) => {return (t.id === elem.id)}) === index);							
+										(t) => {return (t.id === elem.id)}) === index);		
+					let thisAllServs = appToShow[0].allServices.filter((elem, index, self) => self.findIndex(
+								(t) => {return (t.id === elem.id)}) === index);		
+								 
+					thisServs.sort((a, b) => (a.name > b.name) ? 1 : -1)
+
 					appToShow[0]['capList']=thisCaps;
 					appToShow[0]['processList']=thisProcesses;
-					appToShow[0]['servList']=thisServs;
-					console.log(appToShow[0])				 
+					appToShow[0]['servList']=thisServs;  
+					thisAllServs.forEach((e)=>{
+						 
+						svsArray.application_services.forEach((sv)=>{
+							let match = sv.aprs.find((f)=>{
+								 
+								return f == e.id	
+							})
+						 if(match){
+							e['name']=sv.name	 
+							 }
+						})
+						 
+					})
+					thisAllServs.sort((a, b) => (a.name > b.name) ? 1 : -1)
+
+					appToShow[0]['allservList']=thisAllServs; 
+					
+console.log('appToShow[0]',appToShow[0])
+			 
 					$('#appData').html(appTemplate(appToShow[0]));
 					$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
 
@@ -1672,13 +1714,23 @@ function getApps(capid){
 		panelData['apps']=appArrayToShow;
 		let capName=inScopeCapsApp.filter((d)=>{return d.id==capid})
 		panelData['cap']=capid;
-		panelData['capName']=capName[0].name;
- 
+		panelData['capName']=capName[0].name; 
+
+panelData.apps.forEach((d)=>{
+	let capsList = d.caps.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+	d['capsList']=capsList;
+	let processList = d.processes.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+	d['processList']=processList;
+})
+
 		$('#appData').html(appTemplate(panelData));
 
 	workingAppsList=appArrayToShow;
 
 	$('#appsList').empty();
+ 
+	panelData.apps.sort((a, b) => (a.name > b.name) ? 1 : -1)
+  
 	$('#appsList').html(appListTemplate(panelData))
 	openNav(); 
 	thisCapAppList[0].apps.forEach((d)=>{ 

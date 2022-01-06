@@ -27,7 +27,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"infoReps":[<xsl:apply-templates select="$infoReps" mode="infoReps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"infoReps":[<xsl:apply-templates select="$infoReps" mode="infoReps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	<xsl:template match="node()" mode="infoReps">

@@ -249,8 +249,7 @@
    
     
     var busscores=[<xsl:apply-templates select="$BFValues" mode="getScores"/>]
-    var appscores=[<xsl:apply-templates select="$AFValues" mode="getScores"/>]
-    
+    var appscores=[<xsl:apply-templates select="$AFValues" mode="getScores"/>] 
     var bcm;
     var colourToShow;
     var fontToShow;
@@ -271,9 +270,18 @@
                                 this[a.id] = { name: a.id, busScore: 0 , appScore:0, count : 0};
                                 result.push(this[a.id]);
                             }
-
-                            this[a.id].busScore += parseInt(a.busScore);
+ 
+                            if(a.busScore){
+                             this[a.id].busScore += parseInt(a.busScore);
+                            } else{
+                                this[a.id].busScore += 0;
+                            }
+                            if(a.appScore){
                             this[a.id].appScore += parseInt(a.appScore);
+                            }
+                            else{
+                                this[a.id].appScore += 0;
+                            }
                             this[a.id].count += count+1;
                         a['avg']=this[a.id];
                         }, Object.create(null));
@@ -351,17 +359,21 @@ function applySelect(){
                         }
                        
                     });
-             
+         
 
         if(thisCols.length &gt; 0){
-         
-               
+            if (busFitscore == 0){
+                if( f.avg.count&gt; 0 ){
+                    busFitscore = 1;
+                }
+            }
+     
                 var thisBus = busscores.filter(function(g){
                     return g.score==busFitscore
                 })
-	
+            
 			if(thisBus[0]){	
-
+               
 				colourToShow=thisBus[0].backgroundcolor;
 				fontToShow=thisBus[0].color;
     			}
@@ -387,6 +399,11 @@ function applySelect(){
                        
                     });
       if(thisCols.length &gt; 0){
+        if (appFitscore == 0){
+                if( f.avg.count&gt; 0 ){
+                    busFitscore = 1;
+                }
+            }
              var thisApp = appscores.filter(function(g){
                     return g.score==appFitscore;
                 })
@@ -420,6 +437,7 @@ function applySelect(){
         
                     }
         -->
+     
                    $('.'+f.capappid).css({"background-color":colourToShow,"color":fontToShow});
                 });
              });
@@ -454,8 +472,7 @@ function applySelect(){
                 });
             });
       $('#capmodel').empty();
-	
-	console.log(bcmData.bcm[0]);
+	 
 	
       $('#capmodel').append(capTemplate(bcmData.bcm[0]));  
         applySelect()}
@@ -676,9 +693,7 @@ function uniq_fast(a) {
 			  "id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		      "name": "<xsl:value-of select="$thisBusCapName"/>",
 		      "description": "<xsl:value-of select="$thisBusCapDescription"/>",
-		      "link": "<xsl:value-of select="$thisBusCapLink"/>",
-        "debug1":"<xsl:value-of select="count($sthisdirectProcessToAppRel)"/>",
-         "debug2":"<xsl:value-of select="count($sthisrelevantPhysProc2AppProRoles)"/>",
+		      "link": "<xsl:value-of select="$thisBusCapLink"/>", 
         "subAppDirect":"<xsl:value-of select="$sthisrelevantApps/name"/>",
         "subApps":[
         <xsl:for-each select="$allProcs">

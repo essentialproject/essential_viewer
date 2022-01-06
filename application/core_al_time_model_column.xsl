@@ -22,11 +22,13 @@
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<xsl:variable name="timeVals" select="/node()/simple_instance[type = ('Disposition_Lifecycle_Status')]"></xsl:variable>
-	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value = $timeVals/name]"></xsl:variable>
+    <!--<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value = $timeVals/name]"></xsl:variable>
+    -->
 	<xsl:variable name="styles" select="/node()/simple_instance[type = ('Element_Style')]"></xsl:variable>
 	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances" select="($apps)"></xsl:variable>
+	<xsl:variable name="allRoadmapInstances">0</xsl:variable>
 	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"></xsl:variable>
+	<xsl:variable name="appsAPI" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Applications']"></xsl:variable>
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -55,7 +57,12 @@
 
 
 	<xsl:template match="knowledge_base">
-		<xsl:call-template name="docType"></xsl:call-template>
+        <xsl:call-template name="docType"></xsl:call-template>
+        <xsl:variable name="apiApps">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$appsAPI"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"></xsl:call-template>
@@ -103,6 +110,47 @@
                     	font-weight: 700;
                     	
                     }
+                    .tabcolumn {
+                        vertical-align: top;
+                    }
+                    .but{
+                        display:inline-block;
+                    }
+                    .eas-logo-spinner {​​​​​
+                        display: flex;
+                        justify-content: center;
+                    }​​​​​
+                    #editor-spinner {​​​​​
+                        height: 100vh;
+                        width: 100vw;
+                        position: fixed;
+                        top: 0;
+                        left:0;
+                        z-index:999999;
+                        background-color: hsla(255,100%,100%,0.75);
+                        text-align: center;
+                    }​​​​​
+                    #editor-spinner-text {​​​​​
+                        width: 100vw;
+                        z-index:999999;
+                        text-align: center;
+                    }​​​​​
+                    .spin-text {​​​​​
+                        font-weight: 700;
+                        animation-duration: 1.5s;
+                        animation-iteration-count: infinite;
+                        animation-name: logo-spinner-text;
+                        color: #aaa;
+                        float: left;
+                    }​​​​​
+                    .spin-text2 {​​​​​
+                        font-weight: 700;
+                        animation-duration: 1.5s;
+                        animation-iteration-count: infinite;
+                        animation-name: logo-spinner-text2;
+                        color: #666;
+                        float: left;
+                    }​​​​​
 				</style>
 				<xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"></xsl:with-param>
@@ -143,7 +191,10 @@
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-search"/></span>
 										<input type="text" class="form-control" id="applyFilter" placeholder="Filter..." style="width: 200px;"/>
-									</div>
+                                <!--    <xsl:text> </xsl:text>
+                                    <div class="but"><button id="applyFilterButton" class="btn btn-primary btn-sm">Apply Filter</button></div>
+                                   -->
+                                    </div>
 								</div>
 								<div class="col-sm-6">
 									<div class="pull-right top-10 bottom-5">
@@ -157,17 +208,27 @@
 									-->
 									</div>
 								</div>
-							</div>
-							<table class="table table-bordered">
+                            </div>
+                            <div id="editor-spinner" class="hidden">
+                                    <div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;">
+                                        <div class="spin-icon" style="width: 60px; height: 60px;">
+                                            <div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/>
+                                            <div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/>
+                                            <div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/>
+                                        </div>                      
+                                    </div>
+                                    <div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
+                                </div>
+							<table class="table table-bordered" id="timeTable">
 								<thead>
 									<tr>
-										<xsl:apply-templates select="$timeVals" mode="timeHead"></xsl:apply-templates>
+										<xsl:apply-templates select="$timeVals" mode="timeHead">
+										    <xsl:sort select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>
+										</xsl:apply-templates>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
-										<xsl:apply-templates select="$timeVals" mode="timeData"></xsl:apply-templates>
-									</tr>
+								<tbody id="timeBody" style="overflow-y:auto">
+									
 								</tbody>
 							</table>
 						</div>
@@ -175,37 +236,38 @@
 
 						<!--Setup Closing Tags-->
 					</div>
-				</div>
-
+                </div>
+                <script id="data-template" type="text/x-handlebars-template">
+                    {{#each this}}
+                        <td class="tabcolumn">
+                            {{#each this.apps}}
+                                <div class="ess-tag ess-tag-dotted"><xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="style">border: 2pt solid {{this.colour}}</xsl:attribute>
+                                    {{this.name}}
+                                </div>
+                            {{/each}}  
+                        </td>
+                    {{/each}}
+                </script>
+                <script>			
+                        <xsl:call-template name="RenderViewerAPIJSFunction">
+                            <xsl:with-param name="viewerAPIPath" select="$apiApps"></xsl:with-param> 
+                         </xsl:call-template>  
+                    </script>
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"></xsl:call-template>
 			</body>
 			<script id="disposition-template" type="text/x-handlebars-template"></script>
 			<script>
-				var timeJSON = [<xsl:apply-templates select="$timeVals" mode="timeJSON"/>];
-				var applications = {
-					applications: [<xsl:apply-templates select="$apps" mode="getApplications"/>]
-				};
+                var timeJSON = [<xsl:apply-templates select="$timeVals" mode="timeJSON"><xsl:sort select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/></xsl:apply-templates>];
+                var applications;
+ 
+             
 				var inScopeApplications=[];
 				// console.log(timeJSON)
 				// console.log(applications)
 				var newList=[];
 				$('document').ready(function () {
-					var dispostionFragment = $("#disposition-template").html();
-				    var dispostionTemplate = Handlebars.compile(dispostionFragment);
-					redrawView()
-
-
-					$('#applyFilter').on('keyup',function(){
-							 
-							let pattern=$(this).val().toUpperCase(); 
-							newList=applications.applications.filter((d)=>{
-								return d.name.toUpperCase().includes(pattern)
-							})
-					 
-							$('.ess-tag').hide();
-							redrawView()
-					})	
+					
 				});
 
 				function redrawView() {
@@ -223,18 +285,36 @@
 					//filter applications to those in scope for the roadmap start and end date
 					inScopeApplications.applications = rmGetVisibleElements(applications.applications);
 					}
-				 
-					$('.ess-tag').hide();
-					drawApps(inScopeApplications.applications)
-					</xsl:if>
+                    </xsl:if>
+                    $('.ess-tag').hide();
+                
+					//drawApps(inScopeApplications.applications)
+
+                   // console.log('inScopeApplications.applications', inScopeApplications.applications) 
+
+                     timeJSON.forEach((d)=>{
+                        let appList = inScopeApplications.applications.filter((e)=>{
+                            return d.id == e.dispositionId;
+                        });
+                        let currentCol= d.colour;
+                        appList.forEach((e)=>{ 
+                            e['colour']=currentCol; 
+                        })
+
+                        d['apps']=appList;
+
+                    })
+                  $('#timeBody').html(dataTemplate(timeJSON))
+					
 				}
 
-				function drawApps(ele){
+				function drawApps(ele){ 
 					ele.forEach(element => {
-						$('[easid="'+element.id+'"]').show();
+                        $('[easid="'+element.id+'"]').show(); 
 						$('[easid="'+element.id+'"]').css({'border-color': element.colour});
 						$('[easid="'+element.id+'"]').addClass('ess-tag-default');
 					});
+                    removeEditorSpinner();
 				}
 			</script>
 
@@ -252,37 +332,157 @@
 			</div>
 			<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"></xsl:value-of>
 		</th>
-	</xsl:template>
-	<xsl:template match="node()" mode="timeData">
-		<xsl:variable name="this" select="current()"></xsl:variable>
-		<xsl:variable name="thisApps" select="$apps[own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value = $this/name]"></xsl:variable>
-
-		<td class="tabcolumn">
-			<xsl:for-each select="$thisApps">
-				<div class="ess-tag ess-tag-dotted">
-					<xsl:attribute name="easid">
-						<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>
-					</xsl:attribute>
-					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-					</xsl:call-template>
-				</div>
-			</xsl:for-each>
-		</td>
-	</xsl:template>
-
+    </xsl:template>
+    
 	<xsl:template match="node()" mode="timeJSON">
-		<xsl:variable name="this" select="current()"></xsl:variable>
-		<xsl:variable name="thisApps" select="$apps[own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value = $this/name]"></xsl:variable> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+        <xsl:variable name="this" select="current()"></xsl:variable>
+        <xsl:variable name="thisStyle" select="$styles[name = $this/own_slot_value[slot_reference = 'element_styling_classes']/value]"></xsl:variable>
+	
+	    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
 			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
-		</xsl:call-template>", "apps":[<xsl:for-each select="$thisApps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>","link":"<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param></xsl:call-template>"}<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position() != last()">,</xsl:if>
-	</xsl:template>
-	<xsl:template match="node()" mode="getApplications">
-		<xsl:variable name="thisAppDisp" select="$timeVals[name = current()/own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value]"></xsl:variable>
-		<xsl:variable name="thisStyle" select="$styles[name = $thisAppDisp/own_slot_value[slot_reference = 'element_styling_classes']/value]"></xsl:variable>
-		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"></xsl:with-param><xsl:with-param name="theRoadmapInstance" select="current()"></xsl:with-param><xsl:with-param name="theDisplayInstance" select="current()"></xsl:with-param><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"></xsl:with-param></xsl:call-template>, <!-- codebase: "<xsl:value-of select="translate($thisAppCodebase/name, '.', '_')"/>",
-			delivery: "<xsl:value-of select="translate($thisAppDeliveryModel/name, '.', '_')"/>"  --> "colour":"<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"></xsl:value-of>" } <xsl:if test="not(position() = last())">, </xsl:if>
-	</xsl:template>
+        </xsl:call-template>", 
+        "colour":"<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"></xsl:value-of>",
+        "seq":"<xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>"
+        }<xsl:if test="position() != last()">,</xsl:if>
+    </xsl:template>
+    
+    <xsl:template name="RenderViewerAPIJSFunction">
+            <xsl:param name="viewerAPIPath"></xsl:param> 
+            
+             
+            //a global variable that holds the data returned by an Viewer API Report
+            var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
+ 
+             //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+            
+            var promise_loadViewerAPIData = function (apiDataSetURL)
+            {
+                return new Promise(function (resolve, reject)
+                {
+                    if (apiDataSetURL != null)
+                    {
+                        var xmlhttp = new XMLHttpRequest();
+                        xmlhttp.onreadystatechange = function ()
+                        {
+                            if (this.readyState == 4 &amp;&amp; this.status == 200){
+                                var viewerData = JSON.parse(this.responseText);
+                                resolve(viewerData);
+                                $('#ess-data-gen-alert').hide();
+                            }
+                            
+                        };
+                        xmlhttp.onerror = function ()
+                        {
+                            reject(false);
+                        };
+                        
+                        xmlhttp.open("GET", apiDataSetURL, true);
+                        xmlhttp.send();
+                    } else
+                    {
+                        reject(false);
+                    }
+                });
+            }; 
+    
+             function showEditorSpinner(message) {
+                $('#editor-spinner-text').text(message);                            
+                $('#editor-spinner').removeClass('hidden');                         
+            };
+    
+            function removeEditorSpinner() {
+                $('#editor-spinner').addClass('hidden');
+                $('#editor-spinner-text').text('');
+            };
+ 
+           
+           // showEditorSpinner('Fetching Data...');
+            $('document').ready(function ()
+            {
+                dataFragment = $("#data-template").html();
+                dataTemplate = Handlebars.compile(dataFragment);
+        
+                Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+                    return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+                }); 
+
+                var appArray;
+               
+                Promise.all([
+                promise_loadViewerAPIData(viewAPIData),
+                
+                ]).then(function (responses)
+                {
+                
+                    let workingArray = responses[0]; 
+
+                    var dispostionFragment = $("#disposition-template").html();
+                    var dispostionTemplate = Handlebars.compile(dispostionFragment);
+                    applications=workingArray;
+                 
+                    timeJSON.forEach((d)=>{
+                        let appList = applications.applications.filter((e)=>{
+                            return d.id == e.dispositionId;
+                        });
+                        let currentCol= d.colour;
+                        appList.forEach((e)=>{ 
+                            e['colour']=currentCol; 
+                        })
+
+                        d['apps']=appList;
+
+                    })
+
+                    inScopeApplications=Object.assign({}, workingArray); 
+                  //  console.log('timeJSON', timeJSON) 
+
+                    $('#timeBody').append(dataTemplate(timeJSON))
+               
+                    redrawView()
+					$('#applyFilterButton').on('click',function(){ 
+                       // showEditorSpinner('Fetching Data...');
+                            let pattern=$('#applyFilter').val().toUpperCase(); 
+                           
+                            if(pattern ==''){
+                                newList=applications.applications
+                            }
+                            else
+                            {
+                                newList=applications.applications.filter((d)=>{
+                                    return d.name.toUpperCase().includes(pattern)
+                                })
+                            }
+                            inScopeApplications.applications=newList;
+							$('.ess-tag').hide();
+							redrawView()
+					})	
+
+                    $('#applyFilter').on('keyup',function(){
+							 
+                             let pattern=$(this).val().toUpperCase(); 
+                             newList=applications.applications.filter((d)=>{
+                                 return d.name.toUpperCase().includes(pattern)
+                             })
+                             inScopeApplications.applications=newList;
+                             redrawView()
+                     })	
+
+
+                });
+            });
+        </xsl:template>
+    
+        <xsl:template name="GetViewerAPIPath">
+            <xsl:param name="apiReport"></xsl:param>
+    
+            <xsl:variable name="dataSetPath">
+                <xsl:call-template name="RenderAPILinkText">
+                    <xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+                </xsl:call-template>
+            </xsl:variable>
+    
+            <xsl:value-of select="$dataSetPath"></xsl:value-of>
+    
+        </xsl:template>
 </xsl:stylesheet>

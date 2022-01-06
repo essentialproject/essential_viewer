@@ -325,8 +325,7 @@ function getData(dta){
                 //after the first data set is retrieved, set a global variable and render the view elements from the returned JSON data (e.g. via handlebars templates)
                 thisviewAPIData = response1;
                //DO HTML stuff
-         thisviewAPIData=response1;
-		console.log(thisviewAPIData)
+         thisviewAPIData=response1; 
     $('#spinner').hide();
 		if(thisviewAPIData['name']){	
 			var focusNode= thisviewAPIData['name'][0];}
@@ -355,7 +354,7 @@ async function getNode(parentNode,idToCall,pos){
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath2"/>&amp;PMA='+idToCall;
               
         const result = await getData(viewAPIData);
-  
+ 
         var getName =thisviewAPIData.instance.find(function(d){
             return d.name==='name'
         });
@@ -385,8 +384,7 @@ async function getNode(parentNode,idToCall,pos){
             {
             thisviewAPIData['name']=getRelName.values;
             }
-        }
- 		
+        } 
 	if(thisviewAPIData['name']){	
 	var thisNode= thisviewAPIData['name'][0];}
 		else if(thisviewAPIData['relation_name']){
@@ -401,16 +399,16 @@ async function getNode(parentNode,idToCall,pos){
  
 		thisNode =thisNodeSelected[0].values[0];
 		}
-		focusId=idToCall;
+		focusId=idToCall; 
 	if(parentNode==idToCall){
-		var focusNode=thisNode;
+		var focusNode={"id":idToCall,"name":thisNode};
 		}
 		else
 		{
-		var focusNode=parentNode;
+		var focusNode={"id":idToCall,"name":parentNode};
 		}
 	 
-	console.log('states') ;	console.log(states) 
+
 	states.push({"name":thisNode,"id":idToCall});
 
 var temp=[];
@@ -424,10 +422,21 @@ var uniqueArray=[];
 		  return false;
 		})
 states=uniqueArray;
-if(focusNode!==thisNode){
-		nodeSet.push({"id":" ","parent":focusNode,"child":thisNode})
+ 
+if(focusNode.name!==thisNode){
+ 
+ 
+
+let thisNodeID = states.filter((e)=>{
+	return e.name == thisNode
+}) 
+let focusNodeID = states.filter((e)=>{
+	return e.name == focusNode.name
+}) 
+ 
+		nodeSet.push({"id":focusNode.id,"parent":focusNodeID[0].id,"child":thisNodeID[0].id})
 		}
-	console.log('nodeSet') ;	console.log(nodeSet) 	
+ 	
    data={nodes:nodeSet}	;
  
  
@@ -443,8 +452,7 @@ if(focusNode!==thisNode){
 		return d.name!='external_repository_instance_reference';
 		})
 	slots2show={"instance":slots2show}	
-		
-		console.log(slots2show)
+ 
   	$('#slots').append(slotCardTemplate(slots2show));
        
          
@@ -502,11 +510,11 @@ if(focusNode!==thisNode){
 	$('#classSelect').change(function(){  
            
         var clsID=$('#classSelect option:selected').attr('id');
-		console.log(clsID)
+ 
 		var viewClassData = '<xsl:value-of select="$viewerAPIPathClass"/>&amp;PMA='+clsID;
 			 promise_loadViewerAPIData(viewClassData)
 					.then(function(responseClass) {
-				console.log(responseClass)
+			 
 					
  $('#instanceSelect').empty()
 		responseClass.instances.forEach(function(d){
@@ -530,7 +538,8 @@ var g1 = new dagreD3.graphlib.Graph();
 var g=g1.setGraph({});
 
 // Automatically label each of the nodes
-states.forEach(function(state) { g.setNode(state.name, { label: state.name, class:state.id }); });
+
+states.forEach(function(state) { g.setNode(state.id, { label: state.name, class:state.id }); });
 
 data.nodes.forEach(function(d) { g.setEdge(d.parent, d.child,{ label: "",curve: d3.curveBasis}); });	
  
@@ -584,18 +593,17 @@ svg.attr('height', g.graph().height * initialScale + svgHeight);
 	i++}
 
 svg.selectAll('.node').on('click', function(d) { 
-	thisNode=$(this).attr('id');
-		
+	thisNode=$(this).attr('id'); 
 		var thisFocusNodes= states.filter(function(e){
-				return  e.name==thisNode
+				return  e.id==thisNode
 			});
+ 	
 		newIdToCall=thisFocusNodes[0].id;
  
 
 		getNode(newIdToCall,newIdToCall,2);
 
-	});	
-		console.log(focusId)
+	});	 
 	<!-- svg.select('#'+fcsNode).selectAll('rect').style('fill','#eab0e3')-->
 		d3.selectAll("."+focusId).style("fill", "#3c763d");
 		d3.selectAll("."+focusId+">rect").style("fill", "#dff0d8").style("stroke", "#3c763d");

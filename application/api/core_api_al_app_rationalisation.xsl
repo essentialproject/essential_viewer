@@ -57,8 +57,8 @@
 	<xsl:template match="knowledge_base">
 		{
 			"applications": [<xsl:apply-templates select="$apps" mode="getAppJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
-			"services":[<xsl:apply-templates select="$appservices" mode="getServJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
-			"codebase":[<xsl:apply-templates select="$codebaseStatus" mode="selectJSON"><xsl:sort select="own_slot_value[slot_reference='enumeration_value']/value" order="ascending"/></xsl:apply-templates>],
+		 	"services":[<xsl:apply-templates select="$appservices" mode="getServJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+			<!--"codebase":[<xsl:apply-templates select="$codebaseStatus" mode="selectJSON"><xsl:sort select="own_slot_value[slot_reference='enumeration_value']/value" order="ascending"/></xsl:apply-templates>],-->
 			"currency":"<xsl:value-of select="$currency"/>"
         }
 		
@@ -67,20 +67,20 @@
 	<xsl:template match="node()" mode="getAppJSON"><xsl:variable name="codeBase" select="current()/own_slot_value[slot_reference = 'ap_codebase_status']/value"/><xsl:variable name="lifecycle" select="current()/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value"/><xsl:variable name="aprsForApp" select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]"/>
 	<xsl:variable name="topApp" select="current()"/>
 		<xsl:variable name="subApps" select="$apps[name = $topApp/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
-        <xsl:variable name="appLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
 		<xsl:variable name="subSubApps" select="$apps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 		<xsl:variable name="allCurrentApps" select="$topApp union $subApps union $subSubApps"/>
-		<xsl:variable name="appInboundDepCount" select="eas:get_inbound_int_count($allCurrentApps)"/>
-		<xsl:variable name="appOutboundDepCount" select="eas:get_outbound_int_count($allCurrentApps)"/>
+		<xsl:variable name="appInboundDepCount" select="eas:get_inbound_int_count(current())"/>
+		<xsl:variable name="appOutboundDepCount" select="eas:get_outbound_int_count(current())"/>
 		<xsl:variable name="appIntegrationComplexityScore" select="eas:get_integration_complexity_score($appInboundDepCount, $appOutboundDepCount)"/>
 		<xsl:variable name="appIntegrationComplexityValue" select="$appInboundDepCount + $appOutboundDepCount"/>
- <xsl:variable name="thiscodebase" select="$codebaseStatus[name=$codeBase]"/>
-        {"application":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","services":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provides_application_services']/value]" mode="getAppJSONservices"/>],"link":"<xsl:value-of select="$appLink"/>","codebase":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thiscodebase"/><xsl:with-param name="isForJSONAPI" select="true()"/> </xsl:call-template><xsl:if test="not($codeBase)">Not Defined</xsl:if>","codebaseID":"<xsl:value-of select="eas:getSafeJSString($codebaseStatus[name=$codeBase]/name)"/>","statusID":"<xsl:value-of select="eas:getSafeJSString($lifecycleStatus[name=$lifecycle]/name)"/>","status":"<xsl:value-of select="$lifecycleStatus[name=$lifecycle]/own_slot_value[slot_reference='enumeration_value']/value"/><xsl:if test="not($lifecycle)">Not Defined</xsl:if>","inboundIntegrations":"<xsl:value-of select="$appInboundDepCount"/>","outboundIntegrations":"<xsl:value-of select="$appOutboundDepCount"/>","totalIntegrations":"<xsl:value-of select="$appInboundDepCount+$appOutboundDepCount"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
+ 		<xsl:variable name="thiscodebase" select="$codebaseStatus[name=$codeBase]"/>
+		{
+		"children":[<xsl:for-each select="$allCurrentApps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"inboundIntegrations":"<xsl:value-of select="$appInboundDepCount"/>",
+		"outboundIntegrations":"<xsl:value-of select="$appOutboundDepCount"/>",
+		"totalIntegrations":"<xsl:value-of select="$appInboundDepCount+$appOutboundDepCount"/>",
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONservices">
 		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>
@@ -92,10 +92,11 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getServJSON"> {"serviceId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
+<xsl:template match="node()" mode="getServJSON"> {"serviceId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
   <xsl:with-param name="theSubjectInstance" select="current()"/>
   <xsl:with-param name="isForJSONAPI" select="true()"/>
-</xsl:call-template>", "applications":[<xsl:apply-templates select="$approles[name = current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]" mode="getServJSONapps"/>]}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:template>
+</xsl:call-template>" , 
+ "applications":[<xsl:for-each select="current()/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:template>
 	
     <xsl:template match="node()" mode="getServJSONapps">
 		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>

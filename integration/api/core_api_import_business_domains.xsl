@@ -28,7 +28,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"businessDomains":[<xsl:apply-templates select="$businessDomains" mode="businessDomains"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"businessDomains":[<xsl:apply-templates select="$businessDomains" mode="businessDomains"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	

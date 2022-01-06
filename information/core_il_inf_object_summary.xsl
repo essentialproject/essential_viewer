@@ -29,16 +29,19 @@
 	<xsl:variable name="linkClasses" select="('Information_Concept', 'Data_Object', 'Group_Actor', 'Individual_Actor', 'Business_Process', 'Business_Role', 'Application_Provider', 'Data_Representation')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
+	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
 	<xsl:variable name="currentInfoObject" select="/node()/simple_instance[name = $param1]"/>
+	<xsl:variable name="viewAttributes" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = 'contained_view_attributes']/value]"/>
 	<xsl:variable name="infoObjectName" select="$currentInfoObject/own_slot_value[slot_reference = 'view_label']/value"/>
 	<xsl:variable name="implementingInfoReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_information_views']/value = $currentInfoObject/name]"/>
-	<xsl:variable name="allApps" select="/node()/simple_instance[type = 'Application_Provider']"/>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	<xsl:variable name="allAppInforepRels" select="/node()/simple_instance[own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value = $implementingInfoReps/name]"/>
 	<xsl:variable name="allPhysProc2Inforeps" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="allDataCategories" select="/node()/simple_instance[type = 'Data_Category']"/>
 	<xsl:variable name="relevantActor2Roles" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = ('information_view_stakeholders', 'stakeholders')]/value]"/>
+	<xsl:variable name="allActor2Roles" select="/node()/simple_instance[(type = 'Group_Actor')]"/>
 	<xsl:variable name="allActors" select="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]"/>
 	<xsl:variable name="allRoles" select="/node()/simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]"/>
 	<xsl:variable name="dataStakeholderRoleType" select="/node()/simple_instance[(type = 'Business_Role_Type') and (own_slot_value[slot_reference = 'name']/value = 'Data Stakeholder')]"/>
@@ -96,7 +99,7 @@
 				</xsl:call-template>
 				<!--ADD THE CONTENT-->
 				<xsl:variable name="infoObjectDesc" select="$currentInfoObject/own_slot_value[slot_reference = 'description']/value"/>
-				<xsl:variable name="parentConcept" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = 'refinement_of_information_concept']/value]"/>
+				<xsl:variable name="parentConcept" select="$allInfoConcepts[name = $currentInfoObject/own_slot_value[slot_reference = 'refinement_of_information_concept']/value]"/>
 
 				<div class="container-fluid">
 					<div class="row">
@@ -154,13 +157,29 @@
 							</div>
 							<hr/>
 						</div>
+						
+						<!--Setup Data Attributes Section-->
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-table icon-section icon-color"/>
+							</div>
+							
+							<h2 class="text-primary">
+								<xsl:value-of select="eas:i18n('View Attributes')"/>
+							</h2>
+							
+							<div class="content-section">
+								<xsl:call-template name="viewAttributes"/>
+							</div>
+							<hr/>
+						</div>
 
 
 
 						<!--Setup Data Objects Section-->
 						<div class="col-xs-12">
 							<div class="sectionIcon">
-								<i class="fa fa-table icon-section icon-color"/>
+								<i class="fa fa-puzzle-piece icon-section icon-color"/>
 							</div>
 							<div>
 								<h2 class="text-primary">
@@ -342,9 +361,11 @@
 		<!-- Now get the physical process that implement the business processes -->
 		<xsl:variable name="physProcs" select="/node()/simple_instance[name = $busProcs/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
 		<!-- Now get the actor to role relations that perform the physical business processes -->
-		<xsl:variable name="actorToRoles" select="/node()/simple_instance[name = $physProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="actorToRoles" select="$allActor2Roles[name = $physProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 		<!-- Finally get the actors that are playing the roles -->
-		<xsl:variable name="actors" select="/node()/simple_instance[name = $actorToRoles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="directActors" select="$allActors[name = $physProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="indirectActors" select="$allActors[name = $actorToRoles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+		<xsl:variable name="actors" select="$directActors union $indirectActors"/>
 		<xsl:choose>
 			<xsl:when test="count($actors) > 0">
 				<ul>
@@ -650,5 +671,119 @@
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 			</xsl:call-template>
 		</li>
+	</xsl:template>
+	
+	<!--Setup the Data Attributes Template-->
+	<xsl:template name="viewAttributes">
+		<xsl:choose>
+			<xsl:when test="count($viewAttributes) > 0">
+				<script>
+					$(document).ready(function(){
+					// Setup - add a text input to each footer cell
+					$('#dt_viewAttributes tfoot th').each( function () {
+					var title = $(this).text();
+					$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					} );
+					
+					var table = $('#dt_viewAttributes').DataTable({
+					scrollY: "350px",
+					scrollCollapse: true,
+					paging: false,
+					info: false,
+					sort: true,
+					responsive: true,
+					columns: [
+					{ "width": "40%" },
+					{ "width": "60%" }
+					],
+					dom: 'Bfrtip',
+					buttons: [
+					'copyHtml5', 
+					'excelHtml5',
+					'csvHtml5',
+					'pdfHtml5',
+					'print'
+					]
+					});
+					
+					
+					// Apply the search
+					table.columns().every( function () {
+					var that = this;
+					
+					$( 'input', this.footer() ).on( 'keyup change', function () {
+					if ( that.search() !== this.value ) {
+					that
+					.search( this.value )
+					.draw();
+					}
+					} );
+					} );
+					
+					table.columns.adjust();
+					
+					$(window).resize( function () {
+					table.columns.adjust();
+					});
+					});
+				</script>
+				<div>
+					<table class="table table-striped table-bordered" id="dt_viewAttributes">
+						<thead>
+							<tr>
+								<th>
+									<xsl:value-of select="eas:i18n('Attribute Name')"/>
+								</th>
+								<th>
+									<xsl:value-of select="eas:i18n('Description')"/>
+								</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>
+									<xsl:value-of select="eas:i18n('Attribute Name')"/>
+								</th>
+								<th>
+									<xsl:value-of select="eas:i18n('Description')"/>
+								</th>
+							</tr>
+						</tfoot>
+						<tbody>
+							<xsl:for-each select="$viewAttributes">
+								<xsl:variable name="thisDataAtt" select="current()"/>
+								<xsl:variable name="dataAttName" select="$thisDataAtt/own_slot_value[slot_reference = 'name']/value"/>
+								<xsl:variable name="dataAttDesc" select="$thisDataAtt/own_slot_value[slot_reference = 'description']/value"/>
+								<tr>
+									<td>
+										<!--<xsl:value-of select="$dataAttName" />-->
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="$thisDataAtt"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+										</xsl:call-template>
+									</td>
+									<td>
+										<xsl:choose>
+											<xsl:when test="string-length($dataAttDesc) = 0"> - </xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="$dataAttDesc"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</td>
+								</tr>
+							</xsl:for-each>
+						</tbody>
+					</table>
+				</div>
+			</xsl:when>
+			<xsl:otherwise>
+				<div>
+					<em>
+						<xsl:value-of select="eas:i18n('No View Attributes Defined')"/>
+					</em>
+				</div>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

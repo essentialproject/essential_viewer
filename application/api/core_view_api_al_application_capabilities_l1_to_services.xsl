@@ -36,9 +36,9 @@
 	<xsl:variable name="rightRefLayerOld" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Enabling']"/>
 	<xsl:variable name="middleRefLayerOld" select="$refLayers[own_slot_value[slot_reference = 'name']/value = ('Shared','Core')]"/>
  
-	
+	<xsl:variable name="allA2R" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"/>
 	<xsl:variable name="allAppCaps" select="/node()/simple_instance[type = 'Application_Capability']"/>
-	
+	<xsl:variable name="allActors" select="/node()/simple_instance[type = 'Group_Actor']"/>
 	<xsl:variable name="allAppServices" select="/node()/simple_instance[type = 'Application_Service']"/>
     <xsl:variable name="L0AppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $refLayers/name]"/>
 	<xsl:variable name="L1AppCaps" select="$allAppCaps[name = $L0AppCaps/own_slot_value[slot_reference = 'contained_app_capabilities']/value]"/>

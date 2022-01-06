@@ -77,7 +77,7 @@
 	<xsl:variable name="allBusServiceInstances" select="/node()/simple_instance[type = ('Product','Composite_Product')]"/>
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[supertype = 'Physical_Process_Type']"/>
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[supertype = 'Business_Process_Type']"/>
-	
+	<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	
 	
 	<xsl:variable name="currentBusSvc" select="/node()/simple_instance[name = $param1]"/>
@@ -120,6 +120,15 @@
 	<xsl:variable name="busSvcAppProRoles" select="/node()/simple_instance[name = $busSvcApp2PhysProcs/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
 	<xsl:variable name="busSvcAppPros" select="/node()/simple_instance[name = $busSvcAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 
+	<xsl:variable name="relevantPhysProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_business_process']/value = $allBusSvcSupportingProcs/name]"></xsl:variable> 
+	<xsl:variable name="relevantPhysProc2AppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relevantPhysProcs/name]"></xsl:variable>
+	<xsl:variable name="relevantAppProRoles" select="/node()/simple_instance[name = $relevantPhysProc2AppProRoles/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"></xsl:variable>
+	<xsl:variable name="processToAppRel" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"></xsl:variable>
+	<xsl:variable name="directProcessToAppRel" select="$processToAppRel[name = $relevantPhysProcs/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"></xsl:variable>
+	<xsl:variable name="directProcessToApp" select="$allAppProviders[name = $directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"></xsl:variable>
+	<xsl:variable name="relevantApps" select="$allAppProviders[name = $directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"></xsl:variable>
+	<xsl:variable name="relevantAppsviaAPR" select="$allAppProviders[name = $relevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"></xsl:variable>
+	<xsl:variable name="allrelevantApps" select="$relevantAppsviaAPR union $relevantApps union $busSvcAppPros"></xsl:variable>
 
 	<!-- COARSE GRAINED FILTER FOR ADITIONAL APPS-->
 	<!-- Get the logical processes that support the business service -->
@@ -175,10 +184,10 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-
+ 
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
+ 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -316,14 +325,14 @@
 							</h2>
 							<div class="content-section">
 								<xsl:choose>
-									<xsl:when test="count($busSvcAppPros) = 0">
+									<xsl:when test="count($allrelevantApps) = 0">
 										<em>
 											<xsl:value-of select="eas:i18n('No supporting applications captured for this Business Service')"/>
 										</em>
 									</xsl:when>
 									<xsl:otherwise>
 										<ul>
-											<xsl:for-each select="$busSvcAppPros">
+											<xsl:for-each select="$allrelevantApps">
 												<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 												<li>
 													<xsl:call-template name="RenderInstanceLink">

@@ -77,6 +77,7 @@ class ResourceScope {
 //Class that represents a scping value
 class ScopingValue {
     constructor(category, value, isExcludes) {
+
         this.id = value.id;
         this.name = value.name; 
         if(category.name.length > 24){
@@ -90,7 +91,7 @@ class ScopingValue {
         this.valueClass = category.valueClass;
         this.isGroup = category.isGroup;
         if(category.isGroup) {
-            this.group = category.group;
+            this.group = value.group;
         }
         this.isExcludes = isExcludes;
     }
@@ -314,39 +315,39 @@ function essRefreshScopeSummary() {
 //function to retrieve the current list of scoping objects of a given class - including flattening scoping groups - returns a Set object containing id values
 function essGetScopeForMetaClass(aClass) {
     let scopeForMetaClass = {};
-    
     let includesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && !scope.isExcludes);
     let includesScopeValues = [];
+
     includesScopeForClass.forEach(function(scopeVal) {
+        
         if(scopeVal.isGroup) {
-            includesScopeValues.concat(scopeVal.group);
+        includesScopeValues=includesScopeValues.concat(scopeVal.group);
         } else {
             includesScopeValues.push(scopeVal);
         }
     });
+ 
     if(includesScopeValues.length > 0) {
-        let includesScopeValueIds = includesScopeValues.map(val => val.id);
+        let includesScopeValueIds = includesScopeValues.map(val => val.id); 
         scopeForMetaClass['includes'] = new Set(includesScopeValueIds);
     } else {
         scopeForMetaClass['includes'] =  null;
-    }
-
+    } 
     let excludesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && scope.isExcludes);
     let excludesScopeValues = [];
     excludesScopeForClass.forEach(function(scopeVal) {
         if(scopeVal.isGroup) {
-            excludesScopeValues.concat(scopeVal.group);
+            excludesScopeValues=excludesScopeValues.concat(scopeVal.group);
         } else {
             excludesScopeValues.push(scopeVal);
         }
     });
-    if(excludesScopeValues.length > 0) {
+    if(excludesScopeValues.length > 0) { 
         let excludesScopeValueIds = excludesScopeValues.map(val => val.id);
         scopeForMetaClass['excludes'] = new Set(excludesScopeValueIds);
     } else {
         scopeForMetaClass['excludes'] =  null;
-    }
-
+    } 
     return scopeForMetaClass;
 }
 
@@ -373,6 +374,7 @@ function essFilterResources(scopedResources, scopeForProperty, scopingProperty) 
 
 //Main function called by Views/Editor to filter a given list of resources based on the provided property to meta-class pairings
 function essScopeResources(resourceList, scopingPropertyList) {
+
     let scopedResources = resourceList;
     scopingPropertyList.forEach(function(aSP) {
         let scopeForProperty = essGetScopeForMetaClass(aSP.metaClass);

@@ -37,7 +37,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"process_to_apps":[<xsl:apply-templates select="$physicalProcess" mode="process2Apps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"process_to_apps":[<xsl:apply-templates select="$physicalProcess" mode="process2Apps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"6141"}
 	</xsl:template>
 
 	<xsl:template match="node()" mode="process2Apps">
@@ -56,10 +56,13 @@
 	{	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"processName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbpr"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"org":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisorgs"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"orgid":"<xsl:value-of select="eas:getSafeJSString($thisorgs/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"processid":"<xsl:value-of select="eas:getSafeJSString($thisbpr/name)"/>",
 		"appsviaservice":[<xsl:for-each select="$thisapr">
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","appid":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='role_for_application_provider']/value)"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"appsdirect":[<xsl:for-each select="$thisAppsDirect">
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

@@ -708,6 +708,12 @@
 				<xsl:with-param name="theDate" select="$endDate"/>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="thisDesc">
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					</xsl:call-template>
+		</xsl:variable>
 		<div>
 			<xsl:attribute name="id" select="concat('popup', $strategicPlanId)"/>
 			<p class="fontBlack">
@@ -717,10 +723,8 @@
 				</xsl:call-template>
 			</p>
 			<p class="small">
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$strategicPlan"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>
+					<xsl:variable name="Qt">'</xsl:variable>
+					<xsl:value-of select="translate($thisDesc,$Qt,'`')"/>
 			</p>
 			<div class="small">
 				<strong>Start Date: </strong>
@@ -786,6 +790,12 @@
 				<xsl:otherwise>-</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		<xsl:variable name="thisDesc">
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="theSubjectInstance" select="$project"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					</xsl:call-template>
+		</xsl:variable>
 
 		<div>
 			<xsl:attribute name="id" select="concat('popup', $projectId)"/>
@@ -796,10 +806,8 @@
 				</xsl:call-template>
 			</p>
 			<p class="small">
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$project"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>
+				<xsl:variable name="Qt">'</xsl:variable>
+				 <xsl:value-of select="translate($thisDesc,$Qt,'`')"/>
 			</p>
 			<p class="small">
 				<strong>Planned Start Date: </strong>
@@ -840,6 +848,12 @@
 				<xsl:with-param name="theDate" select="$startDate"/>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="thisDesc">
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="theSubjectInstance" select="$archState"/>
+						<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					</xsl:call-template>
+		</xsl:variable>
 		<div>
 			<xsl:attribute name="id" select="concat('popup', $archStateId)"/>
 			<p class="fontBlack">
@@ -849,10 +863,8 @@
 				</xsl:call-template>
 			</p>
 			<p class="small">
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="$archState"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>
+					<xsl:variable name="Qt">'</xsl:variable>
+					<xsl:value-of select="translate($thisDesc,$Qt,'`')"/>
 			</p>
 			<p class="small">
 				<strong>Date: </strong>

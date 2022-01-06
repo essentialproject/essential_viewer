@@ -24,11 +24,12 @@
 	<xsl:variable name="relatedAppservtoPro" select="/node()/simple_instance[type = 'APP_SVC_TO_BUS_RELATION'][own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $relatedBusProcesses/name]"/>
 	<xsl:variable name="relatedAppserv" select="/node()/simple_instance[type = 'Application_Service'][own_slot_value[slot_reference = 'supports_business_process_appsvc']/value = $relatedAppservtoPro/name]"/>
 	<xsl:variable name="relatedAppPro" select="/node()/simple_instance[((type = 'Application_Provider') or (type = 'Composite_Application_Provider'))]"/>
-	<xsl:variable name="relatedAppProviaRole" select="/node()/simple_instance[type = 'Application_Provider_Role'][name = $relatedAppserv/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]"/>
+	<xsl:variable name="relatedAppProviaRole" select="/node()/simple_instance[type = 'Application_Provider_Role']"/>
 	
 
 	<xsl:variable name="relatedPhysBusProcesses" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference = 'implements_business_process']/value = $relatedBusProcesses/name]"/>
 	<xsl:variable name="relatedAppProtoBus" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relatedPhysBusProcesses/name]"/>
+ 
     
     <xsl:variable name="planElements" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION'][own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $relatedAppPro/name]"/>
     <xsl:variable name="planningAction" select="/node()/simple_instance[type = 'Planning_Action']"/>
@@ -124,7 +125,7 @@
 									  { "name": "<xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/>","colour":"red",
 									    "children": [<xsl:apply-templates select="$thisBusCap" mode="buscaps"/>]};
 									    
-									console.log(treeData)
+								//	console.log(treeData)
                                     
 									// Set the dimensions and margins of the diagram
 									var margin = {top: 20, right: 90, bottom: 30, left: 120},
@@ -224,7 +225,7 @@
                                          
 									      .text(function(d) {
                                       
-                                            if(d.data.change){ console.log(d);var str='('+d.data.change+')'; 
+                                            if(d.data.change){  ;var str='('+d.data.change+')'; 
                                             
                                             return d.data.action + str}else {return d.data.action}})
 									    ;
@@ -379,18 +380,21 @@
 		<xsl:variable name="thisphysical" select="$relatedPhysBusProcesses[own_slot_value[slot_reference = 'implements_business_process']/value = $this/name]"/> {"name": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","colour": "gray","link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>", "children": [ <xsl:apply-templates select="$thisappserv" mode="appservices"/>
-		<xsl:apply-templates select="$thisphysical" mode="physprocesses">
-			<xsl:with-param name="process" select="$this/own_slot_value[slot_reference = 'name']/value"/>
-		</xsl:apply-templates> ]}, </xsl:template>
+			<xsl:if test="$thisphysical">
+		<xsl:apply-templates select="$thisphysical" mode="physprocesses"> 
+		</xsl:apply-templates></xsl:if> ]}, </xsl:template>
 
-	<xsl:template match="node()" mode="physprocesses">
-		<xsl:param name="process"/>
+	<xsl:template match="node()" mode="physprocesses"> 
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisParent" select="$relatedBusProcesses[name = $this/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
-		<xsl:variable name="physProcs2AppsForCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $this/name]"/>
-		<xsl:variable name="appRolesForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+		<xsl:variable name="thisrelatedAppProtoBus" select="$relatedAppProtoBus[name=current()/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
+<xsl:variable name="appRoles" select="$relatedAppProviaRole[name = $thisrelatedAppProtoBus/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+<xsl:variable name="appRoles" select="$relatedAppProviaRole[name = $thisrelatedAppProtoBus/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+		apppro_to_physbus_from_appprorole
+	{"id": "<xsl:value-of select="current()/name"/>","physname": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>","debug":"<xsl:value-of select="$thisrelatedAppProtoBus"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+	<!--  		<xsl:variable name="physProcs2AppsForCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $this/name]"/>
+		
 		<xsl:variable name="appsForRolesCap" select="/node()/simple_instance[name = $appRolesForCap/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-		<!--      <xsl:variable name="appsForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+	    <xsl:variable name="appsForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
         <xsl:variable name="allAppsForCap" select="$appsForRolesCap union $appsForCap union $relatedAppPro"/>     
 -->
 		<!-- <xsl:variable name="thisApplication" select="current()"/>

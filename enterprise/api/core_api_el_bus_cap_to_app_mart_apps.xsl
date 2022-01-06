@@ -9,6 +9,7 @@
 <xsl:variable name="rootBusCap" select="$allBusCaps[name = $busCapReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"></xsl:variable>
 <xsl:variable name="L0BusCaps" select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"></xsl:variable>-->
 <xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"></xsl:variable>
+ 
 <xsl:variable name="allChildCap2ParentCapRels" select="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']"/>
 <xsl:variable name="allLifecycleStatus" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
 <xsl:variable name="allLifecycleStatustoShow" select="$allLifecycleStatus[(own_slot_value[slot_reference='enumeration_sequence_number']/value &gt; -1) or not(own_slot_value[slot_reference='enumeration_sequence_number']/value)]"/>
@@ -24,11 +25,14 @@
 <xsl:variable name="relevantAppsviaAPR" select="$allAppProviders[name = $relevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"></xsl:variable>
 <xsl:variable name="appsWithCaps" select="$relevantApps union $relevantAppsviaAPR"/>
 <xsl:variable name="services" select="/node()/simple_instance[type='Application_Service'][name=$relevantAppProRoles/own_slot_value[slot_reference='implementing_application_service']/value]"/>
-
+<xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"></xsl:variable>
  
 <xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Application Organisation User')]"/>
+<xsl:variable name="everyAppOrgUsers2Roles" select="/node()/simple_instance[(name = $appsWithCaps/own_slot_value[slot_reference = 'stakeholders']/value)]"/>
 <xsl:variable name="allAppOrgUsers2Roles" select="/node()/simple_instance[(name = $appsWithCaps/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appOrgUserRole/name)]"/>	
-<xsl:variable name="allAppOrgUsers2RoleSites" select="/node()/simple_instance[name = $allAppOrgUsers2Roles/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>	
+<xsl:variable name="allAppActors" select="$actors[name=$allAppOrgUsers2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+
+<xsl:variable name="allAppOrgUsers2RoleSites" select="/node()/simple_instance[name = $allAppActors/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>	
 <xsl:variable name="allAppOrgUsers2RoleSitesCountry" select="/node()/simple_instance[name = $allAppOrgUsers2RoleSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>	
 <xsl:variable name="countries" select="/node()/simple_instance[type='Geographic_Region']"/>
 <xsl:variable name="appTypesEnums" select="/node()/simple_instance[type='Application_Purpose']"/>
@@ -45,7 +49,7 @@
 <xsl:variable name="unitOfMeasures" select="/node()/simple_instance[type = 'Unit_Of_Measure']"></xsl:variable>
 <xsl:variable name="criticalityStatus" select="/node()/simple_instance[type = 'Business_Criticality']"></xsl:variable>
 <xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"></xsl:variable>
-<xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"></xsl:variable>
+
 <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"></xsl:variable>
 <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"></xsl:variable>
 <xsl:variable name="manualDataEntry" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value='Manual Data Entry']"/> 
@@ -84,7 +88,8 @@
 	"applications":[<xsl:apply-templates select="$allAppProviders" mode="applications"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 	"lifecycles":[<xsl:apply-templates select="$allLifecycleStatus" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>],
 	"codebase":[<xsl:apply-templates select="$codebase" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>],
-	"delivery":[<xsl:apply-templates select="$delivery" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>]
+	"delivery":[<xsl:apply-templates select="$delivery" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>],
+	"version":"614"
 	}
 </xsl:template>
 
@@ -95,14 +100,20 @@
 <xsl:variable name="thisDepStyle" select="$allElementStyles[name=$appDelivery/own_slot_value[slot_reference = 'element_styling_classes']/value]"/> <xsl:variable name="thisCodebase" select="$codebase[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]"/>
 <xsl:variable name="thisCodebaseStyle" select="$allElementStyles[name=$thisCodebase/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>  
 <xsl:variable name="thisAppOrgUsers2Roles" select="$allAppOrgUsers2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+<xsl:variable name="thiseveryAppOrgUsers2Roles" select="$a2r[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+
+
 <xsl:variable name="thisOrgUserIds" select="$thisAppOrgUsers2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
 <xsl:variable name="eaScopedOrgUserIds" select="$actors[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]/name"/>
 
 <xsl:variable name="thisAppTypes" select="$relevantAppTypes[name = current()/own_slot_value[slot_reference = 'application_provider_purpose']/value]"></xsl:variable>
-<xsl:variable name="thisAppOrgUsers2RoleSites" select="$allAppOrgUsers2RoleSites[name = $thisAppOrgUsers2Roles/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>	
-<xsl:variable name="thisAppOrgUsers2RoleSitesCountry" select="$allAppOrgUsers2RoleSitesCountry[name = $thisAppOrgUsers2RoleSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>	
+<xsl:variable name="thisallAppActors" select="$actors[name=$thisAppOrgUsers2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+
+<xsl:variable name="thisAppOrgUsers2RoleSites" select="$allAppOrgUsers2RoleSites[name = $thisallAppActors/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>	
+<xsl:variable name="thisAppOrgUsers2RoleSitesCountry" select="$allAppOrgUsers2RoleSitesCountry[name = $thisAppOrgUsers2RoleSites/own_slot_value[slot_reference = 'site_geographic_location']/value]/name"/>	
+<xsl:variable name="thisAppOrgUsers2RoleSitesCountryAOU" select="$allAppOrgUsers2RoleSitesCountry[name = $thiseveryAppOrgUsers2Roles/own_slot_value[slot_reference = 'site_geographic_location']/value]/name"/>	
 <xsl:variable name="eaScopedGeoIds" select="$countries[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]/name"/>
-<xsl:variable name="allGeos" select="$eaScopedGeoIds union $thisAppOrgUsers2RoleSitesCountry"/>
+<xsl:variable name="allGeos" select="$eaScopedGeoIds union $thisAppOrgUsers2RoleSitesCountry union $thisAppOrgUsers2RoleSitesCountryAOU"/>
 
 <!-- application process support -->
 <xsl:variable name="thisAppAPRs" select="$relevantAppProRoles[own_slot_value[slot_reference = 'role_for_application_provider']/value=current()/name]"></xsl:variable>
@@ -111,11 +122,12 @@
 <xsl:variable name="thisdirectProcessToAppRelation" select="$relevantPhysProcs[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value=$thisApptoProc/name]"></xsl:variable>
 <xsl:variable name="thisrelevantPhysProc2AppProRoles" select="$relevantPhysProcs[name=$thisAppProRolestoPhys/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"></xsl:variable>
 <xsl:variable name="allRelevantPhysProcesses" select="$thisrelevantPhysProc2AppProRoles union $thisdirectProcessToAppRelation"/>  
-<xsl:variable name="allRelevantPhysProcessesIDs" select="$thisAppProRolestoPhys/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value union $thisApptoProc/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value"/> 
+<xsl:variable name="allRelevantPhysProcessesIDs" select="distinct-values($thisAppProRolestoPhys/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value union $thisApptoProc/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value)"/> 
 <xsl:variable name="thisrelevantPhysProcsActorsDirect" select="$actors[name=$allRelevantPhysProcesses/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
 <xsl:variable name="thisrelevantPhysProcsActorsIndirect" select="$a2r[name=$allRelevantPhysProcesses/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
 <xsl:variable name="thisrelevantPhysProcsActors" select="$actors[name=$thisrelevantPhysProcsActorsIndirect/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"></xsl:variable>
 <xsl:variable name="allProcessActors" select="$thisrelevantPhysProcsActors/name union $thisrelevantPhysProcsActorsDirect/name"/>
+ 
 <xsl:variable name="allOrgUserIds" select="$eaScopedOrgUserIds union $thisOrgUserIds union $allProcessActors"/>
 <xsl:variable name="subApps" select="$allAppProviders[name = current()/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 <xsl:variable name="subSubApps" select="$allAppProviders[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
@@ -129,7 +141,7 @@
 <xsl:variable name="appOutboundStaticApps" select="$allAppProviders[name = $appOutboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 <xsl:variable name="appInboundDepCount" select="eas:get_inbound_int_count($allCurrentApps)"/>
 <xsl:variable name="appOutboundDepCount" select="eas:get_outbound_int_count($allCurrentApps)"/>
-		{
+		{  
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="isRenderAsJSString" select="true()"/>
@@ -137,7 +149,7 @@
 		</xsl:call-template>",
 		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>",
 	<!--	"link": "<xsl:call-template name="RenderInstanceLinkForJS">
@@ -161,10 +173,11 @@
 		"geoIds": [<xsl:for-each select="$allGeos">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"codebaseID":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
 		"deliveryID":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
+		"sA2R":[<xsl:for-each select="$thiseveryAppOrgUsers2Roles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"lifecycle":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value)"/>",
 		"physP":[<xsl:for-each select="$allRelevantPhysProcessesIDs">"<xsl:value-of select="eas:getSafeJSString(.)"></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"allServices":[<xsl:for-each select="current()/own_slot_value[slot_reference='provides_application_services']/value">
-				{"id": "<xsl:value-of select="eas:getSafeJSString(.)"></xsl:value-of>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
+	 	{ "id": "<xsl:value-of select="eas:getSafeJSString(.)"></xsl:value-of>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		<!--services supporting processes -->
 		"services":[<xsl:for-each select="$thisAppAPRs">
 			<xsl:variable name="svc" select="$services[name=current()/own_slot_value[slot_reference='implementing_application_service']/value]"/>

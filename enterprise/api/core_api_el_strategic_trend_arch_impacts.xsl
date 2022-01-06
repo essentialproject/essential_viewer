@@ -39,7 +39,7 @@
 		{
 			"impacts": {
 			<!-- BUSINESS LAYER IMPACTS -->
-			<xsl:apply-templates mode="BusCapImpactJSON" select="$impactBusinessCapabilities"/>
+			<xsl:if test="not($impactBusinessCapabilities)">"":{}</xsl:if><xsl:apply-templates mode="BusCapImpactJSON" select="$impactBusinessCapabilities"/>
 			<xsl:if test="$impactBusEnvFactors">,</xsl:if><xsl:apply-templates mode="BusEnvFactorImpactJSON" select="$impactBusEnvFactors"/>
 			<xsl:if test="$impactChannelTypes">,</xsl:if><xsl:apply-templates mode="ChannelTypeImpactJSON" select="$impactChannelTypes"/>
 			<xsl:if test="$impactBrands">,</xsl:if><xsl:apply-templates mode="BrandImpactJSON" select="$impactBrands"/>

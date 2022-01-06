@@ -218,7 +218,7 @@
 							<h2 class="text-primary">
 								<xsl:value-of select="eas:i18n('Description')"/>
 							</h2>
-
+ 
 							<div class="content-section">
 								<xsl:choose>
 									<xsl:when test="string-length($currentBusCapDescription) = 0">
@@ -229,7 +229,7 @@
 									<xsl:otherwise>
 										<xsl:call-template name="RenderMultiLangInstanceDescription">
 											<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
-										</xsl:call-template>
+										</xsl:call-template>	
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>
@@ -330,7 +330,9 @@
 
 
 									<div class="content-section">
-										<p>The following provides a view of the sub-capabilities of <strong><xsl:value-of select="$currentBusCapName"/></strong></p>
+										<p>The following provides a view of the sub-capabilities of <strong><xsl:call-template name="RenderMultiLangInstanceName">
+												<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
+											</xsl:call-template></strong></p>
 										<xsl:variable name="busCapability" select="$allBusinessCaps[name = $currentBusCap/name]"/>
 										<xsl:variable name="busCapName" select="$busCapability/own_slot_value[slot_reference = 'name']/value"/>
 										<xsl:variable name="topLevelBusCapabilities" select="$allBusinessCaps[own_slot_value[slot_reference = 'supports_business_capabilities']/value = $busCapability/name]"/>
@@ -400,7 +402,9 @@
 										</p>
 									</xsl:when>
 									<xsl:otherwise>
-										<p>The following Business Processes implement the <strong><xsl:value-of select="$currentBusCapName"/></strong> Business Capability</p>
+										<p>The following Business Processes implement the <strong><xsl:call-template name="RenderMultiLangInstanceName">
+												<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
+											</xsl:call-template></strong> Business Capability</p>
 										<br/>
 										<table class="table table-bordered table-striped" id="processTable">
 											<thead>
@@ -463,7 +467,9 @@
 										</em>
 									</xsl:when>
 									<xsl:otherwise>
-										<p><xsl:value-of select="eas:i18n('The following Information Concepts support the')"/>&#160; <xsl:value-of select="$currentBusCapName"/>&#160; <xsl:value-of select="eas:i18n('Business Capability')"/></p>
+										<p><xsl:value-of select="eas:i18n('The following Information Concepts support the')"/>&#160; <xsl:call-template name="RenderMultiLangInstanceName">
+												<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
+											</xsl:call-template>&#160; <xsl:value-of select="eas:i18n('Business Capability')"/></p>
 
 										<table class="table table-bordered table-striped">
 											<thead>
@@ -510,7 +516,9 @@
 										</em>
 									</xsl:when>
 									<xsl:otherwise>
-										<p><xsl:value-of select="eas:i18n('The following Applications support the')"/>&#160; <xsl:value-of select="$currentBusCapName"/>&#160; <xsl:value-of select="eas:i18n('Business Capability')"/></p>
+										<p><xsl:value-of select="eas:i18n('The following Applications support the')"/>&#160; <xsl:call-template name="RenderMultiLangInstanceName">
+												<xsl:with-param name="theSubjectInstance" select="$currentBusCap"></xsl:with-param>
+											</xsl:call-template>&#160; <xsl:value-of select="eas:i18n('Business Capability')"/></p>
 
 										<table class="table table-bordered table-striped">
 											<thead>

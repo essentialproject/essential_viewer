@@ -483,6 +483,7 @@
             bcm[0].l1BusCaps.forEach(function(d){
                 d.l2BusCaps.forEach(function(e){
                     let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+            console.log(e.subApps)  
                     let scopedSubApps = essScopeResources(e.subApps, [appOrgScopingDef]);
                     
                     let appsForRM;

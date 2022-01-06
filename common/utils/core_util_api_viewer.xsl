@@ -36,6 +36,7 @@
 				<title>Data Set API List</title>
 				<style>
 				.fa-circle {color:#d3d3d3}
+				.word-break {word-break: break-word;}
 				</style>
 			</head>
 			<body>
@@ -64,103 +65,120 @@
 					</div>
 				</div>
 				<script id="api-template" type="text/x-handlebars-template">
-					<div class="col-xs-8">
-						<table width="350px">
-							<tr><th width="250px">API Name</th><th width="50px">Pre-Cache</th><th width="50px">Status</th></tr>
-						
-						{{#each this}}
-						<tr><td >{{this.name}}</td><td  width="50px">{{this.cache}}</td><td  width="40px"><i class="fa fa-circle"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></td></tr>
-						
-						{{/each}}
-						</table>
-					</div>
+					<table class="table table-striped table-condensed">
+						<tr>
+							<th>API Name</th>
+							<th>Pre-Cache</th>
+							<th>Status</th>
+							<th>File Size</th>
+							<!--<th>Download</th>-->
+						</tr>		
+
+					{{#each this}}
+						<tr>
+							<td><strong>{{this.name}}</strong><br/><span class="text-muted small word-break">{{this.fullpath}}</span></td>
+							<td>{{this.cache}}</td>
+							<td><i class="fa fa-circle"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></td>
+							<td>{{getFileSize this.fullpath}}k</td>
+							<!--<td>
+								<a class="btn btn-xs btn-default">
+									<xsl:attribute name="download" select="concat('{{this.xslpathrep}}','.json')"></xsl:attribute>
+									<xsl:attribute name="href" select="concat('platform/tmp/reportApiCache/','{{this.xslpathrep}}')"></xsl:attribute>
+								<i class="fa fa-download right-5"/>Download</a>
+							</td>-->
+						</tr>
+					{{/each}}
+					</table>					
 				</script>	
 				<script>
 					let apis=[<xsl:apply-templates select="$reportAPI" mode="api"><xsl:sort select="current()/own_slot_value[slot_reference='is_data_set_api_precached']/value" order="descending"/></xsl:apply-templates>];
 
-					$(document).ready(function (){
+					$(document).ready(function () {
 						apiFragment = $("#api-template").html();
 						apiTemplate = Handlebars.compile(apiFragment);
 						$('#stuff').html(apiTemplate(apis))
-						let cachedAPIs=apis.filter((ap)=>{
-							return ap.cache =='true';
-						});
-				
-						cachedAPIs.forEach((d)=>{	
-							
-							let thispath='reportApi?XML=reportXML.xml&amp;XSL='+d.xslpath;
-							Promise.all([
-								promise_loadViewerAPIData(thispath)
-								]).then(function (responses, reject)
-										{
-										if(responses[0]){	
-											if(typeof responses[0]=='object'){
-											 
-												$('#'+d.id).css('color','green');
-											}else
-											{ 
-												$('#'+d.id).html='no';
-											}
-										}
-										else{
-											$('#'+d.id).css('color','amber');
-										}
-									})
-						.catch(function (error, reject) {
-							console.log('FAILED API:'+d.name)
-							$('#'+d.id).css('color','red');
-						});
-							
+						let cachedAPIs = apis.filter((ap) => {
+							return ap.cache == 'true';
 						});
 						
-
+						cachedAPIs.forEach((d) => {
+							
+							let thispath = 'reportApi?XML=reportXML.xml&amp;XSL=' + d.xslpath;
+							Promise.all([
+							promise_loadViewerAPIData(thispath)]).then(function (responses, reject) {
+								if (responses[0]) {
+									if (typeof responses[0] == 'object') {
+										$('#' + d.id).css('color', 'green');
+									} else {
+										$('#' + d.id).html = 'no';
+									}
+								} else {
+									$('#' + d.id).css('color', 'amber');
+								}
+							}). catch (function (error, reject) {
+								console.log('FAILED API:' + d.name)
+								$('#' + d.id).css('color', 'red');
+							});
+						});
+					});
+					
+					function LinkCheck(url) {
+						var http = new XMLHttpRequest();
+						http.open('HEAD', url, false);
+						http.send();
+						return http.status != 404;
+					}
+					
+					function doesFileExist(urlToFile) {
+						var xhr = new XMLHttpRequest();
+						xhr.open('HEAD', urlToFile, false);
+						xhr.send();
+						
+						if (xhr.status == "404") {
+							return false;
+						} else {
+							return true;
+						}
+					}
+					
+					Handlebars.registerHelper("getFileSize", function(url) {
+					  var fileSize = '';
+					    var http = new XMLHttpRequest();
+					    http.open('HEAD', url, false); // false = Synchronous
+					    http.send(null); // it will stop here until this http request is complete
+					
+					    // when we are here, we already have a response, b/c we used Synchronous XHR
+					
+					    if (http.status === 200) {
+					        fileSize = http.getResponseHeader('content-length');
+					        //console.log('fileSize = ' + fileSize);
+					    } else fileSize = 0;
+					    return fileSize;
+					});
 
 					
-
-					});	
-
-					function LinkCheck(url)
-						{
-							var http = new XMLHttpRequest();
-							http.open('HEAD', url, false);
-							http.send();
-							return http.status!=404;
-						}
-
-					function doesFileExist(urlToFile) {
-							var xhr = new XMLHttpRequest();
-							xhr.open('HEAD', urlToFile, false);
-							xhr.send();
-							
-							if (xhr.status == "404") {
-								return false;
+					var promise_loadViewerAPIData = function (apiDataSetURL) {
+						return new Promise(function (resolve, reject) {
+							if (apiDataSetURL != null) {
+								var xmlhttp = new XMLHttpRequest();
+								//console.log(apiDataSetURL);
+								xmlhttp.onreadystatechange = function () {
+									if (this.readyState == 4 &amp;&amp; this.status == 200) {
+										// console.log(this.responseText);
+										var viewerData = JSON.parse(this.responseText);
+										resolve(viewerData);
+									}
+								};
+								xmlhttp.onerror = function () {
+									reject(false);
+								};
+								xmlhttp.open("GET", apiDataSetURL, true);
+								xmlhttp.send();
 							} else {
-								return true;
+								reject(false);
 							}
-						}
-
-			var promise_loadViewerAPIData = function(apiDataSetURL) {
-            	return new Promise(function (resolve, reject) {
-                if (apiDataSetURL != null) {
-                    var xmlhttp = new XMLHttpRequest();
-//console.log(apiDataSetURL);    
-                    xmlhttp.onreadystatechange = function () {
-                        if (this.readyState == 4 &amp;&amp; this.status == 200) {
-//console.log(this.responseText);  
-                            var viewerData = JSON.parse(this.responseText);
-                            resolve(viewerData);
-                        }
-                    };
-                    xmlhttp.onerror = function () {
-                        reject(false);
-                    };
-                    xmlhttp.open("GET", apiDataSetURL, true);
-                    xmlhttp.send();
-                } else {
-                    reject(false);
-                }
-            });
-        };					
+						});
+					};
 				</script>	
 
 				<!-- ADD THE PAGE FOOTER -->
@@ -169,15 +187,24 @@
 		</html>
 	</xsl:template>
 <xsl:template match="node()" mode="api">
-	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+	<xsl:variable name="dataset-id" select="eas:getSafeJSString(current()/name)"/>
+	<xsl:variable name="dataset-name">
+		<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param  name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
-	"xslpathrep":"<xsl:value-of select="replace(current()/own_slot_value[slot_reference='report_xsl_filename']/value,'/','.')"/>",
-	"xslpath":"<xsl:value-of select="current()/own_slot_value[slot_reference='report_xsl_filename']/value"/>",
-	"cache":"<xsl:value-of select="current()/own_slot_value[slot_reference='is_data_set_api_precached']/value"/>"	
-	}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="dataset-xslpathrep" select="replace(current()/own_slot_value[slot_reference='report_xsl_filename']/value,'/','.')"/>
+	<xsl:variable name="dataset-xslpath" select="current()/own_slot_value[slot_reference='report_xsl_filename']/value"/>
+	<xsl:variable name="dataset-cache" select="current()/own_slot_value[slot_reference='is_data_set_api_precached']/value"/>
+	<xsl:variable name="dataset-fullpath" select="concat('platform/tmp/reportApiCache/',$dataset-xslpathrep)"/>
+	{"id":"<xsl:value-of select="$dataset-id"/>",
+	"name":"<xsl:value-of select="$dataset-name"/>",
+	"xslpathrep":"<xsl:value-of select="$dataset-xslpathrep"/>",
+	"xslpath":"<xsl:value-of select="$dataset-xslpath"/>",
+	"cache":"<xsl:choose><xsl:when test="string-length($dataset-cache) &gt; 0"><xsl:value-of select="$dataset-cache"/></xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>",
+	"fullpath": "<xsl:value-of select="$dataset-fullpath"/>"}
+	<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 
 <!--

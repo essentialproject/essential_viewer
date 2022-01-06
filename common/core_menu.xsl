@@ -59,7 +59,7 @@
 	<!-- Define any constant values that are used throughout -->
 	<xsl:variable name="urlNameSuffix" select="'URL'"/>
 	<xsl:variable name="editorXSLPath" select="'ess_editor.xsl'"/>
-	<xsl:variable name="configuredEditorXSLPath" select="'ess_configured_editor.xsl'"/>
+	<xsl:variable name="configuredEditorXSLPath" select="'ess_editor.xsl'"/>
 
 	<xsl:variable name="menuIdeationConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'Ideation Enabled')]/own_slot_value[slot_reference = 'report_constant_value']/value"/>
 	<xsl:variable name="menuIdeationIsOn" select="string-length($menuIdeationConstant)"/>

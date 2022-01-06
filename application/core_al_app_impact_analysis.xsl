@@ -51,7 +51,10 @@
 
 	<xsl:variable name="currentApp" select="/node()/simple_instance[name = $param1]"/>
 
+ 
 	<xsl:variable name="allIndivActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
+	<xsl:variable name="allActors" select="/node()/simple_instance[type = ('Individual_Actor','Group_Actor')]"/>
+	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>	
 	<xsl:variable name="allIndivRoles" select="/node()/simple_instance[type = 'Individual_Business_Role']"/>
 	<xsl:variable name="allActor2Roles" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"/>
 	<xsl:variable name="itContactRole" select="$allIndivRoles[own_slot_value[slot_reference = 'name']/value = 'IT Contact']"/>
@@ -81,7 +84,11 @@
 
 	<!-- Get the set of physical Processes that are supported -->
 	<!-- 06.11.2008	JWC replaced TO slot with apppro_to_physbus_to_busproc -->
-	<xsl:variable name="aPhysProcList" select="/node()/simple_instance[name = $anAppToProcRelList/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"/>
+	<xsl:variable name="aPhysProcListviaAppPro" select="/node()/simple_instance[name = $anAppToProcRelList/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"/>
+	<xsl:variable name="aPhysProcIntermediateListDirect" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $currentApp/name]"/>
+	<xsl:variable name="aPhysProcListDirect" select="/node()/simple_instance[name=$aPhysProcIntermediateListDirect/own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value]"/>
+	<xsl:variable name="aPhysProcList" select="$aPhysProcListDirect union $aPhysProcListviaAppPro"/>
+
 
 	<!-- END VIEW SPECIFIC SETUP VARIABES -->
 
@@ -374,9 +381,7 @@
 
 	<!-- Find the actual instance of  a Processes supported from the specified App Provider  -->
 	<xsl:template match="node()" mode="processInstance">
-
-
-		<!-- Process this for unique IDs and send for rendering -->
+	<!-- Process this for unique IDs and send for rendering -->
 		<xsl:for-each-group select="$aPhysProcList" group-by="name">
 			<xsl:apply-templates select="current()[1]" mode="processDetail"> </xsl:apply-templates>
 		</xsl:for-each-group>
@@ -431,13 +436,29 @@
 			</td>
 
 			<td>
-				<xsl:variable name="anActor">
-					<xsl:value-of select="own_slot_value[slot_reference = 'process_performed_by_actor_role']/value"/>
-				</xsl:variable>
+				<xsl:variable name="anActor" select="$allActors[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+			  
 				<xsl:choose>
 					<xsl:when test="count($anActor) > 0">
-						<xsl:apply-templates select="own_slot_value[slot_reference = 'process_performed_by_actor_role']/value" mode="role_to_actor"> </xsl:apply-templates>
-					</xsl:when>
+						<xsl:for-each select="$anActor">
+							<xsl:variable name="thesite" select="$allSites[name=current()/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
+							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+								<xsl:with-param name="theXML" select="$reposXML"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+							</xsl:call-template>
+						 
+							<xsl:if test="$thesite">
+							(<xsl:for-each select="$thesite">
+								<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+								<xsl:with-param name="theXML" select="$reposXML"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+								</xsl:call-template><xsl:if test="position()!=last()">, </xsl:if>
+								</xsl:for-each>)
+							</xsl:if> <br/>
+						</xsl:for-each>
+						</xsl:when>
 					<xsl:otherwise>
 						<em>
 							<xsl:value-of select="eas:i18n('No information')"/>

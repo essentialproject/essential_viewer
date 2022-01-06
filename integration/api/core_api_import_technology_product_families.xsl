@@ -28,7 +28,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_product_family":[<xsl:apply-templates select="$techProductFamilies" mode="techProductFamilies"></xsl:apply-templates>]}
+		{"technology_product_family":[<xsl:apply-templates select="$techProductFamilies" mode="techProductFamilies"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 	<xsl:template mode="techProductFamilies" match="node()">
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",

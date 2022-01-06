@@ -29,7 +29,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"data_object_inherit":[<xsl:apply-templates select="$dataObjects" mode="dataObjectInherit"></xsl:apply-templates>]}
+		{"data_object_inherit":[<xsl:apply-templates select="$dataObjects" mode="dataObjectInherit"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	 

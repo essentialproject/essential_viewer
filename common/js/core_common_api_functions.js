@@ -79,7 +79,20 @@ function essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb)
 				let theResponseJson = JSON.parse(response);
 				if (status === 403 && theResponseJson.message && theResponseJson.message.errorCode && theResponseJson.message.errorCode === 10) {
 					// specific error code that informs the client that the server has logged the user out and requires a page refresh to complete the logout
-					location.reload();
+					window.stop();
+					var modalHtml =
+						'<div class="modal-dialog" role="document">' +
+						'  <div class="modal-content">' +
+						'    <div class="modal-header"><h4 class="strong"><i class="fa fa-user right-5"></i>Session Expired</h4></div>' +
+						'    <div class="modal-body"><p>Your current session has expired. Please sign-in again.</p>' +
+						'    <div class="modal-footer"><div class="btn btn-success" onClick="location.reload();">Sign-In</div></div>' +
+						'  </div>' + 
+						'</div>';
+					$('body').append('<div id="timeoutModal" class="modal fade" tabindex="-1" role="dialog" style="z-index: 9999999999999" />');	
+					// insert HTML dynamically
+					$("#timeoutModal").html(modalHtml);
+					// display
+					$("#timeoutModal").modal('show');
 				}
 			} catch (e) {
 				// do nothing - if the API doesn't return a JSON error response, just continue

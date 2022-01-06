@@ -86,6 +86,181 @@
 						<xsl:copy-of select="document(.)"/>
 					</xsl:if>
 				</xsl:for-each>
+				
+				<!-- setup editor environment -->
+				<script type="text/javascript">
+					'use strict';
+					
+					const essEditorId = '<xsl:value-of select="$targetEditor/name"/>';
+					<xsl:if test="$hasConfigEditorComps">
+						function compileFragmentTemplate(templateId) {
+						let thisFragment = $("#" + templateId).html();
+						return Handlebars.compile(thisFragment);
+						}
+					</xsl:if>
+					
+					// define the global object to hold environment variables
+					// note we have to define this script in-line to make use of the xsl values
+					var essEnvironment = {};
+					
+					//define the details for the current user
+					var essUserDets = {
+					'id': '<xsl:value-of select="$userData//user:email"/>',
+					'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
+					'lastName': '<xsl:value-of select="$userData//user:lastname"/>'
+					};
+					
+					essEnvironment.repoId = '<xsl:value-of select="repository/repositoryID"/>';
+					essEnvironment.repoName = '<xsl:value-of select="repository/name"/>';
+					essEnvironment.targetEditorID = '<xsl:value-of select="$targetEditor/name"/>';
+					essEnvironment.targetEditorPath = '<xsl:value-of select="$targetEditorContent"/>';
+					essEnvironment.targetEditorLabel = '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>';
+					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
+					
+					essEnvironment.form = {
+					'id': '<xsl:value-of select="$targetEditor/name"/>',
+					'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
+					};				
+					
+					var essDataSetAPIs = {
+					<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
+					};
+					
+					function essGetDataSetAPIUrl(dataSetLabel) {
+					let apiURL = essDataSetAPIs[dataSetLabel].url;
+					return apiURL;
+					}
+					
+					function essGetDataSetAPICachePath(dataSetLabel) {
+					let path = essDataSetAPIs[dataSetLabel].cachePath;
+					return path;
+					}
+					
+					function essIsDataSetAPIPreCached(dataSetLabel) {
+					let isPrecached = essDataSetAPIs[dataSetLabel].isPreCached;
+					return isPrecached;
+					}
+					
+					
+					var promise_essCheckPreCachedDataSetAPIsCompleted = function(successCallBack, failCallback) {
+					return new Promise((resolve) => {
+					let preCachedDataSets = Object.values(essDataSetAPIs).filter(aDS => aDS.isPreCached);
+					if(preCachedDataSets.length > 0) {
+					let apiCheckList = [];
+					preCachedDataSets.forEach(aDS => apiCheckList.push(promise_essCheckPreCachedDataSetAPI(aDS)));
+					Promise.all(apiCheckList)
+					.then(function (responses) {
+					if(responses.filter(aResp => !aResp).length == 0) {
+					successCallBack();
+					resolve(true);
+					} else {
+					failCallback();
+					resolve(false);
+					}
+					})
+					.catch (function (error) {
+					failCallback();
+					resolve(false);
+					});
+					} else {
+					resolve(true);
+					}					   	
+					});
+					};
+					
+					
+					
+					var promise_essCheckPreCachedDataSetAPI = function(apiDetails) {
+					return new Promise((resolve) => {
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4) {
+					if (this.status == 200) {
+					resolve(true);
+					} else {
+					resolve(false);
+					}
+					}
+					};
+					xmlhttp.onerror = function () {
+					resolve(false);
+					};
+					xmlhttp.open("HEAD", apiDetails.cachePath, true);
+					xmlhttp.send();
+					})
+					};
+					
+					
+					var esslinkMenuNames = {
+					<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
+					}
+					
+					var essEditorForClasses = [<xsl:apply-templates mode="RenderClassList" select="$editorForClasses"/>];
+					
+					
+					
+					function essGetMenuName(instance) {
+					let menuName = null;
+					if((instance != null) &amp;&amp; (instance.meta != null) &amp;&amp; (instance.meta.anchorClass != null)) {
+					menuName = esslinkMenuNames[instance.meta.anchorClass];
+					} else if(instance.class != null) {
+					menuName = esslinkMenuNames[instance.class];
+					}
+					return menuName;
+					}
+					
+					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+					
+					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
+					if(instance != null) {
+					let linkMenuName = essGetMenuName(instance);
+					let instanceLink = instance.name;
+					if(linkMenuName != null) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+					}
+					return instanceLink;
+					} else {
+					return '';
+					}
+					});
+					
+					
+					Handlebars.registerHelper('essInstanceStyle', function(instance, styleProperty, options){
+					if((instance != null) &amp;&amp; (instance.styles != null) &amp;&amp; (instance.styles.length > 0) &amp;&amp; (instance.styles[0][styleProperty] != null)) {							
+					return instance.styles[0][styleProperty];
+					} else {
+					return '';
+					}
+					});
+					
+					var essTableLinkTemplate;
+					$('document').ready(function(){
+					let essTableLinkFragment = $("#ess-table-link-template").html();
+					essTableLinkTemplate = Handlebars.compile(essTableLinkFragment);
+					});
+				</script>
+				
+				<xsl:if test="$hasConfigEditorComps">
+					<script type="module">
+						<xsl:attribute name="src">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$targetEditor/name"/>&amp;XSL=editors/configurable/configurable_editor_js.xsl&amp;CT=text/javascript</xsl:attribute>
+					</script>
+					
+					<!-- EDITOR CONFIG JSON -->
+					<script type="text/javascript">
+						<xsl:attribute name="src"><xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/></xsl:attribute>
+					</script>
+				</xsl:if>
+				
+				<!-- Call the JS script to load the CSRF token -->
+				<script async="async" src="editors/assets/js/ess-csrf.js"></script>
+				
+				<!-- main script -->
+				<script type="module" src="./editors/assets/js/ess_editor.js" />
+				
 			</head>
 			<body id="main_section">
 				<!-- Loader -->
@@ -138,179 +313,7 @@
 				
 				<!-- Lodash utility functions -->
 				<script type="text/javascript" src="js/lodash.js"/>
-				
-				<!-- setup editor environment -->
-				<script type="text/javascript">
-					'use strict';
-					
-					const essEditorId = '<xsl:value-of select="$targetEditor/name"/>';
-					<xsl:if test="$hasConfigEditorComps">
-						function compileFragmentTemplate(templateId) {
-							let thisFragment = $("#" + templateId).html();
-							return Handlebars.compile(thisFragment);
-						}
-					</xsl:if>
 
-					// define the global object to hold environment variables
-					// note we have to define this script in-line to make use of the xsl values
-					var essEnvironment = {};
-					
-					//define the details for the current user
-					var essUserDets = {
-						'id': '<xsl:value-of select="$userData//user:email"/>',
-						'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
-						'lastName': '<xsl:value-of select="$userData//user:lastname"/>'
-					};
-
-					essEnvironment.repoId = '<xsl:value-of select="repository/repositoryID"/>';
-					essEnvironment.repoName = '<xsl:value-of select="repository/name"/>';
-					essEnvironment.targetEditorID = '<xsl:value-of select="$targetEditor/name"/>';
-					essEnvironment.targetEditorPath = '<xsl:value-of select="$targetEditorContent"/>';
-					essEnvironment.targetEditorLabel = '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>';
-					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
-
-					essEnvironment.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
-					essEnvironment.form = {
-						'id': '<xsl:value-of select="$targetEditor/name"/>',
-						'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
-					};				
-					
-					var essDataSetAPIs = {
-						<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
-					};
-					
-					function essGetDataSetAPIUrl(dataSetLabel) {
-						let apiURL = essDataSetAPIs[dataSetLabel].url;
-						return apiURL;
-					}
-					
-					function essGetDataSetAPICachePath(dataSetLabel) {
-						let path = essDataSetAPIs[dataSetLabel].cachePath;
-						return path;
-					}
-					
-					function essIsDataSetAPIPreCached(dataSetLabel) {
-						let isPrecached = essDataSetAPIs[dataSetLabel].isPreCached;
-						return isPrecached;
-					}
-					
-					
-					var promise_essCheckPreCachedDataSetAPIsCompleted = function(successCallBack, failCallback) {
-					    return new Promise((resolve) => {
-					    	let preCachedDataSets = Object.values(essDataSetAPIs).filter(aDS => aDS.isPreCached);
-							if(preCachedDataSets.length > 0) {
-								let apiCheckList = [];
-								preCachedDataSets.forEach(aDS => apiCheckList.push(promise_essCheckPreCachedDataSetAPI(aDS)));
-								Promise.all(apiCheckList)
-							    .then(function (responses) {
-							    	if(responses.filter(aResp => !aResp).length == 0) {
-							    		successCallBack();
-							    		resolve(true);
-							    	} else {
-							    		failCallback();
-							    		resolve(false);
-							    	}
-						    	})
-						    	.catch (function (error) {
-						    		failCallback();
-						    		resolve(false);
-							    });
-							} else {
-								resolve(true);
-							}					   	
-					   	});
-					};
-					
-					
-					
-					var promise_essCheckPreCachedDataSetAPI = function(apiDetails) {
-					    return new Promise((resolve) => {
-					    	var xmlhttp = new XMLHttpRequest();
-					        xmlhttp.onreadystatechange = function () {
-					            if (this.readyState == 4) {
-					            	if (this.status == 200) {
-						            	resolve(true);
-						            } else {
-						            	resolve(false);
-						            }
-					            }
-					        };
-					        xmlhttp.onerror = function () {
-					            resolve(false);
-					        };
-					        xmlhttp.open("HEAD", apiDetails.cachePath, true);
-					        xmlhttp.send();
-						  })
-					};
-					
-					
-					var esslinkMenuNames = {
-						<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
-					}
-					
-					var essEditorForClasses = [<xsl:apply-templates mode="RenderClassList" select="$editorForClasses"/>];
-					
-					
-					
-					function essGetMenuName(instance) {
-						let menuName = null;
-						if((instance != null) &amp;&amp; (instance.meta != null) &amp;&amp; (instance.meta.anchorClass != null)) {
-							menuName = esslinkMenuNames[instance.meta.anchorClass];
-						} else if(instance.class != null) {
-							menuName = esslinkMenuNames[instance.class];
-						}
-						return menuName;
-					}
-					
-					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
-					
-					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
-						if(instance != null) {
-							let linkMenuName = essGetMenuName(instance);
-							let instanceLink = instance.name;
-							if(linkMenuName != null) {
-								let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
-								let linkClass = 'context-menu-' + linkMenuName;
-								let linkId = instance.id + 'Link';
-								instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
-								<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
-							}
-						  	return instanceLink;
-					  	} else {
-					  		return '';
-					  	}
-					});
-					
-					
-					Handlebars.registerHelper('essInstanceStyle', function(instance, styleProperty, options){
-						if((instance != null) &amp;&amp; (instance.styles != null) &amp;&amp; (instance.styles.length > 0) &amp;&amp; (instance.styles[0][styleProperty] != null)) {							
-							return instance.styles[0][styleProperty];
-					  	} else {
-					  		return '';
-					  	}
-					});
-					
-					var essTableLinkTemplate;
-					$('document').ready(function(){
-						let essTableLinkFragment = $("#ess-table-link-template").html();
-			    		essTableLinkTemplate = Handlebars.compile(essTableLinkFragment);
-		    		});
-				</script>
-
-				<xsl:if test="$hasConfigEditorComps">
-					<script type="module">
-						<xsl:attribute name="src">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$targetEditor/name"/>&amp;XSL=editors/configurable/configurable_editor_js.xsl&amp;CT=text/javascript</xsl:attribute>
-					</script>
-
-					<!-- EDITOR CONFIG JSON -->
-					<script type="text/javascript">
-						<xsl:attribute name="src"><xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/></xsl:attribute>
-					</script>
-				</xsl:if>
-
-				<!-- main script -->
-				<script type="module" src="./editors/assets/js/ess_editor.js" />
-				
 				<!-- Handlebars template for the contents of the CONFIRM ACTION Modal -->
 				<script id="ess-confirm-modal-template" type="text/x-handlebars-template">
 					<div class="modal-header">

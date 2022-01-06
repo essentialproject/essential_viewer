@@ -40,7 +40,7 @@
 	 
 	<xsl:template match="knowledge_base">
     {"technology_products":[<xsl:apply-templates select="$techProducts" mode="techProducts"></xsl:apply-templates>],
-     "tprStandards":[<xsl:apply-templates select="$tprs" mode="techStds"></xsl:apply-templates>]}
+     "tprStandards":[<xsl:apply-templates select="$tprs" mode="techStds"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 

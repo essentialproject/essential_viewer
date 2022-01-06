@@ -38,7 +38,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"data_objects":[<xsl:apply-templates select="$dataObjects" mode="dataObjects"></xsl:apply-templates>]}
+		{"data_objects":[<xsl:apply-templates select="$dataObjects" mode="dataObjects"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	 

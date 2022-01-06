@@ -30,7 +30,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_product_orgs":[<xsl:apply-templates select="$techProduct" mode="techProductOrgs"></xsl:apply-templates>]} 
+		{"technology_product_orgs":[<xsl:apply-templates select="$techProduct" mode="techProductOrgs"></xsl:apply-templates>],"version":"614"} 
 	</xsl:template>
 
 <xsl:template mode="techProductOrgs" match="node()">

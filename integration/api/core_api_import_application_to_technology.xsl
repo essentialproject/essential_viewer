@@ -40,7 +40,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"application_technology_architecture":[<xsl:apply-templates select="$applications" mode="applicationsTechArch"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"application_technology_architecture":[<xsl:apply-templates select="$applications" mode="applicationsTechArch"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"615"}
 	</xsl:template>
 
 	 
@@ -48,7 +48,8 @@
 
 	 <xsl:variable name="thisDeployment" select="$applicationDeployment[own_slot_value[slot_reference='application_provider_deployed']/value=current()/name]"/> 
 	 
-    {"application":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"application":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	"supportingTech":[<xsl:for-each select="$thisDeployment">
 	  <xsl:variable name="thisProductBuild" select="$techProductBuild[name=current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value]"/>
 	 <xsl:variable name="thistechBuildArchitecture" select="$techBuildArchitecture[own_slot_value[slot_reference='describes_technology_provider']/value=$thisProductBuild/name]"/>

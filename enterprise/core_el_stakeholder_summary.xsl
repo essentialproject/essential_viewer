@@ -15,7 +15,8 @@
 	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Driver', 'Business_Objective', 'Business_Process', 'Individual_Business_Role', 'Group_Business_Role', 'Group_Actor', 'Product_Type', 'Site', 'Data_Object', 'Information_View', 'Application_Provider', 'Application_Service', 'Technology_Component', 'Business_Strategic_Plan', 'Information_Strategic_Plan', 'Application_Strategic_Plan', 'Technology_Strategic_Plan', 'Security_Strategic_Plan', 'Technology_Composite', 'Technology_Product', 'Technology_Product_Build', 'Project', 'Business_Objective', 'Information_Architecture_Objective', 'Application_Architecture_Objectives', 'Technology_Architecture_Objectives', 'Programme', 'Site')"/>
+	<xsl:variable name="allReportMenus" select="/node()/simple_instance[type = 'Report_Menu']"/>
+	<xsl:variable name="linkClasses" select="$allReportMenus/own_slot_value[slot_reference = 'report_menu_class']/value"/>
 
 	<!-- END GENERIC LINK VARIABLES -->
 
@@ -301,6 +302,7 @@
 										<xsl:with-param name="theXML" select="$reposXML"/>
 										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 									</xsl:call-template>
+									<span class="text-muted">&#160;(<xsl:value-of select="replace(type,'_',' ')"/>)</span>
 								</li>
 							</xsl:for-each>
 						</ul>

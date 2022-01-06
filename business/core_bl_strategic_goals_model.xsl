@@ -56,7 +56,9 @@
 	<xsl:variable name="allDrivers" select="/node()/simple_instance[type = 'Business_Driver']"/>
 	<xsl:variable name="allGroupActors" select="/node()/simple_instance[type = 'Group_Actor']"/>
 	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
-	<xsl:variable name="allBusinessServiceQualities" select="/node()/simple_instance[type = 'Business_Service_Quality']"/>
+	<xsl:variable name="allBusinessServiceQualities" select="/node()/simple_instance[type = ('Business_Service_Quality','Service_Quality')]"/>
+
+	<xsl:variable name="allBusinessServiceOBJ" select="/node()/simple_instance[type = 'OBJ_TO_SVC_QUALITY_RELATION']"/>
 	<xsl:variable name="allBusinessServiceQualityValues" select="/node()/simple_instance[type = 'Business_Service_Quality_Value']"/>
 
 
@@ -168,7 +170,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
-
+ 
 							<h2 class="text-primary">
 								<xsl:value-of select="eas:i18n('Strategic Goal Catalogue')"/>
 							</h2>
@@ -269,7 +271,10 @@
 
 	<xsl:template match="node()" mode="BusinessObjective">
 		<xsl:variable name="busObjDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-		<xsl:variable name="busObjMeasures" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+		<xsl:variable name="busObjMeasuresOld" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+		<xsl:variable name="busObjServtoObj" select="$allBusinessServiceOBJ[name = current()/own_slot_value[slot_reference = 'bo_performance_measures']/value]"/>		
+		<xsl:variable name="busObjMeasuresNew" select="$allBusinessServiceQualities[name =$busObjServtoObj/own_slot_value[slot_reference = 'obj_to_svc_quality_service_quality']/value]"/>
+		<xsl:variable name="busObjMeasures" select="$busObjMeasuresOld union $busObjMeasuresNew"/>
 		<xsl:variable name="busObjOrgOwners" select="$allGroupActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjIndividualOwners" select="$allIndividualActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjTargetDate" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
@@ -285,7 +290,7 @@
 		<td>
 			<strong>
 				<xsl:variable name="objName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-
+ 
 				<xsl:call-template name="RenderInstanceLink">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="userParams" select="$param4"/>
@@ -312,7 +317,7 @@
 		</td>
 
 		<!-- Print out the list of Service Quality Values (Measures) -->
-		<td>
+		<td> 
 			<ul>
 				<xsl:apply-templates select="$busObjMeasures" mode="Measure"/>
 			</ul>
@@ -326,12 +331,22 @@
 	<!-- TEMPLATE TO PRINT OUT THE LIST OF SERVICE QUALITY VALUES FOR AN OBJECTIVE AS A BULLETED LIST ITEM -->
 	<xsl:template match="node()" mode="Measure">
 		<xsl:variable name="serviceQuality" select="$allBusinessServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
-
+		<xsl:variable name="serviceQualityVals" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'sq_maximum_value']/value]"/>
+		<xsl:choose><xsl:when test="$serviceQuality">
 		<li>
 			<xsl:value-of select="$serviceQuality/own_slot_value[slot_reference = 'name']/value"/>
 			<xsl:text> - </xsl:text>
-			<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>
 		</li>
+	</xsl:when>
+	<xsl:otherwise>
+		<li>
+			<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:if test="$serviceQualityVals/own_slot_value[slot_reference = 'service_quality_value_value']/value"><xsl:text> - </xsl:text>
+			<xsl:value-of select="$serviceQualityVals/own_slot_value[slot_reference = 'service_quality_value_value']/value"/></xsl:if>
+		</li>
+	</xsl:otherwise>
+	</xsl:choose>
 	</xsl:template>
 
 </xsl:stylesheet>

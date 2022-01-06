@@ -30,7 +30,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"organisations":[<xsl:apply-templates select="$orgs" mode="orgs"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"organisations":[<xsl:apply-templates select="$orgs" mode="orgs"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="orgs">

@@ -255,7 +255,20 @@
 						var theResponseJson = JSON.parse(response);
 						if (status === 403 &amp;&amp; theResponseJson.message &amp;&amp; theResponseJson.message.errorCode &amp;&amp; theResponseJson.message.errorCode === 10) {
 							// specific error code that informs the client that the server has logged the user out and requires a page refresh to complete the logout
-							location.reload();
+							window.stop();
+							var modalHtml =
+								'&lt;div class="modal-dialog" role="document"&gt;' +
+								'  &lt;div class="modal-content"&gt;' +
+								'    &lt;div class="modal-header"&gt;&lt;h4 class="strong"&gt;&lt;i class="fa fa-user right-5"&gt;&lt;/i&gt;Session Expired&lt;/h4&gt;&lt;/div&gt;' +
+								'    &lt;div class="modal-body"&gt;&lt;p&gt;Your current session has expired. Please sign-in again.&lt;/p&gt;' +
+								'    &lt;div class="modal-footer"&gt;&lt;div class="btn btn-success" onClick="location.reload();"&gt;Sign-In&lt;/div&gt;&lt;/div&gt;' +
+								'  &lt;/div&gt;' + 
+								'&lt;/div&gt;';
+							$('body').append('&lt;div id="timeoutModal" class="modal fade" tabindex="-1" role="dialog" style="z-index: 9999999999999" /&gt;');	
+							// insert HTML dynamically
+							$("#timeoutModal").html(modalHtml);
+							// display
+							$("#timeoutModal").modal('show');
 						}
 					} catch (e) {
 						// do nothing - if the API doesn't return a JSON error response, just continue

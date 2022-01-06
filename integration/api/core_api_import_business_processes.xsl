@@ -43,7 +43,7 @@
 	 
 	<xsl:template match="knowledge_base">
 		{"meta":[<xsl:apply-templates select="$reportMenu" mode="classMetaData"></xsl:apply-templates>],
-		 "businessProcesses":[<xsl:apply-templates select="$businessProcesses" mode="businessProcesses"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		 "businessProcesses":[<xsl:apply-templates select="$businessProcesses" mode="businessProcesses"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="businessProcesses">

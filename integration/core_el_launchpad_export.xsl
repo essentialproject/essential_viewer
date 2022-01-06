@@ -1149,36 +1149,7 @@ function setSheets(){
 </script>				
 <script>
 
-	var applicationTechArch={};
-	var applicationDependencies={};
-	var dataObjectAttributes={};
-	var dataObjectInheritance={};
-	var dataObjects={};
-	var dataSubjects={};
-	var techProductOrg={};
-	var techProductFamilies={};
-    var techProducts={};
-    var techSuppliers={};
-    var techCaps={};
-	var techComponents={};
-	var nodes={};
-    var techDomains={};
-    var app2server={};
-	var infoReps={}
-	var processtoapps={} 
-	var processtoservice={}
-	var app2org={}
-	var app2svcs={} 
-	var apps={};
- 	var appService={};
-	var appCap2Service={};
-	var appCaps={};
-	var orgs={};
-	var sites={};
-	var businessProcessFamilies={};
-	var businessCapabilities = {};
-	var businessDomains = {};
-	var businessProcesses = {};
+
 	var worksheetList=[];
  	var ExcelArray=[];		
 	
@@ -8462,7 +8433,36 @@ Enabling - Bottom middle</Data>
                 }
             });
         };
-  
+        var applicationTechArch={};
+	var applicationDependencies={};
+	var dataObjectAttributes={};
+	var dataObjectInheritance={};
+	var dataObjects={};
+	var dataSubjects={};
+	var techProductOrg={};
+	var techProductFamilies={};
+    var techProducts={};
+    var techSuppliers={};
+    var techCaps={};
+	var techComponents={};
+	var nodes={};
+    var techDomains={};
+    var app2server={};
+	var infoReps={}
+	var processtoapps={} 
+	var processtoservice={}
+	var app2org={}
+	var app2svcs={} 
+	var apps={};
+ 	var appService={};
+	var appCap2Service={};
+	var appCaps={};
+	var orgs={};
+	var sites={};
+	var businessProcessFamilies={};
+	var businessCapabilities = {};
+	var businessDomains = {};
+	var businessProcesses = {}; 
         
         
   $('document').ready(function () {

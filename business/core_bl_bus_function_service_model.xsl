@@ -59,7 +59,8 @@
 	<xsl:variable name="allApp2PhysProcs" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"/>
 	<xsl:variable name="allAppProvRoles" select="/node()/simple_instance[type = 'Application_Provider_Role']"/>
 	<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
-
+	<xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"></xsl:variable>
+	<xsl:variable name="actors" select="/node()/simple_instance[type = ('Group_Actor', 'Individual_Actor')]"></xsl:variable>
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
@@ -271,7 +272,15 @@
 		<xsl:variable name="busSvcPhysProcs" select="$allPhysProcs[name = $busSvcSupportingProcs/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
 		<xsl:variable name="busSvcApp2PhysProcs" select="$allApp2PhysProcs[name = $busSvcPhysProcs/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
 		<xsl:variable name="busSvcAppProRoles" select="$allAppProvRoles[name = $busSvcApp2PhysProcs/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
-		<xsl:variable name="busSvcAppPros" select="$allAppProviders[name = $busSvcAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="busSvcAppProsIndirect" select="$allAppProviders[name = $busSvcAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="busSvcDirectApps" select="$allAppProviders[name = $busSvcApp2PhysProcs/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"></xsl:variable>
+		<xsl:variable name="busSvcAppPros" select="$busSvcAppProsIndirect union $busSvcDirectApps"/>
+		<xsl:variable name="thisrelevantPhysProcsActorsIndirect" select="$a2r[name=$busSvcPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
+		<xsl:variable name="thisrelevantPhysProcsActors" select="$actors[name=$busSvcPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
+		<xsl:variable name="thisrelevantPhysProcsActorsIn" select="$actors[name=$thisrelevantPhysProcsActorsIndirect/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"></xsl:variable>
+		<xsl:variable name="allActors" select="$thisrelevantPhysProcsActors union $thisrelevantPhysProcsActorsIn"/>
+	
+	
 		<tr>
 			<!-- Print out the name of the Business Service -->
 			<td>
@@ -302,6 +311,7 @@
 				<ul>
 					<xsl:apply-templates select="$busSvcIndividualConsumers" mode="NameBulletList"/>
 					<xsl:apply-templates select="$busSvcOrgConsumers" mode="NameBulletList"/>
+				
 				</ul>
 			</td>
 
@@ -310,6 +320,7 @@
 				<ul>
 					<xsl:apply-templates select="$busSvcSupportingIndividualRoles" mode="NameBulletList"/>
 					<xsl:apply-templates select="$busSvcSupportingGroupRoles" mode="NameBulletList"/>
+					<xsl:apply-templates select="$allActors" mode="NameBulletList"/>
 				</ul>
 			</td>
 

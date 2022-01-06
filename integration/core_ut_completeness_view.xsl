@@ -360,7 +360,8 @@
                     {$(ele).removeClass('btn btn-default');$(ele).addClass('btn btn-primary')};
                     }
                     
-                classJSON=[<xsl:apply-templates select="$classInstances" mode="getJSON"/>];
+				classJSON=[<xsl:apply-templates select="$classInstances" mode="getJSON"/>];
+			 
                 alphaJSON=classJSON.sort(function(x, y) {
                                 return d3.ascending(x.name, y.name);
                             });
@@ -385,9 +386,9 @@
                     for (var j=0; j &lt; alphaJSON[i].slots.length; j++)
                         {slotVal =slotVal + alphaJSON[i].slots[j]+" "}
                     
-                    $("#popClasses").append("&lt;tr class='"+slotVal+"'&gt;&lt;td&gt;"+alphaJSON[i].name+"&lt;/td&gt;&lt;/tr&gt;");
+                    $("#popClasses").append("&lt;tr class='"+slotVal+"'&gt;&lt;td&gt;"+alphaJSON[i].link+"&lt;/td&gt;&lt;/tr&gt;");
                
-                    $("#popIds").append("&lt;tr id='"+nameStr+"' &gt;&lt;td&gt;"+alphaJSON[i].name+"&lt;/td&gt;&lt;/tr&gt;");
+                    $("#popIds").append("&lt;tr id='"+nameStr+"' &gt;&lt;td&gt;"+alphaJSON[i].link+"&lt;/td&gt;&lt;/tr&gt;");
                         }
                   
                elementsToShow=[];    
@@ -514,7 +515,10 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>","id":"<xsl:value-of select="name"/>","slots":[<xsl:apply-templates select="own_slot_value/slot_reference" mode="slots"/>]}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
+	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>",
+	"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+			<xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+	"id":"<xsl:value-of select="name"/>","slots":[<xsl:apply-templates select="own_slot_value/slot_reference" mode="slots"/>]}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
 
 	<xsl:template match="node()" mode="slots">
 		<xsl:if test="not(. = 'external_repository_instance_reference')">"<xsl:value-of select="."/>"</xsl:if>

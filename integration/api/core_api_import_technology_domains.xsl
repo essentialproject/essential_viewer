@@ -30,7 +30,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_domains":[<xsl:apply-templates select="$techDomain" mode="techDomain"></xsl:apply-templates>]}
+		{"technology_domains":[<xsl:apply-templates select="$techDomain" mode="techDomain"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	

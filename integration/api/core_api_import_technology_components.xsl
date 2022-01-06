@@ -29,7 +29,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_components":[<xsl:apply-templates select="$techComponents" mode="techComponents"></xsl:apply-templates>]}
+		{"technology_components":[<xsl:apply-templates select="$techComponents" mode="techComponents"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
        <xsl:template mode="techComponents" match="node()">

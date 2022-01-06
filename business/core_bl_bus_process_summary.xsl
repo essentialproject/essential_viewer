@@ -23,7 +23,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Role', 'Business_Capability', 'Group_Actor', 'Individual_Actor', 'Site', 'Composite_Application_Provider', 'Application_Provider', 'Information_Concept', 'Information_View', 'Business_Strategic_Plan')"/>
+	<xsl:variable name="linkClasses" select="('Business_Process', 'Business_Role', 'Business_Capability', 'Group_Actor', 'Individual_Actor', 'Site','Composite_Application_Service', 'Application_Service', 'Composite_Application_Provider', 'Application_Provider', 'Information_Concept', 'Information_View', 'Business_Strategic_Plan')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Required View-specific instance -->
@@ -512,7 +512,9 @@
 					</h2>
 
 					<div class="content-section">
-						<p><xsl:value-of select="eas:i18n('A summary of the information interactions for the')"/>&#160;<span class="text-primary"><xsl:value-of select="$processName"/></span>&#160;<xsl:value-of select="eas:i18n(' process')"/></p>
+						<p><xsl:value-of select="eas:i18n('A summary of the information interactions for the')"/>&#160;<span class="text-primary"><xsl:call-template name="RenderMultiLangInstanceName">
+								<xsl:with-param name="theSubjectInstance" select="$currentProcess"></xsl:with-param>
+							</xsl:call-template></span>&#160;<xsl:value-of select="eas:i18n(' process')"/></p>
 
 						<h3 class="text-secondary">
 							<xsl:value-of select="eas:i18n('Information Used')"/>

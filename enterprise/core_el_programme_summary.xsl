@@ -205,8 +205,7 @@
 
 						<!--Setup Description Section-->
 					</div>
-					<div class="row">
-
+					<div class="row"> 
 						<div class="col-xs-12">
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
@@ -520,16 +519,16 @@
 
 				<xsl:variable name="thisProjectDeprectatedStrategicPlanRelations" select="$allStratPlanToElementRelations[(name = $thisRelevantDirectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)]"/>
 				<xsl:variable name="thisImpactedElementViaDeprectedStrategicPlansRels" select="$impactedElementViaDeprectedStrategicPlansRels[name = $thisProjectDeprectatedStrategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
-
+				
 				<xsl:variable name="thisProjectStrategicPlanRelations" select="$allStratPlanToElementRelations[(name = $thisRelevantDirectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value)]"/>
-				<xsl:variable name="thisImpactedElementViaStrategicPlansRels" select="$impactedElementViaStrategicPlansRels[name = $thisProjectStrategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+				<xsl:variable name="thisProjectStrategicPlanRelationsProj" select="$thisProjectStrategicPlanRelations[name=$project/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
+				<xsl:variable name="thisImpactedElementViaStrategicPlansRels" select="$impactedElementViaStrategicPlansRels[name = $thisProjectStrategicPlanRelationsProj/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
 
 				<xsl:variable name="thisProjectPlan2ElementRels" select="$allStratPlanToElementRelations[name = $project/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
 				<xsl:variable name="thisDirectImpactedElements" select="$directImpactedElements[name = $thisProjectPlan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
 				<xsl:variable name="thisDirectImpactedStrategicPlans" select="$directImpactedStrategicPlans[name = $thisProjectPlan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
 
-				<xsl:variable name="thisProjectImpactedElements" select="$thisImpactedElementViaDeprectedStrategicPlansRels union $thisImpactedElementViaStrategicPlansRels union $thisDirectStrategicPlanImpactedElements union $thisDirectImpactedElements"/>
-
+			 <xsl:variable name="thisProjectImpactedElements" select="$thisImpactedElementViaDeprectedStrategicPlansRels union $thisImpactedElementViaStrategicPlansRels union $thisDirectStrategicPlanImpactedElements union $thisDirectImpactedElements"/> 
 				<!--<xsl:variable name="projectStrategicPlans" select="$relevantStrategicPlans[name = current()/own_slot_value[slot_reference = 'ca_strategic_plans_supported']/value]"/>
 				<xsl:variable name="impactedProcesses" select="$allBusProcs[name = $projectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_element']/value]"/>-->
 
@@ -537,7 +536,7 @@
 				<xsl:variable name="infoDataLayerElements" select="$thisProjectImpactedElements[type = $infoLayerClasses]"/>
 				<xsl:variable name="appLayerElements" select="$thisProjectImpactedElements[type = $appLayerClasses]"/>
 				<xsl:variable name="techLayerElements" select="$thisProjectImpactedElements[type = $techLayerClasses]"/>
-
+  
 				<xsl:choose>
 					<xsl:when test="count(($busLayerElements, $infoDataLayerElements, $appLayerElements, $techLayerElements)) > 0">
 
@@ -782,7 +781,8 @@
 						</strong>
 					</td>
 					<td>
-						<xsl:value-of select="$elementDesc"/>
+						<xsl:variable name="Qt">'</xsl:variable>
+						<xsl:value-of select="translate($elementDesc,$Qt,'`')"/> 
 					</td>
 					<td class="impact">
 						<xsl:for-each select="$elementImpact">

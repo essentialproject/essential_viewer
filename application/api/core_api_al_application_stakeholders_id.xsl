@@ -28,8 +28,7 @@
 	
 	<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"/>
 	<xsl:variable name="a2rs" select="/node()/simple_instance[(type = 'ACTOR_TO_ROLE_RELATION')][name=$allAppProviders/own_slot_value[slot_reference='stakeholders']/value]"/>
-	<xsl:variable name="actors" select="/node()/simple_instance[(type = 'Group_Actor')][name=$a2rs/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
-	<xsl:template match="knowledge_base">
+	 <xsl:template match="knowledge_base">
         {"appStakeholders": [
             <xsl:apply-templates mode="RenderAppStakeholderJSONList" select="$allAppProviders">
                 <xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
@@ -37,10 +36,9 @@
 	</xsl:template>
 	
 	<xsl:template mode="RenderAppStakeholderJSONList" match="node()">
-	<xsl:variable name="thisa2rs" select="$a2rs[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
-	<xsl:variable name="thisactors" select="$actors[name=$thisa2rs/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+	<xsl:variable name="thisa2rs" select="$a2rs[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/> 
         {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "stakeholders":[<xsl:if test="current()/own_slot_value[slot_reference='stakeholders']/value"><xsl:for-each select="current()/own_slot_value[slot_reference='stakeholders']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each></xsl:if>],
-		"stakeholderIDs":[<xsl:for-each select="$thisactors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,
+		"stakeholderIDs":[<xsl:for-each select="$thisa2rs/own_slot_value[slot_reference='act_to_role_from_actor']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
 

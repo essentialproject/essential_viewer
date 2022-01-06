@@ -37,7 +37,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"data_subjects":[<xsl:apply-templates select="$dataSubjects" mode="dataSubjects"></xsl:apply-templates>]}
+		{"data_subjects":[<xsl:apply-templates select="$dataSubjects" mode="dataSubjects"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
  

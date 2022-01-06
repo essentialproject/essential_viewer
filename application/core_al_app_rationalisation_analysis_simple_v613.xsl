@@ -208,7 +208,7 @@
                         width:100px;
                         font-weight:bold;    
                         }
-                    .removeApp{color:red}    
+                    .removeApp{color:red}     
                 </style>
                 <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>

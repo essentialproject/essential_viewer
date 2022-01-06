@@ -32,7 +32,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"process_to_service":[<xsl:apply-templates select="$businessProcess" mode="process"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"process_to_service":[<xsl:apply-templates select="$businessProcess" mode="process"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="process">
@@ -41,6 +41,6 @@
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"services":[<xsl:for-each select="$thisasbr">
 		<xsl:variable name="thisapplicationService" select="$applicationService[name=current()/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>	
-		<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisapplicationService"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","criticality":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusinessCriticality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"id":"<xsl:value-of select="eas:getSafeJSString($thisapplicationService/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisapplicationService"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","criticality":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusinessCriticality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

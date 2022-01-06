@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<language xmlns="http://www.enterprise-architecture.org/essential/language"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="en-gb"
-	xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
-
+<language xmlns="http://www.enterprise-architecture.org/essential/language" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="en-gb" xsi:schemaLocation="http://www.enterprise-architecture.org/essential/language language.xsd">
 	<!--
-        * Copyright (c)2012 Enterprise Architecture Solutions ltd.
+        * Copyright (c)2017 Enterprise Architecture Solutions ltd.
         * This file is part of Essential Architecture Manager, 
         * the Essential Architecture Meta Model and The Essential Project.
         *
@@ -23,18 +20,50 @@
         * 
         Default Language internationalisation (i18n) specification for Essential Viewer - en-gb.xml
     -->
+	
 	<!-- 28.06.2012    JWC    1st coding-->
-
-
+	
 	<dateformat>[D1o] [MNn], [Y]</dateformat>
 	<numberformat>#</numberformat>
 	<strings>
 		<message>
-			<name>A</name>
+			<name></name>
 			<value></value>
 		</message>
 		<message>
-			<name>About Essential</name>
+			<name># of Users</name>
+			<value></value>
+		</message>
+		<message>
+			<name>12 Month Outlook</name>
+			<value></value>
+		</message>
+		<message>
+			<name>1-2 People</name>
+			<value></value>
+		</message>
+		<message>
+			<name>1 App</name>
+			<value></value>
+		</message>
+		<message>
+			<name>2 Apps</name>
+			<value></value>
+		</message>
+		<message>
+			<name>3+ People</name>
+			<value></value>
+		</message>
+		<message>
+			<name>3rd Party Country/Org Recipients</name>
+			<value></value>
+		</message>
+		<message>
+			<name>3rd Party Transferred To/Viewed From</name>
+			<value></value>
+		</message>
+		<message>
+			<name>A</name>
 			<value></value>
 		</message>
 		<message>
@@ -42,11 +71,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>A breakdown of the Business Processes by Business Domain, the Business Capabilities that are in each and the Business Processes that implement the Business Capabilities</name>
+			<name>Access Control</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Absorb</name>
+			<name>Access Control Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Access denied</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Accessed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Access Encryption</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Accessing Country</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Accessing Orgs (Countries)</name>
 			<value></value>
 		</message>
 		<message>
@@ -54,7 +103,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Accuracy</name>
+			<value></value>
+		</message>
+		<message>
+			<name>A comment must be given for a rejected idea</name>
+			<value></value>
+		</message>
+		<message>
+			<name>A comment must be given when rejecting content</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Acquisition Method</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Active Application</name>
 			<value></value>
 		</message>
 		<message>
@@ -74,7 +139,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Actual Retirement Date</name>
+			<name>Actual Start Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Add to Options</name>
 			<value></value>
 		</message>
 		<message>
@@ -86,6 +155,38 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Allocated FTEs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Allocated Resources</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Allowed Type</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Allowed Types</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Alternative idea selected</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Analysis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>An Application that is yet to be implemented</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Applicable Regulations</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application</name>
 			<value></value>
 		</message>
@@ -94,15 +195,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application 1</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application 2</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Architecture Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Basket</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Capability</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Capability Catalogue</name>
+			<name>Application Capability Catalogue by Name</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Capability Catalogue by Name</name>
+			<name>Application Capability Footprint</name>
 			<value></value>
 		</message>
 		<message>
@@ -126,6 +243,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Catalogue Catalogue by Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Catalogue Table</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Change Analysis</name>
 			<value></value>
 		</message>
@@ -142,15 +267,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Cost</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Cost vs. Supported Revenue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Count</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Current State Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Data by Domain</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Data Dependencies</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Data Dependency Model</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Deficiency/Redundancy Change Analysis</name>
 			<value></value>
 		</message>
 		<message>
@@ -158,11 +295,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Dependencies Model</name>
+			<name>Application Dependencies for </name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Dependency Model</name>
+			<name>Application Dependency</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Dependency Model for </name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Dependency Network</name>
 			<value></value>
 		</message>
 		<message>
@@ -182,7 +327,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Distribution Change Analysis</name>
+			<name>Application Disposition Model</name>
 			<value></value>
 		</message>
 		<message>
@@ -194,11 +339,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Diversity Analysis</name>
+			<name>Application Diversity and Duplication Analysis</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Diversity and Duplication Analysis</name>
+			<name>Application Duplication Analysis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Families</name>
 			<value></value>
 		</message>
 		<message>
@@ -206,19 +355,23 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Function Name</name>
+			<name>Application Footprint</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Function Implementation Catalogue by Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Functions</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Impact</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Application Impact Analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Info/Data Summary</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Information Dependency Model</name>
 			<value></value>
 		</message>
 		<message>
@@ -230,27 +383,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Interface Change Analysis</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Application Interface Change Analysis Catalogue</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Lifecycle Model</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application List Extract - CSV</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application List Extract - XML</name>
+			<name>application is deployed</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Application Milestone Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Module</name>
 			<value></value>
 		</message>
 		<message>
@@ -262,6 +407,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Provider</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Provider Summary</name>
 			<value></value>
 		</message>
@@ -270,7 +419,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Purpose</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Rationalisation Analysis</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Reference Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application risk is determined by the security compliance level of the applications managing the GDPR data in scope and the CIA risk of the data.</name>
 			<value></value>
 		</message>
 		<message>
@@ -282,19 +443,20 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Applications by Lifecycle Status</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Service</name>
 			<value></value>
 		</message>
 		<message>
-			<name>application service</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Service Catalogue</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Application Service Catalogue by Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Service Catalogue by
+				Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -318,7 +480,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Service Summary for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Service Used</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Service Utilising</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Software</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Applications Status for Business Capability</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Application Strategic Radar</name>
 			<value></value>
 		</message>
 		<message>
@@ -326,15 +508,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Application Supplier</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Application Supported</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Application Technology Platform Model</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Application Technology Strategy Alignment</name>
+			<name>Applications Used</name>
 			<value></value>
 		</message>
 		<message>
@@ -342,11 +524,67 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Application Views</name>
+			<name>Applicaton</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Approval Status</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Approve</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Approved as a result of idea being accepted</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Approved Technology Evaluation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Apps</name>
+			<value></value>
+		</message>
+		<message>
+			<name>A rating must be greater than 0</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Architecture</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Architecture Layer</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Architecture Principles Compliance Dashboard</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Are you sure that you want to remove this presentation?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Are you sure that you want to remove this slide?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Are you sure that you want to remove this slide widget?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Are you sure that you want to remove this widget?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>A Shared Platform that is yet to be implemented</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Aspirational Job</name>
 			<value></value>
 		</message>
 		<message>
@@ -358,11 +596,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>A summary of the information interactions for the</name>
+			<name>A summary of the data managed by </name>
 			<value></value>
 		</message>
 		<message>
-			<name>Architecture Layer</name>
+			<name>A summary of the information interactions for the</name>
 			<value></value>
 		</message>
 		<message>
@@ -370,11 +608,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Attention</name>
+			<name>At Locations</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Attributes</name>
+			<name>Attempting to read cache configuration file in the directory</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Attribute Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -390,15 +632,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Automated Decision Making</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Automated Process</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Available Maturity</name>
+			<name>Availability</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Available Applications</name>
 			<value></value>
 		</message>
 		<message>
 			<name>B</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Back to Previous</name>
 			<value></value>
 		</message>
 		<message>
@@ -410,11 +664,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Belongs to Technology Domain</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Below is a list of the most recent pages viewed in Essential Viewer</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Build Description</name>
+			<name>Bespoke</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Both</name>
 			<value></value>
 		</message>
 		<message>
@@ -422,7 +684,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>business</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Activity</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Capabilities</name>
 			<value></value>
 		</message>
 		<message>
@@ -430,7 +700,12 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Capability Catalogue</name>
+			<name>Business
+				Capability</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Capability.</name>
 			<value></value>
 		</message>
 		<message>
@@ -438,11 +713,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Capability Change Footprint</name>
+			<name>Business Capability Catalogue Table</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Business Capability Issues</name>
+			<name>Business Capability Catalogue - Table View</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Capability Description</name>
 			<value></value>
 		</message>
 		<message>
@@ -450,7 +729,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Business Capability Name</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Capability Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Capability to Applications to Plans</name>
 			<value></value>
 		</message>
 		<message>
@@ -470,19 +757,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Domain Catalogue</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Business Domain Catalogue by Name</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Business Domain IT Analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Business Domain Process Analysis</name>
+			<name>Business Domain Summary</name>
 			<value></value>
 		</message>
 		<message>
@@ -494,7 +773,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Business Environment Factors</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Footprint</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Function</name>
 			<value></value>
 		</message>
 		<message>
@@ -514,10 +801,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Information Change Analysis</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Business Information Model</name>
 			<value></value>
 		</message>
@@ -526,11 +809,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Business Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Model Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Model Overview</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Objective</name>
 			<value></value>
 		</message>
 		<message>
-			<name>business objective</name>
+			<name>Business Objective Catalogue by Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -550,6 +845,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Business Outcomes</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Owner</name>
 			<value></value>
 		</message>
@@ -566,11 +865,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Process</name>
+			<name>Business Priority</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Business Process Analysis</name>
+			<name>Business Process</name>
 			<value></value>
 		</message>
 		<message>
@@ -582,7 +881,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Process Catalogue by Business Domain</name>
+			<name>Business Process Catalogue as Table</name>
 			<value></value>
 		</message>
 		<message>
@@ -595,6 +894,10 @@
 		</message>
 		<message>
 			<name>Business Process Catalogue by Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Process Catalogue Table</name>
 			<value></value>
 		</message>
 		<message>
@@ -618,15 +921,23 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Processes Using</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Business Processes Using Information Object</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Business Process IT Support Change Analysis</name>
+			<name>Business Process Family Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Process Family Catalogue as Table</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Process Family Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Process Family Summary for</name>
 			<value></value>
 		</message>
 		<message>
@@ -638,11 +949,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Business process risk is determined by the proportion of busines processes that are not permitted to use the GDPR data in scope and the CIA risk of the data.</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Business Process Summary</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Business Process Summary for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business Process Supported</name>
 			<value></value>
 		</message>
 		<message>
@@ -658,10 +977,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Roles and Organisations</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Business Rule</name>
 			<value></value>
 		</message>
@@ -671,10 +986,6 @@
 		</message>
 		<message>
 			<name>business service</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Business Service Catalogue</name>
 			<value></value>
 		</message>
 		<message>
@@ -706,7 +1017,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Business Views</name>
+			<name>Business Units Supported</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Business User Application</name>
 			<value></value>
 		</message>
 		<message>
@@ -718,11 +1033,24 @@
 			<value></value>
 		</message>
 		<message>
+			<name>by indicating what needs to change
+			across</name>
+			<value></value>
+		</message>
+		<message>
 			<name>C</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Cancel</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Candidates for Replacement by Focus App</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Capabilities</name>
 			<value></value>
 		</message>
 		<message>
@@ -738,6 +1066,26 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Category</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Category of Individual</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Category of Personal Data</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Category of Recipients</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Change</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Change (Strategic Plan)</name>
 			<value></value>
 		</message>
@@ -746,7 +1094,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Choose a Business Area</name>
+			<name>Change Management</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Child Organisations</name>
 			<value></value>
 		</message>
 		<message>
@@ -762,7 +1114,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Clear Filter</name>
+			<name>CIA Loss Impact</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Class</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Click button to download roadmap data as spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Click on a Roadmap Model name to navigate to the required view</name>
 			<value></value>
 		</message>
 		<message>
@@ -790,6 +1154,11 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Click on one of the Technology Components or
+				Technology Products below to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Click on one of the Technology Products below to analyse which nodes are of the given computer type</name>
 			<value></value>
 		</message>
@@ -802,6 +1171,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Close</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Codebase</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Comment on Site</name>
 			<value></value>
 		</message>
@@ -810,11 +1187,43 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Commodity</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Compentencies</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Competencies</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Completed</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Completeness</name>
 			<value></value>
 		</message>
 		<message>
+			<name>Compliance Level</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Compliance Levels</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Compliant</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Component</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Component Description</name>
 			<value></value>
 		</message>
 		<message>
@@ -826,7 +1235,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>consumed and sourced?</name>
+			<name>Confidentiality</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Consent Required?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>consumed and sourced</name>
 			<value></value>
 		</message>
 		<message>
@@ -834,7 +1251,35 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Contained Sub-Organisations</name>
+			<name>Contact us</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contained Application Provider</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contained Application Providers</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contained Business Processes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contained In Information Store</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contained Technology Capabilities</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contains Physical Data</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contains Technology Capabilities</name>
 			<value></value>
 		</message>
 		<message>
@@ -842,7 +1287,71 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Contract Renewal Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contract Review Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Contract with Processor</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Copy</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Copy link to this page</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Cost</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Cost Analysis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Costs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Cost Targets</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Cost Threshold</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Could not find idea</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Country Stored</name>
+			<value></value>
+		</message>
+		<message>
 			<name>CREATE</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Create</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Create a PDF</name>
+			<value></value>
+		</message>
+		<message>
+			<name>CREATE NEW APPLICATION</name>
+			<value></value>
+		</message>
+		<message>
+			<name>CREATE NEW SHARED PLATFORM</name>
 			<value></value>
 		</message>
 		<message>
@@ -850,7 +1359,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Criticality to Process</name>
+			<name>Creation Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Criticality</name>
 			<value></value>
 		</message>
 		<message>
@@ -862,11 +1375,43 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Current Job</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Current Product</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Current Type</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Current Value</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Customised Package</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Customise Widget</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Custom Text</name>
+			<value></value>
+		</message>
+		<message>
+			<name>CxO Presentation Generator</name>
+			<value></value>
+		</message>
+		<message>
 			<name>D</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Dashboards</name>
+			<name>Data</name>
 			<value></value>
 		</message>
 		<message>
@@ -878,7 +1423,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Database</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Database Dependencies</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Database Installation Technology</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Database Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -894,7 +1451,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Data Catalogue</name>
+			<name>Data Breach Occurred?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Breach Record</name>
 			<value></value>
 		</message>
 		<message>
@@ -906,11 +1467,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Data Catalogue - Table View</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Data Category</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Data Integrity Change Analysis</name>
+			<name>Data generation for this View is not complete. Please try later.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data in Repository</name>
 			<value></value>
 		</message>
 		<message>
@@ -934,10 +1503,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Data Object Provider Model</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Data Objects</name>
 			<value></value>
 		</message>
@@ -950,11 +1515,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Data Provider Model</name>
+			<name>Data Provider Model for</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Data Provider Model for</name>
+			<name>Data Quality</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Quality Analysis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Repository Summary</name>
 			<value></value>
 		</message>
 		<message>
@@ -962,11 +1535,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Data Roadmap</name>
+			<name>Data Representation Catalogue</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Data Scarcity/Redundancy Change Analysis</name>
+			<name>Data Representations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Roadmap</name>
 			<value></value>
 		</message>
 		<message>
@@ -990,27 +1567,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Data Sources</name>
+			<value></value>
+		</message>
+		<message>
+			<name>data sources or related projects captured</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Data Subject</name>
 			<value></value>
 		</message>
 		<message>
-			<name> Data Subject</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Data Subject Catalogue</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Data Subject Catalogue by Name</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Data Subject Scarcity/Redundancy Change Analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Data Subject Security Model</name>
 			<value></value>
 		</message>
 		<message>
@@ -1022,19 +1591,20 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Data Subject to Application Service Model</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Data Subject-to-Application Service Model for</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Data-to-Application Service Matrix</name>
+			<name>Data
+				Summary</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Data to Application Service Model</name>
+			<name>Data Summary for Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data-to-Application Service Matrix</name>
 			<value></value>
 		</message>
 		<message>
@@ -1043,6 +1613,14 @@
 		</message>
 		<message>
 			<name>Data-to-Role Matrix</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Type</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Data Used</name>
 			<value></value>
 		</message>
 		<message>
@@ -1058,7 +1636,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Decommission</name>
+			<name>Decision</name>
 			<value></value>
 		</message>
 		<message>
@@ -1074,11 +1652,28 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Delete Presentation</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Deletes</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Delivery Method</name>
+			<name>Delete Slide</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Delete Slide Widget</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Delivery Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Delivery
+			Model</name>
 			<value></value>
 		</message>
 		<message>
@@ -1086,19 +1681,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Dependant Application Instances</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Dependant Technology Instances</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Dependencies</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Dependency Model</name>
+			<name>Dependent Application Instances</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Dependent Technology Instances</name>
 			<value></value>
 		</message>
 		<message>
@@ -1107,6 +1698,14 @@
 		</message>
 		<message>
 			<name>Deployed Application Instances</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Deployed Applications</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Deployed Apps</name>
 			<value></value>
 		</message>
 		<message>
@@ -1134,7 +1733,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Deployment of</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Deployment of Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Deployment Role</name>
 			<value></value>
 		</message>
 		<message>
@@ -1158,7 +1765,28 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Details of this element are integrated with other repositories as follows</name>
+			<name>Details of this element are integrated
+				with other repositories as follows</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Differentiating</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Differentiation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Differentiation Level</name>
+			<value></value>
+		</message>
+		<message>
+			<name>direct feed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Direct Reports</name>
 			<value></value>
 		</message>
 		<message>
@@ -1174,15 +1802,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>documents</name>
-			<value></value>
-		</message>
-		<message>
 			<name>documents have been published</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Download</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Download as Excel</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Download Roadmap Content</name>
 			<value></value>
 		</message>
 		<message>
@@ -1194,7 +1826,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Duplication/Gap Analysis</name>
+			<name>Duplication Heatmap</name>
 			<value></value>
 		</message>
 		<message>
@@ -1206,7 +1838,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Eco System Stakeholders</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Editors</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Element</name>
+			<value></value>
+		</message>
+		<message>
+			<name>elements defined for this Strategic Plan</name>
 			<value></value>
 		</message>
 		<message>
@@ -1218,6 +1862,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Enable the Detailed Error Message filter to view more information about this error</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Encryption Compliance</name>
+			<value></value>
+		</message>
+		<message>
 			<name>End Date</name>
 			<value></value>
 		</message>
@@ -1226,11 +1878,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Enter a description for the presentation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Enter a description for the slide</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Enter a Heading for the slide</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Enter a name for the presentation</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Enterprise</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Enterprise Views</name>
+			<name>Environment</name>
 			<value></value>
 		</message>
 		<message>
@@ -1238,7 +1906,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Essential Architecture Manager - Application Services Supporting Business Capability Analysis</name>
+			<name>Environments</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Error Report</name>
 			<value></value>
 		</message>
 		<message>
@@ -1246,7 +1918,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Essential Utilities</name>
+			<name>Essential Viewer</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer: error occurred at</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer Configurator</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer Error</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer - Error</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer Error: Access to the requested view is denied</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer Error Messages articles</name>
 			<value></value>
 		</message>
 		<message>
@@ -1254,11 +1950,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Essential Viewer Homepage </name>
+			<value></value>
+		</message>
+		<message>
 			<name>Essential Viewer last updated</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Existing Solutions</name>
+			<name>Essential Viewer Maintenance Service</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer - Maintenance Service</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Essential Viewer Version</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Event</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Exceptional Transfer Safeguards</name>
 			<value></value>
 		</message>
 		<message>
@@ -1270,15 +1986,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>External Document References</name>
+			<name>External?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>External Documentation</name>
 			<value></value>
 		</message>
 		<message>
 			<name>External Facing</name>
-			<value></value>
-		</message>
-		<message>
-			<name>External References</name>
 			<value></value>
 		</message>
 		<message>
@@ -1298,10 +2014,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Feedback</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Feedback Type</name>
 			<value></value>
 		</message>
@@ -1310,7 +2022,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Filters</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Fixed Price Deal in Place</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Focus</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Focus Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>for</name>
 			<value></value>
 		</message>
 		<message>
@@ -1318,19 +2046,35 @@
 			<value></value>
 		</message>
 		<message>
+			<name>For more information about how to resolve this error, visit</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Frequency</name>
 			<value></value>
 		</message>
 		<message>
-			<name>from the baseline state to the target state</name>
+			<name>From Countries</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Function/Service Change Analysis</name>
+			<name>From Technology Component</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Functions/Services</name>
+			<name>From Technology Product</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Full Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Function Implementation Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Function Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -1342,7 +2086,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Further Information</name>
+			<name>Function Types Offered</name>
 			<value></value>
 		</message>
 		<message>
@@ -1350,7 +2094,71 @@
 			<value></value>
 		</message>
 		<message>
+			<name>GDPR Application Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Application Catalogue as Table</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Application Dashboard</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Data</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Data Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Data Managed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Organisation Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>GDPR Organisation Catalogue as Table</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Geographic Scope</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Geographic View</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Get In Touch</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Goal Event</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Goals</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Goals and Objectives</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Goal Supporting</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Golden Source</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Good</name>
 			<value></value>
 		</message>
 		<message>
@@ -1362,11 +2170,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Group Actor Summary</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Group Actor Summary for</name>
+			<name>Greater Than</name>
 			<value></value>
 		</message>
 		<message>
@@ -1378,7 +2182,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>he purpose of the Strategic Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key enterprise elements that will exist at this stage of the Strategic Roadmap</name>
+			<name> have not been linked to their associated Software or Information Components:</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Height</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Hide</name>
 			<value></value>
 		</message>
 		<message>
@@ -1390,7 +2202,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>History</name>
+			<name>High Process Overlap</name>
 			<value></value>
 		</message>
 		<message>
@@ -1398,7 +2210,56 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Host Description</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Hosted</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Hosted GDPR Applications</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Hosting Countries</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Host Location</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Host
+				Location</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Host Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Host Site</name>
+			<value></value>
+		</message>
+		<message>
 			<name>I</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Idea</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Ideas Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Impact</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Impacted Application Elements</name>
 			<value></value>
 		</message>
 		<message>
@@ -1410,15 +2271,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Application Services</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Impacted Business Drivers</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Business Objectives</name>
+			<name>Impacted Business Elements</name>
 			<value></value>
 		</message>
 		<message>
@@ -1438,11 +2295,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Drivers</name>
+			<name>Impacted Elements</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Elements</name>
+			<name>Impacted Information/Data Elements</name>
 			<value></value>
 		</message>
 		<message>
@@ -1458,15 +2315,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Organisations</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Impacted Organisation Units</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Impacted Processes</name>
 			<value></value>
 		</message>
 		<message>
@@ -1474,7 +2323,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Teams</name>
+			<name>Impacted Technologies</name>
 			<value></value>
 		</message>
 		<message>
@@ -1482,7 +2331,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Impacted Technology Products</name>
+			<name>Impacted Technology Elements</name>
 			<value></value>
 		</message>
 		<message>
@@ -1490,7 +2339,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Implemented</name>
+			<name>Impacting Initiatives</name>
 			<value></value>
 		</message>
 		<message>
@@ -1502,6 +2351,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Implemented Data Objects</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Implemented Functions</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Implementing Applications</name>
 			<value></value>
 		</message>
@@ -1510,7 +2367,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Implements Tech Components</name>
+			<name>Implements Data Representation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Implication</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Implications</name>
 			<value></value>
 		</message>
 		<message>
@@ -1538,11 +2403,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Infomation Concept of View</name>
+			<name>Indirect Reports</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Info Representation Deployments</name>
+			<name>Infomation Concept of View</name>
 			<value></value>
 		</message>
 		<message>
@@ -1550,7 +2415,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Information/Data Roadmap</name>
+			<name>information</name>
 			<value></value>
 		</message>
 		<message>
@@ -1559,14 +2424,6 @@
 		</message>
 		<message>
 			<name>Information/Data Summary for Application</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Information and Data Views</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Information Catalogue</name>
 			<value></value>
 		</message>
 		<message>
@@ -1598,23 +2455,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Information Name</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Information Object</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Information Object </name>
-			<value></value>
-		</message>
-		<message>
-			<name>Information Object Summary</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Information Object Summary for</name>
 			<value></value>
 		</message>
 		<message>
@@ -1631,6 +2476,10 @@
 		</message>
 		<message>
 			<name>Information Representation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Information Representation Catalogue - Table View</name>
 			<value></value>
 		</message>
 		<message>
@@ -1651,6 +2500,10 @@
 		</message>
 		<message>
 			<name>Information Store</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Information Store Catalogue</name>
 			<value></value>
 		</message>
 		<message>
@@ -1702,7 +2555,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Infra</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Infrastructure</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Infrastructure risk is determined by the security compliance level of the infrastructure hosting the GDPR data in scope and the CIA risk of the data.</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Infrastructure Software</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Initiative</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Initiatives</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Initiators</name>
 			<value></value>
 		</message>
 		<message>
@@ -1710,7 +2587,35 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Inputs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Instance</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Instance Configuration</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Instance Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Integrity</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Interface</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Interfaces</name>
+			<value></value>
+		</message>
+		<message>
+			<name>in terms of Business and IT operations</name>
 			<value></value>
 		</message>
 		<message>
@@ -1718,11 +2623,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Internal / External</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Internal Facing</name>
 			<value></value>
 		</message>
 		<message>
-			<name>is created based on teh following schedules:</name>
+			<name>IP Address</name>
+			<value></value>
+		</message>
+		<message>
+			<name>IP Addresses</name>
 			<value></value>
 		</message>
 		<message>
@@ -1730,7 +2643,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>is delivered using the following methods:</name>
+			<name>is deployed as well as the locations from where it is accessed or used</name>
 			<value></value>
 		</message>
 		<message>
@@ -1738,7 +2651,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>is to inform stakeholders regarding the extent of change that is required to move</name>
+			<name>Issue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Issues</name>
 			<value></value>
 		</message>
 		<message>
@@ -1746,87 +2663,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>It is a model that defines a portfolio of applications and its service/function decomposition</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the applications, their locations and the interfaces between applications</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the business processes of the enterprise, in the form of events, activities, rules and responsibilities</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the Core and Support Functions/Services of the Enterprise, the Information Systems that enable the function/service, and the roles of the actors that participate</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the defines the technologies in different locations/environments</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the information assets that are consumed and produced by each Business Function/Service, including information exchange requirements with external business functions/services</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the interaction (e.g. create, read, update, delete) between applications and data</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the organisational structure (hierarchical decomposition), the functions/service performed by each organisational unit, the geographic location where these organisation unit reside, and the responsible authority (owner) of these organisation units</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the relationships between objectives / imperatives as derived from Policy, Act, Regulation and requirements, and the responsible organisation to achieve the objectives, and the measures or key performance indicators (KPI) by which to measure achievements of such objectives</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the security classification of Data Objects and the roles in the organisation that need access thereto</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the security classification of Data Subjects and the roles in the organisation that need access thereto</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that defines the Technologies in relation to the different subsystems in a distributed computing or client-server configuration (Note: Also known as the “technology stack” of a specific system)</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Business Architecture models and the Target Business Architecture models</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It is a model that indicates the deficiencies and opportunities for improvement that is derived from a comparison between the Baseline Data Architecture models and the Target Business Architecture models</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It outlines a list of individual increments of change over a timeline to show progression from a baseline to a target architecture state</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Application Architecture to the Target Application Architecture</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Data Architecture to the Target Data Architecture</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It outlines a list of individual increments of change over a timeline to show progression from the Baseline Technology Architecture to the Target Technology Architecture</name>
-			<value></value>
-		</message>
-		<message>
-			<name>It provides a model that defines the major classes of technology components/services (infrastructure software, hardware, and network) and the interoperability standards associated thereto</name>
-			<value></value>
-		</message>
-		<message>
-			<name>IT System Analysis</name>
+			<name>Items Pending My Approval</name>
 			<value></value>
 		</message>
 		<message>
@@ -1834,7 +2671,27 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Jump to</name>
+			<name>Job Position</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Job Roles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Jobs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Jobs &amp; People</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Jobs &amp; Utilisation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Joint Controller</name>
 			<value></value>
 		</message>
 		<message>
@@ -1850,11 +2707,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Key Contact</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Key Stakeholders</name>
+			<value></value>
+		</message>
+		<message>
 			<name>KPI Measures</name>
 			<value></value>
 		</message>
 		<message>
 			<name>KPIs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>KPI Targets</name>
 			<value></value>
 		</message>
 		<message>
@@ -1870,7 +2739,44 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Later</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Layer</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Layer Undefined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Legal Basis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Legal
+			Basis?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Legal Basis for</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Legend</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Legend:</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Legitimate Interests for Processing</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Level</name>
 			<value></value>
 		</message>
 		<message>
@@ -1878,11 +2784,53 @@
 			<value></value>
 		</message>
 		<message>
+			<name>License Renewal</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Lifecycle</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Lifecycle Status</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Lifecycle status for applications supporting the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Lifecycle Viewer</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Link</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Loading</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Local Name</name>
+			<name>Loading Application
+				View</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Loading Business View</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Loading Technology Reference Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Loading Technology View</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Local
+				Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -1898,7 +2846,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Location Summary for </name>
+			<value></value>
+		</message>
+		<message>
+			<name>Logical Technology Architecture</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Low</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Low-Medium</name>
 			<value></value>
 		</message>
 		<message>
@@ -1910,7 +2870,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Maintenance Service</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Managed by Applications</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Manual</name>
+			<value></value>
+		</message>
+		<message>
+			<name>manual extract</name>
+			<value></value>
+		</message>
+		<message>
+			<name>manual input</name>
 			<value></value>
 		</message>
 		<message>
@@ -1919,10 +2895,6 @@
 		</message>
 		<message>
 			<name>Master Data</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Matrix</name>
 			<value></value>
 		</message>
 		<message>
@@ -1938,6 +2910,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Medium-High</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Member of Organisations</name>
 			<value></value>
 		</message>
@@ -1950,7 +2926,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>middleware feed</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Milestone Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Minimum Cancellation Notice</name>
 			<value></value>
 		</message>
 		<message>
@@ -1958,15 +2942,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>models</name>
-			<value></value>
-		</message>
-		<message>
-			<name>models and the Target</name>
+			<name>More than 2 Apps</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Motivating Drivers</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Motivations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Move Backwards</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Move Forwards</name>
+			<value></value>
+		</message>
+		<message>
+			<name>My Approvals Dashboard</name>
+			<value></value>
+		</message>
+		<message>
+			<name>My Items Submitted for Approval</name>
 			<value></value>
 		</message>
 		<message>
@@ -1978,11 +2978,27 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Network Diagram</name>
+			<name>Negative</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Network Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Neutral</name>
 			<value></value>
 		</message>
 		<message>
 			<name>New</name>
+			<value></value>
+		</message>
+		<message>
+			<name>New Strategic Plan</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Next Step</name>
 			<value></value>
 		</message>
 		<message>
@@ -1994,11 +3010,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Additional Technology Nodes defined for this Node</name>
+			<name>No allocated individuals</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No Application Instances dependant on this Technology Instance</name>
+			<name>No application functionality defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Application Instances dependent on this Technology Instance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Applications Captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2006,7 +3030,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Applications Defined</name>
+			<name>No applications captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2027,6 +3051,22 @@
 		</message>
 		<message>
 			<name>No Applications Mapped</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Applications Services captured</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Apps</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No audit records found that match your criteria. Please review your criteria.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Automated Dependencies captured for </name>
 			<value></value>
 		</message>
 		<message>
@@ -2074,11 +3114,21 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No Business Processes
+			Mapped</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No business roles defined for</name>
 			<value></value>
 		</message>
 		<message>
 			<name>No Business Services defined for this milestone</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Business Services defined for this
+			milestone</name>
 			<value></value>
 		</message>
 		<message>
@@ -2098,11 +3148,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No Coverage</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No Data Attributes Defined</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No Database Scheme Defined for this object</name>
+			<name>No data elements managed by</name>
 			<value></value>
 		</message>
 		<message>
@@ -2118,7 +3172,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No Data Representations Defined</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No Data Subjects have been captured for this Information Concept</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Node</name>
 			<value></value>
 		</message>
 		<message>
@@ -2134,31 +3196,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No definition captured for this Technology Component</name>
-			<value></value>
-		</message>
-		<message>
-			<name>No delivery methods have been captured for the</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Node Name</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No dependant applications captured</name>
+			<name>No dependent applications captured</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No dependant business processes/teams captured</name>
-			<value></value>
-		</message>
-		<message>
-			<name>No dependent plans defined for this Strategic Plan</name>
-			<value></value>
-		</message>
-		<message>
-			<name>No Deployed Application Instances Defined for this object</name>
+			<name>No dependent business processes/teams captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2186,11 +3232,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No directly impacted business processes captured</name>
-			<value></value>
-		</message>
-		<message>
-			<name>No directly impacted organisations captured</name>
+			<name>No directly impacted technology platforms captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2202,7 +3244,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No elements impacted by</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No email address provided</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No end date captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2210,23 +3260,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No Flow Defined for this Process</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No Functions Defined</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No further details provided</name>
+			<name>No functions defined</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No Impacted Elements defined for this Strategic Plan</name>
+			<name>No impacted</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No impacted elements defined for this Strategic Plan</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No implemented applications captured</name>
 			<value></value>
 		</message>
 		<message>
 			<name>No Inbound Business Services Mapped for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>No Inbound Information Dependencies Mapped for</name>
 			<value></value>
 		</message>
 		<message>
@@ -2262,6 +3320,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No inputs defined</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No KPI measures captured</name>
 			<value></value>
 		</message>
@@ -2278,7 +3340,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Non-Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Non-Compliant</name>
+			<value></value>
+		</message>
+		<message>
 			<name>None</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Non-Permitted Use</name>
 			<value></value>
 		</message>
 		<message>
@@ -2306,7 +3380,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No other Technology Instances dependant on this Technology Instance</name>
+			<name>No other Technology Instances dependent on this Technology Instance</name>
 			<value></value>
 		</message>
 		<message>
@@ -2318,6 +3392,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No outputs defined</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No Parent Application</name>
 			<value></value>
 		</message>
@@ -2326,7 +3404,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Physical Information Schema dependant on this Technology Instance</name>
+			<name>No Physical Information Schema dependent on this Technology Instance</name>
 			<value></value>
 		</message>
 		<message>
@@ -2338,7 +3416,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Processes Defined</name>
+			<name>No plans defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No procedure owner defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2346,11 +3428,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No process steps defined for the</name>
+			<name>No Product Vendor Defined</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No Product Vendor Defined</name>
+			<name>No Projects Assessed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No related issues captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -2363,6 +3449,10 @@
 		</message>
 		<message>
 			<name>No reports have been captured for this workflow</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Roadmaps defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2382,11 +3472,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Solutions Captured</name>
+			<name>No Software Architecture Defined</name>
 			<value></value>
 		</message>
 		<message>
 			<name>No Source Applications Captured</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No specific competencies required</name>
 			<value></value>
 		</message>
 		<message>
@@ -2406,6 +3500,30 @@
 			<value></value>
 		</message>
 		<message>
+			<name>no standards defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No start date captured</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No start events defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No start or end dates defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Status Plans</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No steps defined for this process</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No strategic plans defined for this element</name>
 			<value></value>
 		</message>
@@ -2418,11 +3536,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No supported Business Processes defined for this Technology Product</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No supported processes defined for this Information Representation</name>
 			<value></value>
 		</message>
 		<message>
 			<name>No supported strategic goals captured</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No supported Strategic Plans defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2438,10 +3564,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No supporting plans defined for this Strategic Plan</name>
-			<value></value>
-		</message>
-		<message>
 			<name>No supporting Projects defined for this Strategic Plan</name>
 			<value></value>
 		</message>
@@ -2454,7 +3576,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Systems Defined</name>
+			<name>No target countries defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2462,11 +3584,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>not defined</name>
+			<name>No target gaols defined</name>
 			<value></value>
 		</message>
 		<message>
-			<name>No Technology Architectures Defined for this Product</name>
+			<name>No target organisations defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No target personas defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No target rationale defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Not Assessed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Not Defined</name>
+			<value></value>
+		</message>
+		<message>
+			<name>not defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2486,6 +3628,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>No Technology Components Defined</name>
+			<value></value>
+		</message>
+		<message>
 			<name>No Technology Components defined for this milestone</name>
 			<value></value>
 		</message>
@@ -2502,7 +3648,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>No Technology Instances Defined for this object</name>
+			<name>No Technology Platform Architecture Defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2511,6 +3657,10 @@
 		</message>
 		<message>
 			<name>No Technology Products/Builds defined for this milestone</name>
+			<value></value>
+		</message>
+		<message>
+			<name>No Technology Products Defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -2530,6 +3680,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Not Set</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Not
+			Set</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Not System of Record</name>
 			<value></value>
 		</message>
@@ -2546,7 +3705,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Number of Applications for this Service</name>
+			<value></value>
+		</message>
+		<message>
 			<name>O</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Object Description</name>
 			<value></value>
 		</message>
 		<message>
@@ -2566,6 +3733,18 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Oops!</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Optional</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Options Analysis</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Organisation</name>
 			<value></value>
 		</message>
@@ -2574,11 +3753,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Organisation Roles</name>
+			<name>Organisational Scope</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Organisational Scope</name>
+			<name>Organisation Catalogue by Name</name>
 			<value></value>
 		</message>
 		<message>
@@ -2586,7 +3765,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Organisation Performance Change Analysis</name>
+			<name>Organisation Resource Allocations</name>
 			<value></value>
 		</message>
 		<message>
@@ -2602,6 +3781,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Organisation Structure</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Organisation Structure Change Analysis</name>
 			<value></value>
 		</message>
@@ -2610,11 +3793,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Organisations Using</name>
+			<name>Organisation Structure Resource Model</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Organisations Using Information Object</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Organisation Team Members</name>
 			<value></value>
 		</message>
 		<message>
@@ -2630,7 +3817,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>other</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Other Impacted Elements</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Others</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Others (No Family Defined)</name>
 			<value></value>
 		</message>
 		<message>
@@ -2646,7 +3845,23 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Overall Demand</name>
+			<name>Outputs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Overall Data Quality</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Overall Project Principle Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Overlap</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Owner</name>
 			<value></value>
 		</message>
 		<message>
@@ -2658,15 +3873,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Page Loading - Please Wait</name>
+			<name>Packaged</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Parent Business Capabilities</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Parent Business Capability</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Parent Capability</name>
 			<value></value>
 		</message>
 		<message>
@@ -2678,7 +3893,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Parent Organisation</name>
+			<name>Parent Organisations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Parent Process</name>
 			<value></value>
 		</message>
 		<message>
@@ -2690,6 +3909,18 @@
 			<value></value>
 		</message>
 		<message>
+			<name>People Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Percentage</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Percentage of Compliant Projects Across EA Domains</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Performed at Sites</name>
 			<value></value>
 		</message>
@@ -2698,11 +3929,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Performed By Organisation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Performed by Organisation</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Performed by Roles</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Performing Roles</name>
+			<name>Performing Organisations</name>
 			<value></value>
 		</message>
 		<message>
@@ -2710,7 +3949,72 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Permitted?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Permitted Data Area</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Permitted Data Type</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Permitted Data Usage</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Permitted Use</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Person</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Personal Data Location</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Personal Data Processing Legal Basis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Personal Data Source</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Person or Organisation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Person or
+			Organisation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Person Skills Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Person Skills Summary for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Physical Business Process</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Physical Business Process Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Physical Data Object</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Physical Data Object Catalogue</name>
 			<value></value>
 		</message>
 		<message>
@@ -2730,10 +4034,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Physical Process Catalogue</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Physical Process Catalogue by Business Domain</name>
 			<value></value>
 		</message>
@@ -2746,7 +4046,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Physical Process Workflow</name>
+			<name>PIA Document</name>
+			<value></value>
+		</message>
+		<message>
+			<name>PIA Progress</name>
+			<value></value>
+		</message>
+		<message>
+			<name>PIA Required?</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Pie chart shows percentage of Projects that are Compliant, Non-Compliant and Not Assessed</name>
 			<value></value>
 		</message>
 		<message>
@@ -2758,6 +4070,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Planned Change</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Planned Changes</name>
 			<value></value>
 		</message>
@@ -2766,19 +4082,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Planned Retirement Date</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Planned Start Date</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Planned Target Date</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Planning Comments</name>
 			<value></value>
 		</message>
 		<message>
@@ -2798,6 +4102,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Platform Information</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Please check your details below and try again</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Please click on an Information Concept, View or Representation below to navigate to the required view</name>
 			<value></value>
 		</message>
@@ -2811,6 +4123,10 @@
 		</message>
 		<message>
 			<name>Please click on one of the Application Capabilities below to navigate to the required view.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Please click on one of the Application Function Implementations below to navigate to the required view.</name>
 			<value></value>
 		</message>
 		<message>
@@ -2830,7 +4146,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Please click on one of the Business Objectives below to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Please click on one of the Business Services below to view its detailed specification</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Please click on one of the Organisations below to navigate to the required view.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Please contact the Essential Project Team to gain access to this view</name>
 			<value></value>
 		</message>
 		<message>
@@ -2842,7 +4170,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Please select a Business Service or Business Process to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Please select a Data Subject to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Please select a group actor to navigate to the required view</name>
 			<value></value>
 		</message>
 		<message>
@@ -2862,23 +4198,39 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Poor</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Populated</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Portals</name>
+			<name>Position</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Powered by</name>
+			<name>Positive</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Presentation of the conceptual Data Subjects in scope for the enterprise, organised by category</name>
+			<name>Potential Candidates</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Primary Base Sites</name>
+			<name>Potential Duplicate</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Potential Replacement</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Presentation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Presentation Manager</name>
 			<value></value>
 		</message>
 		<message>
@@ -2886,7 +4238,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Print This Page</name>
+			<name>Prime Candidates Only</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Principle Compliance for Individual Projects</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Print</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Print this page</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Priority</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Probability</name>
 			<value></value>
 		</message>
 		<message>
@@ -2902,7 +4278,32 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Process Cost</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Processes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Processes Impacting</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Processes Performed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Processes Supporting</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Process Family</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Process
+				Family</name>
 			<value></value>
 		</message>
 		<message>
@@ -2938,7 +4339,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Product/Service</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Product Count</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Product Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Products</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Products/Services</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Product Supplier</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Products Used</name>
 			<value></value>
 		</message>
 		<message>
@@ -2947,10 +4372,6 @@
 		</message>
 		<message>
 			<name>Programme</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Programme Catalogue</name>
 			<value></value>
 		</message>
 		<message>
@@ -2963,6 +4384,10 @@
 		</message>
 		<message>
 			<name>Programme Plan</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Programme Plan for</name>
 			<value></value>
 		</message>
 		<message>
@@ -2990,6 +4415,38 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Project Compliance Across Application Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project Compliance Across Business Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project Compliance Across Information Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project Compliance Across Technology Principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project has at least one Non Compliance to principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project is compliant at any level (Full, Strong, Weak) for all the principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project is not yet assessed against architecture principles</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project Lifecycle Legend</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Project Manager</name>
 			<value></value>
 		</message>
@@ -3002,7 +4459,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Project People Network</name>
+			<name>Project Phases</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Project Principle Compliance Breakdown</name>
 			<value></value>
 		</message>
 		<message>
@@ -3034,11 +4495,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Purpose of Processing</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Q</name>
 			<value></value>
 		</message>
 		<message>
+			<name>Quality Assessment</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Question About Content</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Quite Negative</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Quite Positive</name>
 			<value></value>
 		</message>
 		<message>
@@ -3062,6 +4539,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Realised by Technology Components</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Realised Capabilities</name>
 			<value></value>
 		</message>
@@ -3074,7 +4555,48 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Realising Business Processes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Record of Consent</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Record of Legitimate Interests</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Record of Legitimate
+				Interests</name>
+			<value></value>
+		</message>
+		<message>
+			<name> records. Please refine your search</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Reference Architecture</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Reference Data</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Regulation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Regulatory Body</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Regulatory Compliance Risk</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Reject</name>
 			<value></value>
 		</message>
 		<message>
@@ -3082,11 +4604,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Related Documents</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Related Objectives</name>
+			<name>Related Issues</name>
 			<value></value>
 		</message>
 		<message>
@@ -3098,7 +4616,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Relevant Technology Principles</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Removed</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Remove Widget</name>
 			<value></value>
 		</message>
 		<message>
@@ -3122,6 +4648,46 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Representation Attritbutes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Required Application Service</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Required Competencies</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Required Component</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Required FTEs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Reset</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Reset All Filters</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Reset Zoom</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Response from Maintenance Service:</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Response Report</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Responsibilities</name>
 			<value></value>
 		</message>
@@ -3130,11 +4696,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>RMG Plan</name>
+			<name>Retention Schedule</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Roadmap</name>
+			<name>Revenues</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Revenue Targets</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Rights Available to Individuals</name>
 			<value></value>
 		</message>
 		<message>
@@ -3146,11 +4720,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Roadmap Model Catalogue</name>
+			<name>Roadmap Model Name</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Roadmap Model Catalogue by Layer</name>
+			<name>Roadmap Planner</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Roadmap Scope</name>
 			<value></value>
 		</message>
 		<message>
@@ -3163,6 +4741,10 @@
 		</message>
 		<message>
 			<name>Roles &amp; People</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Roles and People</name>
 			<value></value>
 		</message>
 		<message>
@@ -3182,7 +4764,28 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Savings</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Score</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Search all columns</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Search
+				all columns</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Search by</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Search results for</name>
 			<value></value>
 		</message>
 		<message>
@@ -3190,7 +4793,43 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Security Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Security Measures</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Security Profile</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Security Risk</name>
+			<value></value>
+		</message>
+		<message>
+			<name>See the web application logs for more information</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Business Capability, Business Process or Business Domain to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Business Model to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Select a Business Process or Business Capability to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Data Representation to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Data Subject or Data Object to navigate to the required view</name>
 			<value></value>
 		</message>
 		<message>
@@ -3198,7 +4837,27 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Select an Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select an Information Representation or Application to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select an Information Store to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Select an Option</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Physical Business Process to navigate to the required view</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select a Physical Data Object to navigate to the required view</name>
 			<value></value>
 		</message>
 		<message>
@@ -3222,11 +4881,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Select a view or click the View Filter button to get started</name>
+			<name>Selected Data Objects</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Selected Scope</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Selected Technology Platforms</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Select Services</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Server Name</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Servers</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Service</name>
 			<value></value>
 		</message>
 		<message>
@@ -3246,11 +4925,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Service Functions</name>
+			<name>Service Owner</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Service Owner</name>
+			<name>Service Quality Fit</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Services</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Services Match</name>
 			<value></value>
 		</message>
 		<message>
@@ -3258,11 +4945,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Show</name>
+			<name>Show/Hide Application Count</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Show/Hide Business Process and Systems Overview</name>
+			<name>Show/Hide Impacted Elements</name>
 			<value></value>
 		</message>
 		<message>
@@ -3286,6 +4973,42 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Show Detailed Feeds</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Show in Full Screen</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Skill and Competency Gaps</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Skills</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Skill Type</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Slide</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Slot</name>
+			<value></value>
+		</message>
+		<message>
+			<name>slot</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Sorry, we could not login you in with the details that you specified</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Source</name>
 			<value></value>
 		</message>
@@ -3295,6 +5018,26 @@
 		</message>
 		<message>
 			<name>Source of Truth</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Special Category Data Condition for Processing</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Special Category Data Processing Legal Basis</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Special Category Data Retention Policy</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Special Category Data Retention Policy Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Special Category Data Retention Policy Non-Compliance Reason</name>
 			<value></value>
 		</message>
 		<message>
@@ -3334,6 +5077,22 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Standard Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard Applications</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard for Organisations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard for Orgs</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Standardisation Level</name>
 			<value></value>
 		</message>
@@ -3342,7 +5101,36 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Standardisation level not defined for this
+				process</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard Level</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standards Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard Technology Products</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Standard Technology Product Selector</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Start Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Start Event</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Starting Events</name>
 			<value></value>
 		</message>
 		<message>
@@ -3350,7 +5138,16 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Strategic Alignment</name>
+			<name>Step</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Stored in 3rd Party Country</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic
+				Alignment</name>
 			<value></value>
 		</message>
 		<message>
@@ -3358,11 +5155,24 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Strategic Goal Catalogue</name>
+			<name>Strategic Goal
+				Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Goals and Objectives</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Strategic Goals Model</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Implication Dashboard</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Lifecycle</name>
 			<value></value>
 		</message>
 		<message>
@@ -3374,11 +5184,29 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Strategic
+				Plan</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Plan Elements</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Plan Name</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Strategic Planning</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Strategic Plans</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic
+				Plans</name>
 			<value></value>
 		</message>
 		<message>
@@ -3398,7 +5226,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Strategic Usage Policy (e.g. Production, Prototype, Off Strategy)</name>
+			<name>Strategic Trends and Implications Dashboard</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strategic Trends Dashboard</name>
 			<value></value>
 		</message>
 		<message>
@@ -3406,7 +5238,47 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Strategy Planner</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Strong Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Subject Description</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Submission Deadline</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Submitted as proposal by</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Sub Processes</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Supplier</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supplier Filter</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supplier Impact</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supplier License Management</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Suppliers</name>
 			<value></value>
 		</message>
 		<message>
@@ -3415,6 +5287,10 @@
 		</message>
 		<message>
 			<name>Supported Applications</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supported Business Capabilities</name>
 			<value></value>
 		</message>
 		<message>
@@ -3430,7 +5306,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Supported Physical Processes</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Supported Processes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supported Strategic Plans</name>
 			<value></value>
 		</message>
 		<message>
@@ -3454,10 +5338,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Supporting Capabilities</name>
-			<value></value>
-		</message>
-		<message>
 			<name>Supporting Data</name>
 			<value></value>
 		</message>
@@ -3474,11 +5354,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Supporting Information</name>
+			<name>Supporting Documentation</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Supporting Documentation</name>
+			<name>Supporting Information</name>
 			<value></value>
 		</message>
 		<message>
@@ -3490,11 +5370,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Supporting Systems</name>
+			<name>Supporting Software Component</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Supporting Technology</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supporting Technology Builds</name>
 			<value></value>
 		</message>
 		<message>
@@ -3506,7 +5390,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Supporting Technology Products</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supports Application Function Implementation</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Supports Applications</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Supports Business Processes</name>
 			<value></value>
 		</message>
 		<message>
@@ -3518,14 +5414,6 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Support Views</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Switch Off</name>
-			<value></value>
-		</message>
-		<message>
 			<name>system</name>
 			<value></value>
 		</message>
@@ -3534,7 +5422,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>System Name</name>
+			<name>System of Differentiation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>System of Innovation</name>
+			<value></value>
+		</message>
+		<message>
+			<name>System of Record</name>
 			<value></value>
 		</message>
 		<message>
@@ -3543,10 +5439,6 @@
 		</message>
 		<message>
 			<name>Systems Impacted</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Systems Using</name>
 			<value></value>
 		</message>
 		<message>
@@ -3562,6 +5454,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Table/Collection</name>
+			<value></value>
+		</message>
+		<message>
+			<name>TAM Application Mapping</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Target</name>
 			<value></value>
 		</message>
@@ -3574,11 +5474,35 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Target End Date</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Target Personas</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Team Competencies</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Team Jobs</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Team Skills</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technical Name</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Technology</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Capabilities</name>
+			<name>technology</name>
 			<value></value>
 		</message>
 		<message>
@@ -3586,7 +5510,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Technology Capability Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Capability Summary for</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Technology Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Catalogue - Simple</name>
 			<value></value>
 		</message>
 		<message>
@@ -3614,7 +5550,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Component Catalogue</name>
+			<name>Technology Component Catalogue as Table</name>
 			<value></value>
 		</message>
 		<message>
@@ -3622,19 +5558,12 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Component Change Analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Technology Component Interoperability Catalogue</name>
+			<name>Technology Component Interoperability
+				Catalogue</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Technology Component Interoperability Change Analysis Catalogue</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Technology Components</name>
 			<value></value>
 		</message>
 		<message>
@@ -3654,11 +5583,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Distribution Change Analysis</name>
+			<name>Technology Distribution Model</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Distribution Model</name>
+			<name>Technology Domain Summary</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Domain Summary for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Footprint</name>
 			<value></value>
 		</message>
 		<message>
@@ -3670,7 +5607,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Functions Offered</name>
+			<name>Technology Function Type</name>
 			<value></value>
 		</message>
 		<message>
@@ -3687,10 +5624,6 @@
 		</message>
 		<message>
 			<name>Technology Instance Summary</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Technology Interoperability Change Analysis</name>
 			<value></value>
 		</message>
 		<message>
@@ -3730,7 +5663,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Technology Platform</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Technology Platform Model </name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Platform Model for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Principle</name>
 			<value></value>
 		</message>
 		<message>
@@ -3743,10 +5688,6 @@
 		</message>
 		<message>
 			<name>Technology Product/Build</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Technology Product Build</name>
 			<value></value>
 		</message>
 		<message>
@@ -3763,6 +5704,10 @@
 		</message>
 		<message>
 			<name>Technology Product Catalogue by Component</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Technology Product Catalogue by Type</name>
 			<value></value>
 		</message>
 		<message>
@@ -3786,11 +5731,12 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Reference and Standards Model</name>
+			<name>Technology Reference Model</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Reference Model</name>
+			<name>Technology Reference
+			Model</name>
 			<value></value>
 		</message>
 		<message>
@@ -3798,15 +5744,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Technology Stack</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Technology Strategy Alignment</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Technology Views</name>
-			<value></value>
-		</message>
-		<message>
-			<name>Technoogyg Node Products by Vendor</name>
+			<name>Technology Type</name>
 			<value></value>
 		</message>
 		<message>
@@ -3814,19 +5760,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The</name>
+			<name>The Application Current State Model provides a high level overview of the key application building blocks that support the execution of business processes across the enterprise</name>
 			<value></value>
 		</message>
 		<message>
 			<name>The Application Services supporting this capability</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The Business Capability Model informs stakeholders of the conceptual functional capabilities of the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The Business Driver/Change Footprint view compares the footprint of current change activities (i.e. programmes/projects against the business objectives that have been defined</name>
 			<value></value>
 		</message>
 		<message>
@@ -3838,11 +5776,16 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The Essential Project</name>
+			<name>the
+				enterprise</name>
 			<value></value>
 		</message>
 		<message>
 			<name>The following access control policies are in place for the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following Application Architecture Principles guide and govern changes to the application architecture</name>
 			<value></value>
 		</message>
 		<message>
@@ -3858,15 +5801,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>The following Application Services are required to support the</name>
+			<value></value>
+		</message>
+		<message>
 			<name>The following Applications support the</name>
 			<value></value>
 		</message>
 		<message>
 			<name>The following applications would be impacted by the removal of or changes to the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The following Business Capabilities and Process support the</name>
 			<value></value>
 		</message>
 		<message>
@@ -3878,19 +5821,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following Business Processes are directly impacted by this Project</name>
-			<value></value>
-		</message>
-		<message>
 			<name>The following diagram describes the conceptual business capabilities in scope for</name>
 			<value></value>
 		</message>
 		<message>
 			<name>The following diagram describes the conceptual business capablities in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The following diagram describes the different types of applications that are in use across</name>
 			<value></value>
 		</message>
 		<message>
@@ -3903,6 +5838,10 @@
 		</message>
 		<message>
 			<name>The following diagram describes the information assets that are consumed and produced by the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following diagram highlights the business capabilities directly or indirectly impacted by the</name>
 			<value></value>
 		</message>
 		<message>
@@ -3938,7 +5877,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following items provide details for the</name>
+			<name>The following issues have been identified for</name>
 			<value></value>
 		</message>
 		<message>
@@ -3958,7 +5897,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following Organisations are directly impacted by this Project</name>
+			<name>The following matrix supports analysis of where multiple applications in the portfolio are providing the same functionality</name>
 			<value></value>
 		</message>
 		<message>
@@ -3966,15 +5905,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following provides a graphical view of the sub-capabilities of</name>
-			<value></value>
-		</message>
-		<message>
 			<name>The following processes are supported by this Information Representation</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The following process steps are defined for the</name>
 			<value></value>
 		</message>
 		<message>
@@ -3986,6 +5917,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>The following steps are defined for the</name>
+			<value></value>
+		</message>
+		<message>
 			<name>The following table describes the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name>
 			<value></value>
 		</message>
@@ -3994,7 +5929,8 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following table lists the Business Functions/Services for</name>
+			<name>The following table
+				lists the Business Functions/Services for</name>
 			<value></value>
 		</message>
 		<message>
@@ -4018,7 +5954,15 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following tables describe other Technology Instances that are dependant on this Technology Instance</name>
+			<name>The following table lists the team members of each organisation together with the jobs that they perform within the teams</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following table provides high level details for the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following tables describe other Technology Instances that are dependent on this Technology Instance</name>
 			<value></value>
 		</message>
 		<message>
@@ -4026,7 +5970,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following tables describe the Application Instances that are dependant on this Technology Instance </name>
+			<name>The following tables describe the Application Instances that are dependent on this Technology Instance </name>
 			<value></value>
 		</message>
 		<message>
@@ -4038,7 +5982,7 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The following tables describe the physical information schema that are dependant on this technology instance</name>
+			<name>The following tables describe the physical information schema that are dependent on this technology instance</name>
 			<value></value>
 		</message>
 		<message>
@@ -4050,7 +5994,19 @@
 			<value></value>
 		</message>
 		<message>
+			<name>The following Technology platforms are directly impacted by this Project</name>
+			<value></value>
+		</message>
+		<message>
 			<name>The following Technology Principles guide and govern changes to the technology architecture</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following text values can be updated</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The following usages in the software architecture model for </name>
 			<value></value>
 		</message>
 		<message>
@@ -4058,131 +6014,39 @@
 			<value></value>
 		</message>
 		<message>
-			<name>the free open-source Enterprise Architecture Management Platform</name>
-			<value></value>
-		</message>
-		<message>
 			<name>The logical Information Views that are refinements of this Information Concept </name>
 			<value></value>
 		</message>
 		<message>
+			<name>The map below highlights the countries from where the Application</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below describes the overall risk of regulatory breach, broken down by business process, applications and technology infrastructure.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below highlights the scope of this business capability, the GDPR data used, whether there is a legal basis defined and the level of security compliance of the underlying IT.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below highlights the scope of this business process, the GDPR data used, whether there is a legal basis defined and the level of security compliance of the underlying IT.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below highlights where GDPR data is used by the business, whether there is a legal basis defined and the level of security compliance of the underlying IT.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below highlights where GDPR data is used by the business under this legal basis and the level of security compliance of the underlying IT.</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The model below shows an overview of the</name>
+			<value></value>
+		</message>
+		<message>
 			<name>The output format has not been captured for the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The Principles catalogue captures principles of the business and architecture principles that describe what a "good" solution or architecture should look like. Principles are used to evaluate and agree an outcome for architecture decision points. Principles are also used as a tool to assist in architectural governance of change initiatives</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The Programme Plan shows the timelines for the individual projects contained within the overall Programme</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of a Strategic Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to deliver the business and IT strategy of an enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Application Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Application elements that will exist at this stage of the Application Roadmap</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Application Reference Model is to inform stakeholders regarding the major classes of applications that are needed to automate or enable the functions/services of</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Application Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Application Service Stakeholder Model is to inform stakeholders of the different roles (internal and external) that will interact with a given application service</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Business Function/Service Model is to inform stakeholders regarding the Service Catalogue of an enterprise, the degree of automation of each function/service, and the roles (people) required to perform the function/service</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Business Information Model is to inform stakeholders regarding the Data Subject classes that the enterprise must manage through its life-cycle</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Business Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing key business elements that will exist at this stage of the Business Roadmap</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Business Performance Model is to inform stakeholders regarding the performance accountability in an enterprise and the line of sight of an enterprise towards government strategic outcomes</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Business Roadmap is to inform stakeholders regarding the incremental changes to business ekements of the enterprise that are to be undertaken to deliver the business strategy</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Data Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Information/Data elements that will exist at this stage of the Data Roadmap</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Data Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Data Security Model is to inform stakeholders regarding the security and responsibilities of the data assets in a department in order to improve data accountability</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between Data Subjects and applications in an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Data-to-Application Model is to inform stakeholders regarding the affinity (or relationship) between logical Data Objects and application services in use across an enterprise that is needed to inform the development, integration and deployment of software solutions</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Information Reference Model is to inform stakeholders regarding the information assets of an enterprise in a consistent manner that will enable re-use and information sharing</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Organisation Structure Model is to inform stakeholders regarding the accountability and responsibility towards the services that are routinely rendered by an enterprise – be it an internal service or external service; and the business footprint to inform capacity and network design</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Strategic Goals Model is to provide stakeholders with a line of sight from high level strategic business goals, through objectives and the drivers that motivate them</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Technology Milestone Summary View is to describe the Drivers and Objectives being supported as well as listing the Technology elements that will exist at this stage of the Technology Roadmap</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of the Technology Roadmap is to inform stakeholders regarding the incremental changes to be undertaken to address the deficiencies and redundancies as identified during gap analysis</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to define the distribution of technology components for a distributed operating environment that will reduce duplication and optimise the re-use of shared infrastructure whilst providing optimal access channels to information intensive services to the intended users</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to describe the direct data related dependencies that exist for the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to describe the flow of steps and participants (users and systems) in the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to inform stakeholders on how applications or application components are distributed across the footprint of the organisation and how they interface or integrate with each other and the environment</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to inform stakeholders regarding the redundancies and deficiencies of technology in an enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>The purpose of this view is to inform stakeholders regarding the workflow (and information flow) that is needed to produce a product or render a service.</name>
 			<value></value>
 		</message>
 		<message>
@@ -4194,7 +6058,23 @@
 			<value></value>
 		</message>
 		<message>
+			<name>The table below lists the servers upon which the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The table below lists the stakeholders for the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The table below lists the users that access the</name>
+			<value></value>
+		</message>
+		<message>
 			<name>The table below provides a comparative analysis between</name>
+			<value></value>
+		</message>
+		<message>
+			<name>The table below shows a catalogue of all the Technology Nodes that have been captured</name>
 			<value></value>
 		</message>
 		<message>
@@ -4214,19 +6094,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>The Technology Reference Model informs stakeholders regarding the major kinds of technologies and standards that are needed as a common infrastructure to enable the integration, execution, distribution and management of Information Management systems (data and applications) of an enterprise</name>
+			<name>This option is yet to be rated</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This page describes the inbound and outbound information flows for the selected Application</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This page is highly complex and may take a few minutes to load</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This provides an overview of the selected Data Object</name>
+			<name>This table lists all Ideas that have been submitted across the enterprise</name>
 			<value></value>
 		</message>
 		<message>
@@ -4234,107 +6106,52 @@
 			<value></value>
 		</message>
 		<message>
+			<name>This table lists all the Applications in use and allows search as well as copy to
+				spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the Applications that manage GDPR data and allows search as well as copy to spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the Business Processes in use and allows search as well as copy to spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the Business Process Families in use and allows search as well as copy to spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the GDPR related Data Subjects and Data Objects in scope for the enterprise and allows search as well as copy to spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the Organisations that process GDPR data and allows search as well as copy to spreadsheet</name>
+			<value></value>
+		</message>
+		<message>
+			<name>This table lists all the Technology Components and Products in use and allows download as CSV</name>
+			<value></value>
+		</message>
+		<message>
 			<name>This table lists all the Technology Products in use and allows download as CSV</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view contains links to download Excel spreadsheet templates in Excel 2003 XML format (either empty or populated), specifically structured for importing into Essential</name>
+			<name>This table lists all the Technology Products in use and allows search as well as copy to spreadsheet</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view describes duplication and gaps that exist for the Application Services required by an enterprise</name>
+			<name>This table lists all the Value Streams allows search as well as copy to spreadsheet</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view displays all programmes in scope for the enterprise, as well as their constituent projects</name>
+			<name>This view illustrates the timeline for the projects that form the programme</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view displays all projects in scope for the enterprise, as well as the individuals involved in them</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view is summary of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view outlines the use of approved technology platforms in the selected application by showing the degree of technology strategy alignment for the technology platforms used to support the Application</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provide analysis of the applications that support the Business Capabilities for the selected Business Domain</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a catalogue of the Applications in use across the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a catalogue of the Technology Products available across the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a detailed summary of the selected Technology Instance</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides an analysis of the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides an analysis of the Application Services that support the Business Capabilities for the selected Business Domain</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides an overview of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides an overview of the key elements of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of a set of related changes to elements of the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of details related to an individual actor</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of the Information and Data that the selected Application provides and uses</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of the key attributes and relationships of an Information Object</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides a summary of the key elements of the</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view provides links to published</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows actual physical processes performed by the business, organised by business domain</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows a list of Business Processes as a searchable table</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all individual actors in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the application capabilities for the enterprise</name>
+			<name>This view illustrates the timeline for the strategic plans/projects of the roadmap</name>
 			<value></value>
 		</message>
 		<message>
@@ -4346,107 +6163,19 @@
 			<value></value>
 		</message>
 		<message>
-			<name>This view shows all the Application Services in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Applications in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Applications in scope for the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the business capabilities for the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Business Domains for the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Business Processes in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Business Services in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Data Objects in scope for the enterprise</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Data Subjects in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the physical technology node products in the enterprise, organised by manufacturer</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Roadmap Models in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the Technology Components in scope for</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology components in use across the enterprise. Select a Technology Component to view the Technology Interoperability Change Analysis for that component</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology nodes contained in the repository, organised by hardware model</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology nodes contained in the repository, organised by manufacturer</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology nodes contained in the repository, organised in alphabetical order by name</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology products contained in the repository, organised by Vendor</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology products in use across the enterprise, organised by Technology Capability/Component</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows all the technology products in use across the enterprise, organised by Technology Component</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows a summary of the</name>
-			<value></value>
-		</message>
-		<message>
 			<name>This view shows relationships between people and currently active projects</name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view shows relationships between people and currently active projects. Click on a node to refocus the diagram</name>
+			<name>This view shows the automated dependencies for </name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view shows the information concepts, views and logical representations in scope for the enterprise</name>
+			<name>This view shows the manual dependencies for </name>
 			<value></value>
 		</message>
 		<message>
-			<name>This view shows the IT and Business impact of removing or changing a given Application</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows the main information concepts and views for the enterprise, organised by business domain</name>
-			<value></value>
-		</message>
-		<message>
-			<name>This view shows which systems are the source and which are consumers of a specified Data Object</name>
+			<name>This widget is currently used in presentations</name>
 			<value></value>
 		</message>
 		<message>
@@ -4454,11 +6183,11 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Timing/Frequency</name>
+			<name>Timeliness</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Timing / Frequency</name>
+			<name>Timing/Frequency</name>
 			<value></value>
 		</message>
 		<message>
@@ -4466,7 +6195,35 @@
 			<value></value>
 		</message>
 		<message>
+			<name>To Countries</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Toggle navigation</name>
+			<value></value>
+		</message>
+		<message>
 			<name>to see the inbound and outbound information flows for</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Total Cost</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Total Instances</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Total Number of Services</name>
+			<value></value>
+		</message>
+		<message>
+			<name>To Technology Component</name>
+			<value></value>
+		</message>
+		<message>
+			<name>To Technology Product</name>
 			<value></value>
 		</message>
 		<message>
@@ -4478,7 +6235,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Tree</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Triggers</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Type</name>
 			<value></value>
 		</message>
 		<message>
@@ -4498,6 +6263,14 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Undefined Information</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Undefined Role</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Unknown</name>
 			<value></value>
 		</message>
@@ -4514,7 +6287,15 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Unrecognised URL requested</name>
+			<value></value>
+		</message>
+		<message>
 			<name>UPDATE</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Update</name>
 			<value></value>
 		</message>
 		<message>
@@ -4530,6 +6311,10 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Use</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Used As</name>
 			<value></value>
 		</message>
@@ -4542,11 +6327,31 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Used in Technology Architectures</name>
+			<name>Used to Implement Technology Components</name>
 			<value></value>
 		</message>
 		<message>
-			<name>Used to Implement Technology Components</name>
+			<name>User</name>
+			<value></value>
+		</message>
+		<message>
+			<name>User Count</name>
+			<value></value>
+		</message>
+		<message>
+			<name>User Locations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>User Organisations</name>
+			<value></value>
+		</message>
+		<message>
+			<name>User Sites</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Using Applications</name>
 			<value></value>
 		</message>
 		<message>
@@ -4554,15 +6359,31 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Value Stream</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Value Stream Catalogue</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Value Stream Catalogue as Table</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Value Streams</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Vendor</name>
 			<value></value>
 		</message>
 		<message>
-			<name>View</name>
+			<name>Version</name>
 			<value></value>
 		</message>
 		<message>
-			<name>View Filter</name>
+			<name>View</name>
 			<value></value>
 		</message>
 		<message>
@@ -4586,11 +6407,24 @@
 			<value></value>
 		</message>
 		<message>
-			<name>Welcome to the Essential Viewer Home Page. Here you can access all the available views or filter them to see just the ones you want.</name>
+			<name>Weak Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Weak
+			Compliance</name>
+			<value></value>
+		</message>
+		<message>
+			<name>What do you think?</name>
 			<value></value>
 		</message>
 		<message>
 			<name>Where is the Data Object</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Width</name>
 			<value></value>
 		</message>
 		<message>
@@ -4614,11 +6448,35 @@
 			<value></value>
 		</message>
 		<message>
+			<name>Yes</name>
+			<value></value>
+		</message>
+		<message>
+			<name>You have requested a URL that could not be found in Essential Viewer. Please update any bookmarks that might have brought you here and follow this link to the</name>
+			<value></value>
+		</message>
+		<message>
+			<name>You may need to adjust the Width and Height values to correctly generate your PDF. Enter a value between 5 and 100 in the fields below</name>
+			<value></value>
+		</message>
+		<message>
 			<name>Your Comment</name>
 			<value></value>
 		</message>
 		<message>
+			<name>Your search resulted in more than </name>
+			<value></value>
+		</message>
+		<message>
 			<name>Z</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Zoom In</name>
+			<value></value>
+		</message>
+		<message>
+			<name>Zoom Out</name>
 			<value></value>
 		</message>
 	</strings>

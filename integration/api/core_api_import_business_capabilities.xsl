@@ -39,7 +39,8 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"businessCapabilities":[<xsl:apply-templates select="$businessCapabilities" mode="businessCapabilities"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"businessCapabilities":[<xsl:apply-templates select="$businessCapabilities" mode="businessCapabilities"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+		 "version":"614"}
 	</xsl:template>
 
 	<xsl:template match="node()" mode="businessCapabilities">
@@ -48,7 +49,7 @@
 		<xsl:variable name="indirectCapsRelation" select="$parentCapabilities[name=current()/own_slot_value[slot_reference='buscap_contextual_supports_buscap']/value]"/>
 		<xsl:variable name="indirectCaps" select="$businessCapabilities[name=$indirectCapsRelation/own_slot_value[slot_reference='buscap_to_parent_parent_buscap']/value]"/>
 		<xsl:variable name="caps" select="$indirectCaps union $directCaps"/> 
-		<xsl:variable name="busDomain" select="$businessDomains[name=current()/own_slot_value[slot_reference='belongs_to_business_domain']/value]"/>
+		<xsl:variable name="busDomain" select="$businessDomains[name=current()/own_slot_value[slot_reference='belongs_to_business_domain']/value] union $businessDomains[name=current()/own_slot_value[slot_reference='belongs_to_business_domains']/value]"/>
 		<xsl:variable name="eaScopedGeoIds" select="$countries[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]/name"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
@@ -59,7 +60,7 @@
 		"geoIds": [<xsl:for-each select="$eaScopedGeoIds">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 		"prodConIds": [<xsl:for-each select="$thisProductConcepts">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
-		"parentBusinessCapability":[<xsl:for-each select="$caps">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"parentBusinessCapability":[<xsl:for-each select="$caps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"positioninParent":"<xsl:value-of select="$businessCapabilitiesRole[name=$indirectCapsRelation/own_slot_value[slot_reference='buscap_to_parent_role']/value]/own_slot_value[slot_reference='name']/value"/>",
 		"sequenceNumber":"<xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/>",
 		"rootCapability":"<xsl:if test="$rootBusCap/name=current()/name"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:if>",

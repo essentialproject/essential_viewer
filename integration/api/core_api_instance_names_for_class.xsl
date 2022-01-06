@@ -33,7 +33,7 @@
 			"instances": [
 				<xsl:apply-templates mode="RenderInstance" select="$instances">
 					<xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
-				</xsl:apply-templates>]}
+				</xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 	
 	

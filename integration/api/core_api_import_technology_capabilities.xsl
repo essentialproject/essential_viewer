@@ -29,7 +29,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_capabilities":[<xsl:apply-templates select="$techCapabilities" mode="techCapabilities"></xsl:apply-templates>]}
+		{"technology_capabilities":[<xsl:apply-templates select="$techCapabilities" mode="techCapabilities"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	

@@ -25,7 +25,7 @@
 	<!--<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'" />
 		<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')" />-->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Objective', 'Group_Actor', 'Individual_Actor')"/>
+	<xsl:variable name="linkClasses" select="('Business_Objective', 'Group_Actor', 'Individual_Actor', 'Business_Goal')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 
@@ -33,7 +33,9 @@
 	<xsl:variable name="objName" select="$currentObj/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="objDesc" select="$currentObj/own_slot_value[slot_reference = 'description']/value"/>
 
-	<xsl:variable name="busObjSupportedGoals" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'objective_supports_objective']/value]"/>
+	<xsl:variable name="busObjSupportedGoalsObj" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'objective_supports_objective']/value]"/>
+	<xsl:variable name="busObjSupportedGoalsGoal" select="/node()/simple_instance[own_slot_value[slot_reference = 'goal_supported_by_objectives']/value=$currentObj/name]"/>
+	<xsl:variable name="busObjSupportedGoals" select="$busObjSupportedGoalsGoal union $busObjSupportedGoalsObj"/>
 	<xsl:variable name="busObjDrivers" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
 	<xsl:variable name="busObjMeasureValues" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
 	<xsl:variable name="busObjMeasures" select="/node()/simple_instance[name = $busObjMeasureValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
@@ -198,16 +200,17 @@
 					</div>
 					<h2 class="text-primary">Strategic Goal</h2>
 					<div>
+					<br/>
 						<xsl:choose>
 							<xsl:when test="count($busObjSupportedGoals) > 0">
 								<ul>
 									<xsl:for-each select="$busObjSupportedGoals">
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
+										<li><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
+										<!--<xsl:call-template name="RenderInstanceLink">
 												<xsl:with-param name="theSubjectInstance" select="current()"/>
 												<xsl:with-param name="theXML" select="$reposXML"/>
 												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
+											</xsl:call-template>-->
 										</li>
 									</xsl:for-each>
 								</ul>

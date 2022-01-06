@@ -34,7 +34,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"application_capabilities":[<xsl:apply-templates select="$appCaps" mode="appCaps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"application_capabilities":[<xsl:apply-templates select="$appCaps" mode="appCaps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"615"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="appCaps">

@@ -28,7 +28,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"technology_suppliers":[<xsl:apply-templates select="$suppliers" mode="suppliers"></xsl:apply-templates>]}
+		{"technology_suppliers":[<xsl:apply-templates select="$suppliers" mode="suppliers"></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
    <xsl:template mode="suppliers" match="node()"> 
