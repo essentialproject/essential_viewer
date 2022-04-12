@@ -67,7 +67,7 @@
     <xsl:variable name="thisrelevantAppCaps" select="$relevantAppCaps[name=$thisrelevantAppServices/own_slot_value[slot_reference = 'realises_application_capabilities']/value]"/>    
         
 		{
-			<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+			<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 			"change":[<xsl:apply-templates select="$thisProjects" mode="items"/>],
             "strategicPlans":[<xsl:apply-templates select="$thisStrategicPlans" mode="items"/>],
             "busCapabilitiesSupporting":[<xsl:for-each select="$thisrelevantBusProcs">"<xsl:value-of select="current()/name"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],

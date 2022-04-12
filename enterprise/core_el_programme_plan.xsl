@@ -246,7 +246,8 @@
 var today = new Date();
     var container = document.getElementById('visualization');
     var options = {
-        start: today - ((((365*1000)*60)*60)*24),
+    	start: moment().subtract(6, 'months'),
+        end: moment().add(18, 'months'),
         editable: false,
         selectable: false,
         stack: true,
@@ -500,8 +501,8 @@ var today = new Date();
 		<xsl:variable name="milestoneName" select="$milestone/own_slot_value[slot_reference = 'name']/value"/>
 		
 		
-		<xsl:variable name="milestoneISOStartDate" select="$milestone/own_slot_value[slot_reference = 'start_date_iso_8601']/value"/>
-		<xsl:variable name="milestonEsseStartDateId" select="$milestone/own_slot_value[slot_reference = 'start_date']/value"/>
+		<xsl:variable name="milestoneISOStartDate" select="$milestone/own_slot_value[slot_reference = 'cm_date_iso_8601']/value"/>
+		<xsl:variable name="milestonEsseStartDateId" select="$milestone/own_slot_value[slot_reference = 'cm_date']/value"/>
 		<xsl:variable name="jsMilestoneStartDate">
 			<xsl:choose>
 				<xsl:when test="string-length($milestoneISOStartDate) > 0">

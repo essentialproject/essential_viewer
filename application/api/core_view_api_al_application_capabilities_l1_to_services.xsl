@@ -91,7 +91,7 @@
 		<xsl:variable name="missingSHRoles" select="$allAppSHRoles[not(name = $thisAppSHs/own_slot_value[slot_reference = 'act_to_role_to_role']/value)]"/>
 		<xsl:variable name="thisSHIds" select="$thisAppSHs/name"/>
 		
-		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$thisApp"/><xsl:with-param name="theDisplayInstance" select="$thisApp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		{<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$thisApp"/><xsl:with-param name="theDisplayInstance" select="$thisApp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 		"stakeholders": [<xsl:for-each select="$thisSHIds">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
 		<xsl:if test="(count($thisSHIds) > 0) and (count($missingSHRoles) > 0)">,</xsl:if><xsl:apply-templates select="$missingSHRoles" mode="MissingStakeholder"/>
 		]

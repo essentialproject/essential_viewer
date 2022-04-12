@@ -29,8 +29,20 @@
 	<xsl:variable name="applicationOrgUserA2R" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_to_role']/value=$applicationOrgUser/name]"/>
 	<xsl:variable name="applicationsAOU" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')][own_slot_value[slot_reference='stakeholders']/value=$applicationOrgUserA2R/name]"/>
 	<xsl:variable name="applicationsUsed" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')][name=$applicationsUsedMapping/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
-	<xsl:variable name="allApplicationsUsed" select="$applicationsUsed union $applicationsUsedAPR"/>
+	<xsl:variable name="allApplicationsUsed" select="$applicationsUsed union $applicationsUsedAPR union $applicationsAOU"/>
 	<xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"/>
+
+	<xsl:key name="allActor2RoleRelations_key" match="$allActor2RoleRelations" use="own_slot_value[slot_reference = 'act_to_role_to_role']/value"/> 
+	<xsl:key name="allActor2RoleRelationsviaActor_key" match="$allActor2RoleRelations" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/> 
+	<xsl:key name="physicalProcessA2s_key" match="$physicalProcessA2s" use="own_slot_value[slot_reference = 'process_performed_by_actor_role']/value"/> 
+	<xsl:key name="businessProcess_key" match="$businessProcess" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/> 
+	<xsl:key name="app_pro_phys_bus_key" match="$applicationsUsedMapping" use="own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value"/> 
+	<xsl:key name="aprPhysProcess_key" match="$applicationsUsedviaAPR" use="own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value"/> 
+	<xsl:key name="appToapr_key" match="$allApplicationsUsed" use="own_slot_value[slot_reference = 'provides_application_services']/value"/> 
+	<xsl:key name="appToPhysDirect_key" match="$allApplicationsUsed" use="own_slot_value[slot_reference = 'app_pro_supports_phys_proc']/value"/>
+	<xsl:key name="applicationsAOU_key" match="$applicationsAOU" use="own_slot_value[slot_reference = 'stakeholders']/value"/>
+	<xsl:key name="allRoles_key" match="$allRoles" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
+	
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -89,20 +101,28 @@
 		<xsl:variable name="thisinScopeChildActors" select="eas:get_org_descendants(current(), $allActors, 0)"/>
 		<xsl:variable name="parentActorName" select="$thisparentActor/own_slot_value[slot_reference = 'name']/value"/>
 
-		<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>		
-	
-		<xsl:variable name="thisphysicalProcessA2R" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisactor2role/name]"/>
+		<xsl:variable name="thisactor2role" select="key('allActor2RoleRelations_key',current()/name)"/>		
+	 	<xsl:variable name="thisphysicalProcessA2R" select="key('physicalProcessA2s_key',$thisactor2role/name)"/>	
+		<xsl:variable name="thisphysicalProcessDirect" select="key('physicalProcessA2s_key',current()/name)"/>	
+	 
+	<!--	<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>		
+<xsl:variable name="thisphysicalProcessA2R" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisactor2role/name]"/>
 		<xsl:variable name="thisphysicalProcessDirect" select="$physicalProcess[own_slot_value[slot_reference='process_performed_by_actor_role']/value=$thisinScopeChildActors/name]"/>
+		-->		
 		<xsl:variable name="thisphysicalProcess" select="$thisphysicalProcessA2R union $thisphysicalProcessDirect"/>
-
-		<xsl:variable name="thisapplicationsUsedMapping" select="$applicationsUsedMapping[name=$thisphysicalProcess/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
+		<xsl:variable name="thisapplicationsUsedMapping" select="key('app_pro_phys_bus_key',$thisphysicalProcess/name)"/>	
+		<xsl:variable name="thisapplicationsUsedviaAPR" select="key('aprPhysProcess_key',$thisapplicationsUsedMapping/name)"/>	
+		<xsl:variable name="thisapplicationsUsedAPR" select="key('appToapr_key',$thisapplicationsUsedviaAPR/name)"/>
+		<xsl:variable name="thisapplicationsUsed" select="key('appToPhysDirect_key',$thisapplicationsUsedMapping/name)"/>	
+		
+		<!--		<xsl:variable name="thisapplicationsUsedMapping" select="$applicationsUsedMapping[name=$thisphysicalProcess/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
 		
 		<xsl:variable name="thisapplicationsUsedviaAPR" select="$applicationsUsedviaAPR[name=$thisapplicationsUsedMapping/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]"/>
-		
+
 		<xsl:variable name="thisapplicationsUsedAPR" select="$allApplicationsUsed[name=$thisapplicationsUsedviaAPR/own_slot_value[slot_reference='role_for_application_provider']/value]"/>
 	
 		<xsl:variable name="thisapplicationsUsed" select="$allApplicationsUsed[name=$thisapplicationsUsedMapping/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
-		
+			-->	
 		<xsl:variable name="thisapplicationsUsedbyStakeholder" select="$applications[own_slot_value[slot_reference='stakeholders']/value=$thisactor2role/name]"/>
 		<xsl:variable name="thisA2RForAppOrgUser" select="$applicationOrgUserA2R[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
 
@@ -110,10 +130,12 @@
 		<xsl:variable name="thisallApplicationsUsed" select="$thisapplicationsUsed union $thisapplicationsUsedAPR union $thisA2RForAppOrgUserApps"/>
 	
 		<xsl:variable name="thisbaseSites" select="$allSites[name = current()/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-	
+		<xsl:variable name="thisA2RForActor" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
+		<xsl:variable name="thisRolesForActor" select="key('allRoles_key',$thisA2RForActor/name)"/>	
+<!--
 		<xsl:variable name="thisA2RForActor" select="$allActor2RoleRelations[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
 		<xsl:variable name="thisRolesForActor" select="$allRoles[name = $thisA2RForActor/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
- 
+-->
 		{
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">

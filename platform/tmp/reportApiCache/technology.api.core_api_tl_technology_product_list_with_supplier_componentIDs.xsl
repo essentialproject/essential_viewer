@@ -48,7 +48,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"JBoss",
@@ -198,7 +198,7 @@
 		"id": "essential_baseline_v1_Instance_30024",
 		"name": "ESX Server",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30024&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_baseline_v1_Instance_30024Link\" >ESX Server</a>",
-		"description": "VMWare\'s virtual server hosting platform",
+		"description": "VMWare's virtual server hosting platform",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_61",
@@ -363,7 +363,7 @@
 		"id": "essential_prj_AA_v1_3_Instance_74",
 		"name": "Rendezvous",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.3_Instance_74&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.3_Instance_74Link\" >Rendezvous</a>",
-		"description": "Tibco Rendezvous.<br/>Basic Tibco pub/sub message bus.",
+		"description": "Tibco Rendezvous.\rBasic Tibco pub/sub message bus.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_57",
@@ -412,7 +412,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}, {
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}, {
 		
 		"id": "essential_prj_AA_v1_6_Instance_23",
 		"name": "Messaging Services",
@@ -506,13 +506,13 @@
 		"id": "essential_prj_AA_v1_4_Instance_20018",
 		"name": "Hawk",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.4_Instance_20018&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.4_Instance_20018Link\" >Hawk</a>",
-		"description": "Tibco\'s monitoring and systems management component for monitoring the operation of TIB/Rendezvous applications.",
+		"description": "Tibco's monitoring and systems management component for monitoring the operation of TIB/Rendezvous applications.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}],
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}],
 			"comp":[
 		
 			
@@ -618,7 +618,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_30068",
 		"name": "Weblogic Application Server 9",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.4_Instance_30068&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.4_Instance_30068Link\" >Weblogic Application Server 9</a>",
-		"description": "BEA\'s implementation of J2EE (including JMS)",
+		"description": "BEA's implementation of J2EE (including JMS)",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -669,7 +669,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -695,7 +695,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_30071",
 		"name": "Enterprise Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.4_Instance_30071&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.4_Instance_30071Link\" >Enterprise Message Service</a>",
-		"description": "TIBCO\'s Enterprise Message Service is a multi transport messaging platform supporting JMS and TIB/Rendezvous. The EMS provides a more \"hub-and-spoke\" approach to messaging compared to Rendezvous and includes technology adapters to JMS, MQSeries, Rendezvous and non-messaging technologies such as mainframe assembler, CICS etc. In some ways this is almost an ESB.",
+		"description": "TIBCO's Enterprise Message Service is a multi transport messaging platform supporting JMS and TIB/Rendezvous. The EMS provides a more \"hub-and-spoke\" approach to messaging compared to Rendezvous and includes technology adapters to JMS, MQSeries, Rendezvous and non-messaging technologies such as mainframe assembler, CICS etc. In some ways this is almost an ESB.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_53",
@@ -725,7 +725,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -819,7 +819,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_28",
 		"name": "Enterprise Service Message Bus",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_28&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_28Link\" >Enterprise Service Message Bus</a>",
-		"description": "Enterprise Service Bus.<br/>A messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).<br/>ESB\'s also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
+		"description": "Enterprise Service Bus.\rA messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).\rESB's also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -827,7 +827,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -960,13 +960,13 @@
 		"id": "essential_prj_AA_v1_6_Instance_30",
 		"name": "EnterpriseRTView",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_30&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.6_Instance_30Link\" >EnterpriseRTView</a>",
-		"description": "Another systems management tool from Tibco that can monitor their Enterprise Messaging Service, any existing Hawk agents and the Rendezvous operation. <br/>This is however, an infrastructure monitoring product that does not monitor the execution of, e.g. BusinessWorks integration flows.",
+		"description": "Another systems management tool from Tibco that can monitor their Enterprise Messaging Service, any existing Hawk agents and the Rendezvous operation. \rThis is however, an infrastructure monitoring product that does not monitor the execution of, e.g. BusinessWorks integration flows.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}],
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}],
 			"comp":[
 		
 			
@@ -993,7 +993,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_31",
 		"name": "BusinessFactor",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_31&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_AA_v1.6_Instance_31Link\" >BusinessFactor</a>",
-		"description": "Tibco\'s Business Activity Monitoring platform.",
+		"description": "Tibco's Business Activity Monitoring platform.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_6_Instance_13",
@@ -1004,7 +1004,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}],
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}],
 			"comp":[
 		
 			
@@ -1135,7 +1135,7 @@
 		"id": "essential_prj_CC_v1_4_1_Instance_30000",
 		"name": "Bugzilla",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.1_Instance_30000&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.1_Instance_30000Link\" >Bugzilla</a>",
-		"description": "Mozilla\'s bug tracking sytem.",
+		"description": "Mozilla's bug tracking sytem.",
 			"caps":[{
 		
 		"id": "essential_prj_CC_v1_4_1_Instance_30003",
@@ -1201,7 +1201,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10003",
 		"name": "Oracle RAC 10g",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10003&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10003Link\" >Oracle RAC 10g</a>",
-		"description": "Oracle\'s database clustering solution",
+		"description": "Oracle's database clustering solution",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_11",
@@ -1333,7 +1333,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_130130",
 		"name": "Mac OS X",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_130130&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_130130Link\" >Mac OS X</a>",
-		"description": "Apple\'s Unix-based Operating System.",
+		"description": "Apple's Unix-based Operating System.",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_10013",
@@ -1379,7 +1379,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_140147",
 		"name": "Server Version 5",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_140147&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_140147Link\" >Server Version 5</a>",
-		"description": "Platform providing retrieval, categorisation, metadata management etc.<br/>Contains the DIH and DQH modules",
+		"description": "Platform providing retrieval, categorisation, metadata management etc.\rContains the DIH and DQH modules",
 			"caps":[{
 		
 		"id": "essential_prj_CC_v1_4_2_Instance_140158",
@@ -1423,7 +1423,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -1466,7 +1466,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -1506,13 +1506,13 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_140241",
 		"name": "Cohesion R11",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_140241&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_140241Link\" >Cohesion R11</a>",
-		"description": "Application Configuration Manager.<br/>Provides the ability to deliver dynamic, proactive, policy-based configuration and compliance management. Key features include agentless software discovery, profile-based automation, snapshot-based management, blueprint-based management and a best practices database with more than 10,000 built-in industry configurations",
+		"description": "Application Configuration Manager.\rProvides the ability to deliver dynamic, proactive, policy-based configuration and compliance management. Key features include agentless software discovery, profile-based automation, snapshot-based management, blueprint-based management and a best practices database with more than 10,000 built-in industry configurations",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -1616,7 +1616,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -1654,7 +1654,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -1697,7 +1697,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_DD_v1_1_Instance_3",
 		"name": "Unstructured Data Management Services",
@@ -1777,7 +1777,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"British Telecom",
@@ -1795,7 +1795,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150370",
 		"name": "Active Directory",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150370&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150370Link\" >Active Directory</a>",
-		"description": "Active Directory (AD) is a technology created by Microsoft that provides a variety of network services<br/>LDAP, Kerberos and DNS.<br/>Active Directory allows administrators to assign policies, deploy software, and apply critical updates to an organization.",
+		"description": "Active Directory (AD) is a technology created by Microsoft that provides a variety of network services\rLDAP, Kerberos and DNS.\rActive Directory allows administrators to assign policies, deploy software, and apply critical updates to an organization.",
 			"caps":[{
 		
 		"id": "essential_baseline_v1_Instance_30117",
@@ -1856,7 +1856,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_160037",
 		"name": "Acrobat Reader",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_160037&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_160037Link\" >Acrobat Reader</a>",
-		"description": "Adobe\'s free PDF reader",
+		"description": "Adobe's free PDF reader",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_10013",
@@ -2041,7 +2041,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10001",
 		"name": "SAN",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10001&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10001Link\" >SAN</a>",
-		"description": "Storage Area Network.<br/>Data storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
+		"description": "Storage Area Network.\rData storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -2125,7 +2125,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_200024",
 		"name": "Clarity",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_200024&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_200024Link\" >Clarity</a>",
-		"description": "Computer Associates\' project management solution.",
+		"description": "Computer Associates' project management solution.",
 			"caps":[{
 		
 		"id": "essential_prj_CC_v1_4_2_Instance_130030",
@@ -2280,13 +2280,13 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_210014",
 		"name": "CMDB",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_210014&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_210014Link\" >CMDB</a>",
-		"description": "Computer Associates\' configuration managment platform.",
+		"description": "Computer Associates' configuration managment platform.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -2461,7 +2461,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -2729,7 +2729,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_220022",
 		"name": "Safari",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_220022&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_220022Link\" >Safari</a>",
-		"description": "Safari is Apple\'s Web Browser",
+		"description": "Safari is Apple's Web Browser",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_10013",
@@ -3009,7 +3009,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}],
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}],
 			"comp":[
 		
 			
@@ -3348,7 +3348,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Nortel Networks",
@@ -3472,7 +3472,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_310060",
 		"name": "Audit",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_310060&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_310060Link\" >Audit</a>",
-		"description": "Audit is an audit management system that collects and stores enterprise-wide security data for reporting, compliance verification and event monitoring.<br/>formerly called eTrust Audit",
+		"description": "Audit is an audit management system that collects and stores enterprise-wide security data for reporting, compliance verification and event monitoring.\rformerly called eTrust Audit",
 			"caps":[],
 			"comp":[
 		
@@ -3606,7 +3606,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Nortel Networks",
@@ -3672,7 +3672,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10001",
 		"name": "SAN",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10001&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10001Link\" >SAN</a>",
-		"description": "Storage Area Network.<br/>Data storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
+		"description": "Storage Area Network.\rData storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -3705,7 +3705,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10001",
 		"name": "SAN",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10001&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10001Link\" >SAN</a>",
-		"description": "Storage Area Network.<br/>Data storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
+		"description": "Storage Area Network.\rData storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -3723,7 +3723,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_330014",
 		"name": "Celerra NS40",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_330014&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_330014Link\" >Celerra NS40</a>",
-		"description": "Celerra NS40  can connect to multiple storage networks via NAS, iSCSI, and Fibre Channel SAN using an integrated EMC CLARiiON networked package.<br/>NS40 contains two Data movers and four port networks.",
+		"description": "Celerra NS40  can connect to multiple storage networks via NAS, iSCSI, and Fibre Channel SAN using an integrated EMC CLARiiON networked package.\rNS40 contains two Data movers and four port networks.",
 			"caps":[{
 		
 		"id": "essential_prj_EE_v0_1_Instance_10045",
@@ -3738,7 +3738,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10000",
 		"name": "NAS",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10000&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10000Link\" >NAS</a>",
-		"description": "Network Attached Storage.<br/>File-level data storage that is connected to a network. Provides access to the data to a network of heterogeneous clients.","std":"No Standard Defined","stdStyle":"",
+		"description": "Network Attached Storage.\rFile-level data storage that is connected to a network. Provides access to the data to a network of heterogeneous clients.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -3756,7 +3756,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_330029",
 		"name": "Centera Compliance Edition Plus",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_330029&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_330029Link\" >Centera Compliance Edition Plus</a>",
-		"description": "Content Addressable Storage (CAS)<br/>EMC Centera enforces organisational and application policies for information retention and disposition.",
+		"description": "Content Addressable Storage (CAS)\rEMC Centera enforces organisational and application policies for information retention and disposition.",
 			"caps":[{
 		
 		"id": "essential_prj_EE_v0_1_Instance_10045",
@@ -3789,7 +3789,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_330039",
 		"name": "ACE",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_330039&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_330039Link\" >ACE</a>",
-		"description": "Application Control Engine<br/>The ACE blades are deployed in a ‘one armed’ load balance configuration, so the load balancers are not in line between the client and servers.",
+		"description": "Application Control Engine\rThe ACE blades are deployed in a ‘one armed’ load balance configuration, so the load balancers are not in line between the client and servers.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_59",
@@ -4337,7 +4337,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Verizon",
@@ -4370,7 +4370,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -4394,7 +4394,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}],
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}],
 			"comp":[
 		
 			
@@ -4447,7 +4447,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -4671,7 +4671,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_370118",
 		"name": "PowerEdge 2850",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_370118&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_370118Link\" >PowerEdge 2850</a>",
-		"description": "Dual-core Xeon processors, Six hot-swap drive bays <br/>Integrated remote management , Integrated RAID controller",
+		"description": "Dual-core Xeon processors, Six hot-swap drive bays \rIntegrated remote management , Integrated RAID controller",
 			"caps":[],
 			"comp":[
 		
@@ -4739,7 +4739,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Generic",
@@ -4763,7 +4763,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -4801,7 +4801,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -4839,7 +4839,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -4882,7 +4882,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_DD_v1_1_Instance_3",
 		"name": "Unstructured Data Management Services",
@@ -5114,7 +5114,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_10001",
 		"name": "SAN",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_10001&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_10001Link\" >SAN</a>",
-		"description": "Storage Area Network.<br/>Data storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
+		"description": "Storage Area Network.\rData storage solution that attaches remote computer storage devices such as disk arrays, optical jukeboxes etc. to servers in such a way that they appear to the server operating system to be locally attached.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -5138,7 +5138,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_14",
 		"name": "Event Management Services",
 		"link": "Event Management Services",
-		"description": "Capability to define, monitor and manage events in the enterprise.<br/>The scope of such events covers business, application, information and technology events in the organisation"}],
+		"description": "Capability to define, monitor and manage events in the enterprise.\rThe scope of such events covers business, application, information and technology events in the organisation"}],
 			"comp":[
 		
 			
@@ -5180,7 +5180,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -5279,7 +5279,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -5312,7 +5312,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Mitel Networks",
@@ -6478,7 +6478,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -6516,7 +6516,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -6620,7 +6620,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}, {
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
 		"name": "Monitoring Services",
@@ -6850,7 +6850,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_460016",
 		"name": "Servletexec",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_460016&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_460016Link\" >Servletexec</a>",
-		"description": "Servletexec is a high-performance web application server that implements the<br/> JavaTM Servlet API 2.5,<br/> JavaServer PagesTM (JSP) 2.1, and<br/> JSP Standard Tag Library (JSTL) 1.2",
+		"description": "Servletexec is a high-performance web application server that implements the\r JavaTM Servlet API 2.5,\r JavaServer PagesTM (JSP) 2.1, and\r JSP Standard Tag Library (JSTL) 1.2",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -6921,7 +6921,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_460031",
 		"name": "PrimeAlert",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_460031&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_460031Link\" >PrimeAlert</a>",
-		"description": "Halcyon PrimeAlert for Sun Application Server monitors the health and performance of Sun Application Servers <br/>PrimeAlert EventAction<br/>PrimeAlert Reporter",
+		"description": "Halcyon PrimeAlert for Sun Application Server monitors the health and performance of Sun Application Servers \rPrimeAlert EventAction\rPrimeAlert Reporter",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
@@ -6960,7 +6960,7 @@
 		"id": "essential_prj_AA_v1_4_Instance_20011",
 		"name": "Systems Management Services",
 		"link": "Systems Management Services",
-		"description": "Services to manage and monitor the operation of technology infrastructure.<br/>Alerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}],
+		"description": "Services to manage and monitor the operation of technology infrastructure.\rAlerts are raised pro-actively and re-actively in response to events, incidents or failiure of the technology components being managed."}],
 			"comp":[
 		
 			
@@ -7002,7 +7002,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -7068,7 +7068,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Nortel Networks",
@@ -7101,7 +7101,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -7266,7 +7266,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -7299,7 +7299,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Cisco",
@@ -7317,7 +7317,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_490051",
 		"name": "Database",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_490051&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_490051Link\" >Database</a>",
-		"description": "Oracle\'s Relational Database Management System. Use this where the specific version is unknown.",
+		"description": "Oracle's Relational Database Management System. Use this where the specific version is unknown.",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_11",
@@ -7350,7 +7350,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_500009",
 		"name": "iLO",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_500009&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_500009Link\" >iLO</a>",
-		"description": "iLO Standard provides basic system board management functions, diagnostics and essential Lights-Out functionality as standard features on iLO supported ProLiant servers.<br/>(Integrated Lights Out)",
+		"description": "iLO Standard provides basic system board management functions, diagnostics and essential Lights-Out functionality as standard features on iLO supported ProLiant servers.\r(Integrated Lights Out)",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_20012",
@@ -7431,7 +7431,7 @@
 		"id": "essential_baseline_v1_Instance_30036",
 		"name": "Network Switch",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_baseline_v1_Instance_30036&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_baseline_v1_Instance_30036Link\" >Network Switch</a>",
-		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.<br/>The term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.<br/>The term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
+		"description": "A network switch is a broad and imprecise marketing term for a computer networking device that connects network segments.\rThe term commonly refers to a Network bridge that processes and routes data at the Data link layer (layer 2) of the OSI model. Switches that additionally process data at the Network layer (layer 3 and above) are often referred to as Layer 3 switches or Multilayer switches.\rThe term Network switch does not generally encompass unintelligent or passive network devices such as hubs and repeaters.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"EMC",
@@ -7484,7 +7484,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_150137",
 		"name": "Wide Area Network",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_150137&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_150137Link\" >Wide Area Network</a>",
-		"description": "This is a dedicated wide area network service.<br/>providing connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
+		"description": "This is a dedicated wide area network service.\rproviding connectivity in various technologies.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"British Telecom",
@@ -7601,7 +7601,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_530034",
 		"name": "HTTP Server",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_530034&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_530034Link\" >HTTP Server</a>",
-		"description": "Apache\'s popular implementation of the HTTP server standard.",
+		"description": "Apache's popular implementation of the HTTP server standard.",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_53",
@@ -7667,7 +7667,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_580027",
 		"name": "Weblogic Application Server 10.1",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_580027&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_580027Link\" >Weblogic Application Server 10.1</a>",
-		"description": "Version 10 of BEA\'s Weblogic product.",
+		"description": "Version 10 of BEA's Weblogic product.",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -7865,7 +7865,7 @@
 		"id": "essential_prj_CC_v1_4_2_Instance_620082",
 		"name": "OS 9",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_CC_v1.4.2_Instance_620082&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_CC_v1.4.2_Instance_620082Link\" >OS 9</a>",
-		"description": "Apple\'s own operating system",
+		"description": "Apple's own operating system",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_10013",
@@ -8007,7 +8007,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_10007",
 		"name": "Excel 2005",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_10007&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_10007Link\" >Excel 2005</a>",
-		"description": "Microsoft\'s established spreadsheet editor, part of the Microsoft Office Suite",
+		"description": "Microsoft's established spreadsheet editor, part of the Microsoft Office Suite",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_11",
@@ -8045,7 +8045,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_16",
 		"name": "Data Stage",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_16&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_16Link\" >Data Stage</a>",
-		"description": "A component of  IBM\'s WebSphere Information Integration suite and the IBM Information Server. It uses a graphical notation to construct data integration solutions and is available in various different versions such as the Server Edition and the Enterprise Edition",
+		"description": "A component of  IBM's WebSphere Information Integration suite and the IBM Information Server. It uses a graphical notation to construct data integration solutions and is available in various different versions such as the Server Edition and the Enterprise Edition",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_57",
@@ -8111,7 +8111,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_20001",
 		"name": "Word 2005",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_20001&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_20001Link\" >Word 2005</a>",
-		"description": "Microsoft\'s word processing solution and part of the Microsoft Office suite.",
+		"description": "Microsoft's word processing solution and part of the Microsoft Office suite.",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_v1_0_Instance_10038",
@@ -8144,7 +8144,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_21",
 		"name": "PowerExchange",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_21&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_21Link\" >PowerExchange</a>",
-		"description": "Informatica\'s underlying data integration suite supporting their flagship PowerCenter solution",
+		"description": "Informatica's underlying data integration suite supporting their flagship PowerCenter solution",
 			"caps":[{
 		
 		"id": "essential_prj_AA_v1_4_Instance_57",
@@ -8207,7 +8207,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_28",
 		"name": "Enterprise Service Message Bus",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_28&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_28Link\" >Enterprise Service Message Bus</a>",
-		"description": "Enterprise Service Bus.<br/>A messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).<br/>ESB\'s also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
+		"description": "Enterprise Service Bus.\rA messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).\rESB's also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -8215,7 +8215,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Progress Sonic",
@@ -8268,7 +8268,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_28",
 		"name": "Enterprise Service Message Bus",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_28&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_28Link\" >Enterprise Service Message Bus</a>",
-		"description": "Enterprise Service Bus.<br/>A messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).<br/>ESB\'s also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
+		"description": "Enterprise Service Bus.\rA messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).\rESB's also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -8329,7 +8329,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_28",
 		"name": "Enterprise Service Message Bus",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_28&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_28Link\" >Enterprise Service Message Bus</a>",
-		"description": "Enterprise Service Bus.<br/>A messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).<br/>ESB\'s also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
+		"description": "Enterprise Service Bus.\rA messaging bus that supports the Web Services standards, SOAP, WSDL and UDDI, on the outside - via adapters. Once on the bus, messages are normally transmitted using a proprietary message transport (rather than SOAP).\rESB's also include integration adapters to enable existing non-WebService applications connect to the bus. These adapters are normally deployed at the application endpoints.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}, 
 		{
@@ -8370,7 +8370,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_7",
 		"name": "Enterprise Information Integration Platform",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_7&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_DD_v1.1_Instance_7Link\" >Enterprise Information Integration Platform</a>",
-		"description": "EII platforms work with existing application and data resources to gather information from multiple underlying sources and deliver it to data consumers in a \'just-in-time\' fashion, in the consumer-specific format. Most significantly,all source data is left in place and only queried when appropriate","std":"No Standard Defined","stdStyle":"",
+		"description": "EII platforms work with existing application and data resources to gather information from multiple underlying sources and deliver it to data consumers in a 'just-in-time' fashion, in the consumer-specific format. Most significantly,all source data is left in place and only queried when appropriate","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Composite Software",
@@ -8403,7 +8403,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_7",
 		"name": "Enterprise Information Integration Platform",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_7&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_DD_v1.1_Instance_7Link\" >Enterprise Information Integration Platform</a>",
-		"description": "EII platforms work with existing application and data resources to gather information from multiple underlying sources and deliver it to data consumers in a \'just-in-time\' fashion, in the consumer-specific format. Most significantly,all source data is left in place and only queried when appropriate","std":"No Standard Defined","stdStyle":"",
+		"description": "EII platforms work with existing application and data resources to gather information from multiple underlying sources and deliver it to data consumers in a 'just-in-time' fashion, in the consumer-specific format. Most significantly,all source data is left in place and only queried when appropriate","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"Metamatrix",
@@ -8454,7 +8454,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_33",
 		"name": "SQL Server 2005",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_33&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_33Link\" >SQL Server 2005</a>",
-		"description": "SQL Server 2005 is the successor to SQL Server 2000.<br/>SQL Server 2005 has been enhanced with new indexing algorithms and better error recovery systems.",
+		"description": "SQL Server 2005 is the successor to SQL Server 2000.\rSQL Server 2005 has been enhanced with new indexing algorithms and better error recovery systems.",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_11",
@@ -8487,7 +8487,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_35",
 		"name": "Websphere Application Server 8",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_35&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_35Link\" >Websphere Application Server 8</a>",
-		"description": "IBM\'s implementation of J2EE (including JMS)",
+		"description": "IBM's implementation of J2EE (including JMS)",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -8525,7 +8525,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"IBM",
@@ -8609,7 +8609,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_41",
 		"name": "Solaris 10",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_41&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_41Link\" >Solaris 10</a>",
-		"description": "Latest relase of Solaris (January 2008).<br/>Also known as version 5.10",
+		"description": "Latest relase of Solaris (January 2008).\rAlso known as version 5.10",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_11",
@@ -8797,7 +8797,7 @@
 		"id": "essential_prj_DD_v1_1_Instance_46",
 		"name": "COBOL",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_DD_v1.1_Instance_46&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_DD_v1.1_Instance_46Link\" >COBOL</a>",
-		"description": "IBM\'s implementation of COBOL",
+		"description": "IBM's implementation of COBOL",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -8896,7 +8896,7 @@
 		"id": "essential_prj_EE_v0_1_Instance_10059",
 		"name": "Weblogic Application Server 8",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_EE_v0.1_Instance_10059&cl=en-gb\" class = \" context-menu-techProdGenMenu\" id =\"essential_prj_EE_v0.1_Instance_10059Link\" >Weblogic Application Server 8</a>",
-		"description": "Version 8 of BEA\'s Weblogic",
+		"description": "Version 8 of BEA's Weblogic",
 			"caps":[{
 		
 		"id": "EAS_Meta_Model_Instance_22",
@@ -8955,7 +8955,7 @@
 		"id": "essential_prj_AA_v1_6_Instance_22",
 		"name": "JMS Message Service",
 		"link": "<a href = \"?XML=reportXML.xml&PMA=essential_prj_AA_v1.6_Instance_22&cl=en-gb\" class = \" context-menu-techCompGenMenu\" id =\"essential_prj_AA_v1.6_Instance_22Link\" >JMS Message Service</a>",
-		"description": "Component that implements the JMS standard to provide messaging services.<br/>Notably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
+		"description": "Component that implements the JMS standard to provide messaging services.\rNotably, as it is a standard, JMS does not provide the Transport Services. Implementions of JMS provide a transport, e.g. IBM MQSeries, SonicMQ.","std":"No Standard Defined","stdStyle":"",
 		"stdColour":"",
 		"stdTextColour":""}],
 			"supplier":"BEA",

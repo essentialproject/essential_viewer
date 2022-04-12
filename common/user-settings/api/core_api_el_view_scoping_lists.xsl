@@ -141,7 +141,7 @@
 	<xsl:template mode="RenderBasicScopeJSON" match="node()">
 		<xsl:variable name="this" select="current()"/>{
 			"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
@@ -149,7 +149,7 @@
 			<xsl:variable name="this" select="current()"/>{
 				"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
 				"name": "<xsl:value-of select="$this/own_slot_value[slot_reference='enumeration_value']/value"/>"
-				<!--"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"-->			
+				<!--"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"-->			
 			}<xsl:if test="not(position() = last())">,
 			</xsl:if>
 		</xsl:template>
@@ -159,7 +159,7 @@
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisActor2Roles" select="$relevantActor2Roles[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $this/name]"/>
 		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
+			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
 		</xsl:variable>
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
@@ -183,7 +183,7 @@
 		<xsl:variable name="thisActor" select="$relevantActors[name = $this/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisActor"/></xsl:call-template>"			
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisActor"/></xsl:call-template>"			
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
@@ -192,7 +192,7 @@
 	<xsl:template mode="RenderBasicScopeJSON" match="node()">
 		<xsl:variable name="this" select="current()"/>
 		{"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"			
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>	
@@ -202,7 +202,7 @@
 		<xsl:variable name="thisinScopeChildActors" select="eas:get_org_descendants(current(), $allOrgs, 0)"/>
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",                 
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",                 
 			"group": [<xsl:apply-templates mode="RenderBasicScopeJSON" select="$thisinScopeChildActors">
 					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 				</xsl:apply-templates>]

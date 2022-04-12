@@ -15,6 +15,11 @@
 	<xsl:variable name="AppsViaService" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$apr/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="AppsDirect" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 	 
+	<xsl:key name="busProcess_key" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/>
+	<xsl:key name="appbr_key" match="/node()/simple_instance[type=('APP_PRO_TO_PHYS_BUS_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value"/>
+	<xsl:key name="apr_key" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value"/>
+	<xsl:key name="app_key" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="own_slot_value[slot_reference = 'app_pro_supports_phys_proc']/value"/>
+	
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -41,19 +46,27 @@
 	</xsl:template>
 
 	<xsl:template match="node()" mode="process2Apps">
-	<xsl:variable name="thisbpr" select="$businessProcess[name=current()/own_slot_value[slot_reference = 'implements_business_process']/value]"/> 
+	<!-- <xsl:variable name="thisbpr" select="$businessProcess[name=current()/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
+		<xsl:variable name="thisaprpbr" select="$aprpbr[name=current()/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
+		<xsl:variable name="thisapr" select="$apr[name=$thisaprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+		<xsl:variable name="thisAppsDirect" select="$AppsDirect[name=$thisaprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+	 -->
+	<xsl:variable name="thisbpr" select="key('busProcess_key',current()/name)"/>
 	<xsl:variable name="thisorg" select="$orgs[name=current()/own_slot_value[slot_reference = 'implements_business_process']/value]"/> 	
-	<xsl:variable name="thisaprpbr" select="$aprpbr[name=current()/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
-	<xsl:variable name="thisapr" select="$apr[name=$thisaprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+	<xsl:variable name="thisaprpbr" select="key('appbr_key',current()/name)"/>
+	<xsl:variable name="thisapr" select="key('apr_key',$thisaprpbr/name)"/>
+	<xsl:variable name="thisAppsDirect" select="key('app_key',$thisaprpbr/name)"/>	
+	
 	<xsl:variable name="thisAppsViaService" select="$AppsViaService[name=$thisapr/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-	<xsl:variable name="thisAppsDirect" select="$AppsDirect[name=$thisaprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+
 		
 	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:variable name="thisorgviaa2r" select="$orgviaa2r[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	<xsl:variable name="thisorgdirect" select="$orgdirect[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:variable name="thisorgs" select="$thisorgdirect union $thisorgviaa2r"/>	
 
-	{	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	{  
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"processName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbpr"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"org":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisorgs"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"orgid":"<xsl:value-of select="eas:getSafeJSString($thisorgs/name)"/>",

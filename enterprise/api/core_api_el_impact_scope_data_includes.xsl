@@ -163,16 +163,20 @@
 	<xsl:variable name="allStratPlan2ElementRels" select="/node()/simple_instance[name = $allStratPlans/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]"/>
 	<xsl:variable name="allChangedElements" select="($allBusCapabilities, $allBusinessProcess, $internalOrgs, $allAppCaps, $allAppServices, $allAppProviderRoles, $allApplications, $allTechCaps, $allTechComps, $allTechProdRoles, $allTechProds)[name = $allStratPlan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
 	<xsl:variable name="allPlanningActions" select="/node()/simple_instance[type = 'Planning_Action']"/>
-
-
+	
+	<xsl:key name="geoRegion_key" match="$allGeoRegions" use="own_slot_value[slot_reference = 'gr_contained_regions']/value"/>
+	<xsl:key name="site_key" match="/node()/simple_instance[type='Site']" use="own_slot_value[slot_reference = 'site_geographic_location']/value"/>
+	<xsl:key name="bef_key" match="/node()/simple_instance[type='Business_Environment_Factor']" use="own_slot_value[slot_reference = 'bef_category']/value"/>
+	
 	<!-- Template for rendering the list of Countries  -->
 	<xsl:template match="node()" mode="getCountriesJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisParentRegions" select="$theGeoRegions[own_slot_value[slot_reference = 'gr_contained_regions']/value = $this/name]"/>
+	<!--	<xsl:variable name="thisParentRegions" select="$theGeoRegions[own_slot_value[slot_reference = 'gr_contained_regions']/value = $this/name]"/> -->
+		<xsl:variable name="thisParentRegions" select="key('geoRegion_key',$this/name)"/>  
 		<xsl:variable name="thisLocations" select="$allLocations[name = $this/own_slot_value[slot_reference = 'gr_locations']/value]"/>
-		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($this, $thisLocations)/name]"/>
-		
+	<!--	<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($this, $thisLocations)/name]"/> -->
+		<xsl:variable name="thisSites" select="key('site_key',($this, $thisLocations)/name)"/>  
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
@@ -193,8 +197,8 @@
 		
 		<xsl:variable name="thisGeoRegions" select="$allGeoRegions[name = $this/own_slot_value[slot_reference = 'gr_contained_regions']/value]"/>
 		<xsl:variable name="thisLocations" select="$allLocations[name = $thisGeoRegions/own_slot_value[slot_reference = 'gr_locations']/value]"/>
-		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($thisGeoRegions, $thisLocations)/name]"/>		
-		
+<!--		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($thisGeoRegions, $thisLocations)/name]"/>		-->
+		<xsl:variable name="thisSites" select="key('site_key',($this, $thisLocations)/name)"/>  
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
@@ -214,7 +218,8 @@
 		<xsl:variable name="this" select="current()"/>
 		
 		<xsl:variable name="thisLocations" select="$allLocations[name = $this/own_slot_value[slot_reference = 'gr_locations']/value]"/>
-		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($this, $thisLocations)/name]"/>	
+		<!--		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = ($thisGeoRegions, $thisLocations)/name]"/>		-->
+		<xsl:variable name="thisSites" select="key('site_key',($this, $thisLocations)/name)"/>  
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
@@ -232,7 +237,8 @@
 	<xsl:template match="node()" mode="getLocationsJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = $this/name]"/>
+		<!--		<xsl:variable name="thisSites" select="$allSites[own_slot_value[slot_reference = 'site_geographic_location']/value = $this/name]"/>		-->
+		<xsl:variable name="thisSites" select="key('site_key',$this/name)"/>  
 		<xsl:variable name="thisGeoCode" select="$allGeoCodes[name = $this/own_slot_value[slot_reference = 'gl_geocode']/value]"/>
 		
 		{
@@ -274,14 +280,15 @@
 	<xsl:template match="node()" mode="getBusinssEnvCategoriesJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisBusEnvFactors" select="$allBusEnvFactors[own_slot_value[slot_reference = 'bef_category']/value = $this/name]"/>
+		<xsl:variable name="thisBusEnvFactors" select="key('bef_key',$this/name)"/>  
+	<!--	<xsl:variable name="thisBusEnvFactors" select="$allBusEnvFactors[own_slot_value[slot_reference = 'bef_category']/value = $this/name]"/>-->
 		<xsl:variable name="thisBusEnvCatIcon" select="eas:get_element_style_icon($this)"/>
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"icon": "<xsl:value-of select="$thisBusEnvCatIcon"/>",
+		"icon": "<xsl:value-of select="$thisBusEnvCatIcon"/>", 
 		"busEnvFactorIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusEnvFactors"/>],
 		"busEnvFactors": []
 		}<xsl:if test="not(position()=last())">,</xsl:if> 

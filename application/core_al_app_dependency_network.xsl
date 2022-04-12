@@ -91,7 +91,7 @@
 
 
 	<xsl:variable name="pageType">
-		<xsl:value-of select="eas:i18n('Application Dependency Network')"/>
+		<xsl:value-of select="eas:i18n('Enterprise Application Dependency Network')"/>
 	</xsl:variable>
 	<xsl:variable name="pageTitle" select="$pageType"/>
 

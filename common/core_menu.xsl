@@ -337,6 +337,7 @@
 		
 	</xsl:template>
 
+
 	<xsl:template name="RenderMenuItemEntriesOLD">
 		<xsl:param name="menuItems"/>
 
@@ -349,6 +350,55 @@
 			<xsl:variable name="menuItemIconName" select="$menuItemCategory/own_slot_value[slot_reference = 'enumeration_icon']/value"/>
 			<xsl:value-of select="$menuItemShortName"/>: {name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(index = $menuItemsSize)">, </xsl:if>
 		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template name="RenderJSMenuLinkFunctions">
+		<xsl:param name="linkClasses" select="()"/>
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+		var esslinkMenuNames = {
+			<xsl:call-template name="RenderClassMenuDict">
+				<xsl:with-param name="menuClasses" select="$linkClasses"/>
+			</xsl:call-template>
+		}
+		
+		function essGetMenuName(instance) {
+			let menuName = null;
+			if(instance.meta?.anchorClass) {
+				menuName = esslinkMenuNames[instance.meta.anchorClass];
+			} else if(instance.className) {
+				menuName = esslinkMenuNames[instance.className];
+			}
+			return menuName;
+		}
+		
+		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){
+			if(instance != null) {
+				let linkMenuName = essGetMenuName(instance);
+				let instanceLink = instance.name;
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+				}
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
+	</xsl:template>
+
+	<xsl:template name="RenderClassMenuDict">
+		<xsl:param name="menuClasses" select="()"/>
+		<xsl:for-each select="$menuClasses">
+			<xsl:variable name="this" select="."/>
+			<xsl:variable name="thisMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+			"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
+			</xsl:if>
+		</xsl:for-each>
+		
 	</xsl:template>
 	
 	

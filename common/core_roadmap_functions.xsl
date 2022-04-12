@@ -190,6 +190,90 @@
 			]
 		}</xsl:if>	
 	</xsl:template>
+
+
+	<!-- TEMPLATE TO RENDERS A JSON OBJECT CONTAINING THE COMMON INSTANCE PROPERTIES AND ROADMAP RELATED PROPERTIES TO BE USED IN A DAYASET API-->
+	<xsl:template name="RenderRoadmapJSONPropertiesForAPI">
+		<xsl:param name="isRoadmapEnabled" select="false()"/>
+		<xsl:param name="theDisplayInstance"/>
+		<xsl:param name="theDisplayLabel"/>
+		<xsl:param name="theRoadmapInstance"/>
+		<xsl:param name="theTargetReport" select="()"/>
+		<xsl:param name="allTheRoadmapInstances" select="()"/>
+		
+		
+		<xsl:variable name="thisId"><xsl:value-of select="eas:getSafeJSString($theRoadmapInstance/name)"/></xsl:variable>
+		
+		<xsl:variable name="thisName">
+			<xsl:choose>
+				<xsl:when test="$theDisplayLabel">
+					<xsl:value-of select="$theDisplayLabel"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="thisLink">
+			<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/>
+				<xsl:with-param name="displayString" select="$thisName"/>
+				<xsl:with-param name="targetReport" select="$theTargetReport"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="thisDescription"><xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/></xsl:call-template></xsl:variable>
+		
+		<xsl:variable name="createPlansForElement" select="$rmCreatePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
+		<xsl:variable name="enhancePlansForElement" select="$rmEnhancePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
+		<xsl:variable name="reducePlansForElement" select="$rmReducePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
+		<xsl:variable name="removePlansForElement" select="$rmRemovePlansForElements[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $theRoadmapInstance/name]"/>
+		<xsl:variable name="allPlansForElement" select="$createPlansForElement union $enhancePlansForElement union $reducePlansForElement union $removePlansForElement"/>
+		<xsl:variable name="allThisPlans" select="$rmAllStrategicPlans[own_slot_value[slot_reference = 'strategic_plan_for_elements']/value = $allPlansForElement/name]"/>
+		
+		<xsl:variable name="thisRoadmapChangeName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$theRoadmapInstance"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="thisRoadmapLink"><xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="targetReport" select="$theTargetReport"/><xsl:with-param name="theSubjectInstance" select="$theDisplayInstance"/><xsl:with-param name="displayString" select="$thisRoadmapChangeName"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:variable>
+		
+		
+		<!-- Variable containing all architecture states that are relevant for elements that share the same class as the Roadmap instance -->
+		<xsl:variable name="allTheRoadmapInstancesArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $allTheRoadmapInstances/name]"/>
+		<!-- Variable containing all architecture states that contain the Roadmap instance -->
+		<xsl:variable name="allThisRoadmapInstanceArchStates" select="$rmAllArchitectureStates[own_slot_value[slot_reference = ('arch_state_application_conceptual','arch_state_application_logical', 'arch_state_application_physical', 'arch_state_application_relations', 'arch_state_business_conceptual', 'arch_state_business_logical', 'arch_state_business_physical', 'arch_state_business_relations', 'arch_state_information_conceptual', 'arch_state_information_logical', 'arch_state_physical_information', 'arch_state_information_relations', 'arch_state_technology_conceptual', 'arch_state_technology_logical', 'arch_state_technology_physical', 'arch_state_technology_relations', 'arch_state_security_management', 'arch_state_strategy_management')]/value = $theRoadmapInstance/name]"/>
+		
+		"id": "<xsl:value-of select="$thisId"/>",
+		"name": "<xsl:value-of select="$thisName"/>",
+		"link": "<xsl:value-of select="$thisLink"/>",
+		"description": "<xsl:value-of select="$thisDescription"/>"<xsl:if test="$isRoadmapEnabled">,
+		<xsl:if test="count($theTargetReport) = 0">"menu": "<xsl:value-of select="eas:getElementContextMenuName($theDisplayInstance)"/>",</xsl:if>
+		"roadmap": {
+			"roadmapStatus": "<xsl:value-of select="$unchangedStatusValue"/>",
+			"isVisible": true,
+			"plansForPeriod": [],
+			"archStatesForPeriod": [],
+			"objectivesForPeriod": [],
+			"rmStyle": <xsl:value-of select="$rmNoChangePlanningActionStyleJSON"/>, <!-- default to no change style -->
+			"rmLink": "<xsl:value-of select="$thisRoadmapLink"/>",
+			"rmMetaClassStyle": "rmMetaClassStyles.<xsl:value-of select="eas:getSafeJSString($theRoadmapInstance/type)"/>",
+			"rmEALayer": "<xsl:value-of select="eas:rmGetInstanceEALayer($theRoadmapInstance)"/>",
+			"strategicPlans": [
+				<xsl:apply-templates mode="RenderElementStrategicPlanJSON" select="$allPlansForElement">
+					<!--<xsl:sort select="$allThisPlans[own_slot_value[slot_reference = 'strategic_plan_for_elements']/value = name]/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>-->
+				</xsl:apply-templates>
+			],
+			"archStates": [
+				<xsl:if test="count($allThisRoadmapInstanceArchStates) > 0">
+					<xsl:apply-templates mode="RenderElementArchStateJSON" select="$allTheRoadmapInstancesArchStates">
+						<xsl:with-param name="thisArchStates" select="$allThisRoadmapInstanceArchStates"/>
+						<xsl:sort select="own_slot_value[slot_reference = 'start_date_iso_8601']/value"/>
+					</xsl:apply-templates>
+				</xsl:if>
+			]
+		}</xsl:if>	
+	</xsl:template>
 	
 	
 	<!-- TEMPLATE TO SET THE VISIBILITY AND CHANGE JSON PROPERTIES FOR STRATEGIC PLAN TO ELEMENT RELATION-->

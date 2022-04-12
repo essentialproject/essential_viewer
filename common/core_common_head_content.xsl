@@ -22,9 +22,13 @@
 
 	<xsl:import href="core_utilities.xsl"/>
 	<xsl:import href="datatables_includes.xsl"/>
+	<xsl:key name="allstyles_key" match="/node()/simple_instance[type = 'Viewer_Styling']" use="own_slot_value[slot_reference = 'style_is_active']/value"/>
+	<xsl:variable name="activeViewerStylePre" select="key('allstyles_key','true')"/>
+	<xsl:variable name="activeViewerStyle" select="$activeViewerStylePre[1]"/>
+<!--
 	<xsl:variable name="allViewerStyles" select="/node()/simple_instance[type = 'Viewer_Styling']"/>
 	<xsl:variable name="activeViewerStyle" select="$allViewerStyles[own_slot_value[slot_reference = 'style_is_active']/value = 'true'][1]"/>
-
+-->
 	<xsl:template match="node()" name="commonHeadContent">
 		<xsl:param name="requiresDataTables" select="true()"/>
 		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
@@ -42,46 +46,46 @@
 		<link rel="manifest" href="manifest.json"/>
 		<link rel="mask-icon" href="safari-pinned-tab.svg" color="#c3193c"/>
 		<meta name="theme-color" content="#ffffff"/>
-		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css?release=6.14" type="text/css"/>
-		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css?release=6.14" type="text/css"/>
-		<link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css?release=6.14" type="text/css"/>
-		<link href="js/select2/css/select2.min.css?release=6.14" rel="stylesheet"/>
-		<link href="js/select2/css/select2-bootstrap.min.css?release=6.14" rel="stylesheet"/>
-		<link href="js/hopscotch/css/ess-hopscotch.css?release=6.14" rel="stylesheet"/>
-		<link rel="stylesheet" href="css/essential-core.css?release=6.14" type="text/css"/>
-		<link href="fonts/source-sans/source-sans-pro.css?release=6.14" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css?release=6.15.3" type="text/css"/>
+		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css?release=6.15.3" type="text/css"/>
+		<link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css?release=6.15.3" type="text/css"/>
+		<link href="js/select2/css/select2.min.css?release=6.15.3" rel="stylesheet"/>
+		<link href="js/select2/css/select2-bootstrap.min.css?release=6.15.3" rel="stylesheet"/>
+		<link href="js/hopscotch/css/ess-hopscotch.css?release=6.15.3" rel="stylesheet"/>
+		<link rel="stylesheet" href="css/essential-core.css?release=6.15.3" type="text/css"/>
+		<link href="fonts/source-sans/source-sans-pro.css?release=6.15.3" rel="stylesheet" type="text/css"/>
 		<xsl:if test="$currentLanguage/own_slot_value[slot_reference = 'right_to_left_text']/value = 'true'">
-			<link rel="stylesheet" href="css/essential_rtl.css?release=6.14" type="text/css"/>
+			<link rel="stylesheet" href="css/essential_rtl.css?release=6.15.3" type="text/css"/>
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js?release=6.14"/>
+		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js?release=6.15.3"/>
 		<!--Custom JQuery UI library to support various visual effects-->
-		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.14"/>
+		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.15.3"/>
 		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->
 		<script>
 		$.widget.bridge('uibutton', $.ui.button);
 		$.widget.bridge('uitooltip', $.ui.tooltip);
 		</script>
 		<!-- file saver library -->
-		<script type="text/javascript" src="js/FileSaver.min.js?release=6.14"/>
+		<script type="text/javascript" src="js/FileSaver.min.js?release=6.15.3"/>
 		<!--JQuery plugin to support popup menus for link navigation-->
-		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js?release=6.14"/>
+		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js?release=6.15.3"/>
 		<!--script to support the feedback page-->
-		<script src="js/feedbackformmailer.js?release=6.14" type="text/javascript"/>
+		<script src="js/feedbackformmailer.js?release=6.15.3" type="text/javascript"/>
 		<!--JQuery plugin to support vertical align within divs-->
-		<script type="text/javascript" src="js/jquery.verticalalign.js?release=6.14"/>
+		<script type="text/javascript" src="js/jquery.verticalalign.js?release=6.15.3"/>
 		<!--Bootstrap JS library-->
-		<script type="text/javascript" src="js/bootstrap-3.4.1-dist/js/bootstrap.min.js?release=6.14"/>
+		<script type="text/javascript" src="js/bootstrap-3.4.1-dist/js/bootstrap.min.js?release=6.15.3"/>
 		<!--Match Height Library-->
-		<script src="js/jquery.matchHeight.js?release=6.14" type="text/javascript"/>
-		<script src="js/select2/js/select2.min.js?release=6.14"/>
+		<script src="js/jquery.matchHeight.js?release=6.15.3" type="text/javascript"/>
+		<script src="js/select2/js/select2.min.js?release=6.15.3"/>
 		<!-- Handlebars templating library -->
-		<script src="js/handlebars.min-v4.7.7.js?release=6.14"/>
+		<script src="js/handlebars.min-v4.7.7.js?release=6.15.3"/>
 		<!-- Date formatting library -->
-		<script src="js/moment/moment.js?release=6.14"/>
+		<script src="js/moment/moment.js?release=6.15.3"/>
 		<!--Help text and tour library-->
-		<script src="js/hopscotch/js/hopscotch.min.js?release=6.14"/>
+		<script src="js/hopscotch/js/hopscotch.min.js?release=6.15.3"/>
 		<!--script to show hide sections by click on the icon-->
 		<script>
 			$(document).ready(function () {$('.sectionIcon').click(function (){$(this).parent().children('.content-section').slideToggle(200);});});

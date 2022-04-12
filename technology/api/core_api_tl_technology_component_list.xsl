@@ -58,7 +58,7 @@
 		</xsl:variable>	
 		
 	{ 
-			<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+			<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 			"debug":"<xsl:value-of select="count($thisTPR)"/>",
 			"caps":[<xsl:for-each select="current()/own_slot_value[slot_reference='realisation_of_technology_capability']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
 			"products":[<xsl:for-each select="$thisTPR/own_slot_value[slot_reference='role_for_technology_provider']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]

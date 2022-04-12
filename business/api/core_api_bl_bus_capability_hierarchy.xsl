@@ -52,21 +52,23 @@
         <xsl:variable name="rootBusCapName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="rootBusCapDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="rootBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 	{
-		"l0BusCapId": "<xsl:value-of select="current()/name"/>",
+		"l0BusCapId": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"l0BusCapName": "<xsl:value-of select="eas:validJSONString($rootBusCapName)"/>",
         "l0BusCapDescription": "<xsl:value-of select="eas:validJSONString($rootBusCapDescription)"/>",
         "l0BusCapLink": "<xsl:value-of select="$rootBusCapLink"/>",
@@ -99,21 +101,23 @@
 		 <xsl:variable name="thisBusCapName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="thisBusCapDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="thisBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		{
-		"busCapId": "<xsl:value-of select="current()/name"/>",
+		"busCapId": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"busCapName": "<xsl:value-of select="$thisBusCapName"/>",
 		"busCapDescription": "<xsl:value-of select="$thisBusCapDescription"/>",
 		"busCapLink": "<xsl:value-of select="$thisBusCapLink"/>",
@@ -128,29 +132,31 @@
 	<xsl:template match="node()" mode="l1_caps">
 		 <xsl:variable name="thisBusCapName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="thisBusCapDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="thisBusCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
         <xsl:variable name="relevantBusCaps" select="eas:findAllSubCaps(current(), ())"/>
-        <xsl:variable name="this" select="current()/name"/>
+        <xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>
 		{
-			  "busCapId": "<xsl:value-of select="current()/name"/>",
+			  "busCapId": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		      "busCapName": "<xsl:value-of select="eas:validJSONString($thisBusCapName)"/>",
 		      "busCapDescription": "<xsl:value-of select="$thisBusCapDescription"/>",
 		      "busCapLink": "<xsl:value-of select="$thisBusCapLink"/>",
         "debug":"",
-        "subCaps":[<xsl:for-each select="$relevantBusCaps"><xsl:if test="current()/name!=$this">{"id":"<xsl:value-of select="current()/name"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>"},</xsl:if></xsl:for-each>{}]
+        "subCaps":[<xsl:for-each select="$relevantBusCaps"><xsl:if test="eas:getSafeJSString(current()/name)!=$this">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>"},</xsl:if></xsl:for-each>{}]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>    

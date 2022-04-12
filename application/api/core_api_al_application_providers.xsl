@@ -39,7 +39,10 @@
     <xsl:variable name="allRoadmapInstances" select="$allAppProviders"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
-    
+	<xsl:key name="apr_key" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
+	<xsl:key name="a2r_key" match="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
+	<xsl:key name="services_key" match="/node()/simple_instance[type=('Application_Service')]" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/>
+	<xsl:key name="actor_key" match="/node()/simple_instance[supertype=('Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 	<xsl:template match="knowledge_base">
 		{
 			"applications": [
@@ -55,23 +58,23 @@
 		<xsl:variable name="thisAppCodebase" select="$allAppCodebases[name = current()/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
 		<xsl:variable name="thisAppDeliveryModel" select="$allAppDeliveryModels[name = current()/own_slot_value[slot_reference = 'ap_delivery_model']/value]"/>
 		<xsl:variable name="thisAppOrgUser2Roles" select="$appOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-        <xsl:variable name="thisAppProviderRoles" select="$allAppProviderRoles[own_slot_value[slot_reference='role_for_application_provider']/value=current()/name]"/>
-        <xsl:variable name="thisAppServices" select="$allAppServices[own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$thisAppProviderRoles/name]"/>
+		<xsl:variable name="thisAppProviderRoles" select="key('apr_key',current()/name)"/> 
+      <!--  <xsl:variable name="thisAppProviderRoles" select="$allAppProviderRoles[own_slot_value[slot_reference='role_for_application_provider']/value=current()/name]"/> 
+        <xsl:variable name="thisAppServices" select="$allAppServices[own_slot_value[slot_reference='provided_by_application_provider_roles']/value=$thisAppProviderRoles/name]"/>-->
 	<!--	<xsl:variable name="thsAppUsers" select="$allBusinessUnits[name = $thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>-->
 		<xsl:variable name="thsAppUsersIn" select="$thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
-        <xsl:variable name="thisallActors" select="$allActors[name=$thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-
-		
-		{
-			<!--id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+<!--		<xsl:variable name="thisallActors" select="$allActors[name=$thisAppOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>-->
+		<xsl:variable name="thisarl" select="key('actor_key',$thisAppOrgUser2Roles/name)"/>  
+		<xsl:variable name="thisAppServices" select="key('services_key',$thisAppProviderRoles/name)"/> 
+		{<!--id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			name: "<xsl:value-of select="$thisAppName"/>",
 			description: "<xsl:value-of select="$thisAppDescription"/>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",-->
-			<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+			<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
 			"codebase": "<xsl:value-of select="eas:getSafeJSString($thisAppCodebase/name)"/>",
 			"delivery": "<xsl:value-of select="eas:getSafeJSString($thisAppDeliveryModel/name)"/>",
             "service":[<xsl:for-each select="$thisAppProviderRoles"><xsl:variable name="thisSvc" select="$thisAppServices[own_slot_value[slot_reference='provided_by_application_provider_roles']/value=current()/name]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisSvc"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-            "appOrgUsers": [<xsl:for-each select="$thsAppUsersIn"><xsl:variable name="thisActors" select="$thisallActors[name=current()]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>","name":"<xsl:value-of select="$thisActors/own_slot_value[slot_reference = 'name']/value"/>","link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisActors"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
+			"appOrgUsers": [<xsl:for-each select="$thsAppUsersIn"><xsl:variable name="thisActors" select="$thisarl[name=current()]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>","name":"<xsl:value-of select="$thisActors/own_slot_value[slot_reference = 'name']/value"/>","link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisActors"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 			,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>

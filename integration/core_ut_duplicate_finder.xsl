@@ -198,11 +198,13 @@
 
 
 								<script>
-                                    val =<xsl:value-of select="$param2"/>;
-                                    $('#filterRange').val(val); 
-                                    
-                                    
-                                    
+									console.log(<xsl:value-of select="$param2"/>)
+									val ='<xsl:choose><xsl:when test="count($param2)&gt;0"><xsl:value-of select="$param2"/></xsl:when><xsl:otherwise>0.1</xsl:otherwise></xsl:choose>';
+									if(val=''){val='0.1'}
+									console.log('val',val)
+									$('#filterRange').val(parseInt(val)); 
+									console.log('filtr')
+									var test;
                                     var applicationsJSON = [<xsl:apply-templates select="$class" mode="getJSON"/>];
                                 <!-- remove characters that make it fail -->
                                     
@@ -217,7 +219,7 @@
                                       keys: ['name'],
                                       id: 'name',
                                       includeScore: true,
-                                      threshold:<xsl:value-of select="$param2"/>,
+                                      threshold: parseInt(val),
                                         minMatchCharLength: 5
                                     }
                                 <!-- create fuzzy logic -->    
@@ -281,7 +283,7 @@
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getJSON">
-		<xsl:variable name="this"><xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><xsl:value-of select="own_slot_value[slot_reference = 'relation_name']/value"/></xsl:variable> {"name":"<xsl:choose><xsl:when test="contains($this, '++')"><xsl:value-of select="substring-before($this, ' ')"/></xsl:when><xsl:otherwise><xsl:value-of select="replace($this, '&#47;', ' ')"/></xsl:otherwise></xsl:choose>","id":"<xsl:value-of select="name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:variable name="this"><xsl:value-of select="translate(normalize-space(current()/own_slot_value[slot_reference = 'name']/value),'/&quot;','`')"/><xsl:value-of select="own_slot_value[slot_reference = 'relation_name']/value"/></xsl:variable> {"name":"<xsl:choose><xsl:when test="contains($this, '++')"><xsl:value-of select="substring-before($this, ' ')"/></xsl:when><xsl:otherwise><xsl:value-of select="replace($this, '&#47;', ' ')"/></xsl:otherwise></xsl:choose>","id":"<xsl:value-of select="name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getOptions">

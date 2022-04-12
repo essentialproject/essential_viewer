@@ -215,5 +215,11 @@
 			</div>
 		</div>
 	</xsl:template>
+
+	<xsl:template name="GetReportFilterExcludedSlots">
+		<xsl:param name="theReport"/>
+		<xsl:variable name="excludedSlots" select="theReport/own_slot_value[slot_reference = 'report_filter_excluded_slots']/value"/>
+		<xsl:for-each select="excludedSlots">"<xsl:value-of select="."/>"<xsl:if test="position() != last()">, </xsl:if></xsl:for-each>
+	</xsl:template>
 	
 </xsl:stylesheet>

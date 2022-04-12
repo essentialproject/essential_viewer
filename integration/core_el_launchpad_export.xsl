@@ -2837,7 +2837,9 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          </Row>
 		 {{#each this}}
 		  	{{#if this.supportingTech}}
-		  		 {{#each this.supportingTech}}
+               {{#each this.supportingTech}}
+                  {{#if @last}}
+                  {{else}}
          <Row ss:Height="17">
 			 <Cell ss:Index="2" ss:StyleID="s1090"><Data ss:Type="String">{{../this.application}}</Data></Cell>
 			 <Cell ss:StyleID="s1091"><Data ss:Type="String">{{this.environment}}</Data></Cell>
@@ -2870,6 +2872,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                <Data ss:Type="String"/>
             </Cell>
          </Row>
+         {{/if}}
 		  {{/each}}
 	  {{/if}}
 	{{/each}}

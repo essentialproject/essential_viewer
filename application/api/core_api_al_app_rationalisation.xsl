@@ -39,7 +39,7 @@
     <xsl:variable name="busProcesses" select="node()/simple_instance[type = 'Business_Process']"/>  
     <xsl:variable name="inScopeBusCaps" select="node()/simple_instance[type = 'Business_Capability'][name=$busProcesses/own_slot_value[slot_reference='realises_business_capability']/value]"/> 
     
-     <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $apps/name]"/>
+    <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $apps/name]"/>
 	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
     <xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
 	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
@@ -51,7 +51,9 @@
 	<xsl:variable name="busDifferentiationLevels" select="/node()/simple_instance[own_slot_value[slot_reference = 'term_in_taxonomy']/value = $busDifferentiationLevelTaxonomy/name]"/>
 	<xsl:variable name="differentiatingLevel" select="$busDifferentiationLevels[own_slot_value[slot_reference = 'name']/value = 'Differentiator']"/>
     <xsl:variable name="isAuthzForCostClasses" select="eas:isUserAuthZClasses(('Cost', 'Cost_Component'))"/><xsl:variable name="isAuthzForCostInstances" select="eas:isUserAuthZInstances($inScopeCosts)"/>
-
+	
+	<xsl:key name="services_key" match="/node()/simple_instance[type=('Application_Service')]" use="own_slot_value[slot_reference = 'provides_application_services']/value"/>
+	
 	
     
 	<xsl:template match="knowledge_base">
@@ -83,8 +85,9 @@
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONservices">
-		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>
-		<xsl:variable name="thisserv" select="$appservices[own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value = $this]"/>
+		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/>services_key
+		<xsl:variable name="thisserv" select="key('services_key',current()/name)"/>  
+		<!--<xsl:variable name="thisserv" select="$appservices[own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value = $this]"/> -->
 		<xsl:if test="$thisserv/own_slot_value[slot_reference = 'name']/value"> {"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisserv/name)"/>","service":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="$thisserv"/>
 			<xsl:with-param name="isForJSONAPI" select="true()"/>

@@ -1046,6 +1046,8 @@
 		let workingCapId=0;
 		var partialTemplate, l0capFragment;
 		showEditorSpinner('Fetching Data...');
+		var dynamicAppFilterDefs=[];	
+		var dynamicCapFilterDefs=[];
 		$('document').ready(function ()
 		{
 			l0capFragment = $("#model-l0-template").html();
@@ -1280,13 +1282,28 @@
 	 		promise_loadViewerAPIData(viewAPIDataSvcs)
 			]).then(function (responses)
 			{
-				console.log('viewAPIData',responses[0]);
-				console.log('viewAPIDataApps',responses[1]);
-				console.log('viewAPIDataCaps',responses[2]);
-				console.log('viewAPIDataSvcs',responses[3]);
+			 //	console.log('viewAPIData',responses[0]);
+			//	console.log('viewAPIDataApps',responses[1]);
+			 //	console.log('viewAPIDataCaps',responses[2]);
+			//	console.log('viewAPIDataSvcs',responses[3]);
 				let workingArray = responses[0];
 				svsArray = responses[3]
 				meta = responses[1].meta; 
+				filters=responses[1].filters;
+				capfilters=responses[0].filters;
+
+				
+				responses[1].filters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+				 console.log('capfilters',responses[1].filters)
+				dynamicAppFilterDefs=filters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+
+				dynamicCapFilterDefs=capfilters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+			 
+				
 		 
 				workingArray.busCapHierarchy.forEach((d)=>{
 			 
@@ -1473,7 +1490,7 @@
 					}); 
 					bc["order"]=parseInt(capArr.sequenceNumber);
 					bc.processes.forEach((bp)=>{
-					 
+				 
 						bp.physP.forEach((pbp)=>{
 					 
 							processMap.push({"pbpId":pbp,"pr":bp.name, "prId":bp.id});
@@ -1483,7 +1500,7 @@
 					});
 
 				});
-			   
+				
 				let capMod = new Promise(function(resolve, reject) { 
 					resolve($('#capModelHolder').html(l0CapTemplate(workingArray.busCapHierarchy)));
 					reject();
@@ -1492,7 +1509,7 @@
 		
 			   capMod.then((d)=>{
 				workingArray=[];
-				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain']);
+			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], responses[1].filters, responses[0].filters);
 			   });
 			   removeEditorSpinner()
 			   $('.appInDivBoxL0').hide();
@@ -1529,9 +1546,11 @@ var redrawView=function(){
 			return d.lifecycle != "Retired";
 		})
 	}
+
+	console.log('dynamicAppFilterDefs',dynamicAppFilterDefs)
  
-	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef]);
+	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
 	let appsToShow=[]; 
  
 	inScopeCapsApp=scopedCaps.resources; 
@@ -1583,9 +1602,12 @@ var redrawView=function(){
 						let cap=appToCap.filter((ac)=>{
 							return ac.procId ==php.prId;
 						});
-
 						if(cap.length &gt;0){
-						capforApp.push({"id":cap[0].bcId,"name":cap[0].bc})
+					 
+							cap.forEach((cp)=>{
+								capforApp.push({"id":cp.bcId,"name":cp.bc})
+							})
+						
 						}
 					};
 				});
@@ -1655,9 +1677,7 @@ var redrawView=function(){
 					thisAllServs.sort((a, b) => (a.name > b.name) ? 1 : -1)
 
 					appToShow[0]['allservList']=thisAllServs; 
-					
-console.log('appToShow[0]',appToShow[0])
-			 
+  		 
 					$('#appData').html(appTemplate(appToShow[0]));
 					$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
 

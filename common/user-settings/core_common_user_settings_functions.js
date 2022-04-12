@@ -45,7 +45,7 @@ function essSaveLocalEssentialInstanceSettings(className, settings) {
 const ESS_LOCAL_VIEW_SCOPE_SETTINGS_KEY = 'ESSENTIAL_USER_SETTINGS.VIEW_SCOPE_SETTINGS';
 
 var essUserScopeSettings;
-var essUserScope;
+var essUserScope=[];
 var essScopingLists;
 var essCurrentScopingCat;
 var essScopingDDTemplate, essScopeValuesTemplate;
@@ -98,15 +98,21 @@ class ScopingValue {
 }
 
 var essFilterClassList = [];
+var essDynamicFilterList = [];
+
 var essFilterLabelList = '';
 
 //Function call by Views/Editors to initialise the scoping capability and then call the callback function
-function essInitViewScoping(callback, initfilterClassList) {
+function essInitViewScoping(callback, initfilterClassList, dynamicFilters) {
 
     scopeInitialised = true;
     
     if(initfilterClassList) {
         essFilterClassList = initfilterClassList;
+    }
+
+    if(dynamicFilters) {
+        essDynamicFilterList = dynamicFilters;
     }
     
     //call the callback to refresh the view/editor
@@ -175,8 +181,16 @@ function essIsViewScopingReady() {
 // Function to populate the scoping category drop down list with nothing selected (first dropsown is enabled)
 function essSetScopingDropdowns() {
     if(essScopingLists && essScopingLists.length > 0) {
+        //add the list of filters dynamically provided by the containing view
+        essDynamicFilterList?.forEach(flt => {
+            if(flt.valueClass && essFilterClassList.indexOf(flt.valueClass) < 0) {
+                essFilterClassList.push(flt.valueClass);
+                essScopingLists.push(flt);
+            }
+        });
 
         let inScopeList = essScopingLists;
+        //console.log('Scoping Lists', essScopingLists);
         if(essFilterClassList.length > 0) {
             inScopeList = essScopingLists.filter(scope => essFilterClassList.indexOf(scope.valueClass) >= 0);
         }
@@ -315,6 +329,7 @@ function essRefreshScopeSummary() {
 //function to retrieve the current list of scoping objects of a given class - including flattening scoping groups - returns a Set object containing id values
 function essGetScopeForMetaClass(aClass) {
     let scopeForMetaClass = {};
+    //console.log('essUserScope',essUserScope)
     let includesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && !scope.isExcludes);
     let includesScopeValues = [];
 
@@ -376,7 +391,10 @@ function essFilterResources(scopedResources, scopeForProperty, scopingProperty) 
 function essScopeResources(resourceList, scopingPropertyList) {
 
     let scopedResources = resourceList;
+  //  console.log('resourceList',resourceList)
+  //  console.log('scopingPropertyList',scopingPropertyList)
     scopingPropertyList.forEach(function(aSP) {
+  //      console.log('aSP',aSP)
         let scopeForProperty = essGetScopeForMetaClass(aSP.metaClass);
         if(scopeForProperty.includes || scopeForProperty.excludes) {
             scopedResources = essFilterResources(scopedResources, scopeForProperty, aSP.property);

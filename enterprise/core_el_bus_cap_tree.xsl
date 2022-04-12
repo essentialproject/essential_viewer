@@ -197,6 +197,25 @@
 						bottom: 3px;
 						 
 					}
+					.app-circle-more {
+						display: inline-block;
+						min-width: 10px;
+						padding: 2px 5px;
+						font-size: 10px;
+						font-weight: 700;
+						line-height: 1;
+						text-align: center;
+						white-space: nowrap;
+						vertical-align: middle;
+						background-color: #fff;
+						color: #333;
+						border-radius: 10px;
+						border: 1px solid #ccc;
+						position: absolute;
+						right: 3px;
+						bottom: 3px;
+						 
+					}
 					.bc-eye{
 						display: inline-block;
 						min-width: 8px;
@@ -757,7 +776,7 @@
 					<b>{{#if this.type}}{{#ifEquals this.type 'Application_Provider_Role'}}{{this.name}}{{else}}{{#essRenderInstanceLinkMenuOnly this type}}{{/essRenderInstanceLinkMenuOnly}}{{/ifEquals}}{{else}}{{this.name}}{{/if}}</b><br/>
 					<span style="font-size:5pt">{{this.type}}</span>
 					{{#ifEquals this.type 'Business_Capability'}}{{#if this.children}}{{else}}<span class="bc-eye"><i class="fa fa-eye"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></span>{{/if}}{{/ifEquals}}
-						{{#if this.children}}
+						{{#if this.children}} 
 							<span class="app-circle"><i class="fa fa-caret-right"></i></span>
 						{{/if}}
 
@@ -884,6 +903,8 @@ let plans=[<xsl:apply-templates select="$planElements" mode="plans"/>]
 		{
 			
 $('#caps').select2({width:"250px"})
+
+let focusCap='<xsl:value-of select="$param1"/>'
 			appFragment = $("#app-template").html();
 			appTemplate = Handlebars.compile(appFragment);		
 			
@@ -1016,14 +1037,23 @@ let projmeta = [<xsl:apply-templates select="$reportMenu" mode="classMetaData"><
 
 				$("#caps").prop("selectedIndex", 0).val();
 $("#caps").val('Choose');
-			
+ 
 $('#caps').on('change',function(){
 	let focus=$('#caps').val() 
 	d3.select("#model").select("svg").remove(); 
+	selectedCap(focus)
+})
 
+if(focusCap.length&gt;0){
+	//selectedCap(focusCap);
+	$('#caps').val(focusCap).trigger('change'); 
+ }
+
+function selectedCap(focus){
 let thisCap = workingArray.busCaptoAppDetails.find((d)=>{
     return d.id==focus;
 });
+ 
  
 let treeData=[];
 function dfs(obj, targetId){
@@ -1086,14 +1116,13 @@ let appViaProc=[];
 			let match = el.allServices.find((e)=>{
 				return e.id == s.id;
 			}) 
+		 
 			el['type']='Composite_Application_Provider';
 
 			if(match){
 				appViaProc.push(el)
 			}
-
-		}
-
+		} 
 		s['children']=appViaProc;
 	}); 
 	let thisProcServices = responses[3].process_to_service.find((ps)=>{
@@ -1105,11 +1134,11 @@ thisProcServices.children.forEach((s)=>{
  	s['type']='Application_Service';
 	let bpsvc=[];
 	for (let el of responses[4].applications_to_services) { 
-		console.log('el',el)
+
 		let match = el.services.find((e)=>{
 			return e.id == s.id;
 		}) 
-		console.log('match',match)
+		
 		if(match){
 			el['type']="Composite_Application_Provider";
 			bpsvc.push(el)
@@ -1437,6 +1466,7 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 				
 				// Toggle children on click.
 				function click(d) {
+					console.log('d',d)
 					if (d.children) {
 						d._children = d.children;
 						d.children = null;
@@ -1453,7 +1483,7 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 				}
 
 				
-			})			
+			}			
 				rationReport=responses[1].reports.filter((d)=>{return d.name=='appRat'});
 			//	scores = responses[2];
 	 	     
@@ -1566,7 +1596,6 @@ thisProjs=thisProjs.filter((elem, index, self) => self.findIndex( (t) =>{return 
 			   $('.appInDivBoxL0').hide();
 			   $('.appInDivBox').hide();
 
-			    
 			})
 		 
 	
@@ -1667,18 +1696,18 @@ var redrawView=function(){
 			let openCap= $('#capsId').attr('easid');
 			 getApps(openCap)
 		}
-
+<!--
 	$('.app-circle').on("click", function (d)
 		{ d.stopImmediatePropagation(); 
 
 				let selected = $(this).attr('easidscore')
  
 				if(workingCapId!=selected){ 
-			
+			console.log('selected',selected)
 				getApps(selected);
 
 				$(".appInfoButton").on("click", function ()
-				{
+				{console.log('appinfo',selected)
 					let selected = $(this).attr('easid')
 
 		 
@@ -1723,11 +1752,11 @@ var redrawView=function(){
 				closeNav();
 				
 			}
-		})
+		})-->
 
 
 function getApps(capid){
-	 
+	 console.log('capid',capid)
 	let thisCapAppList = inScopeCapsApp.filter(function (d)
 	{
 		return d.id == capid;
@@ -1766,16 +1795,17 @@ function getApps(capid){
 		rationalisationList.push(d)
 	});
 	}
-	$('.app-circle').text('0')
-		$('.app-circle').each(function() {
+ 	console.log('set app circle to 0')
+	//$('.app-circle').text('0')
+	/*	$('.app-circle').each(function() {
 			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
 		  
 			($(this).html() >= 2 &amp;&amp; $(this).html() &lt; 6) ? $(this).css({'background-color': '#e0beed', 'color': 'black'}): null;
 		  
 			$(this).html() >= 6 ? $(this).css({'background-color': '#d59deb', 'color': 'black'}) : null;
 		  });
-	
-		  inScopeCapsApp.forEach(function (d)
+	*/
+		/*  inScopeCapsApp.forEach(function (d)
 		{
 			let appCount=d.filteredApps.length;
 			$('*[easidscore="' + d.id + '"]').html(appCount);
@@ -1787,6 +1817,7 @@ function getApps(capid){
 			$('*[easidscore="' + d.id + '"]').css({'background-color':colour, 'color':textColour})
 	
 		});
+		*/ 
 	})
 
 

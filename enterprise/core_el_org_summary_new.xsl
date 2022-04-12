@@ -20,15 +20,16 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Service', 'Application_Provider_Interface', 'Application_Provider', 'Business_Process', 'Application_Strategic_Plan', 'Site', 'Group_Actor', 'Technology_Component', 'Technology_Product', 'Infrastructure_Software_Instance', 'Hardware_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Technology_Node', 'Individual_Actor', 'Application_Function', 'Application_Function_Implementation', 'Enterprise_Strategic_Plan', 'Information_Representation')"/>
+	<xsl:variable name="linkClasses" select="('Application_Service', 'Business_Process', 'Application_Provider', 'Site', 'Group_Actor', 'Technology_Component')"/>
 	<!-- END GENERIC LINK VARIABLES -->
-	<xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Org Summmary']"/>
+	<xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Group Actors']"/>
 	<xsl:variable name="physProcAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"/>
   
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<!-- START VIEW SPECIFIC SETUP VARIABES -->
 	<xsl:variable name="products" select="/node()/simple_instance[type='Product']"/>
-						
+	<xsl:variable name="productType" select="/node()/simple_instance[type='Product_Type']"/>
+	
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -82,7 +83,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Summary')"/></title>
-				<link href="user/assets/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"></link>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"></script>
 				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"></script>
@@ -124,6 +125,10 @@
 						right: 3px;
 						color: #aaa;
 						font-size: 90%;
+					}
+					
+					.dataTables_filter label{
+						display: inline-block!important;
 					}
 					
 					#summary-content label{
@@ -211,6 +216,12 @@
 						font-weight: 700;
 						background-color: #eee;
 						font-size: 85%;
+					}
+					
+					.ess-mini-badge {
+						display: inline-block!important;
+						padding: 2px 5px;
+						border-radius: 4px;
 					}
 					
 					@media (min-width : 1220px) and (max-width : 1720px){
@@ -1242,12 +1253,16 @@
 						<li>
 							<a href="#hierarchy" data-toggle="tab"><i class="fa fa-fw fa-th right-10"></i><xsl:value-of select="eas:i18n('Organisation Hierarchy')"/></a>
 						</li>
+						{{#if this.allBusProcs}}
 						<li>
 							<a href="#processes" data-toggle="tab"><i class="fa fa-fw fa-random right-10"></i><xsl:value-of select="eas:i18n('Processes')"/></a>
 						</li>
+						{{/if}}
+						{{#if this.allAppsUsed}}
 						<li>
 							<a href="#applications" class="appTab" data-toggle="tab"><i class="fa fa-fw fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Usage')"/></a>
 						</li>
+						{{/if}}
 					<!-- 	<li>
 							<a href="#projects" data-toggle="tab"><i class="fa fa-fw fa-calendar-check-o right-10"></i><xsl:value-of select="eas:i18n('Plans and Projects')"/></a>
 						</li>-->
@@ -1266,7 +1281,7 @@
 									<div class="ess-string">{{this.name}}</div>
 									<div class="clearfix bottom-10"></div>
 									<label><xsl:value-of select="eas:i18n('Description')"/></label>
-									<div class="ess-string">{{this.description}}</div>
+									<div class="ess-string">{{{this.description}}}</div>
 									<div class="clearfix bottom-10"></div>
 									<label><xsl:value-of select="eas:i18n('Parent Organisation(s)')"/></label>
 									<ul class="ess-list-tags">
@@ -1304,17 +1319,30 @@
 									
 								</div>
 								<div class="col-xs-12"/>
+								{{#if this.orgProductTypes}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Roles &amp; People')"/></h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Products/Services Supported')"/></h3>
+									
+									<ul class="ess-list-tags"> 
+										{{#each this.orgProductTypes}}
+											<li class="roleBlob" style="background-color: rgb(179, 197, 208)">{{this}}</li> 
+										{{/each}}
+									</ul> 
+									<div class="clearfix bottom-10"></div>
+								</div>
+								{{/if}}
+								{{#if this.orgEmployees}}
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('People &amp; Roles')"/></h3>
 									 
 									<table class="table table-striped table-bordered" id="dt_stakeholders">
 											<thead>
 												<tr>
 													<th class="cellWidth-30pc">
-														<xsl:value-of select="eas:i18n('Role')"/>
+														<xsl:value-of select="eas:i18n('Person')"/>
 													</th>
 													<th class="cellWidth-30pc">
-														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
+														<xsl:value-of select="eas:i18n('Role')"/>
 													</th>
 												 
 												</tr>
@@ -1323,16 +1351,16 @@
 											{{#each this.orgEmployees}}
 											<tr>
 												<td class="cellWidth-30pc">
-													{{#ifEquals this.name 'Application Organisation User'}}
-													<i class="fa fa-user text-success right-5"></i> <xsl:value-of select="eas:i18n('Application User')"/>
-													{{else}}
-													<i class="fa fa-user text-success right-5"></i>	{{this.name}}
-													{{/ifEquals}}
+														<i class="fa fa-user text-success right-5"></i>	{{this.name}}
 												</td>
 												<td class="cellWidth-30pc">
 													<ul class="ess-list-tags">
-													 	{{#each this.roles}}
+														{{#each this.roles}}
+														{{#ifEquals this.name 'Application Organisation User'}}
+															<i class="fa fa-user text-success right-5"></i> <xsl:value-of select="eas:i18n('Application User')"/>
+														{{else}}
 															<li class="roleBlob" style="background-color: rgb(96, 217, 214)">{{this.name}}</li>
+														{{/ifEquals}} 
 														{{/each}} 
 														</ul>
 													
@@ -1343,13 +1371,12 @@
 											</tbody>
 											<tfoot>
 												<tr>
-													<th>
+													<th class="cellWidth-30pc">
+															<xsl:value-of select="eas:i18n('Person')"/>
+													</th>
+													<th class="cellWidth-30pc">
 														<xsl:value-of select="eas:i18n('Role')"/>
 													</th>
-													<th>
-														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
-													</th>
-													 
 												</tr>
 											</tfoot>
 										</table>
@@ -1357,7 +1384,21 @@
 									<div class="clearfix bottom-10"></div>
 									
 								</div>
-
+								{{/if}}
+								{{#if this.orgRoles}}
+								<div class="superflex">
+										<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Organisation Roles')"/></h3>
+										<ul class="ess-list-tags">
+											{{#each this.orgRoles}}
+												<li class="roleBlob" style="background-color: rgb(96, 217, 144)">{{this.name}}</li>
+											{{/each}}
+										</ul>
+									 
+	
+										<div class="clearfix bottom-10"></div>
+										
+								</div>
+								{{/if}}
 							</div>
 						</div>
 						<div class="tab-pane" id="hierarchy">
@@ -1381,7 +1422,7 @@
 									 {{#each this.allBusProcs}}
 										<div class="ess-blob bdr-left-orange" id="someid">
 											<div class="ess-blobLabel">
-												<a href="#" id="someidLink">{{this.name}}</a>
+												 {{{essRenderInstanceMenuLink this}}} 
 											</div>
 											<div class="infoButton" id="someid_info">
 												<a tabindex="0" class="popover-trigger">
@@ -1403,6 +1444,7 @@
 						
 			 			<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-table right-10"></i>Process Implementations</h3>
+									Application Mapping Key: <label class="label   ess-mini-badge" style="background-color: rgb(170, 194, 213);color:#000">Direct to Process</label><xsl:text> </xsl:text><label class="label  ess-mini-badge" style="background-color:rgb(210, 169, 190);color:#000">Via Application Service</label>
 									<div class="bottom-10">
 										<table id="dt_supportedprocesses" class="table table-striped table-bordered" >
 											<thead>
@@ -1418,6 +1460,9 @@
 													</th>
 													<th>
 														<xsl:value-of select="eas:i18n('Criticality')"/>
+													</th>
+													<th>
+														<xsl:value-of select="eas:i18n('Applications Used')"/>
 													</th>
 												</tr>
 											</thead>
@@ -1447,6 +1492,16 @@
 															</ul> 
 															{{/if}}
 														</td>
+														<td>
+															<ul class="ess-list-tags">
+															{{#each this.appsdirect}}
+																<li class="roleBlob" style="background-color: rgb(170, 194, 213)">{{this.appName}}</li>
+															{{/each}} 
+															{{#each this.appsviaservice}}
+																<li class="roleBlob" style="background-color: rgb(210, 169, 190)">{{this.appName}}</li>
+															{{/each}} 
+															</ul>
+														</td>
 													</tr>
 
 												{{/each}}
@@ -1466,6 +1521,9 @@
 													<th>
 														<xsl:value-of select="eas:i18n('Criticality')"/>
 													</th>
+													<th>
+														<xsl:value-of select="eas:i18n('Applications Used')"/>
+													</th>
 												</tr>
 											</tfoot>
 										</table>
@@ -1479,8 +1537,8 @@
 								<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-check-circle-o right-10"></i>Supporting Apps</h3>
 									Applications used by this organisation or its children organisations. <br/>
-									Key: <label class="label label-info" style="display:inline-block;width:100px">Via Process</label><xsl:text> </xsl:text><label class="label label-warning"  style="display:inline-block;width:100px">Via App Org User</label><label class="label" style="display:inline-block;width:100px;background-color: #b07fdd;">Via Child Org</label>
-									<label class="label" style="display:inline-block;width:100px;background-color: #646068;">Via Parent</label>
+									Key: <label class="label label-info ess-mini-badge">Via Process</label><xsl:text> </xsl:text><label class="label label-warning ess-mini-badge">Via App Org User</label><label class="label ess-mini-badge" style="background-color: #b07fdd;">Via Child Org</label>
+									<label class="label ess-mini-badge" style="background-color: #646068;">Via Parent</label>
 									 
 									<table class="table table-striped table-bordered" id="dt_apptable">
 											<thead>
@@ -1557,9 +1615,9 @@
 
 	</script>	
 	<script id="appline-template" type="text/x-handlebars-template">
-		<span><xsl:attribute name="id">{{this.id}}</xsl:attribute>{{this.name}}<br/>
-		{{#if this.proc}}{{#ifEquals this.proc 'Indirect'}}<label class="label" style="background-color: #b07fdd; display:inline-block;width:70px">{{this.proc}}</label>{{else}}<label class="label label-info" style="display:inline-block;width:70px">{{this.proc}}</label>{{/ifEquals}}{{/if}}
-		{{#if this.org}}{{#ifEquals this.org 'Parent'}}<label class="label" style="background-color: #646068; display:inline-block;width:70px">{{this.org}}</label>{{else}}<label class="label label-warning" style="display:inline-block;width:70px">{{this.org}}</label>{{/ifEquals}}{{/if}}
+		<span><xsl:attribute name="id">{{this.id}}</xsl:attribute>{{{essRenderInstanceMenuLink this}}}<br/>
+			{{#if this.proc}}{{#ifEquals this.proc 'Indirect'}}<label class="label ess-mini-badge" style="background-color: #b07fdd;">{{this.proc}}</label>{{else}}<label class="label label-info ess-mini-badge">{{this.proc}}</label>{{/ifEquals}}{{/if}}
+			{{#if this.org}}{{#ifEquals this.org 'Parent'}}<label class="label ess-mini-badge" style="background-color: #646068;">{{this.org}}</label>{{else}}<label class="label label-warning ess-mini-badge">{{this.org}}</label>{{/ifEquals}}{{/if}}
 		</span>
 	</script>
 	<script id="roles-template" type="text/x-handlebars-template"></script>
@@ -1571,9 +1629,11 @@
 	<script id="sites-template" type="text/x-handlebars-template"></script>
 	<script id="appsnippet-template" type="text/x-handlebars-template"></script>
 <script>;	   
- 
+  <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
+	<xsl:with-param name="linkClasses" select="$linkClasses"/>
+</xsl:call-template>
  let products=[<xsl:apply-templates select="$products" mode="products"/>];
- 
+  
 	$(document).ready(function ()
 	{
 		// compile any handlebars templates
@@ -1742,54 +1802,72 @@
 			promise_loadViewerAPIData(viewAPIDataApps),
 			promise_loadViewerAPIData(viewAPIDataPP)
 			]).then(function(responses) {
-						
+				let orgRoles=[];		
 				   orgData=responses[0].orgData; 
+				   if(responses[0].orgRoles){
+				   	orgRoles=responses[0].orgRoles;
+				   }
 				   appData=responses[1];
-				   physProc=responses[2];
-			//	   console.log('orgData',orgData)
-			//	   console.log('appData',appData)
-			//	   console.log('physProc',physProc)
+				   physProc=responses[2];  
+				  let orgProductTypes=[];
+				 
 				   products.forEach((prod)=>{
-					
+				 
 					   prod.processes.forEach((e)=>{
 						
-							let thisMatch=physProc.process_to_apps.find((p)=>{
+							let thisMatch=physProc.process_to_apps.filter((p)=>{
 								return p.id == e;
-							})
-							
+							});
+
 							if(thisMatch){
 								if(thisMatch['product']){
 								thisMatch['product'].push(prod.name);
+							
 								}
 								else
 								{
 								thisMatch['product']=[prod.name];	
 								} 
+							 
 							}
+						 
 					   })
+					   
 				   })
-				   
+  
 				   modelData=[]
 				   orgData.forEach((d)=>{
-					 
+ 
+					 if(orgRoles.length&gt;0){
+						let thisRoles=orgRoles.find((or)=>{
+							return or.id==d.id;
+						});
+						if(thisRoles){
+							d['orgRoles']=thisRoles.roles;
+						};
+					 };
+
 					let parent=[];
 					let childrenOrgs=[];
 					d.parentOrgs.forEach((e)=>{
 						let thisParent=orgData.find((f)=>{
 							return f.id == e
 						}); 
+						if(thisParent){
 						parent.push({"name":thisParent.name,"id":thisParent.id})	
+						}
 					})
-					d['parents']=parent;
-					d.childOrgs.forEach((e)=>{
-					 
-						let thisChild=orgData.find((f)=>{
-							return f.id == e
-						}); 
-						childrenOrgs.push({"name":thisChild.name,"id":thisChild.id})	
-					})
+					d['parents']=parent; 
+					if(d.childOrgs){
+						d.childOrgs.forEach((e)=>{ 
+							let thisChild=orgData.find((f)=>{
+								return f.id == e
+							});  
+							childrenOrgs.push({"name":thisChild.name,"id":thisChild.id})	
+						})
+					}
 					d['childrenOrgs']=childrenOrgs;
-					 
+			 
 					   let allAppsUsed=[];
 					   let allBusProcs=[];
 					   let allSubOrgs=[];
@@ -1804,11 +1882,12 @@
 					   d.applicationsUsedbyProcess.forEach((e)=>{
 						allAppsUsed.push(e)
 					  });
-					 
+				 	 
 					  d.businessProcess.forEach((e)=>{
+						  e['className']='Business_Process';
 						allBusProcs.push(e)
 					  }); 
-
+			 	
 					  if(d.site){
 						d.site.forEach((e)=>{
 							allSites.push(e)
@@ -1816,7 +1895,7 @@
 						}
 					 if(d.parentOrgs.length&gt;0){
 						d.parentOrgs.forEach((e)=>{
-						
+						 	
 							let thisOrg=orgData.find((f)=>{
 								return f.id == e
 							});
@@ -1825,24 +1904,27 @@
 							 
 							getParents(thisOrg, allAppsUsedParent, allBusProcsParent, allParentOrgs, allSitesParent)
 							  
-						   }) 
+						   });
+						  
 						 } 
 
 						if(d.childOrgs.length&gt;0){
 
 					   d.childOrgs.forEach((e)=>{
-						
+					 
 						let thisOrg=orgData.find((f)=>{
 							return f.id == e
 						});
 					 
 						allSubOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-						 
+				 
 						getChildren(thisOrg, allAppsUsed, allBusProcs, allSubOrgs, allSites)
 						  
 					   })
 					   
 					}
+					
+
 					   allAppsUsed=allAppsUsed.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allAppsUsedParent=allAppsUsedParent.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allBusProcs=allBusProcs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
@@ -1850,57 +1932,73 @@
 					   allSites=allSites.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   let appList=[]; 
 					   let parentappList=[]; 
-					   allAppsUsedParent = allAppsUsedParent.filter(x => !allAppsUsed.includes(x));
+					   allAppsUsedParent = allAppsUsedParent.filter(x => !allAppsUsed.includes(x));   
 					   allAppsUsed.forEach((ap)=>{ 
 						   let thisApp=appData.applications.find((e)=>{
 							   return e.id == ap.id;
 						   })
 						   appList.push(thisApp)
-					   })
-
+					   });
+ 
 					   allAppsUsedParent.forEach((ap)=>{ 
 						let thisApp=appData.applications.find((e)=>{
 							return e.id == ap.id;
 						})
 						parentappList.push(thisApp)
 						})
-
-
+	 
 					   d['allAppsUsedParent']=parentappList;
 					   d['allAppsUsed']=appList;
 					   d['allBusProcs']=allBusProcs;
 					   d['allChildren']=allSubOrgs;
 					   d['allSites']=allSites;
 						 //  $('.selectOrgBox').append('&lt;option value='+d.id+' >'+d.name+'&lt;option>');
-						 
+					
 					});
-	
+					
+			 
 				//	$('.selectOrgBox').val(focusID);  
 				//	$('.selectOrgBox').trigger('change');
 					
 					let toShow = orgData.find((e)=>{
 					return e.id == focusID;
 					})
-				 	console.log('toShow',toShow)
+				 	
  
 	 	 			getThisHierarchy(toShow, null, modelData )
 					  
 					  let appProcMap=[];
+					  orgProductTypes=[]; 
 					  toShow.allBusProcs.forEach((e)=>{ 
-						let thisProcess=physProc.process_to_apps.find((f)=>{
+						let thisProcess=physProc.process_to_apps.filter((f)=>{
 							return e.id == f.processid;
-						})
-				//		console.log('thisProcess',thisProcess)
+						});
+
+
 						if(thisProcess){
-							thisProcess['criticality']=e.criticality;
-							appProcMap.push(thisProcess)
+							thisProcess.forEach((pr)=>{
+							pr['criticality']=e.criticality;
+							appProcMap.push(pr)
+							if(thisProcess.product){
+							orgProductTypes=[...orgProductTypes, ...pr.product];
+							}
+							})
 						}
+ 
+	appProcMap = appProcMap.filter((ap)=>{
+		return toShow.id == ap.orgid;
+	});
+ 
+	
+						orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
+					 
+						toShow['orgProductTypes']=orgProductTypes
 					  }); 
-				//	  console.log('appProcMap',appProcMap)
+					//  console.log('toShow',toShow) 
 					let parentProcs = appProcMap.filter((e)=>{
 						  return e.orgid ==  toShow.id;
-					  })
-
+					  });
+				 
 					  let childProcs=[];
 					  toShow.allChildren.forEach((e)=>{
 						let thisProcs  = appProcMap.filter((f)=>{
@@ -1914,9 +2012,27 @@
 						childProcs=[...childProcs, ...thisProcs]
 						}
 					})
-					   
-					toShow['physicalProcesses']=[...parentProcs, ...childProcs]
-					  
+	    
+						
+					toShow['physicalProcesses']=[...parentProcs, ...childProcs, ...appProcMap]
+					toShow.physicalProcesses=toShow.physicalProcesses.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
+	 
+					
+					toShow.physicalProcesses.sort((a,b) => (a.processName > b.processName) ? 1 : ((b.processName > a.processName) ? -1 : 0))
+					toShow.physicalProcesses.forEach((pp)=>{
+						pp.appsdirect.forEach((app)=>{ 
+							app['appName']=app.name; 
+						});
+						pp.appsviaservice.forEach((app)=>{ 
+							let thisApp=appData.applications.find((fa)=>{
+								return fa.id ==app.appid;
+							});
+							if(thisApp){
+								app['appName']=thisApp.name;
+							}
+						});
+					});
+			 
 					drawView(toShow, modelData);
   
 				})
@@ -1930,66 +2046,68 @@ function getThisHierarchy(node, chartParent, modelData){
 
 
 	if(chartParent==null){
-		console.log('parent') 
+	 
 			let thisParent=orgData.find((f)=>{
 				return f.id == node.parentOrgs[0]
 			}); 
-			console.log('thisParent',thisParent) 
-	 	let thisNode = {
-			"nodeId": thisParent.id,
-			"parentNodeId": null,
-			"width": 342,
-			"height": 146,
-			"borderWidth": 1,
-			"borderRadius": 5,
-			"borderColor": {
-				"red": 15,
-				"green": 140,
-				"blue": 121,
-				"alpha": 1
-			},
-			"backgroundColor": {
-				"red": 51,
-				"green": 182,
-				"blue": 208,
-				"alpha": 1
-			},
-			"nodeImage": {
-				"url": "images/icon_target.png",
-				"width": 50,
-				"height": 50,
-				"centerTopDistance": 0,
-				"centerLeftDistance": 0,
-				"cornerShape": "SQUARE",
-				"shadow": false,
-				"borderWidth": 0,
-				"borderColor": {
-					"red": 19,
-					"green": 123,
-					"blue": 128,
-					"alpha": 1
-				}
-			},
-			"nodeIcon": {
-				"icon": "images/icon_person.png",
-				"size": 30
-			},
-			"template": jsonTemplate(thisParent),
-			"connectorLineColor":{
-				"red":220,
-				"green":189,
-				"blue":207,
-				"alpha":1},
-				"connectorLineWidth":5,
-				"dashArray":"",
-				"expanded":false,
-				"directSubordinates":4,
-				"totalSubordinates":1515}
-		 
-				modelData.push(thisNode)
-				chartParent=thisParent.id
-	}
- 		
+		//	console.log('thisParent',thisParent) 
+			if(thisParent){	
+				let thisNode = {
+					"nodeId": thisParent.id,
+					"parentNodeId": null,
+					"width": 342,
+					"height": 146,
+					"borderWidth": 1,
+					"borderRadius": 5,
+					"borderColor": {
+						"red": 15,
+						"green": 140,
+						"blue": 121,
+						"alpha": 1
+					},
+					"backgroundColor": {
+						"red": 51,
+						"green": 182,
+						"blue": 208,
+						"alpha": 1
+					},
+					"nodeImage": {
+						"url": "images/icon_target.png",
+						"width": 50,
+						"height": 50,
+						"centerTopDistance": 0,
+						"centerLeftDistance": 0,
+						"cornerShape": "SQUARE",
+						"shadow": false,
+						"borderWidth": 0,
+						"borderColor": {
+							"red": 19,
+							"green": 123,
+							"blue": 128,
+							"alpha": 1
+						}
+					},
+					"nodeIcon": {
+						"icon": "images/icon_person.png",
+						"size": 30
+					},
+					"template": jsonTemplate(thisParent),
+					"connectorLineColor":{
+						"red":220,
+						"green":189,
+						"blue":207,
+						"alpha":1},
+						"connectorLineWidth":5,
+						"dashArray":"",
+						"expanded":false,
+						"directSubordinates":4,
+						"totalSubordinates":1515}
+				
+						modelData.push(thisNode)
+						chartParent=thisParent.id
+			}
+		}else{	chartParent=null}
+
    let thisNode = {
 	"nodeId": node.id,
 	"parentNodeId": chartParent,
@@ -2087,6 +2205,8 @@ function getChildren(arr, allApp, allBus, allOrgs, allSites){
 }	
 
 function getParents(arr, allApp, allBus, allOrgs, allSites){ 
+ 
+ 
 	if(arr.applicationsUsedbyOrgUser){
 		arr.applicationsUsedbyOrgUser.forEach((f)=>{
 			allApp.push(f)
@@ -2113,15 +2233,14 @@ function getParents(arr, allApp, allBus, allOrgs, allSites){
 				return f.id == e1
 			}); 
 			allOrgs.push({"id":thisOrg.id, "name":thisOrg.name})
+		 
 			getParents(thisOrg, allApp, allBus, allOrgs, allSites)
 		})
 	}
-	
+ 
 }			
 			
-function drawView(orgToShowData, modelData){
-//	console.log('modelData',modelData.length)
-	
+function drawView(orgToShowData, modelData){  
 	$('#mainPanel').html(panelTemplate(orgToShowData))
 	 
 	initPopoverTrigger();
@@ -2203,14 +2322,14 @@ function initTable(dt){
 	if(thisproc){thisproc='Process'}else{thisproc=''}
 	if(thisproc =='' &amp;&amp; thisorg==''){thisproc='Indirect'}
 	apps.push({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "parent":""})
-	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc})
+	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "className":"Application_Provider"})
  
 	d['appHTML']=appHTML;
 
 }); 
 dt.allAppsUsedParent.forEach((d)=>{
 	apps.push({"id":d.id,"name":d.name,"description":d.description,"org":"Parent","proc":"", "parent":"Parent"})
-	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":"Parent","proc":"", "parent":"Parent"})
+	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":"Parent","proc":"", "parent":"Parent","className":"Application_Provider"})
 	d['appHTML']=appHTML;
 })
  
@@ -2289,12 +2408,66 @@ function initPopoverTrigger()
 		</xsl:template>	
 		
 <xsl:template match="node()" mode="products">
+		<xsl:variable name="thisProductType" select="$productType[name=current()/own_slot_value[slot_reference='instance_of_product_type']/value]"></xsl:variable>
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"productType":[<xsl:for-each select="$thisProductType">{
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>",
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],	
 		"processes":[<xsl:for-each select="own_slot_value[slot_reference='product_implemented_by_process']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
 		}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>		
+<xsl:template name="RenderJSMenuLinkFunctionsTEMP">
+		<xsl:param name="linkClasses" select="()"/>
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+		var esslinkMenuNames = {
+			<xsl:call-template name="RenderClassMenuDictTEMP">
+				<xsl:with-param name="menuClasses" select="$linkClasses"/>
+			</xsl:call-template>
+		}
+     
+		function essGetMenuName(instance) {  
+			let menuName = null;
+			if(instance.meta?.anchorClass) {
+				menuName = esslinkMenuNames[instance.meta.anchorClass];
+			} else if(instance.className) {
+				menuName = esslinkMenuNames[instance.className];
+			}
+			return menuName;
+		}
+		
+		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){ 
+			if(instance != null) {
+                let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+                } 
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
+    </xsl:template>
+    <xsl:template name="RenderClassMenuDictTEMP">
+		<xsl:param name="menuClasses" select="()"/>
+		<xsl:for-each select="$menuClasses">
+			<xsl:variable name="this" select="."/>
+			<xsl:variable name="thisMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+			"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
+			</xsl:if>
+		</xsl:for-each>
+		
+	</xsl:template>
 </xsl:stylesheet>

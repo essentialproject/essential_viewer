@@ -45,8 +45,8 @@
 	<xsl:template match="knowledge_base">
 		{
 			"id": "<xsl:value-of select="$currentBusCap/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentBusCap"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentBusCap"/></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentBusCap"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$currentBusCap"/></xsl:call-template>",
 			"applicationServices": [
 				<xsl:apply-templates mode="RenderAppServiceJSON" select="$appServices">
 					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
@@ -76,8 +76,8 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"index": <xsl:value-of select="$thisIndex"/>,
 			"meta": {
 				"anchorClass": "<xsl:value-of select="$this/type"/>"

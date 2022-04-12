@@ -177,7 +177,7 @@
 
 				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Supplier Management as Excel</div>
 				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Suppliers_Contracts_Import_Specv1a.zip" download="Suppliers_Contracts_Import_Specv1a.zip">
+                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Suppliers_Contracts_Import_Spec_23_2_22.zip" download="Suppliers_Contracts_Import_Specv1a.zip">
 
 				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Supplier Management Import Specification</div>
                                 </a><br/>

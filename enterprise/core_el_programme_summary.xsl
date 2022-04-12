@@ -74,7 +74,7 @@
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="allPhysProcs2Apps" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"/>
 	<xsl:variable name="allActor2Roles" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"/>
-	<xsl:variable name="allStratPlanToElementRelations" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']"/>
+	
 	<xsl:variable name="impactActions" select="/node()/simple_instance[type = 'Planning_Action']"/>
 	<xsl:variable name="allImpactActionStyles" select="/node()/simple_instance[name = $impactActions/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 	<xsl:variable name="relevantProjects" select="/node()/simple_instance[own_slot_value[slot_reference = 'contained_in_programme']/value = $param1]"/>
@@ -91,6 +91,9 @@
 	<xsl:variable name="programmeRoles" select="$allIndividualRoles[name = $programmeStakeholders/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
 
 	<xsl:variable name="projects" select="/node()/simple_instance[own_slot_value[slot_reference = 'contained_in_programme']/value = $programme/name]"/>
+
+	<xsl:variable name="allStratPlanToElementRelations" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION'][name = $projects/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
+
 	<xsl:variable name="projectStakeholders" select="$allActor2Roles[name = $projects/own_slot_value[slot_reference = 'stakeholders']/value]"/>
 	<xsl:variable name="projectActors" select="$allIndividualActors[name = $projectStakeholders/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	<xsl:variable name="projectRoles" select="$allIndividualRoles[name = $projectStakeholders/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
@@ -513,6 +516,9 @@
 			</div>
 			<div class="-hiddenDiv hideOnLoad">
 				<div class="verticalSpacer_10px"/>
+				<xsl:variable name="thisImpactedProjectToElements" select="$allStratPlanToElementRelations[name = current()/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
+				<xsl:variable name="thisImpactedElements" select="$directImpactedElements[name = $thisImpactedProjectToElements/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+				 
 
 				<xsl:variable name="thisRelevantDirectStrategicPlans" select="$relevantDirectStrategicPlans[name = $project/own_slot_value[slot_reference = 'ca_strategic_plans_supported']/value]"/>
 				<xsl:variable name="thisDirectStrategicPlanImpactedElements" select="$directStrategicPlanImpactedElements[not((type = 'PLAN_TO_ELEMENT_RELATION')) and (name = $thisRelevantDirectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)]"/>
@@ -522,21 +528,26 @@
 				
 				<xsl:variable name="thisProjectStrategicPlanRelations" select="$allStratPlanToElementRelations[(name = $thisRelevantDirectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value)]"/>
 				<xsl:variable name="thisProjectStrategicPlanRelationsProj" select="$thisProjectStrategicPlanRelations[name=$project/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
+
 				<xsl:variable name="thisImpactedElementViaStrategicPlansRels" select="$impactedElementViaStrategicPlansRels[name = $thisProjectStrategicPlanRelationsProj/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+ 
 
 				<xsl:variable name="thisProjectPlan2ElementRels" select="$allStratPlanToElementRelations[name = $project/own_slot_value[slot_reference = 'ca_planned_changes']/value]"/>
 				<xsl:variable name="thisDirectImpactedElements" select="$directImpactedElements[name = $thisProjectPlan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
 				<xsl:variable name="thisDirectImpactedStrategicPlans" select="$directImpactedStrategicPlans[name = $thisProjectPlan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
+ 
 
-			 <xsl:variable name="thisProjectImpactedElements" select="$thisImpactedElementViaDeprectedStrategicPlansRels union $thisImpactedElementViaStrategicPlansRels union $thisDirectStrategicPlanImpactedElements union $thisDirectImpactedElements"/> 
+			<!-- <xsl:variable name="thisProjectImpactedElements" select="$thisImpactedElementViaDeprectedStrategicPlansRels union $thisImpactedElementViaStrategicPlansRels union $thisDirectStrategicPlanImpactedElements union $thisDirectImpactedElements"/> -->
+			 <xsl:variable name="thisProjectImpactedElements" select="$thisDirectImpactedElements"/> 
+
 				<!--<xsl:variable name="projectStrategicPlans" select="$relevantStrategicPlans[name = current()/own_slot_value[slot_reference = 'ca_strategic_plans_supported']/value]"/>
 				<xsl:variable name="impactedProcesses" select="$allBusProcs[name = $projectStrategicPlans/own_slot_value[slot_reference = 'strategic_plan_for_element']/value]"/>-->
 
-				<xsl:variable name="busLayerElements" select="$thisProjectImpactedElements[type = $businessLayerClasses]"/>
-				<xsl:variable name="infoDataLayerElements" select="$thisProjectImpactedElements[type = $infoLayerClasses]"/>
-				<xsl:variable name="appLayerElements" select="$thisProjectImpactedElements[type = $appLayerClasses]"/>
-				<xsl:variable name="techLayerElements" select="$thisProjectImpactedElements[type = $techLayerClasses]"/>
-  
+				<xsl:variable name="busLayerElements" select="$thisImpactedElements[type = $businessLayerClasses]"/>
+				<xsl:variable name="infoDataLayerElements" select="$thisImpactedElements[type = $infoLayerClasses]"/>
+				<xsl:variable name="appLayerElements" select="$thisImpactedElements[type = $appLayerClasses]"/>
+				<xsl:variable name="techLayerElements" select="$thisImpactedElements[type = $techLayerClasses]"/>
+		
 				<xsl:choose>
 					<xsl:when test="count(($busLayerElements, $infoDataLayerElements, $appLayerElements, $techLayerElements)) > 0">
 
@@ -548,10 +559,10 @@
 							<xsl:with-param name="layerClasses" select="$businessLayerClasses"/>
 							<xsl:with-param name="layerLabels" select="$businessLayerLabels"/>
 							<xsl:with-param name="layerType">Business</xsl:with-param>
-							<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>
-							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisProjectPlan2ElementRels"/>
-							<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
-							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/>
+						<!--	<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>-->
+							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisImpactedProjectToElements"/>
+						<!--	<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
+							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/> -->
 						</xsl:call-template>
 
 						<!-- Render the Info/Data Elements Table -->
@@ -562,10 +573,10 @@
 							<xsl:with-param name="layerClasses" select="$infoLayerClasses"/>
 							<xsl:with-param name="layerLabels" select="$infoLayerLabels"/>
 							<xsl:with-param name="layerType">Information/Data</xsl:with-param>
-							<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>
-							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisProjectPlan2ElementRels"/>
-							<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
-							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/>
+							<!--	<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>-->
+							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisImpactedProjectToElements"/>
+						<!--	<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
+							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/> -->
 						</xsl:call-template>
 
 						<!-- Render the Application Elements Table -->
@@ -576,10 +587,10 @@
 							<xsl:with-param name="layerClasses" select="$appLayerClasses"/>
 							<xsl:with-param name="layerLabels" select="$appLayerLabels"/>
 							<xsl:with-param name="layerType">Application</xsl:with-param>
-							<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>
-							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisProjectPlan2ElementRels"/>
-							<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
-							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/>
+							<!--	<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>-->
+							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisImpactedProjectToElements"/>
+						<!--	<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
+							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/> -->
 						</xsl:call-template>
 
 						<!-- Render the Technology Elements Table -->
@@ -590,10 +601,10 @@
 							<xsl:with-param name="layerClasses" select="$techLayerClasses"/>
 							<xsl:with-param name="layerLabels" select="$techLayerLabels"/>
 							<xsl:with-param name="layerType">Technology</xsl:with-param>
-							<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>
-							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisProjectPlan2ElementRels"/>
-							<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
-							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/>
+							<!--	<xsl:with-param name="layerProjectDeprectatedStrategicPlanRelations" select="$thisProjectDeprectatedStrategicPlanRelations"/>-->
+							<xsl:with-param name="layerProjectPlan2ElementRels" select="$thisImpactedProjectToElements"/>
+						<!--	<xsl:with-param name="layerProjectStrategicPlanRelations" select="$thisProjectStrategicPlanRelations"/>
+							<xsl:with-param name="layerRelevantDirectStrategicPlans" select="$thisRelevantDirectStrategicPlans"/> -->
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:otherwise>
@@ -671,45 +682,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<xsl:for-each select="$layerRelevantDirectStrategicPlans">
-						<xsl:variable name="directPlanLayerElements" select="$layerElements[name = current()/own_slot_value[slot_reference = 'strategic_plan_for_element']/value]"/>
-						<xsl:variable name="directPlanImpact" select="$impactActions[name = current()/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
-						<xsl:for-each select="$directPlanLayerElements">
-							<xsl:call-template name="RenderElementImpactRow">
-								<xsl:with-param name="element" select="current()"/>
-								<xsl:with-param name="elementImpact" select="$directPlanImpact"/>
-								<xsl:with-param name="layerClasses" select="$layerClasses"/>
-								<xsl:with-param name="layerLabels" select="$layerLabels"/>
-							</xsl:call-template>
-						</xsl:for-each>
-					</xsl:for-each>
-
-					<xsl:variable name="thisStrategicPlanRels" select="$layerProjectStrategicPlanRelations[(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $layerElements/name) and not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $allDirectPlanLayerElements/name)]"/>
-					<xsl:call-template name="RenderPlan2ElementsRelations">
-						<xsl:with-param name="relations" select="$thisStrategicPlanRels"/>
-						<xsl:with-param name="usedRelations" select="()"/>
-						<xsl:with-param name="layerElements" select="$layerElements"/>
-						<xsl:with-param name="layerClasses" select="$layerClasses"/>
-						<xsl:with-param name="layerLabels" select="$layerLabels"/>
-					</xsl:call-template>
-
-					<xsl:variable name="thisAllDeprectatedStrategicPlanRels" select="$layerProjectDeprectatedStrategicPlanRelations[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $layerElements/name]"/>
-					<xsl:variable name="thisFilteredDeprectatedStrategicPlanRels" select="$thisAllDeprectatedStrategicPlanRels[not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $allDirectPlanLayerElements/name)]"/>
-					<xsl:variable name="thisDeprectatedStrategicPlanRels" select="$thisFilteredDeprectatedStrategicPlanRels[not((own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and (own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))]"/>
-					<xsl:call-template name="RenderPlan2ElementsRelations">
-						<xsl:with-param name="relations" select="$thisDeprectatedStrategicPlanRels"/>
-						<xsl:with-param name="usedRelations" select="()"/>
-						<xsl:with-param name="layerElements" select="$layerElements"/>
-						<xsl:with-param name="layerClasses" select="$layerClasses"/>
-						<xsl:with-param name="layerLabels" select="$layerLabels"/>
-					</xsl:call-template>
+					
 
 					<xsl:variable name="thisAllDirectStrategicPlanRels" select="$layerProjectPlan2ElementRels[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $layerElements/name]"/>
-					<xsl:variable name="thisFilteredDirectStrategicPlanRels" select="$thisAllDirectStrategicPlanRels[not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $allDirectPlanLayerElements/name)]"/>
-					<xsl:variable name="thisFilteredAgainDirectStrategicPlanRels" select="$thisFilteredDirectStrategicPlanRels[not((own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and (own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))]"/>
-					<xsl:variable name="thisDirectStrategicPlanRels" select="$thisFilteredAgainDirectStrategicPlanRels[not((own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $thisDeprectatedStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and (own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $thisDeprectatedStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))]"/>
+				 
 					<xsl:call-template name="RenderPlan2ElementsRelations">
-						<xsl:with-param name="relations" select="$thisDirectStrategicPlanRels"/>
+						<xsl:with-param name="relations" select="$thisAllDirectStrategicPlanRels"/>
 						<xsl:with-param name="usedRelations" select="()"/>
 						<xsl:with-param name="layerElements" select="$layerElements"/>
 						<xsl:with-param name="layerClasses" select="$layerClasses"/>

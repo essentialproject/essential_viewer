@@ -1337,7 +1337,7 @@
 								<span class="cap-label">{{#essRenderInstanceLinkMenuOnly this 'Application_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
 							<br/>	 
 									{{> l1CapTemplate}}
-								 
+									{{#getApps this}}{{/getApps}} 
 							</div>
 						{{/each}}
 					</div>
@@ -1517,7 +1517,8 @@
 	                	<div class="col-sm-12">
 							<ul class="nav nav-tabs ess-small-tabs">
 								<li class="active"><a data-toggle="tab" href="#summary">Summary</a></li>
-								<li><a data-toggle="tab" href="#capabilities">Capabilities<span class="badge dark">{{capsImpacting.length}}</span></a></li>
+								<li><a data-toggle="tab" href="#capabilities">Application Capabilities<span class="badge dark">{{capsImpacting.length}}</span></a></li>
+								<li><a data-toggle="tab" href="#buscapabilities">Business Capabilities<span class="badge dark">{{busCapsImpacting.length}}</span></a></li>
 								<li><a data-toggle="tab" href="#processes">Processes<span class="badge dark">{{processList.length}}</span></a></li>
 								<li><a data-toggle="tab" href="#integrations">Integrations<span class="badge dark">{{totalIntegrations}}</span></a></li>
 			                 	<li><a data-toggle="tab" href="#services">Services <span class="badge dark">{{allServices.length}}</span></a></li>
@@ -1547,17 +1548,29 @@
 		                			</div>
 								</div>
 								<div id="capabilities" class="tab-pane fade">
-										<p class="strong">This application supports the following Business Capabilities:</p>
-										<div>
-										{{#if capsImpacting}}
-										{{#each capsImpacting}}
-											<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
-										{{/each}} 
-										{{else}}
-											<p class="text-muted">None Mapped</p>
-										{{/if}}
-										</div>
+									<p class="strong">This application supports the following Application Capabilities:</p>
+									<div>
+									{{#if capsImpacting}}
+									{{#each capsImpacting}}
+										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Application_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+									{{/each}} 
+									{{else}}
+										<p class="text-muted">None Mapped</p>
+									{{/if}}
 									</div>
+								</div>
+								<div id="buscapabilities" class="tab-pane fade">
+									<p class="strong">This application supports the following Business Capabilities:</p>
+									<div>
+									{{#if busCapsImpacting}}
+									{{#each busCapsImpacting}}
+										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+									{{/each}} 
+									{{else}}
+										<p class="text-muted">None Mapped</p>
+									{{/if}}
+									</div>
+								</div>	
 								<div id="processes" class="tab-pane fade">
 									<p class="strong">This application supports the following Business Processes, supporting {{processes.length}} physical processes:</p>
 									<div>
@@ -2015,6 +2028,8 @@ $('#hideCaps').on('click',function(){
 		workingArray.capability_hierarchy.forEach((f) => {
 			workingArrayCaps.push(f.id)
 		});
+
+		console.log('workingArray',workingArray)
 		workingCaps = responses[0];
 		workingSvcs = responses[0].application_services;
 
@@ -2210,7 +2225,6 @@ $('#hideCaps').on('click',function(){
 										return d.id == selected;
 									});
 
-
 									let thisProcesses = appToShow[0].physP.filter((elem, index, self) => self.findIndex(
 										(t) => {
 											return (t === elem)
@@ -2270,12 +2284,31 @@ $('#hideCaps').on('click',function(){
 									thisAppCapArray = thisAppCapArray.filter((elem, index, self) => self.findIndex((t) => {
 										return (t.id === elem.id)
 									}) === index)
+									console.log('thisAppCapArray',thisAppCapArray)
 
+									let busCapImpact=[];
+									thisAppCapArray.forEach((c)=>{
+										let thisAC=workingArrayAppsCaps.find((ac)=>{
+											return ac.id==c.id
+										}); 
+
+										if(thisAC){
+											thisAC.SupportedBusCapability.forEach((f)=>{
+												busCapImpact.push(f)
+											});
+										}
+									});
+
+									busCapImpact = busCapImpact.filter((elem, index, self) => self.findIndex((t) => {
+										return (t.id === elem.id)
+									}) === index)
 
 									appToShow[0]['processList'] = procListTosShow;
 									appToShow[0]['servList'] = servsArr;
 									appToShow[0]['servUsedList'] = thisUsedServs;
 									appToShow[0]['capsImpacting'] = thisAppCapArray;
+									appToShow[0]['busCapsImpacting'] = busCapImpact;
+									console.log('appToShow',appToShow) 
 									$('#appData').html(appTemplate(appToShow[0]));
 									$('.appPanel').show("blind", {
 										direction: 'down',

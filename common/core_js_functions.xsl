@@ -970,7 +970,9 @@
 	<xsl:function name="eas:getSafeJSString">
 		<xsl:param name="theString"/>
 		
+		<!-- Restore previous approach. Needs revising to resolve instance IDs with ' ' -->
 		<xsl:value-of select="translate($theString, '. ', '__')"/>
+		<!-- <xsl:value-of select="encode-for-uri($theString)"></xsl:value-of> -->
 	</xsl:function>
 	
 	<!-- Move this to core_utilities.xsl -->

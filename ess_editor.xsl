@@ -28,17 +28,29 @@
 	<xsl:variable name="configEditorComponents" select="/node()/simple_instance[name = $targetEditor/own_slot_value[slot_reference = 'ce_editor_components']/value]"/>
 	<xsl:variable name="hasConfigEditorComps" select="count($configEditorComponents) > 0"/>
 	<xsl:variable name="configEditorComponentFragments" select="$configEditorComponents/own_slot_value[slot_reference = 'editor_component_execution_html_path']/value"/>
-	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = $configEditorComponents/own_slot_value[slot_reference = 'viewer_code_libraries']/value]"/>
-	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
 
 	<xsl:variable name="targetEditor" select="$utilitiesAllEditors[name = $EDITOR]"/>
 	<xsl:variable name="targetEditorLabel" select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+	
+	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = ($configEditorComponents, $targetEditor)/own_slot_value[slot_reference = ('viewer_code_libraries')]/value]"/>
+	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
+	
 	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class')]/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
 	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
 	<xsl:variable name="editorHeadContent" select="$targetEditor/own_slot_value[slot_reference = 'editor_included_head_content']/value"/>
-	
+	<xsl:variable name="thisEditorJSPath" select="$targetEditor/own_slot_value[slot_reference = 'ce_editor_js_path']/value"/>
+	<xsl:variable name="editorJSPath">
+		<xsl:choose>
+			<xsl:when test="string-length($thisEditorJSPath) > 0"><xsl:value-of select="$thisEditorJSPath"/></xsl:when>
+			<xsl:otherwise>editors/configurable/configurable_editor_js.xsl</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+
+	<xsl:variable name="configEditorConfig" select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/>
+	<xsl:variable name="configIsJSON" select="ends-with($configEditorConfig, 'json')"/>
+
 	<!-- Get the list of supporting data set APIs -->
 	<xsl:variable name="supportingAPIs" select="$utilitiesAllDataSetAPIs[name = $targetEditor/own_slot_value[slot_reference = 'editor_data_set_apis']/value]"/>
 
@@ -93,6 +105,17 @@
 					
 					const essEditorId = '<xsl:value-of select="$targetEditor/name"/>';
 					<xsl:if test="$hasConfigEditorComps">
+						<xsl:variable name="editorConfigId" select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_id']/value"/>
+						<xsl:choose>
+							<xsl:when test="string-length($editorConfigId) > 0">
+								var editorConfigId = '<xsl:value-of select="$editorConfigId"/>';
+							</xsl:when>
+							<xsl:otherwise>			
+								var editorConfigId;
+							</xsl:otherwise>
+						</xsl:choose>
+						var editorConfigPath = '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/>';
+
 						function compileFragmentTemplate(templateId) {
 						let thisFragment = $("#" + templateId).html();
 						return Handlebars.compile(thisFragment);
@@ -202,11 +225,11 @@
 					function essGetMenuName(instance) {
 					let menuName = null;
 					if((instance != null) &amp;&amp; (instance.meta != null) &amp;&amp; (instance.meta.anchorClass != null)) {
-					menuName = esslinkMenuNames[instance.meta.anchorClass];
-					} else if(instance.class != null) {
-					menuName = esslinkMenuNames[instance.class];
+						menuName = esslinkMenuNames[instance.meta.anchorClass];
+					} else if(instance.className) {
+						menuName = esslinkMenuNames[instance.className];
 					}
-					return menuName;
+						return menuName;
 					}
 					
 					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
@@ -246,13 +269,16 @@
 				
 				<xsl:if test="$hasConfigEditorComps">
 					<script type="module">
-						<xsl:attribute name="src">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$targetEditor/name"/>&amp;XSL=editors/configurable/configurable_editor_js.xsl&amp;CT=text/javascript</xsl:attribute>
+						<xsl:attribute name="src">report?XML=reportXML.xml&amp;PMA=<xsl:value-of select="$targetEditor/name"/>&amp;XSL=<xsl:value-of select="$editorJSPath"/>&amp;CT=text/javascript</xsl:attribute>
 					</script>
 					
 					<!-- EDITOR CONFIG JSON -->
-					<script type="text/javascript">
-						<xsl:attribute name="src"><xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/></xsl:attribute>
-					</script>
+					<xsl:if test="not($configIsJSON)">
+						<script type="text/javascript">
+							<xsl:attribute name="src"><xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'ce_configuration_path']/value"/></xsl:attribute>
+						</script>
+					</xsl:if>
+					
 				</xsl:if>
 				
 				<!-- Call the JS script to load the CSRF token -->

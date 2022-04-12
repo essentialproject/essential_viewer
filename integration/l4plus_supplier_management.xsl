@@ -11,9 +11,14 @@
 <xsl:variable name="groupActors" select="/node()/simple_instance[type = ('Group_Actor')]"/>   
 <xsl:variable name="groupActorSuppliers" select="/node()/simple_instance[type = ('Group_Actor')][own_slot_value[slot_reference='external_to_enterprise']/value='true']"/>    
 <xsl:variable name="allSupplier" select="$supplier union $groupActorSuppliers"/>   
-<xsl:variable name="suppStatus" select="/node()/simple_instance[type = 'Supplier_Relationship_Status']"/>      <xsl:variable name="contracts" select="/node()/simple_instance[type = ('Contract')]"/>  
+<xsl:variable name="suppStatus" select="/node()/simple_instance[type = 'Supplier_Relationship_Status']"/>      
+<xsl:variable name="contracts" select="/node()/simple_instance[type = ('Contract')]"/>  
+<xsl:key name="contractComponents" match="/node()/simple_instance[type = ('CONTRACT_COMPONENT_RELATION')]" use="own_slot_value[slot_reference='contract_component_from_contract']/value"/>  
  <xsl:variable name="contractType" select="/node()/simple_instance[type = ('Contract_Type')]"/>  
- <xsl:variable name="processes" select="/node()/simple_instance[type = ('Business_Process')]"/>       
+ <xsl:variable name="processes" select="/node()/simple_instance[type = ('Business_Process')]"/>   
+ <xsl:variable name="currency" select="/node()/simple_instance[type = ('Currency')]"/>  
+<xsl:variable name="renewalTypes" select="/node()/simple_instance[type = ('Contract_Renewal_Model')]"/>  
+<xsl:variable name="licenseModel" select="/node()/simple_instance[type = ('License_Model')]"/>         
 <xsl:variable name="apps" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>    
  <xsl:variable name="styles" select="/node()/simple_instance[type = 'Element_Style']"/>    
 <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
@@ -799,6 +804,17 @@
    <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#FFFFFF"/>
    <Interior ss:Color="#4F81BD" ss:Pattern="Solid"/>
   </Style>
+   <Style ss:ID="s1124b">
+      <Alignment ss:Vertical="Top"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+      </Borders>
+      <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#000000"/>
+      <Interior ss:Color="#FFC000" ss:Pattern="Solid"/>
+     </Style>
   <Style ss:ID="s1125">
    <Alignment ss:Vertical="Top"/>
    <Borders>
@@ -2694,7 +2710,7 @@
    <NamedRange ss:Name="Tech_Compliance_Levels"
     ss:RefersTo="='Unit Types'!R7C3:R24C3"/>
   </Names>
-  <Table ss:ExpandedColumnCount="12" ss:ExpandedRowCount="24" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12"  x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1079" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1079" ss:AutoFitWidth="0" ss:Width="57"/>
@@ -2742,237 +2758,7 @@
     <Cell ss:StyleID="s1171"/>
     <Cell ss:StyleID="s1172"/>
    </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT1</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Enteprise</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">1</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Enteprise</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT2</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Named User</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">2</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Named User</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT3</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Floating User</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">3</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Floating User</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT4</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Day</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">4</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Day</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT5</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Hour</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">5</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Hour</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT6</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Year</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">6</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Year</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT7</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">CPU</Data><NamedCell
-      ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">7</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">CPU</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String">UT8</Data></Cell>
-    <Cell ss:StyleID="s1044"><Data ss:Type="String">Core</Data><NamedCell
-      ss:Name="Tech_Compliance_Levels"/><NamedCell ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1044"><Data ss:Type="Number">8</Data></Cell>
-    <Cell ss:StyleID="s1044"/>
-    <Cell ss:StyleID="s1069"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String">Core</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT9</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT10</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT11</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT12</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT13</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT14</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT15</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="2" ss:StyleID="s1100"><Data ss:Type="String">UT16</Data></Cell>
-    <Cell ss:StyleID="s1061"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1095"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1061"/>
-    <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="Number">0</Data></Cell>
-   </Row>
+   <xsl:apply-templates select="$licenseModel" mode="unitTypes"/>
    <Row ss:Height="17">
     <Cell ss:Index="2" ss:StyleID="s1101"><Data ss:Type="String">UT17</Data></Cell>
     <Cell ss:StyleID="s1071"><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
@@ -3117,10 +2903,8 @@
    <Column ss:StyleID="s1079" ss:AutoFitWidth="0" ss:Width="453"/>
    <Column ss:StyleID="s1052" ss:AutoFitWidth="0" ss:Width="139"/>
    <Column ss:StyleID="s1091" ss:AutoFitWidth="0" ss:Width="124"/>
-   <Column ss:StyleID="s1091" ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="124"
-    ss:Span="1"/>
-   <Column ss:Index="11" ss:StyleID="s1052" ss:Hidden="1" ss:AutoFitWidth="0"
-    ss:Width="161"/>
+   <Column ss:StyleID="s1091"  ss:AutoFitWidth="0" ss:Width="124"/>
+   <Column ss:Index="11" ss:StyleID="s1052" ss:AutoFitWidth="0" />
    <Column ss:StyleID="s1052" ss:AutoFitWidth="0" ss:Width="757"/>
    <Column ss:AutoFitWidth="0"/>
    <Row>
@@ -3144,12 +2928,7 @@
     <Cell ss:StyleID="s1052"/>
     <Cell ss:Index="13" ss:StyleID="s1052"/>
    </Row>
-   <Row ss:Height="17">
-    <Cell ss:Index="9"><Data ss:Type="String">Hide</Data></Cell>
-    <Cell><Data ss:Type="String">Hide</Data></Cell>
-    <Cell><Data ss:Type="String">Hide</Data></Cell>
-    <Cell ss:Index="13" ss:StyleID="s1052"/>
-   </Row>
+   
    <Row>
     <Cell ss:Index="13" ss:StyleID="s1052"/>
    </Row>
@@ -3161,9 +2940,9 @@
     <Cell ss:StyleID="s1120"><Data ss:Type="String">Service Description</Data></Cell>
     <Cell ss:StyleID="s1121"><Data ss:Type="String">Contract Type</Data></Cell>
     <Cell ss:StyleID="s1123"><Data ss:Type="String">Signature Date (YYYY-MM-DD)</Data></Cell>
-    <Cell ss:StyleID="s1121"><Data ss:Type="String">Column1</Data></Cell>
-    <Cell ss:StyleID="s1121"><Data ss:Type="String">Column2</Data></Cell>
-    <Cell ss:StyleID="s1121"><Data ss:Type="String">Column3</Data></Cell>
+    <Cell ss:StyleID="s1121"><Data ss:Type="String">Renewal Type</Data></Cell>
+    <Cell ss:StyleID="s1121"><Data ss:Type="String">Service End Date (YYYY-MM-DD)</Data></Cell>
+    <Cell ss:StyleID="s1121"><Data ss:Type="String">Service Notice Period (days)</Data></Cell>
     <Cell ss:StyleID="s1122"><Data ss:Type="String">Document Link - URL</Data></Cell>
     <Cell ss:StyleID="s1052"/>
    </Row>
@@ -3184,7 +2963,7 @@
    </Row>
       <xsl:apply-templates select="$contracts" mode="contract"/>  
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s1089"><Data ss:Type="String">CTR1</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s1089"><Data ss:Type="String"></Data></Cell>
     <Cell ss:StyleID="s1073"/>
     <Cell ss:StyleID="s1113"/>
     <Cell ss:StyleID="s1073"/>
@@ -3253,55 +3032,7 @@
    <Type>List</Type>
    <Value>Renewal_Types</Value>
   </DataValidation>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C6:R7C6,R6C2:R7C3</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C6:R7C6, RC)+COUNTIF(R6C2:R7C3, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C5:R7C5</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C5:R7C5, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C12:R7C12</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C12:R7C12, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C7:R7C8</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C7:R7C8, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C4:R7C4</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C4:R7C4, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C9:R7C9</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C9:R7C9, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
-  <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R6C10:R7C11</Range>
-   <Condition>
-    <Value1>AND(COUNTIF(R6C10:R7C11, RC)&gt;1,NOT(ISBLANK(RC)))</Value1>
-    <Format Style='color:#9C0006;background:#FFC7CE'/>
-   </Condition>
-  </ConditionalFormatting>
+ 
  </Worksheet>
  <Worksheet ss:Name="Contract Components">
   <Table ss:ExpandedColumnCount="17" x:FullColumns="1"
@@ -3401,9 +3132,7 @@
     <Cell ss:StyleID="s1052"/>
     <Cell ss:MergeAcross="2" ss:StyleID="m140400766371760"><Data ss:Type="String">Contracted Product / Service (select ONE from THREE columns below)</Data></Cell>
     <Cell ss:StyleID="s1052"/>
-    <Cell ss:StyleID="s1052"/>
-    <Cell ss:StyleID="s1052"/>
-    <Cell ss:StyleID="s1052"/>
+    <Cell ss:MergeAcross="2" ss:StyleID="s1052"><Data ss:Type="String">ONLY ADD IF DIFFERENT FROM MAIN CONTRACT</Data></Cell>
     <Cell ss:StyleID="s1052"/>
     <Cell ss:StyleID="s1056"/>
     <Cell ss:StyleID="s1056"/>
@@ -3420,9 +3149,9 @@
     <Cell ss:StyleID="s1124"><Data ss:Type="String">Application</Data></Cell>
     <Cell ss:StyleID="s1124"><Data ss:Type="String">Technology Product</Data></Cell>
     <Cell ss:StyleID="s1125"><Data ss:Type="String">Column1</Data></Cell>
-    <Cell ss:StyleID="s1124"><Data ss:Type="String">Renewal Type</Data></Cell>
-    <Cell ss:StyleID="s1125"><Data ss:Type="String">Service End Date (YYYY-MM-DD)</Data></Cell>
-    <Cell ss:StyleID="s1125"><Data ss:Type="String">Service Notice Period (days)</Data></Cell>
+    <Cell ss:StyleID="s1124b"><Data ss:Type="String">Renewal Type</Data></Cell>
+    <Cell ss:StyleID="s1124b"><Data ss:Type="String">Service End Date (YYYY-MM-DD)</Data></Cell>
+    <Cell ss:StyleID="s1124b"><Data ss:Type="String">Service Notice Period (days)</Data></Cell>
     <Cell ss:StyleID="s1125"><Data ss:Type="String">Unit Type</Data></Cell>
     <Cell ss:StyleID="s1126"><Data ss:Type="String"># of Units</Data></Cell>
     <Cell ss:StyleID="s1125"><Data ss:Type="String">Total Annual  Cost</Data></Cell>
@@ -3450,6 +3179,7 @@
     <Cell ss:StyleID="s1155"/>
     <Cell ss:StyleID="s1139"/>
    </Row>
+   <xsl:apply-templates select="$contracts" mode="contractComponents"/>
    <Row>
     <Cell ss:StyleID="s1052"/>
     <Cell ss:StyleID="s1089"><Data ss:Type="String">CTRCP1</Data></Cell>
@@ -3495,7 +3225,7 @@
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R7C3:R64C3</Range>
    <Type>List</Type>
-    <Value>Contracts!R3C3:R3000C3</Value>
+    <Value>Contracts!R3C4:R3000C4</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R7C14:R64C14</Range>
@@ -3514,17 +3244,17 @@
     <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C4:R3000C4</Range>
    <Type>List</Type>
-   <Value>'REF Business Processes'!R8C3:R44C3</Value>
+   <Value>'REF Business Processes'!R8C3:R4400C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R3000C5</Range>
    <Type>List</Type>
-   <Value>'REF Applications'!R8C3:R42C3</Value>
+   <Value>'REF Applications'!R8C3:R4200C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R3000C6</Range>
    <Type>List</Type>
-   <Value>'REF Technology Products'!R8C3:R33C3</Value>
+   <Value>'REF Technology Products'!R8C3:R3300C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C11:R3000C11</Range>
@@ -3958,17 +3688,18 @@
  <Row ss:AutoFitHeight="0" ss:Height="44">
    <xsl:variable name="thisSup" select="$allSupplier[name=current()/own_slot_value[slot_reference='contract_supplier']/value]"/>
 <xsl:variable name="thisCust" select="$groupActors[name=current()/own_slot_value[slot_reference='contract_customer']/value]"/>
-<xsl:variable name="ctype" select="$contractType[name=current()/own_slot_value[slot_reference='contract_type']/value]"/>     
+<xsl:variable name="ctype" select="$contractType[name=current()/own_slot_value[slot_reference='contract_type']/value]"/>  
+<xsl:variable name="rtype" select="$renewalTypes[name=current()/own_slot_value[slot_reference='contract_type']/value]"/>  
     <Cell ss:Index="2" ss:StyleID="s1089"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
     <Cell ss:StyleID="s1073"><Data ss:Type="String"><xsl:value-of select="$thisSup/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s1113"/>
+    <Cell ss:StyleID="s1073"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s1073"><Data ss:Type="String"><xsl:value-of select="$thisCust/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s1061"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
     <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$ctype/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s1104"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='contract_signature_date_ISO8601']/value"/></Data></Cell>
-    <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
-    <Cell ss:StyleID="s1094"><Data ss:Type="String"></Data></Cell>
-    <Cell ss:StyleID="s1110"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='contract_signature_date_ISO8601']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$rtype/own_slot_value[slot_reference='contract_renewal_model']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='contract_end_date_ISO8601']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='contract_renewal_notice_days']/value"/></Data></Cell>
     <Cell ss:StyleID="s1107"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='external_reference_links']/value"/></Data></Cell>
     <Cell ss:StyleID="s1052"/>
    </Row>   
@@ -4002,5 +3733,97 @@
    </Row>
  
 </xsl:template>   
-    
+<xsl:template match="node()" mode="contractComponents"> 
+    <xsl:variable name="thiscontract" select="current()"/>"
+    <xsl:variable name="comp" select="key('contractComponents',$thiscontract/name)"/>
+    <xsl:for-each select="$comp">
+      <xsl:variable name="thisComp" select="current()"/>
+        <xsl:variable name="thisApps" select="$apps[name=current()/own_slot_value[slot_reference='contract_component_to_element']/value]"/>
+        <xsl:variable name="thisTechProd" select="$techProd[name=current()/own_slot_value[slot_reference='contract_component_to_element']/value]"/>
+        <xsl:variable name="thisProcesses" select="$processes[name=current()/own_slot_value[slot_reference='contract_component_to_element']/value]"/>
+        <xsl:variable name="thisRenewal" select="$renewalTypes[name=current()/own_slot_value[slot_reference='ccr_renewal_model']/value]"/>
+        <xsl:variable name="thisLicence" select="$licenseModel[name=current()/own_slot_value[slot_reference='ccr_contract_unit_of_measure']/value]"/>
+        <xsl:variable name="thisCurrency" select="$currency[name=current()/own_slot_value[slot_reference='ccr_currency']/value]"/>
+        <xsl:for-each select="$thisApps"> 
+        <Row ss:AutoFitHeight="0" ss:Height="20">
+        <Cell ss:StyleID="s1052"/>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/name"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisRenewal/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_renewal_notice_days']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisLicence/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_contracted_units']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_total_annual_cost']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1052"/>
+       </Row>
+      </xsl:for-each>
+      <xsl:for-each select="$thisTechProd"> 
+        <Row ss:AutoFitHeight="0" ss:Height="20">
+        <Cell ss:StyleID="s1052"/>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/name"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisRenewal/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_renewal_notice_days']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisLicence/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_contracted_units']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_total_annual_cost']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="s1052"/>
+       </Row>
+      </xsl:for-each>
+      <xsl:for-each select="$thisProcesses"> 
+          <Row ss:AutoFitHeight="0" ss:Height="20">
+          <Cell ss:StyleID="s1052"/>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/name"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thiscontract/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisRenewal/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_end_date_ISO8601']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_renewal_notice_days']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisLicence/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_contracted_units']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisComp/own_slot_value[slot_reference='ccr_total_annual_cost']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"><xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="s1054"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="s1052"/>
+         </Row>
+        </xsl:for-each>
+      </xsl:for-each>
+</xsl:template>   
+<xsl:template match="node()" mode="unitTypes">
+    <Row ss:Height="17">
+      <Cell ss:Index="2" ss:StyleID="s1114"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
+      <Cell ss:StyleID="s1044"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data><NamedCell
+        ss:Name="Renewal_Types"/><NamedCell ss:Name="Tech_Compliance_Levels"/><NamedCell
+        ss:Name="Application_Codebases"/></Cell>
+      <Cell ss:StyleID="s1044"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+      <Cell ss:StyleID="s1044"><Data ss:Type="Number"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/></Data></Cell>
+      <Cell ss:StyleID="s1044"/>
+      <Cell ss:StyleID="s1069"/>
+      <Cell ss:StyleID="s1061"/>
+      <Cell ss:StyleID="s1061"/>
+      <Cell ss:StyleID="s1061"/>
+      <Cell ss:StyleID="s1061"/>
+      <Cell ss:StyleID="s1054" ss:Formula="=RC[-9]"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></Data></Cell>
+    </Row>
+</xsl:template>
 </xsl:stylesheet>

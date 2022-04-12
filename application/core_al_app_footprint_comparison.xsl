@@ -432,7 +432,7 @@
 		<xsl:call-template name="appRefModelInclude"/>
 		<div class="col-xs-12">
 			<div class="dashboardPanel bg-offwhite">
-				<h2 class="text-secondary"><xsl:value-of select="eas:i18n('Application Capability Footprint')"/></h2>
+				<h2 class="text-secondary"><xsl:value-of select="eas:i18n('Application Footprint Comparison')"/></h2>
 				<div class="row">
 					<script>
 						$(document).ready(function() {

@@ -59,6 +59,15 @@
 	<xsl:variable name="homePageConstantURL" select="concat('report?XML=',$reposXML,'&amp;XSL=',$homePageXSL,'&amp;cl=',$currentLanguage/own_slot_value[slot_reference='name']/value,'&amp;LABEL=','Home')"/>
 	<xsl:variable name="defaultURL" select="concat('report?XML=',$reposXML,'&amp;XSL=','home.xsl','&amp;cl=',$currentLanguage/own_slot_value[slot_reference='name']/value,'&amp;LABEL=','Home')"/>
 	
+	<xsl:key name="allPortals_key" match="/node()/simple_instance[type = 'Portal']" use="own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:key name="allEnablesPortals_key" match="/node()/simple_instance[type = 'Portal']" use="own_slot_value[slot_reference = 'portal_is_enabled']/value"/>
+
+	<xsl:key name="allReports_key" match="/node()/simple_instance[type = 'Report']" use="own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:key name="utilitiesAllReports_key" match="$utilitiesAllReports" use="own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+	<xsl:key name="utilitiesAllPDFConfigs_key" match="$utilitiesAllPDFConfigs" use="own_slot_value[slot_reference = 'report_pdf_config_is_default']/value"/>
+	
+	
+ 
 	<xsl:variable name="homeHref">
 		<xsl:choose>
 			<xsl:when test="count($portalConstant) &gt; 0">
@@ -450,10 +459,12 @@
 
 				</div>
 				
+				<xsl:variable name="headerThisReport" select="key('utilitiesAllReports_key',$theCurrentXSL)"/> 
+				<xsl:variable name="defaultReportPDFConfig" select="key('utilitiesAllPDFConfigs_key','true')"/> 
 				
-				<xsl:variable name="headerThisReport" select="$utilitiesAllReports[own_slot_value[slot_reference='report_xsl_filename']/value = $theCurrentXSL]"/>
+   			<!--	<xsl:variable name="headerThisReport" select="$utilitiesAllReports[own_slot_value[slot_reference='report_xsl_filename']/value = $theCurrentXSL]"/>-->
 				<xsl:variable name="reportPDFConfig" select="$utilitiesAllPDFConfigs[name = $headerThisReport/own_slot_value[slot_reference='report_pdf_configuration']/value]"/>
-				<xsl:variable name="defaultReportPDFConfig" select="$utilitiesAllPDFConfigs[own_slot_value[slot_reference='report_pdf_config_is_default']/value = 'true']"/>
+			<!--	<xsl:variable name="defaultReportPDFConfig" select="$utilitiesAllPDFConfigs[own_slot_value[slot_reference='report_pdf_config_is_default']/value = 'true']"/>-->
 				<xsl:variable name="printPdfEnabled" select="$headerThisReport and (count($defaultReportPDFConfig) + count($reportPDFConfig)) > 0"/>
 				<div id="printOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;">	
 					<i class="fa fa-times closeHeaderOverlay"/>
@@ -683,10 +694,12 @@
 	</xsl:template>
 
 	<xsl:template name="portalBar">
-		<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
-		<xsl:variable name="allEnabledPortals" select="$allPortals[own_slot_value[slot_reference = 'portal_is_enabled']/value = 'true']"/>
+		<xsl:variable name="allEnabledPortals" select="key('allEnablesPortals_key','true')"/>
+		<xsl:variable name="viewLibraryReport" select="key('allReports_key','Core: View Library')"/> 
+	<!--	<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
+		<xsl:variable name="allEnabledPortals2" select="$allPortals[own_slot_value[slot_reference = 'portal_is_enabled']/value = 'true']"/>
 		<xsl:variable name="allReports" select="/node()/simple_instance[type = 'Report']"/>
-		<xsl:variable name="viewLibraryReport" select="$allReports[own_slot_value[slot_reference = 'name']/value = 'Core: View Library']"/>
+		<xsl:variable name="viewLibraryReport2" select="$allReports[own_slot_value[slot_reference = 'name']/value = 'Core: View Library']"/>-->
 		<xsl:variable name="viewLibraryLabel" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_label']/value"/>
 		<xsl:variable name="viewLibraryDesc" select="$viewLibraryReport/own_slot_value[slot_reference = 'description']/value"/>
 		<xsl:variable name="viewLibraryXSL" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>

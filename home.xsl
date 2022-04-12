@@ -47,6 +47,11 @@
 	<xsl:variable name="allPortals" select="/node()/simple_instance[type = 'Portal']"/>
 	<xsl:variable name="allEnabledPortals" select="$allPortals[own_slot_value[slot_reference = 'portal_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allPortalSections" select="/node()/simple_instance[type = 'Portal_Section']"/>
+	<xsl:key name="portalSection_key" match="/node()/simple_instance[type = 'Portal_Section']" use="own_slot_value[slot_reference = 'parent_portal']/value"/>
+	<xsl:key name="portalPanel_key" match="/node()/simple_instance[type = 'Portal_Panel']" use="own_slot_value[slot_reference = 'panel_for_portal']/value"/>
+	<xsl:key name="allPortalPanelSections_key" match="/node()/simple_instance[type = 'Portal_Panel_Section']" use="own_slot_value[slot_reference = 'portal_parent_panel']/value"/>
+	<xsl:key name="allExtRefs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/>
+
 	<xsl:variable name="allPortalPanels" select="/node()/simple_instance[type = 'Portal_Panel']"/>
 	<xsl:variable name="allPortalPanelSections" select="/node()/simple_instance[type = 'Portal_Panel_Section']"/>
 	<xsl:variable name="allExtRefs" select="/node()/simple_instance[type = 'External_Reference_Link']"/>
@@ -54,8 +59,12 @@
 	<xsl:variable name="allReports" select="/node()/simple_instance[type = 'Report']"/>
 	<xsl:variable name="currentPortal" select="$allPortals[own_slot_value[slot_reference = 'name']/value = 'Essential Viewer Master Portal']"/>
 	<xsl:variable name="portalLabel" select="$currentPortal/own_slot_value[slot_reference = 'portal_label']/value"/>
+	<!--
 	<xsl:variable name="portalSections" select="$allPortalSections[own_slot_value[slot_reference = 'parent_portal']/value = $currentPortal/name]"/>
 	<xsl:variable name="portalPanels" select="$allPortalPanels[name = $currentPortal/own_slot_value[slot_reference = 'portal_panels']/value]"/>
+	-->
+	<xsl:variable name="portalSections" select="key('portalSection_key',$currentPortal/name)"/>
+	<xsl:variable name="portalPanels" select="key('portalPanel_key',$currentPortal/name)"/> 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<html>
@@ -175,7 +184,6 @@
 	</xsl:template>
 
 	<xsl:template name="viewLibrary">
-		<xsl:variable name="allReports" select="/node()/simple_instance[type = 'Report']"/>
 		<xsl:variable name="viewLibraryReport" select="$allReports[own_slot_value[slot_reference = 'name']/value = 'Core: View Library']"/>
 		<xsl:variable name="viewLibraryLabel" select="$viewLibraryReport/own_slot_value[slot_reference = 'report_label']/value"/>
 		<xsl:variable name="viewLibraryDesc" select="$viewLibraryReport/own_slot_value[slot_reference = 'description']/value"/>
@@ -221,7 +229,8 @@
 	<xsl:template mode="portalPanels" match="node()">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:if test="eas:isUserAuthZ($this)">
-			<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>
+	<!--		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>-->
+			<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',current()/name)"/>
 			<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
 			<div class="col-xs-12 col-sm-4 bg-offwhite">
 				<h1 class="text-primary">
@@ -258,8 +267,9 @@
 		<xsl:variable name="this" select="current()"/>
 		<xsl:if test="eas:isUserAuthZ($this)">
 			<xsl:variable name="sectionReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'portal_panel_section_reports']/value]"/>
-			<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+		<!--	<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/>-->
 			<xsl:variable name="sectionActors" select="$allActors[name = current()/own_slot_value[slot_reference = 'portal_panel_actors']/value]"/>
+			<xsl:variable name="sectionExtRefs" select="key('allExtRefs_key',current()/name)"/>
 			<h2>
 				<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_section_label']/value"/>
 			</h2>

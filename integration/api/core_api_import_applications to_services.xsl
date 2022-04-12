@@ -7,8 +7,9 @@
 	<xsl:variable name="applications" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/> 
 	<xsl:variable name="applicationServices" select="/node()/simple_instance[type='Application_Service']"/>
 	<xsl:variable name="aprs" select="/node()/simple_instance[type='Application_Provider_Role']"/>
- 
-	 
+
+	<xsl:key name="apr_key" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
+	<xsl:key name="service_key" match="/node()/simple_instance[type=('Application_Service')]" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/>
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -31,12 +32,12 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"applications_to_services":[<xsl:apply-templates select="$applications" mode="appsvc"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>]}
+		{"applications_to_services":[<xsl:apply-templates select="$applications" mode="appsvc"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"616"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="appsvc">
-		<xsl:variable name="thisaprs" select="$aprs[name=current()/own_slot_value[slot_reference='provides_application_services']/value]"/>
-		<xsl:variable name="thisservices" select="$applicationServices[name=$thisaprs/own_slot_value[slot_reference='implementing_application_service']/value]"/>
+		<xsl:variable name="thisaprs" select="key('apr_key',current()/name)"/>
+		<xsl:variable name="thisservices" select="key('service_key',$thisaprs/name)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"services":[<xsl:for-each select="$thisservices">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>

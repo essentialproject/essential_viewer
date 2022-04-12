@@ -989,6 +989,8 @@
 			promise_loadViewerAPIData(viewAPIDataAppCapSvcs)
 			]).then(function (responses)
 			{
+
+			 
 			let lifeListFragment = $("#life-list-template").html();
 			techJSON=responses[1].technology_lifecycles;
 			appJSON=responses[3].application_lifecycles;
@@ -1000,7 +1002,7 @@
 			standardsJSON=responses[1].standardsJSON;
 			processJSON=responses[4].process_to_apps;
 			appCapsJSON=responses[5];
-  
+  //console.log('appJSON',appJSON)
 			let capToSvs=[];
 			appCapsJSON.application_capabilities_services.forEach((d)=>{
 				d.services.forEach((e)=>{
@@ -1008,6 +1010,7 @@
 				});
 			});
 let capOptions=[];
+capOptions.push({"id":"unknown", "name":"Unknown"})
 				appDetailJSON.forEach((d)=>{
 			 
 					let caps=[];
@@ -1027,7 +1030,13 @@ let capOptions=[];
 					let thisA=appDetailJSON.filter((d)=>{
 						return d.id == e.id;
 					})
-					e['caps']=thisA[0].caps;
+			 
+					if(thisA[0].caps.length==0){
+						e['caps']=[{'id':'unknown'}]
+					}else
+					{
+						e['caps']=thisA[0].caps;
+					}
 				})
  
 capOptions=capOptions.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
@@ -1132,6 +1141,7 @@ function setChart(){
 	if(productJSON==appJSON){
 	if(capability != 'all'){ 
 		productJSON.forEach((f)=>{ 
+		 
 			if(f.caps){
 				
 			f.caps.forEach((g)=>{
@@ -1157,7 +1167,7 @@ else{
 		workingArr=productJSON;
 	}
 }
- 
+ //console.log('workingArr',workingArr)
 	let yearArr=[];
 	for(let i=0;i&lt; endYear-startYear; i++){
 		let dt=String((parseInt(startYear)+i)+'-01-01')
@@ -1165,7 +1175,7 @@ else{
 		yearArr.push({"yr":parseInt(startYear)+i, "date":dy, "pos":getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy)});
 	}
 
-				workingArr.forEach((d)=>{ 
+				workingArr.forEach((d)=>{  
 								let thislifeByType = d3.nest()
 									.key(function(d) { return d.type; })
 									.entries(d.allDates);
@@ -1214,10 +1224,11 @@ else{
 
 	let productsToShow=[];
 	workingArr.forEach((d)=>{ 
+		//console.log('dsd',d)
 	let showDates = d.lifecycles.filter((d)=>{
 		return d.key==thisLife;
 	});
- 
+	//console.log('showDates',showDates)
 if(typeof showDates!= 'undefined'){
  
 	 if(showDates.length &gt;0){
@@ -1232,7 +1243,9 @@ if(typeof showDates!= 'undefined'){
 	
 	let svgH=(productsToShow.length*21)+30;
 	let viewArray={};
+	productsToShow=productsToShow.sort((a, b) => a.name.localeCompare(b.name))
 	viewArray['products']=productsToShow;
+ 
 	viewArray['years']=yearArr;
 	$('#time-chart').attr({'height':svgH+'px'});
 	$('#time-chart').html(productTemplate(viewArray));

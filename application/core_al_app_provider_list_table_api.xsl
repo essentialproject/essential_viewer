@@ -29,6 +29,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="apis" select="/node()/simple_instance[type='Application_Provider_Interface']"/>
 	<xsl:variable name="linkClasses" select="('Business_Process', 'Application_Provider', 'Composite_Application_Provider','Business_Capability')"/>
 
 	<!-- START GENERIC LINK VARIABLES -->
@@ -131,7 +132,26 @@
                     table.table-bordered.dataTable tbody th,
                     table.table-bordered.dataTable tbody td {
                     	word-break: break-word;
-                    }           
+					}  
+					.filtParent{
+						position:absolute;
+						top:-15px;
+						right:10px;
+					}  
+					.filtBtn{
+						position:relative;
+						border:1pt solid #d3d3d3;
+						border-radius:5px;
+						padding:5px;
+						margin:2px;
+						min-width:90px;
+						text-align:center;
+						bachground-color:#fff;
+						display:inline-block;
+					}
+					.btnOn{
+						background-color:#d3d3d3;
+					}       
 				</style>
 			 	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -167,6 +187,11 @@
                         </div>
 						<xsl:call-template name="RenderDataSetAPIWarning"/>
                         <div class="col-xs-12">
+							<div class="pull-right filtParent">
+								<div class="filtBtn btnOn appBtn" id="appBtn">Applications</div>
+								<div class="filtBtn btnOn" id="moduleBtn">Modules</div>
+								<div class="filtBtn" id="apiBtn">APIs</div>
+							</div>
  
                                 <table class="table table-striped table-bordered" id="dt_Capabilities">
                                         <thead>
@@ -283,10 +308,10 @@
 		};
 		 
 
-		 
+		var dynamicAppFilterDefs=[];	
 		var roadmapCaps = [ <xsl:apply-templates select="$applicationsRoadmap" mode="roadmapCaps"/>];
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
-
+ 
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
             listTemplate = Handlebars.compile(listFragment);
@@ -320,8 +345,7 @@
 					if (instance != null) {
 						let linkMenuName = essGetMenuName(instance);
 						let instanceLink = instance.name;
-						console.log('linkMenuName',linkMenuName)
-						console.log('instanceLink',instanceLink)
+					 
 						if (linkMenuName != null) {
 							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
 							let linkClass = 'context-menu-' + linkMenuName;
@@ -346,8 +370,7 @@
 					let thisMeta = meta.filter((d) => {
 		                return d.classes.includes(type)
 					});
-
-					console.log('meta',meta)
+ 
 				 
 		            instance['meta'] = thisMeta[0]
 		            let linkMenuName = essGetMenuName(instance);
@@ -381,7 +404,7 @@
 		            return instanceLink;
 		        }
             });
-            
+            let allAppArr = [];
             let workingArr = []; 
             let svcArr=[];
             let lifecycleArr=[]; 
@@ -390,8 +413,19 @@
                 promise_loadViewerAPIData(viewAPIDataSvc) 
 			]).then(function (responses) {
 				meta = responses[0].meta;
+				filters=responses[0].filters;
                 workingArr = responses[0].applications;  
-                lifecycleArr = responses[0].lifecycles ;  
+				lifecycleArr = responses[0].lifecycles ;
+				workingArr = [...workingArr, ...responses[0].apis];
+  
+				workingArr.forEach((d)=>{ 
+					if(d.containedApp){
+						d.valueClass="Application_Provider";
+					}
+				})
+				dynamicAppFilterDefs=filters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
                 svcArr=responses[1]; 
 				workingArr.forEach((d) => {
 					 
@@ -410,7 +444,8 @@
 						return d.classes.includes('Business_Process')
 					})
                 });
-                
+				allAppArr = JSON.parse(JSON.stringify(workingArr))
+				 
                 roadmapCaps = [];
                 
 
@@ -480,9 +515,92 @@
 		            }
 		        //setCatalogueTable(); 
 
-				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS']);
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters);
 
+		$('#appBtn').on('click', function(){
+			if($('#appBtn').hasClass('btnOn')){
 			 
+				$('#appBtn').removeClass('btnOn')
+			}
+			else{
+			 
+				$('#appBtn').addClass('btnOn')
+			}
+			setList()
+		});
+		$('#moduleBtn').on('click', function(){
+			if($('#moduleBtn').hasClass('btnOn')){
+				 
+				$('#moduleBtn').removeClass('btnOn')
+			}
+			else{
+			 
+				$('#moduleBtn').addClass('btnOn')
+			}
+			setList()
+		})	
+		$('#apiBtn').on('click', function(){
+			if($('#apiBtn').hasClass('btnOn')){
+				 
+				$('#apiBtn').removeClass('btnOn')
+			}
+			else{
+			 
+				$('#apiBtn').addClass('btnOn')
+			}
+			setList()
+		})			
+	function setList(){
+		let wa=[];
+		workingArr=allAppArr
+		if($('#appBtn').hasClass('btnOn')){
+			 
+			workingArr=allAppArr.filter((d)=>{
+				return (d.valueClass == ('Composite_Application_Provider')) ||
+				d.valueClass == ('Application_Provider') ||
+				d.valueClass == ('Application_Provider_Interface')
+			})
+		}
+		else{ 
+			workingArr=allAppArr.filter((d)=>{
+				return !(d.valueClass ==('Composite_Application_Provider'))||
+				d.valueClass == ('Application_Provider') ||
+				d.valueClass == ('Application_Provider_Interface');
+			})
+		} 
+		
+		if($('#moduleBtn').hasClass('btnOn')){
+			workingArr=workingArr.filter((d)=>{
+				return (d.valueClass == ('Application_Provider'))||
+				d.valueClass == ('Composite_Application_Provider') ||
+				d.valueClass == ('Application_Provider_Interface');
+			})
+		}
+		else{ 
+			workingArr=workingArr.filter((d)=>{
+				return !(d.valueClass == ('Application_Provider'))||
+				d.valueClass == ('Composite_Application_Provider') ||
+				d.valueClass == ('Application_Provider_Interface');
+			});
+		}
+		
+		if($('#apiBtn').hasClass('btnOn')){  
+			workingArr=workingArr.filter((d)=>{
+				return (d.valueClass == ('Application_Provider_Interface'))||
+				d.valueClass == ('Composite_Application_Provider') ||
+				d.valueClass == ('Application_Provider')
+			})
+		}
+		else{ 
+			workingArr=workingArr.filter((d)=>{
+				return !(d.valueClass==('Application_Provider_Interface'))||
+				d.valueClass == ('Composite_Application_Provider') ||
+				d.valueClass == ('Application_Provider');
+			});
+		}
+		 
+		redrawView();
+	}		 
 			}).catch(function (error) {
 				//display an error somewhere on the page
             });
@@ -539,10 +657,12 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 		    }
 
 			var redrawView = function () {
+ 
 				let scopedRMProcs = [];
 				workingArr.forEach((d) => {
 					scopedRMProcs.push(d)
 				});
+ 
 				let toShow = []; 
 				// *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS
 				if (roadmapEnabled) {
@@ -562,7 +682,7 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 
-				let scopedApps = essScopeResources(toShow, [appOrgScopingDef, geoScopingDef, visibilityDef]);
+				let scopedApps = essScopeResources(toShow, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 
 				let showApps = scopedApps.resources; 
 				let viewArray = {};
@@ -576,7 +696,7 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 			}
 		});
 
-		function redrawView() {
+		function redrawView() { 
 			essRefreshScopingValues()
 		}
 
@@ -597,6 +717,23 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
 	</xsl:template>
+	<xsl:template match="node()" mode="apiInfo">
+			{
+			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
+			"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
+			"codebaseID":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
+			"deliveryID":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
+			"lifecycle":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value)"/>"
+			}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> </xsl:template>
+
 	<xsl:template match="node()" mode="roadmapCaps">
 			{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> </xsl:template>
 </xsl:stylesheet>

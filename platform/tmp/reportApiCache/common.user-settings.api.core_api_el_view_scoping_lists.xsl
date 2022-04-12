@@ -176,7 +176,7 @@
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50170",
-		"name": "Cote d\'Ivoire"			
+		"name": "Cote d'Ivoire"			
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50099",
@@ -376,7 +376,7 @@
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50134",
-		"name": "Korea, Democratic People\'s Republic of"			
+		"name": "Korea, Democratic People's Republic of"			
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50133",
@@ -396,7 +396,7 @@
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50137",
-		"name": "Lao People\'s Democratic Republic"			
+		"name": "Lao People's Democratic Republic"			
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50109",
@@ -445,6 +445,10 @@
 		
 		{"id": "essential_baseline_v2_0_Class50179",
 		"name": "Mali"			
+		},
+		
+		{"id": "essential_baseline_v6_15_Class0",
+		"name": "Malta"			
 		},
 		
 		{"id": "essential_baseline_v2_0_Class50020",

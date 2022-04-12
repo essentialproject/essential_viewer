@@ -4,8 +4,7 @@
 		
 		],
 		"countries": [
-		
-		
+		  
 		{
 		"id": "essential_baseline_v2.0_Class50005",
 		"name": "United Republic of Tanzania",
@@ -16,8 +15,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50006",
 		"name": "Somalia",
@@ -28,8 +26,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50007",
 		"name": "Kenya",
@@ -40,8 +37,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50008",
 		"name": "Ethiopia",
@@ -52,8 +48,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50009",
 		"name": "Uganda",
@@ -64,8 +59,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50010",
 		"name": "Sudan",
@@ -76,8 +70,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50011",
 		"name": "Canada",
@@ -88,8 +81,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50012",
 		"name": "United States",
@@ -100,8 +92,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50013",
 		"name": "Mexico",
@@ -112,8 +103,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50014",
 		"name": "Bahamas",
@@ -124,8 +114,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50015",
 		"name": "Trinidad and Tobago",
@@ -136,8 +125,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50016",
 		"name": "Grenada",
@@ -148,8 +136,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50017",
 		"name": "St. Vincent and the Grenadines",
@@ -160,8 +147,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50018",
 		"name": "Barbados",
@@ -172,8 +158,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50019",
 		"name": "St. Lucia",
@@ -184,8 +169,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50020",
 		"name": "Martinique",
@@ -196,8 +180,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50021",
 		"name": "Dominica",
@@ -208,8 +191,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50022",
 		"name": "Guadeloupe",
@@ -220,8 +202,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50023",
 		"name": "Antigua and Barbuda",
@@ -232,8 +213,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50024",
 		"name": "St. Kitts and Nevis",
@@ -244,8 +224,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50025",
 		"name": "Argentina",
@@ -256,8 +235,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50026",
 		"name": "Chile",
@@ -268,8 +246,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50027",
 		"name": "Falkland Islands",
@@ -280,8 +257,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50028",
 		"name": "Palau",
@@ -292,8 +268,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50029",
 		"name": "Mauritius",
@@ -304,8 +279,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50030",
 		"name": "Comoros",
@@ -316,8 +290,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50031",
 		"name": "Sao Tome and Principe",
@@ -328,8 +301,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50032",
 		"name": "Equatorial Guinea",
@@ -340,8 +312,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50033",
 		"name": "Cape Verde",
@@ -352,8 +323,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50034",
 		"name": "China",
@@ -364,8 +334,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50035",
 		"name": "Iceland",
@@ -376,8 +345,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50036",
 		"name": "Cuba",
@@ -388,8 +356,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50037",
 		"name": "Jamaica",
@@ -400,8 +367,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50038",
 		"name": "Puerto Rico",
@@ -412,8 +378,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50039",
 		"name": "Paraguay",
@@ -424,8 +389,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50040",
 		"name": "Ecuador",
@@ -436,8 +400,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50041",
 		"name": "French Guiana",
@@ -448,8 +411,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50042",
 		"name": "Suriname",
@@ -460,8 +422,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50043",
 		"name": "Guyana",
@@ -472,8 +433,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50044",
 		"name": "Venezuela",
@@ -484,8 +444,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50045",
 		"name": "Belize",
@@ -496,8 +455,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50046",
 		"name": "Guatemala",
@@ -508,8 +466,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50047",
 		"name": "El Salvador",
@@ -520,8 +477,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50048",
 		"name": "Honduras",
@@ -532,8 +488,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50049",
 		"name": "Nicaragua",
@@ -544,8 +499,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50050",
 		"name": "Costa Rica",
@@ -556,8 +510,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50051",
 		"name": "Panama",
@@ -568,8 +521,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50052",
 		"name": "Colombia",
@@ -580,8 +532,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50053",
 		"name": "Peru",
@@ -592,8 +543,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50054",
 		"name": "Bolivia",
@@ -604,8 +554,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50055",
 		"name": "Brazil",
@@ -616,8 +565,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50056",
 		"name": "Uruguay",
@@ -628,8 +576,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50057",
 		"name": "Haiti",
@@ -640,8 +587,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50058",
 		"name": "Dominican Republic",
@@ -652,8 +598,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50059",
 		"name": "Cyprus",
@@ -664,8 +609,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50060",
 		"name": "Indonesia",
@@ -676,8 +620,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50061",
 		"name": "Egypt",
@@ -688,8 +631,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50062",
 		"name": "Saudi Arabia",
@@ -700,8 +642,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50063",
 		"name": "Libya",
@@ -712,8 +653,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50064",
 		"name": "Yemen",
@@ -724,8 +664,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50065",
 		"name": "Japan",
@@ -736,8 +675,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50066",
 		"name": "Eritrea",
@@ -748,8 +686,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50067",
 		"name": "Djibouti",
@@ -760,8 +697,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50068",
 		"name": "Czech Republic",
@@ -772,8 +708,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50069",
 		"name": "Slovakia",
@@ -784,8 +719,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50070",
 		"name": "Finland",
@@ -796,8 +730,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50071",
 		"name": "Slovenia",
@@ -808,8 +741,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50072",
 		"name": "Brunei Darussalam",
@@ -820,8 +752,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50073",
 		"name": "Malaysia",
@@ -832,8 +763,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50074",
 		"name": "Philippines",
@@ -844,8 +774,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50075",
 		"name": "Russia",
@@ -856,8 +785,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50076",
 		"name": "Georgia",
@@ -868,8 +796,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50077",
 		"name": "Azerbaijan",
@@ -880,8 +807,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50078",
 		"name": "United Kingdom",
@@ -892,8 +818,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50079",
 		"name": "Denmark",
@@ -904,8 +829,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50080",
 		"name": "France",
@@ -916,8 +840,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50081",
 		"name": "Italy",
@@ -928,8 +851,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50082",
 		"name": "Norway",
@@ -940,8 +862,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50083",
 		"name": "Taiwan",
@@ -952,8 +873,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50084",
 		"name": "Sri Lanka",
@@ -964,8 +884,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50085",
 		"name": "Australia",
@@ -976,8 +895,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50086",
 		"name": "New Zealand",
@@ -988,8 +906,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50087",
 		"name": "Solomon Islands",
@@ -1000,8 +917,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50088",
 		"name": "Papua New Guinea",
@@ -1012,8 +928,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50089",
 		"name": "Fiji",
@@ -1024,8 +939,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50090",
 		"name": "New Caledonia",
@@ -1036,8 +950,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50091",
 		"name": "Antarctica",
@@ -1048,8 +961,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50092",
 		"name": "Ireland",
@@ -1060,8 +972,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50093",
 		"name": "Spain",
@@ -1072,8 +983,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50094",
 		"name": "Portugal",
@@ -1084,8 +994,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50095",
 		"name": "Netherlands",
@@ -1096,8 +1005,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50096",
 		"name": "Belgium",
@@ -1108,8 +1016,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50097",
 		"name": "Luxembourg",
@@ -1120,8 +1027,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50098",
 		"name": "Switzerland",
@@ -1132,8 +1038,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50099",
 		"name": "Croatia",
@@ -1144,8 +1049,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50100",
 		"name": "Bosnia and Herzegovina",
@@ -1156,8 +1060,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50101",
 		"name": "Albania",
@@ -1168,8 +1071,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50102",
 		"name": "Turkey",
@@ -1180,8 +1082,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50103",
 		"name": "Greece",
@@ -1192,8 +1093,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50104",
 		"name": "Macedonia",
@@ -1204,8 +1104,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50105",
 		"name": "Bulgaria",
@@ -1216,8 +1115,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50106",
 		"name": "Serbia",
@@ -1228,8 +1126,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50107",
 		"name": "Germany",
@@ -1240,8 +1137,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50108",
 		"name": "Estonia",
@@ -1252,8 +1148,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50109",
 		"name": "Latvia",
@@ -1264,8 +1159,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50110",
 		"name": "Lithuania",
@@ -1276,8 +1170,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50111",
 		"name": "Romania",
@@ -1288,8 +1181,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50112",
 		"name": "Republic of Moldova",
@@ -1300,8 +1192,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50113",
 		"name": "Hungary",
@@ -1312,8 +1203,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50114",
 		"name": "Austria",
@@ -1324,8 +1214,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50115",
 		"name": "Poland",
@@ -1336,8 +1225,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50116",
 		"name": "Ukraine",
@@ -1348,8 +1236,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50117",
 		"name": "Belarus",
@@ -1360,8 +1247,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50118",
 		"name": "Sweden",
@@ -1372,8 +1258,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50119",
 		"name": "Armenia",
@@ -1384,8 +1269,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50120",
 		"name": "Syria",
@@ -1396,8 +1280,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50121",
 		"name": "Iran",
@@ -1408,8 +1291,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50122",
 		"name": "Turkmenistan",
@@ -1420,8 +1302,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50123",
 		"name": "Uzbekistan",
@@ -1432,8 +1313,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50124",
 		"name": "Kyrgyzstan",
@@ -1444,8 +1324,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50125",
 		"name": "Tajikistan",
@@ -1456,8 +1335,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50126",
 		"name": "Afghanistan",
@@ -1468,8 +1346,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50127",
 		"name": "Pakistan",
@@ -1480,8 +1357,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50128",
 		"name": "Nepal",
@@ -1492,8 +1368,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50129",
 		"name": "Bhutan",
@@ -1504,8 +1379,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50130",
 		"name": "Bangladesh",
@@ -1516,8 +1390,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50131",
 		"name": "India",
@@ -1528,8 +1401,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50132",
 		"name": "Mongolia",
@@ -1540,8 +1412,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50133",
 		"name": "Korea, Republic of",
@@ -1552,8 +1423,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50134",
 		"name": "Korea, Democratic People's Republic of",
@@ -1564,8 +1434,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50135",
 		"name": "Vietnam",
@@ -1576,8 +1445,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50136",
 		"name": "Burma",
@@ -1588,8 +1456,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50137",
 		"name": "Lao People's Democratic Republic",
@@ -1600,8 +1467,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50138",
 		"name": "Thailand",
@@ -1612,8 +1478,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50139",
 		"name": "Cambodia",
@@ -1624,8 +1489,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50140",
 		"name": "Vanuatu",
@@ -1636,8 +1500,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50141",
 		"name": "Oman",
@@ -1648,8 +1511,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50142",
 		"name": "Iraq",
@@ -1660,8 +1522,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50143",
 		"name": "Kuwait",
@@ -1672,8 +1533,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50144",
 		"name": "Qatar",
@@ -1684,8 +1544,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50145",
 		"name": "United Arab Emirates",
@@ -1696,8 +1555,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50146",
 		"name": "Jordan",
@@ -1708,8 +1566,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50147",
 		"name": "Algeria",
@@ -1720,8 +1577,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50148",
 		"name": "Tunisia",
@@ -1732,8 +1588,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50149",
 		"name": "Gambia",
@@ -1744,8 +1599,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50150",
 		"name": "West Bank",
@@ -1756,8 +1610,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50151",
 		"name": "Madagascar",
@@ -1768,8 +1621,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50152",
 		"name": "Lebanon",
@@ -1780,8 +1632,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50153",
 		"name": "Israel",
@@ -1792,8 +1643,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50154",
 		"name": "Burundi",
@@ -1804,8 +1654,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50155",
 		"name": "Rwanda",
@@ -1816,8 +1665,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50156",
 		"name": "Angola",
@@ -1828,8 +1676,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50157",
 		"name": "Swaziland",
@@ -1840,8 +1687,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50158",
 		"name": "Mozambique",
@@ -1852,8 +1698,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50159",
 		"name": "Malawi",
@@ -1864,8 +1709,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50160",
 		"name": "Zambia",
@@ -1876,8 +1720,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50161",
 		"name": "Gabon",
@@ -1888,8 +1731,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50162",
 		"name": "Congo",
@@ -1900,8 +1742,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50163",
 		"name": "Democratic Republic of the Congo",
@@ -1912,8 +1753,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50164",
 		"name": "Central African Republic",
@@ -1924,8 +1764,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50165",
 		"name": "Chad",
@@ -1936,8 +1775,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50166",
 		"name": "Burkina Faso",
@@ -1948,8 +1786,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50167",
 		"name": "Sierra Leone",
@@ -1960,8 +1797,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50168",
 		"name": "Liberia",
@@ -1972,8 +1808,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50169",
 		"name": "Guinea-Bissau",
@@ -1984,8 +1819,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50170",
 		"name": "Cote d'Ivoire",
@@ -1996,8 +1830,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50171",
 		"name": "Ghana",
@@ -2008,8 +1841,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50172",
 		"name": "Togo",
@@ -2020,8 +1852,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50173",
 		"name": "Cameroon",
@@ -2032,8 +1863,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50174",
 		"name": "Nigeria",
@@ -2044,8 +1874,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50175",
 		"name": "Benin",
@@ -2056,8 +1885,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50176",
 		"name": "Morocco",
@@ -2068,8 +1896,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50177",
 		"name": "Western Sahara",
@@ -2080,8 +1907,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50178",
 		"name": "Mauritania",
@@ -2092,8 +1918,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50179",
 		"name": "Mali",
@@ -2104,8 +1929,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50180",
 		"name": "Senegal",
@@ -2116,8 +1940,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50181",
 		"name": "Namibia",
@@ -2128,8 +1951,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50182",
 		"name": "Botswana",
@@ -2140,8 +1962,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50183",
 		"name": "Zimbabwe",
@@ -2152,8 +1973,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50184",
 		"name": "South Africa",
@@ -2164,8 +1984,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50185",
 		"name": "Lesotho",
@@ -2176,8 +1995,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50186",
 		"name": "Timor-Leste",
@@ -2188,8 +2006,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50187",
 		"name": "Kazakhstan",
@@ -2200,8 +2017,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v2.0_Class50188",
 		"name": "Reunion",
@@ -2212,8 +2028,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class729",
 		"name": "Montenegro",
@@ -2224,8 +2039,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class730",
 		"name": "Niger",
@@ -2236,8 +2050,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class731",
 		"name": "Guinea",
@@ -2248,8 +2061,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class732",
 		"name": "Kosovo",
@@ -2260,8 +2072,7 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class733",
 		"name": "South Sudan",
@@ -2272,12 +2083,22 @@
 		"locations": [],
 		"sites": [],
 		"parentRegions": []
-		},
-		
+		},  
 		{
 		"id": "essential_baseline_v505_Class734",
 		"name": "Aland Islands",
 		"countryCode": "AX",
+		"locationIds": [],
+		"siteIds": [],
+		"parentRegionIds": [],
+		"locations": [],
+		"sites": [],
+		"parentRegions": []
+		},  
+		{
+		"id": "essential_baseline_v6_15_Class0",
+		"name": "Malta",
+		"countryCode": "MT",
 		"locationIds": [],
 		"siteIds": [],
 		"parentRegionIds": [],
@@ -2299,7 +2120,7 @@
 		"id": "essential_baseline_6.5.4_Class107",
 		"name": "Economic",
 		"description": "Factors that determine or influence economic performance across a geographic region",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class109", 
 		"essential_baseline_6_5_4_Class110", 
@@ -2320,7 +2141,7 @@
 		"id": "essential_baseline_6.5.4_Class121",
 		"name": "Social",
 		"description": "Factors that influence the the demographic characteristics, norms, customs and values of the population within which the organization operates",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class123", 
 		"essential_baseline_6_5_4_Class124", 
@@ -2363,7 +2184,7 @@
 		"id": "essential_baseline_6.5.4_Class157",
 		"name": "Technological",
 		"description": "Factors related to innovations in technology that may affect the operations of an industry and/or a market",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class159", 
 		"essential_baseline_6_5_4_Class160", 
@@ -2382,7 +2203,7 @@
 		"id": "essential_baseline_6.5.4_Class169",
 		"name": "Environmental",
 		"description": "Factors related to ecological and environmental aspects such as weather, climate, environmental offsets and climate change",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class171", 
 		"essential_baseline_6_5_4_Class172", 
@@ -2401,7 +2222,7 @@
 		"id": "essential_baseline_6.5.4_Class181",
 		"name": "Legal",
 		"description": "Factors related to specific changes to laws and/or regulations",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class183", 
 		"essential_baseline_6_5_4_Class184", 
@@ -2418,7 +2239,7 @@
 		"id": "essential_baseline_6.5.4_Class87",
 		"name": "Political",
 		"description": "Factors that describe how and to what degree a government intervenes in the economy or a certain industry",
-		"icon": "",
+		"icon": "", 
 		"busEnvFactorIds": [
 		"essential_baseline_6_5_4_Class100", 
 		"essential_baseline_6_5_4_Class101", 

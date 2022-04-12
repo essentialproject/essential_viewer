@@ -6,15 +6,18 @@
 	<xsl:param name="param1"/> 
  
  <xsl:variable name="dataSubjects" select="/node()/simple_instance[type='Data_Subject']"/>
-  <xsl:variable name="dataObjects" select="/node()/simple_instance[type='Data_Object']"/>
+ <xsl:key name="dataObjects" match="/node()/simple_instance[type='Data_Object']" use="own_slot_value[slot_reference = 'defined_by_data_subject']/value"/>
   <xsl:variable name="synonyms" select="/node()/simple_instance[type='Synonym']"/>
   <xsl:variable name="dataCategory" select="/node()/simple_instance[type='Data_Category']"/>
   <xsl:variable name="actors" select="/node()/simple_instance[type=('Group_Actor')]"/>
   <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor')]"/>	
   <xsl:variable name="allActors" select="$actors union $individual"/>	
   <xsl:variable name="role" select="/node()/simple_instance[type=('Group_Business_Role','Individual_Business_Role')]"/>	
-  <xsl:variable name="actor" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')][own_slot_value[slot_reference = 'act_to_role_from_actor']/value=$allActors/name]"/> 
-	 
+  <xsl:variable name="actor2Role" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/> 
+  <xsl:key name="actors_key" match="/node()/simple_instance[type=('Individual_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+  <xsl:key name="roles_key" match="/node()/simple_instance[type='Individual_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
+  <xsl:key name="grpactors_key" match="/node()/simple_instance[type=('Group_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+  <xsl:key name="grproles_key" match="/node()/simple_instance[type='Group_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -43,15 +46,39 @@
  
  <xsl:template match="node()" mode="dataSubjects">
 	 <xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
+	 <xsl:variable name="dos" select="key('dataObjects',current()/name)"/>
+	 <xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
     <!-- last two need to be org roles as the slots have been deprecated -->
     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	 "synonyms":[<xsl:for-each select="$syns">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
- 	 "category":"<xsl:value-of select="$dataCategory[name=current()/own_slot_value[slot_reference='data_category']/value]/own_slot_value[slot_reference='name']/value"/>",
-     "orgOwner":"<xsl:value-of select="$actors[name=current()/own_slot_value[slot_reference='data_subject_organisation_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
+	 "dataObjects":[<xsl:for-each select="$dos">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
+	 "category":"<xsl:value-of select="$dataCategory[name=current()/own_slot_value[slot_reference='data_category']/value]/own_slot_value[slot_reference='name']/value"/>",
+	 "orgOwner":"<xsl:value-of select="$actors[name=current()/own_slot_value[slot_reference='data_subject_organisation_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
+	 "stakeholders":[<xsl:for-each select="$thisStakeholders">
+                <xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
+				<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
+				<xsl:variable name="thisgrpActors" select="key('grpactors_key',current()/name)"/>
+				<xsl:variable name="thisgrpRoles" select="key('grproles_key',current()/name)"/>
+				<xsl:variable name="allthisActors" select="$thisActors union $thisgrpActors"/>
+				<xsl:variable name="allthisRoles" select="$thisRoles union $thisgrpRoles"/>
+				{"type": "<xsl:value-of select="$allthisActors/type"/>",
+				"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$allthisActors"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+                </xsl:call-template>",  
+                "actorId":"<xsl:value-of select="eas:getSafeJSString($allthisActors/name)"/>",
+                "roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="$allthisRoles"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+                </xsl:call-template>",  
+                "roleId":"<xsl:value-of select="eas:getSafeJSString($allthisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:for-each>],
 	 "indivOwner":"<xsl:value-of select="$individual[name=current()/own_slot_value[slot_reference='data_subject_individual_owner']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
       
   </xsl:template>
 	
 </xsl:stylesheet>
+ 
+ 

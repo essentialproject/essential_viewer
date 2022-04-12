@@ -9,7 +9,8 @@
 	<xsl:variable name="applicationService" select="/node()/simple_instance[type=('Application_Service')][name=$asbr/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
 	<xsl:variable name="businessCriticality" select="/node()/simple_instance[type=('Business_Criticality')][name=$asbr/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>
  
-	 
+	<xsl:key name="asbr_key" match="/node()/simple_instance[type=('APP_SVC_TO_BUS_RELATION')]" use="own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value"/>
+	<xsl:key name="as_key" match="/node()/simple_instance[type=('Application_Service')]" use="own_slot_value[slot_reference = 'supports_business_process_appsvc']/value"/> 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -36,11 +37,12 @@
 	</xsl:template>
 
 <xsl:template match="node()" mode="process">
-	<xsl:variable name="thisasbr" select="$asbr[name=current()/own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value]"/>
+<!--	<xsl:variable name="thisasbr" select="$asbr[name=current()/own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value]"/>-->
+	<xsl:variable name="thisASBR" select="key('asbr_key',current()/name)"/>
 	{	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"services":[<xsl:for-each select="$thisasbr">
-		<xsl:variable name="thisapplicationService" select="$applicationService[name=current()/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>	
-		<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"id":"<xsl:value-of select="eas:getSafeJSString($thisapplicationService/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisapplicationService"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","criticality":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusinessCriticality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		"services":[<xsl:for-each select="$thisASBR"><xsl:variable name="thisapplicationService" select="key('as_key',current()/name)"/>
+				<xsl:variable name="thisapplicationService" select="$applicationService[name=current()/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>	
+				<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"id":"<xsl:value-of select="eas:getSafeJSString($thisapplicationService/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisapplicationService"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","criticality":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusinessCriticality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

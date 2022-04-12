@@ -6,7 +6,8 @@
 	<xsl:param name="param1"/> 
  	<xsl:variable name="appCaps" select="/node()/simple_instance[type='Application_Capability']"/> 
 	<xsl:variable name="appServices" select="/node()/simple_instance[type='Application_Service']"/> 
-	 
+	<xsl:key name="appServices_key" match="/node()/simple_instance[type = 'Application_Service']" use="own_slot_value[slot_reference = 'realises_application_capabilities']/value"/>
+
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -34,7 +35,7 @@
 	</xsl:template>
 
 <xsl:template match="node()" mode="appCaps">
- <xsl:variable name="supportedServices" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>
+<xsl:variable name="supportedServices" select="key('appServices_key',current()/name)"/><!--<xsl:variable name="supportedServices" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>-->
 	{
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
