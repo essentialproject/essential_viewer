@@ -21,7 +21,7 @@
 <xsl:variable name="licenseModel" select="/node()/simple_instance[type = ('License_Model')]"/>         
 <xsl:variable name="apps" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>    
  <xsl:variable name="styles" select="/node()/simple_instance[type = 'Element_Style']"/>    
-<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
+ <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
 <xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"

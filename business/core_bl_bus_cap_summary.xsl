@@ -77,6 +77,8 @@
 	<xsl:variable name="currentBusCapDescription" select="$currentBusCap/own_slot_value[slot_reference = 'description']/value"/>
 	<xsl:variable name="allBusObjectives" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'business_objectives_for_business_capability']/value]"/>
 	<xsl:variable name="busDomain" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'belongs_to_business_domain']/value]"/>
+	<xsl:variable name="busDomains" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'belongs_to_business_domains']/value]"/>
+	<xsl:variable name="allbusDomains" select="$busDomain union $busDomains"/>
 	<xsl:variable name="parentCap" select="$allBusinessCaps[name = $currentBusCap/own_slot_value[slot_reference = 'supports_business_capabilities']/value]"/>
 	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[name = $currentBusCap/own_slot_value[slot_reference = 'business_capability_requires_information']/value]"/>
 	<xsl:variable name="subBusCaps" select="eas:get_object_descendants($currentBusCap, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
@@ -99,6 +101,14 @@
 	<xsl:variable name="appsForRolesCap" select="/node()/simple_instance[name = $appRolesForCap/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="appsForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 	<xsl:variable name="allAppsForCap" select="$appsForRolesCap union $appsForCap union $relevantApps"/>
+	<xsl:variable name="allAppDeploymentsForCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'application_provider_deployed']/value = $allAppsForCap/name]"/>
+	<xsl:variable name="allTechBuildsForCap" select="/node()/simple_instance[name = $allAppDeploymentsForCap/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
+	<xsl:variable name="allTechBuildArchsForCap" select="/node()/simple_instance[name = $allTechBuildsForCap/own_slot_value[slot_reference = ('technology_provider_architecture','technology_product_architecture')]/value]"/>
+	<xsl:variable name="allTechProvRoleUsagesForCap" select="/node()/simple_instance[(name = $allTechBuildArchsForCap/own_slot_value[slot_reference = ('contained_architecture_components','contained_techProd_components')]/value) and (type = ('Technology_Provider_Usage','Technology_Product_Usage','Technology_Product_Dependency'))]"/>
+	<xsl:variable name="allTechProvs" select="/node()/simple_instance[supertype = 'Technology_Provider']"/>
+	<xsl:variable name="allTechProRoles" select="/node()/simple_instance[(type,supertype) = ('Technology_Provider_Role','Technology_Product_Role','Technology_Component')]"/>
+	<xsl:variable name="allAppTechProvRolesForCap" select="$allTechProRoles[name = $allTechProvRoleUsagesForCap/own_slot_value[slot_reference = ('provider_as_role','technology_product_as_role','tpd_technology_component')]/value]"/>
+	<xsl:variable name="allAppTechProvsForCap" select="$allTechProvs[name = $allAppTechProvRolesForCap/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 	<xsl:variable name="performanceMeasures" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'performance_measures']/value]"/>
 	<xsl:variable name="relevantServiceQualityValuesbyPM" select="/node()/simple_instance[name = $performanceMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
 	<xsl:variable name="relevantServiceQualityValuesOld" select="/node()/simple_instance[name = $allBusObjectives/own_slot_value[slot_reference = 'bo_measures']/value]"/>
@@ -117,13 +127,13 @@
 	<xsl:variable name="relevantArchitectureStates" select="($archStatesforApps | $archStatesforBusProcs)"/>
 	<xsl:variable name="archStateProjects" select="$allProjects[own_slot_value[slot_reference = 'project_start_state']/value = $relevantArchitectureStates/name]"/>
 
-	<xsl:variable name="planToElementRelsForBusCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = ($currentBusCap, $relevantBusProcs, $allAppsForCap)/name]"/>
+	<xsl:variable name="planToElementRelsForBusCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = ($currentBusCap, $relevantBusProcs, $allAppsForCap, $allAppTechProvsForCap)/name]"/>
 	<xsl:variable name="directProjectsForBusCap" select="$allProjects[name = $planToElementRelsForBusCap/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value]"/>
 	<xsl:variable name="stratPlansForBusCap" select="/node()/simple_instance[name = $planToElementRelsForBusCap/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
 	<xsl:variable name="deprecatedStratPlansForBusCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'strategic_plan_for_element']/value = ($currentBusCap, $relevantBusProcs, $allAppsForCap)/name]"/>
 	<xsl:variable name="projectsSupportingStratPlans" select="$allProjects[name = ($stratPlansForBusCap, $deprecatedStratPlansForBusCap)/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value]"/>
 	<xsl:variable name="relevantProjects" select="$directProjectsForBusCap union $archStateProjects union $projectsSupportingStratPlans"/>
-
+	<xsl:variable name="lifecycle" select="/node()/simple_instance[type='Lifecycle_Status']"/> 
 
 	<xsl:template match="knowledge_base">
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
@@ -250,17 +260,23 @@
 
 							<div class="content-section">
 								<xsl:choose>
-									<xsl:when test="count($busDomain) = 0">
+									<xsl:when test="count($allbusDomains) = 0">
 										<em>
 											<xsl:value-of select="eas:i18n('No business domain captured')"/>
 										</em>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="$busDomain"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-										</xsl:call-template>
+										<xsl:for-each select="$allbusDomains">
+											<ul>
+												<li>
+											<xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											</xsl:call-template>
+												</li>
+											</ul>
+										</xsl:for-each>
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>
@@ -529,6 +545,9 @@
 													<th class="cellWidth-70pc">
 														<xsl:value-of select="eas:i18n('Description')"/>
 													</th>
+													<th class="cellWidth-70pc">
+														<xsl:value-of select="eas:i18n('Status')"/>
+													</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -747,6 +766,7 @@ $(document).ready(function() {
 
 	<!-- render an Application Provider table row  -->
 	<xsl:template match="node()" mode="RenderAppRow">
+		<xsl:variable name="thisLifecycle" select="$lifecycle[name=current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value]"/>
 		<tr>
 			<td>
 				<xsl:call-template name="RenderInstanceLink">
@@ -759,6 +779,9 @@ $(document).ready(function() {
 				<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:value-of select="$thisLifecycle/own_slot_value[slot_reference='enumeration_value']/value"/>
 			</td>
 		</tr>
 	</xsl:template>

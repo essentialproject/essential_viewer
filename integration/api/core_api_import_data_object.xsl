@@ -7,8 +7,22 @@
  
  <xsl:variable name="dataSubjects" select="/node()/simple_instance[type='Data_Subject']"/>
   <xsl:variable name="dataObjects" select="/node()/simple_instance[type='Data_Object']"/>
+
   <xsl:variable name="synonyms" select="/node()/simple_instance[type='Synonym']"/>
   <xsl:variable name="dataCategory" select="/node()/simple_instance[type='Data_Category']"/>
+  <xsl:variable name="actors" select="/node()/simple_instance[type=('Group_Actor')]"/>
+  <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor')]"/>	
+  <xsl:variable name="dataType" select="/node()/simple_instance[type=('Primitive_Data_Object')] union $dataObjects"/>	
+  <xsl:variable name="allActors" select="$actors union $individual"/>	
+  <xsl:variable name="role" select="/node()/simple_instance[type=('Group_Business_Role','Individual_Business_Role')]"/>	
+  <xsl:variable name="actor2Role" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/> 
+  <xsl:key name="actors_key" match="/node()/simple_instance[type=('Individual_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+  <xsl:key name="roles_key" match="/node()/simple_instance[type='Individual_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
+  <xsl:key name="grpactors_key" match="/node()/simple_instance[type=('Group_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+  <xsl:key name="grproles_key" match="/node()/simple_instance[type='Group_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
+  <xsl:key name="externalDoc_key" match="/node()/simple_instance[type='External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/>
+  <xsl:key name="dataAttribute_key" match="/node()/simple_instance[type='Data_Object_Attribute']" use="own_slot_value[slot_reference = 'belongs_to_data_object']/value"/>
+  
 <!--  <xsl:variable name="actors" select="/node()/simple_instance[type=('Group_Actor')]"/>
   <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor')]"/>	
 	
@@ -45,13 +59,43 @@
  <xsl:template match="node()" mode="dataObjects">
 	 <xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
 	 <xsl:variable name="parents" select="$dataSubjects[name=current()/own_slot_value[slot_reference='defined_by_data_subject']/value]"/>
+	 <xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	 <xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
+	 <xsl:variable name="dataAttribute" select="key('dataAttribute_key',current()/name)"/>
     <!-- last two need to be org roles as the slots have been deprecated -->
     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	 "synonyms":[<xsl:for-each select="$syns">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
  	 "category":"<xsl:value-of select="$dataCategory[name=current()/own_slot_value[slot_reference='data_category']/value]/own_slot_value[slot_reference='name']/value"/>",
-     "isAbstract":"<xsl:value-of select="current()/own_slot_value[slot_reference='data_object_is_abstract']/value"/>",
+	 "isAbstract":"<xsl:value-of select="current()/own_slot_value[slot_reference='data_object_is_abstract']/value"/>",
+	 "orgOwner":"<xsl:value-of select="$actors[name=current()/own_slot_value[slot_reference='data_oject_organisation_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
+	 "indivOwner":"<xsl:value-of select="$individual[name=current()/own_slot_value[slot_reference='data_object_individual_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
+	 "dataAttributes":[<xsl:for-each select="$dataAttribute">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","type":"<xsl:value-of select="$dataType[name=current()/own_slot_value[slot_reference='type_for_data_attribute']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	 "stakeholders":[<xsl:for-each select="$thisStakeholders">
+			<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
+			<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
+			<xsl:variable name="thisgrpActors" select="key('grpactors_key',current()/name)"/>
+			<xsl:variable name="thisgrpRoles" select="key('grproles_key',current()/name)"/>
+			<xsl:variable name="allthisActors" select="$thisActors union $thisgrpActors"/>
+			<xsl:variable name="allthisRoles" select="$thisRoles union $thisgrpRoles"/>
+			{"type": "<xsl:value-of select="$allthisActors/type"/>",
+			"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$allthisActors"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>",  
+			"actorId":"<xsl:value-of select="eas:getSafeJSString($allthisActors/name)"/>",
+			"roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$allthisRoles"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>",  
+			"roleId":"<xsl:value-of select="eas:getSafeJSString($allthisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:for-each>],
+	"externalDocs":[<xsl:for-each select="$docs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	"link":"<xsl:value-of select="current()/own_slot_value[slot_reference='external_reference_url']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "parents":[<xsl:for-each select="$parents">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
       
   </xsl:template>

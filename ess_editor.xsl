@@ -143,25 +143,27 @@
 					essEnvironment.form = {
 					'id': '<xsl:value-of select="$targetEditor/name"/>',
 					'name': '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'name']/value"/>'
-					};				
+					};		
+
+					const editorSupportingConfigPath = "<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'editor_supporting_config_path']/value"/>";		
 					
 					var essDataSetAPIs = {
 					<xsl:apply-templates mode="RenderDataSetAPIDetails" select="$supportingAPIs"/>
 					};
 					
 					function essGetDataSetAPIUrl(dataSetLabel) {
-					let apiURL = essDataSetAPIs[dataSetLabel].url;
-					return apiURL;
+						let apiURL = essDataSetAPIs[dataSetLabel].url;
+						return apiURL;
 					}
 					
 					function essGetDataSetAPICachePath(dataSetLabel) {
-					let path = essDataSetAPIs[dataSetLabel].cachePath;
-					return path;
+						let path = essDataSetAPIs[dataSetLabel].cachePath;
+						return path;
 					}
 					
 					function essIsDataSetAPIPreCached(dataSetLabel) {
-					let isPrecached = essDataSetAPIs[dataSetLabel].isPreCached;
-					return isPrecached;
+						let isPrecached = essDataSetAPIs[dataSetLabel].isPreCached;
+						return isPrecached;
 					}
 					
 					
@@ -242,7 +244,7 @@
 					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
 					let linkClass = 'context-menu-' + linkMenuName;
 					let linkId = instance.id + 'Link';
-					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					instanceLink = '<a target="_blank" href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
 					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
 					}
 					return instanceLink;
@@ -343,7 +345,7 @@
 				<!-- Handlebars template for the contents of the CONFIRM ACTION Modal -->
 				<script id="ess-confirm-modal-template" type="text/x-handlebars-template">
 					<div class="modal-header">
-						<p class="modal-title xlarge" id="essConfirmModalLabel"><i class="fa fa-exclamation-triangle right-10"/><strong><span>{{title}}{{#if resource.name}}: {{/if}}</span><span class="text-primary">{{resource.name}}</span></strong></p>
+						<p class="modal-title xlarge" id="essConfirmModalLabel"><i class="fa fa-exclamation-triangle right-10"/><strong><span>{{title}}</span></strong></p>
 					</div>
 					<div class="modal-body">
 						{{#each messages}}
@@ -432,9 +434,14 @@
 				
 				<!-- Add the handlebars templates for the Editor Components in scope for this Configurable Editor -->
 				<xsl:for-each select="$configEditorComponentFragments">
-					<xsl:if test="doc-available(.)">
-						<xsl:copy-of select="document(.)"/>
-					</xsl:if>
+					<xsl:choose>
+						<xsl:when test="doc-available(.)">
+							<xsl:copy-of select="document(.)"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<span>FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:for-each>
 
 				<xsl:for-each select="$configEditorJSLibPaths">

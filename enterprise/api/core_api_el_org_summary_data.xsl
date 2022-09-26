@@ -140,11 +140,11 @@
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
 				</xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"childOrgs":[<xsl:for-each select="$thisinScopeChildActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],		
     	"data":[{"vis":[<xsl:call-template name="PrintOrgChart"><xsl:with-param name="rootNode" select="$thisparentActor"/><xsl:with-param name="parentNode" select="current()"/><xsl:with-param name="inScopeActors" select="$thisinScopeActors"/><xsl:with-param name="level" select="1"/></xsl:call-template>]}],
@@ -157,7 +157,7 @@
 	<xsl:template mode="getSiteJSON" match="node()">
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -171,14 +171,14 @@
 		<xsl:variable name="thisBusProc" select="$businessProcess[name=$this/own_slot_value[slot_reference='implements_business_process']/value]"/>
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
 			</xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString($thisBusProc/name)"/>"
 		}<xsl:if test="position()!=last()">,</xsl:if>
@@ -188,14 +188,14 @@
 			
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"codebase":"<xsl:value-of select="eas:getSafeJSString($thisStatus/name)"/>"

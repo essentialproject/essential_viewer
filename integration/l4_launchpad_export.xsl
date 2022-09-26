@@ -2,7 +2,7 @@
 
 <xsl:stylesheet version="2.0" xmlns:fn="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:eas="http://www.enterprise-architecture.org/essential">
 
-	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
+  <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
 
 
 	<!--
@@ -27,7 +27,7 @@
 	<!-- 20.05.2019 JM/JP	Created -->
     <xsl:variable name="sites" select="/node()/simple_instance[type = 'Site']"/>
     <xsl:variable name="countries" select="/node()/simple_instance[type = 'Geographic_Region']"/>
-    
+    <xsl:variable name="businessCriticality" select="/node()/simple_instance[type = 'Business_Criticality']"/>
     <xsl:variable name="businessDomains" select="/node()/simple_instance[type = 'Business_Domain']"/>
     <xsl:variable name="businessCapabilities" select="/node()/simple_instance[type = 'Business_Capability']"/>
     <xsl:variable name="applicationCapabilities" select="/node()/simple_instance[type = 'Application_Capability']"/>
@@ -2014,7 +2014,7 @@
   <NamedRange ss:Name="Tech_Vendor_Release_Statii"
    ss:RefersTo="='Tech Vendor Release Statii'!R7C3:R24C3"/>
   <NamedRange ss:Name="Technology_Capabilities"
-   ss:RefersTo="='Technology Capablities'!R7C3:R39C3"/>
+   ss:RefersTo="='Technology Capabilities'!R7C3:R39C3"/>
   <NamedRange ss:Name="Technology_Components"
    ss:RefersTo="='Technology Components'!R7C3:R169C3"/>
   <NamedRange ss:Name="Technology_Domains"
@@ -2267,8 +2267,8 @@
     <Cell ss:StyleID="s1025"><Data ss:Type="String">Captures the high level technology areas relevant to the enterprise</Data></Cell>
    </Row>
    <Row ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Technology Capablities'!A1"><Data
-      ss:Type="String">Technology Capablities</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s1128" ss:HRef="#'Technology Capabilities'!A1"><Data
+      ss:Type="String">Technology Capabilities</Data></Cell>
     <Cell ss:StyleID="s1025"><Data ss:Type="String">Captures the conceptual technology infrastructure capabilities supporting the enterprise</Data></Cell>
    </Row>
    <Row ss:Height="20">
@@ -4659,7 +4659,7 @@
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C4:R4500C4</Range>
    <Type>List</Type>
-   <Value>Valid_High_Medium_Low</Value>
+   <Value>Valid_Business_Criticality</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C3:R4500C3</Range>
@@ -5815,7 +5815,7 @@
    <Value>Reference_Model_Layers</Value>
   </DataValidation>
  </Worksheet>
- <Worksheet ss:Name="Technology Capablities">
+ <Worksheet ss:Name="Technology Capabilities">
   <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
@@ -5924,10 +5924,10 @@
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="7">
     <Cell ss:Index="7" ss:StyleID="s1162"
-     ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capablities'!C[-4],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+     ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capabilities'!C[-4],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
       ss:Type="String"></Data></Cell>
     <Cell ss:StyleID="s1162"
-     ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capablities'!C[-5],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+     ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capabilities'!C[-5],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
       ss:Type="String"></Data></Cell>
    </Row>
     <xsl:apply-templates select="$techComponents" mode="techComponents"></xsl:apply-templates>
@@ -6982,7 +6982,7 @@
   </ConditionalFormatting>
  </Worksheet>
  <Worksheet ss:Name="Application Codebases">
-  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
@@ -6990,6 +6990,10 @@
 	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Application Codebases</Data></Cell>
@@ -7004,10 +7008,14 @@
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
-	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Description</Data></Cell> 
+  <Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
+  <Cell ss:StyleID="s1114"><Data ss:Type="String">Sequence No</Data></Cell> 
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
+    <Cell ss:StyleID="s1113"><Data ss:Type="String">Style Class</Data></Cell>
     <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
+    <Cell ss:StyleID="s1116"><Data ss:Type="String">Name Translation</Data></Cell>
+    <Cell ss:StyleID="s1116"><Data ss:Type="String">Description Translation</Data></Cell>
     <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="8"/> 
@@ -7039,7 +7047,7 @@
   </DataValidation>
  </Worksheet>
  <Worksheet ss:Name="Application Delivery Models">
-  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
@@ -7047,6 +7055,10 @@
 	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Application Delivery Models</Data></Cell>
@@ -7061,11 +7073,15 @@
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
-	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Description</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Sequence No</Data></Cell> 
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Style Class</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Name Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Description Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="8"/> 
 	   <xsl:apply-templates select="$delivery" mode="cdbase"></xsl:apply-templates> 
@@ -7096,7 +7112,7 @@
   </DataValidation>
  </Worksheet>	
  <Worksheet ss:Name="Technology Delivery Models">
-  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
@@ -7104,6 +7120,10 @@
 	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Technology Delivery Models</Data></Cell>
@@ -7118,11 +7138,15 @@
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
-	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Description</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Sequence No</Data></Cell> 
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Style Class</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Name Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Description Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="8"/> 
 	   <xsl:apply-templates select="$techDeliveryModel" mode="cdbase"></xsl:apply-templates> 
@@ -7153,7 +7177,7 @@
   </DataValidation>
  </Worksheet>	
  <Worksheet ss:Name="Tech Vendor Release Statii">
-  <Table ss:ExpandedColumnCount="8" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s1110" ss:DefaultColumnWidth="65"
    ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="57"/>
@@ -7161,6 +7185,10 @@
 	<Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="131"/> 
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="89"/>
    <Column ss:Index="6" ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="141"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
+   <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Column ss:StyleID="s1110" ss:AutoFitWidth="0" ss:Width="111"/>
    <Row ss:Index="2" ss:Height="29">
     <Cell ss:Index="2" ss:StyleID="s1111"><Data ss:Type="String">Technology Vendor Release Statii</Data></Cell>
@@ -7175,11 +7203,15 @@
    <Row ss:Height="19">
     <Cell ss:Index="2" ss:StyleID="s1113"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s1114"><Data ss:Type="String">Name</Data></Cell>
-	<Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
-    <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Translation</Data></Cell>
-    <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Description</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Label</Data></Cell> 
+    <Cell ss:StyleID="s1114"><Data ss:Type="String">Sequence No</Data></Cell> 
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Colour</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Style Class</Data></Cell>
+      <Cell ss:StyleID="s1113"><Data ss:Type="String">Score</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Name Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Description Translation</Data></Cell>
+      <Cell ss:StyleID="s1116"><Data ss:Type="String">Language</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="8"/> 
 	   <xsl:apply-templates select="$techlifecycle" mode="cdbase"></xsl:apply-templates> 
@@ -10787,10 +10819,10 @@
   <xsl:template match="node()" mode="busproc2services">
     <!--- to do -->
     <xsl:variable name="thisappsvc2busproc" select="$appsvc2busproc[name=current()/own_slot_value[slot_reference='supports_business_process_appsvc']/value]"/>  
-    <xsl:variable name="thisappsvc2busprocBus" select="$busProcesses[name=$thisappsvc2busproc/own_slot_value[slot_reference='appsvc_to_bus_from_appsvc']/value]"/>
-    
+    <xsl:variable name="thisappsvc2busprocBus" select="$busProcesses[name=$thisappsvc2busproc/own_slot_value[slot_reference='appsvc_to_bus_to_busproc']/value]"/>
+    <!--
     <Row ss:AutoFitHeight="0" ss:Height="17">
-      <Cell ss:Index="2" ss:StyleID="s1095"><Data ss:Type="String"><xsl:value-of select="$thisappsvc2busprocBus/name"/></Data></Cell>
+      <Cell ss:Index="2" ss:StyleID="s1095"><Data ss:Type="String"><xsl:value-of select="$thisappsvc2busprocBus/own_slot_value[slot_reference='name']/value"/></Data></Cell>
       <Cell ss:StyleID="s1075"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data><NamedCell ss:Name="Servers"/></Cell>
       <Cell ss:StyleID="s1040"><Data ss:Type="String"><xsl:value-of select="thisappsvc2busproc"/></Data></Cell>
       <Cell ss:Index="5" ss:StyleID="s1177"
@@ -10800,7 +10832,7 @@
         ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&quot;Application Service must be already defined in Application Services sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
           ss:Type="String"></Data></Cell>
     </Row>
-    
+  -->
     <xsl:apply-templates select="$thisappsvc2busprocBus" mode="busproc2servicesByRow">
       <xsl:with-param name="svc" select="current()"/>
       <xsl:with-param name="criticality" select="$thisappsvc2busproc"></xsl:with-param>
@@ -10812,11 +10844,11 @@
   <xsl:template match="node()" mode="busproc2servicesByRow">
     <xsl:param name="svc"></xsl:param>
     <xsl:param name="criticality"></xsl:param>
-    
+    <xsl:variable name="criticalityVal" select="$businessCriticality[name=$criticality/own_slot_value[slot_reference='app_to_process_business_criticality']/value]"/>
     <Row ss:AutoFitHeight="0" ss:Height="17">
       <Cell ss:Index="2" ss:StyleID="s1095"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
       <Cell ss:StyleID="s1075"><Data ss:Type="String"><xsl:value-of select="$svc/own_slot_value[slot_reference='name']/value"/></Data><NamedCell ss:Name="Servers"/></Cell>
-      <Cell ss:StyleID="s1040"><Data ss:Type="String"><xsl:value-of select="$criticality/own_slot_value[slot_reference='app_to_process_business_criticality']/value"/></Data></Cell>
+      <Cell ss:StyleID="s1040"><Data ss:Type="String"><xsl:value-of select="$criticalityVal/own_slot_value[slot_reference='name']/value"/></Data></Cell>
       <Cell ss:Index="5" ss:StyleID="s1177"
         ss:Formula="=IF(RC[-3]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&quot;Business Process must be already defined in Business Processes sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
           ss:Type="String"></Data></Cell>
@@ -10828,7 +10860,9 @@
   <xsl:template match="node()" mode="physapps">
     <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
     <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
-    <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+    <xsl:variable name="thisRoleDirect" select="$actors[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+    <xsl:variable name="thisRoleIndirect" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+    <xsl:variable name="thisRole" select="$thisRoleDirect  union $thisRoleIndirect"/>
     <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/>
 	  <xsl:variable name="thisapr" select="$aprs[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]"/>
 	  
@@ -10850,8 +10884,9 @@
   <xsl:template match="node()" mode="physappsdirect">
     <xsl:variable name="thisbusproc" select="$busProcesses[name=current()/own_slot_value[slot_reference='implements_business_process']/value]"/>
     <xsl:variable name="thisorg" select="$a2r[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
-    <xsl:variable name="thisRole" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
-	  <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/> 
+    <xsl:variable name="thisRoleDirect" select="$actors[name=current()/own_slot_value[slot_reference='process_performed_by_actor_role']/value]"/>
+    <xsl:variable name="thisRoleIndirect" select="$actors[name=$thisorg/own_slot_value[slot_reference='act_to_role_from_actor']/value]"/>
+    <xsl:variable name="thisRole" select="$thisRoleDirect  union $thisRoleIndirect"/>  <xsl:variable name="apprel" select="$physbusApp[name=current()/own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value]"/> 
 	    <xsl:variable name="thisapp" select="$applications[name=$apprel/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/>
     
   <Row ss:Height="17">
@@ -10905,10 +10940,10 @@
       <Cell ss:StyleID="s1063"><Data ss:Type="String"><xsl:value-of select="$parentCaps[2]/own_slot_value[slot_reference='name']/value"/></Data><NamedCell
         ss:Name="Technology_Capabilities"/></Cell>
         <Cell ss:StyleID="s1191"
-          ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capablities'!C[-4],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+          ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capabilities'!C[-4],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
             ss:Type="String">OK</Data></Cell>
         <Cell ss:StyleID="s1191"
-          ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capablities'!C[-5],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
+          ss:Formula="=IF(RC[-2]&lt;&gt;&quot;&quot;,(IF(ISNA(VLOOKUP(RC[-2],'Technology Capabilities'!C[-5],1,0)),&quot;Technology Capability must be already defined in Technology Capabilities sheet&quot;,&quot;OK&quot;)),&quot;&quot;)"><Data
             ss:Type="String"></Data></Cell>
     </Row>
     
@@ -11130,12 +11165,15 @@
  <xsl:variable name="thiselemStyles" select="$elemStyles[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
    <Row>
     <Cell ss:Index="2" ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data><NamedCell
-      ss:Name="Application_Codebases"/></Cell>
-	<Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></Data></Cell>  
+    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+  <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></Data></Cell>  
+  <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/></Data></Cell>  
     <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="$thiselemStyles[1]/own_slot_value[slot_reference='element_style_colour']/value"/></Data></Cell>
+    <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="$thiselemStyles[1]/own_slot_value[slot_reference='element_style_class']/value"/></Data></Cell>
 	   <Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_score']/value"/></Data></Cell>
-	<Cell ss:StyleID="s1112"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='synonyms']/value"/></Data></Cell>
+  <Cell ss:StyleID="s1112"></Cell>
+  <Cell ss:StyleID="s1112"></Cell>
     <Cell ss:StyleID="s1112"/>
    </Row>	
 </xsl:template>		

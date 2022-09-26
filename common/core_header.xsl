@@ -98,26 +98,17 @@
 					$("#historyLink").click(function(){
 						$('#feedbackOverlay').hide();
 						$('#searchOverlay').hide();
-						$('#printOverlay').hide();
 						$('#historyOverlay').slideToggle();	
 					});
 					$("#feedbackLink").click(function(){					
 						$('#searchOverlay').hide();
 						$('#historyOverlay').hide();
-						$('#printOverlay').hide();
 						$('#feedbackOverlay').slideToggle();
 					});
 					$("#searchLink").click(function(){
 						$('#feedbackOverlay').hide();
 						$('#historyOverlay').hide();
-						$('#printOverlay').hide();
 						$('#searchOverlay').slideToggle();
-					});
-					$("#printLink").click(function(){
-						$('#feedbackOverlay').hide();
-						$('#historyOverlay').hide();
-						$('#searchOverlay').hide();
-						$('#printOverlay').slideToggle();
 					});
 					$('li[data-toggle="tooltip"]').tooltip();
 					$('.closeHeaderOverlay').click(function(){
@@ -263,22 +254,12 @@
 									<i class="fa fa-road" style="position: relative; top: 1px;"/>
 								</a>
 							</li>
-							<xsl:if test="($eipMode = 'true')">
-								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
-									<xsl:attribute name="title" select="eas:i18n('Print')"/>
-									<a href="#" id="printLink">
-										<i class="fa fa-print" style="position:relative; top: 1px;"/>
-									</a>
-								</li>
-							</xsl:if>
-							<xsl:if test="($eipMode = '')">
-								<li>
-									<xsl:attribute name="title" select="eas:i18n('Print')"/>
-									<a href="#" onclick="window.print();">
-										<i class="fa fa-print" style="position:relative; top: 1px;"/>
-									</a>
-								</li>
-							</xsl:if>
+							<li>
+								<xsl:attribute name="title" select="eas:i18n('Print')"/>
+								<a href="#" onclick="window.print();">
+									<i class="fa fa-print" style="position:relative; top: 1px;"/>
+								</a>
+							</li>
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Feedback')"/>
 								<a href="#" id="feedbackLink">
@@ -460,146 +441,6 @@
 				</div>
 				
 				<xsl:variable name="headerThisReport" select="key('utilitiesAllReports_key',$theCurrentXSL)"/> 
-				<xsl:variable name="defaultReportPDFConfig" select="key('utilitiesAllPDFConfigs_key','true')"/> 
-				
-   			<!--	<xsl:variable name="headerThisReport" select="$utilitiesAllReports[own_slot_value[slot_reference='report_xsl_filename']/value = $theCurrentXSL]"/>-->
-				<xsl:variable name="reportPDFConfig" select="$utilitiesAllPDFConfigs[name = $headerThisReport/own_slot_value[slot_reference='report_pdf_configuration']/value]"/>
-			<!--	<xsl:variable name="defaultReportPDFConfig" select="$utilitiesAllPDFConfigs[own_slot_value[slot_reference='report_pdf_config_is_default']/value = 'true']"/>-->
-				<xsl:variable name="printPdfEnabled" select="$headerThisReport and (count($defaultReportPDFConfig) + count($reportPDFConfig)) > 0"/>
-				<div id="printOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;">	
-					<i class="fa fa-times closeHeaderOverlay"/>
-					<div class="verticalSpacer_20px"/>
-						<div class="pull-left right-30">
-							<h2>
-								<xsl:value-of select="eas:i18n('Print')"/>
-							</h2>
-							<button class="btn btn-default" onclick="window.print();"><i class="fa fa-print right-5"/><xsl:value-of select="eas:i18n('Print this page')"/></button>
-						</div>
-						<xsl:if test="$printPdfEnabled">
-							<!-- Javascript for invoking the PDF print functionality -->
-							<script type="text/javascript">
-								let reportLabel = "<xsl:value-of select="$headerThisReport/own_slot_value[slot_reference='report_label']/value"/>";
-								let reportFileName = reportLabel.replace(' ', '-') + '.pdf';
-								let pdfConfig = {
-									"remoteURL": window.location.href,
-									"resultFilename": reportFileName,
-									<xsl:choose>
-										<xsl:when test="$reportPDFConfig">
-											<xsl:variable name="thisPDFConfig" select="$reportPDFConfig[1]"/>
-											"marginTop": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_top']/value"/>,
-											"marginBottom": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_bottom']/value"/>,
-											"marginLeft": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_left']/value"/>,
-											"marginRight": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_right']/value"/>,
-											"paperWidth": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_paper_width']/value"/>,
-											"paperHeight": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_paper_height']/value"/>,
-											"waitDelay": "<xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_wait_delay']/value"/>",
-											"landscape": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_is_landscape']/value"/>,
-											"scale": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_scale']/value"/>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:variable name="thisPDFConfig" select="$defaultReportPDFConfig[1]"/>
-											"marginTop": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_top']/value"/>,
-											"marginBottom": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_bottom']/value"/>,
-											"marginLeft": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_left']/value"/>,
-											"marginRight": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_margin_right']/value"/>,
-											"paperWidth": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_paper_width']/value"/>,
-											"paperHeight": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_paper_height']/value"/>,
-											"waitDelay": "<xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_wait_delay']/value"/>",
-											"landscape": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_is_landscape']/value"/>,
-											"scale": <xsl:value-of select="$thisPDFConfig/own_slot_value[slot_reference='report_pdf_scale']/value"/>
-										</xsl:otherwise>
-									</xsl:choose>
-								}			
-								
-								var save;
-								
-								$(document).ready(function(){
-									$('#pdfWidth').val(pdfConfig.paperWidth);
-									$('#pdfHeight').val(pdfConfig.paperHeight);
-								
-									$('#ess-print-pdf-btn').on("click", function(){
-										$('#pdf-btn-text').text('Generating PDF...');
-										$('#ess-pdf-spinner').removeClass('hiddenDiv');
-										var thisBtn = $(this);
-										thisBtn.prop('disabled', true);										
-									
-										let updatedWidth = $('#pdfWidth').val();
-										if((updatedWidth != null) &amp;&amp; (updatedWidth > 0) ) {
-											pdfConfig.paperWidth = updatedWidth;
-										}
-										let updatedHeight = $('#pdfWidth').val();
-										if((updatedHeight != null) &amp;&amp; (updatedHeight > 0) ) {
-											pdfConfig.paperHeight = updatedHeight;
-										}
-										
-										var formData = new FormData()																	
-									    formData.append("remoteURL", pdfConfig.remoteURL);
-									    formData.append("resultFilename", 'test.pdf');
-									    formData.append("marginTop", pdfConfig.marginTop);
-									    formData.append("marginBottom", pdfConfig.marginBottom);
-									    formData.append("marginRight", pdfConfig.marginRight);
-									    formData.append("marginLeft", pdfConfig.marginLeft);
-									    formData.append("paperWidth", pdfConfig.paperWidth);
-									    formData.append("paperHeight", pdfConfig.paperHeight);
-									    formData.append("waitDelay", pdfConfig.waitDelay);
-									    formData.append("landscape", pdfConfig.landscape);
-									    formData.append("scale", pdfConfig.scale);
-									    
-										var url = essViewer.baseUrl + '/api/essential-pdf/v1/';
-									    var xhr = essCreateFormCORSRequest('POST', url);
-										if (!xhr) {
-										  throw new Error('CORS not supported');
-										} else {
-											// Response handlers.
-											var success = function(evt){
-												// download the pdf generated and sent as a blob in the response body
-												var downloadUrl = window.URL.createObjectURL(this.response);												
-												var a = document.createElement("a");
-											    document.body.appendChild(a);
-											    a.style = "display: none";
-											    a.href = downloadUrl;
-										        a.download = pdfConfig.resultFilename;
-										        a.click();
-										        window.URL.revokeObjectURL(downloadUrl);
-										        <!--$('#ess-print-pdf-btn').off().on("click", function(){
-										        	a.click();
-										        	//window.URL.revokeObjectURL(downloadUrl);
-										        });-->
-	
-												$('#ess-pdf-spinner').addClass('hiddenDiv');
-												$('#pdf-btn-text').text('Create a PDF');
-												thisBtn.prop('disabled', false);
-											};
-											var failure = function(xhr){
-												// TODO show error message
-												console.log('Failed to download PDF');
-											};
-											xhr.responseType = 'blob'; // required to allow the download of the file sent back in the response
-											xhr.onload = success;
-											xhr.onerror = failure;
-											xhr.send(formData);
-										}
-									});
-								});
-							</script>
-							<div class="pull-left">
-								<h2>&#160;</h2>
-								<button id="ess-print-pdf-btn" class="btn btn-default"><i class="fa fa-file-pdf-o right-5"/><span id="pdf-btn-text"><xsl:value-of select="eas:i18n('Create a PDF')"/></span></button><span id="ess-pdf-spinner" class="left-10 hiddenDiv"><i class="fa fa-refresh fa-spin fa-fw"/></span>
-								<p class="small top-10"><strong><xsl:value-of select="eas:i18n('Optional')"/>: </strong><xsl:value-of select="eas:i18n('You may need to adjust the Width and Height values to correctly generate your PDF. Enter a value between 5 and 100 in the fields below')"/></p>
-								<form class="form-inline">
-									<div class="form-group right-10">
-										<label class="small" for="pdfWidth"><xsl:value-of select="eas:i18n('Width')"/></label>
-										<input type="number" min="5" max="100" class="form-control input-sm" id="pdfWidth" placeholder="Insert a number" style="width: 100px;" value="15"/>
-									</div>
-									<div class="form-group">
-										<label class="small" for="pdfHeight"><xsl:value-of select="eas:i18n('Height')"/></label>
-										<input type="number" min="5" max="100" class="form-control input-sm" id="pdfHeight" placeholder="Insert a number" style="width: 100px;" value="18"/>
-									</div>
-								</form>
-							</div>	
-						</xsl:if>
-					<div class="verticalSpacer_10px"/>
-				</div>
 				
 				<div id="historyOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;">
 					<i class="fa fa-times closeHeaderOverlay"/>

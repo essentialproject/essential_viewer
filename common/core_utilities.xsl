@@ -1111,6 +1111,29 @@
 	</xsl:template>
 
 
+	<xsl:template mode="RenderReportParameters" match="node()">
+		<xsl:param name="paramInstanceVals" select="()"/>
+		
+		<xsl:variable name="thisParam" select="current()"/>
+		<xsl:variable name="thisParamInstanceVal" select="$paramInstanceVals[name = $thisParam/own_slot_value[slot_reference = 'report_parameter_instance_value']/value]"/>
+		
+		<xsl:variable name="thisParamName" select="$thisParam/own_slot_value[slot_reference = 'report_parameter_name']/value"/>
+		<xsl:variable name="thisParamValue">
+			<xsl:choose>
+				<xsl:when test="count($thisParamInstanceVal) > 0">
+					<xsl:value-of select="$thisParamInstanceVal/name"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$thisParam/own_slot_value[slot_reference = 'report_parameter_string_value']/value"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:if test="(string-length($thisParamName) > 0) and (string-length($thisParamValue) > 0)">&amp;<xsl:value-of select="$thisParamName"/>=<xsl:value-of select="$thisParamValue"/></xsl:if>
+		
+	</xsl:template>
+
+
 	<!-- 
         Generic template to render the description of an instance, taking into account the 
         language settings chosen by the user

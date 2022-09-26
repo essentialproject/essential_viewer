@@ -13,20 +13,22 @@
 <xsl:variable name="busProc" select="/node()/simple_instance[type = ('Business_Process')][name=$physbusProc/own_slot_value[slot_reference='implements_business_process']/value]"/>    
 <xsl:variable name="busCap" select="/node()/simple_instance[type = ('Business_Capability')][name=$busProc/own_slot_value[slot_reference='realises_business_capability']/value]"/>   
 <xsl:variable name="busPerf" select="/node()/simple_instance[type = ('Business_Performance_Measure')][name=$appProPhyBus/own_slot_value[slot_reference='performance_measures']/value]"/> 
-<xsl:variable name="busPerfScore" select="/node()/simple_instance[type = ('Business_Service_Quality_Value')][name=$busPerf/own_slot_value[slot_reference='pm_performance_value']/value]"/>       
-  
+ 
+<xsl:variable name="busfit" select="/node()/simple_instance[type = ('Business_Service_Quality')][own_slot_value[slot_reference='name']/value='Business Fit']"/>       
+<xsl:variable name="busPerfScore" select="/node()/simple_instance[type = ('Business_Service_Quality_Value')][name=$busPerf/own_slot_value[slot_reference='pm_performance_value']/value][own_slot_value[slot_reference='usage_of_service_quality']/value=$busfit/name]"/>      
 <xsl:variable name="busPerfScoreTable" select="/node()/simple_instance[type = ('Business_Service_Quality_Value')]"/>   	
 <xsl:variable name="techPerfScoreTable" select="/node()/simple_instance[type = ('Technology_Service_Quality_Value')]"/>	
-	
+  
+<xsl:variable name="techfit" select="/node()/simple_instance[type = ('Technology_Service_Quality')][own_slot_value[slot_reference='name']/value='Technical Fit']"/> 
 <xsl:variable name="techPerf" select="/node()/simple_instance[type = ('Technology_Performance_Measure')][name=$appProPhyBus/own_slot_value[slot_reference='performance_measures']/value]"/>      
-<xsl:variable name="techPerfScore" select="/node()/simple_instance[type = ('Technology_Service_Quality_Value')][name=$techPerf/own_slot_value[slot_reference='pm_performance_value']/value]"/>     
+<xsl:variable name="techPerfScore" select="/node()/simple_instance[type = ('Technology_Service_Quality_Value')][name=$techPerf/own_slot_value[slot_reference='pm_performance_value']/value][own_slot_value[slot_reference='usage_of_service_quality']/value=$techfit/name]"/>     
  <xsl:variable name="busFitQual" select="/node()/simple_instance[type = ('Business_Service_Quality')][own_slot_value[slot_reference='name']/value='Business Fit']"/>   
 <xsl:variable name="techFitQual" select="/node()/simple_instance[type = ('Technology_Service_Quality')][own_slot_value[slot_reference='name']/value='Technical Fit']"/>    
     
 <xsl:variable name="BSQ" select="$busPerfScoreTable[own_slot_value[slot_reference='usage_of_service_quality']/value=$busFitQual/name]"/>
 <xsl:variable name="TSQ" select="$techPerfScoreTable[own_slot_value[slot_reference='usage_of_service_quality']/value=$techFitQual/name]"/>   
  <xsl:variable name="styles" select="/node()/simple_instance[type = 'Element_Style']"/>    
-<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8"/>
+ <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
 <xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"

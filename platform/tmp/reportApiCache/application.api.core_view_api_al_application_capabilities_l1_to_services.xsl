@@ -1,7 +1,0 @@
-
-		{
-			"application_capabilities": [
-				
-			]   
-		}
-	

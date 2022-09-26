@@ -937,8 +937,7 @@
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
 		</xsl:call-template>","license":"tbc","capabilitiesImpacted":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>],
-		"debugD":"<xsl:value-of select="$thisApptoProcsDirect/own_slot_value[slot_reference = 'relation_name']/value"/>",
-		"debugI":"<xsl:value-of select="$thisAPRstoProcsIndirect/own_slot_value[slot_reference = 'relation_name']/value"/>" },</xsl:template>
+ },</xsl:template>
 
 	<xsl:template match="node()" mode="stratPlans"><xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisStratPlans" select="$allObjectives[name = $this/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value]"/>

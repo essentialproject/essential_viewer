@@ -79,134 +79,122 @@
                                     <i class="fa fa-info-circle"></i> Do not edit the purple sheets, they will not be imported. We recommend you don't edit the pink worksheets.   
                                 </p>
 				            </div>
-				        </div>
+						</div>
+						<div class="col-xs-12">
+								<h3><i class="fa fa-file"></i> Launchpad Pre-Complete</h3>
+								<p style="font-size:12pt">A pre-completed spreadsheet based on data in a populated repository</p>
+								<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4_launchpad_export.xsl&amp;CT=application/ms-excel&amp;FILE=l4_launchpad_export.xml&amp;cl=en-gb">
+	
+									<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Launchpad as Excel</div>
+								</a><br/>
+							   
+						   <hr/> 
+							   
+							</div>
+						<div class="col-xs-12">
+			<h3>Launchpad Plus</h3>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Workbook</th>
+						<th>Description</th>
+						<th/>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><i class="fa fa-file"></i> Strategic Plans</td>
+						<td> Importing/Exporting of strategic plans, you can also use this import just programmes and/or projects if you wish</td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_strategic_plans_creation.xsl">
+								<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Strategic Plans Export/Import</div>
+							</a>
+						</td>
+					</tr>
+					<tr>
+					<td><i class="fa fa-file"></i> Application Dependency</td>
+					<td>Importing/Exporting of bulk application dependencies</td>
+					<td>	
+						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_app_dependencies.xsl">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Application Dependency Export/Import</div>
+						</a>
+					</td>
+					</tr>
+					<tr>
+					<td><i class="fa fa-file"></i> Control Frameworks</td>
+					<td>Bulk importing/exporting of frameworks such as NIST, ISO27001 and related assessments</td>
+					<td>									
+						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_framework_manager.xsl">	
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Framework Export/Import</div>
+					</a>
+					</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i> Strategy Planner</td>
+						<td>Importing/Exporting of customer journeys for use with the strategy planner</td>
+						<td>
+						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_strategy_planner.xsl">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Strategy Planner Export/Import</div>
+						</a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i> Technology Reference</td>
+						<td>Data to support the Strategic Technology Product Selector and technology reference models</td>
+						<td>
+						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_technology_reference.xsl">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Technology Reference Export/Import</div>
+						</a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i> Technology Lifecycles</td>
+						<td>Data to support Technology Product lifecycles, both internal and external</td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_tech_lifecycles.xsl">
 
-				        <div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Strategic Plans Creation</h3>
-                            <p style="font-size:12pt">This supports strategic plans and roadmap views.  The first sheet to populate will be the Roadmap sheet.  Add additional rows to the end of the sheets if required. </p>
-                                
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_strategic_plan_export.xsl&amp;CT=application/ms-excel&amp;FILE=strategic_plans.xml&amp;cl=en-gb">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Technology Lifecycle Export/Import</div>
+						</a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i>  Supplier Contract Management</td>
+						<td>This supports the import of supplier contracts for processes, applications and/or technology</td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_suppliers.xsl">
 
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Strategic Plans as Excel</div>
-				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/strategic_plans_importa.zip" download="strategic_plans_importa.zip">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Supplier Contract Export/Import</div>
+						</a>
+						</td>
+					</tr>
+					<!--  future release, do not use	
+					<tr>
+						<td><i class="fa fa-file"></i> Application fit</td>
+						<td>This supports the import of lifecycles for applications and the assigning of simple business and technical fit</td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_application_fit.xsl">
 
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Strategic Plans Import Specification</div>
-                                </a><br/>
-                             <a href="https://enterprise-architecture.org/downloads_area/Using_the_Strategic_Plans_Launchpad_Plus.docx" download="Using_the_Strategic_Plans_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                            
-                            <hr/>
-                            <h3><i class="fa fa-file"></i> Technology Reference </h3>
-                            <p style="font-size:12pt">Data to support the Strategic Technology Product Selector and technology reference models<br/>
-                           
-                            </p>
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_tech_reference_export.xsl&amp;CT=application/ms-excel&amp;FILE=technology_reference.xml&amp;cl=en-gb">
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Application Fit Export/Import</div>
+						</a>
+						</td>
+					</tr>
+					-->
+					<tr>
+						<td><i class="fa fa-file"></i> Value Streams</td>
+						<td>This supports the import of value streams</td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_value_streams.xsl">
 
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Technology Reference as Excel</div>
-				            </a><br/>
-                             <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Technology_Reference_Import.zip" download="Technology_Reference_Import.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Technology Reference Import Specification</div>
-				            </a><br/>
-                             <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Technology_Reference_worksheet.docx" download="LaunchpadPlus-Technology_Reference_worksheet.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                             
-				        </div>
-				        <div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Strategy Planner View Loaded</h3>
-                            <p style="font-size:12pt">Support for the Strategic Planner view including Customer Journeys</p>
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_strat_planner_export.xsl&amp;CT=application/ms-excel&amp;FILE=cust_journey_strat_planner.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Strategy Planner as Excel</div>
-				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Strategy_Planner_Import_v2.zip" download="Strategy_Planner_Import_v2.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Strategy Planner Import Specification</div>
-				            </a><br/>
-                            <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx" download="LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-				       <hr/> 
-                             <h3><i class="fa fa-file"></i> Value Streams</h3>
-                            <p style="font-size:12pt">Data to support the Value Streams<br/>
-                           
-                            </p>
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_value_stream_export.xsl&amp;CT=application/ms-excel&amp;FILE=value_streams.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Value Streams as Excel</div>
-				            </a><br/>
-                             <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Value_Streams_Import_v1.zip" download="Value_Streams_Import_v1.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Value Streams Import Specification</div>
-				            </a><br/>
-                            <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Value_Streams.docx" download="LaunchpadPlus-Value_Streams.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                            <hr/>
-				        </div>
-
-                       	<div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Launchpad Pre-Complete</h3>
-                            <p style="font-size:12pt">A pre-completed spreadsheet based on data in a populated repository</p>
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4_launchpad_export.xsl&amp;CT=application/ms-excel&amp;FILE=l4_launchpad_export.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Launchpad as Excel</div>
-				            </a><br/>
-                           
-				       <hr/> 
-                           
-				        </div>
-                        <div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Technology Lifecycles</h3>
-                            <p style="font-size:12pt">This supports the import of technology lifecycles, both internal and vendor </p>
-                                
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_technology_lifecycle_export.xsl&amp;CT=application/ms-excel&amp;FILE=technology_lifecycles.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Technology Lifecycles as Excel</div>
-				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/tech_lifecycles_IMPORTSPECv1a.zip" download="tech_lifecycles_IMPORTSPECv1a.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Technology Lifecycles Import Specification</div>
-                                </a><br/>
-                            
-                             <a href="https://enterprise-architecture.org/downloads_area/Using_the_Tech-Lifecycle_Launchpad_Plus.docx" download="Using_the_Tech-Lifecycle_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                           
-                            <hr/>
-				        </div>
-                        
-                        <div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Supplier Contract Management</h3>
-                            <p style="font-size:12pt">This supports the import of supplier contracts for processes, applications and/or technology</p>
-                                
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_supplier_management.xsl&amp;CT=application/ms-excel&amp;FILE=supplier_management.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Supplier Management as Excel</div>
-				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Suppliers_Contracts_Import_Spec_23_2_22.zip" download="Suppliers_Contracts_Import_Specv1a.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Supplier Management Import Specification</div>
-                                </a><br/>
-                             
-                             <a href="https://enterprise-architecture.org/downloads_area/Using_the_Supplier_Contracts_Launchpad_Plus.docx" download="Using_the_Supplier_Contracts_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                             
-                            <hr/>
-				        </div>
-                         <div class="col-xs-6">
-                            <h3><i class="fa fa-file"></i> Application Lifecycle &amp; Fit</h3>
-                            <p style="font-size:12pt">This supports the import of lifecycles for applications and the assigning of simple business and technical fit</p>
-                                
-				            <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_app_fit.xsl&amp;CT=application/ms-excel&amp;FILE=application_fit.xml&amp;cl=en-gb">
-
-				                <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Application Lifecycle and Fit as Excel</div>
-				            </a><br/>
-                            <a class="noUL" href="https://enterprise-architecture.org/downloads_area/appFitandLifecycle_scores_IMPORTSPECv1a.zip" download="appFitandLifecycle_scores_IMPORTSPECv1a.zip">
-
-				                <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download application Lifecycle and Fit Import Specification</div>
-                                </a><br/>
-                           
-                             <a href="https://enterprise-architecture.org/downloads_area/Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx" download="Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
-                          
-                            <hr/>
-				        </div>
-                        
-                        
-				    </div>
-				</div>
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Value Stream Export/Import</div>
+						</a>
+						</td>
+					</tr>
+				</tbody>
+				</table>
+				
+			</div>
+		</div>
+	</div>
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>

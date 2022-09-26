@@ -919,6 +919,12 @@
 	border: 2px solid #C3193C;
 	margin-top: 10px;
 }
+.helpMe {
+    position: absolute;
+    right: 35px;
+	top: 95px;
+	color:red;
+}
 .bc-business-sub-capability .bc-business-capability-box h5,
 .bc-business-sub-capability .bc-business-capability-box p{
     color:#C3193C;
@@ -1313,7 +1319,6 @@
 							</a>
 							<div class="clearfix"/>
 							<div class="app-list-scroller top-5">
-
 								<div id="appsList"></div>
 							</div>
 						</div>
@@ -1445,7 +1450,25 @@
 
 				<!-- Apps list for sidebar -->
 				<script id="appList-template" type="text/x-handlebars-template">
-						 <span id="capsId"><xsl:attribute name="easid">{{this.svc}}</xsl:attribute><h3>{{this.svcName}}</h3>
+						 <span id="capsId"><xsl:attribute name="easid">{{this.svc}}</xsl:attribute><h3>Service: {{this.svcName}} </h3>
+							
+							<a tabindex="0" class="popover-trigger">
+								<i class="fa fa-info-circle helpMe"></i>
+							</a>
+							<div class="popover">
+								<div class="strong">Help</div>
+								<div class="text-muted">The information on the applications that provide this application service. <br/>
+								The <b>Application Lifecycle</b> is the lifecycle status of the application<br/>
+								<b>Application Service Lifecycle</b> is the lifecycle of the application use of this service (Application Provider Role)<br/>
+								This will only appear if you have the data captured<br/>
+								
+								<p>
+								Once an application is expanded (click the arrow by the application name) you can see some basic information and also where <br/>
+								any organisation standards exist for this application/service mapping.
+								</p>
+								<p class="small">Note: Click this pop-up to close it</p>
+								</div>
+							</div>
 							<span class="appsvc-circle ">S</span>: Application Service Lifecycle<br/>
 							<span class="appsvc-circle ">A</span>: Application Lifecycle 
 						</span>
@@ -1458,9 +1481,11 @@
 										<xsl:attribute name="title">{{this.app.name}}</xsl:attribute>
 										<i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceLinkMenuOnly this.app 'Composite_Application_Provider'}}{{/essRenderInstanceLinkMenuOnly}}
 									</div>
-									<div class="lifecycle pull-right">
+									<div class="lifecycle pull-right">				
 										 {{#getLifecycle this.app.lifecycle 'app'}}{{/getLifecycle}}
-										 {{#getLifecycle this.app.tosvcLifecycle 'svc'}}{{/getLifecycle}}
+										 {{#if this.app.tosvcLifecycle}}
+											 {{#getLifecycle this.app.tosvcLifecycle 'svc'}}{{/getLifecycle}} 
+										 {{/if}}
 									</div>
 								</div>
 								<div class="clearfix"/>
@@ -1475,7 +1500,7 @@
 										<table width="100%">
 											<tr><th width="150px">Organisation</th><th>Status</th></tr>
 											{{#each this.stds}}
-											<tr><td>{{this.org}}</td><td> {{#getStdColour this.strId this.str}}{{/getStdColour}}  </td></tr>
+											<tr><td>{{#ifEquals this.org ''}}Global{{else}}{{this.org}}{{/ifEquals}}</td><td> {{#getStdColour this.strId this.str}}{{/getStdColour}}  </td></tr>
 											{{/each}}
 										</table>	
 										{{/if}}
@@ -1706,6 +1731,7 @@ jQuery(function ($) {
     maxHeight = Math.max.apply(null, heights);
 
     $(".panel").height(maxHeight);
+ 
   });
 
 });
@@ -1785,6 +1811,21 @@ jQuery(function ($) {
 		let appCaps = []; 
 		var partialTemplate, l0capFragment;
 		showEditorSpinner('Fetching Data...');
+
+		function initPopoverTrigger()
+		{
+			$('.popover-trigger').popover(
+			{
+				container: 'body',
+				html: true,
+				trigger: 'focus',
+				placement: 'auto',
+				content: function ()
+				{
+					return $(this).next().html();
+				}
+			});
+		};
 
 $('document').ready(function () {
 		l0capFragment = $("#model-l0-template").html();
@@ -1877,12 +1918,10 @@ $('document').ready(function () {
 		});
 
 		Handlebars.registerHelper('getStdColour', function (arg1, arg2) {
-			console.log('stdStyles',stdStyles); 
-		console.log('arg1',arg1);
+ 
 			let thisCol= stdStyles.find((d)=>{
 				return d.id==arg1;
-			});
-			console.log('thisCol',thisCol)
+			}); 
 			if(thisCol){
 				return '<div class="lifecycle pull-right"><xsl:attribute name="style">background-color:'+thisCol.colour+' ;color:'+ thisCol.colourText+'</xsl:attribute>'+arg2+'</div>';
 			}
@@ -1980,6 +2019,8 @@ if(instance){
 				return instanceLink;
 			}
 		});
+
+		
 
 let selectCapStyle=localStorage.getItem("essentialhideCaps");
 if(selectCapStyle){
@@ -2353,7 +2394,8 @@ function getApps(svcid) {
 		let appIn = scopedApps.resources.find((app) => {
 			return app.id == d.appId;
 		});
- 
+ console.log('ai',appIn)
+ console.log('d',d)
 if(d.lifecycle){
 		appIn['tosvcLifecycle'] = d.lifecycle;
 }
@@ -2384,6 +2426,9 @@ if(appIn){
 
 	$('#appsList').empty();
 	$('#appsList').html(appListTemplate(panelData))
+
+	initPopoverTrigger();
+ 
 	openNav();
 	thisAppsList.forEach((d) => {
 		rationalisationList.push(d.id)
@@ -2471,9 +2516,8 @@ $('.app-circle').each(function () {
 })
 })
 
-
-
 }
+
 });
 
 function getArrayDepth(arr) {

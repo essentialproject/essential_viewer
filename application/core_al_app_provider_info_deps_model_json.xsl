@@ -17,9 +17,9 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Composite_Application_Provider', 'Application_Provider', 'Application_Provider_Interface', 'Information_View')"/>
+	<xsl:variable name="linkClasses" select="('Composite_Application_Provider', 'Application_Provider', 'Application_Provider_Interface', 'Information_View', 'Information_Representation')"/>
 	<xsl:variable name="apiPathDataAppDeps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Dependencies']"/>
-
+	<xsl:variable name="apiPathDataAppMart" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!--
@@ -51,10 +51,15 @@
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<xsl:variable name="apiPathDeps">
-				<xsl:call-template name="GetViewerAPIPath">
-					<xsl:with-param name="apiReport" select="$apiPathDataAppDeps"/>
-				</xsl:call-template>
-			</xsl:variable>
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$apiPathDataAppDeps"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="apiPathMart">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$apiPathDataAppMart"/>
+			</xsl:call-template>
+		</xsl:variable>	
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/> 
@@ -67,41 +72,6 @@
 				<title>Application Dependency Model</title>
 				<script src="js/d3/d3.v5.7.0.min.js"/>
 			<style>
-					.eas-logo-spinner {​​​​​​​​
-						display: flex;
-						justify-content: center;
-					}​​​​​​​​
-					#editor-spinner {​​​​​​​​
-						height: 100vh;
-						width: 100vw;
-						position: fixed;
-						top: 0;
-						left:0;
-						z-index:999999;
-						background-color: hsla(255,100%,100%,0.75);
-						text-align: center;
-					}​​​​​​​​
-					#editor-spinner-text {​​​​​​​​
-						width: 100vw;
-						z-index:999999;
-						text-align: center;
-					}​​​​​​​​
-					.spin-text {​​​​​​​​
-						font-weight: 700;
-						animation-duration: 1.5s;
-						animation-iteration-count: infinite;
-						animation-name: logo-spinner-text;
-						color: #aaa;
-						float: left;
-					}​​​​​​​​
-					.spin-text2 {​​​​​​​​
-						font-weight: 700;
-						animation-duration: 1.5s;
-						animation-iteration-count: infinite;
-						animation-name: logo-spinner-text2;
-						color: #666;
-						float: left;
-					}​​​​​​​​
 				.lineClick {
 					cursor: pointer;
 					}
@@ -415,7 +385,6 @@
 					height: 100%;
 				}
 				.apiBox a,.appBox a {
-					width: 150px;
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
@@ -579,13 +548,55 @@
 				.int-method-label {
 					font-size: 11.9px;
 				}
+				.ess-truncate {
+					width: 200px;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					}
+
+				.eas-logo-spinner {​​​​​​​​​
+					    display: flex;
+					    justify-content: center;
+					}​​​​​​​​​
+					#editor-spinner {​​​​​​​​​
+					    height: 100vh;
+					    width: 100vw;
+					    position: fixed;
+					    top: 0;
+					    left:0;
+					    z-index:999999;
+					    background-color: hsla(255,100%,100%,0.75);
+					    text-align: center;
+					}​​​​​​​​​
+					#editor-spinner-text {​​​​​​​​​
+					    width: 100vw;
+					    z-index:999999;
+					    text-align: center;
+					}​​​​​​​​​
+					.spin-text {​​​​​​​​​
+					    font-weight: 700;
+					    animation-duration: 1.5s;
+					    animation-iteration-count: infinite;
+					    animation-name: logo-spinner-text;
+					    color: #aaa;
+					    float: left;
+					}​​​​​​​​​
+					.spin-text2 {​​​​​​​​​
+					    font-weight: 700;
+					    animation-duration: 1.5s;
+					    animation-iteration-count: infinite;
+					    animation-name: logo-spinner-text2;
+					    color: #666;
+					    float: left;
+					}​​​​​​​​​
 			</style>	
 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -600,9 +611,6 @@
 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-							<div class="simple-scroller">
-								<div id="model"/>
-							</div>
 							<div id="editor-spinner" class="hidden">
 								<div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;">
 									<div class="spin-icon" style="width: 60px; height: 60px;">
@@ -613,6 +621,10 @@
 								</div>
 								<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 							</div>
+							<div class="simple-scroller">
+								<div id="model"/>
+							</div>
+							
 						</div>
 					
 						<!--Setup Closing Tags-->
@@ -683,6 +695,7 @@
 			<script>
 			<xsl:call-template name="RenderViewerAPIJSFunction">
 					<xsl:with-param name="viewerAPIPath" select="$apiPathDeps"/>
+					<xsl:with-param name="viewerAPIPathMart" select="$apiPathMart"/>
 			</xsl:call-template>
 			</script>
 
@@ -721,7 +734,7 @@
 				{{#each this}}
 				<div class="panel panel-default">
 					<div class="panel-heading strong ess-panel-header-link large">{{{essRenderInstanceMenuLink this}}}{{#if acqMethod}}<span class="label label-primary pull-right">{{acqMethod.label}}</span>{{/if}}</div>
-					<!--<div class="panel-body">
+					<div class="panel-body">
 						<div class="ess-blobWrapper">
 							{{#each dataObjects}}
 							<div class="ess-blob bdr-left-blue">
@@ -738,7 +751,7 @@
 							</div>
 							{{/each}}
 						</div>
-					</div>-->
+					</div>
 				</div>
 				{{/each}}
 				{{else}}
@@ -748,7 +761,7 @@
 
 <script id="iface-list-template" type="text/x-handlebars-template">
 						
-	<svg width="1200px"><xsl:attribute name="height">{{#getFocusHeight this.tot 2}}{{/getFocusHeight}}</xsl:attribute>
+	<svg id="svgPanel"><xsl:attribute name="height">{{#getFocusHeight this.tot 2}}{{/getFocusHeight}}</xsl:attribute><xsl:attribute name="width">{{#getWidth}}{{/getWidth}}</xsl:attribute>
 			   <defs>
 				<marker id="arrowhead" markerWidth="7" markerHeight="7" 
 				refX="0" refY="3.5" orient="auto">
@@ -759,13 +772,15 @@
 	{{#each this.values}}
 	{{#ifEquals @index 0}}
 			<!-- rectangle and text --> 
-			<foreignObject class="appBox"  x="10" width="190"  >
+			{{#ifEquals this.name 'Fake1'}}
+			{{else}}
+			<foreignObject class="appBox"  x="10"><xsl:attribute name="width">{{#getItemWidth box}}{{/getItemWidth}}</xsl:attribute>
 				<xsl:attribute name="y">{{#getRow this.num}}{{/getRow}}</xsl:attribute>
 				<xsl:attribute name="height">{{#if this.apiApp}}{{#getHeight 0 ../this.interfaces.length}}{{/getHeight}}{{else}}{{#getHeight ../this.values.length ../this.interfaces.length}}{{/getHeight}}{{/if}}</xsl:attribute> 
 				<xhtml>
 					<div>
 						<xsl:attribute name="title">{{this.name}}</xsl:attribute>
-						<i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}} {{#getInfo this}}{{/getInfo}}</div>
+						<span class="ess-truncate"><i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}} {{#getInfo this}}{{/getInfo}}</span></div>
 				<!--	<div class="node-rect wordwrap">
 						<xsl:attribute name="style">width: 190px; height: {{#getHeight ../this.values.length ../this.interfaces.length}}{{/getHeight}}px;</xsl:attribute>
 						<div class="node-title">
@@ -780,19 +795,41 @@
 					</div>-->
 				</xhtml>
 			</foreignObject>
-		
+			{{/ifEquals}}
 	{{/ifEquals}} 
 	{{/each}}	
 
 		
 	{{#each this.interfaces}}
-
-		<line x1="200"   x2="495"  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+	{{#ifEquals this.receivesFrom.0.name 'Fake1'}}
+		<line style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+			<xsl:attribute name="x1">{{#getItemX 'Api1'}}{{/getItemX}}</xsl:attribute>
+			<xsl:attribute name="x2">{{#getItemX 'Line1x2'}}{{/getItemX}}</xsl:attribute>
+			<xsl:attribute name="y1">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
+			<xsl:attribute name="y2">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
+		</line>
+		<foreignObject eas-type="fromInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px"   width="20" class="lineClick">
+			<xsl:attribute name="x">{{#getItemX 'Api1Info2'}}{{/getItemX}}</xsl:attribute>
+			<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
+			<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
+			<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
+			<xsl:attribute name="height">20</xsl:attribute>
+			<xhtml> 
+					<div data-toggle="modal" class="node-body-icon">
+						<i class="fa fa-info-circle fa-sm"></i>
+					</div> 
+			</xhtml>
+		</foreignObject> 
+	{{else}}
+		<line style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+		  <xsl:attribute name="x1">{{#getItemX 'Line1'}}{{/getItemX}}</xsl:attribute>
+		  <xsl:attribute name="x2">{{#getItemX 'Line1x2'}}{{/getItemX}}</xsl:attribute>
 		  <xsl:attribute name="y1">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
 		  <xsl:attribute name="y2">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
 		</line>
 		<!-- add info button to the left of the api-->
-		<foreignObject eas-type="fromInterfaceSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px;" x="220" width="20" class="lineClick">
+		<foreignObject eas-type="fromInterfaceSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px;" width="20" class="lineClick">
+			<xsl:attribute name="x">{{#getItemX 'Api1Info'}}{{/getItemX}}</xsl:attribute>
 			<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 			<xsl:attribute name="eas-dep-id">{{receivesFrom.0.dependencyId}}</xsl:attribute>
 			<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -804,7 +841,8 @@
 			</xhtml>
 		</foreignObject>	
 		<!-- add info button to the right of the api-->
-		<foreignObject eas-type="fromInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" x="460" width="20" class="lineClick">
+		<foreignObject eas-type="fromInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px"   width="20" class="lineClick">
+			<xsl:attribute name="x">{{#getItemX 'Api1Info2'}}{{/getItemX}}</xsl:attribute>
 			<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 			<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
 			<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -814,17 +852,22 @@
 						<i class="fa fa-info-circle fa-sm"></i>
 					</div> 
 			</xhtml>
-		</foreignObject>	
+		</foreignObject> 
+		{{/ifEquals}}
+
 		<!-- add api -->		
-		<foreignObject class="apiBox" x="255" height="25" width="190"  >
+		<foreignObject class="apiBox"  height="25"  >
+			<xsl:attribute name="style">width:{{#getItemWidth 'Api1'}}{{/getItemWidth}};white-space: nowrap; margin-right:3px;overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: bottom</xsl:attribute>		
+			<xsl:attribute name="x">{{#getItemX 'Api1'}}{{/getItemX}}</xsl:attribute>	
 			<xsl:attribute name="y">{{#getAPIRow this.num}}{{/getAPIRow}}</xsl:attribute>
 			<xhtml><div>
 				<xsl:attribute name="title">{{this.name}}</xsl:attribute>
-				<i class="fa fa-exchange fa-rotate-90 fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}</div>
+				<i class="fa fa-exchange fa-rotate-90 fa-fw right-5"></i><span><xsl:attribute name="style">font-size:{{#getFont this.name}}{{/getFont}}em</xsl:attribute>{{{essRenderInstanceMenuLink this}}}</span></div>
 				<!--
-				<div class="node-rect wordwrap" style="width: 190px; height:25px;">
+				<div class="node-rect wordwrap"><xsl:attribute name="style">width:{{#getItemWidth 'Api1'}}{{/getItemWidth}};height:25px</xsl:attribute>	
 					<div class="node-title node-title-text">
-						<span class="node-title-text">
+						<span class="node-title-text">	
+							 
 							{{{essRenderInstanceMenuLink this}}}
 						
 						</span>
@@ -840,11 +883,14 @@
 
 	{{#each this.values}}
     {{#if this.apiApp}}{{else}}
- 		 <line x1="200"   x2="495"  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+		  <line style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+		  <xsl:attribute name="x1">{{#getItemX 'Line1'}}{{/getItemX}}</xsl:attribute>
+		  <xsl:attribute name="x2">{{#getItemX 'Line1x2'}}{{/getItemX}}</xsl:attribute>
 		  <xsl:attribute name="y1">{{#getLineRow num}}{{/getLineRow}}</xsl:attribute>
 		  <xsl:attribute name="y2">{{#getLineRow num}}{{/getLineRow}}</xsl:attribute>
 		  </line> 
-		  <foreignObject eas-type="fromSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" x="340" width="20" class="lineClick">
+		  <foreignObject eas-type="fromSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick">
+			<xsl:attribute name="x">{{#getItemX 'Api1i'}}{{/getItemX}}</xsl:attribute>  
  			<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
 			<xsl:attribute name="y">{{#geticonLineRow this.num}}{{/geticonLineRow}}</xsl:attribute>
 			<xsl:attribute name="height">20</xsl:attribute>
@@ -864,13 +910,17 @@
 			{{#each this.values}}
 			{{#ifEquals @index 0}}
 				<!-- to side -->
-				<foreignObject class="appBox"  x="905" width="190"  >
+				{{#ifEquals this.name 'Fake1'}}
+				{{else}}
+				<foreignObject class="appBox"  >
+					<xsl:attribute name="width">{{#getItemWidth 'App2'}}{{/getItemWidth}}</xsl:attribute>	
+					<xsl:attribute name="x">{{#getItemX 'App2'}}{{/getItemX}}</xsl:attribute>
 					<xsl:attribute name="y">{{#getRow this.num}}{{/getRow}}</xsl:attribute>
                     <xsl:attribute name="height">{{#if this.apiApp}}{{#getHeight 0 ../this.tointerfaces.length}}{{/getHeight}}{{else}}{{#getHeight ../this.values.length ../this.tointerfaces.length}}{{/getHeight}}{{/if}}</xsl:attribute> 
 				<xhtml>
 						<div>
 							<xsl:attribute name="title">{{this.name}}</xsl:attribute>
-							<i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}</div>
+							<span class="ess-truncate"><i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}</span></div>
 					<!--	<div class="node-rect wordwrap">
 							<xsl:attribute name="style">width: 190px; height: {{#getHeight ../this.values.length ../this.tointerfaces.length}}{{/getHeight}}px;</xsl:attribute>
 							<div class="node-title">
@@ -885,16 +935,31 @@
                         -->
 					</xhtml>
 				</foreignObject>
+				{{/ifEquals}}
 			{{/ifEquals}} 
 			{{/each}}	
  
 				
 			{{#each this.tointerfaces}} 
-			<line x1="600"   x2="895"  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+			{{#ifEquals ../this.values.0.name 'Fake1'}}
+				<line  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)" class="JOHN">
+				<xsl:attribute name="x1">{{#getItemX 'Line2'}}{{/getItemX}}</xsl:attribute>
+				<xsl:attribute name="x2">{{#getItemX 'Api2'}}{{/getItemX}}</xsl:attribute>
 				<xsl:attribute name="y1">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
 				<xsl:attribute name="y2">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>§
-			</line>				
-			<foreignObject eas-type="toInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" x="850" width="20" class="lineClick"   >
+			</line>	
+			{{else}}
+			<line  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)">
+				<xsl:attribute name="x1">{{#getItemX 'Line2'}}{{/getItemX}}</xsl:attribute>
+				<xsl:attribute name="x2">{{#getItemX 'Line2x2'}}{{/getItemX}}</xsl:attribute>
+				<xsl:attribute name="y1">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>
+				<xsl:attribute name="y2">{{#getAPILineRow this.num}}{{/getAPILineRow}}</xsl:attribute>§
+			</line>	
+
+				
+			{{/ifEquals}} 
+			<foreignObject eas-type="toInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick"   >
+				<xsl:attribute name="x">{{#getItemX 'Api2Info'}}{{/getItemX}}</xsl:attribute>	
 				<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 				<xsl:attribute name="eas-dep-id">{{sendsTo.0.dependencyId}}</xsl:attribute> 
 				<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -906,7 +971,11 @@
 						</div> 
 				</xhtml>
 			</foreignObject>	
-			<foreignObject eas-type="toInterfaceSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" x="620" width="20" class="lineClick"   >
+
+
+			{{#ifNotEquals ../this.values.0.name 'Fake1'}}			
+			<foreignObject eas-type="toInterfaceSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick"   >
+				<xsl:attribute name="x">{{#getItemX 'Api2Info2'}}{{/getItemX}}</xsl:attribute>
 				<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 				<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
 				<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -917,12 +986,15 @@
 						</div> 
 				</xhtml>
 			</foreignObject>
-			<foreignObject  class="apiBox" x="650" height="25" width="190"  >
+			{{/ifNotEquals}}
+			<foreignObject  class="apiBox"  height="25"  >
+				<xsl:attribute name="width">{{#getItemWidth 'Api2'}}{{/getItemWidth}}</xsl:attribute>	
+				<xsl:attribute name="x">{{#getItemX 'Api2'}}{{/getItemX}}</xsl:attribute>
 				<xsl:attribute name="y">{{#getAPIRow this.num}}{{/getAPIRow}}</xsl:attribute>
 				<xhtml>
 					<div>
 						<xsl:attribute name="title">{{this.name}}</xsl:attribute>
-						<i class="fa fa-exchange fa-rotate-90 fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}</div>
+						<i class="fa fa-exchange fa-rotate-90 fa-fw right-5"></i><span><xsl:attribute name="style">font-size:{{#getFont this.name}}{{/getFont}}em</xsl:attribute>{{{essRenderInstanceMenuLink this}}}</span></div>
 					<!--<div class="node-rect wordwrap" style="width: 190px; height: 90px;">
 						<div class="node-title">
 							<span class="node-title-text">
@@ -936,15 +1008,19 @@
                     -->
 				</xhtml>
 			</foreignObject>
+
 			{{/each}}	
 
 	{{#each this.values}}
         {{#if this.apiApp}}{{else}}
- 		 <line x1="600"   x2="895"  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)"  class="lineClick"   >
+		  <line  style="stroke:#888;stroke-width:1" marker-end="url(#arrowhead)"  class="lineClick"   >
+				<xsl:attribute name="x1">{{#getItemX 'Line2'}}{{/getItemX}}</xsl:attribute>
+				<xsl:attribute name="x2">{{#getItemX 'Line2x2'}}{{/getItemX}}</xsl:attribute>
 		  <xsl:attribute name="y1">{{#getLineRow num}}{{/getLineRow}}</xsl:attribute>
 		  <xsl:attribute name="y2">{{#getLineRow num}}{{/getLineRow}}</xsl:attribute>
 		  </line>
-		  <foreignObject eas-type="toTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" x="740" width="20" class="lineClick"   >
+		  <foreignObject eas-type="toTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick"   >
+			<xsl:attribute name="x">{{#getItemX 'Api2i'}}{{/getItemX}}</xsl:attribute>  
 			<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
 			<xsl:attribute name="y">{{#geticonLineRow this.num}}{{/geticonLineRow}}</xsl:attribute>
 			<xsl:attribute name="height">20</xsl:attribute>
@@ -957,10 +1033,11 @@
         {{/if}}
 	{{/each}} 
  
-{{/each}} 	
+{{/each}} 	s
 <!-- middle focus app rect and text -->
  
-		<foreignObject class="hubApp" x="505" width="110">
+		<foreignObject class="hubApp" x="505" width="110"> 
+			<xsl:attribute name="x">{{#getItemX 'Midpoint'}}{{/getItemX}}</xsl:attribute>
 			<xsl:attribute name="y">3</xsl:attribute>
 			<xsl:attribute name="height">{{#getFocusHeight this.tot 1}}{{/getFocusHeight}}</xsl:attribute>
 			<xhtml>
@@ -984,7 +1061,7 @@
 		</foreignObject>
 		</svg>
 
-</script>			
+</script>	
 <script>
 
 <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
@@ -993,6 +1070,7 @@
 
 var infoViewPanelTemplate;
 var depData, focusAppm, allAcqMethods;
+let dataSet=[];
 
 function setAcqMethod(dep) {
 	let acqMethod = allAcqMethods.find(am => am.id == dep.acqMethodId);
@@ -1007,10 +1085,100 @@ function setDepAcqMethod(dep) {
 	dep.infoReps?.forEach(ir => {
 		setAcqMethod(ir);
 	});
+ 
 }
 
+function showEditorSpinner(message) {
+	$('#editor-spinner-text').text(message);                            
+	$('#editor-spinner').removeClass('hidden')
+};
+
+function removeEditorSpinner() {
+	$('#editor-spinner').addClass('hidden');
+	$('#editor-spinner-text').text('')
+};
+
 // DO FROM APPS
+var redrawView = function () {
+ 
+
+	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
+	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+	let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION'); 
+ 
+ 	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+//	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef]);
+ 
+ 
+let thefocusApp={};
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === 'object' &amp;&amp; value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
+
+
+
+thefocusApp=JSON.parse(JSON.stringify(DataSet, getCircularReplacer()));
+
+let tfaDependencies=[];
+let ttaDependencies=[];
+let tfdaDependencies=[];
+let ttdaDependencies=[];
+	DataSet.dependencies.fromInterfaces.forEach((e)=>{
+		let inscope=scopedApps.resourceIds.find((ap)=>{
+			return e.id == ap;
+		})
+	
+		if(inscope){ 
+			if(e.receivesFrom.length==0){
+				e.receivesFrom.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
+			}
+			tfaDependencies.push(e)}
+	})
+	thefocusApp.dependencies['fromInterfaces']=tfaDependencies
+	DataSet.dependencies.toInterfaces.forEach((e)=>{
+		let inscope=scopedApps.resourceIds.find((ap)=>{
+			return e.id == ap;
+		})
+		if(e.sendsTo.length==0){
+			e.sendsTo.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
+		}
+
+		if(inscope){ttaDependencies.push(e)}
+	})
+	thefocusApp.dependencies['toInterfaces']=ttaDependencies
+
+	DataSet.dependencies.receivesFrom.forEach((e)=>{
+		let inscope=scopedApps.resourceIds.find((ap)=>{
+			return e.id == ap;
+		})
+		if(inscope){tfdaDependencies.push(e)}
+	})
+	thefocusApp.dependencies['receivesFrom']=tfdaDependencies
+
+	DataSet.dependencies.sendsTo.forEach((e)=>{
+		let inscope=scopedApps.resourceIds.find((ap)=>{
+			return e.id == ap;
+		})
+		if(inscope){ttdaDependencies.push(e)}
+	})
+	thefocusApp.dependencies['sendsTo']=ttdaDependencies
+ 
+setUpData(thefocusApp)
+}
 function setUpData(data){
+	 
 	depData = data.dependencies;
 	allAcqMethods = data.allAcqMethods;
 	focusApp = {
@@ -1057,6 +1225,7 @@ data.dependencies.fromInterfaces.forEach((e)=>{
        let rxFr= {"acqMethodId":f.acqMethodId,
        "className":f.className,
        "dependencyId":f.dependencyId, 
+	   "lifecycleStatus":f.lifecycleStatus, 
         "hasInfo": f.hasInfo,
         "id": f.id,
         "interfaces": f.interfaces,
@@ -1067,7 +1236,13 @@ data.dependencies.fromInterfaces.forEach((e)=>{
 		interfaceFromApps.push(rxFr)
 	});
 });
+
+let lifeScopingDef = new ScopingProperty('lifecycleStatus', 'Lifecycle_Status');
  
+
+let scopedinterfaceFromApps = essScopeResources(interfaceFromApps, [lifeScopingDef]);
+ 
+
 let interfacesToAdd=[];
 interfaceFromApps.forEach((e)=>{
  
@@ -1082,6 +1257,7 @@ interfaceFromApps.forEach((e)=>{
 		"interfaces":[],
 		"values":[{"className": "Composite_Application_Provider",  
         "id": e.id,
+		"lifecycleStatus":e.lifecycleStatus, 
 		"name": e.name,
 		"apiApp":"true"}]
 		})
@@ -1091,6 +1267,7 @@ interfaceFromApps.forEach((e)=>{
 interfacesToAdd.forEach((iface)=>{
     appCount.push(iface)
 })
+
 <!-- end -->
 let indirectApps=[];
 appCount.forEach((ap)=>{ 
@@ -1114,6 +1291,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
                     "description":d.description,
                     "hasInfo": d.hasInfo,
                     "id": d.id,
+					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "receivesFrom":d.receivesFrom,
                     "usageId":d.usageId
@@ -1125,6 +1303,8 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 		indirectApps.push(newAppsViaInterfaces[0])
 	}
 
+
+
 	if(relInterfaces.length&gt; 0){
         let thisi2= {
                     "acqMethodId": d.acqMethodId,
@@ -1133,6 +1313,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
                     "description":d.description,
                     "hasInfo": d.hasInfo,
                     "id": d.id,
+					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "receivesFrom":d.receivesFrom,
                     "usageId":d.usageId
@@ -1140,20 +1321,21 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 		allInterfaces.push(thisi2)
 	}
 	});
-
+	
 // assign interfaces to apps
 ap['interfaces']=allInterfaces;
 });
+
+let scopedindirectApps = essScopeResources(indirectApps, [lifeScopingDef]);
+ 
+	
+let scopedinterfacesToAdd = essScopeResources(interfacesToAdd, [lifeScopingDef]);
+ 
 <!-- start -->
 interfacesToAdd.forEach((d)=>{
 	appCount.push(d)
  });
  <!-- end -->
-
-//remove duplicates
-
-//indirectApps=indirectApps.filter((elem, index, self) => self.findIndex( (t) => {return (t.usageId === elem.usageId)}) === index)
-
 
 // DO TO APPS ######################
 
@@ -1175,6 +1357,7 @@ data.dependencies.toInterfaces.forEach((e)=>{
          "dependencyId":f.dependencyId, 
           "hasInfo": f.hasInfo,
           "id": f.id,
+		  "lifecycleStatus":f.lifecycleStatus, 
           "interfaces": f.interfaces,
           "acqMethodId": f.acqMethodId,
           "name": f.name,
@@ -1196,6 +1379,7 @@ interfaceToApps.forEach((e)=>{
 		"interfaces":[],
 		"values":[{"className": "Composite_Application_Provider", 
         "id": e.id, 
+		"lifecycleStatus":e.lifecycleStatus, 
 		"name": e.name,
 		"apiApp":"true"}]
 		})
@@ -1232,6 +1416,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
                     "description":d.description,
                     "hasInfo": d.hasInfo,
                     "id": d.id,
+					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "sendsTo":d.sendsTo,
                     "usageId":d.usageId
@@ -1251,6 +1436,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
                     "description":d.description,
                     "hasInfo": d.hasInfo,
                     "id": d.id,
+					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "receivesFrom":d.receivesFrom,
                     "usageId":d.usageId
@@ -1344,17 +1530,15 @@ appCount=appCount.filter((elem, index, self) => self.findIndex( (t) => {return (
  
 //console.log('tot',tot)
 //console.log('totot',totot)
-let dataSet=[]
+
 				dataSet['from']=appCount
 				dataSet['to']=appToCount 
-				let ht = Math.max(totot, tot)+12;
+				let ht = Math.max(totot, tot)+2;
 				dataSet['tot']=ht;
 				dataSet['name']=data.name;
 				dataSet['className']=data.className;
-
-				dataSet['id']=data.id;
 	//console.log('All Dep Data', depData);
-	//console.log('ht',ht)
+ 
 	//console.log('appCount',appCount)
 	//console.log('appToCount',appToCount)
 	//console.log('Data Set:', dataSet);
@@ -1365,6 +1549,7 @@ let dataSet=[]
 const minFocusHeight = 400;
 
 $(document).ready(function() {
+	let ww=$(window).width();
 		let ifaceListFragment = $("#iface-list-template").html();
 		ifaceListTemplate = Handlebars.compile(ifaceListFragment);
 
@@ -1376,6 +1561,10 @@ $(document).ready(function() {
 
 		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+		});
+
+		Handlebars.registerHelper('ifNotEquals', function (arg1, arg2, options) {
+			return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
 		});
 
 		Handlebars.registerHelper('getRow', function (arg1, options) {
@@ -1392,13 +1581,85 @@ $(document).ready(function() {
 		Handlebars.registerHelper('getHeight', function (arg1, arg2, options) {
  
 			let tot = arg1+arg2;
-			return (tot * 30);
+			return (tot * 34);
+		});
+		Handlebars.registerHelper('getItemWidth', function (arg1, options) {
+			let ww=$(window).width();
+			if(arg1=='Line'){
+				return 300;
+			}
+			else{
+				return ww*0.17
+			}
+		});
+		Handlebars.registerHelper('getFont', function (arg1, options) {
+			let boxWidthCharacter=(ww*0.17+10)/9.5;
+		
+			let nameCharacters=arg1.length; 
+			if(nameCharacters &gt; boxWidthCharacter){
+				return boxWidthCharacter/nameCharacters;
+			}
+			else{
+				return 1
+			}
+		});
+		
+		Handlebars.registerHelper('getItemX', function (arg1, options) {
+			let ww=$(window).width();
+			if(arg1=='Line1'){
+				return ww*0.17+10;
+			}
+			if(arg1=='Line1x2'){
+				return (ww/2)-65;
+			}
+			else if(arg1=='Api1Info'){
+				return (((ww/2)-55)/2)-40
+			}
+			else if(arg1=='Api1Info2'){
+				return ((((ww/2)-55)/2)+ww*0.17)+20
+			}
+			else if(arg1=='Api1'){
+				return ((ww/2)-55)/2
+			}
+			else if(arg1=='Midpoint'){
+				return (ww/2)-55;
+			}
+			else if(arg1=='App2'){
+				return ww-(ww*0.17+10)-40;
+			}
+			else if(arg1=='Line2'){
+				return (ww/2)+55;;
+			}
+			else if(arg1=='Line2x2'){
+				return (ww-(ww*0.17+10)-50);
+			}
+			else if(arg1=='Api2'){
+				return (ww/2)+((ww*0.17)/2)
+			}
+			else if(arg1=='Api2Info'){
+				return (ww/2)+((ww*0.17)/2)-40
+			}
+			else if(arg1=='Api2Info2'){
+				return (((ww/2)+((ww*0.17)/2))+ww*0.17)+20
+			}
+			else if(arg1=='Api1i'){
+				return (((ww/2)-65) - ((ww*0.17)+10))+55;
+			}
+			else if(arg1=='Api2i'){
+				return ((((ww-(ww*0.17+10)-50)) - ((ww/2)+55))/2)+(ww/2)+55
+			}
+			
+		});
+ 
+
+		Handlebars.registerHelper('getWidth', function () {
+			return $(window).width()-40;
 		});
 
 		Handlebars.registerHelper('getFocusHeight', function (arg1, arg2, options) {
  
 			let tot = arg1+arg2;
-			return Math.max(minFocusHeight, (tot * 30));
+			return Math.max(minFocusHeight, (tot * 35));
 		});
 		
 		Handlebars.registerHelper('getTextRow', function (arg1, options) {
@@ -1443,7 +1704,6 @@ $(document).ready(function() {
 				}-->
 				
 				if(currentAppInfoExchange.infoViews) {
-					
 					$('#modal-exchanged-info-container').html(infoViewPanelTemplate(currentAppInfoExchange.infoViews)).promise().done(function(){
 						//info popover listener
 						$('.popover-trigger').popover({
@@ -1471,28 +1731,15 @@ $(document).ready(function() {
 			currentTarget = null;
 		});
 	
-
+		
 })
-
-function showEditorSpinner(message){
-	$('#editor-spinner-text').text(message);                            
-    $('#editor-spinner').removeClass('hidden');
-};
-
-function removeEditorSpinner(){
-	$('#editor-spinner').addClass('hidden');
-    $('#editor-spinner-text').text('');
-	};
-showEditorSpinner('Creating Diagram')
- 
 
 var currentExchangeType, currentAppInfoExchange, currentSource, currentTarget;
 
 function redraw(dataForMap){
-	showEditorSpinner('Drawing Diagram')
- 
-	$('#model').append(ifaceListTemplate(dataForMap)).promise().done(function(){
-		removeEditorSpinner();
+	console.log('dataForMap',dataForMap)
+	$('#model').html(ifaceListTemplate(dataForMap)).promise().done(function(){
+		
 		//add event listeners
 		$('.lineClick').on('click', function(e) {
 			let thisDepId = $(this).attr('eas-dep-id');
@@ -1555,8 +1802,10 @@ function redraw(dataForMap){
 	</xsl:template>
 	<xsl:template name="RenderViewerAPIJSFunction">
 			<xsl:param name="viewerAPIPath"/>
+			<xsl:param name="viewerAPIPathMart"/>
 			let param1='<xsl:value-of select="$param1"/>';
 			var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>&amp;PMA='+param1;
+			var viewAPIDataMart = '<xsl:value-of select="$viewerAPIPathMart"/>&amp;PMA='+param1;
 //console.log('viewAPIData',viewAPIData)
 			var promise_loadViewerAPIData = function(apiDataSetURL) {
             return new Promise(function (resolve, reject) {
@@ -1580,17 +1829,41 @@ function redraw(dataForMap){
                 }
             });
 		};
-		
 
-		$('document').ready(function () {
+var DataSet=[];	
+var fullAppList=[];	
+var dynamicAppFilterDefs=[];	
+var dynamicCapFilterDefs=[];
 
+$('document').ready(function () {
+	showEditorSpinner('Fetching Data')
 			Promise.all([
-			promise_loadViewerAPIData(viewAPIData)
+			promise_loadViewerAPIData(viewAPIData),
+			promise_loadViewerAPIData(viewAPIDataMart) 
 			]).then(function (responses)
 			{
-				removeEditorSpinner()
-				//console.log('api',responses[0])
-			 	setUpData(responses[0]);
+				removeEditorSpinner();
+			//	console.log('viewAPIData',responses[0])
+				DataSet=responses[0];
+				let filters=responses[1].filters;
+				let capfilters=responses[1].filters;
+				fullAppList=responses[1].applications.concat(responses[1].apis)
+				capfilters.forEach((d)=>{
+					responses[1].filters.push(d);
+				})
+				responses[1].filters.sort((a, b) => (a.id > b.id) ? 1 : -1) 
+				dynamicAppFilterDefs=filters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+				dynamicCapFilterDefs=capfilters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+				 //console.log('fullAppList',fullAppList)
+			//	 setUpData(DataSet);
+				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+		
+
+
 			})
 		})
 	</xsl:template>
@@ -1616,7 +1889,7 @@ function redraw(dataForMap){
 				<xsl:with-param name="menuClasses" select="$linkClasses"/>
 			</xsl:call-template>
 		}
-		
+		console.log('esslinkMenuNames',esslinkMenuNames)
 		function essGetMenuName(instance) {
 			let menuName = null;
 			if(instance.meta?.anchorClass) {
@@ -1628,7 +1901,6 @@ function redraw(dataForMap){
 		}
 		
 		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){
-	 
 			if(instance != null) {
 				let linkMenuName = essGetMenuName(instance);
 				let instanceLink = instance.name;

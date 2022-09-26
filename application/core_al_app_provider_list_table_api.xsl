@@ -151,7 +151,12 @@
 					}
 					.btnOn{
 						background-color:#d3d3d3;
-					}       
+					}     
+					 
+					.appTypes li{
+						display: inline;
+					}  
+					
 				</style>
 			 	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -186,14 +191,24 @@
 							</div>
                         </div>
 						<xsl:call-template name="RenderDataSetAPIWarning"/>
-                        <div class="col-xs-12">
+                        <div class="col-xs-12 ">
 							<div class="pull-right filtParent">
-								<div class="filtBtn btnOn appBtn" id="appBtn">Applications</div>
-								<div class="filtBtn btnOn" id="moduleBtn">Modules</div>
-								<div class="filtBtn" id="apiBtn">APIs</div>
+								
+							<ul class="appTypes" style="z-index:10">Include:
+								<li ><input type="checkbox" id="appBtn" name="appBtn" value="apps"></input>
+								<label for="vehicle1"> Applications</label>  </li>
+								<li><input type="checkbox" id="moduleBtn" name="moduleBtn" value="modules"/>
+								<label for="vehicle2"> Modules</label>  </li>
+								<li><input type="checkbox" id="apiBtn" name="apiBtn" value="apis"/>
+								<label for="vehicle3"> APIs</label> </li>
+							</ul>
+						 
 							</div>
+						</div>
+						<div class="clearfix bottom-10"/>	
+						<div class="col-xs-12">	
  
-                                <table class="table table-striped table-bordered" id="dt_Capabilities">
+                                <table class="table table-striped table-bordered" id="dt_Capabilities" >
                                         <thead>
                                             <tr>
                                                 <th>
@@ -447,7 +462,8 @@
 				allAppArr = JSON.parse(JSON.stringify(workingArr))
 				 
                 roadmapCaps = [];
-                
+               
+				
 
                 // Setup - add a text input to each footer cell
 		        $('#dt_Capabilities tfoot th').each(function () {
@@ -507,7 +523,8 @@
 
 		        $(window).resize(function () {
 		            catalogueTable.columns.adjust();
-		        });
+				});
+				
 
 		        <!-- *** OPTIONAL *** Register the table as having roadmap aware contents-->
 		            if (roadmapEnabled) {
@@ -518,6 +535,7 @@
 				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters);
 
 		$('#appBtn').on('click', function(){
+			console.log('hi')
 			if($('#appBtn').hasClass('btnOn')){
 			 
 				$('#appBtn').removeClass('btnOn')

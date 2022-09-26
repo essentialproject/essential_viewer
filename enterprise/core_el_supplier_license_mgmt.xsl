@@ -33,6 +33,12 @@
 	<xsl:variable name="tprsForTechnologyProducts" select="/node()/simple_instance[type = 'Technology_Product_Role']"/>
 	<xsl:variable name="technologyComponents" select="/node()/simple_instance[type = 'Technology_Component'][own_slot_value[slot_reference = 'realised_by_technology_products']/value = $tprsForTechnologyProducts/name]"/>
 	<xsl:variable name="applications" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]"/>
+
+	<xsl:key name="allBusProcsSupplier_key" match="$allBusProcs" use="own_slot_value[slot_reference = 'business_process_supplier']/value"/>
+	<xsl:key name="allAppsSupplier_key" match="$applications" use="own_slot_value[slot_reference = 'ap_supplier']/value"/>
+	<xsl:key name="alltechSupplier_key" match="$technologyProducts" use="own_slot_value[slot_reference = 'supplier_technology_product']/value"/>
+	<xsl:key name="allExternalLink_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/>
+	
     <xsl:variable name="aprs" select="/node()/simple_instance[type = 'Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $applications/name]"/>
     <xsl:variable name="services" select="/node()/simple_instance[type = ('Application_Service','Composite_Application_Service')][own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value = $aprs/name]"/>
 	<xsl:variable name="allSuppliers" select="/node()/simple_instance[(type = 'Supplier') and not(own_slot_value[slot_reference = 'system_content_lifecycle_status']/value = $archivedStatus/name)]"/>
@@ -40,16 +46,27 @@
 	<xsl:variable name="supplierRelStatii" select="/node()/simple_instance[name = $allSuppliers/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/>
 <!--	<xsl:variable name="supplierContracts" select="/node()/simple_instance[type = 'OBLIGATION_COMPONENT_RELATION']"/>[own_slot_value[slot_reference = 'obligation_component_to_element']/value = $technologyProducts/name or own_slot_value[slot_reference = 'obligation_component_to_element']/value = $applications/name]-->
 	
+	
 	<xsl:variable name="allContracts" select="/node()/simple_instance[(type='Contract')  and not(own_slot_value[slot_reference = 'system_content_lifecycle_status']/value = $archivedStatus/name)]"/>
+	<xsl:key name="allContractsKey" match="/node()/simple_instance[(type='Contract')]" use="own_slot_value[slot_reference = 'contract_supplier']/value"/>
+	<xsl:key name="allContractsforKey" match="/node()/simple_instance[(type='Contract')]" use="own_slot_value[slot_reference = 'contract_for']/value"/>
+
 	<xsl:variable name="allContractSuppliers" select="$allSuppliers[name = $allContracts/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
 	<xsl:variable name="allContractLinks" select="/node()/simple_instance[name = $allContracts/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
 	<xsl:variable name="allContractToElementRels" select="/node()/simple_instance[name = $allContracts/own_slot_value[slot_reference = 'contract_for']/value]"/>
+	<xsl:key name="ccr_Key" match="/node()/simple_instance[(type='CONTRACT_COMPONENT_RELATION')]" use="own_slot_value[slot_reference = 'contract_component_to_element']/value"/>
+	<xsl:key name="ccrfromContract_Key" match="/node()/simple_instance[(type='CONTRACT_COMPONENT_RELATION')]" use="own_slot_value[slot_reference = 'contract_component_from_contract']/value"/>
+
+ 
+	
+
 	<xsl:variable name="allContractElements" select="/node()/simple_instance[name = $allContractToElementRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
 	<xsl:variable name="allLicenses" select="/node()/simple_instance[name = $allContractToElementRels/own_slot_value[slot_reference = 'ccr_license']/value]"/>
 	<xsl:variable name="allRenewalModels" select="/node()/simple_instance[type='Contract_Renewal_Model']"/>
 	<xsl:variable name="allContractTypes" select="/node()/simple_instance[type='Contract_Type']"/>
 	<xsl:variable name="currencyRC" select="/node()/simple_instance[type='Report_Constant'][own_slot_value[slot_reference='name']/value='Default Currency']"/>
-	<xsl:variable name="currency" select="/node()/simple_instance[type='Currency'][name=$currencyRC/own_slot_value[slot_reference='report_constant_ea_elements']/value]"/>
+	<xsl:variable name="allCurrencies" select="/node()/simple_instance[type='Currency']"/>
+	<xsl:variable name="currency" select="$allCurrencies[name=$currencyRC/own_slot_value[slot_reference='report_constant_ea_elements']/value]"/>
 	<xsl:variable name="contractedBusProcs" select="$allBusProcs"/>
 	<xsl:variable name="contractedApps" select="$applications"/>
 	<xsl:variable name="contractedTechProds" select="$technologyProducts"/>
@@ -1825,7 +1842,7 @@
 											{{/if}}
 			                            {{/if}}
 			                            {{#if cost}}
-											<i class="fa fa-money right-5 left-10"/><span>{{../currency}}{{prettyCost}}</span>
+											<i class="fa fa-money right-5 left-10"/><span>{{currency}}{{prettyCost}}</span>
 			                            {{/if}}
 			                            {{#if contractedUnits}}
 											<i class="fa fa-users right-5 left-10"/><span>{{contractedUnits}}</span>
@@ -1886,13 +1903,13 @@
 											{{/if}}
 			                            {{/if}}
 			                            {{#if cost}}
-											<i class="fa fa-money right-5 left-10"/><span>{{../../currency}}{{prettyCost}}</span>
+											<i class="fa fa-money right-5 left-10"/><span>{{currency}}{{prettyCost}}</span>
 			                            {{/if}}
 			                            {{#if contractedUnits}}
 											<i class="fa fa-users right-5 left-10"/><span>{{contractedUnits}}</span>
 			                            {{/if}}
 			                            {{#if unitCost}}
-											<i class="fa fa-th right-5 left-10"/><span>{{../../currency}}{{unitCost}}</span>
+											<i class="fa fa-th right-5 left-10"/><span>{{currency}}{{unitCost}}</span>
 			                            {{/if}}
 			                            {{#if licenseModel}}
 											<i class="fa fa-file-text-o"/><span>{{licenseModel}}</span>											
@@ -1957,13 +1974,13 @@
 											{{/if}}
 			                            {{/if}}
 			                            {{#if cost}}
-											<i class="fa fa-money right-5 left-10"/><span>{{prettyCost}}</span>
+										<i class="fa fa-money right-5 left-10"/><span>{{currency}}{{prettyCost}}</span>
 			                            {{/if}}
 			                            {{#if contractedUnits}}
 											<i class="fa fa-users right-5 left-10"/><span>{{contractedUnits}}</span>
 			                            {{/if}}
 			                            {{#if unitCost}}
-											<i class="fa fa-th right-5 left-10"/><span>{{unitCost}}</span>
+										<i class="fa fa-th right-5 left-10"/><span>{{currency}}{{unitCost}}</span>
 			                            {{/if}}
 			                            {{#if licenseModel}}
 											<i class="fa fa-file-text-o"/><span>{{licenseModel}}</span>											
@@ -2047,13 +2064,13 @@
 								<div class="col-xs-12 top-20">
 									<div class="pull-left">
 			                            {{#if cost}}
-											<i class="fa fa-money right-5"/><span class="right-15">{{../../currency}}{{prettyCost}}</span>
+											<i class="fa fa-money right-5"/><span class="right-15">{{currency}}{{prettyCost}}</span>
 			                            {{/if}}
 			                            {{#if contractedUnits}}
 											<i class="fa fa-users right-5"/><span class="right-15">{{contractedUnits}}</span>
 			                            {{/if}}
 			                            {{#if unitCost}}
-											<i class="fa fa-th right-5"/><span class="right-15">{{../../currency}}{{unitCost}}</span>
+											<i class="fa fa-th right-5"/><span class="right-15">{{currency}}{{unitCost}}</span>
 			                            {{/if}}
 			                            {{#if renewalModel}}
 											<i class="fa fa-copy right-5"/><span class="right-15">{{renewalModel}}</span>											
@@ -2305,7 +2322,8 @@
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisContracts" select="$allContracts[own_slot_value[slot_reference = 'contract_supplier']/value = $this/name]"/>
+		<!--<xsl:variable name="thisContracts" select="$allContracts[own_slot_value[slot_reference = 'contract_supplier']/value = $this/name]"/>-->
+		<xsl:variable name="thisContracts" select="key('allContractsKey',$this/name)"/>
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>"
@@ -2343,13 +2361,21 @@
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'business_process_supplier']/value = $this/name]"/>
+		<!--<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'business_process_supplier']/value = $this/name]"/>
 		<xsl:variable name="thisApps" select="$applications[own_slot_value[slot_reference = 'ap_supplier']/value = $this/name]"/>
 		<xsl:variable name="thisTechProds" select="$technologyProducts[own_slot_value[slot_reference = 'supplier_technology_product']/value = $this/name]"/>
+	-->
+		<xsl:variable name="thisBusProcs" select="key('allBusProcsSupplier_key',$this/name)"/>
+		<xsl:variable name="thisApps" select="key('allAppsSupplier_key',$this/name)"/>
+		<xsl:variable name="thisTechProds" select="key('alltechSupplier_key',$this/name)"/>
 		
-		<xsl:variable name="thisContractComps" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_to_element']/value = ($thisBusProcs, $thisApps, $thisTechProds)/name]"/>
+		<!--<xsl:variable name="thisContractComps" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_to_element']/value = ($thisBusProcs, $thisApps, $thisTechProds)/name]"/>
 		<xsl:variable name="thisContracts" select="$allContracts[name = $thisContractComps/own_slot_value[slot_reference = 'contract_component_from_contract']/value]"/>
-		
+	-->
+
+		<xsl:variable name="thisContractComps" select="key('ccr_Key', ($thisBusProcs, $thisApps, $thisTechProds)/name)"/>
+		<xsl:variable name="thisContracts" select="key('allContractsforKey', $thisContractComps/name)"/>
+			
 		<xsl:variable name="thisSupplierRelStatus" select="$supplierRelStatii[name = $this/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/>
 		
 		{
@@ -2376,10 +2402,16 @@
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
-		
+		<!--
 		<xsl:variable name="thisDocLinks" select="$allContractLinks[name = $this/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
-		<xsl:variable name="thisSupplier" select="$allSuppliers[name = $this/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
 		<xsl:variable name="thisContractRels" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_from_contract']/value = $this/name]"/>
+		-->
+		<xsl:variable name="thisDocLinks" select="key('allExternalLink_key',$this/name)"/>
+		
+		<xsl:variable name="thisSupplier" select="$allSuppliers[name = $this/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
+		
+		<xsl:variable name="thisContractRels" select="key('ccrfromContract_Key',$this/name)"/>
+	 
 		<xsl:variable name="currentRenewalModel" select="$allRenewalModels[name = ($this, $thisContractRels)/own_slot_value[slot_reference = ('contract_renewal_model', 'ccr_renewal_model')]/value]"/>
 		
 		<xsl:variable name="contractSigDate" select="$this/own_slot_value[slot_reference = 'contract_signature_date_ISO8601']/value"/>
@@ -2407,6 +2439,8 @@
 		<xsl:variable name="thisBusProcs" select="$contractedBusProcs[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
 		<xsl:variable name="thisApps" select="$contractedApps[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
 		<xsl:variable name="thisTechProds" select="$contractedTechProds[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
+
+		<xsl:variable name="thisApps" select="$contractedApps[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>"
@@ -2444,9 +2478,13 @@
 	<xsl:template match="node()" mode="RenderContractCompJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		
+		<!--
 		<xsl:variable name="currentContract" select="$allContracts[name = $this/own_slot_value[slot_reference = 'contract_component_from_contract']/value]"/>
 		<xsl:variable name="currentContractLinks" select="$allContractLinks[name = $currentContract/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+-->
+		<xsl:variable name="currentContract" select="key('allContractsforKey',$this/name)"/>
+		<xsl:variable name="currentContractLinks" select="key('allExternalLink_key',$this/name)"/>
+	
 		<xsl:variable name="currentContractSupplier" select="$allSuppliers[name = $currentContract/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
 		<xsl:variable name="supplierRelStatus" select="$supplierRelStatii[name = $currentContractSupplier/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/>
 		
@@ -2454,6 +2492,8 @@
 		<xsl:variable name="currentLicenseType" select="$licenseType[name = $currentLicense/own_slot_value[slot_reference = 'license_type']/value]"/>
 		
 		<xsl:variable name="currentRenewalModel" select="$allRenewalModels[name = ($this, $currentContract)/own_slot_value[slot_reference = ('ccr_renewal_model', 'contract_renewal_model')]/value]"/>
+		<xsl:variable name="currentCurrencyInst" select="$allCurrencies[name = $this/own_slot_value[slot_reference = 'ccr_currency']/value]"/>
+		
 		<xsl:variable name="startDate">
 			<xsl:choose>
 				<xsl:when test="$this/own_slot_value[slot_reference = 'ccr_start_date_ISO8601']/value">
@@ -2546,6 +2586,7 @@
 		,"licenseModel": <xsl:choose><xsl:when test="count($currentLicenseType) > 0">"<xsl:value-of select="$currentLicenseType/own_slot_value[slot_reference = 'enumeration_value']/value"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>
 		,"contractedUnits": <xsl:value-of select="$currentContractedUnits"/>
 		,"cost": <xsl:choose><xsl:when test="$currentContractTotal"><xsl:value-of select="$currentContractTotal"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>
+		,"currency": "<xsl:choose><xsl:when test="$currentCurrencyInst"><xsl:value-of select="$currentCurrencyInst/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$currency/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:otherwise></xsl:choose>"
 		,"busProcIds": [<xsl:for-each select="$thisBusProcs/name">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
 		,"appIds": [<xsl:for-each select="$thisApps/name">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
 		,"techProdIds": [<xsl:for-each select="$thisTechProds/name">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
@@ -2580,7 +2621,9 @@
 		</xsl:variable>
 		
 		<xsl:variable name="thisSupplier" select="$allSuppliers[name = $this/own_slot_value[slot_reference = $supplierSlot]/value]"/>
-		<xsl:variable name="thisContractComps" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_to_element']/value = $this/name]"/>
+	<!--	<xsl:variable name="thisContractComps" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_to_element']/value = $this/name]"/> -->
+	<xsl:variable name="thisContractComps" select="key('ccr_Key', $this/name)"/>
+		
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>"

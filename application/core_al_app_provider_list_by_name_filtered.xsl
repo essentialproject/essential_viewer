@@ -150,7 +150,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Catalogue Catalogue by Name')"/></span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Catalogue by Name')"/></span>
 								</h1>
 							</div>
                         </div> 

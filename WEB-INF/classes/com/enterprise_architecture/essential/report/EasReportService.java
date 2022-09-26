@@ -183,6 +183,14 @@ public class EasReportService extends HttpServlet
 	 * SecureViewerEngine sets this to true
 	 */
 	protected static final String EIP_MODE_FLAG = "eipMode";
+
+	/**
+	 * Flag to tell Viewer Engine whether we are running in a Docker Mode or not.
+	 * If we are, then we will perform the pre-caching within the existing Viewer.
+	 * In cloud mode, set this to false (in web.xml) which will then call separate micro-services
+	 * to perform the pre-caching.
+	 */
+	protected static final String DOCKER_MODE_FLAG = "dockerMode";
 	
 	/**
 	 * Content type for un-compressed XML
@@ -703,7 +711,8 @@ public class EasReportService extends HttpServlet
 		// Clear the ReportAPI Cache
 		if(thePreOrPost.equals(ViewerCacheManager.CLEAR_AFTER_RECEIVE_REPOSITORY))
 		{
-			if(this.getContextParameter(EIP_MODE_FLAG).equalsIgnoreCase("true"))
+			if(this.getContextParameter(EIP_MODE_FLAG).equalsIgnoreCase("true") && 
+			   this.getContextParameter(DOCKER_MODE_FLAG).equalsIgnoreCase("false"))
 			{
 				// Use the Essential Cloud Viewer Report API Micro Service to build the cache
 				itsLog.debug("**** Requesting Essential Cloud caching API");

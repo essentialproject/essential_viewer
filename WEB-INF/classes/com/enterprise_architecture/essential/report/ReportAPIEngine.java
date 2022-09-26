@@ -202,7 +202,7 @@ public class ReportAPIEngine
 		try
 		{
 			File aCacheDirectory = new File(aRealPathToCache);
-			FileUtils.deleteDirectory(aCacheDirectory);
+			FileUtils.cleanDirectory(aCacheDirectory);
 		}
 		catch(Exception anEx)
 		{

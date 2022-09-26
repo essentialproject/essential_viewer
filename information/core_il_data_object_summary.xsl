@@ -570,7 +570,7 @@
 								
 								<xsl:variable name="dataRepLabel">
 									<xsl:choose>
-										<xsl:when test="string-length() > 0">
+										<xsl:when test="string-length($dataRepTechnical) > 0">
 											<xsl:value-of select="$dataRepTechnical"/>
 										</xsl:when>
 										<xsl:otherwise>

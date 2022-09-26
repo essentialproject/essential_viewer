@@ -26,7 +26,7 @@
 	
 	<xsl:variable name="issues" select="/node()/simple_instance[type='Issue']"/>
 	<xsl:variable name="orgsScope" select="/node()/simple_instance[type='Group_Actor'][name=$issues/own_slot_value[slot_reference='sr_org_scope']/value]"/>
-	<xsl:variable name="orgsSource" select="/node()/simple_instance[type='Group_Actor'][name=$issues/own_slot_value[slot_reference='issue_source']/value]"/>
+	<xsl:variable name="orgsSource" select="/node()/simple_instance[type=('Group_Actor','Individual_Actor')][name=$issues/own_slot_value[slot_reference='issue_source']/value]"/>
 	<xsl:variable name="orgs" select="$orgsScope union $orgsSource"/>
 	<xsl:variable name="status" select="/node()/simple_instance[type='Requirement_Status']"/>
 	<!--
@@ -184,14 +184,16 @@
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="issues">
-	<xsl:variable name="thisOrgs" select="$orgs[name=current()/own_slot_value[slot_reference='sr_org_scope']/value]"/>
-	<xsl:variable name="thisSource" select="$orgs[name=current()/own_slot_value[slot_reference='issue_source']/value]"/>
-	<xsl:variable name="reqStatus" select="$status[name=current()/own_slot_value[slot_reference='requirement_status']/value]"/>	
+	<xsl:variable name="thisOrgs" select="$orgsScope[name=current()/own_slot_value[slot_reference='sr_org_scope']/value]"/>
+	<xsl:variable name="thisSource" select="$orgsSource[name=current()/own_slot_value[slot_reference='issue_source']/value]"/>
+	<xsl:variable name="reqStatus" select="$status[name=current()/own_slot_value[slot_reference='requirement_status']/value]"/>	 
+	<xsl:variable name="allimpacting" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='sr_requirement_for_elements']/value]"/>
+	<!-- support for deprecated slots -->
 	<xsl:variable name="busimpacting" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='related_business_elements']/value]"/>	
 	<xsl:variable name="appimpacting" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='related_application_elements']/value]"/>	
 	<xsl:variable name="techimpacting" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='related_technology_elements']/value]"/>	
 	<xsl:variable name="infoimpacting" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='related_information_elements']/value]"/>	
-	<xsl:variable name="impacting" select="$busimpacting union $appimpacting union $techimpacting union $infoimpacting"/>		
+	<xsl:variable name="impacting" select="$allimpacting union $busimpacting union $appimpacting union $techimpacting union $infoimpacting"/>		
 		
 		
 	<tr>

@@ -382,14 +382,23 @@ public class SecureReportService extends EasReportService
 
 				// Find the specific Viewer that we are publishing to
 				//String aViewerId = theRequest.getContextPath().replace("/", "");
-				String aViewerId = getViewerId(theRequest);
-				preCacheReportReferenceAPIs(aViewerId, aRepositoryURI, getBearerToken(theRequest), getAPIKey(theRequest));
-				
-				//boolean isProductionMode = true;
-				//ReportReferenceEngine aReportReferenceEngine = new ReportReferenceEngine(getServletContext(), isProductionMode);
-				//aReportReferenceEngine.resetNoSQLCache(theRequest, aRepositoryURI);
-				//aReportReferenceEngine.closeResources();		
-		
+
+				// We must be in cloud mode to be here but test for DOCKER MODE. 
+				//If set to true, use the micro service request
+				if(this.getContextParameter(EasReportService.DOCKER_MODE_FLAG).equalsIgnoreCase("false"))
+				{
+					String aViewerId = getViewerId(theRequest);
+					preCacheReportReferenceAPIs(aViewerId, aRepositoryURI, getBearerToken(theRequest), getAPIKey(theRequest));
+				}
+				// Else, if DOCKER MODE is false, use local Viewer to render the ReportReference API JSON elements.
+				else
+				{
+					boolean isProductionMode = true;
+					ReportReferenceEngine aReportReferenceEngine = new ReportReferenceEngine(getServletContext(), isProductionMode);
+					aReportReferenceEngine.resetNoSQLCache(theRequest, aRepositoryURI);
+					aReportReferenceEngine.closeResources();
+				}	
+						
 				// *******
 				
 				// Return success or fail message
@@ -667,7 +676,11 @@ public class SecureReportService extends EasReportService
 		try
 		{
 			File aCacheDirectory = new File(aRealPathToCache);
+<<<<<<< HEAD
 			FileUtils.deleteDirectory(aCacheDirectory);
+=======
+			FileUtils.cleanDirectory(aCacheDirectory);
+>>>>>>> master
 		}
 		catch(Exception anEx)
 		{

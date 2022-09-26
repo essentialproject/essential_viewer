@@ -37,6 +37,7 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/>
+	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 
 	<!--<xsl:include href="../business/menus/core_product_type_menu.xsl" />-->
 
@@ -87,6 +88,8 @@
  <!-- <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][(own_slot_value[slot_reference='process_performed_by_actor_role']/value=$param1)  or (own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name)]"/> -->
     <xsl:variable name="physicalProcess" select="/node()/simple_instance[type = 'Physical_Process'][own_slot_value[slot_reference='process_performed_by_actor_role']/value=$actor2role/name]"/>
     <xsl:variable name="businessProcess" select="/node()/simple_instance[type = 'Business_Process']"/>
+	
+	<xsl:variable name="allExternalRefs" select="/node()/simple_instance[name = $currentActor/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -448,6 +451,26 @@
 									</ul>
 
 								</p>
+							</div>
+							<hr/>
+						</div>
+						
+						<!--Setup SupportingDocs Section-->
+						<div class="col-xs-12">
+							<div class="sectionIcon">
+								<i class="fa fa-file-text-o icon-section icon-color"/>
+							</div>
+							<div>
+								<h2 class="text-primary">
+									<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
+								</h2>
+							</div>
+							<div class="content-section">
+								<xsl:call-template name="RenderExternalDocRefList">
+									<xsl:with-param name="extDocRefs" select="$allExternalRefs"/>
+									<xsl:with-param name="emptyMessage">-</xsl:with-param>
+								</xsl:call-template>
+								
 							</div>
 							<hr/>
 						</div>

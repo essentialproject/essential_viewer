@@ -1302,7 +1302,7 @@
 									<div class="bottom-10">
 										<div class="keyCount lbl-large bg-orange-100">{{this.allBusProcs.length}}</div>
 									 
-									<label><xsl:value-of select="eas:i18n('Applications Used')"/></label>
+									<label><xsl:value-of select="eas:i18n('Applications Used')"/><xsl:text> </xsl:text><small>(<xsl:value-of select="eas:i18n('excl. Parents')"/>)</small></label>
 									 
 									<div class="keyCount lbl-large bg-brightgreen-100">{{this.allAppsUsed.length}}</div>	 							
 									</div>
@@ -2106,7 +2106,7 @@ function getThisHierarchy(node, chartParent, modelData){
 						modelData.push(thisNode)
 						chartParent=thisParent.id
 			}
-		}else{	chartParent=null}
+		}
 
    let thisNode = {
 	"nodeId": node.id,

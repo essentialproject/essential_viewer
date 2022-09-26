@@ -14,8 +14,11 @@
 	
     <xsl:variable name="busCaps" select="/node()/simple_instance[type='Business_Capability']"/> 
     <xsl:variable name="busDomains" select="/node()/simple_instance[type='Business_Domain']"/> 
+	<xsl:variable name="suppliers" select="/node()/simple_instance[type='Supplier']"/> 
+	<xsl:variable name="appFamily" select="/node()/simple_instance[type='Application_Family']"/> 
+	<xsl:variable name="applicationFunctions" select="/node()/simple_instance[type='Application_Function']"/> 
     <xsl:variable name="applicationServices" select="/node()/simple_instance[type='Application_Service']"/> 
-    <xsl:variable name="applicationProviders" select="/node()/simple_instance[supertype='Application_Provider_Type']"/>
+    <xsl:variable name="applicationProviders" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider','Application_Provider_Interface')]"/>
     <xsl:variable name="applicationProviderRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/>
     <xsl:variable name="allAppSvcToProcess" select="/node()/simple_instance[type='APP_SVC_TO_BUS_RELATION']"/>
     <xsl:variable name="allAppStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'aps_standard_app_provider_role']/value = $applicationProviderRoles/name]"/>
@@ -23,14 +26,20 @@
 
 	<xsl:variable name="allGroupActors" select="/node()/simple_instance[type = 'Group_Actor']"/>	
 	<xsl:variable name="production" select="/node()/simple_instance[type='Deployment_Role'][own_slot_value[slot_reference = 'name']/value = 'Production']"/>	
-	
-	<xsl:variable name="allAppDeployments" select="/node()/simple_instance[type='Application_Deployment'][own_slot_value[slot_reference = 'application_deployment_role']/value = $production/name]"/>
+	<xsl:variable name="deploymentRole" select="/node()/simple_instance[type='Deployment_Role']"/>	
+	<xsl:variable name="allAppDeployments" select="/node()/simple_instance[type='Application_Deployment']"/>
 	<xsl:variable name="allTechBuilds" select="/node()/simple_instance[name = $allAppDeployments/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
 
 	<xsl:variable name="allTechProRoles" select="/node()/simple_instance[supertype = 'Technology_Provider_Role']"/>
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component' or supertype = 'Technology_Component']"/>
 	<xsl:variable name="allTechProvs" select="/node()/simple_instance[supertype = 'Technology_Provider']"/>
 
+	<xsl:key name="inScopeCostsKey" match="/node()/simple_instance[type='Cost']" use="own_slot_value[slot_reference = 'cost_for_elements']/value"/>
+	<xsl:key name="inScopeCostComponentKey" match="/node()/simple_instance[type=('Adhoc_Cost_Component','Annual_Cost_Component','Monthly_Cost_Component','Quarterly_Cost_Component')]" use="own_slot_value[slot_reference = 'cc_cost_component_of_cost']/value"/>
+<xsl:variable name="costType" select="/node()/simple_instance[(type = 'Cost_Component_Type')]"/>
+	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
+	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
+   
 	 
 	<!--
 		<xsl:variable name="allAppDeployments" select="/node()/simple_instance[own_slot_value[slot_reference = 'application_provider_deployed']/value = $applicationProviders/name][own_slot_value[slot_reference = 'application_deployment_role']/value = $production/name]"/>
@@ -83,17 +92,21 @@
 			"capability_hierarchy":[<xsl:apply-templates select="$topappCaps" mode="appCapsHierachy"><xsl:with-param name="depth" select="0"/><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],     
 			"application_capabilities":[<xsl:apply-templates select="$appCaps" mode="appCaps"><xsl:with-param name="depth" select="0"/><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 			"application_services":[<xsl:apply-templates select="$applicationServices" mode="appSvcs"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+			"application_functions":[<xsl:apply-templates select="$applicationFunctions" mode="appFuncs"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 			"application_technology":[<xsl:apply-templates select="$applicationProviders" mode="appTech"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+			"applications":[<xsl:apply-templates select="$applicationProviders" mode="appData"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 			"stdStyles":[<xsl:apply-templates select="$eleStyles" mode="styles"/>]
-		}
+		}<!-- note this app info here is additonal to that in the integration ans the bus cap app mart-->
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="appCaps">
 	 <xsl:param name="depth"/>
 	 <xsl:variable name="childAppCaps" select="$appCaps[name=current()/own_slot_value[slot_reference='contained_app_capabilities']/value]"/>
 	 <!--<xsl:variable name="parentAppCaps" select="$appCaps[name=current()/own_slot_value[slot_reference='contained_in_application_capability']/value]"/> -->
-	 <xsl:variable name="businessDomains" select="$busDomains[name=current()/own_slot_value[slot_reference='mapped_to_business_domain']/value]"/>
-	<xsl:variable name="refLayer" select="$taxonomyTerm[name=current()/own_slot_value[slot_reference='element_classified_by']/value]"/>
+	 <xsl:variable name="businessDomainsOld" select="$busDomains[name=current()/own_slot_value[slot_reference='mapped_to_business_domain']/value]"/>
+	 <xsl:variable name="businessDomainsNew" select="$busDomains[name=current()/own_slot_value[slot_reference='mapped_to_business_domains']/value]"/>
+	 <xsl:variable name="businessDomains" select="$businessDomainsOld union $businessDomainsNew"/>
+	 <xsl:variable name="refLayer" select="$taxonomyTerm[name=current()/own_slot_value[slot_reference='element_classified_by']/value]"/>
 	<xsl:variable name="categoryLayer" select="$taxonomyTermCat[name=current()/own_slot_value[slot_reference='element_classified_by']/value]"/>	 
 	<!--<xsl:variable name="thisApplicationServices" select="$applicationServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>	-->
 	 
@@ -141,7 +154,8 @@
 					   "appCapCategory":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$categoryLayer"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 					   "businessDomain":[<xsl:for-each select="$businessDomains">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 					   "childrenCaps": [<xsl:if test="$depth &lt; 5"><xsl:apply-templates select="$childAppCaps" mode="appCapsHierachy"><xsl:with-param name="depth" select="$depth +1"/></xsl:apply-templates></xsl:if>],
-					   "supportingServices":[<xsl:for-each select="$thisApplicationServices">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]	
+					   "supportingServices":[<xsl:for-each select="$thisApplicationServices">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+					   <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	
 				   }<xsl:if test="position()!=last()">,</xsl:if>
 				   </xsl:template>	
 				
@@ -150,10 +164,10 @@
 			<xsl:variable name="thisApplicationProviderRoles" select="key('apr_key',current()/name)"/> 
 			<xsl:variable name="thisAllAppSvcToProcess" select="key('asbr_key',current()/name)"/> 
 			<xsl:variable name="thisbusProc" select="key('busProc_key',$thisAllAppSvcToProcess/name)"/>   
-			
 			{ 
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 				"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 				"APRs":[<xsl:for-each select="$thisApplicationProviderRoles">
@@ -175,7 +189,17 @@
 									</xsl:call-template>"}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:for-each>],
 						"physProc":[<xsl:for-each select="current()/own_slot_value[slot_reference='app_pro_role_supports_phys_proc']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]			
 								}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:for-each>],
-				"busProc":[<xsl:for-each select="$thisbusProc">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],			
+				"busProc":[<xsl:for-each select="$thisbusProc">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+				"functions":[<xsl:for-each select="current()/own_slot_value[slot_reference='provides_application_functions']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],			
+				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+			}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+	
+	<xsl:template match="node()" mode="appFuncs"> 
+			{ 
+				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 			}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
@@ -183,38 +207,87 @@
 	<xsl:template match="node()" mode="appTech">
 			<xsl:variable name="environment" select="key('appDep_key',current()/name)"/>   
 		<!--	<xsl:variable name="environment" select="$allAppDeployments[own_slot_value[slot_reference = 'application_provider_deployed']/value=current()/name]"/>-->
-
 			<xsl:variable name="aTechBuild" select="$allTechBuilds[name = $environment/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
-
-			
 			<xsl:variable name="aTechBuildArch" select="key('tp_key',$aTechBuild/name)"/>   
 		<!--	<xsl:variable name="aTechBuildArch" select="$allTechBuildArchs[name = $aTechBuild/own_slot_value[slot_reference = 'technology_provider_architecture']/value]"/>-->
-
+		<xsl:variable name="aTechProUsageList" select="key('tprole_key',$aTechBuildArch/name)"/>  
 		
-		<xsl:variable name="aTechProUsageList" select="key('tprole_key',$aTechBuildArch/name)"/>   
-	
 		{ 
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"products":[<xsl:for-each select="$aTechProUsageList">
-				<xsl:variable name="aTechProRole" select="$allTechProRoles[name = current()/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
-				<xsl:variable name="aTechProd" select="key('techprod_key',$aTechProRole/name)"/>   
-			<!--	<xsl:variable name="aTechProd" select="$appTechProvs[name = $aTechProRole/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>-->
-				<xsl:variable name="aTechComp" select="key('techcomp_key',$aTechProRole/name)"/>  
-			<!--	<xsl:variable name="aTechComp" select="$appTechComps[name = $aTechProRole/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>-->
-				{"tpr":"<xsl:value-of select="eas:getSafeJSString($aTechProRole/name)"/>",
-				"prod":"<xsl:value-of select="eas:getSafeJSString($aTechProd/name)"/>",
-				"prodname":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aTechProd"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"comp":"<xsl:value-of select="eas:getSafeJSString($aTechComp/name)"/>",
-				"compname":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aTechComp"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"
-	
+		"environments":[<xsl:for-each select="$environment">
+				
+				<xsl:variable name="thisdeploymentRole" select="$deploymentRole[name=current()/own_slot_value[slot_reference='application_deployment_role']/value]"/> 
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisdeploymentRole"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"products":[<xsl:for-each select="$aTechProUsageList">
+						<xsl:variable name="aTechProRole" select="$allTechProRoles[name = current()/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+						<xsl:variable name="aTechProd" select="key('techprod_key',$aTechProRole/name)"/>   
+					<!--	<xsl:variable name="aTechProd" select="$appTechProvs[name = $aTechProRole/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>-->
+						<xsl:variable name="aTechComp" select="key('techcomp_key',$aTechProRole/name)"/>  
+					<!--	<xsl:variable name="aTechComp" select="$appTechComps[name = $aTechProRole/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>-->
+						{"tpr":"<xsl:value-of select="eas:getSafeJSString($aTechProRole/name)"/>",
+						"prod":"<xsl:value-of select="eas:getSafeJSString($aTechProd/name)"/>",
+						"prodname":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aTechProd"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+						"comp":"<xsl:value-of select="eas:getSafeJSString($aTechComp/name)"/>",
+						"compname":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aTechComp"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	
+						}<xsl:if test="position()!=last()">,</xsl:if>
+					</xsl:for-each>]
 				}<xsl:if test="position()!=last()">,</xsl:if>
-			</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:for-each>]
+		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
+	<xsl:template match="node()" mode="appData">
+		<xsl:variable name="thisSupplier" select="$suppliers[name=current()/own_slot_value[slot_reference='ap_supplier']/value]"/>
+		<xsl:variable name="thisAppFamily" select="$appFamily[name=current()/own_slot_value[slot_reference='type_of_application']/value]"/>
+		<xsl:variable name="inScopeCosts" select="key('inScopeCostsKey',current()/name)"/>
+		<xsl:variable name="inScopeCostComponents" select="key('inScopeCostComponentKey',$inScopeCosts/name)"/>
+			{ 
+				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"type":"<xsl:value-of select="current()/type"/>",
+				"supplier":{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisSupplier"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"},
+				"costs":[<xsl:for-each select="$inScopeCostComponents">
+						{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>",
+						"cost":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/>",
+						"costType":"<xsl:value-of select="current()/type"/>",
+						"fromDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
+						"toDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>",
+						"currency":"<xsl:value-of select="$currency"/>",
+						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position()=last())">,</xsl:if>           
+					</xsl:for-each>],
+				"family":[<xsl:for-each select="$thisAppFamily">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+			}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 	<xsl:template match="node()" mode="styles">
 			<xsl:variable name="thisStyle" select="$eleStyles[name=current()[0]/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","shortname":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference = 'enumeration_value']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></xsl:otherwise></xsl:choose>","colour":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference = 'element_style_colour']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='element_style_colour']/value"/></xsl:when><xsl:otherwise>#d3d3d3</xsl:otherwise></xsl:choose>",
 			"colourText":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference = 'element_style_text_colour']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='element_style_text_colour']/value"/></xsl:when><xsl:otherwise>#ffffff</xsl:otherwise></xsl:choose>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> 
 		</xsl:template>	
+
+		<xsl:function as="xs:float" name="eas:get_cost_components_total">
+				<xsl:param name="costComponents"/>
+				<xsl:param name="total"/>
+				
+				<xsl:choose>
+					<xsl:when test="count($costComponents) > 0">
+						<xsl:variable name="nextCost" select="$costComponents[1]"/>
+						<xsl:variable name="newCostComponents" select="remove($costComponents, 1)"/>
+						<xsl:variable name="costAmount" select="$nextCost/own_slot_value[slot_reference='cc_cost_amount']/value"/>
+						<xsl:choose>
+							<xsl:when test="$costAmount > 0">
+								<xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total + number($costAmount))"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total)"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:when>
+					<xsl:otherwise><xsl:value-of select="$total"/></xsl:otherwise>
+				</xsl:choose>
+			</xsl:function>
 	</xsl:stylesheet>
 	

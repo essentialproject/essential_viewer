@@ -1922,7 +1922,7 @@
       <NamedRange ss:Name="Tech_Vendor_Release_Statii"
                   ss:RefersTo="='Tech Vendor Release Statii'!R7C3:R24C3"/>
       <NamedRange ss:Name="Technology_Capabilities"
-                  ss:RefersTo="='Technology Capablities'!R7C3:R39C3"/>
+                  ss:RefersTo="='Technology Capabilities'!R7C3:R39C3"/>
       <NamedRange ss:Name="Technology_Components"
                   ss:RefersTo="='Technology Components'!R7C3:R169C3"/>
       <NamedRange ss:Name="Technology_Domains" ss:RefersTo="='Technology Domains'!R7C3:R72C3"/>

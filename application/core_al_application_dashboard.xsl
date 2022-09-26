@@ -17,10 +17,12 @@
 	<xsl:param name="viewScopeTermIds"></xsl:param>
 
 	<!-- END GENERIC PARAMETERS -->
-
+	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Dashboard']"></xsl:variable>
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"></xsl:variable>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Application_Service', 'Business_Process', 'Business_Activity', 'Business_Task')"></xsl:variable>
+ 
+	 
 	<!-- END GENERIC LINK VARIABLES -->
 	<!--<xsl:variable name="reportPath" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
 	<xsl:variable name="reportPathApps" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
@@ -79,12 +81,7 @@
                     <xsl:with-param name="apiReport" select="$physProcListData"></xsl:with-param>
                 </xsl:call-template>
             </xsl:variable>
-<!--		<xsl:variable name="apiScores">
-			<xsl:call-template name="GetViewerAPIPath">
-				<xsl:with-param name="apiReport" select="$scoreData"></xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
-	-->
+ 
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"></xsl:call-template>
@@ -938,7 +935,9 @@
 		};
 
 	//	var panelLeft=$('#appSidenav').position().left;
-    let codebases;
+	let filtersNo=[<xsl:call-template name="GetReportFilterExcludedSlots"><xsl:with-param name="theReport" select="$theReport"></xsl:with-param></xsl:call-template>]
+	console.log('filtersNo',filtersNo)
+	let codebases;
     let codebaseLabels=[];
     let codebaseData=[];
     let codebaseColour=[];
@@ -1085,11 +1084,18 @@
                 codebases=responses[1].codebase;
                 deliveryModels=responses[1].delivery;
                 lifecycleModels=responses[1].lifecycles;
- 				filters=responses[1].filters;
-		 
+				 filters=responses[1].filters;
+				 
+				 filtersNo.forEach((e)=>{
+					filters=filters.filter((f)=>{
+						return f.slotName !=e;
+					})
+				 })
+		 console.log('filters',filters)
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
+
 				//$('#filtersHolder').html(filtersTemplate(filters));
  
 				$('#chartsArea').html(chartTemplate(filters));
@@ -1168,7 +1174,7 @@
 					redrawView();
 			 })
 
-			 essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], responses[1].filters);
+			 essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
 	
 			  
 			}). catch (function (error)
@@ -1494,4 +1500,6 @@ function redrawView() {
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
 	</xsl:template>
+
+ 
 </xsl:stylesheet>

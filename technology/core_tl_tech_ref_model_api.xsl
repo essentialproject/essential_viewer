@@ -30,7 +30,7 @@
 	<xsl:variable name="rightRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Right']"/>
 	<xsl:variable name="middleRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Middle']"/>
 	<xsl:variable name="bottomRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Bottom']"/>
-
+	<xsl:variable name="stdStrength" select="/node()/simple_instance[type = 'Standard_Strength']"/>
 	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 
@@ -101,7 +101,70 @@
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<style>
+					.dashboardPanel{
+						padding: 10px;
+						border: 1px solid #aaa;
+						box-shadow: 2px 2px 4px #ccc;
+						margin-bottom: 30px;
+						float: left;
+						width: 100%;
+						
+					}
+					
+					.popover{
+						max-width: 800px;
+					}
+					
+					.tech-domain-drill,.tech-domain-up {
+					    font-size:0.95em;
+					    position: relative;
+					    top: 1px;
+					    
+					}
+					
+					.tech-domain-drill{
+						opacity: 0.35;
+					
+					}
+					.tech-domain-up {
+						opacity: 0.75;
+					}
+					
+					.tech-domain-drill:hover {
+						cursor: pointer;
+					}
+					
+					.tech-domain-up:hover {
+						cursor: pointer;
+					}
+					
+					.hidden-ref-model {
+					    opacity: 0;
+					    transform: scale(0.98);
+					    transform-origin: center center;
+					}
+					
+					#techRefModelPanel {
+					    transition: all 100ms ease-in;
+					}
+
+					.blob-standard{
+						position:absolute;
+						left:4px;
+						bottom:0px;
+
+					}
+
+					.stdlabel{
+						border-radius:5px;
+						border:1pt solid #d3d3d3;
+						padding:2px;
+
+					}
 				
+
+				</style>
 
 				<xsl:call-template name="refModelLegendInclude"/>
 				
@@ -116,7 +179,11 @@
 					var currentMode = trmMode;
 					
 					var scaleOptions = {};
-					
+
+					var stdStrength=[<xsl:apply-templates select="$stdStrength" mode="stdStrength"/>];
+					console.log('stdStrength',stdStrength)
+				 
+		 
 					// the list of JSON objects representing the delivery models for technology products
 				  	var techDeliveryModels = [<xsl:apply-templates select="$allTechProdDeliveryTypes" mode="RenderEnumerationJSONList"/>];
 					
@@ -124,6 +191,7 @@
 				  	var lifecycleStatii = [
 						<xsl:apply-templates select="$allLifecycleStatii" mode="getSimpleJSONList"/>					
 					];
+
 					
 					// the list of JSON objects representing the business units pf the enterprise
 	<!--			  	var businessUnits = {
@@ -309,19 +377,38 @@
 						aTechDomain.childTechCaps.forEach( function(aTechCap) {
 							 techCapProdCount = 0;
 							 aTechCap.techComponents.forEach( function(aTechComp) {
-								techCompProdIDList = aTechComp.techProds;										
+								techCompProdIDList = aTechComp.techProds;	
+							 										
 								var relevantTechProdIds = getArrayIntersect([techCompProdIDList, selectedTechProdIDs]);
 								var relevantTechProds = getObjectsByIds(selectedTechProds, "id", relevantTechProdIds);
 								thisTechProdCount = relevantTechProds.length;
-								aTechComp['inScopeTechProds'] = relevantTechProds;							
+								aTechComp['inScopeTechProds'] = relevantTechProds;	
+							 						
 								aTechComp['techProdCount'] = thisTechProdCount;
 								techCapProdCount = techCapProdCount + thisTechProdCount;
 								techDomainProdCount = techDomainProdCount + thisTechProdCount;
+
+								let thisTPRs=techProdRoles.techProdRoles.filter((e)=>{
+								return e.techCompid == aTechComp.id
+								});
+								aTechComp.inScopeTechProds.forEach((p)=>{
+									let thisProd = thisTPRs.find((pr)=>{
+										return pr.techProdid == p.id
+									})
+									if(thisProd.standard){
+									p['standards']=thisProd.standard
+									} 
+								})
+
+						
 							});
 							aTechCap.techComponents.sort(function(a, b){return b.techProdCount - a.techProdCount});
 							aTechCap['techProdCount'] = techCapProdCount;
+							
+						
+						 
 						});
-						aTechDomain['techProdCount'] = techDomainProdCount;		
+						aTechDomain['techProdCount'] = techDomainProdCount;		 
 					}
 					
 					//function to set the current overlay
@@ -331,6 +418,7 @@
 						} else {
 							refreshTechDomainOverlay();
 						}
+						
 					}
 					
 					
@@ -449,6 +537,7 @@
 								$(this).attr("class", 'tech-prod techRefModel-blob bg-lightblue-80');
 							});
 						}
+						
 					}
 					
 					<!--//function to scope the relevant elements in acordance with the current roadmap period
@@ -489,6 +578,8 @@
 							});
 							$('.matchHeight2').matchHeight();
 				 			$('.matchHeightTRM').matchHeight();
+
+							
 				 			
 				 			//Update the TRM Model overlays
 							refreshTechCapabilityOverlay();
@@ -500,6 +591,7 @@
 					//function to draw the Technology Domain drill down view
 					function drawTechDomainModel() {
 						if(currentTechDomain != null) {
+							console.log('currentTechDomain', currentTechDomain)
 							setTechDomainProducts(currentTechDomain);
 							$("#techRefModelContainer").html(techDomainTemplate(currentTechDomain)).promise().done(function(){
 						        $('.tech-domain-up').click(function(){
@@ -518,7 +610,10 @@
 				 				$('.matchHeightTRM').matchHeight();
 								//Update the Tech Domain Model overlays
 								refreshTechDomainOverlay();
+								
 								enableInfoPopups();
+								
+
 						    });	
 						}
 					}
@@ -544,6 +639,19 @@
 							return false;
 						});
 						$('.fa-info-circle').popover({
+							container: 'body',
+							html: true,
+							trigger: 'click',
+							content: function(){
+								return $(this).next().html();
+							}
+						});
+
+						$('.fa-bookmark').click(function() {
+							$('[role="tooltip"]').remove();
+							return false;
+						});
+						$('.fa-bookmark').popover({
 							container: 'body',
 							html: true,
 							trigger: 'click',
@@ -584,6 +692,7 @@
                         })
                     }
                     let unique = [...new Set(techprodslist)];      
+					
                     techComponents.techComponents[i]['techProds']=unique;
                     
                      <!--   d.techProdRoles.forEach(function(e){
@@ -671,55 +780,7 @@
 					});
 							   });	  	
 				</script>
-				<style>
-					.dashboardPanel{
-						padding: 10px;
-						border: 1px solid #aaa;
-						box-shadow: 2px 2px 4px #ccc;
-						margin-bottom: 30px;
-						float: left;
-						width: 100%;
-						
-					}
-					
-					.popover{
-						max-width: 800px;
-					}
-					
-					.tech-domain-drill,.tech-domain-up {
-					    font-size:0.95em;
-					    position: relative;
-					    top: 1px;
-					    
-					}
-					
-					.tech-domain-drill{
-						opacity: 0.35;
-					
-					}
-					.tech-domain-up {
-						opacity: 0.75;
-					}
-					
-					.tech-domain-drill:hover {
-						cursor: pointer;
-					}
-					
-					.tech-domain-up:hover {
-						cursor: pointer;
-					}
-					
-					.hidden-ref-model {
-					    opacity: 0;
-					    transform: scale(0.98);
-					    transform-origin: center center;
-					}
-					
-					#techRefModelPanel {
-					    transition: all 100ms ease-in;
-					}
-
-				</style>
+			
 				
 				<xsl:call-template name="refModelStyles"/>
 				
@@ -819,6 +880,45 @@
 																						<i class="fa fa-info-circle text-white" data-original-title="" title=""></i>
 																						<div class="hiddenDiv" id="xyz789">
 																							<p>{{description}}</p>
+																						</div>
+																					</div>
+																				{{/if}}
+																				{{#if this.standards}}
+																					<div class="blob-standard"> 
+																						<i class="fa fa-bookmark text-white" data-original-title="" title=""></i>
+																						<div class="hiddenDiv" id="xyz789">
+																						<table class="table table-striped table-small">
+																						<thead><tr>
+																						<th>Status</th>
+																						<th>Geography</th>
+																						<th>Organisations</th>
+																						</tr></thead>
+																						<tbody>
+																						{{#each this.standards}}
+																						<tr><td>
+																						<div><xsl:attribute name="class">stdlabel {{this.status}} </xsl:attribute><xsl:attribute name="style">background-color:{{this.statusBgColour}}; color: {{this.statusColour}}</xsl:attribute>{{this.status}}</div>
+																						</td>
+																						<td>{{#if this.scopeGeo}}
+																							{{#each this.scopeGeo}}
+																							<i class="fa fa-caret"></i> {{this.name}}<br/>
+																							{{/each}}
+																							{{else}}
+																								All
+																							{{/if}}
+																						</td>
+																						<td>
+																							{{#if this.scopeOrg}}
+																							{{#each this.scopeOrg}}
+																								<i class="fa fa-caret"></i> {{this.name}}<br/>
+																							{{/each}} 
+																							{{else}}
+																								All
+																							{{/if}}
+																						</td>
+																						</tr>
+																						{{/each}}	
+																						</tbody> 
+																						</table>
 																						</div>
 																					</div>
 																				{{/if}}
@@ -1138,7 +1238,10 @@
 		
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techDomainName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
 		refLayer: "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
@@ -1165,7 +1268,10 @@
 
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="$techCapName"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 			techComponents: [	
@@ -1189,7 +1295,10 @@
 		<xsl:variable name="techComponents" select="current()/own_slot_value[slot_reference = 'realised_by_technology_components']"/>
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="$techCapName"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 
@@ -1219,7 +1328,10 @@
 	-->	 <xsl:variable name="thisTechProdRoles2" select="current()/own_slot_value[slot_reference = 'realised_by_technology_products']"/>
 		{debug:"test",
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techCompName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
 	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
@@ -1244,7 +1356,10 @@
         <xsl:variable name="thisTechProdRoles2" select="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techCompName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
         techProdRole: [<xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]
@@ -1503,4 +1618,9 @@
        
         <xsl:value-of select="concat('&amp;cl=', $i18n)"/>
     </xsl:template> 
+	<xsl:template match="node()" mode="stdStrength">
+			{"status":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'enumeration_value']/value"/>",
+				"statusColour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>",
+				"statusBgColour":"<xsl:value-of select="eas:get_element_style_colour(current())"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
+	</xsl:template>
 </xsl:stylesheet>

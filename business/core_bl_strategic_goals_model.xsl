@@ -455,14 +455,11 @@
                  {{#if this.objectives}}
 						{{#each this.objectives}}
 							<tr>
-								{{#ifEquals @index 0}} 
+								 
 								<td class="cellWidth-20pc" style="background-color:#e3e3e3;">
                                         <span class="label label-primary lbl-mid">{{../this.name}}</span>
 								</td>
-								{{else}}
-								<td class="cellWidth-20pc" style="border-bottom:1pt solid #f2f2f2;background-color:#f2f2f2">		
-								</td> 
-								{{/ifEquals}}
+								 
 								<td class="cellWidth-20pc">
                                         <span class="label label-success-link lbl-mid"> 	{{{essRenderInstanceMenuLink this}}}</span>
 								</td>
@@ -750,7 +747,7 @@ $(document).ready(function() {
             e['goals']=gls;
         })
     });
-     
+console.log('goals',goals)
     $('#orgTable').html(otableTemplate(orgs)); 
     $('#goalsTable').html(tableTemplate(goals));
     $('#driverTable').html(driverTemplate(drivers));
@@ -1001,8 +998,8 @@ $(document).ready(function() {
 		<xsl:variable name="thisGoals" select="$busGoals[name=$this/own_slot_value[slot_reference='bd_motivated_objectives']/value]"/>
 		{
 		"id":"<xsl:value-of select="current()/name"/>",
-		"driver":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", 
-		"description":"<xsl:value-of select="$this/own_slot_value[slot_reference='description']/value"/>",
+		"driver":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>", 
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",
 		"goals":[<xsl:apply-templates select="$thisGoals" mode="goals"/>]}<xsl:if test="position()!=last()">,</xsl:if> 
 </xsl:template>
 	
@@ -1011,7 +1008,7 @@ $(document).ready(function() {
     <xsl:variable name="thisObjsOld" select="$allBusObjectives[name=$this/own_slot_value[slot_reference='objective_supported_by_objective']/value]"/>
     <xsl:variable name="thisObjsNew" select="$allBusObjectives[name=$this/own_slot_value[slot_reference='goal_supported_by_objectives']/value]"/>
     <xsl:variable name="thisObjs" select="$thisObjsOld union $thisObjsNew"/>
-    {"goal":"<xsl:value-of select="$this/own_slot_value[slot_reference='name']/value"/>", 
+    {"goal":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>", 
     "id":"<xsl:value-of select="current()/name"/>",
     "objectives":[<xsl:apply-templates select="$thisObjs" mode="objs"/>]}<xsl:if test="position()!=last()">,</xsl:if> 
 </xsl:template>   

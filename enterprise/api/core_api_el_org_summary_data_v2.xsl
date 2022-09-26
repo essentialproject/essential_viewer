@@ -41,7 +41,7 @@
 	<xsl:key name="appToPhysDirect_key" match="$allApplicationsUsed" use="own_slot_value[slot_reference = 'app_pro_supports_phys_proc']/value"/>
 	<xsl:key name="applicationsAOU_key" match="$applicationsAOU" use="own_slot_value[slot_reference = 'stakeholders']/value"/>
 	<xsl:key name="allRoles_key" match="$allRoles" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
-	<xsl:key name="actor_key" match="$allIndActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+	<xsl:key name="actor_key" match="$allActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 	<xsl:key name="allactor2r_key" match="$allActor2RoleRelations" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/> 
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
@@ -86,7 +86,9 @@
 	 
 	<xsl:template match="knowledge_base">
 			 {"orgData":[<xsl:apply-templates select="$allOrgs" mode="getOrgs"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
-			 "orgRoles":[<xsl:apply-templates select="$allOrgs" mode="a2rs"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],"version":"615"} 
+			 "orgRoles":[<xsl:apply-templates select="$allOrgs" mode="a2rs"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+			 "a2rs":[<xsl:apply-templates select="$allActor2RoleRelations" mode="a2rsOnly"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+			 "version":"615"} 
 	</xsl:template>
 
  
@@ -138,34 +140,36 @@
 <!--
         <xsl:variable name="thisRolesForActor" select="$allRoles[name = $thisA2RForActor/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
 -->     
- 
+<!-- for all children, not just direct -->
+<xsl:variable name="relevantchildren" select="eas:get_descendants(current(), $allActors, 0, 10, 'is_member_of_actor')"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
                 </xsl:call-template>",
         "description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+                <xsl:with-param name="isForJSONAPI" select="true()"/>
             </xsl:call-template>",             
         "parentOrgs":[<xsl:for-each select="$thisparentActor">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"childOrgs":[<xsl:for-each select="$thisChildActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
-        "orgEmployees":[<xsl:for-each select="$thisEmployees"> 
+	   	"allChildOrgs":[<xsl:for-each select="$relevantchildren">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"orgEmployees":[<xsl:for-each select="$thisEmployees"> 
 				<xsl:variable name="thisEmployeeA2Rs" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
 				<xsl:variable name="thisEmployeeRoles" select="key('allRoles_key',$thisEmployeeA2Rs/name)"/>	
 				  
 				<!--
             <xsl:variable name="thisEmployeeA2Rs" select="$allActor2RoleRelations[name = current()/own_slot_value[slot_reference = 'actor_plays_role']/value]"/>
             <xsl:variable name="thisEmployeeRoles" select="$allRoles[name = $thisEmployeeA2Rs/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>-->
-            {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
-            </xsl:call-template>",
-			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
-            "roles":[<xsl:for-each select="$thisEmployeeRoles">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-                    <xsl:with-param name="theSubjectInstance" select="current()"/>
-                    <xsl:with-param name="isRenderAsJSString" select="true()"/>
-                </xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>",
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+		"roles":[<xsl:for-each select="$thisEmployeeRoles">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"site":[<xsl:apply-templates select="$thisbaseSites" mode="getSimpleJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 		"orgUsersA2R":[<xsl:apply-templates select="$thisA2RForAppOrgUser" mode="getSimpleJSON"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
         "orgUserIds":[<xsl:for-each select="$allOrgUserIds">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
@@ -177,7 +181,7 @@
 	<xsl:template mode="getSimpleJSON" match="node()">
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"
 		}<xsl:if test="position()!=last()">,</xsl:if>
@@ -191,11 +195,11 @@
         <xsl:variable name="thisBusProcCriticality" select="$businessCriticality[name=$thisBusProc/own_slot_value[slot_reference='bpt_business_criticality']/value]"/>
 		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
         "id":"<xsl:value-of select="eas:getSafeJSString($thisBusProc/name)"/>",
         "criticality":"<xsl:value-of select="$thisBusProcCriticality/own_slot_value[slot_reference='enumeration_value']/value"/>"
@@ -211,13 +215,48 @@
 		<xsl:variable name="a2rs" select="key('allactor2r_key',current()/name)"/>
 		<xsl:variable name="thisroles" select="key('allRoles_key',$a2rs/name)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>",
 		"actor":"<xsl:value-of select="$a2rs/name"/>", 
+		"a2rs":[<xsl:for-each select="$a2rs">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
 		"roles":[<xsl:for-each select="$thisroles">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
-			</xsl:template>
+	</xsl:template>
 	
-	
+	<xsl:template mode="a2rsOnly" match="node()">
+			<xsl:variable name="this" select="current()"/>
+			<xsl:variable name="thisactor2role" select="key('actor_key',current()/name)"/>
+			<xsl:variable name="thisroles" select="key('allRoles_key',current()/name)"/>
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"actor":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisactor2role"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				 </xsl:call-template>", 
+			"actorid":"<xsl:value-of select="eas:getSafeJSString($thisactor2role/name)"/>",	 
+			"type":"<xsl:value-of select="$thisactor2role/type"/>",	
+		 	"role":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisroles"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+
+	<xsl:function name="eas:get_descendants" as="node()*">
+		<xsl:param name="parentNode"/>
+		<xsl:param name="inScopeOrgs"/>
+		<xsl:param name="level"/>
+		<xsl:param name="maxDepth"/>
+		<xsl:param name="slotName"/>
+		<xsl:sequence select="$parentNode"/>
+		<xsl:if test="$level &lt; $maxDepth">
+		 <xsl:variable name="childOrgs" select="$inScopeOrgs[own_slot_value[slot_reference = $slotName]/value = $parentNode/name]" as="node()*"/> 
+			<xsl:for-each select="$childOrgs">
+				<xsl:sequence select="eas:get_object_descendants(current(), ($inScopeOrgs), $level + 1, $maxDepth, $slotName)"/>
+			</xsl:for-each>
+		</xsl:if>
+	</xsl:function>
 </xsl:stylesheet>

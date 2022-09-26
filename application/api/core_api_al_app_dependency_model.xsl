@@ -46,6 +46,8 @@
 	<xsl:variable name="allDataObjs" select="/node()/simple_instance[type = 'Data_Object']"/>
 	<xsl:variable name="allAppDependencies" select="/node()/simple_instance[type = ':APU-TO-APU-STATIC-RELATION']"/>
 	<xsl:variable name="allAppDepInfoExchanged" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_EXCHANGE_RELATION']"/>
+	<xsl:variable name="allAppDeps" select="$allApp2InfoReps union $allAppDepInfoExchanged"/>
+	<xsl:key name="appDepKey" match="$allAppDeps" use="own_slot_value[slot_reference = 'used_in_app_dependencies']/value"/>
 	<xsl:key name="apexKey" match="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_EXCHANGE_RELATION']" use="own_slot_value[slot_reference = 'used_in_app_dependencies']/value"/>
 	<xsl:key name="apinfKey" match="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_RELATION']" use="own_slot_value[slot_reference = 'used_in_app_dependencies']/value"/>
 	<xsl:variable name="allAppUsages" select="/node()/simple_instance[type = 'Static_Application_Provider_Usage']"/>
@@ -64,8 +66,11 @@
 	
 	<xsl:variable name="currentAppUsages" select="key('usageKey', $currentApp/name)"/> 
 	<xsl:variable name="inboundDependenciespre" select="key('fromKey',$currentAppUsages/name)"/>
+
 	<xsl:variable name="inboundDependencies" select="$inboundDependenciespre[not(own_slot_value[slot_reference = ':TO']/value = $currentAppUsages/name)]"/>
-<!--
+	<xsl:key name="inboundDependenciesKey" match="$inboundDependencies" use="own_slot_value[slot_reference = ':TO']/value"/>
+
+	<!--
 	<xsl:variable name="currentAppUsages" select="$allAppUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $currentApp/name]"/>
 
 
@@ -84,6 +89,10 @@
 
 	<xsl:variable name="inboundInterfaceSourceDepspre" select="key('fromInfaceKey',$inboundInterfaceUsages/name)"/>
 	<xsl:variable name="inboundInterfaceSourceDeps" select="$inboundInterfaceSourceDepspre[not(own_slot_value[slot_reference = ':TO']/value = $inboundInterfaceUsages/name)]"/>
+
+	<xsl:key name="inboundInterfaceSourceDepsKey" match="$inboundInterfaceSourceDeps" use="own_slot_value[slot_reference = ':FROM']/value"/>
+
+
 <!--	<xsl:variable name="inboundInterfaceSourceDeps" select="$allAppDependencies[(own_slot_value[slot_reference = ':FROM']/value = $inboundInterfaceUsages/name) and not(own_slot_value[slot_reference = ':TO']/value = $inboundInterfaceUsages/name)]"/> -->
 	<xsl:variable name="inboundInterfaceSourceAppUsages" select="$allAppUsages[name = $inboundInterfaceSourceDeps/own_slot_value[slot_reference = ':TO']/value]"/>
 	<xsl:variable name="inboundInterfaceSourceApps" select="$allBusApps[name = $inboundInterfaceSourceAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
@@ -92,7 +101,8 @@
 
 	<xsl:variable name="outboundDependenciespre" select="key('outInfaceKey',$currentAppUsages/name)"/>
 	<xsl:variable name="outboundDependencies" select="$outboundDependenciespre"/>
- 
+	<xsl:key name="outboundDependenciesKey" match="$outboundDependencies" use="own_slot_value[slot_reference = ':FROM']/value"/>
+
 
 	<!--<xsl:variable name="outboundDependencies" select="$allAppDependencies[(own_slot_value[slot_reference = ':TO']/value = $currentAppUsages/name) and not(own_slot_value[slot_reference = ':FROM']/value = $currentAppUsages/name)]"/> -->
 	<xsl:variable name="allOutboundAppUsages" select="$allAppUsages[name = $outboundDependencies/own_slot_value[slot_reference = ':FROM']/value]"/>
@@ -114,6 +124,10 @@
 	
  
 	<xsl:template match="knowledge_base">
+		<xsl:variable name="inDirect" select="key('inboundDependenciesKey',$inboundAppUsages/name)"/>
+		<xsl:variable name="inApi" select="key('inboundDependenciesKey',$inboundInterfaceUsages/name)"/>
+		<xsl:variable name="outDirect" select="key('outboundDependenciesKey',$outboundAppUsages/name)"/>
+		<xsl:variable name="outApi" select="key('outboundDependenciesKey',$outboundInterfaceUsages/name)"/>
 		{
 			"id": "<xsl:value-of select="$topApp/name"/>",
 			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$topApp"/></xsl:call-template>",
@@ -122,19 +136,19 @@
 			"dependencies": {
 				"receivesFrom": [
 				<!--<xsl:apply-templates mode="RenderDirectInboundJSON" select="key('toKey', $inboundAppUsages/name)"/>-->
-					<xsl:apply-templates mode="RenderDirectInboundJSON" select="$inboundDependencies[own_slot_value[slot_reference = ':TO']/value = $inboundAppUsages/name]"/>
+					<xsl:apply-templates mode="RenderDirectInboundJSON" select="$inDirect"/>
 				],
 				"sendsTo": [
 				<!--<xsl:apply-templates mode="RenderDirectInboundJSON" select="key('fromKey', $outboundAppUsages/name)"/>-->
-					<xsl:apply-templates mode="RenderDirectOutboundJSON" select="$outboundDependencies[own_slot_value[slot_reference = ':FROM']/value = $outboundAppUsages/name]"/> 
+					<xsl:apply-templates mode="RenderDirectOutboundJSON" select="$outDirect"/> 
 				],
 				"fromInterfaces": [
 				<!--<xsl:apply-templates mode="RenderDirectInboundJSON" select="key('toKey', $inboundInterfaceUsages/name)"/>-->
-					<xsl:apply-templates mode="RenderInboundInterfaceJSON" select="$inboundDependencies[own_slot_value[slot_reference = ':TO']/value = $inboundInterfaceUsages/name]"/>
+					<xsl:apply-templates mode="RenderInboundInterfaceJSON" select="$inApi"/>
 				],
 				"toInterfaces": [
 				<!--<xsl:apply-templates mode="RenderDirectInboundJSON" select="key('fromKey', $outboundInterfaceUsages/name)"/>-->
-				<xsl:apply-templates mode="RenderOutboundInterfaceJSON" select="$outboundDependencies[own_slot_value[slot_reference = ':FROM']/value = $outboundInterfaceUsages/name]"/>
+				<xsl:apply-templates mode="RenderOutboundInterfaceJSON" select="$outApi"/>
 				]
 			},
 			"allAcqMethods": [
@@ -143,6 +157,7 @@
 		}
 	</xsl:template>
 	<xsl:template match="node()" mode="RenderDirectInboundJSONTest">  
+			 
 			<xsl:variable name="thisInboundAppUsage" select="$inboundDependencies[own_slot_value[slot_reference = ':TO']/value=current()/name]"/>
 			<xsl:variable name="thisInboundApp" select="$inboundApps[name = current()/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 		{"id": "<xsl:value-of select="current()/name"/>",
@@ -201,7 +216,8 @@
 		
 		<xsl:variable name="thisInboundInterfaceUsage" select="$inboundInterfaceUsages[name = $thisDep/own_slot_value[slot_reference = ':TO']/value]"/>
 		<xsl:variable name="thisInboundInterface" select="$inboundInterfaces[name = $thisInboundInterfaceUsage/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
-		<xsl:variable name="thisInboundInterfaceSourceDeps" select="$inboundInterfaceSourceDeps[own_slot_value[slot_reference = ':FROM']/value = $thisInboundInterfaceUsage/name]"/>
+		<xsl:variable name="thisInboundInterfaceSourceDepsA" select="$inboundInterfaceSourceDeps[own_slot_value[slot_reference = ':FROM']/value = $thisInboundInterfaceUsage/name]"/>
+		<xsl:variable name="thisInboundInterfaceSourceDeps" select="key('inboundInterfaceSourceDepsKey',$thisInboundInterfaceUsage/name)"/>
 		
 		
 		{
@@ -304,17 +320,19 @@
 		<xsl:variable name="directApp2InfoRepsA" select="key('apinfKey',$thisDep/name)"/>
 		
 	<!--	<xsl:variable name="thisApp2InfoRepXs" select="$allAppDepInfoExchanged[name = $thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>-->
-		<xsl:variable name="directApp2InfoReps" select="$allApp2InfoReps[name = $thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>	
+		<xsl:variable name="directApp2InfoReps2" select="$allApp2InfoReps[name = $thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>	
+		<xsl:variable name="directApp2InfoReps" select="key('appDepKey', $thisDep/name)"/>
 		
-		<xsl:variable name="indirectApp2InfoReps" select="$allApp2InfoReps[name = $thisApp2InfoRepXs/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+		<xsl:variable name="indirectApp2InfoReps" select="$allApp2InfoReps[name = $directApp2InfoReps/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
 		<xsl:variable name="thisApp2InfoReps" select="$directApp2InfoReps"/>
-		<xsl:variable name="thisInfoReps" select="$allInfoReps[name = $thisApp2InfoReps/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
+		<xsl:variable name="thisInfoReps" select="/node()/simple_instance[name = $directApp2InfoReps/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/> 
 		<xsl:variable name="thisInfoViews" select="$allInfoViews[name = $thisInfoReps/own_slot_value[slot_reference = 'implements_information_views']/value]"/>
+		
+
 		<xsl:variable name="infoViewCount" select="count($thisInfoViews)"/>
 		<xsl:variable name="infoRepCount" select="count($thisInfoReps)"/>
 		<xsl:variable name="hasInfo" select="($infoViewCount + $infoRepCount) > 0"/>
-"debug":"<xsl:value-of select="$directApp2InfoRepsA/name"/>",
-"debug1":"<xsl:value-of select="$directApp2InfoReps/name"/>",
+	
 		"hasInfo": <xsl:choose><xsl:when test="$hasInfo">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
 		<xsl:choose>
 			<xsl:when test="$infoViewCount > 0">
@@ -349,27 +367,24 @@
 
 	<xsl:template match="node()" mode="RenderInfoViewJSON">
 		<xsl:param name="thisAcqMethodId"/>
-		
 		<xsl:variable name="thisInfo" select="current()"/>
-		
 		<xsl:variable name="thisDataObjs" select="$allDataObjs[name = $thisInfo/own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value]"/>
 		<xsl:variable name="hasData" select="count($thisDataObjs) > 0"/>
+		<xsl:variable name="instanceName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template></xsl:variable>
 
 		{
 		"id": "<xsl:value-of select="$thisInfo/name"/>",
 		"className": "<xsl:value-of select="$thisInfo/type"/>",
 		<!-- "name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>", -->
-		"name": "<xsl:value-of select="$thisInfo/own_slot_value[slot_reference = 'name']/value"/>",
+		"name": "<xsl:choose><xsl:when test="$instanceName=''"><xsl:value-of select="$thisInfo/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$instanceName"/></xsl:otherwise></xsl:choose>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
 		"hasData": <xsl:choose><xsl:when test="$hasData">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
-		<xsl:if test="$hasData">
 			"dataObjects": [
 				<xsl:apply-templates mode="RenderDataObjJSON" select="$thisDataObjs">
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
-			]
-		</xsl:if>
+			] 
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
@@ -394,15 +409,22 @@
 		
 		<xsl:variable name="thisApp2InfoRep" select="$allApp2InfoReps[name = $this/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
 		<xsl:variable name="thisInfo" select="$allInfoReps[name = $thisApp2InfoRep/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
-		
+		<xsl:variable name="thisInfoReps" select="$allInfoReps[name = current()/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/> 
+		<xsl:variable name="thisInfoViews" select="$allInfoViews[name = $thisInfo/own_slot_value[slot_reference = 'implements_information_views']/value]"/>
 		{
 		"id": "<xsl:value-of select="$thisInfo/name"/>",
 		"className": "<xsl:value-of select="$thisInfo/type"/>",
 		<!-- "name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>", -->
-		"name": "<xsl:value-of select="$thisInfo/own_slot_value[slot_reference = 'name']/value"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
-		"hasData": false
+		"hasData": false,
+		"dataObjects": [
+				<xsl:apply-templates mode="RenderInfoViewJSON" select="$thisInfoViews">
+					<xsl:with-param name="thisAcqMethodId" select="$thisAcqMethodId"/>
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+				</xsl:apply-templates>
+				]
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
@@ -417,7 +439,7 @@
 		"className": "<xsl:value-of select="$thisInfo/type"/>",
 		"infRep":"Yes",
 		<!-- "name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>", -->
-		"name": "<xsl:value-of select="$thisInfo/own_slot_value[slot_reference = 'name']/value"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
 		"hasData": false

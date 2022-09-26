@@ -134,7 +134,7 @@
 									<xsl:value-of select="eas:i18n('Business Reference Model')"/>
 								</h2>
 								<div class="content-section">
-									<p><xsl:value-of select="eas:i18n('The following diagram describes the conceptual business capablities in scope for')"/>&#160;<xsl:value-of select="$orgName"/>. </p>
+									<p><xsl:value-of select="eas:i18n('The following diagram describes the conceptual business capabilities in scope for')"/>&#160;<xsl:value-of select="$orgName"/>. </p>
 
 									<xsl:variable name="fullWidth" select="count($topLevelBusCapabilities) * 140"/>
 									<xsl:variable name="widthStyle" select="concat('width:', $fullWidth, 'px;')"/>

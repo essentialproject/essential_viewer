@@ -17,10 +17,13 @@
 	<xsl:param name="viewScopeTermIds"></xsl:param>
 
 	<!-- END GENERIC PARAMETERS -->
+	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Business Capability Dashboard']"></xsl:variable>
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"></xsl:variable>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Application_Service', 'Business_Process', 'Business_Activity', 'Business_Task')"></xsl:variable>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Project','Application_Provider', 'Application_Service', 'Business_Process', 'Business_Activity', 'Business_Task')"></xsl:variable>
+	<xsl:variable name="apps" select="/node()/simple_instance[type=('Composite_Application_Provider','Application_Provider')]"></xsl:variable>
+	
 	<!-- END GENERIC LINK VARIABLES -->
 	<!--<xsl:variable name="reportPath" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
 	<xsl:variable name="reportPathApps" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
@@ -43,20 +46,37 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
+		-->
 	<xsl:variable name="allRoadmapInstances" select="$apps"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
 	 
-	-->
+	
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="capsListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
 	<xsl:variable name="servicesListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Application Services']"></xsl:variable>
+	<xsl:variable name="actorData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Group Actors']"/>
+
+	<xsl:variable name="goalTaxonomy" select="/node()/simple_instance[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
+	<xsl:variable name="allBusObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
+	<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
+	<xsl:variable name="busGoals" select="$allStrategicGoals"/>
+	<xsl:variable name="busCaps" select="/node()/simple_instance[type='Business_Capability']"/>
+	<xsl:key name="busCapImpact" match="$busCaps" use="own_slot_value[slot_reference = 'business_objectives_for_business_capability']/value"/>
+
+	<xsl:key name="plantolement_key" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"/>
+	<xsl:key name="projecttoplantolement_key" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference = 'ca_planned_changes']/value"/>
 
 <!--	<xsl:variable name="scoreData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
 -->
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"></xsl:call-template>
+		<xsl:variable name="apiActor">
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$actorData"/>
+				</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="apiBCM">
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$busCapData"></xsl:with-param>
@@ -128,6 +148,24 @@
 						position: relative;
 						min-height: 60px;
 						line-height: 1.1em;
+					}
+					.goalbox{
+						font-weight: 400;
+						position: absolute;
+						bottom:0px;
+						min-height: 10px;
+						width:95%;
+						text-align: center;
+						display:none;
+					}
+					.goalpill{
+						border-radius:5px;
+						margin-left:2px;
+						border:1pt solid #d3d3d3;
+						position: relative;
+						display:inline-block;
+						width:15px;
+						height: 8px; 
 					}
 					
 					.l1-cap{
@@ -258,6 +296,13 @@
 						overflow: hidden;
 						text-overflow: ellipsis;
 					}
+
+					.projectBoxTitle {
+						width: 300px;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
 					
 					.appInfoButton {
 						position: absolute;
@@ -266,7 +311,7 @@
 					}
 					
 					.app-circle{
-						display: inline-block;
+						display: block;
 						min-width: 10px;
 						padding: 2px 5px;
 						font-size: 10px;
@@ -285,6 +330,53 @@
 					}
 					
 					.app-circle:hover {
+						background-color: #333;
+						color: #fff;
+						cursor: pointer;
+					}
+					.proj-circle{
+						display: none;
+						min-width: 10px;
+						padding: 2px 5px;
+						font-size: 10px;
+						font-weight: 700;
+						line-height: 1;
+						text-align: center;
+						white-space: nowrap;
+						vertical-align: middle;
+						background-color: #fff;
+						color: #333;
+						border-radius: 10px;
+						border: 1px solid #ccc;
+						position: absolute;
+						right: 5px;
+						top: 5px;
+					}
+					.proj-circle:hover {
+						background-color: #333;
+						color: #fff;
+						cursor: pointer;
+					}
+
+					.compare-circle{
+						display: none;
+						min-width: 10px;
+						padding: 2px 5px;
+						font-size: 10px;
+						font-weight: 700;
+						line-height: 1;
+						text-align: center;
+						white-space: nowrap;
+						vertical-align: middle;
+						background-color: rgb(247, 247, 247);
+						color: #fff;
+						border-radius: 10px;
+						border: 1px solid #ccc;
+						position: absolute;
+						right: 5px;
+						top: 5px;
+					}
+					.compare-circle:hover {
 						background-color: #333;
 						color: #fff;
 						cursor: pointer;
@@ -471,6 +563,11 @@
 						position:relative;
 						top:-30px;
 					}
+					.goalInfo{
+						position:absolute;
+						right:2px;
+						bottom:2px;
+					}
 					.shigh{color: #6E2C00}
 					.smed {color:#BA4A00} 
 					.slow{color: #EDBB99 }
@@ -553,6 +650,120 @@
    						 height: 12pt;
 							padding:3px;
 					}
+					.goalCard{
+						height:70px;
+						display: inline-block;
+						border-radius: 4px;
+						font-size:0.8em;
+						width:100px;
+						border:1pt solid #d3d3d3;
+						vertical-align: top;
+						margin-bottom: 5px;
+						padding:2px;
+
+					}
+					.popOpenGoals{
+						padding:2px;
+						margin-left:15px;
+						border:1pt solid #d3d3d3;
+						border-radius:5px;
+						font-size:0.8em;
+						text-align: center;
+						}
+						.goalCard2{
+							height:90px;
+							display: inline-block;
+							border-radius: 4px;
+							font-size:0.8em;
+							width:100px;
+							border:1pt solid #d3d3d3;
+							color:#fff;
+							vertical-align: top;
+							margin-bottom: 5px;
+							padding:2px;
+							position:relative;
+	
+						}	
+						.goalHead{
+						 position:relative;
+						 top:-2px;
+						 left:-2px;
+						 width:98px;
+						 border-radius: 4px 4px 0px 0px;
+						 height:15px;
+						 font-size:0.9em;
+						 background-color: #636363;
+						 color:#fff;
+						 padding-left:2px;
+						}
+						.goalMain{
+						 position:relative;
+						 font-size:0.93em;
+						 top:2px;
+						 padding-right:3px;
+						 border-radius: 4px;
+						 width:100px;
+						}
+					.leftAppColourBlob{
+						background-color: #24A5F4;
+						color: #24A5F4;
+						border-radius:4px;
+						border:1pt solid #fff;
+						width:50px;
+						margin:2px;
+						height:10px;
+						font-size: 5pt;
+					}
+					.leftAppColour{
+						background-color: #24A5F4;
+						color: #fff;
+						border:1pt solid #fff;
+						-webkit-transition: all 0.5s ease;
+						-moz-transition: all 0.5s ease;
+						-o-transition: all 0.5s ease;
+						-ms-transition: all 0.5s ease;
+						transition: all 0.5s ease;
+						}
+					
+					.rightAppColourBlob{
+						background-color: #1FC1B4;
+						color: #1FC1B4;
+						border-radius:4px;
+						border:1pt solid #fff;
+						width:50px;
+						margin:2px;
+						height:10px;
+						font-size: 5pt;
+					}	
+					.rightAppColour{
+						background-color: #1FC1B4;
+						color: #fff;
+						border:1pt solid #fff;
+						-webkit-transition: all 0.5s ease;
+						-moz-transition: all 0.5s ease;
+						-o-transition: all 0.5s ease;
+						-ms-transition: all 0.5s ease;
+						transition: all 0.5s ease;
+					}
+					
+					.bothAppColour{
+						background-color: #7438A4;
+						color: #fff;
+						-webkit-transition: all 0.5s ease;
+						-moz-transition: all 0.5s ease;
+						-o-transition: all 0.5s ease;
+						-ms-transition: all 0.5s ease;
+						transition: all 0.5s ease;
+					}
+					
+					.noAppColour{
+						background-color: #fff;
+						-webkit-transition: all 0.5s ease;
+						-moz-transition: all 0.5s ease;
+						-o-transition: all 0.5s ease;
+						-ms-transition: all 0.5s ease;
+						transition: all 0.5s ease;
+					}
 				</style>
 				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -582,12 +793,12 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Dashboard')"></xsl:value-of> - </span>
+									<span class="text-darkgrey"><span id="reportTitle"><xsl:value-of select="eas:i18n('Business Capability Dashboard')"></xsl:value-of></span> - </span>
 									<span class="text-primary">
 										<span id="rootCap"></span>
 									</span>
 								</h1>
-							</div>
+							</div> 
 						</div>
 						<xsl:call-template name="RenderDataSetAPIWarning"/>
 						<div class="col-xs-12">
@@ -601,17 +812,57 @@
 								</div>
 								<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 							</div>	
-							<div id="blobLevel" ></div>
-							<div class="pull-right Key"><b><xsl:value-of select="eas:i18n('Caps Style')"></xsl:value-of>:</b><button class="btn btn-xs btn-secondary" id="hideCaps">Show</button><xsl:text> </xsl:text><xsl:text> </xsl:text>
-								<b><xsl:value-of select="eas:i18n('Show Retired')"></xsl:value-of>	</b><input type="checkbox" id="retired" name="retired"/>
-								<xsl:text> </xsl:text>
-							<b><xsl:value-of select="eas:i18n('Application Usage Key')"></xsl:value-of></b>: <i class="fa fa-square shigh"></i> - <xsl:value-of select="eas:i18n('High')"/><xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - <xsl:value-of select="eas:i18n('Medium')"/> <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - <xsl:value-of select="eas:i18n('Low')"/></div>
-							<div class="pull-right showApps Key right-30" id="pmKey"><xsl:value-of select="eas:i18n('Ratings')"></xsl:value-of>:<input type="checkbox" id="fit" name="fit"></input></div>
 						</div>
-						<div class="col-xs-12" id="keyHolder">
-
+						<div class="col-xs-12 col-md-8">
+								<div class="legend">
+									<div class="inline-block right-30">
+										<strong class="right-10"><xsl:value-of select="eas:i18n('Application Usage Key')"></xsl:value-of>:</strong>
+										<i class="fa fa-square shigh right-5"></i><xsl:value-of select="eas:i18n('High')"/>
+										<i class="fa fa-square smed left-10 right-5"></i><xsl:value-of select="eas:i18n('Medium')"/>
+										<i class="fa fa-square slow left-10 right-5"></i><xsl:value-of select="eas:i18n('Low')"/>
+									</div>
+								</div>
+								<div class=" top-10">
+									<strong class="right-5"><xsl:value-of select="eas:i18n('Caps Style')"/>:</strong>
+									<button class="btn btn-xs btn-success" id="hideCaps">Show</button>
+									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Show Retired')"/>:</strong>
+									<input type="checkbox" id="retired" name="retired"/>
+									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Perspectives')"/>:</strong>
+									<select name="viewOption" id="viewOption"/>
+									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Jump To')"/>:</strong>
+									<select name="capjump" id="capjump"/>
+									
+								</div>
+								<div class="showApps right-30" id="pmKey">
+									<xsl:value-of select="eas:i18n('Ratings')"></xsl:value-of>:<input type="checkbox" id="fit" name="fit"></input>
+								</div>
+								<div class="top-10 bottom-10">
+									<div class="" id="keyHolder" style="display:none"/>
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-4">
+								<div class="pull-right" id="blobLevel"/>
+							</div>
+						<div id="comparePanel" style="display:none">
+							<div class="col-xs-6 col-lg-6">
+								<label>
+									<span><xsl:value-of select="eas:i18n('Organisation')"/> 1</span>
+								</label>
+								<select id="leftOrgList" class="form-control orgCompare" style="width:100%"><option value="all">All</option></select>	
+								<div class="leftAppColour" style="width:100%">&#160;</div>
+							</div>
+							<div class="col-xs-6 col-lg-6">
+								<label>
+									<span><xsl:value-of select="eas:i18n('Organisation')"/> 2</span>
+								</label>
+								<select id="rightOrgList" class="form-control orgCompare" style="width:100%"><option value="all">All</option></select>		
+								<div class="rightAppColour" style="width:100%">&#160;</div>
+							</div>
+							<div class="col-xs-12">
+								<div class="bothAppColour top-10" style="width:100%; text-align:center;"><strong><xsl:value-of select="eas:i18n('Both')"/></strong></div>
+								<hr/>
+							</div>
 						</div>
-
 						<div class="col-xs-12" id="capModelHolder">
 						</div>
 						<div id="appSidenav" class="sidenav">
@@ -667,7 +918,7 @@
 				<script id="model-l0-template" type="text/x-handlebars-template">
 		         	<div class="capModel">
 						{{#each this}}
-							<div class="l0-cap"><xsl:attribute name="level">{{this.level}}</xsl:attribute>
+							<div class="l0-cap"><xsl:attribute name="level">{{this.level}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 								<span class="cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
 							<br/>	{{#getApps this}}{{this}}{{/getApps}} 
 							<!--	<span class="app-circle "> <xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
@@ -683,12 +934,16 @@
 				<script id="model-l1cap-template" type="text/x-handlebars-template">
 					<div class="l1-caps-wrapper caplevel "><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
 						{{#each this.childrenCaps}}
-						<div class="l1-cap bg-darkblue-40 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute>
+						<div class="l1-cap bg-darkblue-40 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 							<span class="sub-cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
 							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
+							<span class="proj-circle "><xsl:attribute name="easidproj">{{id}}</xsl:attribute>{{#getProjects this}}{{/getProjects}}</span>
+							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 							{{#getApps this}}{{/getApps}} 
-								{{> l2CapTemplate}} 	 
-						</div>
+								{{> l2CapTemplate}} 	
+								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		 
+						</div> 
+						
 						{{/each}}
 					</div>
 				</script>
@@ -697,11 +952,14 @@
 				<script id="model-l2cap-template" type="text/x-handlebars-template">
 					<div class="l2-caps-wrapper caplevel "><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
 						{{#each this.childrenCaps}}
-						<div class="l2-cap buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute>
+						<div class="l2-cap buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 							<span class="sub-cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
 							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
+							<span class="proj-circle "><xsl:attribute name="easidproj">{{id}}</xsl:attribute>{{#getProjects this}}{{/getProjects}}</span>
+							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 							{{#getApps this}}{{/getApps}} 
-								{{> l3CapTemplate}} 	 
+								{{> l3CapTemplate}}
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	 	 
 						</div>
 						{{/each}}
 					</div>
@@ -711,11 +969,14 @@
 				<script id="model-l3cap-template" type="text/x-handlebars-template">
 					<div class="l3-caps-wrapper caplevel "><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
 						{{#each this.childrenCaps}}
-						<div class="l3-cap bg-lightblue-80 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute>
+						<div class="l3-cap bg-lightblue-80 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 							<span class="sub-cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
-							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>		
+							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
+							<span class="proj-circle "><xsl:attribute name="easidproj">{{id}}</xsl:attribute>{{#getProjects this}}{{/getProjects}}</span>
+							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>	
 							{{#getApps this}}{{/getApps}} 				 
-								{{> l4CapTemplate}} 		 
+								{{> l4CapTemplate}} 	
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		 
 						</div>
 						{{/each}}
 					</div>	
@@ -724,11 +985,14 @@
 				<script id="model-l4cap-template" type="text/x-handlebars-template">
 					<div class="l4-caps-wrapper caplevel "><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
 					{{#each this.childrenCaps}}
-					<div class="l4-cap bg-lightblue-80 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute>
+					<div class="l4-cap bg-lightblue-80 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 						<span class="sub-cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
 						<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>
+						<span class="proj-circle "><xsl:attribute name="easidproj">{{id}}</xsl:attribute>{{#getProjects this}}{{/getProjects}}</span>
+						<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 						{{#getApps this}}{{/getApps}} 		
-							{{> l5CapTemplate}}		 
+							{{> l5CapTemplate}}
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>			 
 					</div>
 					{{/each}}
 					</div>
@@ -738,12 +1002,15 @@
 				<script id="model-l5cap-template" type="text/x-handlebars-template">
 					<div class="l4-caps-wrapper caplevel "><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
 						{{#each this.childrenCaps}}
-						<div class="l5on-cap bg-lightblue-20 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute>
+						<div class="l5on-cap bg-lightblue-20 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 							<span class="sub-cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
-							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>	 
+							<span class="app-circle "><xsl:attribute name="easidscore">{{id}}</xsl:attribute>{{this.apps.length}}</span>	
+							<span class="proj-circle "><xsl:attribute name="easidproj">{{id}}</xsl:attribute>{{#getProjects this}}{{/getProjects}}</span>
+							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 							{{#getApps this}}{{/getApps}} 
-							<div class="l5-caps-wrapper caplevel"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute>
+							<div class="l5-caps-wrapper caplevel"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 									{{> l5CapTemplate}}
+								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
 								</div>	
 						</div>
 						{{/each}}
@@ -803,6 +1070,35 @@
 							</div>
 						{{/each}}
 					 
+				</script>
+				<script id="compare-template" type="text/x-handlebars-template">
+					<div class="row">
+							<div class="col-sm-8">
+								<h4 class="text-normal strong inline-block right-30" >{{#essRenderInstanceLinkMenuOnlyLight this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnlyLight}}</h4>
+								<!--<div class="ess-tag ess-tag-default"><i class="fa fa-money right-5"/>Cost: {{costValue}}</div>
+								<div class="inline-block">{{#calcComplexity totalIntegrations capsCount processesSupporting servicesUsed.length}}{{/calcComplexity}}</div>-->
+							</div>
+							<div class="col-sm-4">
+								<div class="text-right">
+									<i class="fa fa-times closePanelButton left-30"></i>
+								</div>
+								<div class="clearfix"/>
+							</div>
+					</div>
+					<div class="row">
+							<div class="col-sm-8">
+								<table>
+									<thead><tr><th width="33%">Application</th><th width="33%">	{{this.left}}</th><th width="33%">{{this.right}}</th></tr></thead>
+									<tbody>
+										{{#each this.rows}}
+											<tr><td>{{this.name}}</td><td>{{#getBlob this.left 'left'}}{{/getBlob}}</td><td>{{#getBlob this.right 'right'}}{{/getBlob}}</td></tr>
+										{{/each}}
+									</tbody>
+								</table>
+							
+							</div>
+					</div>
+
 				</script>
 
 				<script id="app-template" type="text/x-handlebars-template">
@@ -961,8 +1257,67 @@
 						</div>	
 					{{/each}}
 				</script>	
-		
+				<script id="project-template" type="text/x-handlebars-template">
+					<h3>Projects</h3>
+					<ul>
+					{{#each this.projects}}
+					<div class="appBox"> 
+							<xsl:attribute name="easid">{{id}}-{{this.name}}</xsl:attribute>
+							<div class="appBoxSummary">
+								<div class="projectBoxTitle pull-left strong">
+									<xsl:attribute name="title">{{this.name}}</xsl:attribute>
+									<i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceLinkMenuOnly this 'Project'}}{{/essRenderInstanceLinkMenuOnly}}
+								</div>
+							</div>
+							<div class="clearfix"/>
+							<div class="mini-details">
+								<div class="small pull-left text-white">
+									<div class="left-5 bottom-5"><i class="fa fa-calendar right-5"></i>Proposed Start Date: {{proposedstartDate}}</div>
+									<div class="left-5 bottom-5"><i class="fa fa-calendar right-5"></i>Actual Start Date: {{actualstartDate}}</div>
+									<div class="left-5 bottom-5"><i class="fa fa-calendar right-5"></i>Target End Date: {{targetEndDate}}</div>
+									<div class="left-5 bottom-5"><i class="fa fa-calendar right-5"></i>Forecast End Date: {{forecastendDate}}</div>
+									 
+								</div>
+<!--
+									<button class="btn btn-default btn-xs appInfoButton pull-right"><xsl:attribute name="easid">{{id}}</xsl:attribute>Show Details</button>
+-->
+								
+							</div>
+							<div class="clearfix"/>
+						</div>
+					{{/each}}
+					</ul>
+				</script>
+
+				<script id="goal-template" type="text/x-handlebars-template">
+					<div class="col-xs-11">
+					<h3>{{this.name}}</h3>
+					<p>Objectives supporting this goal:</p>
+					{{#each this.objectives}}
+					<i class="fa fa-circle"></i> {{this.name}}<br/>
+					{{/each}}
+					</div>
+					<div class="col-xs-1">
+						<div class="text-right">
+							<i class="fa fa-times closePanelButton left-30"></i>
+						</div>
+					</div>
+					
+				</script>
 				
+				<script id="goalKey-template" type="text/x-handlebars-template">
+					{{#each this}}
+					<!--	<div class="goalCard"><xsl:attribute name="style">color:{{goaltxtColour}};background-color:{{goalColour}}</xsl:attribute>{{this.name}} 
+						</div>	
+					-->
+						<div class="goalCard2"><xsl:attribute name="style">color:#000;border-bottom:7px solid {{goalColour}}</xsl:attribute>
+							<div class="goalHead"><xsl:attribute name="style">border-bottom:2px solid {{goalColour}}</xsl:attribute>Goal</div>
+							<div class="goalMain">{{this.name}}
+							</div> 
+							<i class="fa fa-info-circle goalInfo"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i>
+						</div>	
+					{{/each}}
+				</script>
 			</body>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction">
@@ -970,6 +1325,7 @@
 					<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
 					<xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param>  
 					<xsl:with-param name="viewerAPIPathSvcs" select="$apiSvcs"></xsl:with-param>  
+					<xsl:with-param name="viewerAPIPathActor" select="$apiActor"></xsl:with-param>   
 					
 				<!--	<xsl:with-param name="viewerAPIPathScores" select="$apiScores"></xsl:with-param>-->
 					
@@ -984,7 +1340,7 @@
 		<xsl:param name="viewerAPIPathApps"></xsl:param>
 		<xsl:param name="viewerAPIPathCaps"></xsl:param> 
 		<xsl:param name="viewerAPIPathSvcs"></xsl:param> 
-		
+		<xsl:param name="viewerAPIPathActor"></xsl:param> 
 		
 	<!--	<xsl:param name="viewerAPIPathScores"></xsl:param>-->
 		
@@ -993,7 +1349,7 @@
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
 		var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>'; 
 		var viewAPIDataSvcs = '<xsl:value-of select="$viewerAPIPathSvcs"/>'; 
-		
+		var viewAPIDataActor = '<xsl:value-of select="$viewerAPIPathActor"/>'; 
 		
 <!--		var viewAPIScores= '<xsl:value-of select="$viewerAPIPathScores"/>';-->
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
@@ -1028,6 +1384,16 @@
 			});
 		}; 
 
+
+		//set report title, this is based on the report label, IMPORTANT: do not chnage the report name, only the label
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const repTitle = urlParams.get('LABEL')
+ 
+		if(repTitle){
+			$('#reportTitle').text(repTitle)
+		}
+
 	 	function showEditorSpinner(message) {
 			$('#editor-spinner-text').text(message);                            
 			$('#editor-spinner').removeClass('hidden');                         
@@ -1038,6 +1404,9 @@
 			$('#editor-spinner-text').text('');
 		};
 
+		let filtersNo=[<xsl:call-template name="GetReportFilterExcludedSlots"><xsl:with-param name="theReport" select="$theReport"></xsl:with-param></xsl:call-template>];
+		var busGoals=[<xsl:apply-templates select="$busGoals" mode="busGoals"/> ];
+		var capProjects=[<xsl:apply-templates select="$busCaps" mode="capChanges"/>]
 		var panelLeft=$('#appSidenav').position().left;
 		 
 		var level=0;
@@ -1084,11 +1453,23 @@
 			appFragment = $("#app-template").html();
 			appTemplate = Handlebars.compile(appFragment);		
 
+			compareFragment = $("#compare-template").html();
+			compareTemplate = Handlebars.compile(compareFragment);		
+
 			blobsFragment = $("#blob-template").html();
 			blobTemplate = Handlebars.compile(blobsFragment);
 			
 			appListFragment = $("#appList-template").html();
 			appListTemplate = Handlebars.compile(appListFragment);
+
+			goalKeyFragment = $("#goalKey-template").html();
+			goalKeyTemplate = Handlebars.compile(goalKeyFragment);
+
+			goalFragment = $("#goal-template").html();
+			goalTemplate = Handlebars.compile(goalFragment);
+			 
+			projectFragment = $("#project-template").html();
+			projectTemplate = Handlebars.compile(projectFragment);
 
 			appScoreFragment = $("#appScore-template").html();
 			appScoreTemplate = Handlebars.compile(appScoreFragment);
@@ -1106,6 +1487,32 @@
 				return (100/sclen.length)-2;
 			});
 
+			Handlebars.registerHelper('getProjects', function(bc) {
+			 
+				 let thisProj=capProjects.find((e)=>{
+					 return e.id==bc.id
+				 });
+				
+				 if(thisProj){
+					return thisProj.projects.length;
+				 }else{
+					 return 0;
+				 }
+			});
+
+			Handlebars.registerHelper('setGoals', function(gls) {
+				divData='';
+				busGoals.forEach((bg)=>{
+					if(bg.capsList.includes(gls.id)){
+						divData=divData+'<div class="goalpill" data-toggle="tooltip" title="'+bg.name+'"  style="background-color:'+bg.goalColour+'"/>'
+					}else{
+						divData=divData+'<div class="goalpill" style="background-color:#fff"/>'
+					}
+				})
+			 
+				return divData
+			});
+
 			Handlebars.registerHelper('getApps', function(instance) {
 			 
 				let thisApps=workingArrayAppsCaps.filter((d)=>{
@@ -1114,72 +1521,15 @@
 			 
 				let appHtml='';
 				let appArr=[];
-/*				thisApps[0].apps.forEach((f)=>{
-					let mappedApp=scores.applications.filter((d)=>{
-						return d.id==f;
-					});
 
-				let thisProcs=[];
-				mappedApp[0].processes.forEach((d)=>{
-					thisApps[0].physP.forEach((e)=>{
-						if(e==d.id){
-							thisProcs.push(d);
-						}
-					})
-
-				})
-				let scArr=[]; 
-				if(thisProcs[0]){
-				thisProcs.forEach((sc)=>{  
-					if(sc.scores){ 
-					sc.scores.forEach((s)=>{  
-						scArr.push(s) 
-						 });
-						}
-					});
-				}
-				 
-				if(mappedApp[0].scores){ 
-					mappedApp[0].scores.forEach((s)=>{  
-						scArr.push(s) 
-						 });
-						}
-	 
-				var totals = d3.nest()
-					.key(function(d) { return d.type; })
-					.rollup(function(v) { return {
-						count: v.length,
-						total: d3.sum(v, function(d) { return d.score; }),
-						avg: d3.mean(v, function(d) { return d.score; })
-					}; })
-					.entries(scArr);
-				
-				let thisQuals=[];
-			
-				scores.serviceQualities.forEach((sq)=>{
-					let appMap=totals.filter((s)=>{
-						return s.key==sq.id;
-					})
-				
-					if(appMap.length &gt; 0){
-						let thisScore=Math.round(appMap[0].values.avg)
-
-						let qualInfo=sq.sqvs.find((q)=>{
-							return q.score==thisScore;
-						})
-					thisQuals.push({"id":sq.id,"name":sq.shortName,"score":thisScore, "bgColour":qualInfo.elementBackgroundColour, "color":qualInfo.elementColour})
-					}else
-					{
-						thisQuals.push({"id":sq.id,"name":sq.shortName,"score":0})
-					}
-				});
-				appArr.push({"id":f,"name":mappedApp[0].app,"level":instance.level, "scores":thisQuals});
-
-				})
-				appHtml= appScoreTemplate(appArr);
-				return appHtml;
-*/
 			});
+
+			Handlebars.registerHelper('getCompareApps', function(alist) {
+ 
+			});
+			
+
+
 
 			Handlebars.registerHelper('getColour', function(arg1) {
 				let colour='#fff';
@@ -1223,6 +1573,18 @@
 		            return instanceLink;
 		        }
 			});
+			 
+			Handlebars.registerHelper('getBlob', function (instance, type) {
+					
+					if(instance=='true'){	
+						if(type=='left'){
+							return 	'<div class="leftAppColourBlob">T</div>'
+						}	
+						else{
+							return 	'<div class="rightAppColourBlob">T</div>'
+						}
+					}
+			})
 			
 			Handlebars.registerHelper('essRenderInstanceLinkMenuOnlyLight', function (instance, type) {
 		 
@@ -1249,6 +1611,20 @@
 				document.getElementById("hideCaps").innerHTML = localStorage.getItem("essentialhideCaps");
 			}
 
+	$('#viewOption').append($('&lt;option>', {
+			value: 'apps',
+			text: 'Application Overlay'
+		}));	
+
+	//$('#viewOption').hide()	
+	if(busGoals.length&gt;0){  
+		$('#viewOption').append($('&lt;option>', {
+				value: 'goals',
+				text: 'Goals and Projects'
+			}));	
+	}
+	$('#viewOption').select2({width:'200px'});
+
 	$('#hideCaps').on('click',function(){
 		let capState=$('#hideCaps').text() 
 		if(capState=='Hiding'){
@@ -1267,6 +1643,68 @@
 			redrawView()
 	})
 
+	$('.orgCompare').on('change',function(){
+		redrawView()
+})
+
+	$('.popOpenGoals2').on('click', function(){
+		$('.app-circle').toggle();
+		$('.keyToggle').toggleClass('fa-caret-up fa-caret-down')
+		$('#keyHolder').toggle()
+		$('.proj-circle').toggle()
+		$('.goalbox').slideToggle();
+	});
+
+	$('#viewOption').on('change', function(){
+		let thisId=$(this).val();
+		if(thisId=='apps'){
+			$('.app-circle').show();  
+			$('.proj-circle').hide();
+			$('.compare-circle').hide(); 
+			$('#keyHolder').slideUp();
+			$('#comparePanel').slideUp() 
+			$('.goalbox').hide();
+		}else if(thisId=='goals'){
+			$('.app-circle').hide();  
+			$('.proj-circle').show();
+			$('.compare-circle').hide();
+			$('#comparePanel').slideUp()
+			$('#keyHolder').slideDown()  
+			$('.goalbox').show();
+		}else if(thisId=='compare'){
+			$('.app-circle').hide();  
+			$('.compare-circle').show();  
+			$('.proj-circle').hide()
+			$('#keyHolder').slideUp() 
+			$('#comparePanel').slideDown() 
+			$('.goalbox').hide();
+		}
+	})
+<!--
+	$('.popOpenGoals').on('click', function(){
+		toggle_visibility('app-circle') 
+		$('.keyToggle').toggleClass('fa-caret-up fa-caret-down')
+		toggle_visibility('proj-circle') 
+		$('#keyHolder').slideToggle() 
+		toggle_visibility('goalbox');
+	});
+
+
+	function toggle_visibility(className) {
+		
+		var elements = document.getElementsByClassName(className),
+			n = elements.length;
+		for (var i = 0; i &lt; n; i++) {
+		  var e = elements[i];
+	 
+		  if(e.style.display == 'block') {
+			e.style.display = 'none';
+		  } else {
+			e.style.display = 'block';
+		  }
+	   }
+	 }
+	-->
 			$('.appPanel').hide();
 			var appArray;
 			var workingArrayCaps;
@@ -1275,26 +1713,52 @@
 			var processMap=[]; 
 			let svsArray=[];
 			var scores=[];
+			var relevantOrgData=[]; 
 			Promise.all([
 			promise_loadViewerAPIData(viewAPIData),
 			promise_loadViewerAPIData(viewAPIDataApps),
 			promise_loadViewerAPIData(viewAPIDataCaps), 
-	 		promise_loadViewerAPIData(viewAPIDataSvcs)
+			promise_loadViewerAPIData(viewAPIDataSvcs),
+			promise_loadViewerAPIData(viewAPIDataActor)
 			]).then(function (responses)
 			{
 			 //	console.log('viewAPIData',responses[0]);
 			//	console.log('viewAPIDataApps',responses[1]);
 			 //	console.log('viewAPIDataCaps',responses[2]);
 			//	console.log('viewAPIDataSvcs',responses[3]);
+			//	console.log('viewAPIDataActos',responses[4]);
+				
+				responses[4].orgData.forEach((d)=>{
+					relevantOrgData.push({"id":d.id,"name":d.name, "allOrgsInScope": d.allChildOrgs})
+				});
+				responses[4]=[]; 
+				if(relevantOrgData.length&gt;0){
+						$('#viewOption').append($('&lt;option>', {
+								value: 'compare',
+								text: 'Compare'
+							})); 
+				}
 				let workingArray = responses[0];
 				svsArray = responses[3]
 				meta = responses[1].meta; 
+ 
+				meta.push({"classes":["Project"],"menuId":"projGenMenu"})
 				filters=responses[1].filters;
 				capfilters=responses[0].filters;
 
-				
-				responses[1].filters.sort((a, b) => (a.id > b.id) ? 1 : -1)
-				 console.log('capfilters',responses[1].filters)
+				filters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+		 
+				filtersNo.forEach((e)=>{
+					filters=filters.filter((f)=>{
+						return f.slotName !=e;
+					})
+				 })
+				 filtersNo.forEach((e)=>{
+					capfilters=capfilters.filter((f)=>{
+						return f.slotName !=e;
+					})
+				 })
+ 
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
@@ -1303,8 +1767,35 @@
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
 			 
-				
-		 
+				busGoals.forEach((e)=>{
+					let capsList=[];
+					e.objectives.forEach((c)=>{
+						c.caps.forEach((sc)=>{
+							capsList=[...capsList, ...sc.childCaps]
+						})
+					})
+					e['capsList']=capsList;
+				})
+		 $('#keyHolder').html(goalKeyTemplate(busGoals))
+
+		 $('.goalInfo').on('click',function(d){
+
+			let goalId=$(this).attr('easid');
+			thisgoal= busGoals.find((d)=>{
+				return d.id==goalId;
+			}) 
+			$('#appData').html(goalTemplate(thisgoal));
+			$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
+	
+			//$('#appModal').modal('show');
+			$('.closePanelButton').on('click',function(){ 
+				$('.appPanel').hide();
+			})
+		 })
+
+
+
+
 				workingArray.busCapHierarchy.forEach((d)=>{
 			 
 					let capArr=responses[2].businessCapabilities.find((e)=>{
@@ -1327,40 +1818,44 @@
 				workingArray.busCapHierarchy.sort(function (a, b) {   
 					return a.position - b.position || a.order - b.order;
 				});
-				
-		 
+				 
 				rationReport=responses[1].reports.filter((d)=>{return d.name=='appRat'});
-			//	scores = responses[2];
-			//	console.log(scores); 
-
+  
 				 let checkkey= false;
-			/*	 scores.applications.some((d)=>{
-					if(d.processes.length&gt;0)
-					{ 
-						d.processes.some((e)=>{
-						if(e.scores.length &gt; 0){
-							checkkey=true; 
-						}	
-					 	})
-					}else{
-					}
-
-				});
-			*/
-			//	console.log(checkkey);
+			 
 				if(checkkey){$('#pmKey').show()}
 				else{
 					$('#pmKey').hide()
 				}
-			/*	 
-				$('#keyHolder').hide();
-				scores.serviceQualities.forEach((d)=>{
-					d.sqvs.sort((a, b) => (a.score > b.score) ? -1 : 1)
-				})
+			
+				 getArrayDepth(workingArray.busCapHierarchy);
+				 
+			<!-- add org ids for all the related apps for filtering -->
+				 workingArray.busCaptoAppDetails.forEach((d)=>{
+					$('#capjump').append($('&lt;option>', {
+						value: d.id,
+						text: d.name
+					}));
+					let appOrgs=[];
+					d.apps.forEach((dap)=>{
+						let matchApp=responses[1].applications.find((ap)=>{
+						 return ap.id==dap;
+						});
+					appOrgs=[...appOrgs, ...matchApp.orgUserIds];
+					});
+			   
+					d['orgUserIds']=[...d.orgUserIds, ...appOrgs];
+					 
+				});
 
- 				$('#keyHolder').html(keyListTemplate(scores.serviceQualities)) 
-			*/
-			 	getArrayDepth(workingArray.busCapHierarchy);
+				var sel = $('#capjump');
+				var selected = sel.val(); // cache selected value, before reordering
+				var opts_list = sel.find('option');
+				opts_list.sort(function(a, b) { return $(a).text() > $(b).text() ? 1 : -1; });
+				sel.html('').append(opts_list);
+				sel.val(selected);
+				$('#capjump').select2({'width':'200px'});
+		 
 				 workingArrayAppsCaps=workingArray.busCaptoAppDetails
 				 let appUpdateMod = new Promise(function(resolve, reject) { 
 					resolve(appArray = responses[1]);
@@ -1389,38 +1884,7 @@
 						}
 					//	setScoreApps()
 					}) 
-/*
-					$('#fit').on('click',function(){ 
-						setScoreApps();
-					});
 
-					$('.measures').on('click',function(){ 
-						let thisId= $(this).attr('id');
-						let thisVal=$(this).prop('checked');
-					//	console.log(thisId)
-						if(thisVal==true){
-							$('.'+thisId).show();
-						}
-						else{
-							$('.'+thisId).hide();
-						}
-					});
-
-					function setScoreApps(){
-						let fit=$('#fit').is(":checked");
-						if(fit == true){
-							$('#keyHolder').show();
-							$('.appInDivBoxL0').hide();
-							$('.appInDivBox').hide();
-							$('.appL'+(level-1)).show();
-						}
-						else{
-							$('#keyHolder').hide();
-							$('.appInDivBoxL0').hide();
-							$('.appInDivBox').hide();
-						}
-					}
-*/
 				$('#rootCap').text(workingArray.rootCap);	
 				
 				codebase=appArray.codebase;
@@ -1505,16 +1969,31 @@
 					resolve($('#capModelHolder').html(l0CapTemplate(workingArray.busCapHierarchy)));
 					reject();
 			   })
-			   
-		
+			    
 			   capMod.then((d)=>{
 				workingArray=[];
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], responses[1].filters, responses[0].filters);
+				filters=[...capfilters, ...filters];
+			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], filters, capfilters);
 			   });
+
+			  
 			   removeEditorSpinner()
 			   $('.appInDivBoxL0').hide();
 			   $('.appInDivBox').hide();
 			})
+
+			relevantOrgData.forEach((org)=>{
+				$('#leftOrgList').append($('&lt;option>', {
+					value: org.id,
+					text: org.name
+				}));
+				$('#rightOrgList').append($('&lt;option>', {
+					value: org.id,
+					text: org.name
+				}));
+			})
+			$('#leftOrgList').select2();
+			$('#rightOrgList').select2();
 				 
 		//	$('#scope-panel').append('<div style="position:relative;bottom:0px; right:10px; font-size:8pt; font-weight:bold; text-align:right">Available Filters: Business Unit, Geographic Region, Content Status</div>');
  
@@ -1546,23 +2025,21 @@ var redrawView=function(){
 			return d.lifecycle != "Retired";
 		})
 	}
-
-	console.log('dynamicAppFilterDefs',dynamicAppFilterDefs)
- 
+  
 	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
 	let appsToShow=[]; 
- 
+	 
 	inScopeCapsApp=scopedCaps.resources; 
  
 	let capSelectStyle= $('#hideCaps').text(); 
 	if(capSelectStyle=='Hiding'){
-	 	localStorage.setItem("essentialhideCaps", "Hiding");
+	localStorage.setItem("essentialhideCaps", "Hiding");
+
 	$('.buscap').hide();
 	inScopeCapsApp.forEach((d)=>{
 		$('div[eascapid="'+d.id+'"]').parents().show();
 		$('div[eascapid="'+d.id+'"]').show();
-	 
 		});
 	}else
 	{	 
@@ -1583,7 +2060,7 @@ var redrawView=function(){
 
 	appMod.then((d)=>{
 
-		inScopeCapsApp.forEach((d)=>{ 
+		workingArrayAppsCaps.forEach((d)=>{ 
 			let filteredAppsforCap = d.apps.filter((id) => scopedApps.resourceIds.includes(id));
 			d['filteredApps']=	filteredAppsforCap;
 			
@@ -1629,9 +2106,36 @@ var redrawView=function(){
 			 getApps(openCap)
 		}
 
+		$('.proj-circle').hide()
+		$('.goalbox').hide();
+
+		$('body').on("click", '.proj-circle', function ()
+		{ 
+			 
+			let projCap=$(this).attr('easidproj');
+			
+			let focusCap=capProjects.find((e)=>{
+				return e.id==projCap;
+			})
+			if(workingCapId!=projCap){
+				$('.appRatButton').hide();
+				$('#appsList').html(projectTemplate(focusCap))
+				openNav(); 
+				workingCapId=projCap;
+			}
+			else{
+				closeNav();
+			}
+					
+		})
+		if($('#viewOption').val()=='apps'){
+			$('.app-circle ').css('display','block')
+		}else{
+			$('.app-circle ').css('display','none')
+		}
 	$('.app-circle').on("click", function (d)
 		{ d.stopImmediatePropagation(); 
-
+			$('.appRatButton').show();
 				let selected = $(this).attr('easidscore')
  
 				if(workingCapId!=selected){ 
@@ -1705,11 +2209,116 @@ var redrawView=function(){
 				
 			}
 		})
+		$('.compare-circle').on("click", function (d){
+			d.stopImmediatePropagation(); 
+			let leftOrg=$('#leftOrgList').val();
+			let rightOrg=$('#rightOrgList').val();
+			let workLeft=relevantOrgData.find((e)=>{ return e.id==leftOrg})
+			let workRight=relevantOrgData.find((e)=>{ return e.id==rightOrg})
+			let capid=$(this).attr('easidcompare');	
+			let thisCapAppList = inScopeCapsApp.filter(function (d)
+				{
+					return d.id == capid;
+				});		
+	 
+			let thisAppArray=[]
+			thisCapAppList[0].filteredApps.forEach((app)=>{
+				let thisApps= appArray.applications.find((d)=>{
+					return d.id ==app;
+				})
+				thisAppArray.push(thisApps)
+			})
+			let leftMatch=[];
+			if(workLeft){
+				
+				thisAppArray.forEach((ap)=>{
+					if(workLeft.allOrgsInScope){
+						workLeft.allOrgsInScope.forEach((wl)=>{
+							let match=ap.orgUserIds.find((ap)=>{
+								return ap==wl;
+							})
+							if(match){
+								console.log('apl',ap)
+								leftMatch.push(ap) 
+							}
+						})
+					}
+				})
+	 
+			}
+			let rightMatch=[];
+			if(workRight){
+				let capMatch=[];
+				thisAppArray.forEach((ap)=>{
+					if(workRight.allOrgsInScope){
+						workRight.allOrgsInScope.forEach((wl)=>{
+							let match=ap.orgUserIds.find((ap)=>{
+								return ap==wl;
+							})
+							if(match){ 
+								console.log('ap',ap)
+								rightMatch.push(ap) 
+							}
+						})
+					}
+				})  
+			} 
+			let allApps=[...rightMatch, ...leftMatch];
+			let rowToShow=[]; 
+			allApps.forEach((ap)=>{
+				let thisApp=thisAppArray.find((a)=>{
+					return a.id==ap.id;
+				}) 
+				let inLeft=leftMatch.find((la)=>{
+					return la.id==ap.id;
+				})
+				let inRight=rightMatch.find((la)=>{
+					return la.id==ap.id;
+				}) 
+				if(inLeft){
+					thisApp['left']='true'
+				}else{
+					if($('#leftOrgList :selected').text()=='All'){
+						thisApp['left']="true"}
+					else{
+						thisApp['left']='false'
+					}
+				}
 
+				if(inRight){
+					thisApp['right']='true'
+				}else{
+					if($('#rightOrgList :selected').text()=='All'){
+						thisApp['right']="true"}
+					else{
+						thisApp['right']='false'
+					}
+				}
+				rowToShow.push(thisApp)
+			})
+			
+			let dataToShow=[];
+			dataToShow['left']=$('#leftOrgList :selected').text();
+			dataToShow['right']=$('#rightOrgList :selected').text(); 
+			dataToShow['name']=thisCapAppList[0].name;
+			dataToShow['id']=thisCapAppList[0].id;
+			dataToShow['rows']=rowToShow
+			console.log('dataToShow ',dataToShow)
+			dataToShow.rows=dataToShow.rows.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+			
+			$('#appData').html(compareTemplate(dataToShow));
+			$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
+
+			//$('#appModal').modal('show');
+			$('.closePanelButton').on('click',function(){ 
+				$('.appPanel').hide();
+			})
+
+		})
 
 function getApps(capid){
-	 
-	let thisCapAppList = inScopeCapsApp.filter(function (d)
+	 console.log('ci',capid)
+	let thisCapAppList =  workingArrayAppsCaps.filter(function (d)
 	{
 		return d.id == capid;
 	});
@@ -1732,7 +2341,7 @@ function getApps(capid){
 
 	let panelData=[];
 		panelData['apps']=appArrayToShow;
-		let capName=inScopeCapsApp.filter((d)=>{return d.id==capid})
+		let capName= workingArrayAppsCaps.filter((d)=>{return d.id==capid})
 		panelData['cap']=capid;
 		panelData['capName']=capName[0].name; 
 
@@ -1753,23 +2362,109 @@ panelData.apps.forEach((d)=>{
   
 	$('#appsList').html(appListTemplate(panelData))
 	openNav(); 
+	rationalisationList=[];
 	thisCapAppList[0].apps.forEach((d)=>{ 
 		rationalisationList.push(d)
 	});
 	}
+
+	let leftOrg=$('#leftOrgList').val();
+	let rightOrg=$('#rightOrgList').val(); 
+	let workLeft=relevantOrgData.find((e)=>{ return e.id==leftOrg})
+	let workRight=relevantOrgData.find((e)=>{ return e.id==rightOrg})
+	let appCount=0
 	$('.app-circle').text('0')
 		$('.app-circle').each(function() {
+			if($(this).html() ==0) {$(this).parent().addClass("off-cap")}
+
 			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
 		  
 			($(this).html() >= 2 &amp;&amp; $(this).html() &lt; 6) ? $(this).css({'background-color': '#e0beed', 'color': 'black'}): null;
 		  
 			$(this).html() >= 6 ? $(this).css({'background-color': '#d59deb', 'color': 'black'}) : null;
 		  });
+
+		  workingArrayAppsCaps.forEach(function (d)
+		  {
+			   
+			  let appCount=d.filteredApps.length;
+			  $('*[easidscore="' + d.id + '"]').html(appCount);
+		   
+		  })
+	  
+		  inScopeCapsApp.forEach((e)=>{
+			  
+			  $('*[easidscore="' + e.id + '"]').parent().removeClass("off-cap")
+		  
+		  })
+
+
+
 	
-		  inScopeCapsApp.forEach(function (d)
+		  workingArrayAppsCaps.forEach(function (d)
 		{
-			let appCount=d.filteredApps.length;
-			$('*[easidscore="' + d.id + '"]').html(appCount);
+
+			compareScoreA=0;
+			compareScoreB=0; 
+	 
+		//	orgUserIds:
+
+			let thisAppArray=[]
+			d.filteredApps.forEach((app)=>{
+				let thisApps= appArray.applications.find((d)=>{
+					return d.id ==app;
+				})
+				thisAppArray.push(thisApps)
+			})
+	  
+			if(workLeft){
+				let capMatch=[];
+				thisAppArray.forEach((ap)=>{
+					workLeft.allOrgsInScope.forEach((wl)=>{
+						let match=ap.orgUserIds.find((ap)=>{
+							return ap==wl;
+						})
+						if(match){
+							capMatch.push(match)
+							compareScoreA=1
+						}
+					})
+				})
+			
+			}
+			if(workRight){
+				let capMatch=[];
+				thisAppArray.forEach((ap)=>{
+					workRight.allOrgsInScope.forEach((wl)=>{
+						let match=ap.orgUserIds.find((ap)=>{
+							return ap==wl;
+						})
+						if(match){ 
+							capMatch.push(match)
+							compareScoreB=1
+						}
+					})
+				}) 
+			}
+
+
+			let compareScoreAll = compareScoreB + compareScoreA;
+			$('*[easidcompare="' + d.id + '"]').removeClass('bothAppColour leftAppColour rightAppColour');
+			if(compareScoreAll&gt;0){
+				
+				if(compareScoreAll==2){
+					
+					$('*[easidcompare="' + d.id + '"]').html('B').addClass('bothAppColour').css("color","#7438A4");
+				}else{
+					if(compareScoreA==1){ 
+						$('*[easidcompare="' + d.id + '"]').html('1').addClass('leftAppColour').css("color","#24A5F4");
+					}else{
+						$('*[easidcompare="' + d.id + '"]').html('2').addClass('rightAppColour').css("color","#1FC1B4");
+					}
+				}
+			}else{
+			$('*[easidcompare="' + d.id + '"]').html('?').css("color","#fff");;
+			}
 			let colour='#fff';
 			let textColour='#fff';
 			if(appCount &lt;2){colour='#EDBB99'} 
@@ -1789,12 +2484,21 @@ function redrawView() {
 }
 });
 
+$('#capjump').change(function(){
+	var id = "#" + $(this).val();
+	console.log('id',id)
+	$('html, body').animate({
+		scrollTop: $(id).offset().top
+	}, 5000);
+  });
+
 		function getArrayDepth(arr){  
 			arr.forEach((d)=>{
 			levelArr.push(parseInt(d.level))	
 			getArrayDepth(d.childrenCaps);
 			 })
 		  }	  
+		     
 
 		function openNav()
 		{	
@@ -1843,4 +2547,71 @@ function redrawView() {
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
 	</xsl:template>
+	<xsl:template match="node()" mode="busGoals">
+					<xsl:variable name="this" select="current()"/>
+					<xsl:variable name="goalBusObjs" select="$allBusObjectives[name=$this/own_slot_value[slot_reference = 'goal_supported_by_objectives']/value]"/> 
+					<xsl:variable name="pseudoGoalbusObjs" select="$allBusObjectives[name=$this/own_slot_value[slot_reference = 'objective_supported_by_objective']/value]"/> 
+					<xsl:variable name="busObjs" select="$goalBusObjs union $pseudoGoalbusObjs"/> 
+					{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+							<xsl:with-param name="isRenderAsJSString" select="true()"/>
+						</xsl:call-template>",
+					"className":"<xsl:value-of select="current()/type"/>",
+					"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+					"objectives":[<xsl:apply-templates select="$busObjs" mode="objs"/>],
+					"goalColour":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
+					"goaltxtColour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>",
+					}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+	<xsl:template match="node()" mode="objs">
+			<xsl:variable name="busCapsImpacted" select="key('busCapImpact',current()/name)"/>
+				{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+			"caps":[<xsl:for-each select="$busCapsImpacted">
+					<xsl:variable name="relevantBusCaps" select="eas:get_cap_descendants(current(), $busCaps, 0, 10, 'supports_business_capabilities')"/>
+					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+					"childCaps":[<xsl:for-each select="$relevantBusCaps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
+					</xsl:for-each>]
+			}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+	<xsl:template match="node()" mode="capChanges">
+			<xsl:variable name="busCapP2es" select="key('plantolement_key',current()/name)"/>
+			<xsl:variable name="busCapProjects" select="key('projecttoplantolement_key',$busCapP2es/name)"/>
+				{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+			"projects":[<xsl:for-each select="$busCapProjects">
+					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+					"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+					"actualstartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>",
+					"forecastendDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>",
+					"proposedstartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_proposed_start_date_iso_8601']/value"/>",
+					"targetEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_target_end_date_iso_8601']/value"/>",
+					}<xsl:if test="position()!=last()">,</xsl:if>
+					</xsl:for-each>]
+			}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+
+	<xsl:function name="eas:get_cap_descendants" as="node()*">
+		<xsl:param name="parentNode"/>
+		<xsl:param name="inScopeOrgs"/>
+		<xsl:param name="level"/>
+		<xsl:param name="maxDepth"/>
+		<xsl:param name="slotName"/>
+		<xsl:sequence select="$parentNode"/>
+		<xsl:if test="$level &lt; $maxDepth">
+		 <xsl:variable name="childOrgs" select="$inScopeOrgs[own_slot_value[slot_reference = $slotName]/value = $parentNode/name]" as="node()*"/> 
+			<xsl:for-each select="$childOrgs">
+				<xsl:sequence select="eas:get_object_descendants(current(), ($inScopeOrgs), $level + 1, $maxDepth, $slotName)"/>
+			</xsl:for-each>
+		</xsl:if>
+	</xsl:function>
 </xsl:stylesheet>

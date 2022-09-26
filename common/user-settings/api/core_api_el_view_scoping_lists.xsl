@@ -7,7 +7,7 @@
 	<xsl:variable name="countryType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Country')]"/>
 	<xsl:variable name="allCountries" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name)]"/>
 
- 	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor']"/>
+ 	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference = 'external_to_enterprise']/value !='true']"/>
  
 	 <xsl:variable name="allProdConcepts" select="/node()/simple_instance[type='Product_Concept']"/>
 	 <xsl:variable name="allDomains" select="/node()/simple_instance[type='Business_Domain']"/>

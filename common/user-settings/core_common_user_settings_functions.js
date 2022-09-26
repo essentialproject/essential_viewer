@@ -490,7 +490,7 @@ function essInitViewState(stateObj, defaultViewState) {
         thisState = essDeserializeUrlParam(stateVal);
     } else {
         //if the url parameter is empty, see if there is anything in local storage
-        thisState = essGetLocalEssentialViewState(essUserSettingsRepoId);
+        thisState = essGetLocalEssentialViewState();
     }
 
     //if a state value was found, deserialize it into a JSON object

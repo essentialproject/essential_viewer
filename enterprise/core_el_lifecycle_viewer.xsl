@@ -816,7 +816,7 @@
 								<xsl:attribute name="style">fill:{{getColour this}}</xsl:attribute>
 								<xsl:attribute name="y">{{yPos @../index 20}}</xsl:attribute>
 								<xsl:attribute name="x">{{this.startPos}}</xsl:attribute>
-								<xsl:attribute name="width">{{getWidth this.startPos this.endPos}}px</xsl:attribute>
+								<xsl:attribute name="width">{{getWidth this.startPos this.endPos this}}px</xsl:attribute>
 							</rect>
 						{{/each}}
 						<foreignObject x="2" fill="black" width="240" height="20"><xsl:attribute name="y">{{yPosText @index 20}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i> {{this.name}}</foreignObject>
@@ -955,8 +955,15 @@
 			Handlebars.registerHelper("yPosText", function(row, height) {
 					  return (row * height) +15;  
 			});
-			Handlebars.registerHelper("getWidth", function(st, end) {
-					  return end - st;  
+			Handlebars.registerHelper("getWidth", function(st, end, ap) {
+		 
+						let wresult = end-st;
+						if(wresult &lt;0)
+							{
+								return 0
+							}else{
+					 		 	return end - st;  
+							}
 			});
 			
 			$('#fromYear').val(moment(chartStartDate).subtract(1,'year').format('YYYY'))
@@ -1025,23 +1032,29 @@ capOptions.push({"id":"unknown", "name":"Unknown"})
 					})
 					d['caps']=caps; 
 				})
-
+			 
 				appJSON.forEach((e)=>{
 					let thisA=appDetailJSON.filter((d)=>{
 						return d.id == e.id;
-					})
-			 
-					if(thisA[0].caps.length==0){
-						e['caps']=[{'id':'unknown'}]
-					}else
+					}) 
+					if(thisA[0]){
+						if(thisA[0].caps.length==0){
+							e['caps']=[{'id':'unknown'}]
+						}else
+						{
+							e['caps']=thisA[0].caps;
+						}
+					}
+					else
 					{
-						e['caps']=thisA[0].caps;
+						e['caps']=[{'id':'unknown'}]
 					}
 				})
- 
+			 
+			 
 capOptions=capOptions.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
-  
+ 
 				lifeListTemplate = Handlebars.compile(lifeListFragment);  
 		 
 				$('#lifecycleOptions').html(lifeListTemplate(lifecycleTypes))

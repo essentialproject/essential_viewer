@@ -4187,7 +4187,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
     </Worksheet>
           </script>
 <script id="techcaps-name" type="text/x-handlebars-template">
- <Worksheet ss:Name="Technology Capablities">
+ <Worksheet ss:Name="Technology Capabilities">
       <Table ss:ExpandedColumnCount="6" x:FullColumns="1" x:FullRows="1" ss:StyleID="s1110"
              ss:DefaultColumnWidth="65"
              ss:DefaultRowHeight="16">
@@ -5346,7 +5346,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
          </Row>
          <Row ss:AutoFitHeight="0" ss:Height="5">
             <Cell ss:Index="6" ss:StyleID="s1162"
-                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capablities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capablities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capabilities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capabilities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
                <Data ss:Type="String"/>
             </Cell>
          </Row>
@@ -5369,7 +5369,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                <NamedCell ss:Name="Technology_Capabilities"/>
             </Cell>
             <Cell ss:StyleID="s1191"
-                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capablities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capablities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capabilities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capabilities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
                <Data ss:Type="String">OK</Data>
             </Cell>
          </Row>
@@ -5391,7 +5391,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                <NamedCell ss:Name="Technology_Capabilities"/>
             </Cell>
             <Cell ss:StyleID="s1191"
-                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capablities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capablities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+                  ss:Formula="=IF(RC[-1]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-1],'Technology Capabilities'!C[-3],1,0)),&#34;Technology Capability must be already defined in Technology Capabilities sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
                <Data ss:Type="String">OK</Data>
             </Cell>
          </Row>
@@ -6427,7 +6427,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 	  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
 	   <Range>R8C6:R4005C6</Range>
 	   <Type>List</Type>
-	   <Value>'Lifecycle Status'!R8C5:R38C5</Value>
+	   <Value>'Lifecycle Status'!R8C3:R38C3</Value>
 	  </DataValidation>
 	  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
 	   <Range>R8C5:R4005C5</Range>

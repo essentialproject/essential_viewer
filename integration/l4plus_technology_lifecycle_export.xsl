@@ -9,7 +9,7 @@
 <xsl:variable name="lifecycleModelStatus" select="/node()/simple_instance[type = ('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$lifecycleModel/name]"/>   
 <xsl:variable name="supplier" select="/node()/simple_instance[type = ('Supplier')]"/>    
  <xsl:variable name="styles" select="/node()/simple_instance[type = 'Element_Style']"/>    
-<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="iso-8859-1"/>
+ <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="iso-8859-1" media-type="application/ms-excel"/>
 <xsl:template match="knowledge_base">
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -62,7 +62,7 @@
    <SheetName>Business Process 2 App Services</SheetName>
    <SheetName>Physical Proc 2 App and Service</SheetName>
    <SheetName>Technology Domains</SheetName>
-   <SheetName>Technology Capablities</SheetName>
+   <SheetName>Technology Capabilities</SheetName>
    <SheetName>Technology Components</SheetName>
    <SheetName>Technology Suppliers</SheetName>
    <SheetName>Technology Product Families</SheetName>

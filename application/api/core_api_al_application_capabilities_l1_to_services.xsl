@@ -51,7 +51,10 @@
 		{
 			"application_capabilities": [
 				<xsl:apply-templates select="$L1AppCaps" mode="RenderApplicationCapabilities"/>
-			]   
+			],
+			"application_capabilities_all": [
+					<xsl:apply-templates select="$allAppCaps" mode="RenderApplicationCapabilities"/>
+				]      
 		}
 	</xsl:template>
 	

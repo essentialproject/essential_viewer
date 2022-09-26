@@ -66,7 +66,8 @@
 
 <xsl:variable name="allContained" select="$allAppProviders[name=$allAppProviders/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 <xsl:key name="static_usage_key" match="$allAppStaticUsages" use="own_slot_value[slot_reference = 'static_usage_of_app_provider']/value"/>
- 
+<xsl:key name="family_key" match="/node()/simple_instance[type='Application_Family']" use="own_slot_value[slot_reference = 'groups_applications']/value"/>
+
 <!--<xsl:variable name="allInboundStaticAppRels" select="/node()/simple_instance[(own_slot_value[slot_reference = ':FROM']/value = $allAppStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>
 <xsl:variable name="allOutboundStaticAppRels" select="/node()/simple_instance[(own_slot_value[slot_reference = ':TO']/value = $allAppStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>-->
 <xsl:variable name="allGeosRegions" select="/node()/simple_instance[type='Geographic_Region']"/>
@@ -187,7 +188,7 @@
 <xsl:variable name="siteGeos" select="$allGeo[name=$thisSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 <xsl:variable name="siteGeosviaLoc" select="$allGeo[own_slot_value[slot_reference = 'gr_locations']/value=$siteGeos/name]"/>
 <xsl:variable name="siteCountries" select="$siteGeos[type='Geographic_Region'] union $siteGeosviaLoc"/>
-
+<xsl:variable name="appFamilies" select="key('family_key', current()/name)"/>
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
@@ -199,6 +200,11 @@
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>",
+		"family":[<xsl:for-each select="$appFamilies">{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	<!--	"link": "<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
@@ -230,9 +236,20 @@
 		"sA2R":[<xsl:for-each select="$thiseveryAppOrgUsers2Roles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"lifecycle":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value)"/>",
 		"physP":[<xsl:for-each select="$physicalProcesskey">"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
-		"allServices":[<xsl:for-each select="current()/own_slot_value[slot_reference='provides_application_services']/value">
+		<!-- extended services to include name and apr, was previously just id, renamed old Id to allServicesIdOnly -->
+		"allServicesIdOnly":[<xsl:for-each select="current()/own_slot_value[slot_reference='provides_application_services']/value">
 		 { 
 		 "id": "<xsl:value-of select="eas:getSafeJSString(.)"></xsl:value-of>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
+		 <xsl:variable name="aprs" select="key('apr_key',current()/name)"/>
+		 "allServices":[<xsl:for-each select="$aprs"><xsl:variable name="thisserviceskey" select="key('services_key',current()/name)"/>
+		 { 
+		 "id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>",
+		 "lifecycleId": "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='apr_lifecycle_status']/value)"></xsl:value-of>",
+		 "serviceId": "<xsl:value-of select="eas:getSafeJSString($thisserviceskey/name)"></xsl:value-of>",
+		 "serviceName": "<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+				 <xsl:with-param name="theSubjectInstance" select="$thisserviceskey"/>
+			</xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		 <xsl:for-each select="$allAppSlots"><xsl:variable name="slt" select="current()/name"/>"<xsl:value-of select="current()/name"/>":[<xsl:for-each select="$thisApp/own_slot_value[slot_reference=$slt]/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>,	 
 		<xsl:if test="$allAppSlotsBoo">
 			<xsl:for-each select="$allAppSlotsBoo">
@@ -249,7 +266,7 @@
 		"services":[<xsl:for-each select="$aprKey[name=$aprBusRelkey/own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value]">
 			<xsl:variable name="serviceskey" select="key('services_key',current()/name)"/>
 			{"id": "<xsl:value-of select="eas:getSafeJSString($serviceskey/name)"></xsl:value-of>","name": "<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
 					 <xsl:with-param name="theSubjectInstance" select="$serviceskey"/>
 				</xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
@@ -260,7 +277,7 @@
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
 		</xsl:call-template>",
 		"shortname":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/>",
 		"colour":"<xsl:value-of select="$style[name=current()[1]/own_slot_value[slot_reference='element_styling_classes']/value]/own_slot_value[slot_reference='element_style_colour']/value"/>",
@@ -344,7 +361,7 @@
 		"values": [
 		<xsl:for-each select="$releventEnums">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-			<xsl:with-param name="isRenderAsJSString" select="true()"></xsl:with-param>
+			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
 		</xsl:call-template>",
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>

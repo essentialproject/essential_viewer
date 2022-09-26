@@ -256,7 +256,7 @@
 								<xsl:value-of select="eas:i18n('Business Footprint')"/>
 							</h2>
 							<div class="content-section">
-								<p><xsl:value-of select="eas:i18n('The following diagram highlights the conceptual business capablities impacted by this programme')"/>.</p>
+								<p><xsl:value-of select="eas:i18n('The following diagram highlights the conceptual business capabilities impacted by this programme')"/>.</p>
 								<xsl:variable name="fullWidth" select="count($topLevelBusCapabilities) * 140"/>
 								<xsl:variable name="widthStyle" select="concat('width:', $fullWidth, 'px;')"/>
 								<div class="simple-scroller">

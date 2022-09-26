@@ -128,6 +128,11 @@
 		<param-value>false</param-value><!--eipmode-->
 	</context-param>
 	<context-param>
+		<!-- Set this to true when building Essential Docker to control Data Set API pre-caching. -->
+		<param-name>dockerMode</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
 		<param-name>pageHistoryTracking</param-name>
 		<!-- Set to 'off' to switch off page history tracking and 'on' to enable tracking -->  		
   		<param-value>on</param-value>

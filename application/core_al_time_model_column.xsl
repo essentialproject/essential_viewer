@@ -373,7 +373,7 @@
                     let workingArray = responses[0]; 
                     filters=responses[0].filters; 
                     filters.sort((a, b) => (a.id > b.id) ? 1 : -1) 
-
+console.log(workingArray)
                     dynamicAppFilterDefs=filters?.map(function(filterdef){
                         return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
                     });

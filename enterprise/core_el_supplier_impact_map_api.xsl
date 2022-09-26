@@ -438,6 +438,8 @@
 								</h1>
 							</div>
 						</div>
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
+					
 						<div class="col-xs-9">
 							<div class="pull-left">
 								<span class="right-10"><strong>Supplier Filter</strong>:</span>
@@ -805,13 +807,12 @@
         promise_loadViewerAPIData(viewAPIData)
             .then(function(response) {		
                 let data = response;
-                console.log(data)
-                console.log('data')
+				$('#ess-data-gen-alert').hide();
                 var focusSupplier=[];
     supplierJSON=data.suppliers;
     capabilityJSON=data.capabilities;
     plansJSON=data.plans;       
-
+	
       capabilityJSON.forEach(function(d){
         d['boxHeight']=((Math.floor(d.subCaps.length / 7)+1) * 55)+20;
       })

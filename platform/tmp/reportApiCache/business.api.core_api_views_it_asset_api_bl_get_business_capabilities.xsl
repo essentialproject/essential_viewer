@@ -1,6 +1,0 @@
-
-	 
-		 	{
-			"business_capabilities":[]
-			}  
-	

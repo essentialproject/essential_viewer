@@ -47,9 +47,16 @@
 	
     <xsl:variable name="productLifecycles" select="/node()/simple_instance[type='Lifecycle_Model'][own_slot_value[slot_reference='lifecycle_model_subject']/value=$currentNode/name]"/>
 
-    <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type='Lifecycle_Status_Usage'][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
+	<xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status_Usage','Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
     <xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status')]"/>
 	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
+
+	<xsl:variable name="inScopeCosts" select="/node()/simple_instance[type='Cost'][own_slot_value[slot_reference = 'cost_for_elements']/value = $currentNode/name]"/>
+	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[supertype='Cost_Component'][name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
+	<xsl:variable name="inScopeCostInstances" select="$inScopeCosts union $inScopeCostComponents"></xsl:variable>
+	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
+	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
+	
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -231,13 +238,26 @@
 				</div>
 <script>
     <xsl:variable name="internal" select="$lifecycles[name=current()/own_slot_value[slot_reference='technology_provider_lifecycle_status']/value]"/>
-    <xsl:variable name="external" select="$lifecycles[name=current()/own_slot_value[slot_reference='vendor_product_lifecycle_status']/value]"/>
+    <xsl:variable name="internalStatusLabel">
+    	<xsl:choose>
+    		<xsl:when test="count($internal) = 0">Not Set</xsl:when>
+    		<xsl:when test="string-length($internal/own_slot_value[slot_reference='enumeration_value']/value) > 0"><xsl:value-of select="$internal/own_slot_value[slot_reference='enumeration_value']/value"/></xsl:when>
+    		<xsl:otherwise><xsl:value-of select="$internal/own_slot_value[slot_reference='name']/value"/></xsl:otherwise>
+    	</xsl:choose>
+    </xsl:variable>
+	<xsl:variable name="external" select="$lifecycles[name=current()/own_slot_value[slot_reference='vendor_product_lifecycle_status']/value]"/>
+	<xsl:variable name="externalStatusLabel">
+		<xsl:choose>
+			<xsl:when test="count($external) = 0">Not Set</xsl:when>
+			<xsl:when test="string-length($external/own_slot_value[slot_reference='enumeration_value']/value) > 0"><xsl:value-of select="$external/own_slot_value[slot_reference='enumeration_value']/value"/></xsl:when>
+			<xsl:otherwise><xsl:value-of select="$external/own_slot_value[slot_reference='name']/value"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
     today= new Date().getTime();
 statusJSON=[<xsl:apply-templates select="$lifecycleStatusUsages" mode="lifecyclesJSON"/>]; 
-thisvendor=['<xsl:value-of select="$external/own_slot_value[slot_reference='enumeration_value']/value"/>'];    
-thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='enumeration_value']/value"/>'];  
- 
-    
+	thisvendor=['<xsl:value-of select="$externalStatusLabel"/>'];    
+	thisinternal=['<xsl:value-of select="$internalStatusLabel"/>'];  
+
      var list=statusJSON.filter(function(d){
         return new Date(d.date).getTime() &lt; today; 
     })
@@ -261,7 +281,9 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
     
     
 </script>
-         
+         <xsl:variable name="isAuthzForCostClasses" select="eas:isUserAuthZClasses(('Cost', 'Cost_Component'))"/>
+		 <xsl:variable name="isAuthzForCostInstances" select="eas:isUserAuthZInstances($inScopeCostInstances)"/>
+
                 <div class="col-xs-6">
 					<div class="sectionIcon">
 						<i class="fa fa-info-circle icon-section icon-color"/>
@@ -269,20 +291,37 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
 					<h2 class="text-primary">
 						<xsl:value-of select="eas:i18n('Maintenance Cost')"/>
 					</h2>
+					<xsl:variable name="defaultCurrencyConstant" select="eas:get_instance_by_name(/node()/simple_instance, 'Report_Constant', 'Default Currency')"/>
+					<xsl:variable name="defaultCurrency" select="eas:get_instance_slot_values(/node()/simple_instance, $defaultCurrencyConstant, 'report_constant_ea_elements')"/>
+					<xsl:variable name="defaultCurrencySymbol" select="eas:get_string_slot_values($defaultCurrency, 'currency_symbol')"/>
+					<xsl:variable name="maintenanceCost" select="if (count(current()/own_slot_value[slot_reference = 'maintenance_cost']/value) > 0) then concat($defaultCurrencySymbol,format-number(current()/own_slot_value[slot_reference = 'maintenance_cost']/value, '##,###,###')) else ''"/>
+				
 					<div class="content-section">
-						<xsl:variable name="defaultCurrencyConstant" select="eas:get_instance_by_name(/node()/simple_instance, 'Report_Constant', 'Default Currency')"/>
-						<xsl:variable name="defaultCurrency" select="eas:get_instance_slot_values(/node()/simple_instance, $defaultCurrencyConstant, 'report_constant_ea_elements')"/>
-						<xsl:variable name="defaultCurrencySymbol" select="eas:get_string_slot_values($defaultCurrency, 'currency_symbol')"/>
-						<xsl:variable name="maintenanceCost" select="if (count(current()/own_slot_value[slot_reference = 'maintenance_cost']/value) > 0) then concat($defaultCurrencySymbol,format-number(current()/own_slot_value[slot_reference = 'maintenance_cost']/value, '##,###,###')) else ''"/>
-						<xsl:choose>
-							<xsl:when test="not(count($maintenanceCost) > 0)">
-								<p> - </p>
-							</xsl:when>
-							<xsl:otherwise>
-								<p> <xsl:value-of select="eas:getSafeJSString($maintenanceCost)"/>
-								</p>
-							</xsl:otherwise>
-						</xsl:choose>
+							<xsl:choose>
+								<xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"><span><xsl:value-of select="$theRedactedString"/></span></xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($inScopeCostComponents, 0)"/>
+									<xsl:choose>
+										<xsl:when test="$costTypeTotal=0">
+												<xsl:choose>
+													<xsl:when test="not(count($maintenanceCost) > 0)">
+														<p> - </p>
+													</xsl:when>
+													<xsl:otherwise>
+														<p> <xsl:value-of select="eas:getSafeJSString($maintenanceCost)"/>
+														</p>
+													</xsl:otherwise>
+												</xsl:choose>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$currency"/>  <xsl:value-of select="format-number($costTypeTotal, '###,###,###')"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:otherwise>
+							</xsl:choose>  
+
+
+						
 					</div>
 					<hr/>
 				</div>
@@ -826,7 +865,7 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
 				<xsl:when test="count($allRelevantTechProdStandards) = 0">
 					<td class="alignCentre">
 						<em><xsl:value-of select="eas:i18n('no standards defined')"/></em>
-					</td>oce
+					</td>
 				</xsl:when>
 				<xsl:when test="count($thisTechProdStandard) >0">
 					<td class="alignCentre {$thisStandardStyleClass}">
@@ -1331,7 +1370,27 @@ thisinternal=['<xsl:value-of select="$internal/own_slot_value[slot_reference='en
 		</table>
 		<!-\-		</xsl:if>-\->
 	</xsl:template>-->
-
+	<xsl:function as="xs:float" name="eas:get_cost_components_total">
+			<xsl:param name="costComponents"/>
+			<xsl:param name="total"/>
+			
+			<xsl:choose>
+				<xsl:when test="count($costComponents) > 0">
+					<xsl:variable name="nextCost" select="$costComponents[1]"/>
+					<xsl:variable name="newCostComponents" select="remove($costComponents, 1)"/>
+					<xsl:variable name="costAmount" select="$nextCost/own_slot_value[slot_reference='cc_cost_amount']/value"/>
+					<xsl:choose>
+						<xsl:when test="$costAmount > 0">
+							<xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total + number($costAmount))"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="eas:get_cost_components_total($newCostComponents, $total)"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:otherwise><xsl:value-of select="$total"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:function>
 
 
 </xsl:stylesheet>

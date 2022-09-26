@@ -165,12 +165,10 @@
 				  	};
 
 					var tpr = techProdRoles.techProdRoles; 
-					console.log(tpr) 
+				 
                     for(var i=0; i &lt; techComponents.techComponents.length;i++) {
 					var techprodslist=[];
-					console.log(techComponents.techComponents[i].name) 
-					console.log('techComponents.techComponents[i].techProdRoles') 
-					console.log(techComponents.techComponents[i].techProdRoles) 
+			 
                        for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
                          
                             var thistpr = tpr.filter(function(d){
@@ -181,9 +179,7 @@
                         })
                     }
 					let unique = [...new Set(techprodslist)];   
-					console.log('techprodslist')   
-					console.log(techprodslist) 
-					console.log(unique) 
+	 
                     techComponents.techComponents[i]['techProds']=unique;
                     
                      <!--   d.techProdRoles.forEach(function(e){
@@ -512,8 +508,7 @@
 					
 					//function to draw the full TRM
 					function drawTRM() {
-						console.log('trmData');	
-						console.log(trmData)
+					
 						$("#techRefModelContainer").html(trmTemplate(trmData)).promise().done(function(){
 					        $('.tech-domain-drill').click(function(){
 								var techDomainId = $(this).attr('eas-id');
@@ -1123,8 +1118,14 @@
 		
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
-			description: "<xsl:value-of select="own_slot_value[slot_reference='description']/value"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 			country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",
 			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
@@ -1144,8 +1145,14 @@
 
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="own_slot_value[slot_reference='name']/value"/>",
-			description: "<xsl:value-of select="eas:renderJSText(own_slot_value[slot_reference='description']/value)"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 			status: "<xsl:value-of select="$theLifecycleStatus/name"/>",
 			statusScore: <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
@@ -1171,8 +1178,14 @@
 		
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techDomainName"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
+		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				 <xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
 		refLayer: "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
 		childTechCapIds: [
@@ -1198,9 +1211,15 @@
 
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="$techCapName"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
 			techComponents: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechCompDetails"/>-->
 				<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
@@ -1222,9 +1241,15 @@
 		<xsl:variable name="techComponents" select="current()/own_slot_value[slot_reference = 'realised_by_technology_components']"/>
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:value-of select="$techCapName"/>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					 <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
 
         techComponentIds: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechComponents"/>-->
@@ -1250,11 +1275,17 @@
 				<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRoles/name]"/>
         <xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 	-->	 <xsl:variable name="thisTechProdRoles2" select="current()/own_slot_value[slot_reference = 'realised_by_technology_products']"/>
-		{debug:"test",
+		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techCompName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
+		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				 <xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>",
 	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
 	<!--	techProdRoles: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
         techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
@@ -1295,9 +1326,15 @@
         <xsl:variable name="thisTechProdRoles2" select="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techCompName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
+		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				 <xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>",
         techProdRole: [<xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
@@ -1316,9 +1353,15 @@
 
 		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:value-of select="$techProdName"/>",
+		name: "<xsl:call-template name="RenderMultiLangInstanceName">
+                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+            </xsl:call-template>",
 		link: "<xsl:value-of select="$techProdLink"/>",
-		description: "<xsl:value-of select="eas:renderJSText($techProdDescription)"/>"
+		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				 <xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>

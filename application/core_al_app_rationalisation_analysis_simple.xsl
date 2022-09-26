@@ -400,13 +400,13 @@
 										<h3 class="text-primary"><xsl:value-of select="eas:i18n('Services')"/></h3>
 										<ul id="appServs" class="small fa-ul"/>
 										<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Hide')"/></button>
-										<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default">Show')"/></button>
+										<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default">Show</button>
 									</div>
-									<div id="carriedApps" style="display:none;border:1pt solid #d3d3d3;border-radius:3px;padding:3px" class="top-15"> 
+									<div id="carriedApps" style="display:none;border:1pt solid #d3d3d3;border-radius:3px;padding:3px;text-align:center" class="top-15"> 
 										<h4><xsl:value-of select="eas:i18n('Application Basket')"/></h4>
-										<div id="selPlace"></div>
-										<br/>
-										<button class="btn btn-primary btn-sm" onclick="goBack()">Back to Previous</button>
+										<div class="col-xs-12" width="150px" id="selPlace"></div>
+										
+										<button class="btn btn-primary btn-xs top-5" onclick="goBack()">Back to Previous</button>
 									</div>			  
 		                        </div>	
 		                        <div class="col-xs-10">
@@ -666,8 +666,10 @@
 						return d.serviceId === item.serviceId;
 					});
 					//     console.log('servSelectedApps',servSelectedApps)
-					var appsUsingService = servSelectedApps[0].newapplications;
-					
+					let appsUsingService=[];
+					if(servSelectedApps[0]){
+					appsUsingService = servSelectedApps[0].newapplications;
+					}
 					var appsCount = (appsUsingService.length) -1;
 					count = count + 1;
 					
@@ -1106,10 +1108,13 @@
 							selectArray.unshift({
 								val: '', text: 'choose'
 							});
+							
 							var sel = $('&lt;select id="carriedSelect">').appendTo('#selPlace');
 							$(selectArray).each(function () {
 								sel.append($("&lt;option>").attr('value', this.val).text(this.text));
 							});
+
+							
 						};
 						
 						$('#carriedSelect').change(function () {
@@ -1119,7 +1124,7 @@
 							$('#' + $(this).val()).hide();
 						});
 					};
-					$('#carriedSelect').select2();
+					$('#carriedSelect').select2({width:'170px'});
 				};
 			}).catch (function (error) {
 				//display an error somewhere on the page

@@ -19,23 +19,38 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
-<xsl:variable name="allPhysProcesses" select="/node()/simple_instance[type='Physical_Process']"/>
-    
+ 
+  <xsl:variable name="allPhysProcessesCount" select="/node()/simple_instance[type='Physical_Process']"/> 
+ 
   
-    <xsl:variable name="allBusProcesses" select="/node()/simple_instance[type='Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value=$allPhysProcesses/name]"/>
+    <xsl:variable name="allBusProcesses" select="/node()/simple_instance[type='Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value=$allPhysProcessesCount/name]"/>
+
     <xsl:variable name="processFamily" select="/node()/simple_instance[(type = 'Business_Process_Family')][own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value=$allBusProcesses/name]"/>
     <xsl:variable name="processFamilytoBusProc" select="$allBusProcesses[name=$processFamily/own_slot_value[slot_reference = 'bpf_contained_business_process_types']/value]"/>
     <xsl:variable name="allSites" select="/node()/simple_instance[type='Site']"/>
-    <xsl:variable name="allProcessSites" select="$allSites[name=$allPhysProcesses/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
-    <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $allPhysProcesses/name]"/>
+
+    <xsl:key name="allPhysProcessestoBPKey" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference = 'implements_business_process']/value"/>
+    <xsl:variable name="allPhysProcessestobp" select="key('allPhysProcessestoBPKey',$allBusProcesses/name)"/>
+    <xsl:key name="allPhysProcessesKey" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference = 'process_performed_at_sites']/value"/>
+    <xsl:variable name="allPhysProcesses" select="key('allPhysProcessesKey',$allSites/name)"/>
+    <xsl:variable name="allProcessSites" select="$allSites[name=$allPhysProcessesCount/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
+
+    <xsl:key name="sitesKey" match="$allSites" use="own_slot_value[slot_reference = 'site_geographic_location']/value"/>
+  
+    <xsl:key name="costsKey" match="/node()/simple_instance[type='Cost']" use="own_slot_value[slot_reference = 'cost_for_elements']/value"/>
+    <xsl:variable name="inScopeCosts" select="key('costsKey',$allPhysProcesses/name)"/>
+    <xsl:variable name="inScopeCosts2" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $allPhysProcesses/name]"/>
 	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
 	<xsl:variable name="inScopeCostTypes" select="/node()/simple_instance[name = $inScopeCostComponents/own_slot_value[slot_reference = 'cc_cost_component_type']/value]"/>
     <xsl:variable name="defaultCurrencyConstant" select="eas:get_instance_by_name(/node()/simple_instance, 'Report_Constant', 'Default Currency')"/>
 	<xsl:variable name="defaultCurrency" select="eas:get_instance_slot_values(/node()/simple_instance, $defaultCurrencyConstant, 'report_constant_ea_elements')"/>
 	<xsl:variable name="defaultCurrencySymbol" select="eas:get_string_slot_values($defaultCurrency, 'currency_symbol')"/>
-    <xsl:variable name="geoLocation" select="/node()/simple_instance[type='Geographic_Location'][name=$allSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+    <xsl:variable name="allGeosRegions" select="/node()/simple_instance[type='Geographic_Region']"/>
+    <xsl:variable name="allCtrySites" select="/node()/simple_instance[type='Site']"/>
+    <xsl:variable name="geoLocation" select="/node()/simple_instance[type='Geographic_Location']"/> 
+    <xsl:variable name="allGeo" select="$allGeosRegions union $geoLocation"/> 
     <xsl:variable name="geoCode" select="/node()/simple_instance[type='GeoCode'][name=$geoLocation/own_slot_value[slot_reference = 'gl_geocode']/value]"/>
-    
+    <xsl:variable name="ctrySites" select="key('sitesKey',$allGeosRegions/name)"/>
      <xsl:variable name="theLocationSummaryReport" select="eas:get_report_by_name('Core: Location Summary')"/>
 
 	<!--
@@ -145,8 +160,8 @@
 									<span class="text-darkgrey">Process Dashboard</span>
 								</h1>
 							</div>
-						</div>
-
+            </div>
+           
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
 							<div class="content-section">
@@ -168,7 +183,7 @@
                                                 <div class="icon">
                                                     <i class="fa fa-pie-chart"/>
                                                 </div>
-                                                <div class="count"><xsl:value-of select="count($allPhysProcesses)"/></div>
+                                                <div class="count"><xsl:value-of select="count($allPhysProcessestobp)"/></div>
                                                 <h3>
                                                  Process Implementations
                                                 </h3>
@@ -213,11 +228,16 @@
   <script>
 <!-- order here has to map the markers order -->     
   processValue=[ <xsl:apply-templates select="$allSites" mode="processCount"></xsl:apply-templates> ];
-
-   $(function(){
+    $(function(){
     $('#world-map').vectorMap({
     map: 'world_mill',
-    
+    series: {
+        regions: [{
+          values: {<xsl:apply-templates select="$ctrySites" mode="getCountries"/>},
+          scale: ['#C8EEFF', '#0071A4'],
+          normalizeFunction: 'polynomial'
+        }]
+      },
     normalizeFunction: 'polynomial',
     hoverOpacity: 0.7,
     hoverColor: false,
@@ -280,13 +300,18 @@
       <xsl:variable name="thisgeoCode" select="$geoCode[name=$thisgeoLocation/own_slot_value[slot_reference = 'gl_geocode']/value]"/>
      <xsl:variable name="lat" select="$thisgeoCode/own_slot_value[slot_reference='geocode_latitude']/value"/>
      <xsl:variable name="long" select="$thisgeoCode/own_slot_value[slot_reference='geocode_longitude']/value"/>
-     <xsl:if test="$lat"> {latLng: [<xsl:value-of select="$lat"/>,<xsl:value-of select="$long"/>], name: '<xsl:value-of select="$thisgeoLocation//own_slot_value[slot_reference='name']/value"/>', style: {fill: '#faa053'}, id:'<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference='gl_identifier']/value"/>'},</xsl:if>
+     <xsl:if test="$lat"> {latLng: [<xsl:value-of select="$lat"/>,<xsl:value-of select="$long"/>], name: '<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference='name']/value"/>', style: {fill: '#faa053'}, id:'<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference='gl_identifier']/value"/>'},</xsl:if>
 </xsl:template>     
-    
+
+<xsl:template match="node()" mode="getCountries">
+        <xsl:variable name="this" select="current()"/>
+         <xsl:variable name="thisgeoLocation" select="$allGeosRegions[name=$this/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+           "<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference='gr_region_identifier']/value"/>":1<xsl:if test="position()!=last()">,</xsl:if>
+  </xsl:template>  
    <xsl:template match="node()" mode="processCount">
       <xsl:variable name="this" select="current()"/>
         <xsl:variable name="thisgeoLocation" select="$geoLocation[name=$this/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
-       <xsl:variable name="processAtSite" select="$allPhysProcesses[own_slot_value[slot_reference = 'process_performed_at_sites']/value=$this/name]"/>
+       <xsl:variable name="processAtSite" select="key('allPhysProcessesKey',$this/name)"/>
      <xsl:if test="$thisgeoLocation"> {"name":"<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference='name']/value"/>","processes":<xsl:value-of select="count($processAtSite)"/>, "weburl": "<xsl:call-template name="RenderLinkText">
                     <xsl:with-param name="theInstanceID"><xsl:value-of select="$thisgeoLocation/name"/></xsl:with-param>
                     <xsl:with-param name="theXSL" select="$theLocationSummaryReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>                         

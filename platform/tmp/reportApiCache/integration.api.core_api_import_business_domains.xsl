@@ -1,3 +1,0 @@
-
-		{"businessDomains":[],"version":"614"}
-	

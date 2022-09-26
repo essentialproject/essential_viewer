@@ -61,7 +61,7 @@
 	<xsl:variable name="platformConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Platform Term']"/>
 	<xsl:variable name="platformTerm" select="$allTaxonomyTerms[(name = $platformConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = 'Bottom')]"/>
 
-	<xsl:variable name="centralConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Central Capablities']"/>
+	<xsl:variable name="centralConstant" select="$reportConstants[own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Central Capabilities']"/>
 	<xsl:variable name="centralTerms" select="$allTaxonomyTerms[(name = $centralConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value) or (own_slot_value[slot_reference = 'name']/value = ('Top', 'Middle'))]"/>
 
 	<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->

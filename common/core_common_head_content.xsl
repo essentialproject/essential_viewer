@@ -46,46 +46,46 @@
 		<link rel="manifest" href="manifest.json"/>
 		<link rel="mask-icon" href="safari-pinned-tab.svg" color="#c3193c"/>
 		<meta name="theme-color" content="#ffffff"/>
-		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css?release=6.15.3" type="text/css"/>
-		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css?release=6.15.3" type="text/css"/>
-		<link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css?release=6.15.3" type="text/css"/>
-		<link href="js/select2/css/select2.min.css?release=6.15.3" rel="stylesheet"/>
-		<link href="js/select2/css/select2-bootstrap.min.css?release=6.15.3" rel="stylesheet"/>
-		<link href="js/hopscotch/css/ess-hopscotch.css?release=6.15.3" rel="stylesheet"/>
-		<link rel="stylesheet" href="css/essential-core.css?release=6.15.3" type="text/css"/>
-		<link href="fonts/source-sans/source-sans-pro.css?release=6.15.3" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" href="js/bootstrap-3.4.1-dist/css/bootstrap.min.css?release=6.16" type="text/css"/>
+		<link rel="stylesheet" href="js/context-menu/jquery.contextMenu.min.css?release=6.16" type="text/css"/>
+		<link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css?release=6.16" type="text/css"/>
+		<link href="js/select2/css/select2.min.css?release=6.16" rel="stylesheet"/>
+		<link href="js/select2/css/select2-bootstrap.min.css?release=6.16" rel="stylesheet"/>
+		<link href="js/hopscotch/css/ess-hopscotch.css?release=6.16" rel="stylesheet"/>
+		<link rel="stylesheet" href="css/essential-core.css?release=6.16" type="text/css"/>
+		<link href="fonts/source-sans/source-sans-pro.css?release=6.16" rel="stylesheet" type="text/css"/>
 		<xsl:if test="$currentLanguage/own_slot_value[slot_reference = 'right_to_left_text']/value = 'true'">
-			<link rel="stylesheet" href="css/essential_rtl.css?release=6.15.3" type="text/css"/>
+			<link rel="stylesheet" href="css/essential_rtl.css?release=6.16" type="text/css"/>
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js?release=6.16"/>
 		<!--Custom JQuery UI library to support various visual effects-->
-		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.16"/>
 		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->
 		<script>
 		$.widget.bridge('uibutton', $.ui.button);
 		$.widget.bridge('uitooltip', $.ui.tooltip);
 		</script>
 		<!-- file saver library -->
-		<script type="text/javascript" src="js/FileSaver.min.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/FileSaver.min.js?release=6.16"/>
 		<!--JQuery plugin to support popup menus for link navigation-->
-		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/context-menu/jquery.contextMenu.js?release=6.16"/>
 		<!--script to support the feedback page-->
-		<script src="js/feedbackformmailer.js?release=6.15.3" type="text/javascript"/>
+		<script src="js/feedbackformmailer.js?release=6.16" type="text/javascript"/>
 		<!--JQuery plugin to support vertical align within divs-->
-		<script type="text/javascript" src="js/jquery.verticalalign.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/jquery.verticalalign.js?release=6.16"/>
 		<!--Bootstrap JS library-->
-		<script type="text/javascript" src="js/bootstrap-3.4.1-dist/js/bootstrap.min.js?release=6.15.3"/>
+		<script type="text/javascript" src="js/bootstrap-3.4.1-dist/js/bootstrap.min.js?release=6.16"/>
 		<!--Match Height Library-->
-		<script src="js/jquery.matchHeight.js?release=6.15.3" type="text/javascript"/>
-		<script src="js/select2/js/select2.min.js?release=6.15.3"/>
+		<script src="js/jquery.matchHeight.js?release=6.16" type="text/javascript"/>
+		<script src="js/select2/js/select2.full.min.js?release=6.16"/>
 		<!-- Handlebars templating library -->
-		<script src="js/handlebars.min-v4.7.7.js?release=6.15.3"/>
+		<script src="js/handlebars.min-v4.7.7.js?release=6.16"/>
 		<!-- Date formatting library -->
-		<script src="js/moment/moment.js?release=6.15.3"/>
+		<script src="js/moment/moment.js?release=6.16"/>
 		<!--Help text and tour library-->
-		<script src="js/hopscotch/js/hopscotch.min.js?release=6.15.3"/>
+		<script src="js/hopscotch/js/hopscotch.min.js?release=6.16"/>
 		<!--script to show hide sections by click on the icon-->
 		<script>
 			$(document).ready(function () {$('.sectionIcon').click(function (){$(this).parent().children('.content-section').slideToggle(200);});});

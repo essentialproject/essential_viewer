@@ -70,14 +70,17 @@
 		<xsl:variable name="allthisPhysProcesses" select="$thisphysProcessesDirect union $thisphysProcessesIndirect"/> 
 	<!--	<xsl:variable name="thisperfMeasures" select="$perfMeasures[name=current()/own_slot_value[slot_reference='performance_measures']/value]"/> -->
 		<xsl:variable name="thisperfMeasures" select="key('perfMeasureskey',current()/name)"/>
-		<xsl:variable name="thisServQualityValues" select="$serviceQualityValues[name=$thisperfMeasures/own_slot_value[slot_reference='pm_performance_value']/value]"/> 
+		<xsl:variable name="thisProcessperfMeasures" select="key('perfMeasureskey',$allthisPhysProcesses/name)"/>
+	 	<xsl:variable name="thisServQualityValues" select="$serviceQualityValues[name=$thisperfMeasures/own_slot_value[slot_reference='pm_performance_value']/value]"/> 
 		
 		<xsl:variable name="processesWithScores" select="$allthisPhysProcesses[count(own_slot_value[slot_reference='performance_measures']/value)&gt;0]"/>
 		
 		<xsl:variable name="thisperfCategory" select="$perfCategory[own_slot_value[slot_reference='pmc_measures_ea_classes']/value=current()/type]"/> 
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"app": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>]
+		"debug":"<xsl:value-of select="$thisProcessperfMeasures/name"/>",
+		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>],
+		"processPerfMeasures":[<xsl:apply-templates select="$allthisPhysProcesses" mode="processPerformanceMeasures"/>]
 		<!--
 		"scores":[<xsl:for-each select="$thisServQualityValues"><xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>","type":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value)"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
@@ -136,7 +139,7 @@
 			{"categoryid": "<xsl:value-of select="$thisperfCategory/name"/>", 
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
-			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='system_last_modified_datetime_iso8601']/value"/>",
+			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
 			"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
 				<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 				<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>
@@ -146,10 +149,37 @@
 				"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",
 				"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
 				"value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
-				"categoryId":"<xsl:value-of select="eas:getSafeJSString($perfQual/name)"/>",
+				"categoryId":[<xsl:for-each select="$perfQual">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 				"categoryName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$perfQual"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 			</xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+		</xsl:template>
+		<xsl:template match="node()" mode="processPerformanceMeasures">
+
+				<xsl:variable name="thisProcessperfMeasures" select="key('perfMeasureskey',current()/name)"/>
+				
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"proid":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='apppro_to_physbus_to_busproc']/value)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"scores":[<xsl:for-each select="$thisProcessperfMeasures">
+						<xsl:variable name="thisServQualityValues" select="$serviceQualityValues[name=current()/own_slot_value[slot_reference='pm_performance_value']/value]"/> 
+						<xsl:variable name="thisperfCategory" select="$perfCategory[name=current()/own_slot_value[slot_reference='pm_category']/value]"/> 
+				{"categoryid": "<xsl:value-of select="$thisperfCategory/name"/>",
+				"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
+				"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
+				"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
+					<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
+					<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>
+					{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				<!--	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
+					"serviceName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisServiceQuality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+					"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",
+					"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
+					"value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
+					"categoryId":[<xsl:for-each select="$perfQual">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
+					"categoryName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$perfQual"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+				</xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+			</xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 			</xsl:template>
-		
 		   </xsl:stylesheet>
 		   

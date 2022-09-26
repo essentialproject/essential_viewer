@@ -336,6 +336,7 @@
 
 
 function setCaps(cap){
+ 
 	let focusCap=appCapList.find((e)=>{
 			return e.id==cap;
 		});
@@ -391,9 +392,12 @@ function setCaps(cap){
 		getDependencies(focusCap,svcList, scopedAppsList)
 }
 function getDependencies(focusCap,svcList, apps){
+ 
 	inScopeApps=[] 
 	let newAppList=[];
 	let coreAppList=[];
+
+ 
 	if(focusCap){
 		if(focusCap=='all'){	
 			apps.forEach((a)=>{
@@ -426,19 +430,32 @@ function getDependencies(focusCap,svcList, apps){
 	  
 		newDepList=[]; 
 		newAppList.forEach((e)=>{ 
-		 
+			 
 			if(e){
+
+
 			let thisNode = depList.find((f)=>{
 				return f.ApplicationID==e.appId;
 			});
 			newDepList.push(thisNode); 
- 
-			thisNode.From.forEach((f)=>{
 	 
-				newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
+			thisNode.From.forEach((f)=>{
+		 
+				let here=apps.find((ap)=>{
+					return ap.appId==f.appid;
+				})
+				if(here){
+					newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
+				}  
 			});
 			thisNode.To.forEach((f)=>{
-			newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
+				let here=apps.find((ap)=>{
+					return ap.appId==f.appid;
+				})
+				if(here){
+					newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
+				} 
+				
 			})
 		}
 		});
@@ -511,11 +528,10 @@ var redrawView = function () {
 				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 
-                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef]);
+                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs));
  
 				scopedAppsList = scopedApps.resources;  
-
-				//console.log('scopedAppsList',scopedAppsList)
+ 
 				let thisId=$('#caps').val()
 				if(thisId == 'all'){
 					
@@ -528,8 +544,7 @@ var redrawView = function () {
 
 				
 			}
-	 
-
+	  
 		function redrawView() {
 			essRefreshScopingValues()
 		}
@@ -538,19 +553,30 @@ var redrawView = function () {
 
 <!-- create graph -->
 function createChart(depList, appList){
+	 
 	var g;
 	g = new dagreD3.graphlib.Graph().setGraph({ rankdir: "LR"});
 
 depList.forEach((d)=>{  
 	if(d.From.length&gt;0){
 		d.From.forEach((fr)=>{ 
+			let here=scopedAppsList.find((ap)=>{
+					return ap.appId==fr.appid;
+				})
+				if(here){
 			g.setEdge(fr.appName,  d.ApplicationName,     { label: "",curve: d3.curveBundle.beta(0.5)  });
+				}
 		});
 	}
 	if(d.To.length&gt;0){
 		d.To.forEach((to)=>{
 			if(to){ 
+				let here=scopedAppsList.find((ap)=>{
+					return ap.appId==to.appid;
+				})
+				if(here){
 			g.setEdge(d.ApplicationName,  to.appName,     { label: "",curve:d3.curveBundle.beta(0.5)  });
+				}
 			}
 		})
 	}
@@ -560,7 +586,8 @@ depList.forEach((d)=>{
  
 // Automatically label each of the nodes
 var nodes = []; 
-appList.forEach((d)=>{ 
+ 
+scopedAppsList.forEach((d)=>{ 
 	var niceLabel;
 	let thisCodeColour ={};
 	let thisDeliveryColour={}
@@ -641,16 +668,16 @@ render(inner, g);
 // Center the graph
 var initialScale = 1;
 if(nodes.length &gt; 0){
-	svg.call(zoom.transform, d3.zoomIdentity.translate((svg.attr("width") - g.graph().width * initialScale) / 2, 20).scale(initialScale));
+ 	svg.call(zoom.transform, d3.zoomIdentity.translate((svg.attr("width") - g.graph().width * initialScale) / 2, 20).scale(initialScale));
 }
  
 if(g.graph().height == -Infinity){
  
-	g.graph().height = 500;
+	g.graph().height = 600;
 }
 else
 {
-if(g.graph().height == 500){
+if(g.graph().height == 600){
 	$('#refresh').trigger("click")
 }
 }
@@ -660,7 +687,7 @@ var windowWidth = $(window).width();
  
 //svg.attr('height', g.graph().height * initialScale + 40);
 svg.attr('width', windowWidth-30);
-svg.attr('height', windowHeight-360);
+svg.attr('height', windowHeight-300);
 
 }
 </script>            
@@ -695,7 +722,7 @@ svg.attr('height', windowHeight-360);
 		<xsl:variable name="usages"	select="$allArchUsages[own_slot_value[slot_reference='static_usage_of_app_provider']/value=current()/name]" />
 		<xsl:variable name="subApps" select="$allApplications[name=current()/own_slot_value[slot_reference='contained_application_providers']/value]" />
 		<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=current()/name]" />	
-		{"ApplicationName": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		{"ApplicationName": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"type":"<xsl:value-of select="current()/type"/>",
 		"ApplicationID": "<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS">
@@ -706,7 +733,7 @@ svg.attr('height', windowHeight-360);
 		"codebase":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
 		"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"delivery":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)" />"}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
 		<xsl:template match="node()" mode="getToUsages">
@@ -732,7 +759,7 @@ svg.attr('height', windowHeight-360);
 		"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"delivery":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>", 
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
+		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
 		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"<!--, "data":[<xsl:apply-templates select="$thisAppProtoInfo" mode="dataPassing"/>]-->},</xsl:if>
 	</xsl:template> 
 		<xsl:template match="node()" mode="getfromAPU">
@@ -747,7 +774,7 @@ svg.attr('height', windowHeight-360);
 				"codebase":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
 				"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
 				"delivery":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-				"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>", "parent":"<xsl:value-of select="$parent/own_slot_value[slot_reference='name']/value"/>",  "parentID":"<xsl:value-of select="$parent/name"/>"<!--,
+				"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>", "parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",  "parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"<!--,
 				"data":[<xsl:apply-templates select="$thisAppProtoInfo" mode="dataPassing"/>]-->},</xsl:if>
 	</xsl:template> 
 	<xsl:template match="node()" mode="dataPassing">
@@ -759,8 +786,8 @@ svg.attr('height', windowHeight-360);
 	<xsl:template match="node()" mode="getContainedApps">
 		<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=current()/name]"/>
 		{"subId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"subName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
+		"subName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
+		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
 		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template> 
 
@@ -769,7 +796,7 @@ svg.attr('height', windowHeight-360);
 	<xsl:variable name="thisPurposes" select="$purpose[name=current()/own_slot_value[slot_reference='application_provider_purpose']/value]"/>
 	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]" />
 	<xsl:variable name="thisFamily" select="$family[name=current()/own_slot_value[slot_reference='type_of_application']/value]"/>
-		{"appName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		{"appName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"type":"<xsl:value-of select="current()/type"/>",
 		"appId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"codebase":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
@@ -792,7 +819,7 @@ svg.attr('height', windowHeight-360);
 		<xsl:variable name="supportedServices" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>
 		<xsl:variable name="supportedServiceswithKids" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=$thisChildCaps/name]"/>
 	
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"relatedServicesThis":[<xsl:for-each select="$supportedServices">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
 		"relatedServices":[<xsl:for-each select="$supportedServiceswithKids">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
@@ -802,7 +829,7 @@ svg.attr('height', windowHeight-360);
 	<xsl:template match="node()" mode="svcList">
 		<xsl:variable name="aprs" select="$aprRoles[name=current()/own_slot_value[slot_reference='provided_by_application_provider_roles']/value]"/>
 		<xsl:variable name="apps" select="$aprs/own_slot_value[slot_reference='role_for_application_provider']/value"/>
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"relatedApps":[<xsl:for-each select="$apps">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position()=last())">,</xsl:if>
 	
@@ -830,7 +857,7 @@ svg.attr('height', windowHeight-360);
 <xsl:template match="node()" mode="elements">
 <xsl:variable name="thiselementStyle" select="$elementStyle[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 "colour":"<xsl:value-of select="$thiselementStyle[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>",
 'bgcolour':"<xsl:value-of select="$thiselementStyle[1]/own_slot_value[slot_reference='element_style_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 		
@@ -882,12 +909,19 @@ svg.attr('height', windowHeight-360);
 		};
  
 		showEditorSpinner('Fetching Data...');
+		var dynamicAppFilterDefs=[];
 		$('document').ready(function (){
 			Promise.all([ 
 			promise_loadViewerAPIData(viewAPIDataApps)
 			]).then(function (responses)
 			{
 			let apiApps = responses[0].applications;
+			filters=responses[0].filters;
+			responses[0].filters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+				  
+			dynamicAppFilterDefs=filters?.map(function(filterdef){
+				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+			});
 
 		$('#caps').select2();
 		$('#services').select2();
@@ -901,12 +935,12 @@ svg.attr('height', windowHeight-360);
 	svcList=[<xsl:apply-templates select="$appServices" mode="svcList"/>];  
 	appList=[<xsl:apply-templates select="$allApplications" mode="appList"/>];  
 	depList=[<xsl:apply-templates select="$allApplications" mode="getApps"/> ];    
-
+		
 //console.log('appCapList',appCapList)
+let tempApp=[];
 	appList.forEach((d)=>{
-		 
+	 
 		let thisIDs= apiApps.find((e)=>{
-		 
 			return e.id==d.appId
 		}); 
 		if(thisIDs){ 
@@ -917,9 +951,16 @@ svg.attr('height', windowHeight-360);
 		if(thisIDs.geoIds.length&gt;0){
 			d['geoIds']=thisIDs.geoIds
 		}
+		var obj = Object.assign({}, d, thisIDs); 
+        tempApp.push(obj);
+		
+	}else{
+		tempApp.push(d)
 	}
 		  
 	});
+	 
+	appList=tempApp;		
 	thisstyles ={"codebase":[<xsl:apply-templates select="$codebases" mode="elements"/>],
 				 "delivery":[<xsl:apply-templates select="$deliveryTypes" mode="elements"/>]
 				}
@@ -967,7 +1008,8 @@ svg.attr('height', windowHeight-360);
 		let thisId=$(this).val();
 		if(thisId == 'all'){
 			//console.log('all',thisId)
-			getDependencies(thisId,svcList, appList)
+			redrawView()
+		//	getDependencies(thisId,svcList, appList)
 			
 		}
 		else{
@@ -998,9 +1040,9 @@ svg.attr('height', windowHeight-360);
 	});
 				
 
-	createChart(depList, appList)
+	//createChart(depList, appList)
 
-	essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region']);
+	essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters);
 
 	$('#codebase').on('change',function(){ 
 		redrawView();
@@ -1016,7 +1058,7 @@ svg.attr('height', windowHeight-360);
 	$('#family').on('change',function(){ 
 		redrawView();
 	});
- 
+	redrawView();
 			})
 		})
 	</xsl:template>

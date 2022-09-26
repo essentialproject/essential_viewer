@@ -17,17 +17,6 @@
 
 	<!-- END GENERIC PARAMETERS -->
 <xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
-	<!--<xsl:variable name="allBusProcs" select="/node()/simple_instance[type='Business_Process']" />
-	<xsl:variable name="allApps" select="/node()/simple_instance[(type='Application_Provider') or (type='Composite_Application_Provider')]" />
-	<xsl:variable name="allAppServices" select="/node()/simple_instance[(type='Application_Service') or (type='Composite_Application_Service')]"/>
-	<xsl:variable name="allAppRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/>
-	<xsl:variable name="allBusProc2AppSvcs" select="/node()/simple_instance[type='APP_SVC_TO_BUS_RELATION']"/>
-	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type='Individual_Actor']" />
-	<xsl:variable name="allIndividualRoles" select="/node()/simple_instance[type='Individual_Business_Role']" />
-	<xsl:variable name="allGroupActors" select="/node()/simple_instance[type='Group_Actor']" />
-	<xsl:variable name="allGroupRoles" select="/node()/simple_instance[type='Group_Business_Role']"/>
-	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type='Physical_Process']" />
-	<xsl:variable name="allPhysProcs2Apps" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']" />-->
 
 	<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type='Application_Provider') or (type='Composite_Application_Provider')]" />
 	<xsl:variable name="currentBusCap" select="$allBusinessCaps[name = $param1]"/>
@@ -37,7 +26,8 @@
 
 
 	<xsl:variable name="relevantBusCaps" select="$currentBusCap union $subBusCaps"/>
-	<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
+<!--
+		<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"/>
 	<xsl:variable name="currentBusProcs" select="$relevantBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $currentBusCap/name]"/>
 	<xsl:variable name="relevantBusProc2AppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $relevantBusProcs/name]"/>
 	<xsl:variable name="relevantAppSvcs" select="/node()/simple_instance[name = $relevantBusProc2AppSvcs/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
@@ -48,7 +38,7 @@
 	<xsl:variable name="physProcs2AppsForCap" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcsForCap/name]"/>
 	<xsl:variable name="appRolesForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
 	
-	   <xsl:variable name="processToAppRel" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value=$allAppProviders/name]"/>
+	<xsl:variable name="processToAppRel" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value=$allAppProviders/name]"/>
     <xsl:variable name="directProcessToAppRel" select="$processToAppRel[name=$physProcsForCap/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
     <xsl:variable name="directProcessToApp" select="$allAppProviders[name=$directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 	<xsl:variable name="relevantAppsDirect" select="$allAppProviders[name= $directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
@@ -58,14 +48,30 @@
 	<xsl:variable name="appsForRolesCap" select="/node()/simple_instance[name = $appRolesForCap/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="appsForCap" select="/node()/simple_instance[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 	<xsl:variable name="allAppsForCap" select="$appsForRolesCap union $appsForCap union $relevantApps"/>
+-->
 
-
+	<xsl:key name="procsBc" match="/node()/simple_instance[type='Business_Process']" use="own_slot_value[slot_reference='realises_business_capability']/value"/>
+	<xsl:key name="physProcs" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference='implements_business_process']/value"/>
+	<xsl:key name="physProcsMap" match="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']" use="own_slot_value[slot_reference='apppro_to_physbus_to_busproc']/value"/>
+	<xsl:key name="physProcsMapApr" match="/node()/simple_instance[type='Application_Provider_Role']" use="own_slot_value[slot_reference='app_pro_role_supports_phys_proc']/value"/>
+	<xsl:key name="physProcsMapApp" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="own_slot_value[slot_reference='app_pro_supports_phys_proc']/value"/>
+	<xsl:key name="physProcsMapAppviaApr" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="own_slot_value[slot_reference='provides_application_services']/value"/>
+	<xsl:variable name="aprs" select="/node()/simple_instance[type='Application_Provider_Role']"/>
 	
+	<xsl:variable name="procsBc" select="key('procsBc',$relevantBusCaps/name)"/>
+	<xsl:variable name="physProcs" select="key('physProcs',$procsBc/name)"/>
+	<xsl:variable name="procMap" select="key('physProcsMap',$physProcs/name)"/>
+
+	<xsl:variable name="procMapApr" select="key('physProcsMapApr',$procMap/name)"/>
+
+	<xsl:variable name="procMapAppApr" select="key('physProcsMapAppviaApr',$procMapApr/name)"/>
+	<xsl:variable name="procMapApp" select="key('physProcsMapApp',$procMap/name)"/>
+	<xsl:variable name="allApps" select="$procMapAppApr union $procMapApp"/>
 	<xsl:variable name="lifecycleStatus" select="/node()/simple_instance[type = 'Lifecycle_Status'][own_slot_value[slot_reference='enumeration_sequence_number']/value]"/>
 	<xsl:variable name="deliveryModel" select="/node()/simple_instance[type = 'Codebase_Status']"/>
      <xsl:variable name="styles" select="/node()/simple_instance[type='Element_Style']"/>
     <!-- ROADMAP VARIABLES -->
-	<xsl:variable name="allRoadmapInstances" select="$allAppsForCap"/>
+	<xsl:variable name="allRoadmapInstances" select="$allApps"/>
     <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
 	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
     <!-- END ROADMAP VARIABLES -->
@@ -139,22 +145,23 @@
 								</h1>
 							</div>
 						</div>
-
+ 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-                            <strong class="right-5">Apps to Show:</strong>
-                            <select id="switch">
+                          <!--     <strong class="right-5">Apps to Show:</strong>
+                         	<select id="switch">
                                 <option id="All">Show All</option>
                                 <option id="Does">Do Support</option>
                                 <option id="Could">Could Support</option>
-                            </select>
+							</select>
+						-->
 							<div class="clearfix"></div>
 							<xsl:if test="not($lifecycleStatus)"><p><br/>Missing Data: Please Set Enumeration Sequence Numbers for Lifecycles</p></xsl:if> 
 							<svg id="radar"></svg>
 
 							<script>
-							    var entriesForRadar=[ <xsl:apply-templates select="$allAppsForCap" mode="apps"></xsl:apply-templates>  ]
-  
+							    var entriesForRadar=[ <xsl:apply-templates select="$allApps" mode="apps"></xsl:apply-templates>  ]
+ 
 								function callRadar(myRadar){    
 								radar_visualization({
 								  svg_id: "radar",
@@ -189,7 +196,7 @@
 								    
 								    callRadar(entriesForRadar)
 								    
-								$('#switch').change(function(){
+						/*		$('#switch').change(function(){
 								    var appState = $(this).children(":selected").attr("id");
 								       console.log(appState);
 								    if(appState !=='All'){
@@ -200,11 +207,13 @@
 								        }
 								    else{
 								    toShow=entriesForRadar;
-								    }
+									}
+								
 								$('#radar').empty();
 								   console.log(toShow);
 								    callRadar(toShow);
-								    })    
+									})    	
+									*/
 								</script>
 								<hr/>
 							</div>
@@ -223,19 +232,15 @@
         <xsl:variable name="ThisApp">
 			<xsl:value-of select="current()/own_slot_value[slot_reference = 'lifecycle_status_application_provider']/value"/>
 		</xsl:variable>
-        <xsl:variable name="ThisAppProRole" select="$relevantAppRoles[name=current()/own_slot_value[slot_reference = 'provides_application_services']/value]"/>
-
-        <xsl:variable name="ThisAppProRolePhysical" select="$ThisAppProRole/own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value"/>
-		
+         
         <xsl:variable name="lifeValue"><xsl:value-of select="$lifecycleStatus[name = $ThisApp]/own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/></xsl:variable>
-      {
+	  { 
         quadrant: <xsl:value-of select="position() mod 4"/>,
         ring: <xsl:choose><xsl:when test="$lifeValue=''"><xsl:value-of select="count($lifecycleStatus)-1"/></xsl:when><xsl:otherwise><xsl:value-of select="$lifeValue"/></xsl:otherwise></xsl:choose>,
         label: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
         active: false,
         link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-        moved: 0,
-        couldDoes: "<xsl:choose><xsl:when test="$ThisAppProRolePhysical">Does</xsl:when><xsl:otherwise>Could</xsl:otherwise></xsl:choose>"
+        moved: 0
       }<xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
 	

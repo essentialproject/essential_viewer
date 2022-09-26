@@ -44,7 +44,7 @@ function essInitViewState(stateObj, defaultViewState) {
 function essUpdateViewState() {
     let newURL = essGeneratePageLink();
     history.replaceState(essCurrentViewState.state, null, newURL);
-    essSaveLocalEssentialViewState(essViewId, essCurrentViewState.state);
+    essSaveLocalEssentialViewState(essCurrentViewState.state);
 }
 
 
@@ -52,8 +52,8 @@ function essRevertViewState(e) {
     // page reload
     if(e.state) {
         essCurrentViewState.state = e.state;
-        console.log('Current state on reload');
-        console.log(essCurrentViewState.state);
+        //console.log('Current state on reload');
+        //console.log(essCurrentViewState.state);
     } else {
         console.log('No State Found');
         console.log(essCurrentViewState.state);
@@ -125,7 +125,7 @@ const ESS_LOCAL_VIEW_STATE_KEY = 'ESSENTIAL_USER_SETTINGS.VIEW_STATE';
 function essGetLocalEssentialViewState() {
     let viewStateKey = ESS_LOCAL_VIEW_STATE_KEY + '.' + essViewId;
     let viewStateString = localStorage.getItem(viewStateKey);
-    console.log('Locally stored encoded state: ' + viewStateString);
+    //console.log('Locally stored encoded state: ' + viewStateString);
     let viewState;
     if(viewStateString) {     
         try {
@@ -140,8 +140,8 @@ function essGetLocalEssentialViewState() {
 }
 
 
-function essSaveLocalEssentialViewState(viewId, theState) {
-    let viewStateKey = ESS_LOCAL_VIEW_STATE_KEY + '.' + viewId;
+function essSaveLocalEssentialViewState(theState) {
+    let viewStateKey = ESS_LOCAL_VIEW_STATE_KEY + '.' + essViewId;
     if(theState != null) {
         let settingsString = essSerializeState(theState);
         localStorage.setItem(viewStateKey, settingsString);         

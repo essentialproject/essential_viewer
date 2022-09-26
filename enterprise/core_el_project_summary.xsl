@@ -113,7 +113,15 @@
 
     <xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')]"/>
-	<xsl:variable name="allAppServices" select="/node()/simple_instance[(type = 'Application_Service') or (type = 'Composite_Application_Service')]"/>
+        <xsl:variable name="allAppDeployments" select="/node()/simple_instance[own_slot_value[slot_reference = 'application_provider_deployed']/value = $allApps/name]"/>
+        <xsl:variable name="allTechBuilds" select="/node()/simple_instance[name = $allAppDeployments/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
+	<xsl:variable name="allTechBuildArchs" select="/node()/simple_instance[name = $allTechBuilds/own_slot_value[slot_reference = ('technology_provider_architecture','technology_product_architecture')]/value]"/>
+	<xsl:variable name="allTechProvRoleUsages" select="/node()/simple_instance[(name = $allTechBuildArchs/own_slot_value[slot_reference = ('contained_architecture_components','contained_techProd_components')]/value) and (type = ('Technology_Provider_Usage','Technology_Product_Usage','Technology_Product_Dependency'))]"/>
+        <xsl:variable name="allTechProvs" select="/node()/simple_instance[supertype = 'Technology_Provider']"/>
+	<xsl:variable name="allTechProRoles" select="/node()/simple_instance[(type,supertype) = ('Technology_Provider_Role','Technology_Product_Role','Technology_Component')]"/>
+        <xsl:variable name="allAppTechProvRoles" select="$allTechProRoles[name = $allTechProvRoleUsages/own_slot_value[slot_reference = ('provider_as_role','technology_product_as_role','tpd_technology_component')]/value]"/>
+        <xsl:variable name="allAppTechProvs" select="$allTechProvs[name = $allAppTechProvRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
+        <xsl:variable name="allAppServices" select="/node()/simple_instance[(type = 'Application_Service') or (type = 'Composite_Application_Service')]"/>
 	<xsl:variable name="allAppRoles" select="/node()/simple_instance[type = 'Application_Provider_Role']"/>
 	<xsl:variable name="allBusProc2AppSvcs" select="/node()/simple_instance[type = 'APP_SVC_TO_BUS_RELATION']"/>
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
@@ -645,7 +653,7 @@
                          "impactedElements":[<xsl:apply-templates select="$thisPlannedChanges" mode="layerInfo"/>],
                          "strategicPlansActual":[<xsl:apply-templates select="$thisInterestedStrategicPlans" mode="plansInfo"/>],
                          "strategicPlansExplict":[<xsl:apply-templates select="$thisdirectStrategicPlans" mode="plansInfo"/>],
-                         "allStratPlans":[<xsl:if test="$thisInterestedStrategicPlans"><xsl:apply-templates select="$thisInterestedStrategicPlans" mode="plansInfo"/>,</xsl:if><xsl:if test="$thisdirectStrategicPlans"><xsl:apply-templates select="$thisdirectStrategicPlans" mode="plansInfo"/></xsl:if>],
+                         "allStratPlans":[<xsl:apply-templates select="$thisInterestedStrategicPlans union $thisdirectStrategicPlans" mode="plansInfo"/>],
                          "stakeholders":[<xsl:apply-templates select="$projectStakeholders" mode="stakeholders"/>]};
                 
                 
@@ -763,6 +771,7 @@
                     });
             
                 var impacts=[];
+                const pushIfNotIncluded = function(arr,obj){const index = arr.findIndex(object => object.id === obj.id); if (index===-1) arr.push(obj);};
                 buscaps.forEach(function(e){   
                 e.subcaps.forEach(function(f){
                     var thisCap={};
@@ -773,7 +782,8 @@
                         count=count+f.impacts[0].numberImpacted;
                         if(f.impacts[0].numberImpacted &gt;0){
                                 f.impacts[0].elements.forEach(function(h){
-                                        elems.push(h)
+                                        //if (!elems.includes(h)) elems.push(h);
+                                        pushIfNotIncluded(elems,h);
                                         })
                              }
                         if(f.subcaps){
@@ -781,7 +791,8 @@
                                  count=count+g.impacts[0].numberImpacted;
                             if(g.impacts[0].numberImpacted &gt;0){
                                 g.impacts[0].elements.forEach(function(h){
-                                        elems.push(h)
+                                        //if (!elems.includes(h))elems.push(h);
+                                        pushIfNotIncluded(elems,h);
                                         })
                              }
                                             });
@@ -797,7 +808,8 @@
                  });
                 
                 impacts.forEach(function(d){
-                    $('#info'+d.id).text(d.count);
+                $('#info'+d.id).text(d.count);
+                if (d.count>0){$('#info'+d.id).attr('style','background-color:orange')}
                 });
                 
             var busI=project.impactedElements.filter(function(d){
@@ -810,7 +822,7 @@
                     return d.layer==='Technology';
                 })
                 var infoI=project.impactedElements.filter(function(d){
-                    return d.layer==='Information';
+                    return d.layer==='Information/Data';
                 })
               
                 $("#busimpacts").html(impactTemplate(busI));
@@ -955,7 +967,7 @@
 
 
         <div class="compModelElementContainer"><xsl:attribute name="id"><xsl:value-of select="eas:getSafeJSString(current()/name)"/></xsl:attribute>
-            <div style="position:absolute;top:-7px;left:-7px"><span class="badge badge-secondary" href="#" data-toggle="popover" title="Impacts" data-html="true" data-content="&lt;div class='popoverText'>"><xsl:attribute name="id">info<xsl:value-of select="eas:getSafeJSString(current()/name)"/></xsl:attribute><xsl:attribute name="easid"><xsl:value-of select="eas:getSafeJSString(current()/name)"/></xsl:attribute>0</span> </div>
+            <div style="position:absolute;top:-7px;left:-7px"><span class="badge badge-secondary" href="#" data-toggle="popover" title="Impacts" data-html="true" data-content="&lt;p style='fontsize:8px;'>Number of elements impacted may be less than displayed number of impacts on the capability as an element may be impacted through several paths&lt;/p>&lt;div class='popoverText'>"><xsl:attribute name="id">info<xsl:value-of select="eas:getSafeJSString(current()/name)"/></xsl:attribute><xsl:attribute name="easid"><xsl:value-of select="eas:getSafeJSString(current()/name)"/></xsl:attribute>0</span> </div>
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>
@@ -1035,24 +1047,38 @@
 		<xsl:variable name="appsForRolesCap" select="$allApps[name = $appRolesForCap/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 		<xsl:variable name="appsForCap" select="$allApps[name = $physProcs2AppsForCap/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
 		<xsl:variable name="allAppsForCap" select="$appsForRolesCap union $appsForCap union $appsForSvcsCap"/>
+                <xsl:variable name="allAppDeploymentsForCap"  select="$allAppDeployments[own_slot_value[slot_reference = 'application_provider_deployed']/value = $allAppsForCap/name]"/>
+                <xsl:variable name="aTechBuild" select="$allTechBuilds[name = $allAppDeploymentsForCap/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
+		<xsl:variable name="aTechBuildArch" select="$allTechBuildArchs[name = $aTechBuild/own_slot_value[slot_reference = ('technology_provider_architecture','technology_product_architecture')]/value]"/>
+		<xsl:variable name="aTechProUsageList" select="$allTechProvRoleUsages[name = $aTechBuildArch/own_slot_value[slot_reference = ('contained_architecture_components','contained_techProd_components')]/value]"/>
+                <xsl:variable name="aTechProRole" select="$allAppTechProvRoles[name = $aTechProUsageList/own_slot_value[slot_reference = ('provider_as_role','technology_product_as_role','tpd_technology_component')]/value]"/>
+                <xsl:variable name="techProdForCap" select="$allAppTechProvs[name = $aTechProRole/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
         <xsl:variable name="plansForBusCap" select="$thisPlannedChangeElements[name = current()/name]"/>
 		<xsl:variable name="plansforBusProcs" select="$thisPlannedChangeElements[name = $busProcsForCap/name]"/>
 		<xsl:variable name="plansforApps" select="$thisPlannedChangeElements[name = $allAppsForCap/name]"/>
 		<xsl:variable name="plansforOrgs" select="$thisPlannedChangeElements[name = $orgsForCap/name]"/>
-        {"numberImpacted":<xsl:value-of select="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs)"/>,<xsl:if test="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs)&gt;0">"elements":[
+		<xsl:variable name="plansforTechProds" select="$thisPlannedChangeElements[name = $techProdForCap/name]"/>
+                /**TORTOT<xsl:value-of select="$plansforTechProds"/>**/
+        
+        {"numberImpacted":<xsl:value-of select="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs union $plansforTechProds)"/>,<xsl:if test="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs union $plansforTechProds)&gt;0">"elements":[
         <xsl:if test="$plansForBusCap">
            
-        <xsl:for-each select="$plansForBusCap">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>"},
+        <xsl:for-each select="$plansForBusCap">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},
         </xsl:for-each></xsl:if>
         <xsl:if test="$plansforBusProcs">
             
-        <xsl:for-each select="$plansforBusProcs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforBusProcs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         <xsl:if test="$plansforApps">
             
-        <xsl:for-each select="$plansforApps">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforApps">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         <xsl:if test="$plansforOrgs">
            
-            <xsl:for-each select="$plansforOrgs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>"},</xsl:for-each></xsl:if>]</xsl:if>}
+        <xsl:for-each select="$plansforOrgs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        
+        <xsl:if test="$plansforTechProds">
+           
+        <xsl:for-each select="$plansforTechProds">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        ]</xsl:if>}
         
     </xsl:template>
     

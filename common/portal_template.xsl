@@ -18,11 +18,11 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
-	<xsl:variable name="anyReports" select="/node()/simple_instance[type = ('Configured_Editor', 'Simple_Editor', 'Editor', 'Report')]"/>
+	<xsl:variable name="anyReports" select="if ($eipMode) then /node()/simple_instance[type = ('Configured_Editor', 'Simple_Editor', 'Editor', 'Report')] else /node()/simple_instance[type = 'Report']"/>
 	<xsl:key name="anyReports_key" match="$anyReports" use="own_slot_value[slot_reference = 'report_is_enabled']/value"/>
 	<xsl:variable name="allReports" select="key('anyReports_key','true')"/>
 	<xsl:variable name="qualifyingReports" select="$anyReports[name=$allReports/own_slot_value[slot_reference='report_qualifying_report']/value]"/>
-	
+	<xsl:variable name="anyReportParameters" select="/node()/simple_instance[name = $anyReports/own_slot_value[slot_reference = 'report_parameters']/value]"/>
 	 
  
 
@@ -223,7 +223,11 @@
 								<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
 									<xsl:variable name="theEditorId" select="current()/name"/>
 									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
-									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
+									<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
+									<xsl:variable name="theEditorParamString">
+										<xsl:apply-templates mode="RenderMenuItemParameters" select="$theEditorParameterInsts"/>
+									</xsl:variable>
+									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:value-of select="$theEditorParamString"/></xsl:variable>
 									<li class="fontSemi large">
 										<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
 											<xsl:value-of select="$theEditorLabel"/>

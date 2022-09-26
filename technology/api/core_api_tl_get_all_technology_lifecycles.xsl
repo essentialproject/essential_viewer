@@ -69,12 +69,12 @@
 	
    {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
             </xsl:call-template>", 
     "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
     "supplier":"<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="$thisSupplier"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
             </xsl:call-template>", 
     "id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
     "supplierId":"<xsl:value-of select="eas:getSafeJSString($this/own_slot_value[slot_reference='supplier_technology_product']/value)"/>", 
@@ -95,7 +95,7 @@
         <xsl:for-each select="$thisApps">
         {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
             </xsl:call-template>",
         "className":"Application_Provider",    
         "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -111,18 +111,18 @@
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"componentName":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisComponent"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"standardStrength":"<xsl:value-of select="eas:getSafeJSString($thisStandard/name)"/>",
 		"geoScope":[<xsl:for-each select="$thisGeos">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"orgScope":[<xsl:for-each select="$thisOrgs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]	
 		}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
@@ -140,7 +140,7 @@
 	<xsl:variable name="thisStyle" select="$elementStyle[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
 		<xsl:with-param name="theSubjectInstance" select="current()"/>
-		<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		<xsl:with-param name="isForJSONAPI" select="true()"/>
 	</xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","seq":<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="position()"/></xsl:otherwise></xsl:choose>,
 	"backgroundColour":"<xsl:value-of select="$thisStyle[1]/own_slot_value[slot_reference='element_style_colour']/value"/>","colour":"<xsl:value-of select="$thisStyle[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>

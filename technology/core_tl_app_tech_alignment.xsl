@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:functx="http://www.functx.com">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:functx="http://www.functx.com" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview" xmlns:user="http://www.enterprise-architecture.org/essential/vieweruserdata">
 	<xsl:import href="../common/core_utilities.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
-	
-
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
 	<!-- param1 = the subject of the UML model -->
@@ -120,8 +118,8 @@
 	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
 
-	<xsl:variable name="DEBUG" select="''"/>
-
+	<xsl:key name="tprProdKey" match="/node()/simple_instance[supertype='Technology_Provider']" use="own_slot_value[slot_reference = 'implements_technology_components']/value"/>
+	<xsl:key name="tprCompKey" match="/node()/simple_instance[type='Technology_Component']" use="own_slot_value[slot_reference = 'realised_by_technology_products']/value"/>
 	<xsl:variable name="modelSubjectName">
 		<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
@@ -171,6 +169,12 @@
 	<xsl:variable name="pageTitle" select="'Application Technology Strategy Alignment for '"/>
 
 	<xsl:variable name="techProdSummaryReport" select="eas:get_report_by_name('Core: Technology Product Summary')"/>
+	<xsl:variable name="isEIPMode">
+ 		<xsl:choose>
+ 			<xsl:when test="$eipMode = 'true'">true</xsl:when>
+ 			<xsl:otherwise>false</xsl:otherwise>
+ 		</xsl:choose>
+ 	</xsl:variable>
 
 
 
@@ -192,6 +196,8 @@
 						<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
 					</xsl:call-template>
 				</title>
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
 				<script src="js/jquery-migrate-1.4.1.min.js"></script>
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
 				<script src="js/lodash/index.js"/>
@@ -209,8 +215,13 @@
 						pointer-events: none;
 					}
 					
-					.techProdCell{
-					}</style>
+					.techProdCell:hover{
+						cursor: pointer;
+					
+					}
+					#planModal {
+					z-index: 10000;}
+				</style>
 				<script>
 					$(document).ready(function() {													
 					// initialize tooltip
@@ -231,7 +242,13 @@
 					
 					});
 				</script>
-
+				<style>
+					.label-block {
+						display: block;
+						padding: 5px;
+						font-size: 14px;
+					}
+				</style>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -253,7 +270,35 @@
 								</xsl:call-template>
 							</h1>
 						</div>
+						<div id="planModal" class="modal fade" role="dialog">
+							<div class="modal-dialog">
 
+								<!-- Modal content-->
+								<div class="modal-content">
+								<div class="modal-header">
+									<h3 class="modal-title strong text-primary"><i class="fa fa-tasks right-5"/><xsl:value-of select="eas:i18n('Create Plan to Switch')"/></h3>
+								</div>
+								<div class="modal-body">
+									<label><xsl:value-of select="eas:i18n('Plan Name')"/>:</label>
+									<input class="form-control"  id="planName"></input>
+									<br/>
+									<label><xsl:value-of select="eas:i18n('Plan Description')"/>:</label>
+									<textarea class="form-control" rows="3" id="planDescription"></textarea>
+									<br/>
+									<label><xsl:value-of select="eas:i18n('Plan Start Date')"/>:</label>
+									<input  class="form-control" id="planStart"></input><br/>
+									<label><xsl:value-of select="eas:i18n('Plan End Date')"/>:</label>
+									<input  class="form-control"  id="planEnd"></input><br/>
+									
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-danger right-10" data-dismiss="modal">Cancel</button>
+									<button class="btn btn-success" id="save"><xsl:value-of select="eas:i18n('Create Plan')"/></button><xsl:text> </xsl:text><span id="savefeedback"></span> 
+								</div>
+								</div>
+
+							</div>
+						</div>
 						<!--Setup Description Section-->
 						<!--<div class="col-xs-12">
 							<div class="sectionIcon">
@@ -305,9 +350,10 @@
 							<div class="verticalSpacer_5px"/>
 							<xsl:choose>
 								<xsl:when test="count($techProdRoles) > 0">
-									<table class="table table-bordered table-striped ">
+									<table class="table table-bordered table-striped tot">
 										<thead>
 											<tr>
+												<th>&#160;</th>
 												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Required Component')"/></th>
 												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Products Used')"/></th>
 												<th class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></th>
@@ -340,7 +386,120 @@
 						var windowWidth = $(window).width();
                         $('.simple-scroller').scrollLeft(windowWidth/2);
                     });
-                </script>
+				</script>
+				
+				<script>
+					 
+				let tprs=[<xsl:apply-templates select="$allTechProdRoles" mode="tprs"/>];
+				let appNm="<xsl:value-of select="$appProvName"/>";
+			 
+					$(document).ready(function(){
+						
+					$(document).off().on('click', '.replaceBut',function(d){ 
+						let targTrp= $(this).attr('easid')
+						 
+						 let thisTpr=$(this).parent().parent().parent().parent().parent().parent().parent().parent().next().next().attr('tprid') 
+
+						 let currentTPR=tprs.find((e)=>{
+							 return e.id==thisTpr
+						 })
+						 let targetTPR=tprs.find((e)=>{
+							 return e.id==targTrp
+						 })
+
+						 let planName= appNm +" - Replace "+ currentTPR.componentName;
+
+						 let planDesc= appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+ currentTPR.componentName;
+						 $('#planName').val(planName);
+
+						 $('#planDescription').val(planDesc);
+						$('#planModal').modal('show'); 
+						$( function() {
+                            $( "#planStart" ).datepicker();
+                        } );
+                        $( function() {
+                            $( "#planEnd" ).datepicker();
+						} );
+
+						$('#save').off().on('click',function(){ 
+						
+							console.log('c',currentTPR)
+
+						
+ 
+							let planS=$('#planStart').val();
+							let planE=$('#planEnd').val();
+							let planStart=new Date(planS).toISOString();
+							let planEnd=new Date(planE).toISOString() ;
+							let planDescription = $( "#planDescription" ).val();
+ 
+
+					let plan  = {"name": planName,
+                                "className": "Enterprise_Strategic_Plan",
+                                "description": planDescription,
+                                "system_is_published": false,
+                                "strategic_plan_valid_from_date_iso_8601":planStart.substring(0,10),
+                                "strategic_plan_valid_to_date_iso_8601":planEnd.substring(0,10),
+								"strategic_plan_for_elements":  [{ 
+                        					"name": "replace - "+ currentTPR.productName + ' as '+currentTPR.componentName ,
+											"className": "PLAN_TO_ELEMENT_RELATION",
+											"plan_to_element_change_action": { 
+												"name": 'Replace',
+												"className": "Planning_Action"
+											},
+											"plan_to_element_ea_element": {
+												"id": currentTPR.id, 
+												"className": "Technology_Provider_Role"
+											}
+											},
+											{ 
+                        					"name": "enhance - "+ targetTPR.productName + ' as '+targetTPR.componentName ,
+											"className": "PLAN_TO_ELEMENT_RELATION",
+											"plan_to_element_change_action": { 
+												"name": 'Enhance',
+												"className": "Planning_Action"
+											},
+											"plan_to_element_ea_element": {
+												"id": targetTPR.id, 
+												"className": "Technology_Provider_Role"
+											}
+											}]
+									}
+                         
+
+                    essPromise_createAPIElement('/essential-utility/v3',plan,'instances','Enterprise_Strategic_Plan')
+                        .then(function(response){
+                           
+                            console.log('Plan Created');
+                            console.log(response);
+
+							let decision = {"name": appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName,
+							  	"className": "Enterprise_Decision",
+								"decision_result": {
+									"className": "Decision_Result",
+									"name": 'Proposed'},
+								"description":"Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+targetTPR.componentName,	 
+								"governance_reference":'ap'+targetTPR.id,
+								"decision_elements":[{id: currentTPR.id, className: 'Technology_Provider_Role'},{id:  targetTPR.id, className:'Technology_Provider_Role'},{"id":response.id, "className":"Enterprise_Strategic_Plan" }]
+                                };
+								console.log('decision',decision)
+								
+                                essPromise_createAPIElement('/essential-utility/v3',decision,'instances','Decision')
+                                .then(function(response){
+                                  
+                                    console.log('Decision created with elements');
+                                    console.log(response);
+                                    //delete planElements;
+                                    //delete plan;
+
+                                    $('#planModal').modal('hide');
+                                }); 
+                        });
+					});
+				});
+<!--  end  --> 
+});
+				</script>
 
 			</body>
 		</html>
@@ -509,6 +668,7 @@
 
 		<xsl:for-each select="$targetTechProdRoleUsages">
 			<xsl:variable name="targetTechProdRole" select="$techProdRoles[name = current()/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
+			
 			<xsl:variable name="targetIndex" select="index-of($techProdRoles, $targetTechProdRole)"/>
 			<xsl:variable name="targetListName" select="concat('cluster', $targetIndex)"/>
 			new joint.dia.Link({ source: { id: clusters.<xsl:value-of select="$sourceListName"/>.id }, target: { id: clusters.<xsl:value-of select="$targetListName"/>.id }, attrs: { '.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' }, '.connection': {'stroke-width': 2 }, '.link-tools': { display : 'none'}, '.marker-arrowheads': { display: 'none' },'.connection-wrap': { display: 'none' }, }})<xsl:if test="not(position() = last())"><xsl:text>,
@@ -877,16 +1037,20 @@
 		<xsl:variable name="thisTechProdRoles" select="$techProdRoles[own_slot_value[slot_reference = 'implementing_technology_component']/value = current()/name]"/>
 		
 		<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
+		<td class="text-center">
+			<xsl:attribute name="rowspan" select="count($thisTechProdRoles)"/>
+			<i>
+				<xsl:attribute name="class" select="'fa fa-question-circle techProdCell'"/>
+				<xsl:attribute name="techcompid" select="current()/name"/>
+			</i>
+			<xsl:call-template name="RenderStandardProductsForCompPopup">
+				<xsl:with-param name="techComp" select="$thisTechComp"/>
+			</xsl:call-template>
+		</td>
 		<td>
 			<xsl:attribute name="rowspan" select="count($thisTechProdRoles)"/>
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="$thisTechComp"/>
-			</xsl:call-template>
-			<div class="keySampleWide">
-				<xsl:attribute name="class" select="'keySampleWide techProdCell bg-darkblue-120'"/>
-			</div>
-			<xsl:call-template name="RenderStandardProductsForCompPopup">
-				<xsl:with-param name="techComp" select="$thisTechComp"/>
 			</xsl:call-template>
 		</td>
 		
@@ -904,7 +1068,7 @@
 			<xsl:variable name="standardLabel" select="eas:get_node_standard_label(current())"/>
 			<xsl:variable name="standardStyle" select="eas:get_node_standard_colour(current())"/>
 			
-			<td>
+			<td><xsl:attribute name="easid" select="$thisTechProd/name"/><xsl:attribute name="tprid" select="current()/name"/>
 				<div>
 					<xsl:call-template name="RenderInstanceLink">
 						<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
@@ -915,18 +1079,18 @@
 			<td>
 				<xsl:choose>
 					<xsl:when test="string-length($lifecycleLabel) > 0">
-						<button class="btn btn-block impact {$lifecycleStyle}">
+						<div class="label label-block impact {$lifecycleStyle}">
 							<xsl:value-of select="$lifecycleLabel"/>
-						</button>
+						</div>
 					</xsl:when>
 				</xsl:choose>
 			</td>
 			<td>
 				<xsl:choose>
 					<xsl:when test="string-length($standardLabel) > 0">
-						<button style="background-color: {$standardStyle};color: white" class="btn btn-block impact">
+						<div style="background-color: {$standardStyle};color: white" class="label label-block impact">
 							<xsl:value-of select="$standardLabel"/>
-						</button>
+						</div>
 					</xsl:when>
 				</xsl:choose>
 			</td>
@@ -950,7 +1114,7 @@
 				.ulTight{
 					margin-bottom: 0px;
 				}</style>
-			<table class="table table-bordered table-striped ">
+			<table class="table table-bordered table-striped toolt">
 				<thead>
 					<tr>
 						<xsl:for-each select="$allStandardStrengths">
@@ -983,6 +1147,10 @@
 														<xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
 														<xsl:with-param name="displayString" select="$thisTechProdName"/>
 													</xsl:call-template>
+													<xsl:text> </xsl:text>
+													<xsl:if test="$isEIPMode='true'">
+														<button class="btn btn-xs replaceBut btn-warning" style="opacity: 1"><xsl:attribute name="easid" select="current()/name"/>Switch</button>
+													</xsl:if>
 												</li>
 											</xsl:for-each>
 										</ul>
@@ -1000,9 +1168,20 @@
 			</table>
 		</div>
 		
+
+		
 	</xsl:template>
 
-
+<xsl:template match="node()" mode="tprs">
+	<xsl:variable name="thisProd" select="key('tprProdKey',current()/name)"/>
+	<xsl:variable name="thisComp" select="key('tprCompKey',current()/name)"/>
+{"id":"<xsl:value-of select="current()/name"/>",
+"product":"<xsl:value-of select="$thisProd/name"/>",
+"productName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisProd"/></xsl:call-template>",
+"component":"<xsl:value-of select="$thisComp/name"/>",
+"componentName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisComp"/></xsl:call-template>",
+}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 
 
 </xsl:stylesheet>

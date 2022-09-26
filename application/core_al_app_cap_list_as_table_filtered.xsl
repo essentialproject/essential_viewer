@@ -350,18 +350,19 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 		    ]).then(function (responses) {
 		        //meta = responses[0].meta;
 				appCapArr = responses[0].application_capabilities;
-				appCapMap = responses[1].application_capabilities;
+				appCapMap = responses[1].application_capabilities_all;
 				appCapApps = responses[2].applications;
 				meta=responses[2].meta;
  
 				let serviceList=[];
- 
+				console.log('appCapArr',appCapArr)
+ console.log('appCapMap',appCapMap)
 				appCapMap.forEach((d)=>{
 					d.application_services.forEach((e)=>{
 						serviceList.push({"svcid":e.id, "apps":e.apps});
 					})
 				});
-
+				console.log('appCapMap',appCapMap)
 		        appCapArr.forEach((d) => {
 
 		            var thisCap = appCapMap.filter((e) => {

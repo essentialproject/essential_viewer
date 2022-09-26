@@ -32,22 +32,32 @@
 	<xsl:variable name="supplier" select="/node()/simple_instance[type = 'Supplier']"/>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product'][own_slot_value[slot_reference = 'supplier_technology_product']/value = $supplier/name]"/>
 	<xsl:variable name="allTPRs" select="/node()/simple_instance[type = 'Technology_Product_Role'][name = $allTechProds/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
+	<xsl:key name="allTPRsKey" match="/node()/simple_instance[type = 'Technology_Product_Role']" use="own_slot_value[slot_reference = 'role_for_technology_provider']/value"/>
+	<xsl:key name="allTPUKey" match="/node()/simple_instance[type = 'Technology_Provider_Usage']" use="own_slot_value[slot_reference = 'provider_as_role']/value"/>
 	<xsl:variable name="allTPU" select="/node()/simple_instance[type = 'Technology_Provider_Usage'][own_slot_value[slot_reference = 'provider_as_role']/value = $allTPRs/name]"/>
+	<xsl:key name="allTBAKey" match="/node()/simple_instance[type = 'Technology_Build_Architecture']" use="own_slot_value[slot_reference = 'contained_architecture_components']/value"/>
 	<xsl:variable name="allTBA" select="/node()/simple_instance[type = 'Technology_Build_Architecture'][own_slot_value[slot_reference = 'contained_architecture_components']/value = $allTPU/name]"/>
-
+	<xsl:key name="allTPBKey" match="/node()/simple_instance[type = 'Technology_Product_Build']" use="own_slot_value[slot_reference = 'technology_provider_architecture']/value"/>
 	<xsl:variable name="allTPB" select="/node()/simple_instance[type = 'Technology_Product_Build'][own_slot_value[slot_reference = 'technology_provider_architecture']/value = $allTBA/name]"/>
-
+	<xsl:key name="allAppDepsKey" match="/node()/simple_instance[type = 'Application_Deployment']" use="own_slot_value[slot_reference = 'application_deployment_technical_arch']/value"/>
 	<xsl:variable name="allAppDeps" select="/node()/simple_instance[type = ('Application_Deployment')][own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $allTPB/name]"/>
+	<xsl:key name="allTechAppsKey" match="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]" use="own_slot_value[slot_reference = 'deployments_of_application_provider']/value"/>
 	<xsl:variable name="allTechApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'deployments_of_application_provider']/value = $allAppDeps/name]"/>
     <xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_supplier']/value = $supplier/name] union $allTechApps"/>
- 
+	
+	<xsl:key name="allAPRKey" match="/node()/simple_instance[type = ('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
 	<xsl:variable name="allAPRs" select="/node()/simple_instance[type = 'Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>
+	<xsl:key name="allApptoProcsDirectKey" match="/node()/simple_instance[type = ('APP_PRO_TO_PHYS_BUS_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value"/>
 	<xsl:variable name="allApptoProcsDirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $allApps/name]"/>
+	<xsl:key name="allAPRstoProcsIndirectKey" match="/node()/simple_instance[type = ('APP_PRO_TO_PHYS_BUS_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/>
 	<xsl:variable name="allAPRstoProcsIndirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $allAPRs/name]"/>
 	<xsl:variable name="allAPRstoProcs" select="$allAPRstoProcsIndirect union $allApptoProcsDirect"/>
-	
+	<xsl:key name="allAPRstoProcsIndirectKey" match="/node()/simple_instance[type = ('APP_PRO_TO_PHYS_BUS_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/>
+	<xsl:key name="allPhysProcsBaseKey" match="/node()/simple_instance[type = ('Physical_Process')]" use="own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value"/>
 	<xsl:variable name="allPhysProcsBase" select="/node()/simple_instance[type = 'Physical_Process']"/>
+	<xsl:key name="allPhysProcsKey" match="/node()/simple_instance[type = ('Physical_Process')]" use="own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value"/>
 	<xsl:variable name="allPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $allAPRstoProcs/name]"/>
+	<xsl:key name="allBusProcsKey" match="/node()/simple_instance[type = ('Business_Process')]" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/>
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $allPhysProcs/name]"/>
 	<xsl:variable name="allOrg" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name = $allPhysProcsBase/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:variable name="directOrg" select="/node()/simple_instance[type = 'Group_Actor'][name = $allPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
@@ -80,7 +90,8 @@
 
 		<xsl:template match="node()" mode="getProcesses">
 			<xsl:variable name="this" select="current()" />
-			<xsl:variable name="thisPhysProcs"
+			<xsl:variable name="thisPhysProcs" select="key('allPhysProcsKey',$this/name)"/>
+			<xsl:variable name="thisPhysProcs2"
 				select="$allPhysProcsBase[name = $this/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]" />
 			<xsl:variable name="thisOrgs"
 				select="$allOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]" />
@@ -127,32 +138,33 @@
 			</xsl:call-template>","impacted":[<xsl:apply-templates select="$this" mode="TechCaps"/>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 	
 		<xsl:template match="node()" mode="TechCaps"><xsl:variable name="this" select="current()"/>
-			<xsl:variable name="thisTPRs" select="$allTPRs[name = $this/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
-			<xsl:variable name="thisTPU" select="$allTPU[own_slot_value[slot_reference = 'provider_as_role']/value = $thisTPRs/name]"/>
-			<xsl:variable name="thisTBA" select="$allTBA[own_slot_value[slot_reference = 'contained_architecture_components']/value = $thisTPU/name]"/>
-			<xsl:variable name="thisTPB" select="$allTPB[own_slot_value[slot_reference = 'technology_provider_architecture']/value = $thisTBA/name]"/>
-			<xsl:variable name="thisAppDeps" select="$allAppDeps[own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $thisTPB/name]"/>
-			<xsl:variable name="thisTechApps" select="$allTechApps[own_slot_value[slot_reference = 'deployments_of_application_provider']/value = $thisAppDeps/name]"/>
-			<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = $thisTechApps/name]"/>
+			<xsl:variable name="thisTPRs2" select="$allTPRs[name = $this/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
+			<xsl:variable name="thisTPRs" select="key('allTPRsKey',$this)"/>
+			<xsl:variable name="thisTPU" select="key('allTPUKey',$thisTPRs)"/>
+			<xsl:variable name="thisTBA" select="key('allTBAKey',$thisTPU)"/>
+			<xsl:variable name="thisTPB" select="key('allTPBKey',$thisTBA)"/>
+			<xsl:variable name="thisAppDeps" select="key('allAppDepsKey',$thisTPB)"/>
+			<xsl:variable name="thisTechApps" select="key('allTechAppsKey',$thisAppDeps)"/>
+			<xsl:variable name="thisAPRs" select="key('allAPRKey',$thisTechApps)"/>	 
 			<xsl:variable name="thisAPRstoProcs" select="$allAPRstoProcs[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
-			<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
-			<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
+			
+			<xsl:variable name="thisPhysProcs" select="key('allPhysProcsBaseKey', $thisAPRstoProcs/name)"/>
+			<xsl:variable name="thisBusProcs" select="key('allBusProcsKey', $thisPhysProcs/name)"/>
 			<xsl:variable name="thisBusCaps" select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]"/> {"apps":[<xsl:apply-templates select="$thisTechApps" mode="stdImpact"/>]}, {"processes":[<xsl:apply-templates select="$thisBusProcs" mode="stdImpact"/>]}, {"caps":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>]},{"capAscendents":[<xsl:for-each select="$thisBusCaps"><xsl:apply-templates select="current()" mode="parentBusCaps"></xsl:apply-templates></xsl:for-each>""]}<xsl:if test="position()!=last()">,</xsl:if> </xsl:template>
 	
 	
 		<xsl:template match="node()" mode="supplierApp">
 			<xsl:variable name="this" select="current()" />
-			<xsl:variable name="thisAPRs"
-				select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = current()/name]" />
-			<xsl:variable name="thisApptoProcsDirect"
-				select="$allApptoProcsDirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = current()/name]" />
-			<xsl:variable name="thisAPRstoProcsIndirect"
-				select="$allAPRstoProcsIndirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]" />
+			<xsl:variable name="thisAPRs" select="key('allAPRKey',current()/name)"/>
+ 
+			<xsl:variable name="thisApptoProcsDirect" select="key('allApptoProcsDirectKey', current()/name)"/>	
+			<xsl:variable name="thisAPRstoProcsIndirect" select="key('allAPRstoProcsIndirectKey', $thisAPRs/name)"/>	
+ 
 			<xsl:variable name="thisAPRstoProcs" select="$thisAPRstoProcsIndirect union $thisApptoProcsDirect" />
-			<xsl:variable name="thisPhysProcs"
-				select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]" />
-			<xsl:variable name="thisBusProcs"
-				select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]" />
+			<xsl:variable name="thisPhysProcs" select="key('allPhysProcsBaseKey',$thisAPRstoProcs/name)"/>
+	 
+				<xsl:variable name="thisBusProcs" select="key('allBusProcsKey',$thisPhysProcs/name)"/>
+		 
 			<xsl:variable name="thisBusCaps"
 				select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]" />
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
