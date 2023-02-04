@@ -58,9 +58,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Dashboard Editor</title>
-				<!-- <script src="jquery-3.6.0.min.js"></script> -->
 				<link rel="stylesheet" href="js/chartjs/Chart.css"/>
-				<script src="js/chartjs/Chart.bundle.min.js"/>
+				<script src="js/chartjs/Chart.min.js"/>
 				<link rel="stylesheet" type="text/css" href="js/pivot/pivot.css"/>
 				<script type="text/javascript" src="js/plotly/plotly-basic-latest.min.js"/>
 				<script type="text/javascript" src="js/pivot/pivot.js"/>

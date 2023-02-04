@@ -336,7 +336,7 @@ function essGetScopeForMetaClass(aClass) {
     includesScopeForClass.forEach(function(scopeVal) {
         
         if(scopeVal.isGroup) {
-        includesScopeValues=includesScopeValues.concat(scopeVal.group);
+            includesScopeValues=includesScopeValues.concat(scopeVal.group);
         } else {
             includesScopeValues.push(scopeVal);
         }
@@ -348,6 +348,8 @@ function essGetScopeForMetaClass(aClass) {
     } else {
         scopeForMetaClass['includes'] =  null;
     } 
+
+
     let excludesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && scope.isExcludes);
     let excludesScopeValues = [];
     excludesScopeForClass.forEach(function(scopeVal) {
@@ -363,28 +365,44 @@ function essGetScopeForMetaClass(aClass) {
     } else {
         scopeForMetaClass['excludes'] =  null;
     } 
+  
     return scopeForMetaClass;
 }
 
 
 //function to filter a given list of resources against the given scope
 //Assumes that each resource has a property containing a list of essential instance ids (e.g. Group_Actor ids)
-function essFilterResources(scopedResources, scopeForProperty, scopingProperty) {
-    return scopedResources.filter(function(aRes) {
-        let inScope = true;
+function essFilterResources(scopedResources, scopeForProperty, scopingProperty, metaClass) {
+    let filteredResources = scopedResources.filter(function(aRes) {
+        let isIncludeInScope = true;
+ 
         let resScope = new Set(aRes[scopingProperty]);
-        if(scopeForProperty.includes) {           
-            let intersection = new Set([...scopeForProperty.includes].filter(scopeValue => resScope.has(scopeValue)));
-            inScope = intersection.size > 0;
+        
+        if(scopeForProperty.includes) {
+     
+            //let intersection = new Set([...scopeForProperty.includes].filter(scopeValue => resScope.has(scopeValue)));
+            //isIncludeInScope = intersection.size > 0;
+            let intersection = [...scopeForProperty.includes].map(scopeValue => resScope.has(scopeValue));
+            //console.log('Includes Intersection',intersection);
+            isIncludeInScope = intersection.includes(true);
         }
             
-        if(inScope && scopeForProperty.excludes) {
-            let intersection = new Set([...scopeForProperty.excludes].filter(scopeValue => !resScope.has(scopeValue)));
-            inScope = intersection.size > 0;
+        let isExcludeInScope = true;
+        if(scopeForProperty.excludes) {
+            //let intersection = new Set([...scopeForProperty.excludes].filter(scopeValue => !resScope.has(scopeValue)));
+            //isExcludeInScope = intersection.size > 0;
+            let intersection = [...scopeForProperty.excludes].map(scopeValue => resScope.has(scopeValue));
+            //console.log('Excludes Intersection',intersection);
+            isExcludeInScope = !intersection.includes(true);
         }
 
-        return inScope;
+        //console.log('Applying Filter for ' + scopingProperty + ' on instance: ' + aRes.name, aRes);
+        //console.log('In Scope for Exclude?', isExcludeInScope);
+        //console.log('In Scope for Include?', isIncludeInScope);
+        return isIncludeInScope && isExcludeInScope;
     });
+    console.log('filteredResources',filteredResources)
+    return filteredResources;
 }
 
 //Main function called by Views/Editor to filter a given list of resources based on the provided property to meta-class pairings

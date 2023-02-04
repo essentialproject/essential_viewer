@@ -20,8 +20,8 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Technology_Product', 'Site', 'Technology_Node', 'Application_Deployment', 'Application_Provider', 'Application_Software_Instance', 'Infrastructure_Software_Instance', 'Information_Store_Instance', 'Technology_Product', 'Technology_Component', 'Individual_Actor', 'Group_Actor', 'Information_Representation', 'Business_Strategic_Plan', 'Information_Strategic_Plan', 'Application_Strategic_Plan', 'Technology_Strategic_Plan', 'Security_Strategic_Plan')"/>
 
-	<xsl:variable name="techTPR" select="/node()/simple_instance[type='Technology_Product_Role'][name=$currentNode/own_slot_value[slot_reference='technology_node_platform_stack']/value]"/>
-	<xsl:variable name="techProducts" select="/node()/simple_instance[type='Technology_Product'][name=$techTPR/own_slot_value[slot_reference='role_for_technology_provider']/value]"/>
+	<xsl:variable name="techTPR" select="/node()/simple_instance[supertype='Technology_Provider_Role'][name=$currentNode/own_slot_value[slot_reference='technology_node_platform_stack']/value]"/>
+	<xsl:variable name="techProducts" select="/node()/simple_instance[supertype='Technology_Provider'][name=$techTPR/own_slot_value[slot_reference='role_for_technology_provider']/value]"/>
 	
 	<xsl:variable name="techComponents" select="/node()/simple_instance[type='Technology_Component'][name=$techTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/>
 	<!-- END GENERIC LINK VARIABLES -->

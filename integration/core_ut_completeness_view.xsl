@@ -75,7 +75,7 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/chartjs/Chart.bundle.min.js"/>
+				<script src="js/chartjs/Chart.min.js"/>
 				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js"/>
 				<title>Repository Completeness Analysis</title>

@@ -289,7 +289,9 @@
 									<input  class="form-control" id="planStart"></input><br/>
 									<label><xsl:value-of select="eas:i18n('Plan End Date')"/>:</label>
 									<input  class="form-control"  id="planEnd"></input><br/>
-									
+									<label><xsl:value-of select="eas:i18n('Requestor')"/>:</label><input class="form-control"  id="requestor"></input>
+									<label><xsl:value-of select="eas:i18n('ID')"/>:</label><input class="form-control"  id="planID"></input>
+								 
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-danger right-10" data-dismiss="modal">Cancel</button>
@@ -422,17 +424,15 @@
 						} );
 
 						$('#save').off().on('click',function(){ 
-						
-							console.log('c',currentTPR)
-
-						
+						 
  
 							let planS=$('#planStart').val();
 							let planE=$('#planEnd').val();
 							let planStart=new Date(planS).toISOString();
 							let planEnd=new Date(planE).toISOString() ;
 							let planDescription = $( "#planDescription" ).val();
- 
+							let requestor=$("#requestor").val();
+							let planIDval=$("#planID").val();
 
 					let plan  = {"name": planName,
                                 "className": "Enterprise_Strategic_Plan",
@@ -479,7 +479,8 @@
 									"className": "Decision_Result",
 									"name": 'Proposed'},
 								"description":"Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+targetTPR.componentName,	 
-								"governance_reference":'ap'+targetTPR.id,
+								"ea_notes": requestor,
+								"governance_reference":'ap'+planIDval,
 								"decision_elements":[{id: currentTPR.id, className: 'Technology_Provider_Role'},{id:  targetTPR.id, className:'Technology_Provider_Role'},{"id":response.id, "className":"Enterprise_Strategic_Plan" }]
                                 };
 								console.log('decision',decision)

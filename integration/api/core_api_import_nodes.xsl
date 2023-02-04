@@ -43,6 +43,7 @@
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"hostedIn":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thissite"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"ipAddress":"<xsl:value-of select="$thisattributeValue/own_slot_value[slot_reference='attribute_value']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		"ipAddress":"<xsl:value-of select="$thisattributeValue/own_slot_value[slot_reference='attribute_value']/value"/>",
+		"ipAddresses":[<xsl:for-each select="$thisattributeValue/own_slot_value[slot_reference='attribute_value']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

@@ -25,54 +25,75 @@
 	-->
 	<!-- 03.09.2019 JP  Created	 template-->
     <xsl:variable name="drivers" select="/node()/simple_instance[(type = 'Business_Driver')]"/>
-    <xsl:variable name="stratGoalTaxTerm" select="/node()/simple_instance[(type = 'Taxonomy_Term') and (own_slot_value[slot_reference = 'name']/value = 'Strategic Goal')]"/>
-	<xsl:variable name="objectiveTaxTerm" select="/node()/simple_instance[(type = 'Taxonomy_Term') and (own_slot_value[slot_reference = 'name']/value = 'SMART Objective')]"/>
-	<xsl:variable name="allObjectives" select="/node()/simple_instance[type = 'Business_Objective']"/>
-	<xsl:variable name="stratGoals" select="$allObjectives[own_slot_value[slot_reference = 'element_classified_by']/value = $stratGoalTaxTerm/name]"/>
-	<xsl:variable name="stratObjectives" select="$allObjectives[own_slot_value[slot_reference = 'element_classified_by']/value = $objectiveTaxTerm/name]"/>
-    <xsl:variable name="goals" select="/node()/simple_instance[(type = 'Business_Goal')]"/>
-    <xsl:variable name="allGoals" select="$goals union $stratGoals"/>	
-	<!--
-    <xsl:variable name="allRoadmapInstances" select="$allAppProviders"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
-    -->
+
+	<xsl:variable name="goalTaxonomy" select="/node()/simple_instance[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
+	<xsl:variable name="allObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
+	<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
+	<xsl:variable name="allGoals" select="$allStrategicGoals"/>
+	<xsl:variable name="busCaps" select="/node()/simple_instance[type='Business_Capability']"/>
+	<xsl:key name="busCapImpact" match="$busCaps" use="own_slot_value[slot_reference = 'business_objectives_for_business_capability']/value"/>
+	<xsl:key name="motivatingObjKey" match="$allObjectives" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
+	<xsl:key name="goalObjKey" match="$allObjectives" use="own_slot_value[slot_reference = 'objective_supports_goals']/value"/>
+	<xsl:key name="oldgoalObjKey" match="$allObjectives" use="own_slot_value[slot_reference = 'objective_supports_objective']/value"/>
 	<xsl:template match="knowledge_base">
 		{
 			"drivers": [
 				<xsl:apply-templates mode="RenderDrivers" select="$drivers">
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
-			]   
+			],
+			"objectives": [ <!-- all objectives, incl those not mapped to drivers -->
+				<xsl:apply-templates mode="renderObjectives" select="$allObjectives">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+				</xsl:apply-templates>
+			]
 		}
 	</xsl:template>
 	
 	
 	<xsl:template mode="RenderDrivers" match="node()">
     <xsl:variable name="thisGoals" select="$allGoals[own_slot_value[slot_reference='bo_motivated_by_driver']/value=current()/name]"/>
+	<xsl:variable name="motivatingObjs" select="key('motivatingObjKey',current()/name)"/>
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>",
-			"description": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'description']/value"/>",
+			"type": "Business_Driver",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-            "goals":[<xsl:apply-templates select="$thisGoals" mode="renderGoals"/>],
-            "objectives":[]
-			<!--<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->
-			
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
+            "goals":[<xsl:apply-templates select="$thisGoals" mode="renderGoals"/>], 
+            "motivatingObjectives":[<xsl:for-each select="$motivatingObjs">{
+			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]  
+		} <xsl:if test="not(position()=last())">, </xsl:if>
 	</xsl:template>
 	<xsl:template mode="renderGoals" match="node()">
-     <xsl:variable name="thisGoals" select="$allGoals[own_slot_value[slot_reference='supporting_business_capabilities']/value=current()/name]"/>   
-        
+	 <xsl:variable name="goalObjs" select="key('goalObjKey',current()/name)"/>
+	 <xsl:variable name="oldgoalObjs" select="key('oldgoalObjKey',current()/name)"/>
+	 <xsl:variable name="allObjsMappedtoGoal" select="$goalObjs union $oldgoalObjs"/>
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>",
-			"description": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'description']/value"/>",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"type": "Business_Goal",
+			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-            "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]
-			<!--<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->
-			
+            "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
+			"objectives":[<xsl:apply-templates select="$allObjsMappedtoGoal" mode="renderObjectives"/>] 		
 		} <xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
+	<xsl:template mode="renderObjectives" match="node()">
+		   {
+			   "id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			   "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			   "type": "<xsl:value-of select="current()/type"/>",
+			   "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
+			   "targetDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='bo_target_date_iso_8601']/value"/>",
+			   "boDriverMotivated":[<xsl:for-each select="current()/own_slot_value[slot_reference='bo_motivated_by_driver']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
+			   "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+			   "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]
+			   
+		   } <xsl:if test="not(position()=last())">,</xsl:if>
+	   </xsl:template>
 </xsl:stylesheet>

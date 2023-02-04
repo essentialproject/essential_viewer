@@ -59,7 +59,7 @@
 		</xsl:if>
 		<link rel="stylesheet" href="user/custom.css" type="text/css"/>
 		<!--Standard JQuery Library-->
-		<script type="text/javascript" src="js/jquery/jquery-3.6.0.min.js?release=6.16"/>
+		<script type="text/javascript" src="js/jquery/jquery-3.6.3.min.js?release=6.16"/>
 		<!--Custom JQuery UI library to support various visual effects-->
 		<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.16"/>
 		<!--Resolve name collision between jQuery UI and Twitter Bootstrap-->

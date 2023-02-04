@@ -30,13 +30,13 @@
 	
 	<!-- START VIEW SPECIFIC VARIABLES -->
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface')]"/>
-	<xsl:variable name="allBusApps" select="$allApps[type = ('Application_Provider', 'Composite_Application_Provider')]"/>
+	<xsl:variable name="allBusApps" select="$allApps[type = ('Application_Provider', 'Composite_Application_Provider',  'Application_Provider_Interface')]"/>
 	<xsl:variable name="allInterfaces" select="$allApps[type = 'Application_Provider_Interface']"/>
 	<xsl:variable name="topApp" select="$allApps[name = $param1]"/>
 	<xsl:variable name="subApps" select="$allApps[name = $topApp/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 	<xsl:variable name="subSubApps" select="$allApps[name = $subApps/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
-	<xsl:variable name="currentApp" select="$topApp union $subApps union $subSubApps"/>
-	
+<!-- original	<xsl:variable name="currentApp" select="$topApp union $subApps union $subSubApps"/> -->
+	<xsl:variable name="currentApp" select="$topApp"/>
 	
 	<!-- Get all Data Sets needed to minimise having to traverse the whole document -->
 	<xsl:variable name="allApp2InfoReps" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_RELATION']"/>
@@ -153,6 +153,9 @@
 			},
 			"allAcqMethods": [
 				<xsl:apply-templates mode="RenderEnumJSON" select="$allAcquisitionMethods"/>
+			],
+			"allSVCQualVals": [
+				<xsl:apply-templates mode="RenderServiceQualValJSON" select="$allServiceQualVals"/>
 			]
 		}
 	</xsl:template>
@@ -182,6 +185,7 @@
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisInboundAppUsage/name"/>",
 		"acqMethodId": "<xsl:value-of select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInboundApp"/></xsl:call-template>",
 		"dependencyId": "<xsl:value-of select="$thisDep/name"/>"
 		}<xsl:if test="not(position() = last())">,
@@ -204,6 +208,7 @@
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisInboundInterfaceSourceAppUsage/name"/>",
 		"acqMethodId": "<xsl:value-of select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInboundInterfaceSourceApp"/></xsl:call-template>",
 		"dependencyId": "<xsl:value-of select="$thisDep/name"/>"
 		}<xsl:if test="not(position() = last())">,
@@ -230,6 +235,7 @@
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisInboundInterfaceUsage/name"/>",
 		"acqMethodId": "<xsl:value-of select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInboundInterface"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInboundInterface"/></xsl:call-template>",
 		"dependencyId": "<xsl:value-of select="$thisDep/name"/>",
@@ -254,9 +260,11 @@
 		<xsl:call-template name="RenderDepInfoJSON">
 			<xsl:with-param name="thisDep" select="$thisDep"/>
 			<xsl:with-param name="thisAcqMethodId" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"></xsl:with-param>
+			<xsl:with-param name="thisSVCQualIds" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value"></xsl:with-param>
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisOutboundAppUsage/name"/>",
 		"acqMethodId": "<xsl:value-of select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisOutboundApp"/></xsl:call-template>",
 		"dependencyId": "<xsl:value-of select="$thisDep/name"/>"
 		}<xsl:if test="not(position() = last())">,
@@ -276,9 +284,11 @@
 		<xsl:call-template name="RenderDepInfoJSON">
 			<xsl:with-param name="thisDep" select="$thisDep"/>
 			<xsl:with-param name="thisAcqMethodId" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"></xsl:with-param>
+			<xsl:with-param name="thisSVCQualIds" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value"></xsl:with-param>
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisOutboundInterfaceTargetAppUsage/name"/>",
 		"acqMethodId": "<xsl:value-of select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisOutboundInterfaceTargetApp"/></xsl:call-template>",
 		"dependencyId": "<xsl:value-of select="$thisDep/name"/>"
 		}<xsl:if test="not(position() = last())">,
@@ -300,6 +310,7 @@
 		<xsl:call-template name="RenderDepInfoJSON">
 			<xsl:with-param name="thisDep" select="$thisDep"/>
 			<xsl:with-param name="thisAcqMethodId" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value"></xsl:with-param>
+			<xsl:with-param name="thisSVCQualIds" select="$thisDep/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_service_quals']/value"></xsl:with-param>
 		</xsl:call-template>
 		"usageId": "<xsl:value-of select="$thisOutboundInterfaceUsage/name"/>",
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisOutboundInterface"/></xsl:call-template>",
@@ -316,6 +327,8 @@
 	<xsl:template name="RenderDepInfoJSON">
 		<xsl:param name="thisDep" select="()"/>
 		<xsl:param name="thisAcqMethodId"/>
+		<xsl:param name="thisSVCQualIds"/>
+		
 		<xsl:variable name="thisApp2InfoRepXs" select="key('apexKey',$thisDep/name)"/>
 		<xsl:variable name="directApp2InfoRepsA" select="key('apinfKey',$thisDep/name)"/>
 		
@@ -339,6 +352,7 @@
 				"infoViews": [
 				<xsl:apply-templates mode="RenderInfoViewJSON" select="$thisInfoViews">
 					<xsl:with-param name="thisAcqMethodId" select="$thisAcqMethodId"/>
+					<xsl:with-param name="thisSVCQualIds" select="$thisSVCQualIds"/>
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
 				],
@@ -350,6 +364,7 @@
 				
 				<xsl:apply-templates mode="RenderInfoRepXJSON" select="$thisApp2InfoRepXs">
 					<xsl:with-param name="depAcqMethodId" select="$thisAcqMethodId"/>
+					<xsl:with-param name="thisSVCQualIds" select="$thisSVCQualIds"/>
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
 				
@@ -358,6 +373,7 @@
 				<xsl:if test="count($thisApp2InfoRepXs) > 0">,</xsl:if>
 				<xsl:apply-templates mode="RenderInfoRepJSON" select="$thisInfoReps">
 					<xsl:with-param name="thisAcqMethodId" select="$thisAcqMethodId"/>
+					<xsl:with-param name="thisSVCQualIds" select="$thisSVCQualIds"/>
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>	
 			</xsl:if>
@@ -367,6 +383,7 @@
 
 	<xsl:template match="node()" mode="RenderInfoViewJSON">
 		<xsl:param name="thisAcqMethodId"/>
+		<xsl:param name="thisSVCQualIds"/>
 		<xsl:variable name="thisInfo" select="current()"/>
 		<xsl:variable name="thisDataObjs" select="$allDataObjs[name = $thisInfo/own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value]"/>
 		<xsl:variable name="hasData" select="count($thisDataObjs) > 0"/>
@@ -379,6 +396,7 @@
 		"name": "<xsl:choose><xsl:when test="$instanceName=''"><xsl:value-of select="$thisInfo/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$instanceName"/></xsl:otherwise></xsl:choose>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisSVCQualIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"hasData": <xsl:choose><xsl:when test="$hasData">true</xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose>,
 			"dataObjects": [
 				<xsl:apply-templates mode="RenderDataObjJSON" select="$thisDataObjs">
@@ -391,10 +409,11 @@
 	
 	<xsl:template match="node()" mode="RenderInfoRepXJSON">
 		<xsl:param name="depAcqMethodId"/>
+		<xsl:param name="thisSVCQualIds"/>
 		
-		<xsl:variable name="this" select="current()"/>		
+		<xsl:variable name="this" select="current()"/>	
+		
 		<xsl:variable name="myAcqMethod" select="$this/own_slot_value[slot_reference = 'atire_acquisition_method']/value"/>
-		
 		<xsl:variable name="thisAcqMethodId">
 			<xsl:choose>
 				<xsl:when test="string-length($myAcqMethod) > 0">
@@ -406,6 +425,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		
+		<xsl:variable name="mySVCQualIds" select="$this/own_slot_value[slot_reference = 'atire_service_quals']/value"/>
 		
 		<xsl:variable name="thisApp2InfoRep" select="$allApp2InfoReps[name = $this/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
 		<xsl:variable name="thisInfo" select="$allInfoReps[name = $thisApp2InfoRep/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
@@ -418,6 +438,14 @@
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
+		<xsl:choose>
+			<xsl:when test="count($mySVCQualIds) > 0">
+				"svcQualValIds": [<xsl:for-each select="$mySVCQualIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
+			</xsl:when>
+			<xsl:otherwise>
+				"svcQualValIds": [<xsl:for-each select="$thisSVCQualIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
+			</xsl:otherwise>
+		</xsl:choose>
 		"hasData": false,
 		"dataObjects": [
 				<xsl:apply-templates mode="RenderInfoViewJSON" select="$thisInfoViews">
@@ -431,6 +459,7 @@
 	
 	<xsl:template match="node()" mode="RenderInfoRepJSON">
 		<xsl:param name="thisAcqMethodId"/>
+		<xsl:param name="thisSVCQualIds"/>
 		
 		<xsl:variable name="thisInfo" select="current()"/>
 		
@@ -442,6 +471,7 @@
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>",
 		"acqMethodId": "<xsl:value-of select="$thisAcqMethodId"/>",
+		"svcQualValIds": [<xsl:for-each select="$thisSVCQualIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 		"hasData": false
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
@@ -467,6 +497,19 @@
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		"label": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'enumeration_value']/value"/>"
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template match="node()" mode="RenderServiceQualValJSON">
+		<xsl:variable name="this" select="current()"/>
+		<xsl:variable name="thsServiceQual" select="$allServiceQuals[name = $this/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+		
+		{
+		"id": "<xsl:value-of select="$this/name"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"valLabel": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
+		"sqLabel": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thsServiceQual"/></xsl:call-template>"
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>

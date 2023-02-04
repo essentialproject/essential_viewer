@@ -888,7 +888,7 @@
 
 
 let plans=[<xsl:apply-templates select="$planElements" mode="plans"/>]
-
+//console.log('plans',plans)
 
 		var panelLeft=$('#appSidenav').position().left;
 		 
@@ -995,7 +995,7 @@ let focusCap='<xsl:value-of select="$param1"/>'
 		        }
 			});
 let projmeta = [<xsl:apply-templates select="$reportMenu" mode="classMetaData"></xsl:apply-templates>];			
-
+var aprToProj
 			$('.appPanel').hide();
 			var appArray;
 			var workingArrayCaps;
@@ -1110,7 +1110,31 @@ if(thisProc){
 
 	thisProc.appsviaservice.forEach((s)=>{
  	s['type']="Application_Provider_Role";
-let appViaProc=[];
+	 let relatedPlans=plans.filter((ap)=>{
+		return ap.impacting==s.id;
+				}) 				
+			let thisPlans=[];
+			let thisProjs=[];
+			relatedPlans.forEach((e)=>{
+			if(e.plans[0]){
+
+			//e.plans[0]['children']=e.plans[0]
+			thisPlans.push(e.plans[0])
+			}
+			});
+			thisPlans=thisPlans.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+
+			relatedPlans.forEach((e)=>{
+			if(e.projects[0]){
+			thisProjs.push(e.projects[0])
+			}
+			})
+
+			thisProjs=thisProjs.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+			
+   	aprToProj=[{"name":"Plans", "colour":"#A3E4D7", "children": thisPlans},{"name":"Projects", "colour":"#A9DFBF", "children": thisProjs}]   
+ 	//console.log('aprToProj1',aprToProj)
+	let appViaProc=[];
 	for (let el of responses[1].applications) { 
  
 			let match = el.allServices.find((e)=>{
@@ -1123,7 +1147,12 @@ let appViaProc=[];
 				appViaProc.push(el)
 			}
 		} 
-		s['children']=appViaProc;
+		s['test']='test';
+		let aprKids=appViaProc
+		if(aprToProj){ 
+			aprKids=[...appViaProc, ...aprToProj]
+			} 
+		s['children']=aprKids;
 	}); 
 	let thisProcServices = responses[3].process_to_service.find((ps)=>{
 		return d.id == ps.id
@@ -1149,17 +1178,20 @@ thisProcServices.children.forEach((s)=>{
 	  
 });
  
+let aprsAndPojects=thisProc.appsviaservice
+
+	 
 
     d['children']=[{"name":"Services Required", "colour":"#3d85c6", 
 	"children": thisProcServices.services},{"name":"Direct Apps", "colour":"#EAC7F5", 
-	"children": thisProc.appsdirect},{"name":"Apps via Services", "colour":"#95C9F7", "children": thisProc.appsviaservice}]
+	"children": thisProc.appsdirect},{"name":"Apps via Services", "colour":"#95C9F7", "children": aprsAndPojects}]
 } 
 })
 
 
 treeData.push({"id": result.name,"name":result.name,"type":"Business_Capability", "children":[{"name":"Sub-Capabilities", "colour":"#90afa2", "children": result.childrenCaps},{"name":"Processes", "colour":"#7cc4cf", "children": thisCap.processes}]}) 
 
-console.log('treeData',treeData)
+//console.log('treeData',treeData)
          
 treeData=treeData[0];
 
@@ -1466,7 +1498,7 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 				
 				// Toggle children on click.
 				function click(d) {
-					console.log('d',d)
+					//console.log('d',d)
 					if (d.children) {
 						d._children = d.children;
 						d.children = null;
@@ -1703,11 +1735,11 @@ var redrawView=function(){
 				let selected = $(this).attr('easidscore')
  
 				if(workingCapId!=selected){ 
-			console.log('selected',selected)
+			//console.log('selected',selected)
 				getApps(selected);
 
 				$(".appInfoButton").on("click", function ()
-				{console.log('appinfo',selected)
+				{//console.log('appinfo',selected)
 					let selected = $(this).attr('easid')
 
 		 
@@ -1725,7 +1757,7 @@ var redrawView=function(){
 					appToShow[0]['processList']=thisProcesses;
 					appToShow[0]['servList']=thisServs; 	 
 
-					console.log(appToShow[0])
+					//console.log(appToShow[0])
 					$('#appData').html(appTemplate(appToShow[0]));
 					$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
 
@@ -1756,7 +1788,7 @@ var redrawView=function(){
 
 
 function getApps(capid){
-	 console.log('capid',capid)
+	 //console.log('capid',capid)
 	let thisCapAppList = inScopeCapsApp.filter(function (d)
 	{
 		return d.id == capid;
@@ -1795,7 +1827,7 @@ function getApps(capid){
 		rationalisationList.push(d)
 	});
 	}
- 	console.log('set app circle to 0')
+ 	//console.log('set app circle to 0')
 	//$('.app-circle').text('0')
 	/*	$('.app-circle').each(function() {
 			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
@@ -1892,7 +1924,8 @@ function redrawView() {
     <xsl:variable name="thisrelatedAppPlans" select="$relatedAppPlans[name=$thisplanElements/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value]"/>
     <xsl:variable name="thisrelatedAppStratPlans" select="$relatedAppStratPlans[name=$thisplanElements/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"impacting":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='plan_to_element_ea_element']/value)"/>",
+	"type":"<xsl:value-of select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='plan_to_element_ea_element']/value]/type"/>",
+		"impacting":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='plan_to_element_ea_element']/value)"/>",
 	"action":"<xsl:value-of select="$thisplanningAction/own_slot_value[slot_reference = 'name']/value"/>", 
 	"plans":[<xsl:for-each select="$thisrelatedAppStratPlans">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
 	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>"

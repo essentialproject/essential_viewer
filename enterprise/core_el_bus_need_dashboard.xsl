@@ -368,7 +368,7 @@
 				<script src="js/star-rating/star-rating.min.js"/>
 				
 				<!-- Chart library -->
-				<script src="js/chartjs/Chart.bundle.min.js"/>
+				<script src="js/chartjs/Chart.min.js"/>
 					
 				<!-- Handlebars template for strings -->
 				<script id="need-goal-bullet-template" type="text/x-handlebars-template">

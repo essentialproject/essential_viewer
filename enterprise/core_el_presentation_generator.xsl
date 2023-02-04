@@ -350,7 +350,7 @@
 				<script type="text/javascript" src="js/moment/moment.js"/>
 				
 				<!-- zip library -->
-				<script type="text/javascript" src="js/jszip.min.js"/>
+				<script type="text/javascript" src="js/jszip/jszip.min.js"/>
 				
 				<!-- file saver library -->
 				<script type="text/javascript" src="js/FileSaver.min.js"/>

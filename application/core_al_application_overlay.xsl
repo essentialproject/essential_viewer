@@ -51,7 +51,7 @@
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="capsListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
-	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
+	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = ('Core API: App KPIs','Core: App KPIs')]"></xsl:variable>
 	<xsl:variable name="servicesListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Application Services']"></xsl:variable>
 
 <!--	<xsl:variable name="scoreData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
@@ -206,7 +206,7 @@
 						border-radius:8px;
 						width:30px;
 						border:1px solid #666; 
-						background-color: #ccc;
+						background-color: #fff;
 						}
 
 					.blobNum{
@@ -366,16 +366,17 @@
 								<div class="pull-left left-30 " id="simps">
 									<label class="right-10" style="position: relative; top: 2px;">Analyse:</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess" checked="checked"/> Via Process
+										<input type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess"/> Via Process
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaApp" value="viaApp"/> Via Application
+										<input type="radio" name="appProcessSwitch" id="viaApp" value="viaApp" checked="checked"/> Via Application
 									</label>
 									<i class="fa fa-question-circle" style="position: relative; top: 2px;" id="helpMe"></i>
 								</div>
 							</div>
 							<div class="clearfix"/>
 							<div class="overlay-selection top-10" id="sqkey"/>
+							<div class="overlay-selection top-10" id="nokey">No Key Data Defined - set styles in repository</div>
 						</div>
 						<div class="col-sm-6">
 							<div class="pull-right"> 
@@ -420,6 +421,7 @@
 						</div>
 							<div class="clearfix"/>
 							<div class="appContainer">
+						 
 								{{#if this.appList.resources}}
 								{{#each this.appList.resources}}
 									<div class="app xsmall">
@@ -467,10 +469,69 @@
 						</div>
 						<div class="clearfix"/>
 						<div class="appContainer"> 
+						
 							{{#if this.appList.resources}}
 					 
 							{{#each this.appList.resources}}
+							
+								<div class="app xsmall">
+									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
+									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
+									 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
+									<!--<div class="bushealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.fitcolour}};  </xsl:attribute>.</div>
+									<div class="techhealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.techfitcolour}};  </xsl:attribute>.</div>
+									<div>
+									<xsl:attribute name="style">border-left: 5px solid;border-image:linear-gradient(to top, red, green) 1 100%;float:right:height:100%;position:relative;left:20</xsl:attribute>.</div>-->
+									<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+									<div class="appTitle">{{{this.name}}}</div>
+									
+								</div>
+							{{/each}}
+							{{else}}
+							{{#each this.appList}}
+						   {{#if ../this.appList.resources}}
+								<div class="app xsmall">
+									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
+									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
+									<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
+									<!--<div class="bushealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.fitcolour}};  </xsl:attribute>.</div>
+									<div class="techhealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.techfitcolour}};  </xsl:attribute>.</div>
+									<div>
+									<xsl:attribute name="style">border-left: 5px solid;border-image:linear-gradient(to top, red, green) 1 100%;float:right:height:100%;position:relative;left:20</xsl:attribute>.</div>-->
+									<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+									<div class="appTitle">{{{this.name}}}</div>
+									
+								</div> 
+								{{/if}}
+							{{/each}}
+							{{/if}}
+						</div>
+						<div class="clearfix"/>
+						{{> partialTemplate}}
+						</div>
+					{{/each}} 
+			</script>
+			<script id="model-partial-template-other" type="text/x-handlebars-template">
+				{{#each this.childrenCaps}}
+					<div class="capContainer bottom-15" width="100%"><xsl:attribute name="style">background-color:{{this.colour}}</xsl:attribute>
+						<div class="capTitle bg-white medPadding inline-block">
+							{{#if this.appList.resources}}
+							<strong class="right-5">{{this.name}}</strong><span class="badge">{{this.appList.resources.length}}</span>
+							{{else}}
+							<strong class="right-5">{{this.name}}</strong><span class="badge">{{this.appList.length}}</span>
+							{{/if}}
+						</div>
+						<div class="clearfix"/>
+						<div class="appContainer"> 
+						
+							{{#if this.appList.resources}}
 					 
+							{{#each this.appList.resources}}
+							
 								<div class="app xsmall">
 									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
 									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
@@ -548,14 +609,18 @@
 				</div> 
 				{{#each this}}
 				<div class="blobBox">
+					{{#unless @last}}
 					<div class="blobNum">{{this.name}}</div>
-					  <div class="blob"><xsl:attribute name="id">{{this.level}}</xsl:attribute></div>
+					  <div class="blob"><xsl:attribute name="id">{{this.level}}</xsl:attribute>
+					<xsl:attribute name="style">{{#ifEquals this.level 1}}background-color:#d3d3d3{{else}}{{#ifEquals this.level 0}}background-color:#d3d3d3{{/ifEquals}}{{/ifEquals}}  </xsl:attribute> 
+					{{/unless}}
+					</div>
 				</div>
 				{{/each}}
 				<div class="blobBox">
 					<br/>
 					<div class="blobNum"> 
-					<!--  hover over to say that blobs are clickable to chnage level
+					<!--  hover over to say that blobs are clickable to cnange level
 						<i class="fa fa-info-circle levelinfo " style="font-size:10pt"> 
 						</i>
 					-->	 
@@ -565,7 +630,7 @@
 			</script>
 			<script id="sqkey-template" type="text/x-handlebars-template">
 			{{#each this}}
-				<div><xsl:attribute name="style">border-radius:3px;height:10px;width:20px;color:{{this.elementColour}};background-color:{{this.elementBackgroundColour}};display:inline-block</xsl:attribute></div> {{this.score}}
+				<div><xsl:attribute name="style">border-radius:3px;height:10px;width:20px;color:{{this.elementColour}};background-color:{{this.elementBackgroundColour}};display:inline-block</xsl:attribute></div> {{this.value}}
 			{{/each}}
 			</script>
 			<script id="app-template" type="text/x-handlebars-template">
@@ -759,6 +824,7 @@
 		var thisLevel=1;
 		$('document').ready(function ()
 		{
+			$('#nokey').hide();
 			modelFragment = $("#model-template").html();
 			modelTemplate = Handlebars.compile(modelFragment);
 
@@ -769,6 +835,9 @@
 			partialTemplate = Handlebars.compile(templateFragment);
 			Handlebars.registerPartial('partialTemplate', partialTemplate);
 		
+			templateOtherFragment = $("#model-partial-template-other").html();
+			partialTemplateOther = Handlebars.compile(templateOtherFragment);
+			Handlebars.registerPartial('partialTemplatOther', partialTemplateOther);
 		
 			appOnlyFragment = $("#app-only-template").html();
 			appOnlyTemplate = Handlebars.compile(appOnlyFragment);
@@ -788,7 +857,7 @@
 			Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 			});
-
+			
 			Handlebars.registerHelper('inScopeApp', function (instance) {
 
 				let thisApp = appListScoped.resources.find((e)=>{
@@ -877,7 +946,7 @@
 	 		promise_loadViewerAPIData(viewAPIDataSvcs)
 			]).then(function (responses)
 			{
-		 
+  
 			appsList=responses[1]
 			meta=responses[1].meta
 			squals=responses[3].serviceQualities; 
@@ -1052,7 +1121,7 @@
 				$("#level-selection").empty();
 				$("#level-selection").append('&lt;option easid="All">All&lt;/option>');
 				let levelData=[];
-				for(i=0;i&lt;treeDepth;i++){
+				for(i=0;i&lt;treeDepth+1;i++){
 						$("#level-selection").append(new Option("Level "+(i+1), i));
 						levelData.push({"id":i,"level":i, "name":i+1})
 				}	
@@ -1065,8 +1134,7 @@
 				}	 
 				$("#measure-selection").select2();
 
-				modelData=busCaps;
-				redrawView()
+				modelData=busCaps; 
 				$('.blob').on('click',function(){
 					thisLevel=$(this).attr('id')
 					$('.blob').css('background-color','#ffffff');
@@ -1074,15 +1142,15 @@
 					$('#'+i).css('background-color','#d3d3d3');
 					}
 					$(this).css('background-color','#b1bbc9');
-					redrawView()
+					redrawScope()
 				})
 
 				$("#measure-selection").change(function(){
-					redrawView()
+					redrawScope()
 				})
 
 				$("[name='appProcessSwitch']").change(function(){
-					redrawView()
+					redrawScope()
 				})
 
 
@@ -1091,9 +1159,11 @@
 				})
 
 				$('#level-selection').change(function(){
-					redrawView();
+					redrawScope();
 				});
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], responses[1].filters, responses[0].filters);
+
+				let allFilters=[...responses[0].filters, ...responses[1].filters];
+			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION','SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], allFilters);
 		
 			}). catch (function (error)
 			{
@@ -1115,9 +1185,9 @@
 function getChildrenToShow(dataSet,level){
  
 	var childrenArray=[];
-	dataSet.forEach(function(d){
-	 
-	if(d.childrenCaps.length&gt;0){ 
+	dataSet.forEach(function(d){ 
+	 if(d.level &lt; level+1){
+	if(d.appList.length&gt;0){ 
 		 
 		thisscopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 	 
@@ -1135,9 +1205,31 @@ function getChildrenToShow(dataSet,level){
 		newAppList=newAppList.sort((a, b) => a.name.localeCompare(b.name))
 
 		newAppList={"resources":newAppList};
+	   
+		if(d.level == lev){
+			childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
+		}
+		else{
+			thisscopedApps = essScopeResources(d.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 	 
-		childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level});
-			
+			scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+			let newAppList=[] 
+			d.appList.forEach((e)=>{
+				let mapApp=thisscopedApps.resources.find((g)=>{
+					return e.id==g.id;
+				})
+				if(mapApp){
+				newAppList.push(mapApp)
+				}
+			})
+	
+			newAppList=newAppList.sort((a, b) => a.name.localeCompare(b.name))
+	
+			newAppList={"resources":newAppList};
+		 	childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
+	 
+		}
+		}
 		}
 	});				
 	 
@@ -1172,6 +1264,7 @@ function getKids(mod, appsList){
 	mod['thisappList']=appList;
 	mod['workingappList']=appList;
 	mod['apps']=thisApps.apps;	
+	mod['thisCapAppsOnly']=appList;
 	}
 	mod.childrenCaps.forEach(function(cap){
 		<!--
@@ -1194,7 +1287,7 @@ function getKids(mod, appsList){
 		});	
  
 }						
-			 
+var lev;		 
 var redrawView=function(){
   
 	workingCapId=0;
@@ -1208,7 +1301,7 @@ var redrawView=function(){
 	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
  
  let scopedCapsIds=scopedCaps.resourceIds
- let lev=thisLevel;
+lev=thisLevel;
  
 				showArray=[]	
  
@@ -1230,54 +1323,47 @@ var redrawView=function(){
 							scopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 							thisHLApps=scopedApps.resources; 
 						}
+						 
 						if(d.level &lt; (lev)){
 	  
-							d.childrenCaps.forEach(function(e){	
-						 
+							d.childrenCaps.forEach(function(e){	 
+
 								let inScopeTest=scopedCapsIds.find((c)=>{
 									return c==e.id;
 								})
 								if(inScopeTest){ 
 								var thisApps; 
-								scopedApps = essScopeResources(e.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+								
+
+								if(e.level == lev){
+									scopedApps = essScopeResources(e.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+
+									scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+								 
+
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, "childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
+									}else{
+										scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 
 								scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-						<!--	if(lev==1){
-									
-									scopedApps = essScopeResources(e.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-									thisApps1=scopedApps
-									thisApps2=e.thisappList 
-									console.log('l', lev)
+ 
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, 
+									"childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
 									}
-									else{
-
-									scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-									thisApps1=e.appList
-									thisApps2=scopedApps.resources;
-									console.log('l2', lev)
-								} 
-								console.log('e',e.name)
-								console.log('thisApps1',thisApps1)
-								console.log('thisApps2',thisApps2)
-								if(thisApps1.resources){}else{
-									thisApps1['resources']=thisApps1;  
-									}-->
-								thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,
-								"childrenCaps":getChildrenToShow(e.childrenCaps,lev+1)});
-							 
 								}
 							})
 						 
 						} 
+						 
 						
-						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "role":"l1"});
+						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "thisCapAppsOnly":d.thisappList, "role":"l1"});
 					 
 						}
 					});
 				 
 				};
-				modelData=showArray;
- console.log('modelData',modelData)
+			 
+				modelData=showArray; 
 	<!-- set colours-->  
 	$('#area').empty();
 		   $('#area').html(modelTemplate(modelData));
@@ -1300,11 +1386,15 @@ var redrawView=function(){
 	let keyData=squals.find((sq)=>{
 		return sq.id==selectedMeasure.qualities[0]
 	});
+	if(keyData){
 	keyData.sqvs.forEach((k)=>{
 		if(k.elementBackgroundColour==''){
-			console.log('k',k)
+		 
 			if(k.score){
 			k.elementBackgroundColour=emergencyColour[k.score-1].elementBackgroundColour;
+			if(k.elementBackgroundColour.length&gt;7){
+				k.elementBackgroundColour=k.elementBackgroundColour.substring(0,7)
+			}
 			k.elementColour=emergencyColour[k.score-1].elementColour;
 			}else{
 				k.elementBackgroundColour='#d3d3d3';
@@ -1315,10 +1405,15 @@ var redrawView=function(){
 	keyData.sqvs=keyData.sqvs.sort((a, b) => (parseInt(a.score) > parseInt(b.score)) ? 1 : -1);
  
 	$('#sqkey').show()
+	$('#noKey').hide();
 	$('#sqkey').html(sqkeyTemplate(keyData.sqvs));
 	keyData.sqvs.forEach((c,i)=>{
 			$("&lt;style type='text/css'> ."+c.id+"{ color:"+c.elementColour+"; background-color:"+c.elementBackgroundColour+"} &lt;/style>").appendTo("head");
 	})
+}else{
+	$('#sqkey').hide();
+	$('#noKey').css('display','block')
+}
  
 	let viaProcess=0;		
 		appsList.applications.forEach((app)=>{
@@ -1326,38 +1421,49 @@ var redrawView=function(){
 			let thisPerfMeasures=app.pm.filter((e)=>{ 
 				return e.categoryid.includes(measure)
 				//return e.categoryid==measure;
-			}); 	 
+			}); 	  
 			thisPerfMeasures.sort((a, b) => (a.date &lt; b.date) ? 1 : -1) 
 			
 			let inScopePMs=[];
+			if(app.bpm.length&gt;0){
 			app.bpm.forEach((pr)=>{ 
 
 				let processPerfMeasures=pr.scores.filter((e)=>{ 
 					return e.categoryid.includes(measure)
 					//return e.categoryid==measure;
 				});
+				let ppms=[];
 				processPerfMeasures.forEach((p)=>{
-					p['procId']=pr.proid;
-					let bcMap= busCapApps.find((e)=>{ 
+					p['procId']=pr.proid; 
+					let bcMap= busCapApps.filter((e)=>{ 
 						if(e.physP){
 							return e.physP.includes(pr.proid)
 						}
 					})
-					
+
 					if(bcMap){ 
 						p['busCapId']=bcMap.id;
+						bcMap.forEach((c)=>{
+							let tempP={'busCapId':c.id,
+								'categoryid':p.categoryid,
+								'date':p.date,
+								'id':p.id,
+								'procId':p.procId,
+								'serviceQuals':p.serviceQuals} 
+							ppms.push(tempP)
+						})
 					}
 				})
-
-				
-
-				inScopePMs=[...inScopePMs, ...processPerfMeasures];
+			
+				inScopePMs=[...ppms, ...processPerfMeasures];
 			});
+		}
 let capAppsScores =d3.nest()
 	.key(function(d) { return d.busCapId; }) 
 	.key(function(d) { return d.procId; })
 	.entries(inScopePMs);
  
+	
 capAppsScores.forEach((d,i)=>{
 <!--	if(i==1){
 		$('#measure-selection').append($('<option>', {
@@ -1384,7 +1490,7 @@ capAppsScores.forEach((d,i)=>{
 	d['bcScore']=Math.round(tot);
 	viaProcess=1;
 });
-
+ 
 if(viaProcess==1){
 	$('#simps').show(); 
 	$("#switch").show();}
@@ -1393,13 +1499,6 @@ else{
 	$("#switch").hide();
 	}
 app['capsScore']=capAppsScores;
-<!--
-			console.log('processPerfMeasures',processPerfMeasures)
-			processPerfMeasures.forEach((pr)=>{
-				console.log(pr)
-				pr.scores.sort((a, b) => (a.date &lt; b.date) ? 1 : -1) 
-			})
-		--> 
 			app['score']=0;
 			if(thisPerfMeasures.length&gt;0){
 				let appscore=0
@@ -1411,30 +1510,40 @@ app['capsScore']=capAppsScores;
 			app['thisQuals']=thisPerfMeasures[0].serviceQuals;
 			}
 
-			let thisColours=keyData.sqvs.find((d)=>{
+			let thisColours=keyData?.sqvs.find((d)=>{
 				return d.score == Math.round(app.score);
 			});
-		  
-			if(viaProcess!=1 || $('#viaProcess').is(':checked') ){
-				if(thisColours){ 
+		   
+			if ($('#viaProcess').is(':checked')) {
+				if (thisColours) {    
+						app.capsScore.forEach((c) => {
+							let cpID = c.key + app.id;
+							$('.app[appcapid="' + cpID + '"]').addClass(thisColours.id)
+						})
+					}
+					else{
+						 
+						let thisColourID = 'ec' + Math.round(app.score);
+			
+						app.capsScore.forEach((c) => {
+							let thisColourID = 'ec' + Math.round(c.bcScore);
+							let cpID = c.key + app.id;
+							$('.app[appcapid="' + cpID + '"]').addClass(thisColourID)
+						}) 
+					}
 				
-					$('.app[easid="'+app.id+'"]').addClass(thisColours.id)
+			} else { 
+				if (thisColours) { 
+					$('.app[easid="' + app.id + '"]').addClass(thisColours.id)
+				} else {
+					let thisColourID = 'ec' + Math.round(app.score);
+					$('.app[easid="' + app.id + '"]').addClass(thisColourID)
+			
 				}
-				else{
-					let thisColourID = 'ec'+Math.round(app.score);
-					$('.app[easid="'+app.id+'"]').addClass(thisColourID)
-				}
-			}else{
-				 
-				app.capsScore.forEach((c)=>{
-					let thisColourID = 'ec'+Math.round(c.bcScore);
-				let cpID=c.key+app.id; 
-					$('.app[appcapid="'+cpID+'"]').addClass(thisColourID)
-				})
-			}
-		
+			} 
+			
 			})
-	}
+			}
 
 		   $('.info').click(function(){
 			let thisi=$(this).attr("easinfoid");
@@ -1469,7 +1578,7 @@ app['capsScore']=capAppsScores;
 	}
 
 
-function redrawView() {
+function redrawScope() {
 	essRefreshScopingValues()
 }
 });

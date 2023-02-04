@@ -179,7 +179,7 @@
 		<xsl:variable name="thisSites" select="key('site_key',($this, $thisLocations)/name)"/>  
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"countryCode": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'gr_region_identifier']/value"/>",
 		"locationIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisLocations"/>],
 		"siteIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisSites"/>],
@@ -201,8 +201,8 @@
 		<xsl:variable name="thisSites" select="key('site_key',($this, $thisLocations)/name)"/>  
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"subRegionIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisGeoRegions"/>],
 		"locationIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisLocations"/>],
 		"siteIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisSites"/>],
@@ -223,7 +223,7 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"countryCode": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'gr_region_identifier']/value"/>",
 		"locationIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisLocations"/>],
 		"siteIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisSites"/>],
@@ -243,8 +243,8 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		<xsl:if test="count($thisGeoCode) > 0">
 			<xsl:variable name="lat" select="$thisGeoCode/own_slot_value[slot_reference='geocode_latitude']/value"/>
 			<xsl:variable name="long" select="$thisGeoCode/own_slot_value[slot_reference='geocode_longitude']/value"/>
@@ -264,9 +264,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"
 		<xsl:if test="count($thisGeoCode) > 0">
 			<xsl:variable name="lat" select="$thisGeoCode/own_slot_value[slot_reference='geocode_latitude']/value"/>
 			<xsl:variable name="long" select="$thisGeoCode/own_slot_value[slot_reference='geocode_longitude']/value"/>
@@ -286,8 +286,8 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"icon": "<xsl:value-of select="$thisBusEnvCatIcon"/>", 
 		"busEnvFactorIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusEnvFactors"/>],
 		"busEnvFactors": []
@@ -310,7 +310,7 @@
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'bef_label']/value"/>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"busEnvCategoryId": <xsl:choose><xsl:when test="string-length($thisBusEnvCatId) > 0">"<xsl:value-of select="eas:getSafeJSString($thisBusEnvCatId)"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>
 		<!--"dependencyIds": [<xsl:for-each select="$thisDepELementIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]-->
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -325,9 +325,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"prodTypeIds": [<xsl:for-each select="$thisProdTypeIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
 		"prodTypes": []
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -361,9 +361,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"customerFacing": <xsl:value-of select="$isCustomerFacing"/>,
 		"meta": {
 			"anchorClass": "<xsl:value-of select="$this/type"/>"
@@ -382,9 +382,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"externalPoductTypeIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtProdTypes"/>],
 		"productIds": [<xsl:for-each select="$thisProdIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
 		"externalPoductTypes": [],
@@ -404,9 +404,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"externalPoductTypeIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtProdTypes"/>],
 		"externalOrgIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisProdTypeStakeholders"/>],
 		"productIds": [<xsl:for-each select="$thisProdIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
@@ -434,9 +434,9 @@
 
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"suppExtProductIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtProducts"/>],
 		"suppExtOrgIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtStakeholders"/>],
 		<!-\-"suppBusCapIds": [<xsl:for-each select="$suppBusCapIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],-\->
@@ -472,9 +472,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"suppExtProductIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtProducts"/>],
 		"suppExtOrgIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisExtStakeholders"/>],
 		"depIntProductIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$depIntProducts"/>],
@@ -507,9 +507,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"extOrgIds": [<xsl:for-each select="$thisExtOrgIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
 		"productIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisProds"/>],
 		"depIntProductIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisDependentIntProds"/>],
@@ -530,9 +530,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"
 		<!--"extRoleIds": [<xsl:for-each select="$thisExtRoleIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]-->
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
@@ -548,9 +548,9 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		<xsl:if test="count($thisParentOrgId) > 0">
 			"parentOrgId": "<xsl:value-of select="eas:getSafeJSString($thisParentOrgId[1])"/>",
 		</xsl:if>
@@ -569,8 +569,8 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"objectiveIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
 			"objectives": []
@@ -585,8 +585,8 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"targetDate": <xsl:choose><xsl:when test="string-length($thisTargetDate) > 0">"<xsl:value-of select="$thisTargetDate"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -601,8 +601,8 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		"stratPlanIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisStratPlans"/>],
 		"stratPlans": []
@@ -624,8 +624,8 @@
 				
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		"startDate": <xsl:choose><xsl:when test="string-length($thisStartDate) > 0">"<xsl:value-of select="$thisStartDate"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
 		"endDate": <xsl:choose><xsl:when test="string-length($thisEndDate) > 0">"<xsl:value-of select="$thisEndDate"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
@@ -645,7 +645,7 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"planningActionId": <xsl:choose><xsl:when test="string-length($thisPlanningActionId) > 0">"<xsl:value-of select="$thisPlanningActionId"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
 			"changedElement": {
 				"id": "<xsl:value-of select="eas:getSafeJSString($thisChangedElement/name)"/>",
@@ -679,8 +679,8 @@
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
 			"ref": "busCap<xsl:value-of select="index-of($allBusCapabilities, $this)"/>",
-			"name": "<xsl:value-of select="$thisName"/>",
-			"description": "<xsl:value-of select="$thisDesc"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"busProcessIds": [<xsl:for-each select="$thisBusProcessIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
 			"busProcesses": []
@@ -701,8 +701,8 @@
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 		
@@ -757,8 +757,8 @@
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"index": <xsl:value-of select="position() - 1"/>,
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		<!-\-type: elementTypes.busProcess,-\->
 		"busCapIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessCapabilities"/>],
@@ -824,21 +824,14 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
 		</xsl:variable>
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:value-of select="$thisName"/>",
-			"description": "<xsl:value-of select="$thisDesc"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:value-of select="$thisLink"/>",
 			"childBusCaps": [
 				<xsl:apply-templates select="$L0Caps" mode="l0_caps"><xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/></xsl:apply-templates>
@@ -861,21 +854,15 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
 		"childBusCaps": [	
 			<xsl:apply-templates select="$L1Caps" mode="l1_caps"><xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/></xsl:apply-templates>
@@ -896,16 +883,10 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		<xsl:variable name="isDifferentiator">
 			<xsl:choose>
@@ -917,8 +898,8 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:value-of select="$thisName"/>",
-			"description": "<xsl:value-of select="$thisDesc"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:value-of select="$thisLink"/>",
 			"isDifferentiator": <xsl:value-of select="$isDifferentiator"/>,
 			"meta": {
@@ -1023,21 +1004,15 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
-		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
+
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
 		"infoConceptIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisInfoConcepts"/>],
 		"infoConcepts": [],
@@ -1058,21 +1033,15 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
 		"infoViewIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisInfoViews"/>],
 		"infoViews": [],
@@ -1090,21 +1059,14 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
 		</xsl:variable>
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
 		"meta": {
 			"anchorClass": "Information_View"
@@ -1124,22 +1086,16 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 		"index": <xsl:value-of select="position() - 1"/>,
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",		
 		<!--type: elementTypes.appService,-->
 		"appServiceIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppServices"/>],
@@ -1162,22 +1118,16 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 		"index": <xsl:value-of select="position() - 1"/>,
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",		
 		<!--type: elementTypes.appService,-->
 		"appIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisApps"/>],
@@ -1196,22 +1146,16 @@
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 		"index": <xsl:value-of select="position() - 1"/>,
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
 		"meta": {
 			"anchorClass": "Composite_Application_Provider"
@@ -1259,8 +1203,8 @@
 			id: "<xsl:value-of select="$this/name"/>",
 			type: elementTypes.application,
 			index: <xsl:value-of select="position() - 1"/>,
-			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			techHealthScore: 8,
 			objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
@@ -1304,9 +1248,9 @@
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"valueStageIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"><xsl:sort select="own_slot_value[slot_reference = 'vsg_index']/value"/></xsl:apply-templates>],
 			"depIntProductTypeIds": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisProdTypes"/>],
 			"depIntProductIds": [<xsl:for-each select="$thisProdIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
@@ -1325,9 +1269,9 @@
 
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
 			"parentValStreamId": "",
 			"parentValStageId": ""
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -1355,23 +1299,16 @@
 		
 		<xsl:variable name="childAppCaps" select="$allAppCaps[name = $this/own_slot_value[slot_reference = 'contained_app_capabilities']/value]"></xsl:variable>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
 		<xsl:variable name="thisLink">
-			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:value-of select="$thisName"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:value-of select="$thisLink"/>",
-			"description": "<xsl:value-of select="$thisDesc"/>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"childAppCaps": [
 				<xsl:apply-templates select="$childAppCaps" mode="RenderBasicInstanceJSON"/>		
 			],
@@ -1386,26 +1323,20 @@
 	
 	<xsl:template match="node()" mode="getTechCapabilityJSON">
 		<xsl:variable name="this" select="current()"/>
-		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
+
 		
 		<xsl:variable name="thisLink">
-			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 		
 		<xsl:variable name="thisTechCompIds" select="$this/own_slot_value[slot_reference = 'realised_by_technology_components']/value"/>
 		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"techCompIds": [<xsl:for-each select="$thisTechCompIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>],
 		"meta": {
 			"anchorClass": "Technology_Capability"
@@ -1418,23 +1349,16 @@
 	<xsl:template match="node()" mode="getTechComponentJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
 		<xsl:variable name="thisLink">
-			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
 
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
-		"name": "<xsl:value-of select="$thisName"/>",
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"link": "<xsl:value-of select="$thisLink"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"meta": {
 			"anchorClass": "Technology_Component"
 		}
@@ -1493,18 +1417,19 @@
 		<xsl:variable name="techDomainName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="techDomainDescription">
 			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="techDomainLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="childTechCaps" select="$allTechCaps[name = $this/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
@@ -1528,23 +1453,15 @@
 	<xsl:template match="node()" mode="RenderBasicInstanceJSON">
 		<xsl:variable name="this" select="current()"/>
 		
-		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</xsl:variable>
-		
 		<xsl:variable name="thisLink">
-			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
+			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>
 		</xsl:variable>
 		
 		{
 			"id": "<xsl:value-of select="$this/name"/>",
-			"name": "<xsl:value-of select="$thisName"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"link": "<xsl:value-of select="$thisLink"/>",
-			"description": "<xsl:value-of select="$thisDesc"/>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"meta": {
 				"anchorClass": "<xsl:value-of select="$this/type"/>"
 			}
@@ -1567,17 +1484,10 @@
 		<xsl:variable name="thisName" select="$this/own_slot_value[slot_reference = 'enumeration_value']/value"/>
 		
 		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="theSubjectInstance" select="$this"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
-		"description": "<xsl:value-of select="$thisDesc"/>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"meta": {
 			"anchorClass": "<xsl:value-of select="$this/type"/>"
 		}

@@ -197,7 +197,7 @@
 	</xsl:template>
 
 	<xsl:template mode="portalPanels" match="node()">
-		<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',$currentPortal/name)"/>
+		<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',current()/name)"/>
 		<!--	
 		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>-->
 		<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
@@ -287,7 +287,9 @@
 						</xsl:if>
 					</xsl:for-each>
 				</ul>
-				<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections"/>
+				<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections">
+					<xsl:sort select="number(current()/own_slot_value[slot_reference = 'portal_panel_section_sequence']/value)"/>
+				</xsl:apply-templates>
 				<br/>
 			</div>
 		</div>

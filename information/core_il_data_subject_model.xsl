@@ -303,22 +303,26 @@
 	<!-- FUNCTION THAT RETURNS A LOWER CASE STRING WITHOUT ANY SPACES FOR A DATA OBJECT NAME -->
 	<xsl:function as="xs:string" name="eas:get_js_name_for_data_object">
 		<xsl:param name="dataObjectName"/>
-
+		
 		<xsl:variable name="lowerCaseName" select="lower-case($dataObjectName)"/>
 		<xsl:variable name="noOpenBrackets" select="translate($lowerCaseName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="translate($noCloseBrackets, ' ', '')"/>
-
+		<xsl:variable name="noSqBracketsOpen" select="translate($noCloseBrackets, '[', ' ')"/>
+		<xsl:variable name="noSqBracketsClosed" select="translate($noSqBracketsOpen, ']', ' ')"/>
+		<xsl:value-of select="translate($noSqBracketsClosed, ' ', '')"/>
+		
 	</xsl:function>
-
+	
 	<!-- FUNCTION THAT RETURNS A LOWER CASE STRING WITHOUT ANY SPACES FOR A DATA OBJECT NAME -->
 	<xsl:function as="xs:string" name="eas:no_specials_js_name_for_data_object">
 		<xsl:param name="dataObjectName"/>
-
+		
 		<xsl:variable name="noOpenBrackets" select="translate($dataObjectName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="$noCloseBrackets"/>
-
+		<xsl:variable name="noSqBracketsOpen" select="translate($noCloseBrackets, '[', ' ')"/>
+		<xsl:variable name="noSqBracketsClosed" select="translate($noSqBracketsOpen, ']', ' ')"/>
+		<xsl:value-of select="$noSqBracketsClosed"/>
+		
 	</xsl:function>
 
 

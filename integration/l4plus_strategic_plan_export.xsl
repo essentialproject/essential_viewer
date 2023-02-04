@@ -27,6 +27,7 @@
 	<!-- 20.05.2019 JM/JP	Created -->
 
     <xsl:variable name="phyProc" select="/node()/simple_instance[type = 'Physical_Process']"/>
+    <xsl:variable name="busCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="busProc" select="/node()/simple_instance[type = 'Business_Process']"/>
      <xsl:variable name="appSvs" select="/node()/simple_instance[type = 'Application_Service']"/>
 	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>  
@@ -141,6 +142,39 @@
    </Borders>
   </Style>
  </Styles>
+ <Worksheet ss:Name="Business Capabilities">
+  <Table ss:ExpandedColumnCount="3"  x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($busProc)+8"/></xsl:attribute>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="188"/>
+   <Row ss:Index="2" ss:Height="21">
+    <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Business Capabilities</Data></Cell>
+   </Row>
+   <Row ss:Index="5" ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s60"><Data ss:Type="String">ID</Data></Cell>
+    <Cell ss:StyleID="s60"><Data ss:Type="String">Name</Data></Cell>
+   </Row>
+   <xsl:apply-templates select="$busCaps" mode="catalogue">
+      <xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
+    </xsl:apply-templates>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+      <TabColorIndex>54</TabColorIndex>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>6</ActiveRow>
+     <ActiveCol>2</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
  <Worksheet ss:Name="Business Processes">
   <Table ss:ExpandedColumnCount="3"  x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($busProc)+8"/></xsl:attribute>
@@ -964,7 +998,7 @@
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
    </Row>  
       </xsl:for-each> 
@@ -1044,7 +1078,7 @@
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
    </Row>  
       </xsl:for-each> 
@@ -1088,6 +1122,89 @@
    <Value>'Projects'!R8C3:R1100C3</Value>
   </DataValidation>   
  </Worksheet>
+
+ <Worksheet ss:Name="Bus Cap Planning Actions">
+  <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s57" ss:DefaultColumnWidth="65"
+   ss:DefaultRowHeight="16">
+   <Column ss:Index="2" ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="207"/>
+   <Column ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="335"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="141"/>
+   <Column ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="322"/>
+   <Column ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="322"/>          
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:AutoFitHeight="0" ss:Height="29">
+    <Cell ss:Index="2" ss:StyleID="s58"><Data ss:Type="String">Business Capability Planning Actions</Data></Cell>
+    <Cell ss:StyleID="s58"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s59"><Data ss:Type="String">The changes that are planned to Business Capability</Data></Cell>
+    <Cell ss:StyleID="s59"/>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0" ss:Height="17"/>
+   <Row ss:AutoFitHeight="0" ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s60"><Data ss:Type="String">Strategic Plan</Data></Cell>
+    <Cell ss:StyleID="s60"><Data ss:Type="String">Impacted Business Capability</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Planned Change</Data></Cell>
+    <Cell ss:StyleID="s60"><Data ss:Type="String">Change Rationale</Data></Cell>
+    <Cell ss:StyleID="s60"><Data ss:Type="String">Implementing Project</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="9"/>
+   <Row ss:AutoFitHeight="0" ss:Height="9"/>
+      <xsl:for-each select="$plansActions[own_slot_value[slot_reference='plan_to_element_ea_element']/value=$busCaps/name]"> 
+    <xsl:variable name="thisplan" select="$stratPlans[name=current()/own_slot_value[slot_reference='plan_to_element_plan']/value]"/>    
+    <xsl:variable name="thisbusCap" select="$busCaps[name=current()/own_slot_value[slot_reference='plan_to_element_ea_element']/value]"/> 
+ <xsl:variable name="thischange" select="$planAction[name=current()/own_slot_value[slot_reference='plan_to_element_change_action']/value]"/> 
+ <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
+ 
+    <Row ss:AutoFitHeight="0" ss:Height="20">
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisbusCap/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+   </Row>  
+      </xsl:for-each> 
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>14</ActiveRow>
+     <ActiveCol>2</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C3:R2000C3</Range>
+   <Type>List</Type>
+   <Value>'Business Capabilities'!R6C3:R2062C3</Value>
+  </DataValidation>
+<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C2:R300C2</Range>
+   <Type>List</Type>
+   <Value>'Strategic Plans'!R8C4:R300C4</Value>
+  </DataValidation>
+   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C4:R2000C4</Range>
+   <Type>List</Type>
+   <CellRangeList/>
+   <Value>&quot;Enhance, Establish, Replace, Switch Off, Decommission, Outsource&quot;</Value>
+  </DataValidation> 
+<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C6:R1100C6</Range>
+   <Type>List</Type>
+   <Value>'Projects'!R8C3:R1100C3</Value>
+  </DataValidation>      
+ </Worksheet>
  <Worksheet ss:Name="Bus Proc Planning Actions">
   <Table ss:ExpandedColumnCount="6" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s57" ss:DefaultColumnWidth="65"
@@ -1125,7 +1242,7 @@
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisbusProc/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
    </Row>  
       </xsl:for-each> 
@@ -1205,7 +1322,7 @@
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
    </Row>  
       </xsl:for-each> 
@@ -1365,7 +1482,7 @@
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
    </Row>  
       </xsl:for-each> 

@@ -78,7 +78,6 @@
 		<xsl:variable name="thisperfCategory" select="$perfCategory[own_slot_value[slot_reference='pmc_measures_ea_classes']/value=current()/type]"/> 
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"app": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"debug":"<xsl:value-of select="$thisProcessperfMeasures/name"/>",
 		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>],
 		"processPerfMeasures":[<xsl:apply-templates select="$allthisPhysProcesses" mode="processPerformanceMeasures"/>]
 		<!--
@@ -98,23 +97,33 @@
 			<!--	<xsl:variable name="thisserviceQualityValues" select="$serviceQualityValues[own_slot_value[slot_reference = 'usage_of_service_quality']/value=current()/name]"></xsl:variable>
 			-->
 				<xsl:variable name="thisserviceQualityValues" select="key('serviceQualityValueskey',current()/name)"/> 
+				<xsl:variable name="thisserviceQualityMax" select="$serviceQualityValues[name = current()/own_slot_value[slot_reference = 'sq_maximum_value']/value]"></xsl:variable>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"type": "<xsl:value-of select="current()/type"/>",
 				"shortName":"<xsl:value-of select="current()/own_slot_value[slot_reference='short_name']/value"/>",
+				"maxScore":"<xsl:value-of select="$thisserviceQualityMax/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
+				"serviceWeighting":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'sq_weighting']/value"/>",
+				"serviceIndex":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'sq_index']/value"/>", 
 				"sqvs":[<xsl:apply-templates select="$thisserviceQualityValues" mode="sqvalues"><xsl:sort select="own_slot_name[slot_reference='name']/value" order="ascending"/> </xsl:apply-templates>]
 			}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
 		<xsl:template match="node()" mode="perf">
 				<xsl:variable name="thisServiceQualities" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'pmc_service_qualities']/value]"></xsl:variable>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"type": "<xsl:value-of select="current()/type"/>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"qualities":[<xsl:for-each select="$thisServiceQualities">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
 		<xsl:template match="node()" mode="sqvalues">
 			<xsl:variable name="thisStyle" select="$allElementStyles[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"type": "<xsl:value-of select="current()/type"/>",
+				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
+				"index": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'sqv_index']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
+          		"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
 				"elementColour": "<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>",
 				"elementBackgroundColour": "<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>"
 				}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
@@ -125,9 +134,11 @@
 		
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"serviceQuals":[<xsl:for-each select="$thisAppserviceQualities">
 			
 			{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"type": "<xsl:value-of select="current()/type"/>",
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
@@ -144,6 +155,7 @@
 				<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 				<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"type": "<xsl:value-of select="current()/type"/>",
 			<!--	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 				"serviceName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisServiceQuality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",
@@ -171,6 +183,7 @@
 					<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 					<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>
 					{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+					"type": "<xsl:value-of select="current()/type"/>",
 				<!--	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 					"serviceName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisServiceQuality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 					"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",

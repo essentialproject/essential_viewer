@@ -20,12 +20,13 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Provider', 'Business_Process', 'Technology_Product', 'Information_Representation')"/>
+	<xsl:variable name="linkClasses" select="('Enterprise_Strategic_Plan','Application_Provider', 'Business_Process', 'Technology_Product', 'Information_Representation')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Org Summmary']"/>
 	<xsl:variable name="physProcAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"/>
 	<xsl:variable name="techProdData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Technology Products']"/>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
+	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"></xsl:variable>
 	<!-- START VIEW SPECIFIC SETUP VARIABES -->
 	<xsl:variable name="controlFramework" select="/node()/simple_instance[type='Control_Framework']"/>
 	<xsl:variable name="controls" select="/node()/simple_instance[type='Control'][name=$controlFramework/own_slot_value[slot_reference = 'cf_controls']/value]"/>
@@ -34,6 +35,7 @@
 	<xsl:variable name="processControls" select="/node()/simple_instance[type='Business_Process'][name=$controlToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 	<xsl:variable name="applicationControls" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$controlToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 	<xsl:variable name="technologyControls" select="/node()/simple_instance[supertype='Technology_Provider'][name=$controlToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
+	<xsl:variable name="informationControls" select="/node()/simple_instance[type='Information_Representation'][name=$controlToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 	<xsl:variable name="actors" select="/node()/simple_instance[type='Individual_Actor']"/>	
 	<xsl:variable name="business_role" select="/node()/simple_instance[type='Individual_Business_Role']"/>	
 	<xsl:variable name="actor2role" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>		
@@ -42,7 +44,8 @@
 	<xsl:variable name="processFramework" select="/node()/simple_instance[type='Business_Process'][name=$controls/own_slot_value[slot_reference = 'control_supported_by_business']/value]"/>
 	<xsl:variable name="commentaryas" select="/node()/simple_instance[type='Commentary'][name=$assessment/own_slot_value[slot_reference = 'assessment_comments']/value]"/>		
 	<xsl:variable name="csassessment" select="/node()/simple_instance[type='Control_Solution_Assessment']"/>
-	
+	<xsl:variable name="plans" select="/node()/simple_instance[supertype='Strategic_Plan'][name=$assessment/own_slot_value[slot_reference = 'ca_remediation_plans']/value]"/>
+
 	<xsl:variable name="commentarycs" select="/node()/simple_instance[type='Commentary'][name=$csassessment/own_slot_value[slot_reference = 'commentary']/value]"/>
 	<xsl:variable name="commentary" select="$commentaryas union $commentarycs"/>
 	<xsl:variable name="csa" select="/node()/simple_instance[type='Control_Solution']"/>
@@ -98,6 +101,11 @@
 				<xsl:with-param name="apiReport" select="$physProcAppsData"/>
 			</xsl:call-template>
 		</xsl:variable>	
+		<xsl:variable name="infoPath">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$infoData"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="techPath">
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$techProdData"/>
@@ -345,6 +353,9 @@
 					.roleBlob{
 						background-color: rgb(68, 182, 179)
 					}
+					.planBlob{
+						background-color: rgb(205, 196, 132)
+					}
 					
 					.countBox-wrapper {
 						display: flex;
@@ -472,7 +483,9 @@
 					<xsl:with-param name="viewerAPIPath" select="$apiPath"/> 
 					<xsl:with-param name="viewerAPIPathApp" select="$appPath"/>
 					<xsl:with-param name="viewerAPIPathPP" select="$ppPath"/>
-					<xsl:with-param name="viewerAPIPathTech" select="$techPath"/>
+					<xsl:with-param name="viewerAPIPathTech" select="$techPath"/> 
+					<xsl:with-param name="viewerAPIPathInfo" select="$infoPath"/>
+					
 				</xsl:call-template>
 				</script>
 		
@@ -573,9 +586,10 @@
 									<div class="counts bg-lightblue-60"><xsl:value-of select="eas:i18n('Technology')"/><br/>
 										<div class="fontBlack">{{techTotal}}</div>
 									</div>
-							<!--		<div class="counts bg-lightblue-40">Information<br/>
-										{{infoTotal}} 
+									<div class="counts bg-lightblue-40"><xsl:value-of select="eas:i18n('Information')"/><br/>
+										<div class="fontBlack">{{infoTotal}}</div>
 									</div>
+							<!--	 
 									<div class="counts bg-lightblue-20">Support<br/>
 										{{suppTotal}} 
 									</div> -->
@@ -601,6 +615,9 @@
 												{{#if this.techImpacting}}
 												<div class="bar">T:{{this.techImpacting.length}}</div>
 												{{/if}}
+												{{#if this.infoImpacting}}
+												<div class="bar">I:{{this.infoImpacting.length}}</div>
+												{{/if}}
 											</div>
 										</div>
 									{{/each}}
@@ -623,7 +640,7 @@
 											<li class="roleBlob bg-lightblue-80" style="background-color: #785EF0"><xsl:value-of select="eas:i18n('Application')"/></li>
 											<li class="roleBlob bg-lightblue-60" style="background-color: #DC267F"><xsl:value-of select="eas:i18n('Technology')"/></li>
 											<li class="roleBlob bg-lightblue-80" style="background-color: #FE6100"><xsl:value-of select="eas:i18n('Information')"/></li>
-											<li class="roleBlob bg-lightblue-80" style="background-color: #FFB000"><xsl:value-of select="eas:i18n('Support')"/></li>
+										<!--	<li class="roleBlob bg-lightblue-80" style="background-color: #FFB000"><xsl:value-of select="eas:i18n('Support')"/></li>-->
 										</ul> 
 									</div>
 									<div class="bottom-10">
@@ -682,8 +699,8 @@
 															{{#if this.techImpacting}}<li class="roleBlob bg-lightblue-60" style="background-color: #DC267F">{{this.techImpacting.length}}</li>{{/if}}
 															{{#if this.infoImpacting}}
 															<li class="roleBlob bg-lightblue-80" style="background-color: #FE6100">{{this.infoImpacting.length}}</li>{{/if}}
-															{{#if this.supportImpacting}}
-															<li class="roleBlob bg-lightblue-80" style="background-color: #FFB000">{{this.supportImpacting.length}}</li>{{/if}}
+														<!--	{{#if this.supportImpacting}}
+															<li class="roleBlob bg-lightblue-80" style="background-color: #FFB000">{{this.supportImpacting.length}}</li>{{/if}}-->
 														</ul> 
 													</td>
 													
@@ -857,10 +874,16 @@
 														</th>
 															
 													</tr>
-												</thead>
+												</thead> 
 												<tbody>
-							
-												</tbody>
+														{{#each this.info}}
+														<tr>
+															<td>{{this.name}}</td>
+															<td>{{{this.infoHTML}}}</td>
+														</tr>
+
+														{{/each}}
+												</tbody> 
 												<tfoot>
 													<tr>
 														<th>
@@ -926,7 +949,7 @@
 	<script id="apps-template" type="text/x-handlebars-template">
 		<ul class="ess-list-tags">
 			{{#each this.controls}} 
-				<li class="roleBlob bg-lightblue-80 eleTag" ><xsl:attribute name="easid">{{this.assessment}}</xsl:attribute><xsl:attribute name="easapp">{{../this.name}}</xsl:attribute><xsl:attribute name="easctrl">{{this.name}}</xsl:attribute><xsl:attribute name="style">background-color:{{#getFindingColour this}}{{/getFindingColour}}</xsl:attribute>{{this.name}}</li>
+				<li class="roleBlob bg-lightblue-80 eleTag" ><xsl:attribute name="easid">{{this.assessment}}</xsl:attribute><xsl:attribute name="easapp">{{../this.name}}</xsl:attribute><xsl:attribute name="easctrl">{{this.name}}</xsl:attribute><xsl:attribute name="style">background-color:{{#getFindingColour this}}{{/getFindingColour}}</xsl:attribute>{{#ifEquals this.assessmentFinding 'Pass'}}<i class="fa fa-check-circle-o"></i>{{else}}<i class="fa fa-times-circle-o"></i>{{/ifEquals}} {{this.name}}</li>
 			{{/each}}
 		</ul>		
 	</script>
@@ -968,7 +991,13 @@
 						<td class="infoTd">{{#if this.targetRemediationDate}}{{this.targetRemediationDate}}{{else}} - {{/if}}</td>
 						<th  width="25%"><xsl:value-of select="eas:i18n('Remediation Completion Date')"/></th>
 						<td class="infoTd">{{#if this.completedRemediationDate}}{{this.completedRemediationDate}}{{else}} - {{/if}}</td>
+					</tr> 
+					{{#if this.plans}}
+					<tr>
+						<th><xsl:value-of select="eas:i18n('Plans')"/></th>
+						<td colspan="3" class="infoTd"><ul class="ess-list-tags">{{#each this.plans}}<li class="planBlob">{{{essRenderInstanceMenuLink this}}}</li> {{/each}}</ul></td>
 					</tr>
+					{{/if}}
 					<tr>
 						<th><xsl:value-of select="eas:i18n('Comments')"/></th>
 						<td colspan="3" class="infoTd">{{#if this.comments}}{{this.comments}}{{else}} - {{/if}}</td>
@@ -996,7 +1025,11 @@
  	<script id="processes-template" type="text/x-handlebars-template"></script>
 	<script id="sites-template" type="text/x-handlebars-template"></script>
 	<script id="appsnippet-template" type="text/x-handlebars-template"></script>
-<script>;	   
+<script>
+
+<xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
+	<xsl:with-param name="linkClasses" select="$linkClasses"/>
+</xsl:call-template>
  
 function showEditorSpinner(message) { $('#editor-spinner-text').text(message);                            
     $('#editor-spinner').removeClass('hidden');
@@ -1009,7 +1042,7 @@ showEditorSpinner('Loading Data - please wait');
  let products=[<xsl:apply-templates select="$controlFramework" mode="controlFramework"/>];
  let assessment=[<xsl:apply-templates select="$controlToElement" mode="elementAssessments"/>];
  let solutionAssessment=[<xsl:apply-templates select="$csa" mode="solutionAssessments"/>]
-//console.log('solutionAssessment',solutionAssessment)
+ console.log('assessment',assessment)
 focusID=products[0].id;
 
 //console.log('focusID',focusID)
@@ -1046,11 +1079,14 @@ focusID=products[0].id;
 			<xsl:param name="viewerAPIPathApp"/>
 			<xsl:param name="viewerAPIPathPP"/>
 			<xsl:param name="viewerAPIPathTech"/>
+			<xsl:param name="viewerAPIPathInfo"/>
+			
 			//a global variable that holds the data returned by an Viewer API Report
 			var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
 			var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApp"/>';
 			var viewAPIDataPP = '<xsl:value-of select="$viewerAPIPathPP"/>';
 			var viewAPIDataTech = '<xsl:value-of select="$viewerAPIPathTech"/>';
+			var viewAPIDataInfo = '<xsl:value-of select="$viewerAPIPathInfo"/>'; 
 			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		   
 		   var promise_loadViewerAPIData = function(apiDataSetURL) {
@@ -1075,11 +1111,12 @@ focusID=products[0].id;
 				});
 			};
 		   
-	  let orgData=[];
-	  let appData=[];
-	  let processData=[]
-	  let focusID
-
+	  var orgData=[];
+	  var appData=[];
+	  var processData=[]
+	  var infoData=[]
+	  var focusID
+ 
 
 	  let rolesFragment, appsnippetTemplate, appsnippetFragment, appsFragment, processesFragment, sitesFragment, rolesTemplate, appsTemplate, processesTemplate,sitesTemplate ;
 	
@@ -1118,9 +1155,9 @@ focusID=products[0].id;
 				
 				Handlebars.registerHelper('getFindingColour', function(arg1, options) {
 					let colourToShow = 'hsla(200, 80%, 60%, 1)';
- 
+
 					if(arg1.assessmentFinding=='Pass'){
-						colourToShow='#63a763'
+						colourToShow='#1da014'
 					}
 					else if(arg1.assessmentFinding=='Fail'){
 						colourToShow='#f10000'
@@ -1226,14 +1263,17 @@ focusID=products[0].id;
 	Promise.all([ 
 			promise_loadViewerAPIData(viewAPIDataApps),
 			promise_loadViewerAPIData(viewAPIDataPP),
-			promise_loadViewerAPIData(viewAPIDataTech)
+			promise_loadViewerAPIData(viewAPIDataTech),
+			promise_loadViewerAPIData(viewAPIDataInfo)
+			
 			]).then(function(responses) {
 				removeEditorSpinner();
 				   appData=responses[0] 
 				  
 				   processData=responses[1]; 
 				   techProds=responses[2]
-				//console.log('appData',appData)
+				   infoData=responses[3];
+				 console.log('infoData',infoData)
 				//console.log('processData',processData)
 				//console.log('techProds',techProds)
 				//console.log('products',products)
@@ -1251,6 +1291,10 @@ focusID=products[0].id;
 						d['controls']=[];
 					})
 
+					infoData.information_representation.forEach((d)=>{
+						d['controls']=[];
+					})
+ 
 				getFocus(focusID);
 				
 				$('.control-name-trigger').popover({
@@ -1269,6 +1313,23 @@ focusID=products[0].id;
 
 					//console.log('val',$(this).val())
 					let framework=$(this).val()
+
+					appData.applications.forEach((d)=>{
+						d['controls']=[];
+					})
+ 
+					processData.businessProcesses.forEach((d)=>{
+						 d['controls']=[];
+					 })
+					 
+					techProds.technology_products.forEach((d)=>{
+						 d['controls']=[];
+					 })
+ 
+					 infoData.information_representation.forEach((d)=>{
+						 d['controls']=[];
+					 })
+
 					getFocus(framework)
 					})
 			
@@ -1282,11 +1343,11 @@ focusID=products[0].id;
 			});
 
 function getFocus(idtoUse){
- 	console.log('idtoUse',idtoUse)
+ 	
 	let focusProduct=products.find((e)=>{
 				return e.id==idtoUse;
 			})		
- 
+			console.log('focusProduct',focusProduct)
 					let busTotal=0;
 					let appsTotal=0;
 					let techTotal=0;
@@ -1302,6 +1363,7 @@ function getFocus(idtoUse){
 						let busImp=groupByType.find((f)=>{return f.key=='Business_Process'})
 						let appImp=groupByType.find((f)=>{return f.key=='Composite_Application_Provider'})
 						let techImp=groupByType.find((f)=>{return f.key=='Technology_Product'})
+						let dataImp=groupByType.find((f)=>{return f.key=='Information_Representation'})
 						
 						if(busImp){
 							e['busImpacting']=busImp.values;
@@ -1312,9 +1374,13 @@ function getFocus(idtoUse){
 						if(techImp){
 							e['techImpacting']=techImp.values;
 						}
+
+						if(dataImp){
+							e['infoImpacting']=dataImp.values;
+						}
 				 
 					
-						if(e.busImpacting){
+						if(e.busImpacting.length&gt;0){
 						busTotal=busTotal+e.busImpacting.length;
 							e.busImpacting.forEach((f)=>{
 							 
@@ -1326,7 +1392,7 @@ function getFocus(idtoUse){
 							 
 						}
 					
-						if(e.appsImpacting){
+						if(e.appsImpacting.length&gt;0){
 						appsTotal=appsTotal+e.appsImpacting.length;
 					 
 							e.appsImpacting.forEach((f)=>{ 
@@ -1336,8 +1402,23 @@ function getFocus(idtoUse){
 								thisApp.controls.push({"id":e.id,"name":e.name, "assessment":f.id, "assessmentFinding":f.assessmentFinding})
 								 
 							})
-						}
-						if(e.techImpacting){
+						} 
+					 
+						if(e.infoImpacting.length&gt;0){
+						 
+							infoTotal=infoTotal+e.infoImpacting.length;
+							console.log('e.infoTotal',infoTotal)
+								e.infoImpacting.forEach((f)=>{ 
+									let thisData=infoData.information_representation.find((ap)=>{
+										return ap.id==f.elementId;
+									});
+									console.log('thisData',thisData)
+									thisData.controls.push({"id":e.id,"name":e.name, "assessment":f.id, "assessmentFinding":f.assessmentFinding})
+									 
+								})
+							}
+
+						if(e.techImpacting.length&gt;0){
 						techTotal=techTotal+e.techImpacting.length;
 							e.techImpacting.forEach((f)=>{
 							let thisTech=techProds.technology_products.find((ap)=>{
@@ -1346,36 +1427,37 @@ function getFocus(idtoUse){
 							thisTech.controls.push({"id":e.id,"name":e.name, "assessment":f.id, "assessmentFinding":f.assessmentFinding})
 							})
 						}
-						if(e.infoImpacting){
-						infoTotal=infoTotal+e.infoImpacting.length;
-						}
+						 
 						if(e.suppImpacting){
 						suppTotal=suppTotal+e.suppImpacting.length;
 						}
 					 
 					}) 
+					
 					focusProduct['busTotal']=busTotal;
 					focusProduct['appsTotal']=appsTotal;
 					focusProduct['techTotal']=techTotal;
 					focusProduct['infoTotal']=infoTotal;
 					focusProduct['suppTotal']=suppTotal;
-				
+					
 				let inScopeApp=appData.applications.filter((e)=>{
 					return e.controls.length &gt;0
-				})
-	 
+				}) 
 				let inScopeProc=processData.businessProcesses.filter((e)=>{
 					return e.controls.length &gt;0
-				})
-
+				}) 
 				let inScopeTech=techProds.technology_products.filter((e)=>{
 					return e.controls.length &gt;0
 				})
- 
-  				drawView(focusProduct, inScopeApp, inScopeProc, inScopeTech)
+		 
+				let inScopeInfo=infoData.information_representation.filter((e)=>{
+					return e.controls.length &gt;0
+				})
+		 
+  				drawView(focusProduct, inScopeApp, inScopeProc, inScopeTech, inScopeInfo)
 }			
 	
-function drawView(controls, apps, busproc, techprod){
+function drawView(controls, apps, busproc, techprod, infoData){
  
 	apps.forEach((f)=>{
  
@@ -1393,14 +1475,22 @@ function drawView(controls, apps, busproc, techprod){
 		f['techHTML']=thisHTML
 	})
 
+	infoData.forEach((f)=>{
+		let thisHTML=appsTemplate(f);
+		f['infoHTML']=thisHTML
+	})
+
 	initPopoverTrigger();
 
 	controls['apps']=apps;
 	controls['busProcs']=busproc;
 	controls['techProds']=techprod; 
+	controls['info']=infoData
+
+	console.log('controls',controls)
 	$('#mainPanel').html(panelTemplate(controls))
 
-	initTable(apps, busproc, techprod);
+	initTable(apps, busproc, techprod, infoData);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){ $($.fn.dataTable.tables(true)).DataTable() .columns.adjust(); });
 		
 	
@@ -1429,7 +1519,7 @@ function drawView(controls, apps, busproc, techprod){
 	})
 }
  
-function initTable(dt, dbust, dtecht){
+function initTable(dt, dbust, dtecht, dinfo){
  
 	$('#dt_apptable tfoot th').each( function () {
 		var techtitle = $(this).text();
@@ -1685,6 +1775,8 @@ function initPopoverTrigger()
 				<xsl:variable name="thisprocessControls" select="$processControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 				<xsl:variable name="thisapplicationControls" select="$applicationControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 				<xsl:variable name="thistechnologyControls" select="$technologyControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
+				<xsl:variable name="thisinformationControls" select="$informationControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
+				
 				{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 						<xsl:with-param name="theSubjectInstance" select="current()"/>
 						<xsl:with-param name="isRenderAsJSString" select="true()"/>
@@ -1718,7 +1810,9 @@ function initPopoverTrigger()
 						<xsl:variable name="thisprocessControls" select="$processControls[name=current()/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 						<xsl:variable name="thisapplicationControls" select="$applicationControls[name=current()/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 						<xsl:variable name="thistechnologyControls" select="$technologyControls[name=current()/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
-						<xsl:variable name="allctrls" select="$thisprocessControls union $thisapplicationControls union $thistechnologyControls"/>
+						<xsl:variable name="thisthisinformationControls" select="$thisinformationControls[name=current()/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
+					
+						<xsl:variable name="allctrls" select="$thisthisinformationControls union $thisprocessControls union $thisapplicationControls union $thistechnologyControls"/>
 					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 					"elementId":"<xsl:value-of select="eas:getSafeJSString(own_slot_value[slot_reference='control_to_element_ea_element']/value)"/>",
 					"elementType":"<xsl:choose>
@@ -1732,7 +1826,8 @@ function initPopoverTrigger()
 				</xsl:for-each>],
 				"busImpacting":[],
 				"appsImpacting":[],
-				"techImpacting":[]
+				"techImpacting":[],
+				"infoImpacting":[]
 <!--
 				"appsImpacting":[<xsl:for-each select="$thisapplicationControls">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 				"busImpacting":[<xsl:for-each select="$thisprocessControls">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
@@ -1770,26 +1865,83 @@ function initPopoverTrigger()
 <xsl:variable name="assessmentKey" select="key('assessment_key',current()/name)"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 "assessments":[<xsl:for-each select="$assessmentKey">
+		<xsl:variable name="thisplans" select="$plans[name=current()/own_slot_value[slot_reference = 'ca_remediation_plans']/value]"/>
 		<xsl:variable name="assessmentResult" select="$assessmentFinding[name=current()/own_slot_value[slot_reference='assessment_finding']/value]"/> 
 		<xsl:variable name="assessor" select="$actors[name=current()/own_slot_value[slot_reference='control_assessor']/value]"/>	
 		<xsl:variable name="thisComments" select="$commentary[name=current()/own_slot_value[slot_reference='assessment_comments']/value]"/>		
-{"id":"<xsl:value-of select="current()/name"/>",
-"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
-"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_assessor']/value"/>",
-"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
-"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
-"assessmentFinding":"<xsl:value-of select="$assessmentResult/own_slot_value[slot_reference='enumeration_value']/value"/>",
-"targetRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_target_date_ISO8601']/value"/>",
-"completedRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_completion_date_ISO8601']/value"/>",
-"comments":"<xsl:value-of select="$thisComments/own_slot_value[slot_reference='name']/value"/>"		
-	}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
-}<xsl:if test="position()!=last()">,</xsl:if>
+		{"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+		"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_assessor']/value"/>",
+		"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
+		"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
+		"assessmentFinding":"<xsl:value-of select="$assessmentResult/own_slot_value[slot_reference='enumeration_value']/value"/>",
+		"targetRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_target_date_ISO8601']/value"/>",
+		"completedRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_completion_date_ISO8601']/value"/>",
+		"plans":[<xsl:for-each select="$thisplans">{"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",
+		"className":"Enterprise_Strategic_Plan"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"comments":"<xsl:value-of select="$thisComments/own_slot_value[slot_reference='name']/value"/>"		
+			}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+		}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 
 <xsl:template match="node()" mode="options">
 <option><xsl:attribute name="value"><xsl:value-of select="current()/name"/></xsl:attribute><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></option>
 </xsl:template>
+
+<xsl:template name="RenderJSMenuLinkFunctionsTEMP">
+		<xsl:param name="linkClasses" select="()"/>
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+		var esslinkMenuNames = {
+			<xsl:call-template name="RenderClassMenuDictTEMP">
+				<xsl:with-param name="menuClasses" select="$linkClasses"/>
+			</xsl:call-template>
+		}
+     
+		function essGetMenuName(instance) {  
+			console.log('instance',instance)
+			let menuName = null;
+			if(instance.meta?.anchorClass) {
+				menuName = esslinkMenuNames[instance.meta.anchorClass];
+			} else if(instance.className) {
+				menuName = esslinkMenuNames[instance.className];
+			}
+			console.log('menuName',menuName)
+			return menuName;
+		}
+		
+		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){ 
+			if(instance != null) {
+                let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+                } 
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
+    </xsl:template>
+    <xsl:template name="RenderClassMenuDictTEMP">
+		<xsl:param name="menuClasses" select="()"/>
+		<xsl:for-each select="$menuClasses">
+			<xsl:variable name="this" select="."/>
+			<xsl:variable name="thisMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+			"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
+			</xsl:if>
+		</xsl:for-each>
+		
+	</xsl:template>
 </xsl:stylesheet>

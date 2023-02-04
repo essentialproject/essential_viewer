@@ -4225,6 +4225,7 @@ td.CompImpactLow{
 @media print {
 	#mainHeader, footer, .portalBarRow, #printOverlay {display: none!important;}
 	a[href]::after {content: none !important;}
+	.chartjs-size-monitor{position:fixed !important;}
 }
 
 @page {

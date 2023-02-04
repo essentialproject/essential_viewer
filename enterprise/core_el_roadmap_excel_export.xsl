@@ -5,6 +5,140 @@
 	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
 	
 	<xsl:template name="RenderRoadmapExcel">
+		<!-- Handlebars template to render the roadmap data in json format for exporting as Excel -->
+		<script id="roadmap-excel-json-template" type="text/x-handlebars-template">
+			{
+				"roadmap": {
+					"id": 1,
+					"name":"Roadmap",
+					"worksheetNameNice":"Roadmap",
+					"worksheetName":"Roadmap",
+					"description":"The Roadmap that has been created",
+					"heading":[
+						{"col":"B", "name":"Id"},
+						{"col":"C", "name":"Name"},
+						{"col":"D", "name":"Description"}
+					],
+					"data": [
+						{
+							"row": 8,
+							"id": "{{roadmap.extId}}",
+							"name": "{{roadmap.name}}",
+							"description": "{{roadmap.description}}"
+						}
+					]
+				},
+				"strategicPlans": {
+					"id": 2,
+					"name":"Strategic Plans",
+					"worksheetNameNice":"Strategic Plans",
+					"worksheetName":"Strategic_Plans",
+					"description":"The strategic plans contained in the Roadmap",
+					"heading":[
+						{"col":"B", "name":"Roadmap"}, 
+						{"col":"C", "name":"Name"},
+						{"col":"D", "name":"Description"},
+						{"col":"E", "name":"StartDate"},
+						{"col":"F", "name":"EndDate"}
+					],
+					"data": [
+						{{#each strategicPlans}}
+							{{#unless @first}},{{/unless}}
+							{
+								"row": {{add @index 8 0}},
+								"roadmap": "{{../roadmap.name}}",
+								"name": "{{name}}",
+								"description": "{{description}}",
+								"startdate": "{{excelStartDate}}",
+								"enddate": "{{excelEndDate}}"
+							}
+						{{/each}}
+					]
+				},
+				"stratPlanObjectives": {
+					"id": 3,
+					"name":"Strategic Plan Objectives",
+					"worksheetNameNice":"Strategic Plan Objectives",
+					"worksheetName":"Strategic_Plan_Objectives",
+					"description":"Maps Strategic Plans to the Objectives that they support",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"SupportedObjective"}
+					],
+					"data": []
+				},
+				"stratPlanDependencies": {
+					"id": 4,
+					"name":"Strategic Plan Dependencies",
+					"worksheetNameNice":"Strategic Plan Dependencies",
+					"worksheetName":"Strategic_Plan_Dependencies",
+					"description":"Define the dependencies between Strategic Plans",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"DependsOnPlan"}
+					],
+					"data": []
+				},
+				"plannedAppChanges": {
+					"id": 5,
+					"name":"Application Planning Actions",
+					"worksheetNameNice":"Application Planning Actions",
+					"worksheetName":"Application_Planning_Actions",
+					"description":"The changes that are planned to Applications",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"ImpactedApplication"}, 
+						{"col":"D", "name":"PlannedChange"}, 
+						{"col":"E", "name":"ChangeRationale"}
+					],
+					"data": []
+				},
+				"plannedAppServiceChanges": {
+					"id": 6,
+					"name":"Application Service Planning Actions",
+					"worksheetNameNice":"Application Service Planning Actions",
+					"worksheetName":"Application_Service_Planning_Actions",
+					"description":"The changes that are planned to Application Services",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"ImpactedApplicationService"}, 
+						{"col":"D", "name":"PlannedChange"}, 
+						{"col":"E", "name":"ChangeRationale"}
+					],
+					"data": []
+				},
+				"plannedBusProcChanges": {
+					"id": 7,
+					"name":"Business Process Planning Actions",
+					"worksheetNameNice":"Business Process Planning Actions",
+					"worksheetName":"Business Process_Planning_Actions",
+					"description":"The changes that are planned to Business Processes",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"ImpactedBusinessProcess"}, 
+						{"col":"D", "name":"PlannedChange"}, 
+						{"col":"E", "name":"ChangeRationale"}
+					],
+					"data": []
+				},
+				"plannedOrgChanges": {
+					"id": 8,
+					"name":"Organisation Planning Actions",
+					"worksheetNameNice":"Organisation Planning Actions",
+					"worksheetName":"Organisation_Planning_Actions",
+					"description":"The changes that are planned to Organisations",
+					"heading":[
+						{"col":"B", "name":"StrategicPlan"}, 
+						{"col":"C", "name":"ImpactedOrganisation"}, 
+						{"col":"D", "name":"PlannedChange"}, 
+						{"col":"E", "name":"ChangeRationale"}
+					],
+					"data": []
+				}
+			}
+		</script>
+		
+		
 		<!-- Handlebars template to render the roadmap data in excel format -->
 		<script id="roadmap-excel-template" type="text/x-handlebars-template">
 			<?mso-application progid="Excel.Sheet"?>

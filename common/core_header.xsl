@@ -66,7 +66,7 @@
 	<xsl:key name="utilitiesAllReports_key" match="$utilitiesAllReports" use="own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 	<xsl:key name="utilitiesAllPDFConfigs_key" match="$utilitiesAllPDFConfigs" use="own_slot_value[slot_reference = 'report_pdf_config_is_default']/value"/>
 	
-	
+	<xsl:variable name="dynQueryInstance" select="$utilitiesAllEditors[(own_slot_value[slot_reference='name']/value = 'SYS: DYNAMIC QUERY TOOL')]"/>
  
 	<xsl:variable name="homeHref">
 		<xsl:choose>
@@ -220,6 +220,16 @@
 								</a>
 							</li>
 							<!-- ONLY SHOW THE FOLLOWING IF IN EIP MODE -->
+							<xsl:if test="($eipMode = 'true') and $dynQueryInstance">
+								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
+									<xsl:attribute name="title" select="eas:i18n('Query')"/>
+									<a id="queryLink" target="_blank">
+										<xsl:attribute name="href" select="concat('report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Dynamic%20Query%20Tool&amp;SECTION=&amp;EDITOR=',$dynQueryInstance/name)"/>
+										<i class="fa fa-table"/>
+									</a>
+									
+								</li>
+							</xsl:if>
 							<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 									<xsl:attribute name="title" select="eas:i18n('Comments')"/>

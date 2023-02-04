@@ -121,7 +121,12 @@
 				<style type="text/css">
 					table.dataTable{
 						margin-top: 0px !important;
-					}</style>
+					}
+					.bg-midgrey {
+						background-color: #999!important;
+						color: #fff;
+					}
+				</style>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -241,7 +246,7 @@
 		<xsl:param name="businessRoles"/>
 		<xsl:param name="dmPolicies"/>
 		<!--Setup Matrix Section-->
-		<table class="tableStyleMatrix dataTable table-header-background" id="dt_dataObjects">
+		<table class="table table-bordered table-header-background" id="dt_dataObjects">
 			<thead>
 				<tr>
 					<th class="tableStyleMatrixCorner cellWidth-140 vAlignMiddle">&#160;</th>

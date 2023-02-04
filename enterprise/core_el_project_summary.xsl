@@ -656,9 +656,9 @@
                          "allStratPlans":[<xsl:apply-templates select="$thisInterestedStrategicPlans union $thisdirectStrategicPlans" mode="plansInfo"/>],
                          "stakeholders":[<xsl:apply-templates select="$projectStakeholders" mode="stakeholders"/>]};
                 
-                
-                $('#datechecker').val(project.forecastEndDate);
-                
+                console.log('project.forecastEndDate', project.forecastEndDate)
+              //  $('#datechecker').val('setDate',);
+                $("#datechecker").datepicker('setDate',new Date(project.forecastEndDate));
                 var keydates=[];
                 
                 keydates.push({"id":project.projectID, content:project.projectName,  start: project.actualStartDate, end: project.forecastEndDate, style:'background-color:#de8585'});

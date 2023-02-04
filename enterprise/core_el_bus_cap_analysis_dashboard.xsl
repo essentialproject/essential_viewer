@@ -1533,8 +1533,8 @@
 
 			Handlebars.registerHelper('getColour', function(arg1) {
 				let colour='#fff';
-
-				if(parseInt(arg1) &lt;2){colour='#EDBB99'}
+				if(parseInt(arg1) ==0 ){colour='#d3d3d3'}
+				else if(parseInt(arg1) &lt;2){colour='#EDBB99'}
 				else if(parseInt(arg1) &lt;6){colour='#BA4A00'}
 				else if(parseInt(arg1) &gt;5){colour='#6E2C00'} 
 
@@ -1722,7 +1722,7 @@
 			promise_loadViewerAPIData(viewAPIDataActor)
 			]).then(function (responses)
 			{
-			 //	console.log('viewAPIData',responses[0]);
+			// 	console.log('viewAPIData',responses[0]);
 			//	console.log('viewAPIDataApps',responses[1]);
 			 //	console.log('viewAPIDataCaps',responses[2]);
 			//	console.log('viewAPIDataSvcs',responses[3]);
@@ -2008,7 +2008,7 @@
 			let scopedCaps=[];
 
 var redrawView=function(){
- 
+	$('#capjump').prop('disabled', 'disabled');
 	workingCapId=0;
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
@@ -2044,13 +2044,13 @@ var redrawView=function(){
 	}else
 	{	 
 		localStorage.setItem("essentialhideCaps", "Showing");
-		$('.buscap').show(); 
-		$('.buscap').addClass("off-cap")
-		inScopeCapsApp.forEach((d)=>{
-		 
+	 $('.buscap').show(); 
+	<!--	inScopeCapsApp.forEach((d)=>{
+		 console.log('inScopeCapsApp',inScopeCapsApp)
 			 $('div[eascapid="'+d.id+'"]').removeClass("off-cap");
 		 
 			});
+		-->		
 	}
 
 	let appMod = new Promise(function(resolve, reject) { 
@@ -2238,7 +2238,7 @@ var redrawView=function(){
 								return ap==wl;
 							})
 							if(match){
-								console.log('apl',ap)
+						 
 								leftMatch.push(ap) 
 							}
 						})
@@ -2256,7 +2256,7 @@ var redrawView=function(){
 								return ap==wl;
 							})
 							if(match){ 
-								console.log('ap',ap)
+						 
 								rightMatch.push(ap) 
 							}
 						})
@@ -2302,8 +2302,7 @@ var redrawView=function(){
 			dataToShow['right']=$('#rightOrgList :selected').text(); 
 			dataToShow['name']=thisCapAppList[0].name;
 			dataToShow['id']=thisCapAppList[0].id;
-			dataToShow['rows']=rowToShow
-			console.log('dataToShow ',dataToShow)
+			dataToShow['rows']=rowToShow;
 			dataToShow.rows=dataToShow.rows.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
 			
 			$('#appData').html(compareTemplate(dataToShow));
@@ -2317,7 +2316,7 @@ var redrawView=function(){
 		})
 
 function getApps(capid){
-	 console.log('ci',capid)
+ 
 	let thisCapAppList =  workingArrayAppsCaps.filter(function (d)
 	{
 		return d.id == capid;
@@ -2373,9 +2372,12 @@ panelData.apps.forEach((d)=>{
 	let workLeft=relevantOrgData.find((e)=>{ return e.id==leftOrg})
 	let workRight=relevantOrgData.find((e)=>{ return e.id==rightOrg})
 	let appCount=0
-	$('.app-circle').text('0')
+<!--	$('.app-circle').text('0')
 		$('.app-circle').each(function() {
-			if($(this).html() ==0) {$(this).parent().addClass("off-cap")}
+			console.log('addap',$(this).html() )
+			if($(this).html() ==0) {$(this).parent().addClass("off-cap")
+				console.log('added off-cap')
+				}
 
 			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
 		  
@@ -2383,14 +2385,8 @@ panelData.apps.forEach((d)=>{
 		  
 			$(this).html() >= 6 ? $(this).css({'background-color': '#d59deb', 'color': 'black'}) : null;
 		  });
-
-		  workingArrayAppsCaps.forEach(function (d)
-		  {
-			   
-			  let appCount=d.filteredApps.length;
-			  $('*[easidscore="' + d.id + '"]').html(appCount);
-		   
-		  })
+		-->
+		  
 	  
 		  inScopeCapsApp.forEach((e)=>{
 			  
@@ -2398,9 +2394,6 @@ panelData.apps.forEach((d)=>{
 		  
 		  })
 
-
-
-	
 		  workingArrayAppsCaps.forEach(function (d)
 		{
 
@@ -2465,14 +2458,32 @@ panelData.apps.forEach((d)=>{
 			}else{
 			$('*[easidcompare="' + d.id + '"]').html('?').css("color","#fff");;
 			}
-			let colour='#fff';
-			let textColour='#fff';
-			if(appCount &lt;2){colour='#EDBB99'} 
-			else if(appCount &lt;6){colour='#BA4A00'} 
+
+	 
+		});
+		workingArrayAppsCaps.forEach(function (d)
+		  {
+			
+			  let appCount=d.filteredApps.length;
+			  $('*[easidscore="' + d.id + '"]').html(appCount);
+			 
+			  let colour='#fff';
+			let textColour='#fff'; 
+			if(appCount !=0 ){
+				$('*[eascapid="' + d.id + '"]').parent().removeClass("off-cap");
+		 
+		}
+			if(appCount ==0 ){colour='#d3d3d3';
+			$('*[eascapid="' + d.id + '"]').addClass("off-cap");
+		}   
+			else if(appCount &lt;2){colour='#EDBB99'}
+			else if(appCount &lt;6){colour='#BA4A00';
+			
+		} 
 			else{colour='#6E2C00'}
 			$('*[easidscore="' + d.id + '"]').css({'background-color':colour, 'color':textColour})
-	
-		});
+		  })
+		$('#capjump').prop('disabled', false);
 	})
 
 
@@ -2483,10 +2494,11 @@ function redrawView() {
 	essRefreshScopingValues()
 }
 });
+$('#capjump').prop('disabled', 'disabled');
 
 $('#capjump').change(function(){
 	var id = "#" + $(this).val();
-	console.log('id',id)
+ 
 	$('html, body').animate({
 		scrollTop: $(id).offset().top
 	}, 5000);

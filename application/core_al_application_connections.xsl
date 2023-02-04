@@ -466,12 +466,19 @@ function getDependencies(focusCap,svcList, apps){
 			letIn = coreAppList.find((g)=>{
 				return g.appId ==e.appId;
 			})
-			if(letIn){
-				e.col="1"
+			console.log('letIn',letIn)
+			console.log(typeof letIn)
+			if(typeof letIn=='undefined'){ 
+				e.col="#999"
+			}else{ 
+				e.col="#000"
 			}
-		})
-		newDepList=newDepList.filter((elem, index, self) => self.findIndex( (t) => {return (t.ApplicationID === elem.ApplicationID)}) === index)
  
+		})
+		console.log('newAppList',newAppList)
+		console.log('coreAppList',coreAppList)
+		newDepList=newDepList.filter((elem, index, self) => self.findIndex( (t) => {return (t.ApplicationID === elem.ApplicationID)}) === index)
+	 
 		createChart(newDepList, newAppList)
 		
 	}
@@ -553,17 +560,20 @@ var redrawView = function () {
 
 <!-- create graph -->
 function createChart(depList, appList){
-	 
+	 console.log('appList2',appList)
 	var g;
 	g = new dagreD3.graphlib.Graph().setGraph({ rankdir: "LR"});
-
-depList.forEach((d)=>{  
+let attachedApps=[];
+console.log('ddepList',depList)
+depList.forEach((d)=>{   
 	if(d.From.length&gt;0){
 		d.From.forEach((fr)=>{ 
 			let here=scopedAppsList.find((ap)=>{
 					return ap.appId==fr.appid;
 				})
-				if(here){
+				if(here){  
+					attachedApps.push({"id":fr.appid,"name":fr.appName})
+					attachedApps.push({"id":d.ApplicationID,"name":d.ApplicationName})
 			g.setEdge(fr.appName,  d.ApplicationName,     { label: "",curve: d3.curveBundle.beta(0.5)  });
 				}
 		});
@@ -574,20 +584,34 @@ depList.forEach((d)=>{
 				let here=scopedAppsList.find((ap)=>{
 					return ap.appId==to.appid;
 				})
-				if(here){
+				if(here){  
+					attachedApps.push({"id":to.appid,"name":to.appName})
+					attachedApps.push({"id":d.ApplicationID,"name":d.ApplicationName})
 			g.setEdge(d.ApplicationName,  to.appName,     { label: "",curve:d3.curveBundle.beta(0.5)  });
 				}
 			}
 		})
 	}
 	})
- 
+	attachedApps = [...new Set(attachedApps)];
+	attachedApps= attachedApps.filter((value, index, self) =>
+  index === self.findIndex((t) => (
+    t.id === value.id  
+  ))
+)
+ console.log('attachedApps',attachedApps)
 // States and transitions from RFC 793
  
 // Automatically label each of the nodes
 var nodes = []; 
- 
-scopedAppsList.forEach((d)=>{ 
+ console.log('scopedAppsList',scopedAppsList)
+scopedAppsList.forEach((d)=>{
+
+	let includeApp=attachedApps.find((a)=>{
+		return a.id==d.appId
+	})  
+	if(includeApp){
+	if(typeof includeApp.id !='undefined'){ 
 	var niceLabel;
 	let thisCodeColour ={};
 	let thisDeliveryColour={}
@@ -603,7 +627,11 @@ scopedAppsList.forEach((d)=>{
 		thisCodeColour ={};
 		thisCodeColour['colour']='#000000';
 		thisCodeColour['bgcolour']='#ffffff';
+		if(d.codebaseName){
 		thisCodeColour['name']=d.codebaseName;
+		}else{
+			thisCodeColour['name']='Codebase not set'
+		}
 	}
 
 	thisDeliveryColour = thisstyles.delivery.find((e)=>{
@@ -618,31 +646,59 @@ scopedAppsList.forEach((d)=>{
 		thisDeliveryColour ={};
 		thisDeliveryColour['colour']='#000000';
 		thisDeliveryColour['bgcolour']='#ffffff';
+		if(d.codebaseName){
 		thisDeliveryColour['name']=d.delivery;
+		}else{
+			thisDeliveryColour['name']='Delivery model not set'
+		}
 	}
+
+	let appColour=appList.find((a)=>{
+		return a.appId==d.appId
+	})
+	console.log('appColour1',appColour)
+	if(typeof appColour=='undefined'){
+		 
+		let appColour={}
+		appColour['col']='red'
+		console.log('appColour2',appColour)
+	}else{
+		console.log('appColour3',appColour)
+	}
+	
 	 
  if(d.type !=='Application_Provider_Interface'){
- niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:'+d.col+'</xsl:attribute>Application</div>';
+	console.log('appColour4',appColour)
+	if(typeof appColour=='undefined'){
+		niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:#999</xsl:attribute>Application</div>';
 		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.bgcolour+';color:'+thisCodeColour.colour+'</xsl:attribute>'+thisCodeColour.name +'</div>';
 		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'; 
 		niceLabel +='</div>';
+		 
+	 }else{
+ niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:'+appColour.col+'</xsl:attribute>Application</div>';
+		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.bgcolour+';color:'+thisCodeColour.colour+'</xsl:attribute>'+thisCodeColour.name +'</div>';
+		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'; 
+		niceLabel +='</div>';
+	 }
 	}
 	else{ 
-	niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="apibadge"><xsl:attribute name="style">background-color:'+d.col+'</xsl:attribute>API</div>';
+	niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="apibadge"><xsl:attribute name="style">background-color:'+appColour.col+'</xsl:attribute>API</div>';
 		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.name +';color:'+thisCodeColour.colour+'</xsl:attribute>'+d.codebaseName +'</div>';
 		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'
 		niceLabel +='</div>';
 	}
 
 	nodes.push(g.setNode(d.appName, { labelType:"html", label: niceLabel }) );
-});
-		
  
-
+	}	
+}
+});
+  
 // Set some general styles
 g.nodes().forEach(function(v) {
 		 
-  var node = g.node(v);
+  var node = g.node(v); 
   node.rx = node.ry = 5;
 });
 

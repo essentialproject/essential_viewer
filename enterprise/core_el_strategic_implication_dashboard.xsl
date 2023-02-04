@@ -173,7 +173,7 @@
 				<script src="js/handlebars-v4.1.2.js"/>
 				
 				<!-- Chart library -->
-				<script src="js/chartjs/Chart.bundle.min.js"/>
+				<script src="js/chartjs/Chart.min.js"/>
 				
 				<style type="text/css">
 					

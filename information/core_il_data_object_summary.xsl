@@ -163,11 +163,17 @@
 										</xsl:call-template>
 										<xsl:value-of select="$dsName" />
 									</a>-->
-								<xsl:call-template name="RenderInstanceLink">
-									<xsl:with-param name="theSubjectInstance" select="$parentSubject"/>
-									<xsl:with-param name="theXML" select="$reposXML"/>
-									<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-								</xsl:call-template>
+								<ul>
+									<xsl:for-each select="$parentSubject">
+										<li>
+											<xsl:call-template name="RenderInstanceLink">
+												<xsl:with-param name="theSubjectInstance" select="current()"/>
+												<xsl:with-param name="theXML" select="$reposXML"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+											</xsl:call-template>
+										</li>
+									</xsl:for-each>
+								</ul>
 							</div>
 							<hr/>
 						</div>

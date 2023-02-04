@@ -1263,6 +1263,11 @@
 							<a href="#applications" class="appTab" data-toggle="tab"><i class="fa fa-fw fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Usage')"/></a>
 						</li>
 						{{/if}}
+						{{#if this.documents}}
+						<li>
+							<a href="#documents" class="appTab" data-toggle="tab"><i class="fa fa-fw fa-file-text-o right-10"></i><xsl:value-of select="eas:i18n('Documents')"/></a>
+						</li>
+						{{/if}}
 					<!-- 	<li>
 							<a href="#projects" data-toggle="tab"><i class="fa fa-fw fa-calendar-check-o right-10"></i><xsl:value-of select="eas:i18n('Plans and Projects')"/></a>
 						</li>-->
@@ -1539,7 +1544,7 @@
 									Applications used by this organisation or its children organisations. <br/>
 									Key: <label class="label label-info ess-mini-badge">Via Process</label><xsl:text> </xsl:text><label class="label label-warning ess-mini-badge">Via App Org User</label><label class="label ess-mini-badge" style="background-color: #b07fdd;">Via Child Org</label>
 									<label class="label ess-mini-badge" style="background-color: #646068;">Via Parent</label>
-									 
+									<div class="clearfix top-15"/>
 									<table class="table table-striped table-bordered" id="dt_apptable">
 											<thead>
 												<tr>
@@ -1606,6 +1611,28 @@
 							</div>
 						</div>
 						
+						<div class="tab-pane" id="documents">
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-file-text-o right-10"></i>Documents</h2>
+							<div class="parent-superflex">
+								  
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-file-text-o right-10"></i>Documents</h3>
+									{{#each this.documents}}  
+										  {{#each this.values}} 
+											{{#ifEquals @index 0}}
+												{{#if this.type}}
+													<h3>{{this.type}}</h3>
+												{{else}}
+													<h3>General</h3>
+												{{/if}}
+											{{/ifEquals}}
+											<i class="fa fa-caret-right"></i> {{this.name}}: <a><xsl:attribute name="href">{{this.documentLink}}</xsl:attribute><i class="fa fa-link"></i></a><br/>
+										{{/each}} 
+									{{/each}}
+								</div>
+							</div>
+						
+						</div>
 					</div>
 				</div>
 			</div>
@@ -2032,8 +2059,14 @@
 							}
 						});
 					});
-			 
-					drawView(toShow, modelData);
+			 var docSort = d3.nest()
+			 	.key(function(d) { return d.index; })
+			 	.entries(toShow.documents);
+			  toShow.documents=docSort;
+
+
+			 console.log('to',toShow)
+			 drawView(toShow, modelData);
   
 				})
 				.catch (function (error) {

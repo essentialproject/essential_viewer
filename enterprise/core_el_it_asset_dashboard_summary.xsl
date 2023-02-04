@@ -197,7 +197,7 @@
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>
 				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<script src="js/chartjs/Chart.bundle.min.js"/>
+				<script src="js/chartjs/Chart.min.js"/>
 				<script src="js/chartjs/chartjs-plugin-labels.min.js"/> 
 				<xsl:call-template name="dataTablesLibrary"/>
 				<!--<xsl:call-template name="RenderRoadmapJSLibraries">

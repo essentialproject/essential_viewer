@@ -5549,22 +5549,42 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
             </Cell>
          </Row>
          <Row ss:AutoFitHeight="0" ss:Height="6"/>
-		{{#each this}}
+      {{#each this}}
+         {{#if this.ipAddresses}}
+         {{#each this.ipAddresses}}
+            <Row ss:AutoFitHeight="0" ss:Height="15">
+               <Cell ss:Index="2" ss:StyleID="s1095">
+                  <Data ss:Type="String">{{../this.id}}</Data>
+               </Cell>
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{../this.name}}</Data>
+                  <NamedCell ss:Name="Servers"/>
+               </Cell>
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{../this.hostedIn}}</Data>
+               </Cell>  
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{this}}</Data>
+               </Cell>
+            </Row>
+         {{/each}}
+         {{else}}
          <Row ss:AutoFitHeight="0" ss:Height="15">
-            <Cell ss:Index="2" ss:StyleID="s1095">
-               <Data ss:Type="String">{{this.id}}</Data>
-            </Cell>
-            <Cell ss:StyleID="s1095">
-               <Data ss:Type="String">{{this.name}}</Data>
-               <NamedCell ss:Name="Servers"/>
-            </Cell>
-            <Cell ss:StyleID="s1095">
-               <Data ss:Type="String">{{this.hostedIn}}</Data>
-            </Cell>  
-            <Cell ss:StyleID="s1095">
-               <Data ss:Type="String">{{this.ipAddress}}</Data>
-            </Cell>
-         </Row>
+               <Cell ss:Index="2" ss:StyleID="s1095">
+                  <Data ss:Type="String">{{this.id}}</Data>
+               </Cell>
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{this.name}}</Data>
+                  <NamedCell ss:Name="Servers"/>
+               </Cell>
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{this.hostedIn}}</Data>
+               </Cell>  
+               <Cell ss:StyleID="s1095">
+                  <Data ss:Type="String">{{this.ipAddress}}</Data>
+               </Cell>
+            </Row>
+         {{/if}}
 		  {{/each}}
 	 </Table>
       <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -8899,12 +8919,15 @@ $('#appsCheck').on("change", function() {
 			return promise_loadViewerAPIData(viewAPIDataApps)
 					.then(function(response1) {
 		 				$('#aps').css('color','#0aa20a')  
-						apps =response1;
-						//console.log('apps');
-						//console.log(apps);
+                  apps =response1; 
+                  apps.applications=apps.applications.filter((d)=>{
+                     return d.class=='Composite_Application_Provider';
+                  }) 
+						 console.log('apps');
+						 console.log(apps); 
 					 worksheetList.push({"id":20,"name": appstableTemplate(apps.applications)});	
 					}).catch (function (error) {
-						alert('Error - check you have the Core API: Import App Service Data API set up')
+						alert('Error - check you have the Core API: Import Appplication API set up')
 					});  
 		 }
 		} else {

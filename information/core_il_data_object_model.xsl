@@ -335,7 +335,9 @@
 		<xsl:variable name="lowerCaseName" select="lower-case($dataObjectName)"/>
 		<xsl:variable name="noOpenBrackets" select="translate($lowerCaseName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="translate($noCloseBrackets, ' ', '')"/>
+		<xsl:variable name="noSqBracketsOpen" select="translate($noCloseBrackets, '[', ' ')"/>
+		<xsl:variable name="noSqBracketsClosed" select="translate($noSqBracketsOpen, ']', ' ')"/>
+		<xsl:value-of select="translate($noSqBracketsClosed, ' ', '')"/>
 
 	</xsl:function>
 
@@ -345,7 +347,9 @@
 
 		<xsl:variable name="noOpenBrackets" select="translate($dataObjectName, '(', '')"/>
 		<xsl:variable name="noCloseBrackets" select="translate($noOpenBrackets, ')', '')"/>
-		<xsl:value-of select="$noCloseBrackets"/>
+		<xsl:variable name="noSqBracketsOpen" select="translate($noCloseBrackets, '[', ' ')"/>
+		<xsl:variable name="noSqBracketsClosed" select="translate($noSqBracketsOpen, ']', ' ')"/>
+		<xsl:value-of select="$noSqBracketsClosed"/>
 
 	</xsl:function>
 

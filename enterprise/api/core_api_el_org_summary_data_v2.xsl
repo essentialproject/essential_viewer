@@ -43,6 +43,10 @@
 	<xsl:key name="allRoles_key" match="$allRoles" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
 	<xsl:key name="actor_key" match="$allActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 	<xsl:key name="allactor2r_key" match="$allActor2RoleRelations" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/> 
+
+	<xsl:key name="allDocs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
+	<xsl:key name="allTaxTerms_key" match="/node()/simple_instance[type = 'Taxonomy_Term']" use="own_slot_value[slot_reference = 'classifies_elements']/value"/> 
+	 
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -140,6 +144,7 @@
 <!--
         <xsl:variable name="thisRolesForActor" select="$allRoles[name = $thisA2RForActor/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
 -->     
+<xsl:variable name="thisDocs" select="key('allDocs_key',current()/name)"/>
 <!-- for all children, not just direct -->
 <xsl:variable name="relevantchildren" select="eas:get_descendants(current(), $allActors, 0, 10, 'is_member_of_actor')"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -153,7 +158,19 @@
             </xsl:call-template>",             
         "parentOrgs":[<xsl:for-each select="$thisparentActor">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"childOrgs":[<xsl:for-each select="$thisChildActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
-	   	"allChildOrgs":[<xsl:for-each select="$relevantchildren">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"allChildOrgs":[<xsl:for-each select="$relevantchildren">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"documents":[<xsl:for-each select="$thisDocs">
+		<xsl:variable name="thisTaxonomyTerms" select="key('allTaxTerms_key',current()/name)"/>
+		{"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>",
+		"documentLink":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>",
+		"date":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'erl_date_iso_8601']/value"/>",
+		"type":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'name']/value"/>",
+		"index":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'taxonomy_term_index']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:for-each>],   
 		"orgEmployees":[<xsl:for-each select="$thisEmployees"> 
 				<xsl:variable name="thisEmployeeA2Rs" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
 				<xsl:variable name="thisEmployeeRoles" select="key('allRoles_key',$thisEmployeeA2Rs/name)"/>	

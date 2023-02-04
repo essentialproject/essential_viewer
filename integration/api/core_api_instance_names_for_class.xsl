@@ -40,7 +40,7 @@
 	<xsl:template mode="RenderInstance" match="node()">
 		{<xsl:choose><xsl:when test="eas:isUserAuthZ(current())">"id": "<xsl:value-of select="eas:validJSONString(current()/name)"/>",
 		"type": "<xsl:value-of select="eas:validJSONString(current()/type)"/>",
-        "name": "<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='name']/value"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></xsl:when><xsl:when test="current()/own_slot_value[slot_reference=':relation_name']/value"><xsl:value-of  select="own_slot_value[slot_reference=':relation_name']/value"/></xsl:when><xsl:otherwise><xsl:value-of  select="own_slot_value[slot_reference='relation_name']/value"/></xsl:otherwise></xsl:choose>"</xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose>
+        "name": "<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='name']/value"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:when><xsl:when test="current()/own_slot_value[slot_reference=':relation_name']/value"><xsl:value-of  select="own_slot_value[slot_reference=':relation_name']/value"/></xsl:when><xsl:otherwise><xsl:value-of  select="own_slot_value[slot_reference='relation_name']/value"/></xsl:otherwise></xsl:choose>"</xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose>
         }<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>

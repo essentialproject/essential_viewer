@@ -99,7 +99,6 @@
 				<script type="text/javascript" src="common/js/core_common_api_functions.js"/>
 				<script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
 				<script type="text/javascript" src="enterprise/js/ess_strategic_trend_radar.js"></script>
-				<script type="text/javascript" src="js/handlebars-v4.0.8.js"/>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>

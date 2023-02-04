@@ -20,7 +20,7 @@
 	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Dashboard']"></xsl:variable>
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"></xsl:variable>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Application_Service', 'Business_Process', 'Business_Activity', 'Business_Task')"></xsl:variable>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Composite_Application_Provider')"></xsl:variable>
  
 	 
 	<!-- END GENERIC LINK VARIABLES -->
@@ -45,9 +45,19 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
+PPTX - powerpoint generation
+
+Copyright (c) 2015-Present Brent Ely
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files 
+(the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, 
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	 
 	-->
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
@@ -92,8 +102,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
                 <script src="js/d3/d3.min.js"></script>
-                <script src="js/chartjs/Chart.bundle.min.js"></script>
-                <script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
+                <script src="js/chartjs/Chart.min.js"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
+				<script src="js/pptxgenjs/dist/pptxgen.bundle.js"></script>
 				<title>Application Dashboard</title>
 				<style>
 					html {
@@ -551,6 +562,20 @@
 						color: #fff;
 						cursor: pointer;
 					}
+					<!--.sentToPowerPoint{
+						background-color:green;
+						color:#fff;
+					}-->
+					.sendToPP {
+						position:absolute;
+						top: 5px;
+						right: 5px;
+					}
+					
+					.panel-body{
+						position: relative;
+					}
+					
 				</style>
 				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -614,6 +639,10 @@
 										<select id="busCaps" style="width: 200px;">
 											<option id="all">All</option>
 										</select>
+										<div class="pull-right">
+											<button id="generate" class="btn btn-success"><i class="fa fa-cogs right-5"/>Generate PowerPoint<span></span></button>
+										</div>
+
 									</div>
 									<div class="appCounter top-10 bg-primary"><i class="fa fa-desktop right-10"/>Applications In Scope: <span id="appVal">0</span></div>									
 									<div id="chart-quick-links" class="top-15"/>
@@ -850,7 +879,13 @@
 							</div>
 							<div class="panel-body">
 								<canvas width="800" height="450"><xsl:attribute name="id">{{this.id}}</xsl:attribute></canvas>
+								<button class="btn btn-default btn-xs sendToPP">
+									<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
+									<i class="fa fa-share right-5"/>
+									Send to PowerPoint
+								</button>
 							</div>
+							 
 						</div>
 					</div>
 				{{/each}}	
@@ -863,7 +898,7 @@
                         	<div class="appBoxLabel">{{#essRenderInstanceLinkMenuOnly this 'Composite_Application_Provider'}}{{/essRenderInstanceLinkMenuOnly}}</div>
                         	<i class="fa fa-info-circle appInfoButton">
                         		<xsl:attribute name="easid">{{this.id}}</xsl:attribute></i>
-                        </div>
+						</div>
                     {{/each}}
                 </script>
 
@@ -891,7 +926,8 @@
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
         var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>'; 
 		var viewAPIDataPhysProc = '<xsl:value-of select="$viewerAPIPathPhysProc"/>'; 
-		
+		var pres = new PptxGenJS();
+		var selectedPPTCount =0;
  		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL)
@@ -936,7 +972,7 @@
 
 	//	var panelLeft=$('#appSidenav').position().left;
 	let filtersNo=[<xsl:call-template name="GetReportFilterExcludedSlots"><xsl:with-param name="theReport" select="$theReport"></xsl:with-param></xsl:call-template>]
-	console.log('filtersNo',filtersNo)
+
 	let codebases;
     let codebaseLabels=[];
     let codebaseData=[];
@@ -1079,7 +1115,7 @@
             promise_loadViewerAPIData(viewAPIDataPhysProc)  
 			]).then(function (responses)
 			{
-				console.log('app',responses[1])
+			
                 meta=responses[1].meta
                 codebases=responses[1].codebase;
                 deliveryModels=responses[1].delivery;
@@ -1091,7 +1127,7 @@
 						return f.slotName !=e;
 					})
 				 })
-		 console.log('filters',filters)
+
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
@@ -1197,6 +1233,7 @@ var appCount = d3.nest()
 
 
 var charts = [];
+var chartData=[];
 function drawChart(canvasId, type, labels, inputData, title, colours) {
 	//console.log('canvasId',canvasId)
 	//console.log('canvasId',type)
@@ -1235,13 +1272,16 @@ function drawChart(canvasId, type, labels, inputData, title, colours) {
                     },
                   }
 });
+
+chartData[canvasId]=({"name":title, "values":inputData, "labels":labels, "colours":colours})
+
 return (charts[canvasId] !== null);
 }
 
 $(document).on('click', '.appInfoButton',function ()
     {
         let selected = $(this).attr('easid')
-        console.log('clicked', selected)
+
         let appToShow =allApps.filter((d)=>{
             return d.id==selected;	
         });
@@ -1253,8 +1293,7 @@ $(document).on('click', '.appInfoButton',function ()
         //  appToShow[0]['capList']=thisCaps;
         //  appToShow[0]['processList']=thisProcesses;
 
-		
-	console.log('app',appToShow[0])
+
 		let appFilters=[];
 		filters.forEach((d)=>{
 			 <!-- hardcoded as these are already in the view, may want to remove another time -->
@@ -1275,7 +1314,6 @@ $(document).on('click', '.appInfoButton',function ()
 			});
 		
 				
-		console.log('appFilters', appFilters)
 		appToShow[0]['appFilters']=appFilters
         $('#appData').html(appTemplate(appToShow[0]));
  
@@ -1309,7 +1347,7 @@ var redrawView=function(){
                  let chosenCap = busCapAppList.find((d)=>{
                      return d.id == selectedCap;
 				 }); 
-				 console.log('chosenCap',chosenCap)
+			
                  let showApps=[];
                  chosenCap.apps.forEach((ap)=>{
                     let thisApp=scopedApps.resources.find((a)=>{
@@ -1322,8 +1360,7 @@ var redrawView=function(){
                  });
 				scopedApps.resources = showApps;
 				}
-				console.log('scopedApps',scopedApps)
-				console.log('filters pre',filters)
+		
 				$('#appVal').text(scopedApps.resources.length)
 				filters.forEach((d)=>{
 					var filterCount = d3.nest()
@@ -1355,6 +1392,73 @@ var redrawView=function(){
 						})
 					 
 					drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours) 
+					//console.log('chartData',  chartData);
+					var COLORS_ACCENT = ["4472C4", "ED7D31", "FFC000", "70AD47"]; // 1,2,4,6
+					var COLORS_SPECTRUM = ["56B4E4", "126CB0", "672C7E", "E92A31", "F06826", "E9AF1F", "51B747", "189247"]; // B-G spectrum wheel
+					var COLORS_CHART = ["003f5c", "0077b6", "084c61", "177e89", "3066be", "00a9b5", "58508d", "bc5090", "db3a34", "ff6361", "ffa600"];
+					var COLORS_VIVID = ["ff595e", "F38940", "ffca3a", "8ac926", "1982c4", "5FBDE1", "6a4c93"]; // (R, Y, G, B, P)
+					$('.sendToPP').off().on('click', function(){
+
+						let filt=[]
+						let filterText=' (';
+						$('.ess-scope-blob-label').each(function(){
+							filt.push($( this ).text())
+							filterText=filterText+$( this ).text()+', ';
+						});
+				 
+						filterText=filterText.slice(0, -2)+')';
+
+						if(filterText.length&lt;4){
+							filterText=''
+						}
+
+						$(this).addClass('sentToPowerPoint');
+						$(this).addClass('btn-success');
+						selectedPPTCount = selectedPPTCount+1;
+						$('#generate').children('span').html(' ('+selectedPPTCount+')');
+				
+						let slide = pres.addSlide();
+						selected=$(this).attr('easid');
+						let clrs=[]
+						chartData[selected].colours.forEach((c)=>{
+							clrs.push(c.slice(1))
+						})
+						
+						
+						
+						let labelClean=[];
+						chartData[selected].labels.forEach((e)=>{
+							labelClean.push(e)
+						})
+						chartData[selected].labels=labelClean;
+ 
+						slide.addChart(pres.ChartType.doughnut, [chartData[selected]], { 
+							x: 0.2,
+							y: 0.2,
+							w: "95%",
+							h: "90%",
+							name: "Apps by Codebase",
+							chartArea: { fill: { color: "F1F1F1" } },
+							chartColors: clrs,
+							//
+							legendPos: "l",
+							legendFontFace: "Courier New",
+							showLegend: true,
+							//
+							showLeaderLines: true,
+							showPercent: false,
+							showValue: true,
+							dataLabelColor: "000000",                        
+							showTitle: true,    
+							title: chartData[selected].name + filterText,
+							dataLabelFontSize: 12,
+							dataLabelPosition: "bestFit", // 'bestFit' | 'outEnd' | 'inEnd' | 'ctr' 
+							}) 
+					})
+
+					$('#generate').off().on('click', function(){
+						pres.writeFile({ fileName: "Essential Presentation.pptx" });
+					})
 				})
  
 

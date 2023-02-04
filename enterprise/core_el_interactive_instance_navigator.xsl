@@ -451,8 +451,7 @@ let focusNodeID = states.filter((e)=>{
 	var slots2show=	thisviewAPIData.instance.filter(function(d){
 		return d.name!='external_repository_instance_reference';
 		})
-	slots2show={"instance":slots2show}	
- 
+	slots2show={"instance":slots2show}	 
   	$('#slots').append(slotCardTemplate(slots2show));
        
          

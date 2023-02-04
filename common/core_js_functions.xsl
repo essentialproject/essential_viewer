@@ -209,6 +209,7 @@
 	
 	
 	<xsl:template name="RenderJavascriptRESTFunctions">
+		
 		<!-- TODO remove. Refactor to use the same function in core_common_editor_api_functions.js. -->
 
 		//Utility function to create a CORs request
@@ -688,7 +689,92 @@
 		
 		
 		<!-- END PAGE DATA SCOPING FUNCTIONS -->	
+	</xsl:template>
+
+	<!-- office related functions-->
+	<xsl:template name="officeHandlebarsTemplates">
 		
+	</xsl:template>
+	<xsl:template name="RenderOfficetUtilityFunctions">		
+		<!-- ODS fucntions -->
+
+		var getXML = function promise_getExcelXML(excelXML_URL) {
+			return new Promise(
+			function (resolve, reject) {
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4 &amp;&amp; this.status == 200) {
+						////console.log(prefixString);
+						resolve(this.responseText);
+					}
+				};
+				xmlhttp.onerror = function () {
+					reject(false);
+				};
+				xmlhttp.open("GET", excelXML_URL, true);
+				xmlhttp.send();
+			});
+		};
+
+
+		function setExcel(excelFile, filename){ 
+ 
+			let worksheetsVar=[];
+			excelFile.sheets.forEach((s)=>{
+				worksheetsVar.push(s.worksheetName)
+			})
+			 
+			let contentXML, stylesXML, metaXML, manifestXML, mimetypeXML;
+  	
+				getXML('common/ods_spreadsheet_files/styles.xml').then(function(response){ 
+				stylesXML=response; 
+			}).then(function(response){  
+			
+				getXML('common/ods_spreadsheet_files/meta.xml').then(function(response){ 
+				metaXML=response; 
+			}).then(function(response){  
+			
+				getXML('common/ods_spreadsheet_files/manifest.xml').then(function(response){ 
+					manifestXML=response; 
+			}).then(function(response){  
+			
+				getXML('common/ods_spreadsheet_files/mimetype').then(function(response){ 
+					mimetypeXML=response; 
+			}).then(function(response){  
+			let meta='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?>&lt;office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.3">&lt;office:meta>&lt;meta:generator>MicrosoftOffice/16.0 MicrosoftExcel/CalculationVersion-10911&lt;/meta:generator>&lt;dc:creator>Microsoft Office User&lt;/dc:creator>&lt;meta:creation-date>2022-09-17T13:59:29Z&lt;/meta:creation-date>&lt;dc:date>2022-09-19T09:26:31Z&lt;/dc:date>&lt;/office:meta>&lt;/office:document-meta>';
+			let contentHead='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?>&lt;office:document-content xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" office:version="1.3">&lt;office:font-face-decls>&lt;style:font-face style:name="Calibri" svg:font-family="Calibri"/>&lt;/office:font-face-decls>&lt;office:automatic-styles>&lt;style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default" style:data-style-name="N0"/>&lt;style:style style:name="ce2" style:family="table-cell" style:data-style-name="N0">&lt;style:table-cell-properties style:vertical-align="automatic" fo:background-color="transparent"/>&lt;/style:style>&lt;style:style style:name="co1" style:family="table-column">&lt;style:table-column-properties fo:break-before="auto" style:column-width="3.91583333333333cm"/>&lt;/style:style>&lt;style:style style:name="co2" style:family="table-column">&lt;style:table-column-properties fo:break-before="auto" style:column-width="4.97416666666667cm"/>&lt;/style:style>&lt;style:style style:name="co3" style:family="table-column">&lt;style:table-column-properties fo:break-before="auto" style:column-width="1.71979166666667cm"/>&lt;/style:style>&lt;style:style style:name="ro1" style:family="table-row">&lt;style:table-row-properties style:row-height="16pt" style:use-optimal-row-height="true" fo:break-before="auto"/>&lt;/style:style>&lt;style:style style:name="ta1" style:family="table" style:master-page-name="mp1">&lt;style:table-properties table:display="true" style:writing-mode="lr-tb"/>&lt;/style:style>&lt;/office:automatic-styles>&lt;office:body>&lt;office:spreadsheet>';
+					  
+			let contentBody=excelTemplate(excelFile);
+			let contentFoot='&lt;/office:spreadsheet>&lt;/office:body>&lt;/office:document-content>';
+			
+			let content= contentHead+contentBody+contentFoot;
+			
+			let manifest='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?>&lt;manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">&lt;manifest:file-entry manifest:full-path="/" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>&lt;manifest:file-entry manifest:full-path="styles.xml" manifest:media-type="text/xml"/>&lt;manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>&lt;manifest:file-entry manifest:full-path="meta.xml" manifest:media-type="text/xml"/>&lt;/manifest:manifest>';
+			let mimetype='application/vnd.oasis.opendocument.spreadsheet';
+			let styles='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?>&lt;office:document-styles xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" &lt;xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" &lt;xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" &lt;xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" &lt;xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" &lt;xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" &lt;xmlns:xlink="http://www.w3.org/1999/xlink" &lt;xmlns:dc="http://purl.org/dc/elements/1.1/" &lt;xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" &lt;xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" &lt;xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" office:version="1.3">&lt;office:font-face-decls>&lt;style:font-face style:name="Calibri" svg:font-family="Calibri"/>&lt;/office:font-face-decls>&lt;office:styles>&lt;number:number-style style:name="N0">&lt;number:number number:min-integer-digits="1"/>&lt;/number:number-style>&lt;style:style style:name="Default" style:family="table-cell" style:data-style-name="N0">&lt;style:table-cell-properties style:vertical-align="automatic" fo:background-color="transparent"/>&lt;style:text-properties fo:color="#000000" style:font-name="Calibri" style:font-name-asian="Calibri" style:font-name-complex="Calibri" fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>&lt;/style:style>&lt;style:default-style style:family="graphic">&lt;style:graphic-properties draw:fill="solid" draw:fill-color="#4472c4" draw:opacity="100%" draw:stroke="solid" svg:stroke-width="0.01389in" svg:stroke-color="#2f528f" svg:stroke-opacity="100%" draw:stroke-linejoin="miter" svg:stroke-linecap="butt"/>&lt;/style:default-style>&lt;/office:styles>&lt;office:automatic-styles>&lt;style:page-layout style:name="pm1">&lt;style:page-layout-properties fo:margin-top="0.3in" fo:margin-bottom="0.3in" fo:margin-left="0.7in" fo:margin-right="0.7in" style:table-centering="none" style:print="objects charts drawings"/>&lt;style:header-style>&lt;style:header-footer-properties fo:min-height="0.45in" fo:margin-left="0.7in" fo:margin-right="0.7in" fo:margin-bottom="0in"/>&lt;/style:header-style>&lt;style:footer-style>&lt;style:header-footer-properties fo:min-height="0.45in" fo:margin-left="0.7in" fo:margin-right="0.7in" fo:margin-top="0in"/>&lt;/style:footer-style>&lt;/style:page-layout>&lt;/office:automatic-styles>&lt;office:master-styles>&lt;style:master-page style:name="mp1" style:page-layout-name="pm1">&lt;style:header/>&lt;style:header-left style:display="false"/>&lt;style:header-first/>&lt;style:footer/>&lt;style:footer-left style:display="false"/>&lt;style:footer-first/>&lt;/style:master-page>&lt;/office:master-styles>&lt;/office:document-styles>';
+			 
+			var zip = new JSZip();
+			
+			zip.file("content.xml", content)
+			zip.folder("META-INF").file("manifest.xml", manifestXML)
+			zip.file("mimetype", mimetypeXML)
+			zip.file("meta.xml", metaXML)
+			zip.file("styles.xml", stylesXML)
+			var zipConfig = {
+						type: 'blob',
+						mimeType: 'application/vnd.oasis.opendocument.spreadsheet'
+					};
+			
+			zip.generateAsync(zipConfig)
+				.then(function (blob) {
+				saveAs(blob, filename+".ods");
+			});
+		})
+	})
+  })
+ })  
+}; 
+
 	</xsl:template>
 	
 	

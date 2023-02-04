@@ -14,7 +14,7 @@
   <xsl:variable name="infoRepresentationCategory" select="/node()/simple_instance[type='Information_Representation_Category']"/>
 
   <xsl:variable name="aptitdrelation" select="/node()/simple_instance[type='APP_PRO_TO_INFOREP_TO_DATAREP_RELATION']"/>
-
+  <xsl:variable name="allInfoDomains" select="/node()/simple_instance[type = 'Information_Domain']"/>
   <xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
   <xsl:variable name="allInfoViews" select="/node()/simple_instance[type = 'Information_View']"/>
   <xsl:key name="allInfoViewsKey" match="$allInfoViews" use="own_slot_value[slot_reference = 'refinement_of_information_concept']/value"/>
@@ -94,6 +94,7 @@
 		"information_views":[<xsl:apply-templates select="$allInfoViews" mode="infoViews"></xsl:apply-templates>],
 		"information_concepts":[<xsl:apply-templates select="$allInfoConcepts" mode="infoConceptList"/>],
 		"app_infoRep_Pairs":[<xsl:apply-templates select="$dataAppProInfoReps" mode="appPairs"></xsl:apply-templates>],
+		"info_domains":[<xsl:apply-templates select="$allInfoDomains" mode="infDomains"></xsl:apply-templates>],
 		"version":"615"
 		}
 	</xsl:template>
@@ -142,7 +143,7 @@
 	 "infoReps":[<xsl:for-each select="$thisInfoReps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "infoViews":[<xsl:for-each select="$thisInfoViews">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "dataReps":[<xsl:for-each select="$thisDataReps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "stakeholders":[<xsl:for-each select="$thisStakeholders">
 			<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
 			<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
@@ -260,7 +261,7 @@
 	 "dataReps":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_data_representations']/value">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 } <xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template>
- <xsl:template match="node()" mode="infoViews">
+ <xsl:template match="node()" mode="infoViews2">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
 	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
 	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
@@ -288,12 +289,17 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",	
 		"infoViews":[<xsl:apply-templates select="$infoViews" mode="infoViews"/>]}<xsl:if test="not(position() = last())">,</xsl:if>
 
 </xsl:template>
 <xsl:template match="node()" mode="infoViews">
 		<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
 		<xsl:variable name="instanceName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
+		<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
+		<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
+		<xsl:variable name="supporting_data_objects" select="own_slot_value[slot_reference='info_view_supporting_data_objects']/value"/>
 		{ 
 		"id": "<xsl:value-of select="current()/name"/>",
 		"className": "<xsl:value-of select="current()/type"/>",
@@ -311,6 +317,20 @@
 			<xsl:with-param name="theSubjectInstance" select="$thisrole"/>
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 		</xsl:call-template>"
-		}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())">,</xsl:if>
+		}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"dataObjects":[<xsl:for-each select="$supporting_data_objects">{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"synonyms":[<xsl:for-each select="$syns">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
+<xsl:template match="node()" mode="infDomains">
+	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
+	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>  
+   <!-- last two need to be org roles as the slots have been deprecated -->
+   {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	"infoConcepts":[<xsl:for-each select="current()/own_slot_value[slot_reference='info_domain_contained_info_concepts']/value">{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	"synonyms":[<xsl:for-each select="$syns">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
+ </xsl:template>
 </xsl:stylesheet>

@@ -56,9 +56,9 @@
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="apiPathMart">
-			<xsl:call-template name="GetViewerAPIPath">
-				<xsl:with-param name="apiReport" select="$apiPathDataAppMart"/>
-			</xsl:call-template>
+				<xsl:call-template name="RenderAPILinkText">
+					<xsl:with-param name="theXSL" select="$apiPathDataAppMart/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+				</xsl:call-template>
 		</xsl:variable>	
 		<html>
 			<head>
@@ -331,6 +331,14 @@
 					border:1px solid #ccc;
 					border-bottom:1px solid #999;
 				}
+
+				.hubAppModule{
+					background-color:#88dce1;
+					border-radius:4px; 
+					padding:5px;
+					position: relative;
+					border:8px solid #47bac1; 
+				}
 				
 				.hubApp a,.hubApp i {
 					color: #fff;
@@ -348,16 +356,37 @@
 					color: #c3193c;
 				}
 				
+				.hubAppModule > xhtml, .hubApp > xhtml {
+					display: flex;
+					flex-direction: row-reverse;
+				}
+				
 				.hubApp div {
 					writing-mode: vertical-rl;
-					transform: rotate(-180deg);
 					position: relative;
-					font-size: 18px;
-					padding-right: 32px;
-					padding-bottom: 16px;
+					font-size: 14px;
+					padding-right: 2px;
+					padding-bottom: 2px;
 				}
 				
 				.hubApp i {
+					transform: rotate(90deg);
+					margin-bottom: 10px;
+				}
+
+				.hubAppModule div {
+					writing-mode: vertical-rl;
+					position: relative;
+					font-size: 14px;
+					padding-right: 2px;
+					padding-bottom: 2px;
+				}
+				.moduleType{  
+					 
+					font-size: 10px; 
+				}
+				
+				.hubAppModule i {
 					transform: rotate(90deg);
 					margin-bottom: 10px;
 				}
@@ -703,12 +732,21 @@
 				{{#if this.length}}
 					{{#each this}}
 						<div class="panel panel-default">
-							<div class="panel-heading strong ess-panel-header-link large">{{{essRenderInstanceMenuLink this}}}{{#if acqMethod}}<span class="label label-primary pull-right">{{acqMethod.label}}</span>{{/if}}</div>
+							<div class="panel-heading strong ess-panel-header-link large">
+								{{{essRenderInstanceMenuLink this}}}..{{#if acqMethod}}<span class="label label-primary pull-right">{{acqMethod.label}}</span>{{/if}}
+								{{#if svcQualVals.length}}
+									{{#each svcQualVals}}
+										<span class="label label-secondary pull-right right-5">{{valLabel}}</span>
+									{{/each}}
+								{{/if}}
+							</div>
 							<div class="panel-body">
 								<div class="ess-blobWrapper">
 									{{#each dataObjects}}
 										<div class="ess-blob bdr-left-blue">
 											<div class="ess-blobLabel">{{{essRenderInstanceMenuLink this}}}</div>
+											{{#ifEquals this.description.length 0}}
+											{{else}}
 											<div class="infoButton">
 												<a tabindex="0" class="popover-trigger">
 													<i class="fa fa-info-circle"></i>
@@ -718,6 +756,7 @@
 													<div class="small text-muted">{{#if description}}{{description}}{{else}}-{{/if}}</div>
 												</div>
 											</div>
+											{{/ifEquals}}
 										</div>
 									{{/each}}
 								</div>
@@ -733,21 +772,31 @@
 				{{#if this.length}}
 				{{#each this}}
 				<div class="panel panel-default">
-					<div class="panel-heading strong ess-panel-header-link large">{{{essRenderInstanceMenuLink this}}}{{#if acqMethod}}<span class="label label-primary pull-right">{{acqMethod.label}}</span>{{/if}}</div>
+					<div class="panel-heading strong ess-panel-header-link large">{{{essRenderInstanceMenuLink this}}}
+						{{#if acqMethod}}<span class="label label-primary pull-right">{{acqMethod.label}}</span>{{/if}}
+						{{#if svcQualVals}} 
+							{{#each this.svcQualVals}}
+								<span class="label label-danger pull-right right-5">{{valLabel}}</span>
+							{{/each}}
+						{{/if}}
+					</div>
 					<div class="panel-body">
 						<div class="ess-blobWrapper">
 							{{#each dataObjects}}
 							<div class="ess-blob bdr-left-blue">
 								<div class="ess-blobLabel">{{{essRenderInstanceMenuLink this}}}</div>
-								<div class="infoButton">
-									<a tabindex="0" class="popover-trigger">
-										<i class="fa fa-info-circle"></i>
-									</a>
-									<div class="popover">
-										<div class="strong">{{{essRenderInstanceMenuLink this}}}</div>
-										<div class="small text-muted">{{#if description}}{{description}}{{else}}-{{/if}}</div>
+								{{#ifEquals this.description.length 0}}
+									{{else}}
+									<div class="infoButton">
+										<a tabindex="0" class="popover-trigger">
+											<i class="fa fa-info-circle"></i>
+										</a>
+										<div class="popover">
+											<div class="strong">{{{essRenderInstanceMenuLink this}}}</div>
+											<div class="small text-muted">{{#if description}}{{description}}{{else}}-{{/if}}</div>
+										</div>
 									</div>
-								</div>
+								{{/ifEquals}}
 							</div>
 							{{/each}}
 						</div>
@@ -959,7 +1008,7 @@
 				
 			{{/ifEquals}} 
 			<foreignObject eas-type="toInterfaceTarget" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick"   >
-				<xsl:attribute name="x">{{#getItemX 'Api2Info'}}{{/getItemX}}</xsl:attribute>	
+				<xsl:attribute name="x">{{#getItemX 'Api2Info2'}}{{/getItemX}}</xsl:attribute>	
 				<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 				<xsl:attribute name="eas-dep-id">{{sendsTo.0.dependencyId}}</xsl:attribute> 
 				<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -975,7 +1024,7 @@
 
 			{{#ifNotEquals ../this.values.0.name 'Fake1'}}			
 			<foreignObject eas-type="toInterfaceSource" style="background-color:rgb(255,255,255);border-radius:5px; padding:3px" width="20" class="lineClick"   >
-				<xsl:attribute name="x">{{#getItemX 'Api2Info2'}}{{/getItemX}}</xsl:attribute>
+				<xsl:attribute name="x">{{#getItemX 'Api2Info'}}{{/getItemX}}</xsl:attribute>
 				<xsl:attribute name="eas-int-id">{{id}}</xsl:attribute>
 				<xsl:attribute name="eas-dep-id">{{dependencyId}}</xsl:attribute>
 				<xsl:attribute name="y">{{#geticonAPILineRow this.num}}{{/geticonAPILineRow}}</xsl:attribute>
@@ -1035,30 +1084,35 @@
  
 {{/each}} 	s
 <!-- middle focus app rect and text -->
- 
-		<foreignObject class="hubApp" x="505" width="110"> 
+		{{#checkMain this}} 
+		<foreignObject class="hubAppModule" x="505" width="110"> 
 			<xsl:attribute name="x">{{#getItemX 'Midpoint'}}{{/getItemX}}</xsl:attribute>
-			<xsl:attribute name="y">3</xsl:attribute>
+			<xsl:attribute name="y">0</xsl:attribute>
 			<xsl:attribute name="height">{{#getFocusHeight this.tot 1}}{{/getFocusHeight}}</xsl:attribute>
 			<xhtml>
 				<div>
 					<xsl:attribute name="title">{{this.name}}</xsl:attribute>
-					<i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}	
-			<!--	<div class="node-rect wordwrap">
-					<xsl:attribute name="style">width: 110px; height:{{#getHeight this.tot 1}}{{/getHeight}}px;</xsl:attribute>
-					<div class="node-title">
-						<span class="node-title-text">
-							{{{essRenderInstanceMenuLink this}}}							
-						</span>
-					</div>
-					<div class="node-body-icon">
-						<i class="fa fa-desktop"></i>
-					</div>
-				</div>
-                -->
+				 
+					<i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}	<br/>
+					<span class="moduleType">Module</span>
 				</div>
 			</xhtml>
 		</foreignObject>
+		{{else}}
+		<foreignObject class="hubApp" x="505" width="110"> 
+			<xsl:attribute name="x">{{#getItemX 'Midpoint'}}{{/getItemX}}</xsl:attribute>
+			<xsl:attribute name="y">0</xsl:attribute>
+			<xsl:attribute name="height">{{#getFocusHeight this.tot 1}}{{/getFocusHeight}}</xsl:attribute>
+			<xhtml>
+				<div>
+					<xsl:attribute name="title">{{this.name}}</xsl:attribute>
+				 
+					<i class="fa fa-desktop fa-fw right-5"></i>{{{essRenderInstanceMenuLink this}}}	
+		 
+				</div>
+			</xhtml>
+		</foreignObject>
+		{{/checkMain}}	
 		</svg>
 
 </script>	
@@ -1067,10 +1121,13 @@
 <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
 	<xsl:with-param name="linkClasses" select="$linkClasses"/>
 </xsl:call-template>
-
+var mainApp;
+var focusApp={};
 var infoViewPanelTemplate;
-var depData, focusAppm, allAcqMethods;
-let dataSet=[];
+var depData, focusAppm, allAcqMethods, allSVCQualVals;
+var dataSet=[];
+var dependencyMap=[];
+var wwidth=$(window).width();
 
 function setAcqMethod(dep) {
 	let acqMethod = allAcqMethods.find(am => am.id == dep.acqMethodId);
@@ -1088,6 +1145,22 @@ function setDepAcqMethod(dep) {
  
 }
 
+function setSQVals(obj) {
+	let sqVals = obj.svcQualValIds?.map(sqvId => allSVCQualVals.find(sqv => sqv.id == sqvId));
+	obj.svcQualVals = sqVals;
+}
+
+function setDepSvcQualVals(dep) {
+	setSQVals(dep);
+	dep.infoViews?.forEach(iv => {
+		setSQVals(iv);
+	});
+	dep.infoReps?.forEach(ir => {
+		setSQVals(ir);
+	});
+ 
+}
+
 function showEditorSpinner(message) {
 	$('#editor-spinner-text').text(message);                            
 	$('#editor-spinner').removeClass('hidden')
@@ -1101,17 +1174,18 @@ function removeEditorSpinner() {
 // DO FROM APPS
 var redrawView = function () {
  
+	$('#model').empty();
 
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION'); 
  
+	
  	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
 //	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef]);
- 
- 
-let thefocusApp={};
+  
+thefocusApp={};
 
 const getCircularReplacer = () => {
   const seen = new WeakSet();
@@ -1125,88 +1199,162 @@ const getCircularReplacer = () => {
     return value;
   };
 };
-
-
-
-
+  
 thefocusApp=JSON.parse(JSON.stringify(DataSet, getCircularReplacer()));
+ 
+getInfoforApp(thefocusApp, DataSet)
 
-let tfaDependencies=[];
+$('#focus-app-name-lbl').text(thefocusApp.name);
+mainApp=thefocusApp.id
+setUpData(thefocusApp, totot, tot)
+ 
+let getKids=fullAppList.find((f)=>{
+	return f?.id==thefocusApp.id;
+});
+ 
+getKids.children?.forEach((c)=>{
+ 
+let viewAPISubData=viewPath+c;
+	Promise.all([
+			promise_loadViewerAPIData(viewAPISubData) 
+			]).then(function (responses)
+			{	 
+			let numArray=[];
+			let thisApp=responses[0];
+			if(thisApp.id!=thefocusApp.id){
+			  thisApp['module']='true'; 
+			}
+	 
+				getInfoforApp(thisApp, thisApp);
+				setUpData(thisApp, totot, tot);
+				//console.log('DEP DATA', depData);
+			})
+})
+
+
+}
+
+function getInfoforApp(theApp, dataFromAPI){
+	let tfaDependencies=[];
 let ttaDependencies=[];
 let tfdaDependencies=[];
 let ttdaDependencies=[];
-	DataSet.dependencies.fromInterfaces.forEach((e)=>{
-		let inscope=scopedApps.resourceIds.find((ap)=>{
-			return e.id == ap;
+dataFromAPI.dependencies.fromInterfaces.forEach((e)=>{
+	let inscope;
+	e.receivesFrom.forEach((f)=>{
+		inscope=scopedApps.resourceIds.find((ap)=>{
+		return f.id == ap;
 		})
-	
-		if(inscope){ 
-			if(e.receivesFrom.length==0){
-				e.receivesFrom.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
-			}
-			tfaDependencies.push(e)}
+		
 	})
-	thefocusApp.dependencies['fromInterfaces']=tfaDependencies
-	DataSet.dependencies.toInterfaces.forEach((e)=>{
-		let inscope=scopedApps.resourceIds.find((ap)=>{
-			return e.id == ap;
-		})
-		if(e.sendsTo.length==0){
-			e.sendsTo.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
+	if(!e.infoViews){e["infoViews"]=[]}
+		if(e.receivesFrom.length==0){
+			e.receivesFrom.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
+			
+			dependencyMap.push({"depId":e.dependencyId,"debug":"fif", "source": e.name, "target": theApp.name,"infoReps":e.infoReps,"infoViews":e.infoViews});
+			 inscope='fake';
+		}else{
+			dependencyMap.push({"depId":e.dependencyId,"debug":"fi", "source": e.name, "target": theApp.name,"infoReps":e.infoReps,"infoViews":e.infoViews});
+			<!-- get other side of interface --> 
+			
+			if(e.receivesFrom[0].name){ 
+				if(!e.receivesFrom[0].infoViews){e.receivesFrom[0]["infoViews"]=[]}
+			dependencyMap.push({"depId":e.receivesFrom[0].dependencyId,"debug":"fi", "source": e.receivesFrom[0].name, "target": e.name,"infoReps": e.receivesFrom[0].infoReps,"infoViews": e.receivesFrom[0].infoViews});
+			}
+		
 		}
+
+		if(inscope){tfaDependencies.push(e)}
+	 
+	})
+	theApp.dependencies['fromInterfaces']=tfaDependencies
+	dataFromAPI.dependencies.toInterfaces.forEach((e)=>{
+		
+		let inscope;
+		e.sendsTo.forEach((f)=>{
+		 	inscope=scopedApps.resourceIds.find((ap)=>{
+			return f.id == ap;
+			})
+		})
+		if(!e.infoViews){e["infoViews"]=[]}
+		if(e.sendsTo.length==0){
+			e.sendsTo.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'});
+			dependencyMap.push({"depId":e.dependencyId,"debug":"fif", "source":  theApp.name, "target": e.name,"infoReps":e.infoReps,"infoViews":e.infoViews});
+			inscope='fake';
+		}else{
+ 
+			dependencyMap.push({"depId":e.dependencyId,"debug":"ti", "source":  theApp.name, "target": e.name, "infoReps":e.infoReps,"infoViews":e.infoViews});
+		}
+ 
+		if(e.sendsTo[0].name){ 
+			if(!e.sendsTo[0].infoViews){e.sendsTo[0]["infoViews"]=[]}
+			dependencyMap.push({"depId":e.sendsTo[0].dependencyId,"debug":"tip", "target": e.sendsTo[0].name, "source": e.name,"infoReps": e.sendsTo[0].infoReps,"infoViews": e.sendsTo[0].infoViews});
+			}
 
 		if(inscope){ttaDependencies.push(e)}
 	})
 	thefocusApp.dependencies['toInterfaces']=ttaDependencies
 
-	DataSet.dependencies.receivesFrom.forEach((e)=>{
+	dataFromAPI.dependencies.receivesFrom.forEach((e)=>{
 		let inscope=scopedApps.resourceIds.find((ap)=>{
 			return e.id == ap;
 		})
+		if(!e.infoViews){e["infoViews"]=[]}
 		if(inscope){tfdaDependencies.push(e)}
+		dependencyMap.push({"depId":e.dependencyId, "debug":"rf", "source": e.name, "target": theApp.name, "infoReps":e.infoReps,"infoViews":e.infoViews});
 	})
 	thefocusApp.dependencies['receivesFrom']=tfdaDependencies
 
-	DataSet.dependencies.sendsTo.forEach((e)=>{
+	dataFromAPI.dependencies.sendsTo.forEach((e)=>{
 		let inscope=scopedApps.resourceIds.find((ap)=>{
 			return e.id == ap;
 		})
+		if(!e.infoViews){e["infoViews"]=[]}
 		if(inscope){ttdaDependencies.push(e)}
+		dependencyMap.push({"depId":e.dependencyId,"debug":"st", "source":  theApp.name, "target": e.name, "infoReps":e.infoReps,"infoViews":e.infoViews});
 	})
 	thefocusApp.dependencies['sendsTo']=ttdaDependencies
  
-setUpData(thefocusApp)
+//setUpData(thefocusApp)
 }
-function setUpData(data){
-	 
+
+
+
+function setUpData(data, totot, tot){
+
 	depData = data.dependencies;
 	allAcqMethods = data.allAcqMethods;
+	allSVCQualVals = data.allSVCQualVals;
 	focusApp = {
 		"id": data.id,
 		"className": data.className,
 		"name": data.name
-	}
-	$('#focus-app-name-lbl').text(focusApp.name);
-	
+	} 
+
 	depData.receivesFrom?.forEach(src => {
 		setDepAcqMethod(src);
+		setDepSvcQualVals(src);
 	});
 	
 	depData.sendsTo?.forEach(tgt => {
 		setDepAcqMethod(tgt);
+		setDepSvcQualVals(tgt);
 	});
 	
 	depData.fromInterfaces?.forEach(ifc => {
 		setDepAcqMethod(ifc);
+		setDepSvcQualVals(ifc);
 		ifc.receivesFrom?.forEach(src => {
-			setDepAcqMethod(ifc);
+			setDepAcqMethod(src);
+			setDepSvcQualVals(src);
 		});
 	});
 	
 	depData.toInterfaces?.forEach(ifc => {
 		setDepAcqMethod(ifc);
-		ifc.sendsTo?.forEach(src => {
-			setDepAcqMethod(ifc);
+		ifc.sendsTo?.forEach(tgt => {
+			setDepAcqMethod(tgt);
+			setDepSvcQualVals(tgt);
 		});
 	});
 
@@ -1230,6 +1378,7 @@ data.dependencies.fromInterfaces.forEach((e)=>{
         "id": f.id,
         "interfaces": f.interfaces,
         "acqMethodId": f.acqMethodId,
+		"svcQualValIds": f.svcQualValIds,
         "name": f.name,
         "usageId":f.usageId};
 
@@ -1286,6 +1435,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
       
         let thisi= {
                     "acqMethodId": d.acqMethodId,
+					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
                     "dependencyId": d.dependencyId,
                     "description":d.description,
@@ -1293,7 +1443,8 @@ data.dependencies.fromInterfaces.forEach((d)=>{
                     "id": d.id,
 					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
-                    "receivesFrom":d.receivesFrom,
+					"receivesFrom":d.receivesFrom,
+					"sendsTo":d.sendsTo,
                     "usageId":d.usageId
                      }
 
@@ -1308,6 +1459,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 	if(relInterfaces.length&gt; 0){
         let thisi2= {
                     "acqMethodId": d.acqMethodId,
+					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
                     "dependencyId": d.dependencyId,
                     "description":d.description,
@@ -1316,6 +1468,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "receivesFrom":d.receivesFrom,
+					"sendsTo":d.sendsTo,
                     "usageId":d.usageId
                      } 
 		allInterfaces.push(thisi2)
@@ -1360,6 +1513,7 @@ data.dependencies.toInterfaces.forEach((e)=>{
 		  "lifecycleStatus":f.lifecycleStatus, 
           "interfaces": f.interfaces,
           "acqMethodId": f.acqMethodId,
+		  "svcQualValIds": f.svcQualValIds,
           "name": f.name,
           "usageId":f.usageId};
   
@@ -1411,6 +1565,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
  
         let thisi= {
                     "acqMethodId": d.acqMethodId,
+					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
                     "dependencyId": d.dependencyId,
                     "description":d.description,
@@ -1431,6 +1586,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
 	if(relInterfaces.length&gt; 0){
         let thisi2= {
                     "acqMethodId": d.acqMethodId,
+					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
                     "dependencyId": d.dependencyId,
                     "description":d.description,
@@ -1439,6 +1595,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
 					"lifecycleStatus":d.lifecycleStatus, 
                     "name": d.name,
                     "receivesFrom":d.receivesFrom,
+                    "sendsTo":d.sendsTo,
                     "usageId":d.usageId
                      } 
 		allToInterfaces.push(thisi2)
@@ -1449,7 +1606,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
 ap['tointerfaces']=allToInterfaces; 
 });
 
-let totot=0;
+  totot=0;
 
 appToCount=appToCount.filter((elem, index, self) => self.findIndex( (t) => {return (t.key === elem.key)}) === index)
 appToCount.forEach((d)=>{
@@ -1473,10 +1630,12 @@ appToCount.forEach((d)=>{
 		totot=totot+1;
 	})
 	d['tot']=totot;
+	
+	
 })
-
+ 
 <!-- set positions -->
-let tot=0;
+ tot=0;
 
 var appToCountConsolidated =[];
 
@@ -1530,13 +1689,17 @@ appCount=appCount.filter((elem, index, self) => self.findIndex( (t) => {return (
  
 //console.log('tot',tot)
 //console.log('totot',totot)
-
+ 
 				dataSet['from']=appCount
 				dataSet['to']=appToCount 
 				let ht = Math.max(totot, tot)+2;
 				dataSet['tot']=ht;
 				dataSet['name']=data.name;
 				dataSet['className']=data.className;
+				dataSet['id']=data.id;
+				if(data.module){
+				dataSet['module']=data.module;
+			}
 	//console.log('All Dep Data', depData);
  
 	//console.log('appCount',appCount)
@@ -1546,10 +1709,12 @@ appCount=appCount.filter((elem, index, self) => self.findIndex( (t) => {return (
 
 }
 
-const minFocusHeight = 400;
-
+const minFocusHeight = 140;
+ var totot=0;
+ var tot=0;
+let totsArray=[];
 $(document).ready(function() {
-	let ww=$(window).width();
+	let ww=wwidth
 		let ifaceListFragment = $("#iface-list-template").html();
 		ifaceListTemplate = Handlebars.compile(ifaceListFragment);
 
@@ -1561,6 +1726,12 @@ $(document).ready(function() {
 
 		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+		});
+		
+		Handlebars.registerHelper('checkMain', function (arg1, options) {
+		 
+			return (arg1.id !== mainApp) ? options.fn(this) : options.inverse(this);
+ 
 		});
 
 		Handlebars.registerHelper('ifNotEquals', function (arg1, arg2, options) {
@@ -1584,7 +1755,7 @@ $(document).ready(function() {
 			return (tot * 34);
 		});
 		Handlebars.registerHelper('getItemWidth', function (arg1, options) {
-			let ww=$(window).width();
+			let ww=wwidth
 			if(arg1=='Line'){
 				return 300;
 			}
@@ -1605,7 +1776,7 @@ $(document).ready(function() {
 		});
 		
 		Handlebars.registerHelper('getItemX', function (arg1, options) {
-			let ww=$(window).width();
+			let ww=wwidth
 			if(arg1=='Line1'){
 				return ww*0.17+10;
 			}
@@ -1653,13 +1824,14 @@ $(document).ready(function() {
  
 
 		Handlebars.registerHelper('getWidth', function () {
-			return $(window).width()-40;
+		 
+			return wwidth-40;
 		});
 
 		Handlebars.registerHelper('getFocusHeight', function (arg1, arg2, options) {
  
-			let tot = arg1+arg2;
-			return Math.max(minFocusHeight, (tot * 35));
+			let tot = arg1 ;
+			return Math.max(minFocusHeight, (tot * 31));
 		});
 		
 		Handlebars.registerHelper('getTextRow', function (arg1, options) {
@@ -1679,7 +1851,7 @@ $(document).ready(function() {
 		});
 
 		Handlebars.registerHelper('getInfo', function (arg1, options) {
-			//console.log('arg1',arg1);
+		 
 			return ''
 		});
 
@@ -1690,10 +1862,10 @@ $(document).ready(function() {
 			return (arg1 * 35)+5;
 		});
 		
-		$('#info-exchanged-modal').on('show.bs.modal', function (e) {
+		$('#info-exchanged-modal').off().on('show.bs.modal', function (e) {
 			if(currentAppInfoExchange &amp;&amp; currentSource &amp;&amp; currentTarget) {
-				$('#modal-source-name').text(currentSource.name);
-				$('#modal-target-name').text(currentTarget.name);
+				$('#modal-source-name').text(currentAppInfoExchange.currentSource);
+				$('#modal-target-name').text(currentAppInfoExchange.currentTarget);
 				<!--let acqMethod = allAcqMethods.find(am => am.id == currentAppInfoExchange.acqMethodId);
 				if(acqMethod) {
 					$('#modal-acquisition-method').text(acqMethod?.label);
@@ -1702,8 +1874,9 @@ $(document).ready(function() {
 					$('#modal-acquisition-method').text('No integration method defined');
 					$('#modal-acquisition-method').attr('class', 'text-italic');
 				}-->
-				
+			//	console.log('ci',currentAppInfoExchange)
 				if(currentAppInfoExchange.infoViews) {
+					
 					$('#modal-exchanged-info-container').html(infoViewPanelTemplate(currentAppInfoExchange.infoViews)).promise().done(function(){
 						//info popover listener
 						$('.popover-trigger').popover({
@@ -1736,60 +1909,35 @@ $(document).ready(function() {
 
 var currentExchangeType, currentAppInfoExchange, currentSource, currentTarget;
 
-function redraw(dataForMap){
-	console.log('dataForMap',dataForMap)
-	$('#model').html(ifaceListTemplate(dataForMap)).promise().done(function(){
+function redraw(dataForMap){ 
+ 
+	$('#model').append(ifaceListTemplate(dataForMap)).promise().done(function(){
 		
 		//add event listeners
 		$('.lineClick').on('click', function(e) {
+			currentAppInfoExchange=[];
 			let thisDepId = $(this).attr('eas-dep-id');
+	 
 			currentExchangeType = $(this).attr('eas-type');
 			let interfaceId = $(this).attr('eas-int-id');
+ 
+			let selectedDep=dependencyMap.find((d)=>{
+				return d.depId == thisDepId;
+			})
+
 			//console.log('Interface ID', interfaceId);
-			if(thisDepId &amp;&amp; currentExchangeType) {
-				switch (currentExchangeType) {
-					case 'fromSource':
-						currentAppInfoExchange = depData.receivesFrom?.find(dep => dep.dependencyId == thisDepId);
-						currentSource = currentAppInfoExchange;
-						currentTarget = focusApp;
-						break;
-					case 'toTarget':
-						currentAppInfoExchange = depData.sendsTo?.find(dep => dep.dependencyId == thisDepId);
-						currentSource = focusApp;
-						currentTarget = currentAppInfoExchange;
-						break;
-					case 'fromInterfaceSource':
-						currentTarget = depData.fromInterfaces?.find(intfc => intfc.id == interfaceId);
-						if(currentTarget) {
-							currentAppInfoExchange = currentTarget.receivesFrom?.find(dep => dep.dependencyId == thisDepId);
-							currentSource = currentAppInfoExchange;
-						}						
-						break;
-					case 'fromInterfaceTarget':
-						currentAppInfoExchange = depData.fromInterfaces?.find(intfc => intfc.id == interfaceId);						
-						currentSource = currentAppInfoExchange;
-						currentTarget = focusApp;
-						break;
-					case 'toInterfaceSource':
-						currentSource = focusApp;
-						currentAppInfoExchange = depData.toInterfaces?.find(intfc => intfc.id == interfaceId);		
-						currentTarget = currentAppInfoExchange;		
-						break;
-					case 'toInterfaceTarget':				
-						currentSource = depData.toInterfaces?.find(intfc => intfc.id == interfaceId);
-						if(currentSource) {
-							currentAppInfoExchange = currentSource.sendsTo?.find(dep => dep.dependencyId == thisDepId);
-							currentTarget = currentAppInfoExchange;
-						}						
-						break;
-					default:
-						break;
-				}
-			}
-			//console.log('Current Dep Type', currentExchangeType);
-			//console.log('Current Dependency', currentAppInfoExchange);
-			//console.log('Current Source', currentSource);
-			//console.log('Current Target', currentTarget);
+
+						 currentSource = selectedDep.source;
+						 
+						 currentAppInfoExchange['currentSource']=selectedDep.source;
+						 currentAppInfoExchange['currentTarget']=selectedDep.target;
+						 currentAppInfoExchange['infoReps'] = selectedDep.infoReps;	
+						 if(selectedDep.infoViews.length&gt;0){
+
+						 currentAppInfoExchange['infoViews'] = selectedDep.infoViews;	
+						 }	
+						currentTarget = selectedDep.target;	
+ 
 			$('#info-exchanged-modal').modal('show');
 		});
 	});
@@ -1804,9 +1952,10 @@ function redraw(dataForMap){
 			<xsl:param name="viewerAPIPath"/>
 			<xsl:param name="viewerAPIPathMart"/>
 			let param1='<xsl:value-of select="$param1"/>';
+			var viewPath='<xsl:value-of select="$viewerAPIPath"/>&amp;PMA=';
 			var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>&amp;PMA='+param1;
 			var viewAPIDataMart = '<xsl:value-of select="$viewerAPIPathMart"/>&amp;PMA='+param1;
-//console.log('viewAPIData',viewAPIData)
+ 
 			var promise_loadViewerAPIData = function(apiDataSetURL) {
             return new Promise(function (resolve, reject) {
                 if (apiDataSetURL != null) {
@@ -1843,11 +1992,11 @@ $('document').ready(function () {
 			]).then(function (responses)
 			{
 				removeEditorSpinner();
-			//	console.log('viewAPIData',responses[0])
+ 		 
 				DataSet=responses[0];
 				let filters=responses[1].filters;
 				let capfilters=responses[1].filters;
-				fullAppList=responses[1].applications.concat(responses[1].apis)
+				fullAppList=responses[1].applications.concat(responses[1].apis).filter(app => app != null);
 				capfilters.forEach((d)=>{
 					responses[1].filters.push(d);
 				})
@@ -1858,7 +2007,7 @@ $('document').ready(function () {
 				dynamicCapFilterDefs=capfilters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
-				 //console.log('fullAppList',fullAppList)
+			 
 			//	 setUpData(DataSet);
 				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
 		
@@ -1889,7 +2038,7 @@ $('document').ready(function () {
 				<xsl:with-param name="menuClasses" select="$linkClasses"/>
 			</xsl:call-template>
 		}
-		console.log('esslinkMenuNames',esslinkMenuNames)
+ 
 		function essGetMenuName(instance) {
 			let menuName = null;
 			if(instance.meta?.anchorClass) {

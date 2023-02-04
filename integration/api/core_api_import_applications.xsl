@@ -42,7 +42,8 @@
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-             </xsl:call-template>",
+			 </xsl:call-template>",
+		"class":"<xsl:value-of select="current()/type"/>",	 
 		"codebase_name":"<xsl:value-of select="$thiscodebase/own_slot_value[slot_reference='name']/value"/>",
 		"dispositionId":"<xsl:value-of select="own_slot_value[slot_reference='ap_disposition_lifecycle_status']/value"/>",
 		"delivery_name":"<xsl:value-of select="$thisdelivery/own_slot_value[slot_reference='name']/value"/>",

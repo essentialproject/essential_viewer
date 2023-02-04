@@ -167,18 +167,18 @@
 						</a>
 						</td>
 					</tr>
-					<!--  future release, do not use	
+					 
 					<tr>
-						<td><i class="fa fa-file"></i> Application fit</td>
-						<td>This supports the import of lifecycles for applications and the assigning of simple business and technical fit</td>
+						<td><i class="fa fa-file"></i> Application KPIs</td>
+						<td>This supports the import of KPis for applications using performance measures</td>
 						<td>
-							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_application_fit.xsl">
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_perf_measures.xsl">
 
-						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Application Fit Export/Import</div>
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Go to Application KPIs Export/Import</div>
 						</a>
 						</td>
 					</tr>
-					-->
+				 
 					<tr>
 						<td><i class="fa fa-file"></i> Value Streams</td>
 						<td>This supports the import of value streams</td>

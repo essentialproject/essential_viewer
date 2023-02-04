@@ -1721,16 +1721,10 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   	</WorksheetOptions>
-  	<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R8C5:R11C5</Range>
-   <Type>List</Type>
-   <CellRangeList/>
-   <Value>&quot;Ad-Hoc, annual, quarterly, monthly, weekly ,daily, hourly, Real-Time&quot;</Value>
-	</DataValidation>
 	<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-	<Range>R8C7:R250C7</Range>
+	<Range>R8C5:R2500C5</Range>
 	<Type>List</Type>
-	<Value>Valid_Composite_Applications</Value>
+	<Value>'Applications'!R8C3:R4000C3</Value>
 	</DataValidation>
 	<DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
 	<Range>R8C6:R240C6</Range>
@@ -1808,9 +1802,9 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
    <Value>&quot;Ad-Hoc, annual, quarterly, monthly, weekly ,daily, hourly, Real-Time&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R8C7:R250C7</Range>
+   <Range>R8C7:R2500C7</Range>
    <Type>List</Type>
-   <Value>Valid_Composite_Applications</Value>
+   <Value>'Applications'!R8C3:R4000C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R240C6</Range>
