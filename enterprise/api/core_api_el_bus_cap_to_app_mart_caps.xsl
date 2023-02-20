@@ -72,6 +72,8 @@
 <xsl:variable name="allGeosRegions" select="/node()/simple_instance[type='Geographic_Region']"/>
 <xsl:variable name="allGeoLocs" select="/node()/simple_instance[type='Geographic_Location']"/> 
 <xsl:variable name="allGeo" select="$allGeosRegions union $allGeoLocs"/> 
+<xsl:variable name="infoConcepts" select="/node()/simple_instance[type='Information_Concept'][name=$allBusCaps/own_slot_value[slot_reference = 'business_capability_requires_information']/value]"/> 
+
 <!--
 	* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 * This file is part of Essential Architecture Manager, 
@@ -166,7 +168,7 @@
 <!-- direct Apps -->
 <xsl:variable name="thisonlydirectProcessToAppRel" select="key('directApptoProcessKey',$thisonlyrelevantPhysProc2AppProRoles/name)"/> 
 <xsl:variable name="thisonlyappsWithCapsfromAPR" select="$thisonlyprocessToAppRel union $thisonlydirectProcessToAppRel"/>
-
+<xsl:variable name="thisinfoConcepts" select="$infoConcepts[name=current()/own_slot_value[slot_reference = 'business_capability_requires_information']/value]"/> 
 
 <!--	<xsl:variable name="directBusProcs" select="$relevantBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = current()/name]"></xsl:variable>
 <xsl:variable name="thisrelevantBusProcs" select="$relevantBusProcs[own_slot_value[slot_reference = 'realises_business_capability']/value = $relevantBusCaps/name]"></xsl:variable>
@@ -200,6 +202,9 @@
 "index":"<xsl:value-of select="own_slot_value[slot_reference='business_capability_level']/value"/>",
 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<!-- note these are all processes for this capability and its children -->
 "allProcesses":[<xsl:for-each select="$thisrelevantBusProcs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<!-- note these are direct processes for this capability only, not children.  make directBusProcs thisrelevantBusProcs to change -->
+"infoConcepts":[<xsl:for-each select="$thisinfoConcepts"> 
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "processes":[<xsl:for-each select="$directBusProcs">
 <xsl:variable name="thisProcessrelevantPhysProcs" select="key('physProcessKey', current()/name)"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<!-- note these are all processes for this capability only, including children -->

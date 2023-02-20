@@ -764,6 +764,27 @@
 						-ms-transition: all 0.5s ease;
 						transition: all 0.5s ease;
 					}
+					.infoConceptBox{
+						border:1pt solid #d3d3d3;
+						border-radius: 5px;
+						font-size:9pt;
+						display:inline-block;
+						background-color: #fff;
+						color:#000;
+						padding:2px;
+						margin:2px; 
+						min-width:48px;
+						text-align: center;
+					}
+					.infoConceptBoxHide{
+						border:0pt solid #d3d3d3;
+						border-radius: 5px;
+						font-size:0pt;
+						display:inline-block;
+						background-color: #fff;
+						padding:0px;
+						margin:0px; 	
+					}
 				</style>
 				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -1318,6 +1339,13 @@
 						</div>	
 					{{/each}}
 				</script>
+				<script id="infoConcept-template" type="text/x-handlebars-template">
+					<div class="infoConceptBoxHide dataBox"><xsl:attribute name="easid">{{id}}</xsl:attribute>{{this.name}} <xsl:text> </xsl:text>
+						<!-- 
+							link to info views <span class="info-circle "><xsl:attribute name="easidinfo">{{id}}</xsl:attribute>{{this.infoViews.length}}</span>
+						-->
+					</div> 
+				</script>
 			</body>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction">
@@ -1474,6 +1502,9 @@
 			appScoreFragment = $("#appScore-template").html();
 			appScoreTemplate = Handlebars.compile(appScoreFragment);
 
+			infoConceptFragment = $("#infoConcept-template").html();
+			infoConceptTemplate = Handlebars.compile(infoConceptFragment);
+
 			Handlebars.registerHelper('getLevel', function(arg1) {
 				return parseInt(arg1) + 1; 
 			});
@@ -1519,9 +1550,13 @@
 					return d.id ==instance.id
 				});
 			 
-				let appHtml='';
+				let appHtml='<br/>';
 				let appArr=[];
-
+				thisApps[0].infoConcepts?.forEach((inf)=>{ 
+					 
+					appHtml=appHtml+infoConceptTemplate(inf);
+				}) 
+				return appHtml;
 			});
 
 			Handlebars.registerHelper('getCompareApps', function(alist) {
@@ -1664,6 +1699,7 @@
 			$('#keyHolder').slideUp();
 			$('#comparePanel').slideUp() 
 			$('.goalbox').hide();
+			$('.dataBox').removeClass('infoConceptBox').addClass('infoConceptBoxHide');
 		}else if(thisId=='goals'){
 			$('.app-circle').hide();  
 			$('.proj-circle').show();
@@ -1671,6 +1707,7 @@
 			$('#comparePanel').slideUp()
 			$('#keyHolder').slideDown()  
 			$('.goalbox').show();
+			$('.dataBox').removeClass('infoConceptBox').addClass('infoConceptBoxHide');
 		}else if(thisId=='compare'){
 			$('.app-circle').hide();  
 			$('.compare-circle').show();  
@@ -1678,6 +1715,10 @@
 			$('#keyHolder').slideUp() 
 			$('#comparePanel').slideDown() 
 			$('.goalbox').hide();
+			$('.dataBox').removeClass('infoConceptBox').addClass('infoConceptBoxHide');
+		}else if(thisId=='data'){
+			$('.dataBox').addClass('infoConceptBox').removeClass('infoConceptBoxHide');
+			$('.info-circle').css('display','block')
 		}
 	})
 <!--
@@ -1946,9 +1987,10 @@
 		
 	
 				//create paired arrays
-				
+				let showInfo=0;
 				workingArray.busCaptoAppDetails.forEach((bc)=>{
-				 
+					//if infoConcepts in array then tell view to show
+					if(bc.infoConcepts){showInfo=1}
 					let capArr=responses[2].businessCapabilities.find((e)=>{
 						return e.id==bc.id;
 					}); 
@@ -1964,6 +2006,13 @@
 					});
 
 				});
+
+				if(showInfo&gt;0){
+					$('#viewOption').append($('&lt;option>', {
+						value: 'data',
+						text: 'Information Overlay'
+					}));	
+				}
 				
 				let capMod = new Promise(function(resolve, reject) { 
 					resolve($('#capModelHolder').html(l0CapTemplate(workingArray.busCapHierarchy)));

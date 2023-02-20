@@ -97,7 +97,10 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Capability to Application Deployments: <xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/></span>
+									<span class="text-darkgrey">Capability to Application Deployments: <xsl:call-template name="RenderMultiLangInstanceName">
+										<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
+										<xsl:with-param name="isRenderAsJSString" select="true()"/>
+									</xsl:call-template></span>
 								</h1>
 							</div>
 						</div>
@@ -110,7 +113,10 @@
 								<div id="model"/>
 								<script>
 									var treeData =
-									  { "name": "<xsl:value-of select="$thisBusCap/own_slot_value[slot_reference = 'name']/value"/>","colour":"red",
+									  { "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+										<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
+										<xsl:with-param name="isRenderAsJSString" select="true()"/>
+									</xsl:call-template>","colour":"red",
 										"children": [<xsl:apply-templates select="$thisBusCap" mode="buscaps"/>],
 										"children1":[]};
 									    
@@ -342,9 +348,15 @@
 	<xsl:template match="node()" mode="busprocesses">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisappserv" select="$relatedAppservtoPro[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $this/name]"/>
-		<xsl:variable name="thisphysical" select="$relatedPhysBusProcesses[own_slot_value[slot_reference = 'implements_business_process']/value = $this/name]"/> {"name": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","colour": "gray", "children": [ <xsl:apply-templates select="$thisappserv" mode="appservices"/>
+		<xsl:variable name="thisphysical" select="$relatedPhysBusProcesses[own_slot_value[slot_reference = 'implements_business_process']/value = $this/name]"/> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$this"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","colour": "gray", "children": [ <xsl:apply-templates select="$thisappserv" mode="appservices"/>
 		<xsl:apply-templates select="$thisphysical" mode="physprocesses">
-			<xsl:with-param name="process" select="$this/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:with-param name="process"><xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:with-param>
 		</xsl:apply-templates> ]}, </xsl:template>
 
 	<xsl:template match="node()" mode="physprocesses">
@@ -369,7 +381,10 @@
 	<xsl:template match="node()" mode="appservices">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisParent" select="$relatedBusProcesses[own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value = $this/name]"/>
-		<xsl:variable name="thisTarget" select="$relatedAppserv[name = $this/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/> {"name": "<xsl:value-of select="$thisTarget/own_slot_value[slot_reference = 'name']/value"/>","colour": "green", "children": [ <xsl:apply-templates select="$thisTarget" mode="apps"/> ]}, <!-- <xsl:variable name="thisApplication" select="current()"/> -->
+		<xsl:variable name="thisTarget" select="$relatedAppserv[name = $this/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$thisTarget"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","colour": "green", "children": [ <xsl:apply-templates select="$thisTarget" mode="apps"/> ]}, <!-- <xsl:variable name="thisApplication" select="current()"/> -->
 	</xsl:template>
 
 
@@ -382,25 +397,37 @@
 		<!-- pass service as parameter iterate roles, iterate apps-->
 
 		<xsl:apply-templates select="$thisTargetviaRole" mode="approles">
-			<xsl:with-param name="service" select="$this/own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:with-param name="service"><xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$this"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template></xsl:with-param> 
 		</xsl:apply-templates>
 
 	</xsl:template>
 
 	<xsl:template match="node()" mode="caps">
-		<xsl:param name="capability"/> {"name": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>"} </xsl:template>
+		<xsl:param name="capability"/> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>"} </xsl:template>
 
 	<xsl:template match="node()" mode="approles">
 		<xsl:param name="service"/>
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisTarget" select="$relatedAppPro[name = $this/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-		<xsl:if test="$thisTarget"> {"name": "<xsl:value-of select="$thisTarget/own_slot_value[slot_reference = 'name']/value"/>","colour": "orange", "children": [ <xsl:apply-templates select="$thisTarget" mode="appdeployments"/> ]}, </xsl:if>
+		<xsl:if test="$thisTarget"> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$thisTarget"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","colour": "orange", "children": [ <xsl:apply-templates select="$thisTarget" mode="appdeployments"/> ]}, </xsl:if>
 	</xsl:template>
 
 
 	<xsl:template match="node()" mode="appsforphysical">
 		<xsl:param name="process"/>
-		<xsl:variable name="this" select="current()"/> {"name": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","colour": "orange", "children": [ <xsl:apply-templates select="$this" mode="appdeployments"/> ]}, </xsl:template>
+		<xsl:variable name="this" select="current()"/> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$this"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","colour": "orange", "children": [ <xsl:apply-templates select="$this" mode="appdeployments"/> ]}, </xsl:template>
 
 	<xsl:template match="node()" mode="appdeployments">
 		<xsl:variable name="this" select="current()"/>
@@ -415,10 +442,16 @@
 
 	<xsl:template match="node()" mode="appdeploymentsrender">
 		<xsl:param name="apps"/>
-		<xsl:variable name="this" select="current()"/> {"name": "<xsl:value-of select="$this/own_slot_value[slot_reference = 'name']/value"/>","colour":"#e27878"}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:variable name="this" select="current()"/> {"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$this"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","colour":"#e27878"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="nodeList"> {name: "<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>", "type": "<xsl:value-of select="type"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+	<xsl:template match="node()" mode="nodeList"> {name: "<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:with-param name="theSubjectInstance" select="current()"/>
+		<xsl:with-param name="isRenderAsJSString" select="true()"/>
+	</xsl:call-template>", "type": "<xsl:value-of select="type"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

@@ -217,6 +217,9 @@
 					<xsl:with-param name="theXML" select="$reposXML"/>
 					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 				</xsl:call-template></strong>
+				<xsl:if test="current()/own_slot_value[slot_reference = 'business_process_id']/value">
+					<xsl:text> </xsl:text>(ID:<xsl:value-of select="current()/own_slot_value[slot_reference = 'business_process_id']/value"/>)
+				</xsl:if>
 				<br/>
 				<div class="xsmall text-darkgrey"><i id="btn{$thisid}" class="fa fa-toggle-off tbn right-" onclick="toggleProcess(&quot;{$thisid}&quot;)" /><span>Show/Hide Physical Processes</span></div>
 			</td>

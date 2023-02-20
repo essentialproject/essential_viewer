@@ -56,7 +56,10 @@
 	<xsl:variable name="inScopeCostInstances" select="$inScopeCosts union $inScopeCostComponents"></xsl:variable>
 	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
 	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
-	
+	<xsl:variable name="allStakeholders" select="/node()/simple_instance[name = $currentNode/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+	<xsl:variable name="allActors" select="/node()/simple_instance[name = $allStakeholders/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:variable name="allRoles" select="/node()/simple_instance[name = $allStakeholders/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
+
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -414,7 +417,137 @@ statusJSON=[<xsl:apply-templates select="$lifecycleStatusUsages" mode="lifecycle
 					<hr/>
 				</div>
 
+	<!--Setup Stakeholders Section-->
+	<div class="col-xs-12">
+		<div class="sectionIcon">
+			<i class="fa fa-users icon-section icon-color"/>
+		</div>
+		<div>
+			<h2 class="text-primary">
+				<xsl:value-of select="eas:i18n('Roles and People')"/>
+			</h2>
+			 
+		</div>
+		<div class="content-section">
+			<xsl:choose>
+				<xsl:when test="count($allStakeholders) &gt; 0">
+					<script>
+					$(document).ready(function(){
+						// Setup - add a text input to each footer cell
+						$('#dt_stakeholders tfoot th').each( function () {
+							var title = $(this).text();
+							$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+						} );
+						
+						var table = $('#dt_stakeholders').DataTable({
+						scrollY: "350px",
+						scrollCollapse: true,
+						paging: false,
+						info: false,
+						sort: true,
+						responsive: true,
+						columns: [
+							{ "width": "30%" },
+							{ "width": "30%" },
+							{ "width": "40%" }
+						  ],
+						dom: 'Bfrtip',
+						buttons: [
+							'copyHtml5', 
+							'excelHtml5',
+							'csvHtml5',
+							'pdfHtml5',
+							'print'
+						]
+						});
+						
+						
+						// Apply the search
+						table.columns().every( function () {
+							var that = this;
+					 
+							$( 'input', this.footer() ).on( 'keyup change', function () {
+								if ( that.search() !== this.value ) {
+									that
+										.search( this.value )
+										.draw();
+								}
+							} );
+						} );
+						
+						table.columns.adjust();
+						
+						$(window).resize( function () {
+							table.columns.adjust();
+						});
+					});
+				</script>
+					<table class="table table-striped table-bordered" id="dt_stakeholders">
+						<thead>
+							<tr>
+								<th class="cellWidth-30pc">
+									<xsl:value-of select="eas:i18n('Role')"/>
+								</th>
+								<th class="cellWidth-30pc">
+									<xsl:value-of select="eas:i18n('Person or Organisation')"/>
+								</th>
+								<th class="cellWidth-40pc">
+									<xsl:value-of select="eas:i18n('Email')"/>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<xsl:for-each select="$allStakeholders">
+								<xsl:variable name="actor" select="$allActors[name = current()/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+								<xsl:variable name="role" select="$allRoles[name = current()/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
+								<xsl:variable name="email" select="$actor/own_slot_value[slot_reference = 'email']/value"/>
+								<tr>
+									<td>
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="$role"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+										</xsl:call-template>
+									</td>
+									<td>
+										<xsl:call-template name="RenderInstanceLink">
+											<xsl:with-param name="theSubjectInstance" select="$actor"/>
+											<xsl:with-param name="theXML" select="$reposXML"/>
+											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+										</xsl:call-template>
+									</td>
+									<td>
+										<xsl:value-of select="$email"/>
+									</td>
+								</tr>
+							</xsl:for-each>
 
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>
+									<xsl:value-of select="eas:i18n('Role')"/>
+								</th>
+								<th>
+									<xsl:value-of select="eas:i18n('Person or Organisation')"/>
+								</th>
+								<th>
+									<xsl:value-of select="eas:i18n('Email')"/>
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+				</xsl:when>
+				<xsl:otherwise>
+					<p>
+						<span>-</span>
+					</p>
+				</xsl:otherwise>
+			</xsl:choose>
+
+		</div>
+		<hr/>
+	</div>
 				<!--Setup Supports Applications Section-->
 
 				<xsl:variable name="techProvsInScope" select="$techProdBuildList/own_slot_value[slot_reference = 'describes_technology_provider']/value"/>

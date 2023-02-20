@@ -211,11 +211,12 @@
 				sort: true,
 				responsive: true,
 				columns: [
-				    { "width": "25%" },
+				    { "width": "20%" },
 				    { "width": "10%" },
-				    { "width": "25%" },
-				    { "width": "25%" },
-				    { "width": "25%" }
+				    { "width": "20%" },
+				    { "width": "20%" },
+				    { "width": "15%" },
+				    { "width": "15%" }
 				  ],
 				dom: 'Bfrtip',
 			    buttons: [
@@ -262,6 +263,9 @@
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Host Description')"/>
+					</th>
+					<th>
+						<xsl:value-of select="eas:i18n('Host Site')"/>
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Host Location')"/>
@@ -312,6 +316,13 @@
 						</td>
 						<td>
 							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="$techNodeSite"/>
+								<xsl:with-param name="theXML" select="$reposXML"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+							</xsl:call-template>
+						</td>
+						<td>
+							<xsl:call-template name="RenderInstanceLink">
 								<xsl:with-param name="theSubjectInstance" select="$techNodeCountry"/>
 								<xsl:with-param name="theXML" select="$reposXML"/>
 								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
@@ -334,6 +345,9 @@
 					</th>
 					<th>
 						<input type="text" name="search_env" value="Search Description" class="search_init"/>
+					</th>
+					<th>
+						<input type="text" name="search_site" value="Search Site" class="search_init"/>
 					</th>
 					<th>
 						<input type="text" name="search_loc" value="Search Location" class="search_init"/>

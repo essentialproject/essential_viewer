@@ -23,7 +23,8 @@
     
     <!-- plans that this project supports-->
     <xsl:variable name="thisdirectStrategicPlans" select="/node()/simple_instance[type='Enterprise_Strategic_Plan'][name=$this/own_slot_value[slot_reference='ca_strategic_plans_supported']/value]"/>
-    
+	<xsl:variable name="thisStrategicPlansviaElement" select="/node()/simple_instance[type='Enterprise_Strategic_Plan'][name=$thisPlannedChanges/own_slot_value[slot_reference='plan_to_element_plan']/value]"/>
+
     <xsl:variable name="planningActions" select="/node()/simple_instance[type='Planning_Action']"/>
 	<xsl:variable name="projectApprovalStatus" select="/node()/simple_instance[name = $this/own_slot_value[slot_reference = 'ca_approval_status']/value]"/>
 	<xsl:variable name="projectApprovalStatusName" select="$projectApprovalStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
@@ -250,8 +251,7 @@
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
-
+				<xsl:call-template name="Heading"/> 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -653,10 +653,10 @@
                          "impactedElements":[<xsl:apply-templates select="$thisPlannedChanges" mode="layerInfo"/>],
                          "strategicPlansActual":[<xsl:apply-templates select="$thisInterestedStrategicPlans" mode="plansInfo"/>],
                          "strategicPlansExplict":[<xsl:apply-templates select="$thisdirectStrategicPlans" mode="plansInfo"/>],
-                         "allStratPlans":[<xsl:apply-templates select="$thisInterestedStrategicPlans union $thisdirectStrategicPlans" mode="plansInfo"/>],
+                         "allStratPlans":[<xsl:apply-templates select="$thisInterestedStrategicPlans union $thisdirectStrategicPlans union $thisStrategicPlansviaElement" mode="plansInfo"/>],
                          "stakeholders":[<xsl:apply-templates select="$projectStakeholders" mode="stakeholders"/>]};
                 
-                console.log('project.forecastEndDate', project.forecastEndDate)
+                //console.log('project', project)
               //  $('#datechecker').val('setDate',);
                 $("#datechecker").datepicker('setDate',new Date(project.forecastEndDate));
                 var keydates=[];
@@ -895,19 +895,31 @@
     <xsl:template match="node()" mode="layerInfoDetails">
     <xsl:param name="change"/> 
     <xsl:param name="thePlan"/> 
-        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","layer":"<xsl:choose><xsl:when test="supertype='Business_Layer'">Business</xsl:when>
+        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>","layer":"<xsl:choose><xsl:when test="supertype='Business_Layer'">Business</xsl:when>
         <xsl:when test="supertype='Application_Layer'">Application</xsl:when>
         <xsl:when test="supertype='Technology_Layer'">Technology</xsl:when>
         <xsl:when test="supertype='Information_Layer'">Information/Data</xsl:when>
-        <xsl:otherwise>Support</xsl:otherwise></xsl:choose>","changeType":"<xsl:value-of select="$planningActions[name=$change]/own_slot_value[slot_reference='name']/value"/>","instanceType":"<xsl:value-of select="current()/type"/>", "plan":"<xsl:value-of select="$thisInterestedStrategicPlans[name=$thePlan]/own_slot_value[slot_reference='name']/value"/>","planID":"<xsl:value-of select="$thePlan"/>"}, 
+        <xsl:otherwise>Support</xsl:otherwise></xsl:choose>","changeType":"<xsl:value-of select="$planningActions[name=$change]/own_slot_value[slot_reference='name']/value"/>","instanceType":"<xsl:value-of select="current()/type"/>", "niceTypeName":"<xsl:value-of select="translate(current()/type,'_',' ')"/>", "plan":"<xsl:value-of select="$thisInterestedStrategicPlans[name=$thePlan]/own_slot_value[slot_reference='name']/value"/>","planID":"<xsl:value-of select="$thePlan"/>"}, 
     </xsl:template>
     
     <xsl:template match="node()" mode="plansInfo">
         <xsl:variable name="deps" select="$allStrategicPlans[name=current()/own_slot_value[slot_reference='depends_on_strategic_plans']/value]"/>
         <xsl:variable name="sups" select="$allStrategicPlans[name=current()/own_slot_value[slot_reference='supports_strategic_plan']/value]"/>
-        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","status":"<xsl:value-of select="$allStratStatus[name=current()/own_slot_value[slot_reference='strategic_plan_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>",
-        "dependsOn":[<xsl:for-each select="$deps"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>"},</xsl:for-each>],
-        "supports":[<xsl:for-each select="$sups"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>"},</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>  
+        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","status":"<xsl:value-of select="$allStratStatus[name=current()/own_slot_value[slot_reference='strategic_plan_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>",
+        "dependsOn":[<xsl:for-each select="$deps"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>"},</xsl:for-each>],
+        "supports":[<xsl:for-each select="$sups"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","planStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>","planEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>"},</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>  
     </xsl:template>   
         
   
@@ -999,7 +1011,10 @@
     <xsl:template match="node()" mode="getCaps">
 
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-         "name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>",
+         "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>",
          "subcaps":[
 			<xsl:variable name="supportingBusCaps" select="$allBusinessCaps[own_slot_value[slot_reference = 'supports_business_capabilities']/value = current()/name]"/>
 			<xsl:apply-templates mode="subcaps" select="$supportingBusCaps">
@@ -1012,15 +1027,20 @@
     <xsl:template match="node()" mode="subcaps">
         <xsl:variable name="this" select="current()/name"/>
         <xsl:variable name="busCapChildren" select="eas:findAllSubCaps(current(), ())"/>
-        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-         "name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>",
-        "debug":<xsl:value-of select="count($busCapChildren)"/>,
+        {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+		 "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+			 <xsl:with-param name="isRenderAsJSString" select="true()"/>
+		 </xsl:call-template>",
         <xsl:if test="count($busCapChildren) &gt;1">
          "subcaps":[
                 <xsl:for-each select="$busCapChildren">
                     <xsl:if test="current()/name!=$this">
                 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-                        "name":"<xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/>",
+                        "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+							<xsl:with-param name="isRenderAsJSString" select="true()"/>
+						</xsl:call-template>",
                         "impacts":[<xsl:apply-templates mode="impacts" select="current()">
 			</xsl:apply-templates>]}<xsl:if test="position()!=last()">,</xsl:if>
                     </xsl:if>
@@ -1063,21 +1083,36 @@
         {"numberImpacted":<xsl:value-of select="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs union $plansforTechProds)"/>,<xsl:if test="count($plansForBusCap union $plansforApps union $plansforBusProcs union $plansforOrgs union $plansforTechProds)&gt;0">"elements":[
         <xsl:if test="$plansForBusCap">
            
-        <xsl:for-each select="$plansForBusCap">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},
+        <xsl:for-each select="$plansForBusCap">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","id":"<xsl:value-of select="current()/name"/>"},
         </xsl:for-each></xsl:if>
         <xsl:if test="$plansforBusProcs">
             
-        <xsl:for-each select="$plansforBusProcs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforBusProcs">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         <xsl:if test="$plansforApps">
             
-        <xsl:for-each select="$plansforApps">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforApps">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         <xsl:if test="$plansforOrgs">
            
-        <xsl:for-each select="$plansforOrgs">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforOrgs">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         
         <xsl:if test="$plansforTechProds">
            
-        <xsl:for-each select="$plansforTechProds">{"name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
+        <xsl:for-each select="$plansforTechProds">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","id":"<xsl:value-of select="current()/name"/>"},</xsl:for-each></xsl:if>
         ]</xsl:if>}
         
     </xsl:template>
@@ -1086,9 +1121,9 @@
 		<script id="impact-template" type="text/x-handlebars-template">
             {{#if this}}
             <table class="table table-bordered table-striped">
-                <tr><th>Type</th><th>Name</th><th>Action</th></tr>
+            	<tr><th width="25%">Type</th><th>Name</th><th width="25%">Action</th></tr>
             {{#each this}}
-                <tr><td>{{instanceType}}</td><td>{{{name}}}</td><td>{{changeType}}</td></tr>
+                <tr><td>{{niceTypeName}}</td><td>{{{name}}}</td><td>{{changeType}}</td></tr>
             {{/each}}
             {{else}}
                 No Impacts
@@ -1133,7 +1168,10 @@
         <xsl:if test="current()/name!=$this/name">
             <xsl:variable name="thisP2E" select="$thisPlanEle[own_slot_value[slot_reference='plan_to_element_change_activity']/value=current()/name]"/>
             <xsl:variable name="thisStratPlan" select="$allStrategicPlans[own_slot_value[slot_reference='strategic_plan_for_elements']/value=$thisP2E/name]"/>
-            {"id":"<xsl:value-of select="$thisItem/name"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisItem"/></xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>", "stratplanid":"<xsl:value-of select="$thisStratPlan/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisStratPlan"/></xsl:call-template>"},
+            {"id":"<xsl:value-of select="$thisItem/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$thisItem"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>", "stratplanid":"<xsl:value-of select="$thisStratPlan/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisStratPlan"/></xsl:call-template>"},
         </xsl:if>
         </xsl:for-each>
     </xsl:template> 
@@ -1175,7 +1213,10 @@
             <xsl:variable name="projectRole" select="$projectRoles[name = current()/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
             <xsl:variable name="roleName" select="$projectRole/own_slot_value[slot_reference = 'name']/value"/>
             <xsl:variable name="actorEmail" select="$projectActor/own_slot_value[slot_reference = 'email']/value"/>
-            {"id":"<xsl:value-of select="$projectActor/name"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$projectActor"/></xsl:call-template>","role":"<xsl:value-of select="$roleName"/>"},
+            {"id":"<xsl:value-of select="$projectActor/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$projectActor"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
+			</xsl:call-template>","role":"<xsl:value-of select="$roleName"/>"},
     </xsl:template>
      <xsl:template name="plandepsHandlebarsTemplate">
 		<script id="plandeps-template" type="text/x-handlebars-template">

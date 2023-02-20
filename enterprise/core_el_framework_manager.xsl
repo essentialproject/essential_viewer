@@ -1297,15 +1297,7 @@ focusID=products[0].id;
  
 				getFocus(focusID);
 				
-				$('.control-name-trigger').popover({
-					container: 'body',
-					html: true,
-					trigger: 'hover',
-					placement: 'auto',
-					content: function(){
-						return $(this).next().html();
-					}
-					}).on("show.bs.popover", function(){$(this).data("bs.popover").tip().css("max-width", "600px");});
+				
 
 				$('#fw').select2();
 
@@ -1492,7 +1484,16 @@ function drawView(controls, apps, busproc, techprod, infoData){
 
 	initTable(apps, busproc, techprod, infoData);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){ $($.fn.dataTable.tables(true)).DataTable() .columns.adjust(); });
-		
+	
+	$('.control-name-trigger').popover({
+		container: 'body',
+		html: true,
+		trigger: 'hover',
+		placement: 'auto',
+		content: function(){
+			return $(this).next().html();
+		}
+		}).on("show.bs.popover", function(){$(this).data("bs.popover").tip().css("max-width", "600px");});
 	
 	$('.solutionTag').on('click',function(){
 		let theID =$(this).attr('easid');

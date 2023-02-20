@@ -190,7 +190,7 @@
 
 				<!--Setup the Definition section-->
 
-				<div class="col-xs-12"> 
+				<div class="col-xs-9"> 
 					<div class="sectionIcon">
 						<i class="fa fa-list-ul icon-section icon-color"/>
 					</div>
@@ -211,6 +211,18 @@
 					</div>
 					<hr/>
 				</div>
+				<xsl:if test="$currentProcess/own_slot_value[slot_reference = 'business_process_id']/value">
+					<div class="col-xs-3"> 
+						<div class="sectionIcon">
+							<i class="fa fa-hashtag icon-section icon-color"/> 
+						</div>
+						<h2 class="text-primary">
+						<xsl:value-of select="eas:i18n('ID')"/>
+					</h2>
+					<h2><span style="color:#000"><xsl:value-of select="$currentProcess/own_slot_value[slot_reference = 'business_process_id']/value"/></span></h2>
+					</div> 
+				
+				</xsl:if>
 
 
 				<!--Setup the Standardisation section-->

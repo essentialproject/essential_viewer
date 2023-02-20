@@ -96,10 +96,10 @@
 	<xsl:variable name="infoLayerClasses" select="('Information_View', 'Data_Subject', 'Data_Object', 'Data_Representation', 'Security_Policy', 'Information_Store')"/>
 	<xsl:variable name="infoLayerLabels" select="(eas:i18n('Information Object'), eas:i18n('Data Subject'), eas:i18n('Data Object'), eas:i18n('Data Representation'), eas:i18n('Security Policy'), eas:i18n('Information/Data Store'))"/>
 
-	<xsl:variable name="appLayerClasses" select="('Application_Service', 'Application_Provider_Interface', 'Composite_Application_Provider', 'Application_Provider', 'Application_Function', 'Application_Deployment')"/>
+	<xsl:variable name="appLayerClasses" select="('Application_Service', 'Application_Provider_Interface', 'Composite_Application_Provider','Application_Provider_Interface','Application_Provider_Role', 'Application_Provider', 'Application_Function', 'Application_Deployment')"/>
 	<xsl:variable name="appLayerLabels" select="(eas:i18n('Application Service'), eas:i18n('Application Interface'), eas:i18n('Application'), eas:i18n('Application'), eas:i18n('Application Function'), eas:i18n('Application Deployment'))"/>
 
-	<xsl:variable name="techLayerClasses" select="('Technology_Capability', 'Technology_Component', 'Technology_Product', 'Technology_Product_Build', 'Infrastructure_Software_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Hardware_Instance', 'Technology_Node')"/>
+	<xsl:variable name="techLayerClasses" select="('Technology_Capability', 'Technology_Component', 'Technology_Product','Technology_Product_Build', 'Technology_Product_Build_Role', 'Technology_Product_Role', 'Technology_Product_Build','Technology_Provider_Role', 'Infrastructure_Software_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Hardware_Instance', 'Technology_Node')"/>
 	<xsl:variable name="techLayerLabels" select="(eas:i18n('Technology Capability'), eas:i18n('Technology Component'), eas:i18n('Technology Product'), eas:i18n('Technology Build'), eas:i18n('Infrastructure Software Instance'), eas:i18n('Application Software Instance'), eas:i18n('Information/Data Store Instance'), eas:i18n('Hardware Instance'), eas:i18n('Technology Node'))"/>
 
 	<!-- Set up the requierd link classes -->
@@ -175,8 +175,7 @@
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading">
 					<xsl:with-param name="contentID" select="$param1"/>
-				</xsl:call-template>
-
+				</xsl:call-template> 
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
@@ -997,7 +996,7 @@
 			<xsl:when test="string-length($elementName) > 0">
 				<tr>
 					<td>
-						<xsl:value-of select="$elementTypeLabel"/>
+						 <xsl:value-of select="translate($element/type,'_',' ')"/>
 					</td>
 					<td>
 						<strong>
