@@ -613,8 +613,8 @@
 		<xsl:choose>
 			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
 				<xsl:variable name="slotName">
-					<xsl:call-template name="GetDisplaySlotForClass">
-						<xsl:with-param name="theClass" select="$theSubjectInstance/type"/>
+					<xsl:call-template name="GetDisplaySlotForInstance">
+						<xsl:with-param name="theInstance" select="$theSubjectInstance"/>
 					</xsl:call-template>
 				</xsl:variable>
 				<xsl:value-of>

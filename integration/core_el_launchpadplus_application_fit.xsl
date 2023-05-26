@@ -130,10 +130,10 @@
 								<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_app_fit.xsl&amp;CT=application/ms-excel&amp;FILE=application_fit.xml&amp;cl=en-gb">		
 									<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Application Lifecycle and Fit as Excel</div>
 								</a><br/>
-								<a class="noUL" href="https://enterprise-architecture.org/downloads_area/appFitandLifecycle_scores_IMPORTSPECv1a.zip" download="appFitandLifecycle_scores_IMPORTSPECv1a.zip">
+								<a class="noUL" href="integration/plus/appFitandLifecycle_scores_IMPORTSPECv1a.zip" download="appFitandLifecycle_scores_IMPORTSPECv1a.zip">
 									<div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Application Lifecycle and Fit Import Specification</div>
 									</a><br/>								   
-									<a href="https://enterprise-architecture.org/downloads_area/Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx" download="Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+									<a href="integration/plus/Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx" download="Using_the_Application_Fit_and_Lifecycle_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
 								<hr/> 
 							</p>
 						</div>

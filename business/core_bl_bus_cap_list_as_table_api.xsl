@@ -491,7 +491,7 @@ showEditorSpinner('Fetching Data...');
 		                registerRoadmapDatatable(catalogueTable);
 		            }
 		        //setCatalogueTable(); 
-				essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept']);
+				essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept'],'', true);
 		    });
 
 		    function renderCatalogueTableData(scopedData) {
@@ -534,6 +534,12 @@ showEditorSpinner('Fetching Data...');
 		    }
 
 		    var redrawView = function () {
+				essResetRMChanges();
+				typeInfo = {
+					"className": "Business_Capability",
+					"label": 'Business Capability',
+					"icon": 'fa-landmark'
+				}
 
 		        let scopedRMCaps = [];
 		        busCapArr.forEach((d) => {
@@ -564,7 +570,7 @@ showEditorSpinner('Fetching Data...');
 				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 
-		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef]);
+		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef], typeInfo);
 
 		        let showCaps = scopedCaps.resources;
 

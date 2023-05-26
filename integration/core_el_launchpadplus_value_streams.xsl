@@ -131,10 +131,10 @@
                         <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_value_stream_export.xsl&amp;CT=application/ms-excel&amp;FILE=value_streams.xml&amp;cl=en-gb">
                             <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Value Streams as Excel</div>
                         </a><br/>
-                         <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Value_Streams_Import_v1.zip" download="Value_Streams_Import_v1.zip">
+                         <a class="noUL" href="integration/plus/Value_Streams_Import_v1.zip" download="Value_Streams_Import_v1.zip">
                             <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Value Streams Import Specification</div>
                         </a><br/>
-                        <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Value_Streams.docx" download="LaunchpadPlus-Value_Streams.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                        <a href="integration/plus/LaunchpadPlus-Value_Streams.docx" download="LaunchpadPlus-Value_Streams.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
                         <hr/>                        
 						</div>
                 <div class="col-md-8">

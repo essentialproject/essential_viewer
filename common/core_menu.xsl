@@ -275,7 +275,7 @@
 				<!--   title:	{type: "html", html: '<span class="uppercase fontBlack text-darkgrey"><xsl:value-of select="$menuGroupLabel"/></span>', icon: "none"},-->
 				<xsl:apply-templates mode="RenderMenuItemEntries" select="$thisGroupReportMenuItems"/>
 			</xsl:when>
-			<xsl:otherwise>,title: {type: "html", html: '<span class="uppercase fontBlack menuTitle"><em>No view menu items defined</em></span>', icon: "none"} </xsl:otherwise>
+			<xsl:otherwise><!--,title: {type: "html", html: '<span class="uppercase fontBlack menuTitle"><em>No view menu items defined</em></span>', icon: "none"} --></xsl:otherwise>
 		</xsl:choose>
 
 	</xsl:template>

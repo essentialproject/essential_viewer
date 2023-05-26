@@ -5100,7 +5100,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                <Data ss:Type="String">{{this.name}}</Data>
             </Cell>
             <Cell ss:StyleID="s1112">
-               <Data ss:Type="String">{{this.vendor}}</Data>
+               <Data ss:Type="String">{{this.supplier}}</Data>
             </Cell>
             <Cell ss:StyleID="s1112">
                <Data ss:Type="String">{{this.description}}</Data>
@@ -9436,8 +9436,8 @@ $('#techProductsCheck').on("change", function() {
 					.then(function(response1) {
 		 				$('#tprods').css('color','#0aa20a')  
 						techProducts =response1;
-						//console.log('techProducts');
-						//console.log(techProducts);
+						 console.log('techProducts');
+					 console.log(techProducts);
 					 worksheetList.push({"id":47,"name": techproductstableTemplate(techProducts.technology_products)});	
 					}).catch (function (error) {
 						alert('Error - check you have the Core API: Import Technology Domains API set up')

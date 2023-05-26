@@ -672,7 +672,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
+				<div id="appModal" class="modal fade" role="dialog">
+					<div class="modal-dialog"> 
+						<div class="modal-content"> 
+						<div class="modal-header">
+							<h3><div id="appListModalTitle"></div></h3>
+						</div>
 
+						<div class="modal-body">
+							<div id="appListModal"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+						</div>
+
+					</div>
+				</div>
 
 				<div class="appPanel" id="appPanel">
 						<div id="appData"></div>
@@ -692,7 +708,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		</select>
 		{{/each}}
 		</script>
-
+		<script id="appListModal-template" type="text/x-handlebars-template">
+			{{#each this}} 
+			<div class="appBox">
+				<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
+				<xsl:attribute name="title">{{this.name}}</xsl:attribute>
+				<div class="appBoxLabel">{{#essRenderInstanceLinkMenuOnly this 'Composite_Application_Provider'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+				<i class="fa fa-info-circle appInfoButton">
+					<xsl:attribute name="easid">{{this.id}}</xsl:attribute></i>
+			</div>
+			{{/each}}
+		</script>
+		
 				<!-- Apps list for sidebar -->
 				<script id="appList-template" type="text/x-handlebars-template">
 					 	<span id="capsId"><xsl:attribute name="easid">{{this.cap}}</xsl:attribute><h3>{{this.capName}}</h3></span>
@@ -864,6 +891,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 					{{#each this}}
 						<a class="quick-link">
 							<xsl:attribute name="href">#{{this.id}}</xsl:attribute>
+							<xsl:attribute name="easlinkid">{{this.id}}</xsl:attribute>
 							<div class="quick-link-label">{{this.name}}</div>
 						</a>
 					{{/each}}	
@@ -970,6 +998,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			$('#editor-spinner-text').text('');
 		};
 
+		var settings=[] 
+			 
+
 	//	var panelLeft=$('#appSidenav').position().left;
 	let filtersNo=[<xsl:call-template name="GetReportFilterExcludedSlots"><xsl:with-param name="theReport" select="$theReport"></xsl:with-param></xsl:call-template>]
 
@@ -1001,8 +1032,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	var dynamicAppFilterDefs=[];	
 	//	showEditorSpinner('Fetching Data...');
 		$('document').ready(function ()
-		{
+		{ 
              $('#busCaps').select2();
+	 
              
 			appMiniFragment = $("#appmini-template").html();
 			appMiniTemplate = Handlebars.compile(appMiniFragment);
@@ -1013,6 +1045,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	 		appListFragment = $("#appList-template").html();
             appListTemplate = Handlebars.compile(appListFragment);
+            
+			
+			appListModalFragment = $("#appListModal-template").html();
+            appListModalTemplate = Handlebars.compile(appListModalFragment);
             
             appBoxFragment = $("#appsBox-template").html();
             appBoxTemplate = Handlebars.compile(appBoxFragment);
@@ -1209,8 +1245,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
              $('#busCaps').on('change',function(){
 					redrawView();
 			 })
-
-			 essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+			 
+			 fetch('user/appDashboard.json')  .then(response => {
+				if (response.ok) {
+				  return response.json();
+				} else {
+				 console.log('No settings File');
+				 essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+				}
+			  })
+			  .then(data => {
+				settings=data;
+				essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+			  })
+			  .catch(error => console.error(error));
+			
 	
 			  
 			}). catch (function (error)
@@ -1231,17 +1280,17 @@ var appCount = d3.nest()
 
 }
 
-
+console.log('s',settings)
 var charts = [];
 var chartData=[];
-function drawChart(canvasId, type, labels, inputData, title, colours) {
+function drawChart(canvasId, type, labels, inputData, title, colours, detailedData, ctype) {
 	//console.log('canvasId',canvasId)
 	//console.log('canvasId',type)
 	//console.log('canvasId',labels)
-	//console.log('canvasId',inputData)
+	console.log('canvasId',inputData)
  
 	if(charts[canvasId]){charts[canvasId].destroy()};			
- 	charts[canvasId] = new Chart(document.getElementById(canvasId), { type: 'doughnut',
+ 	charts[canvasId] = new Chart(document.getElementById(canvasId), { type: ctype,
                 data: {
                   labels: labels ,
                   datasets: [
@@ -1270,6 +1319,26 @@ function drawChart(canvasId, type, labels, inputData, title, colours) {
                       },
                       
                     },
+					onClick: function(event, elements) {
+						if (elements.length) {
+							// Get the first element from the list of clicked elements
+							var segment = elements[0];
+							// Get the index of the segment in the data array
+							var segmentIndex = segment._index;
+							// Get the label and value of the segment
+							var segmentLabel = charts[canvasId].data.labels[segmentIndex];
+							var segmentValue = charts[canvasId].data.datasets[0].data[segmentIndex];
+							console.log('Clicked segment:', segmentLabel, segmentValue);
+						
+							let thisSelection=detailedData.filter((e)=>{
+								return e.id==segmentLabel;
+							})
+							console.log('thisSelection',thisSelection)
+							$('#appListModalTitle').html(segmentLabel)
+$('#appListModal').html(appListModalTemplate(thisSelection[0].values));
+$('#appModal').modal('show')
+						}
+					}
                   }
 });
 
@@ -1326,7 +1395,7 @@ $(document).on('click', '.appInfoButton',function ()
     });
 
 var redrawView=function(){
- 
+ console.log('settings', settings)
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
@@ -1363,13 +1432,23 @@ var redrawView=function(){
 		
 				$('#appVal').text(scopedApps.resources.length)
 				filters.forEach((d)=>{
+					console.log('d',d)
+					let checkType=settings?.app_dashboard?.find((e)=>{
+						return e.id==d.id;
+					})
+				
+					let type='doughnut';
+					if(checkType){type=checkType.type}
+					console.log('checkType',checkType)
 					var filterCount = d3.nest()
 					.key(function(e) {return e[d.slotName]}) 
 					.entries(scopedApps.resources);
-				 
+				
 					let labels=[];
 					let labelcolours=[];
 					let inputData=[];
+					let hoverData=[];
+					
 					let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
                    
 					filterCount.forEach((e,i)=>{  
@@ -1379,19 +1458,25 @@ var redrawView=function(){
 							if(thisFilter){
 							labels.push(thisFilter.name +' ('+e.values.length+')'); 
 							labelcolours.push(thisFilter.backgroundColor)
+							hoverData.push({"id":thisFilter.name +' ('+e.values.length+')', "values": e.values})
 						 
 							}
 							else
 							{labels.push('Not Set ('+e.values.length+')');
 							labelcolours.push(missingBackgroundColour[i])
+							hoverData.push({"id":'Not Set ('+e.values.length+')', "values": e.values})
 						 
 							}
 						 
-							inputData.push(e.values.length)
-							
+							inputData.push(e.values.length) 
 						})
-					 
-					drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours) 
+						if(checkType?.show=='N'){
+							$('div[name="'+checkType.id+'"]').hide()
+							$('a[easlinkid="'+checkType.id+'"]').hide()
+						}
+			 
+							drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
+						 
 					//console.log('chartData',  chartData);
 					var COLORS_ACCENT = ["4472C4", "ED7D31", "FFC000", "70AD47"]; // 1,2,4,6
 					var COLORS_SPECTRUM = ["56B4E4", "126CB0", "672C7E", "E92A31", "F06826", "E9AF1F", "51B747", "189247"]; // B-G spectrum wheel
@@ -1420,19 +1505,32 @@ var redrawView=function(){
 						let slide = pres.addSlide();
 						selected=$(this).attr('easid');
 						let clrs=[]
+						console.log('chartData[selected].colours',chartData[selected].colours)
 						chartData[selected].colours.forEach((c)=>{
-							clrs.push(c.slice(1))
+							console.log('c',c)
+							if(c){
+								clrs.push(c.slice(1))
+							}else{
+								clrs.push('#d3d3d3')
+							}
 						})
-						
-						
-						
+						console.log('chartData[selected]',chartData[selected])
+						let checkPresType=settings?.app_dashboard?.find((e)=>{
+							return e.id==chartData[selected].name.replace(/ /g,"_");
+						})
 						let labelClean=[];
 						chartData[selected].labels.forEach((e)=>{
 							labelClean.push(e)
 						})
 						chartData[selected].labels=labelClean;
- 
-						slide.addChart(pres.ChartType.doughnut, [chartData[selected]], { 
+
+						let prestype=pres.ChartType.doughnut
+						if(checkPresType){
+							prestype=pres.ChartType[checkPresType.type]
+						}
+					
+ console.log('chartData',chartData)
+						slide.addChart(prestype, [chartData[selected]], { 
 							x: 0.2,
 							y: 0.2,
 							w: "95%",

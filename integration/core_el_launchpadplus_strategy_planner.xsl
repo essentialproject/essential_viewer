@@ -130,12 +130,12 @@
 
 								<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Strategy Planner as Excel</div>
 							</a><br/>
-							<a class="noUL" href="https://enterprise-architecture.org/downloads_area/Strategy_Planner_Import_v2.zip" download="Strategy_Planner_Import_v2.zip">
+							<a class="noUL" href="integration/plus/Strategy_Planner_Import_v2.zip" download="Strategy_Planner_Import_v2.zip">
 
 								<div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Strategy Planner Import Specification</div>
 							</a><br/>
 							<br/>
-                            <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx" download="LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                            <a href="integration/plus/LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx" download="LaunchpadPlus-Strategy_Planner_and_Customer_Journeys.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
 				     
 						</p>
 						</div>

@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+ 	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
@@ -43,10 +42,7 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+ 
 	-->
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
@@ -201,7 +197,7 @@
 					
 					.sidenav .closebtn{
 						position: absolute;
-						top: 5px;
+						top: 43px;
 						right: 5px;
 						font-size: 14px;
 						margin-left: 50px;
@@ -209,7 +205,7 @@
 					
 					@media screen and (max-height : 450px){
 						.sidenav{
-							padding-top: 15px;
+							padding-top: 43px;
 						}
 					
 						.sidenav a{
@@ -577,704 +573,43 @@
 						border-left: 3px solid #f39c1f;
 						position:relative;
 					}
-// bc style
-.bc-body{
-    font-family: 'Lato', sans-serif;
-    font-size:16px;
-    margin:0;
-}
-.bc-body h1,
-.bc-body h2,
-.bc-body h3,
-.bc-body h4,
-.bc-body h5,
-.bc-body h6,
-.bc-body p{
-    margin:0;
-}
-.bc-body a,
-.bc-body button{
-    -webkit-transition: ease all 0.5s;
-    -o-transition: ease all 0.5s;
-    -moz-transition: ease all 0.5s;
-    transition: ease all 0.5s;
-}
-.bc-body .a-i-end {
-    -webkit-box-align: end;
-    -webkit-align-items: flex-end;
-       -moz-box-align: end;
-        -ms-flex-align: end;
-            align-items: flex-end;
-}
-.bc-body .a-i-center {
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-       -moz-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-}
-.bc-body .j-c-between {
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-       -moz-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
-}
-.bc-body .a-i-start {
-    -webkit-box-align: start;
-    -webkit-align-items: flex-start;
-       -moz-box-align: start;
-        -ms-flex-align: start;
-            align-items: flex-start;
-}
-.bc-body .d-flex {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: flex;
-}
-.bc-body .container-fluid {
-    padding:0 15px;
-}
-.bc-body .container-fluid.p-50 {
-    padding:0 50px;
-}
-.bc-body .container{
-    max-width:1170px;
-    width: 100%;
-    margin:0 auto;
-}
-.bg-dark{
-    background:#000;
-}
+				// bc style
+				
+				.bg-dark{
+					background:#000;
+				}
 
-/* ================================= */
-/* ------- Tabs Section CSS -------- */
-/* ================================= */
-.bc-main-wrapp {
-	padding: 0;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	margin-bottom: 0;
-	height: 350px;
-	box-shadow: 0 0 30px 0 rgba(0,0,0,0.20);
-}
-.bc-heading{
-    margin-bottom:20px;
-}
-.bc-heading h3{
-    font-size:18px;
-}
-.bc-heading h3,
-.bc-heading h4 {
-	color:#fff;
-    font-weight:600;
-}
-.bc-heading h4 {
-    font-size:26px; 
-}
-.bc-tabs-nav.nav-tabs > li > a {
-	font-weight: 600;
-	padding: 5px 30px;
-	font-size: 14px;
-    margin:0;
-    color:#fff;
-}
-.bc-tabs-nav.nav-tabs > li > a,
-.bc-tabs-nav.nav-tabs > li.active > a,
-.bc-tabs-nav.nav-tabs > li.active > a:focus,
-.bc-tabs-nav.nav-tabs > li.active > a:hover,
-.bc-tabs-nav.nav-tabs > li > a:focus,
-.bc-tabs-nav.nav-tabs > li > a:hover {
-	-webkit-border-radius:5px 5px 0 0;
-       -moz-border-radius:5px 5px 0 0;
-            border-radius:5px 5px 0 0;
-			border:none;
-}
-.bc-tabs-nav.nav-tabs > li.active > a,
-.bc-tabs-nav.nav-tabs > li.active > a:focus,
-.bc-tabs-nav.nav-tabs > li.active > a:hover,
-.bc-tabs-nav.nav-tabs > li > a:focus,
-.bc-tabs-nav.nav-tabs > li > a:hover {
-    color: #222;
-	background-color: #fff;
-}
-.bc-tabs-nav.nav-tabs > li:hover {
-	background-color:transparent !important;
-}
-.bc-tabs-nav.nav-tabs > li {
-    border:none !important;
-}
-.bc-heading.d-flex {
-	margin-top:15px;
-	-webkit-box-pack:end;
-	-webkit-justify-content:flex-end;
-	   -moz-box-pack:end;
-	    -ms-flex-pack:end;
-	        justify-content:flex-end;
-}
-.bc-heading.d-flex,
-.bc-change-view {
-	-webkit-box-align: center;
-	-webkit-align-items: center;
-	   -moz-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
-}
-.bc-change-view {
-	background: #C3193C;
-	height: 39px;
-	width: 39px;
-	padding: 5px;
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -moz-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-pack: center;
-	-webkit-justify-content: center;
-	   -moz-box-pack: center;
-	    -ms-flex-pack: center;
-	        justify-content: center;
-}
-.bc-change-view, .bc-card-view-option {
-	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
-			cursor: pointer;
+				
+				.helpMe {
+					position: absolute;
+					right: 35px;
+					top: 95px;
+					color:red;
+				}
+				
+				#content-panel {
+					width: 100%;
+					position: relative;
+				}
+				.modal-backdrop {
+					z-index: -1;
+				}
 
-}
-.bc-change-view .bc-default-change-view,
-.bc-active-view .bc-change-view .bc-default-view {
-    display:none;
-}
-.bc-change-view .bc-default-change-view,
-.bc-active-view .bc-change-view .bc-default-view,
-.bc-card-view-option,
-.bc-card-view-option .bc-collapse-all,
-.bc-card-view-active .bc-card-view-option .bc-expand-all,
-.bc-card-view-active .bc-card-view-option .bc-collapse-all {
-	-webkit-transition: ease all 0.5s;
-	-o-transition: ease all 0.5s;
-	-moz-transition: ease all 0.5s;
-	transition: ease all 0.5s;
-}
-.bc-active-view .bc-change-view .bc-default-change-view{
-    display:block;
-}
-.bc-card-view-option {
-	border: 2px solid #C3193C;
-	color: #fff;
-	padding: 7px 50px;
-	margin-right:15px;
-}
-.bc-card-view-option:hover{
-	background:#C3193C;
-}
-.bc-card-view-option .bc-collapse-all,
-.bc-card-view-active .bc-card-view-option .bc-expand-all {
-	display: none;
-}
-.bc-card-view-active .bc-card-view-option .bc-collapse-all {
-	display: block;
-}
-/** Main tab **/
-.bc-business-capability-wrapp{
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    margin:0 -10px;
-}
-.bc-business-capability {
-	-webkit-box-flex: 0;
-	-ms-flex: 0 0 15px;
-	flex: 0 0 10%;
-	max-width: 10%;
-	width: 100%;
-	padding: 0 10px;
-	margin-bottom:5px;
-	position: relative;
-}
-.bc-business-capability .bc-business-capability-box,
-.bc-sub-business-capability .bc-business-capability-box,
-.bc-business-capability h4,
-.bc-business-capability .bc-business-capability-box p {
-	-webkit-transition: ease all 0.5s;
-	-o-transition: ease all 0.5s;
-	-moz-transition: ease all 0.5s;
-	transition: ease all 0.5s;
-}
-.bc-business-capability h4 {
-	font-weight: 900;
-	font-size: 14px;
-	line-height: 18px;
-	color: #FFFFFF;
-	text-align: center;
-	margin-bottom: 10px;
-	min-height:45px;
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: -moz-box;
-	display: flex;
-	-webkit-box-align:  flex-start;
-	-webkit-align-items:  flex-start;
-	-ms-flex-align:  flex-start;
-	-moz-box-align: start;
-	     align-items: flex-start;
-	-webkit-box-pack: center;
-	-webkit-justify-content: center;
-	-ms-flex-pack: center;
-	-moz-box-pack: center;
-	     justify-content: center;
-	position: -webkit-sticky;
-	position: sticky;
-	top: 0;
-	left: 0;
-	right: 0;
-	margin: 0 auto;
-	background: #000;
-}
-.bc-business-capability .bc-business-capability-box {
-	background: #C3193C;
-	border-radius: 10px;
-	border: 2px solid #fff;
-	text-align: center;
-    padding:15px 10px;
-    cursor: pointer;
-}
-.bc-sub-business-capability .bc-business-capability-box {
-	background: #fff;
-	border-color:#C3193C;
-}
-.bc-business-capability .bc-business-capability-box h5 {
-	white-space: nowrap;
-	font-weight: bold;
-    font-size:16px;
-    line-height:16px;
-    text-align: center;
-    color: #FFFFFF;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    margin-bottom:5px;
-}
-.bc-business-capability .bc-business-capability-box h5 span {
-	display: inline-block;
-	margin-right: 10px;
-	max-width: 20px;
-	width: 100%;
-}
-.bc-business-capability .bc-business-capability-box h5 span img{
-	width:100%;
-}
-.bc-business-capability .bc-business-capability-box p {
-	font-size: 12px;
-	text-align: center;
-	color: #FFFFFF;
-	line-height: 16px;
-}
-.bc-business-capability .bc-business-capability-box p.read-next,
-.bc-card-view-active .bc-business-capability .bc-business-capability-box.read-more p.read-next{
-	opacity:0;
-	height:0;
-	visibility: hidden;
-}
-.bc-card-view-active .bc-business-capability .bc-business-capability-box p.read-next{
-	opacity:1;
-	height:100%;
-	visibility: visible;
-}
-.bc-business-capability .bc-business-capability-box.read-more p.read-next{
-	opacity:1;
-	height:100%;
-	visibility: visible;
-}
-.bc-business-capability .arrow-icon {
-	display: block;
-	text-align: center;
-	color: #fff;
-	font-size: 15px;
-	margin: 10px 0 0 0;
-	line-height: 13px;
-}
-.bc-business-sub-capability .bc-business-capability-box {
-	background: #fff;
-	border: 2px solid #C3193C;
-	margin-top: 10px;
-}
-.helpMe {
-    position: absolute;
-    right: 35px;
-	top: 95px;
-	color:red;
-}
-.bc-business-sub-capability .bc-business-capability-box h5,
-.bc-business-sub-capability .bc-business-capability-box p{
-    color:#C3193C;
-}
-.bc-business-capability{
-	height:100%;
-	max-height:260px;
-}
-#content-panel {
-	width: 100%;
-	position: relative;
-}
-.modal-backdrop {
-	z-index: -1;
-}
+				.off-cap{
+						border: 1pt solid #ccc;
+						border-left: 3px solid rgb(125, 174, 198);					
+						background-color: rgb(237, 237, 237);
+						color:#d3d3d3;  
 
-/* ================================= */
-/* ---- Section View Change CSS ---- */
-/* ================================= */
-.bc-active-view .bc-business-capability {
-	height: auto;
-	overflow-x: auto;
-	scrollbar-width: thin;
-	-webkit-box-flex: 0;
-	-webkit-flex: 0 0 100%;
-	   -moz-box-flex: 0;
-	    -ms-flex: 0 0 100%;
-	        flex: 0 0 100%;
-	max-width: 100%;
-	max-height:100%;
-}
-.bc-active-view .bc-business-capability,
-.bc-active-view .bc-business-sub-capability,
-.bc-active-view .bc-business-sub-capability  {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -moz-box;
-	display: -ms-flexbox;
-	display: flex;
-}
-.bc-active-view .bc-business-capability,
-.bc-active-view .bc-business-capability h4,
-.bc-active-view .bc-business-sub-capability {
-	-webkit-box-align: center;
-	-webkit-align-items: center;
-	   -moz-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
-}
-.bc-active-view .bc-business-capability .bc-business-capability-box h5,
-.bc-active-view .bc-business-capability .bc-business-capability-box h5 span{
-	display: block;
-}
-.bc-active-view .bc-business-capability .bc-business-capability-box h5 span {
-	display: block;
-	margin: 10px auto;
-}
-.bc-active-view .bc-business-capability-wrapp {
-	display: block;
-}
-.bc-active-view .bc-business-capability h4 {
-	min-width: 130px;
-	max-width: 130px;
-	margin: 0 10px 0 0;
-	text-align: left;
-	line-height: 20px;
-	font-size: 14px;
-	-webkit-box-pack: start;
-	-webkit-justify-content: flex-start;
-	-moz-box-pack: start;
-	-ms-flex-pack: start;
-	justify-content: flex-start;
-	position: -webkit-sticky;
-	position: sticky;
-	left: 0;
-	background: #000;
-	z-index: 999;
-	align-items: center;
-	min-height: 146px;
-	border-radius: 0 15px 15px 0;
-}
-.bc-active-view .bc-business-capability .bc-business-capability-box {
-	min-height: auto;
-	height:auto;
-	min-width:170px;
-	max-width:170px;
-	margin:0 0 10px 0;
-	-webkit-transition: ease all 0.5s;
-	-o-transition: ease all 0.5s;
-	-moz-transition: ease all 0.5s;
-	transition: ease all 0.5s;
-	padding: 0 10px 15px 10px;
-}
-.bc-active-view.bc-main-wrapp {
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-.bc-active-view #content-panel {
-	overflow-x: hidden;
-}
-.bc-active-view .bc-business-capability .arrow-icon {
-	min-width:30px;
-	-webkit-transform: rotate(-90deg);
-	   -moz-transform: rotate(-90deg);
-	    -ms-transform: rotate(-90deg);
-	     -o-transform: rotate(-90deg);
-	        transform: rotate(-90deg);
-	margin: -10px 0 0 0;
-}
-/* ================================= */
-/* ------------ Model CSS ---------- */
-/* ================================= */
-.bc-business-model.fade.in,
-.bc-business-sub-model.fade.in{
-	background: rgba(0,0,0,0.8);
-}
-.bc-business-model .modal-dialog,
-.bc-business-sub-model .modal-dialog {
-    -webkit-transform: translate(0,-50%) !important;
-    -ms-transform: translate(0,-50%) !important;
-        transform: translate(0,-50%) !important;
-    top: 50%;
-    margin: 0 auto;
-    -webkit-transition: ease all 0.5s;
-    -o-transition: ease all 0.5s;
-    transition: ease all 0.5s;
-}
-.bc-business-model .modal-content,
-.bc-business-sub-model .modal-content{
-    background: #C3193C;
-	-webkit-border-radius: 10px;
-	        border-radius: 10px;
-	border: 2px solid #fff;
-    padding:30px;
-}
-.bc-business-sub-model .modal-content{
-    background: #fff;
-	border: 2px solid #C3193C;
-}
-.bc-business-model .modal-content .modal-header,
-.bc-business-sub-model .modal-content .modal-header{
-    border:none;
-}
-.bc-business-model .modal-content .modal-header .close,
-.bc-business-sub-model .modal-content .modal-header .close {
-	color: #fff;
-	text-shadow: none;
-	opacity: 1;
-}
-.bc-business-sub-model .modal-content .modal-header .close {
-	color: #C3193C;
-}
-.bc-business-model .modal-content .modal-header h4,
-.bc-business-sub-model .modal-content .modal-header h4 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-	letter-spacing: 1px;
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-align: center;
-	-webkit-align-items: center;
-	    -ms-flex-align: center;
-	        align-items: center;
-}
-.bc-business-sub-model .modal-content .modal-header h4 {
-	color: #C3193C;
-}
-.bc-business-model .modal-content .modal-header h4 span,
-.bc-business-sub-model .modal-content .modal-header h4 span {
-	display: inline-block;
-	margin: 0 15px 0 0;
-}
-.bc-business-model .modal-content .modal-body p,
-.bc-business-sub-model .modal-content .modal-body p{
-    color:#fff;
-    font-size:16px;
-    line-height:30px;
-}
-.bc-business-sub-model .modal-content .modal-body p{
-    color:#333;
-}
-
-
-/** Verticaliy Scroll **/
-#content-panel,
-.bc-active-view .bc-business-capability {
-	overflow-x: auto;
-	scrollbar-color: #C3193C #ddd;
-	scrollbar-width: thin;
-	-ms-overflow-style: none;
-}
-.bc-active-view .bc-business-capability {
-	overflow-y: hidden;
-	margin-bottom:10px;
-}
-#content-panel::-webkit-scrollbar,
-.bc-active-view .bc-business-capability::-webkit-scrollbar{
-	height: 3px;
-	background-color: #fff;
-}
-#content-panel::-webkit-scrollbar-track,
-.bc-active-view .bc-business-capability::-webkit-scrollbar-track{
-	box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
-	-webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
-}
-#content-panel::-webkit-scrollbar-thumb,
-.bc-active-view .bc-business-capability::-webkit-scrollbar-thumb{
-	height: 3px;
-	background-color: #C3193C;
-}
-#content-panel::-webkit-scrollbar-thumb:hover,
-.bc-active-view .bc-business-capability::-webkit-scrollbar-thumb:hover {
-	background-color: #C3193C;
-}
-#content-panel::-webkit-scrollbar:vertical,
-.bc-active-view .bc-business-capability::-webkit-scrollbar:vertical{
-	display: none;
-}
-.bc-active-view .bc-business-capability::-webkit-scrollbar:horizontal {
-	display: inherit;
-}
-/** Verticaliy Scroll **/
-.bc-business-capability{
-	overflow-y: auto;
-	scrollbar-color: #C3193C #ddd;
-	scrollbar-width: thin;
-	-ms-overflow-style: none;
-}
-.bc-business-capability::-webkit-scrollbar {
-	width:3px;
-}
-.bc-business-capability::-webkit-scrollbar-track{
-	-webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
-	box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
-}
-.bc-business-capability::-webkit-scrollbar{
-	width: 3px;
-	background-color: #fff;
-} 
-.bc-business-capability::-webkit-scrollbar-thumb{
-	border-radius: 40px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-	box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-	background-color: #C3193C;
-}
-.bc-business-capability::-webkit-scrollbar:horizontal {
-	display: none;
-}
-/* -------- Responsive CSS --------- */
-@media (min-width: 1601px) {
-}
-@media (max-width: 1600px) {
-    #business-capability-here {
-        overflow-x: auto;
-        width: 100%;
-    }
-    .bc-business-capability {
-        height: 450px;
-    }
-    .bc-business-capability .bc-business-capability-box p {
-        font-size: 14px;
-        line-height: 18px;
-    }
-    .bc-business-capability .bc-business-capability-box h5 {
-        font-size: 16px;
-        margin-bottom: 5px;
-    }
-    .bc-business-capability .bc-business-capability-box {
-        padding: 15px 10px;
-    }
-    .bc-business-capability {
-        -webkit-box-flex: 0;
-        -webkit-flex: 0 0 15%;
-           -moz-box-flex: 0;
-            -ms-flex: 0 0 15%;
-                flex: 0 0 15%;
-        max-width: 15%;
-    }
-}
-@media (max-width: 1320px){
-}
-@media (max-width:1199px) {
-}
-@media (max-width: 1600px) {
-}
-@media (max-width: 1200px) {
-}
-@media (max-width: 991px) {
-    .bc-business-capability {
-        -webkit-box-flex: 0;
-        -webkit-flex: 0 0 25%;
-        -moz-box-flex: 0;
-        -ms-flex: 0 0 25%;
-        flex: 0 0 25%;
-        max-width: 25%;
-    }
-}
-@media (max-width: 767px) {
-    .bc-business-capability {
-        -webkit-box-flex: 0;
-        -webkit-flex: 0 0 33.33%;
-        -moz-box-flex: 0;
-        -ms-flex: 0 0 33.33%;
-        flex: 0 0 33.33%;
-        max-width: 33.33%;
-    }
-}
-@media (max-width: 575px) {
-    .bc-business-capability {
-        -webkit-box-flex: 0;
-        -webkit-flex: 0 0 50%;
-        -moz-box-flex: 0;
-        -ms-flex: 0 0 50%;
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-.off-cap{
-		border: 1pt solid #ccc;
-		border-left: 3px solid rgb(125, 174, 198);					
-		background-color: rgb(237, 237, 237);
-		color:#d3d3d3;  
-
-	}
+					}
 				</style>
-				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				-->
+			 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
-				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<!--	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-			-->
-				<!--ADD THE CONTENT-->
+                <xsl:call-template name="ViewUserScopingUI"/>
+			 	<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -1500,7 +835,9 @@
 										<table width="100%">
 											<tr><th width="150px">Organisation</th><th>Status</th></tr>
 											{{#each this.stds}}
-											<tr><td>{{#ifEquals this.org ''}}Global{{else}}{{this.org}}{{/ifEquals}}</td><td> {{#getStdColour this.strId this.str}}{{/getStdColour}}  </td></tr>
+												{{#each this.orgs}}
+											<tr><td>{{#ifEquals this.org ''}}Global{{else}}{{this.name}}{{/ifEquals}}</td><td> {{#getStdColour ../this.strId ../this.str}}{{/getStdColour}}  </td></tr>
+												{{/each}}
 											{{/each}}
 										</table>	
 										{{/if}}
@@ -1690,24 +1027,7 @@
 				</xsl:call-template>  
 			</script>
 <script>
-jQuery(function ($) {
-  "use strict";
-    
-  jQuery(function ($) {
-    $(".bc-change-view").on("click", function () {
-      $(".bc-main-wrapp").toggleClass("bc-active-view");
-    });
-  });
 
-  jQuery(function ($) {
-    $(".bc-card-view-option").on("click", function () {
-      $(".bc-main-wrapp").toggleClass("bc-card-view-active");
-    });
-  });
-
-  $('.bc-business-capability-box').click(function(){
-    $(this).toggleClass('read-more');
- });
 
   $(document).ready(function() {
     var scrollFunction = function() {
@@ -1734,7 +1054,7 @@ jQuery(function ($) {
  
   });
 
-});
+ 
 </script>
 		</html>
 	</xsl:template>
@@ -2126,7 +1446,7 @@ $('#hideCaps').on('click',function(){
 			capMod.then((d) => {
 				workingArray = [];
 				
-				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION', 'SYS_CONTENT_APPROVAL_STATUS']);
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION', 'SYS_CONTENT_APPROVAL_STATUS'],'',true);
 
 				
 			});
@@ -2169,7 +1489,25 @@ $('#hideCaps').on('click',function(){
 	let scopedCaps = [];
 	let scopedSvcs = [];
 
+	var appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+	}
+	var appSvcTypeInfo = {
+		"className": "Application_Service",
+		"label": 'Application Service',
+		"icon": 'fa-tv'
+	}
+	var busCapTypeInfo = {
+		"className": "Business_Capability",
+		"label": 'Business Capability',
+		"icon": 'fa-landmark'
+	}
+
 	var redrawView = function () { 
+			essResetRMChanges();
+
 			workingCapId = 0;
 			let workingAppsList = [];
 			let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
@@ -2181,9 +1519,9 @@ $('#hideCaps').on('click',function(){
 
 			let apps = appArray.applications;
 
-			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef]);
-			scopedCaps = essScopeResources(workingArrayAppsCaps, [visibilityDef]);
-			scopedService = essScopeResources(workingsvcArray, [geoScopingDef, visibilityDef]);
+			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef], appTypeInfo);
+			scopedCaps = essScopeResources(workingArrayAppsCaps, [visibilityDef], busCapTypeInfo);
+			scopedService = essScopeResources(workingsvcArray, [geoScopingDef, visibilityDef], appSvcTypeInfo);
 			let appsToShow = [];
 			inScopeCapsApp = scopedCaps.resources;
 			$('.svcLozenge').removeClass("off-cap")

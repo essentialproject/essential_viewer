@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../enterprise/core_el_issue_functions.xsl"/>
 	<xsl:import href="../common/core_strategic_plans.xsl"/>
@@ -9,7 +8,6 @@
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/core_arch_image.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
-	<xsl:include href="../common/datatables_includes.xsl"/>
 
 	<!--<xsl:include href="../application/menus/core_app_provider_menu.xsl" />-->
 
@@ -117,7 +115,6 @@
 			<xsl:value-of select="$allBusProcs"/>
 		</xsl:param>
 
-		<html xmlns:pro="http://protege.stanford.edu/xml" xmlns:xalan="http://xml.apache.org/xslt">
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
@@ -130,7 +127,6 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<xsl:call-template name="dataTablesLibrary"/>
 				<script>
 					$(document).ready(function(){
 						$('[data-toggle="popover"]').popover(
@@ -149,6 +145,12 @@
 						});
 					});
 				</script>
+				<style>
+					.bg-darkgreen-20 {
+						background-color: hsla(130, 50%, 90%, 1)!important;
+						color: hsla(130, 50%, 15%, 1);
+					}
+				</style>
 			</head>
 			<body>
 				<!-- ADD SCRIPTS FOR CONTEXT POP-UP MENUS -->
@@ -167,7 +169,6 @@
 				<!-- PAGE BODY ENDS HERE -->
 				<xsl:call-template name="Footer"/>
 			</body>
-		</html>
 	</xsl:template>
 
 	<!-- TEMPLATE TO CREATE THE PAGE BODY -->
@@ -357,7 +358,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_apps tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_apps').DataTable({

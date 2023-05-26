@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- All Copyright © 2016 Enterprise Architecture Solutions Limited. Not for redistribution.-->   
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:easlang="http://www.enterprise-architecture.org/essential/language" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xmlns:fn="http://www.w3.org/2005/xpath-functions">
-	<xsl:import href="../application/core_al_app_cost_revenue_functions.xsl"/>
-	<xsl:include href="../common/core_roadmap_functions.xsl"/>
-	<xsl:include href="../common/core_doctype.xsl"/>
+	<xsl:import href="../application/core_al_app_cost_revenue_functions.xsl"/> 
+	 <xsl:include href="../common/core_doctype.xsl"/>
+	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
@@ -15,8 +15,10 @@
 
 	<!-- START GENERIC PARAMETERS -->
 	<xsl:param name="viewScopeTermIds"/>
-	<!-- END GENERIC PARAMETERS -->
 
+    <xsl:param name="targetReportId"/>
+	<!-- END GENERIC PARAMETERS -->
+	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Composite_Application_Provider', 'Application_Provider')"/>
@@ -70,9 +72,7 @@
 	<xsl:variable name="appDifferentiationSeriesColours" select="$seriesColourPaallette[position() &lt;= count($appDifferentiationLevels)]"/>
 
 	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances" select="($allApps)"/>
-	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	
+ 	
 	<xsl:variable name="isAuthzForCostClasses" select="eas:isUserAuthZClasses(('Cost', 'Cost_Component'))"/>
  	<xsl:variable name="isEIPMode">
  		<xsl:choose>
@@ -82,11 +82,18 @@
  	</xsl:variable>
  
     <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: APM Costs']"/>
+	<xsl:variable name="anAPIReportApps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"/>
+
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
         <xsl:variable name="apiPath">
             <xsl:call-template name="GetViewerAPIPath">
                 <xsl:with-param name="apiReport" select="$anAPIReport"/>
+            </xsl:call-template>
+        </xsl:variable>
+		<xsl:variable name="apiPathApps">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReportApps"/>
             </xsl:call-template>
         </xsl:variable>
 		<html>
@@ -159,26 +166,13 @@
 					}</style>
 				
 				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
+				 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
-				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-					<div class="clearfix"></div>
-				</div>
-				<!--ADD THE CONTENT-->
+				<xsl:call-template name="Heading"/> 
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+			 	<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -235,14 +229,15 @@
                 <script>
              <xsl:call-template name="RenderViewerAPIJSFunction">
                 <xsl:with-param name="viewerAPIPath" select="$apiPath"/>
+				<xsl:with-param name="viewerAPIPathApps" select="$apiPathApps"/>
             </xsl:call-template>
             </script>
-	
-				<!-- Handlebars template to render an individual application as text-->
-				<script id="app-link" type="text/x-handlebars-template">
-					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
-					  <xsl:call-template name="RenderHandlebarsRoadmapSpan"/>  
-				</script>
+			<script id="app-link" type="text/x-handlebars-template">
+				<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
+				{{#essRenderInstanceLinkSelect this 'Application_Provider'}}{{/essRenderInstanceLinkSelect}}       
+			</script>
+
+			 
 			</body>
 		</html>
 	</xsl:template>
@@ -267,7 +262,7 @@
 				// Setup - add a text input to each footer cell
 			    $('#dt_apps tfoot th').each( function () {
 			        var title = $(this).text();
-			        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+			        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 			    } );
 				
 				var table = $('#dt_apps').DataTable({
@@ -335,9 +330,10 @@
 
  <xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPath"/>
+		<xsl:param name="viewerAPIPathApps"/>
         //a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';//INSTANCE_ID sent via param1
-    
+		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
         //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
        
         var promise_loadViewerAPIData = function(apiDataSetURL) {
@@ -370,7 +366,7 @@
             var currencySymbol = '<xsl:value-of select="$defaultCurrencySymbol"/>';
             var applications 
             var inScopeApplications 
-					
+			var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';		
 			applications=[
 				<xsl:apply-templates mode="RenderApplicationJSON" select="$inScopeApps">
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
@@ -403,7 +399,8 @@
 							}
 				        })
 				        .reduce(sumCosts, 0);
-				        $('#app-cost-total').text(currencySymbol + formatNumber(appCostTotal));				        			
+						 
+				        $('#app-cost-total').text(currencySymbol +  (appCostTotal.toLocaleString('en-US')));				        			
 					}
 					
 					
@@ -482,7 +479,7 @@
 				        })
 				        .reduce(sumCosts, 0);
 				        
-				        var costTypeLabel = thisCostType.name + " - " + currencySymbol + formatNumber(costTypeTotal);
+				        var costTypeLabel = thisCostType.name + " - " + currencySymbol + (costTypeTotal.toLocaleString('en-US'));
 				        var costTypeEntry = [costTypeLabel, costTypeTotal];
 				        
 				        //console.log(thisCostType.name + ': ' + costTypeTotal);
@@ -504,7 +501,7 @@
 				        })
 				        .reduce(sumCosts, 0);
 				        
-				        var diffLevelLabel = thisDiffLevel.name + " - " + currencySymbol + formatNumber(diffLevelTotal);
+				        var diffLevelLabel = thisDiffLevel.name + " - " + currencySymbol + (diffLevelTotal.toLocaleString('en-US'));
 				        var diffLevelEntry = [diffLevelLabel, diffLevelTotal];
 				        
 				        //console.log(thisDiffLevel.name + ': ' + diffLevelTotal);
@@ -558,7 +555,7 @@
 					    	"data" : "name",
 					    	"width": "15%",
 					    	"render": function( d, type, row, meta ){
-					    		if(row != null) {   
+					    		if(row != null) {    
 				                	return appLinkTemplate(row);
 				               	} else {
 				               		return '';
@@ -597,7 +594,7 @@
 
                                    thisLineCost=thisLineCost+parseInt(e.amount);
                          }); 
-				return currencySymbol + formatNumber(thisLineCost);
+				return currencySymbol + (thisLineCost.toLocaleString('en-US'));
 					               	}
 					            }
 					    	}
@@ -610,7 +607,7 @@
 					    	"width": "10%",
 					    	"render": function(d){
 						    		if(d != null) {
-					                	return currencySymbol + formatNumber(Math.round(d));
+					                	return currencySymbol + (Math.round(d).toLocaleString('en-US'));
 					               	}
 					            }
 					    };
@@ -675,11 +672,7 @@
 					    $(window).resize( function () {
 					        catalogueTable.columns.adjust();
 					    });
-					    
-					    <xsl:if test="$isRoadmapEnabled">
-						    <!-- ***OPTIONAL*** Register the table as having roadmap aware contents -->
-						    registerRoadmapDatatable(catalogueTable);
-					    </xsl:if>
+					   
 					    
 					    //END INITIALISE UP THE CATALOGUE TABLE
 					}
@@ -691,11 +684,23 @@
 				  	//function to redraw the view based on the current scope
 					function redrawView(appsList) { 
 
-						inScopeApplications.applications=applications;
-
+						inScopeApplications.applications=applications; 
 						if(appsList===undefined){
 						appsList=inScopeApplications.applications}
-						 
+  
+						let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+						let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
+						let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+		 
+		 				essResetRMChanges();
+						let typeInfo = {
+							"className": "Application_Provider",
+							"label": 'Application',
+							"icon": 'fa-desktop'
+						}
+						let scopedApps = essScopeResources(appsList, [visibilityDef, appOrgScopingDef,geoScopingDef], typeInfo);
+		
+						 <!--
 						 <xsl:if test="$isRoadmapEnabled"> 
 							 
 							//update the roadmap status of the applications and application provider roles passed as an array of arrays
@@ -718,13 +723,14 @@
 							inScopeApplications.applications = inScopeAppsList;
 						}else{
 						}
-						</xsl:if> 
+						</xsl:if> -->
+						inScopeApplications.applications = scopedApps.resources;
 						let rmVal = $('#rmEnabledCheckbox').is(":checked");
 					 	if( rmVal == false){
 							console.log('no tick'); 
 						}
 						 
-					console.log(inScopeApplications)
+					 
 					 
 						setOverallAppCosts();				
 						drawCostTypePieChart();
@@ -742,8 +748,20 @@
         var canAccessCostClasses = <xsl:value-of select="$isAuthzForCostClasses"/>;
         
         $('document').ready(function () {
-     
-    
+		 
+			Promise.all([
+                promise_loadViewerAPIData(viewAPIDataApps)
+			]).then(function (responses) { 
+	 
+				applications.forEach((a)=>{
+					let match=responses[0].applications.find((aa)=>{
+						return aa.id==a.id;
+					})
+					
+  
+					a = Object.assign(a,match)
+					   
+				})
  		if(!eipMode || canAccessCostClasses) {
 
  
@@ -762,10 +780,12 @@
 				            return anApp;
 				         });		
 				         $('#main-cost-section').removeClass('hiddenDiv');
-				   			console.log(inScopeApplications)      
-					         
+				   		      
+					        let filters=responses[0].filters; 
 					    //DRAW THE VIEW
-					    redrawView(inScopeApplications.applications);
+						essInitViewScoping(redrawView, ['Group_Actor',  'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'],filters,true);
+
+					  //  redrawView(inScopeApplications.applications);
         				$('#page-spinner').hide();
                   
                                
@@ -776,7 +796,47 @@
         	$('#access-denied-section').removeClass('hiddenDiv')   
         	$('.eas-logo-spinner').hide();
         }
+
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+
+			function essGetMenuName(instance) { 
+		        let menuName = null;
+		        if ((instance != null) &amp;&amp;
+		            (instance.meta != null) &amp;&amp;
+		            (instance.meta.classes != null)) {
+		            menuName = instance.meta.menuId;
+		        } else if (instance.classes != null) {
+		            menuName = instance.meta.classes;
+				}
+			 
+		        return menuName;
+			}
         
+		Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
+
+			let meta=[ 
+				{"classes":["Application_Provider","Composite_Application_Provider"], "menuId":"appProviderGenMenu"},
+			];
+
+				let thisMeta = meta.filter((d) => {
+					return d.classes.includes(type)
+				});
+
+				instance['meta'] = thisMeta[0]
+				let linkMenuName = essGetMenuName(instance);
+				let instanceLink = instance.name;
+				if (linkMenuName != null) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					let linkURL = reportURL; 
+					instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'+instance.name;
+		
+					return instanceLink;
+				} 
+		});
+
+
 
    $('.tops').on('click',function(){
 	    inScopeApplications = {
@@ -788,7 +848,7 @@
 
 		let apps=inScopeApplications.applications;
 		apps.sort((a, b) => parseInt(b.totalCost) > parseInt(a.totalCost) &amp;&amp; 1 || -1)
-
+		 
 		let newApps=[];
 			for(let i=0; i &lt; counter; i++){
 				newApps.push(apps[i])
@@ -797,16 +857,15 @@
 	   inScopeApplications = {
 	 		applications: newApps
 	 		  	}
-				   			  		
-	console.log(newApps)
+				   			  	 
 	
 	redrawView(newApps);
 
 
-   })
-
+   		})
+	});
 	   
-    });
+});
         
     </xsl:template>
 	
@@ -833,9 +892,20 @@
         <xsl:variable name="thissite" select="$site[name = $appUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
         <xsl:variable name="thislocation" select="$location[name = $thissite/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 		    
-    {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-        "description": "<xsl:value-of select="eas:validJSONString(current()/own_slot_value[slot_reference='description']/value)"/>",
-        "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+    {
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:with-param name="isForJSONAPI" select="false()"/>
+		<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		 <xsl:with-param name="theSubjectInstance" select="current()"/>
+	</xsl:call-template>",
+
+	"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
+	"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		 <xsl:with-param name="theSubjectInstance" select="current()"/>
+	</xsl:call-template>",
+         "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
         "differentiation": <xsl:choose><xsl:when test="$appDiffLevel/name"><xsl:apply-templates mode="RenderViewEnumerationJSONList" select="$appDiffLevel"/></xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,<xsl:apply-templates mode="RenderApplicationCostsJSON" select="$inScopeCostTypes"><xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence']/value"/><xsl:with-param name="thisCostComps" select="$appCostComponents"/></xsl:apply-templates>,"countries":[<xsl:for-each select="$thislocation">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
 		,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="$this"/></xsl:call-template>
 	}<xsl:if test="not(position()=last())">,</xsl:if>
@@ -885,8 +955,11 @@
 		<xsl:variable name="colour" select="eas:get_element_style_colour(current())"/>
 		
 		{
-		"id": "<xsl:value-of select="translate(current()/name, '.', '_')"/>",
-		"name": "<xsl:value-of select="eas:validJSONString($thisName)"/>",
+			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="isForJSONAPI" select="false()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>",
 		"colour": "<xsl:choose><xsl:when test="string-length($colour) &gt; 0"><xsl:value-of select="$colour"/></xsl:when><xsl:otherwise>#fff</xsl:otherwise></xsl:choose>"
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>

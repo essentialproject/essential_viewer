@@ -60,8 +60,7 @@
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>",
-			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-            "goals":[<xsl:apply-templates select="$thisGoals" mode="renderGoals"/>], 
+		    "goals":[<xsl:apply-templates select="$thisGoals" mode="renderGoals"/>], 
             "motivatingObjectives":[<xsl:for-each select="$motivatingObjs">{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]  
@@ -77,8 +76,7 @@
 			"type": "Business_Goal",
 			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>",
-			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-            "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
+		    "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
 			"objectives":[<xsl:apply-templates select="$allObjsMappedtoGoal" mode="renderObjectives"/>] 		
 		} <xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
@@ -91,8 +89,7 @@
 				</xsl:call-template>",
 			   "targetDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='bo_target_date_iso_8601']/value"/>",
 			   "boDriverMotivated":[<xsl:for-each select="current()/own_slot_value[slot_reference='bo_motivated_by_driver']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
-			   "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			   "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]
+			  	"supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]
 			   
 		   } <xsl:if test="not(position()=last())">,</xsl:if>
 	   </xsl:template>

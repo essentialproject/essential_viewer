@@ -45,8 +45,8 @@
 		<xsl:variable name="currentReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theCurrentXSL]"/>
 		<xsl:variable name="currentSubject" select="/node()/simple_instance[name = $theSubjectID]"/>
 		<xsl:variable name="subjectLabelSlot">
-			<xsl:call-template name="GetDisplaySlotForClass">
-				<xsl:with-param name="theClass" select="$currentSubject/type"/>
+			<xsl:call-template name="GetDisplaySlotForInstance">
+				<xsl:with-param name="theInstance" select="$currentSubject"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="subjectLabel">

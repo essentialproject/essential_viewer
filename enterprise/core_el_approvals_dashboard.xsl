@@ -406,7 +406,7 @@
 							// Setup - add a text input to each footer cell
 						    $('#dt_submittedApprovals tfoot th').not(":eq(6)").each( function () {
 						        var title = $(this).text();
-						        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+						        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 						    } );
 							
 							submittedApprovalsTable = $('#dt_submittedApprovals').DataTable({

@@ -488,7 +488,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_containedApps tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_containedApps').DataTable({
@@ -597,7 +597,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_functions tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_functions').DataTable({
@@ -750,7 +750,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_stakeholders tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_stakeholders').DataTable({
@@ -882,7 +882,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_supportedprocesses tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_supportedprocesses').DataTable({
@@ -1119,7 +1119,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_database tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_database').DataTable({
@@ -1294,7 +1294,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_issues tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_issues').DataTable({
@@ -1420,7 +1420,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_regulations tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_regulations').DataTable({
@@ -1681,7 +1681,7 @@
 											// Setup - add a text input to each footer cell
 										    $('#dt_supportingtech tfoot th').each( function () {
 										        var title = $(this).text();
-										        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+										        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 										    } );
 											
 											var table = $('#dt_supportingtech').DataTable({

@@ -9,14 +9,17 @@
     <xsl:variable name="suppliers" select="/node()/simple_instance[type='Supplier']"/>  
   <xsl:variable name="techProducts" select="/node()/simple_instance[type='Technology_Product']"/> 
  <xsl:variable name="techProdFams" select="/node()/simple_instance[type='Technology_Product_Family']"/>
+ <xsl:key name="techProdFamsKey" match="/node()/simple_instance[type='Technology_Product_Family']" use="own_slot_value[slot_reference='groups_technology_products']/value"/>
     <xsl:variable name="lifecycle" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
    <xsl:variable name="techDeliveryModel" select="/node()/simple_instance[type='Technology_Delivery_Model']"/>
   <xsl:variable name="tprs" select="/node()/simple_instance[type = 'Technology_Product_Role']"/> 
+  <xsl:key name="tprsKey" match="/node()/simple_instance[type = 'Technology_Product_Role']" use="own_slot_value[slot_reference='role_for_technology_provider']/value"/> 
   <xsl:variable name="techStandards" select="/node()/simple_instance[type='Technology_Provider_Standard_Specification']"/>
-  <xsl:variable name="enumsStandards" select="/node()/simple_instance[type='Standard_Strength']"/>
-  <xsl:variable name="supplier" select="/node()/simple_instance[type='Supplier']"/>	
+  <xsl:variable name="enumsStandards" select="/node()/simple_instance[type='Standard_Strength']"/> 
  <xsl:variable name="techlifecycle" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>
-	 
+ <xsl:key name="techCompKey" match="$techComponents" use="own_slot_value[slot_reference='realised_by_technology_products']/value"/>
+ <xsl:key name="techStandardsKey" match="/node()/simple_instance[type='Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference='tps_standard_tech_provider_role']/value"/>
+ <xsl:key name="techProductStandardsKey" match="/node()/simple_instance[type='Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference='tpr_has_standard_specs']/value"/>
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -46,11 +49,13 @@
 
    <xsl:template mode="techProducts" match="node()">
     <xsl:variable name="thissupplier" select="$suppliers[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>
-    <xsl:variable name="thisfamily" select="$techProdFams[name=current()/own_slot_value[slot_reference='member_of_technology_product_families']/value]"/>
-    <xsl:variable name="thisvendor" select="$techlifecycle[name=current()/own_slot_value[slot_reference='vendor_product_lifecycle_status']/value]"/>
-	 <xsl:variable name="thissupplier" select="$supplier[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>   
+   <!-- <xsl:variable name="thisfamily2" select="$techProdFams[name=current()/own_slot_value[slot_reference='member_of_technology_product_families']/value]"/>-->
+    <xsl:variable name="thisfamily" select="key('techProdFamsKey', current()/name)"/>
+    
+    <xsl:variable name="thisvendor" select="$techlifecycle[name=current()/own_slot_value[slot_reference='vendor_product_lifecycle_status']/value]"/>   
     <xsl:variable name="thisdelivery" select="$techDeliveryModel[name=current()/own_slot_value[slot_reference='technology_provider_delivery_model']/value]"/>
-    <xsl:variable name="thisusages" select="$tprs[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>
+   <!-- <xsl:variable name="thisusages2" select="$tprs[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>-->
+    <xsl:variable name="thisusages" select="key('tprsKey',current()/name)"/>
     
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
@@ -62,15 +67,21 @@
         "vendor":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisvendor"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "delivery":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisdelivery"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "usages":[<xsl:for-each select="$thisusages">
-        <xsl:variable name="componentsUsed" select="$techComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/>{"id":"<xsl:value-of select="eas:getSafeJSString($componentsUsed/name)"/>","tprid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+         <xsl:variable name="complianceStd" select="key('techStandardsKey',current()/name)"/>
+        <xsl:variable name="componentsUsed" select="key('techCompKey', current()/name)"/>{"id":"<xsl:value-of select="eas:getSafeJSString($componentsUsed/name)"/>","tprid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$componentsUsed"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+         <xsl:variable name="complianceStd" select="key('techStandardsKey',current()/name)"/>
+<xsl:variable name="thisenumsStandards" select="key('techProductStandardsKey', $complianceStd/name)"/>
+"compliance22":"<xsl:value-of select="$thisenumsStandards/own_slot_value[slot_reference='name']/value"/>",
+"compliance22a":"<xsl:value-of select="$complianceStd/name"/>",
         "compliance":"<xsl:value-of select="$enumsStandards[name=$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='name']/value"/>",
         "adoption":"<xsl:value-of select="$lifecycle[name=$thisusages[1]/own_slot_value[slot_reference='strategic_lifecycle_status']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
         }<xsl:if test="position()!=last()">,</xsl:if>
   </xsl:template> 
   <xsl:template mode="techStds" match="node()">
+    <xsl:variable name="complianceStd" select="key('techStandardsKey',current()/name)"/>
       {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-      "compliance2":[<xsl:for-each select="$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]">
+      "compliance2":[<xsl:for-each select="$complianceStd">
       {"id":"<xsl:value-of select="eas:getSafeJSString($enumsStandards[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]/name)"/>",
       "name":"<xsl:value-of select="$enumsStandards[name=current()/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
       "geos":[<xsl:for-each select="current()/own_slot_value[slot_reference='sm_geographic_scope']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],

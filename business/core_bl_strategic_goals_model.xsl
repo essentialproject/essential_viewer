@@ -754,7 +754,7 @@ console.log('goals',goals)
 
     $('#organisationTable tfoot th').each( function () {
 		var title = $(this).text();
-		$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+		$(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
     } );
     
     $('#driverGlTable tfoot th').each( function () {

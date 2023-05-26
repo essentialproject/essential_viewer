@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
-
-
-	<!--<xsl:include href="../information/menus/core_info_concept_menu.xsl" />-->
-
+	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
+
+	<xsl:param name="param1"/>
+
+	<!-- START GENERIC PARAMETERS -->
+	<xsl:param name="viewScopeTermIds"/>
+
+	<!-- END GENERIC PARAMETERS -->
+    <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"/>
+
+	<!-- START GENERIC LINK VARIABLES -->
+	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="linkClasses" select="('Information_Concept', 'Information_View','Information_Domain','Data_Object')"/>
+	<!-- END GENERIC LINK VARIABLES -->
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -35,256 +46,430 @@
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
 
-	<!-- param4 = the optional taxonomy term used to scope the view -->
-	<!--<xsl:param name="param4" />-->
-
-	<!-- START GENERIC PARAMETERS -->
-	<xsl:param name="viewScopeTermIds"/>
-
-	<!-- END GENERIC PARAMETERS -->
-	<!-- START GENERIC LINK VARIABLES -->
-	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Information_Concept')"/>
-	<!-- END GENERIC LINK VARIABLES -->
-
-	<!-- GET THE TAXONOMY TERMS TO BE USED FOR LAYERING BUSINESS DOMAINS -->
-	<xsl:variable name="infoRefModelReport" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'report_label']/value = 'Information Reference Model')]"/>
-	<xsl:variable name="reportConstant" select="/node()/simple_instance[name = $infoRefModelReport/own_slot_value[slot_reference = 'rp_report_constants']/value]"/>
-	<xsl:variable name="layeringTaxonomy" select="/node()/simple_instance[name = $reportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
-	<xsl:variable name="layeringTerms" select="/node()/simple_instance[name = $layeringTaxonomy/own_slot_value[slot_reference = 'taxonomy_terms']/value]"/>
-
-	<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
-	<xsl:variable name="allBusDomains" select="/node()/simple_instance[type = 'Business_Domain']"/>
-	<xsl:variable name="allInfoDomains" select="/node()/simple_instance[type = 'Information_Domain']"/>
-	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
 
 	<xsl:template match="knowledge_base">
-		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
-		<xsl:choose>
-			<xsl:when test="string-length($viewScopeTermIds) > 0">
-				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeDomains" select="$allBusDomains[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
-					<xsl:with-param name="inScopeConcepts" select="$allInfoConcepts[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeDomains" select="$allBusDomains"/>
-					<xsl:with-param name="inScopeConcepts" select="$allInfoConcepts"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-
-	<xsl:template name="BuildPage">
-		<xsl:param name="pageLabel">
-			<xsl:value-of select="eas:i18n('Information Reference Model')"/>
-		</xsl:param>
-		<xsl:param name="orgName">
-			<xsl:value-of select="eas:i18n('the enterprise')"/>
-		</xsl:param>
-		<xsl:param name="inScopeDomains"/>
-		<xsl:param name="inScopeConcepts"/>
-		<xsl:call-template name="docType"/>
+        <xsl:call-template name="docType"/>
+        <xsl:variable name="apiPath">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$anAPIReport"/>
+            </xsl:call-template>
+        </xsl:variable>
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<title>
-					<xsl:value-of select="$pageLabel"/>
-				</title>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
+                <title>Information Reference Model  </title>
+                <style>
+                    
+                    #modelHolder {
+                        display: flex;
+                        gap: 15px;
+                        width: 100%;
+                        flex-direction: column; 
+                    }
+                    #modelHolder a {color: #24806f;}
+                    
+                    .domain {
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative;
+                        min-height:80px;
+                        border-left: 3px solid #207465;
+                        position: relative;
+                        background-color: hsla(130, 50%, 99%, 1);
+                    }
+                    .concept-wrapper,.infoview-wrapper {
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                    }
+                    .concept i {
+                        color: #24806f;
+                    }
+                    
+                    .infoview i {
+                        position: absolute;
+                        bottom: 5px;
+                        right: 5px;
+                        color: #24806f;
+                    }
+                    
+                    .concept {
+                        padding: 5px 5px 30px 5px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative;
+                        min-height:80px;
+                        min-width: 200px;
+                        max-width: 400px;
+                        background-color: hsla(130, 50%, 90%, 1);
+                        position: relative;
+                    }
+                    .infoview{
+                        padding: 5px 5px 30px 5px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative;
+                        min-height:80px;
+                        background-color: #fff;
+                        min-width: 160px;
+                        max-width: 160px;
+                        position: relative;
+                    }
+                    .headName{
+                        font-size: 10px;    
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        color:#aaa;
+                    }
+                    .conceptheadName, .viewheadName, .dataObjBoxHeader{
+                        font-size: 10px;    
+                        position: absolute;
+                        bottom: 5px;
+                        left: 5px;
+                        color:#aaa;
+                    }
+    
+                    #infoPanel {
+                        background-color: rgba(0,0,0,0.85);
+                        padding: 10px;
+                        border-top: 1px solid #ccc;
+                        position: fixed;
+                        bottom: 0;
+                        left: 0;
+                        z-index: 100;
+                        width: 100%;
+                        height: 350px;
+                        color: #fff;
+                    }
+                    .dataObjBox a {
+                        color: #24806f;
+                    }
+                    .dataObjBox{
+                        position:relative;
+                        display:inline-block;
+                        border-radius:6px;
+                        height:70px;
+                        width:160px;
+                        margin:5px;
+                        padding:5px;
+                        background-color: hsla(130, 50%, 95%, 1);
+                        vertical-align:top;
+                        border:1px solid #ccc;
+                        word-break: break-all;
+                    }                
+                </style>
 			</head>
 			<body>
-				<!-- ADD SCRIPTS FOR CONTEXT POP-UP MENUS -->
-				<!--<xsl:call-template name="RenderInfoConceptPopUpScript" />-->
-
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
 
 				<!--ADD THE CONTENT-->
-				<a id="top"/>
 				<div class="container-fluid">
 					<div class="row">
-						<div>
-							<div class="col-xs-12">
-								<div class="page-header">
-									<h1>
-										<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-										<span class="text-darkgrey">
-											<xsl:value-of select="$pageLabel"/>
-										</span>
-									</h1>
-								</div>
-							</div>
-						</div>
-
-						<!--Setup Matrix Section-->
-
 						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
+							<div class="page-header">
+								<h1>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
+									<span class="text-darkgrey">Information Reference Model</span>
+								</h1>
 							</div>
-							<div>
-								<h2 class="text-primary">
-									<xsl:value-of select="eas:i18n('Information Reference Model')"/>
-								</h2>
-							</div>
-							<p><xsl:value-of select="eas:i18n('The following diagram describes the different types of information that are in use across')"/>&#160;<xsl:value-of select="$orgName"/></p>
-							<xsl:choose>
-								<xsl:when test="count($allInfoDomains) > 0">
-									<xsl:call-template name="infoReferenceModel">
-										<xsl:with-param name="infoConcepts" select="$inScopeConcepts"/>
-									</xsl:call-template>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:call-template name="referenceModel">
-										<xsl:with-param name="busDomains" select="$inScopeDomains"/>
-										<xsl:with-param name="infoConcepts" select="$inScopeConcepts"/>
-									</xsl:call-template>
-								</xsl:otherwise>
-							</xsl:choose>							
 						</div>
-
+                        <div class="col-xs-12">
+                            <div id="modelHolder"/>
+                        </div>
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
+                <div class="infoPanel" id="infoPanel">
+						<div id="infoData"></div>
+				</div>
 				<!-- ADD THE PAGE FOOTER -->
-				<xsl:call-template name="Footer"/>
+                <xsl:call-template name="Footer"/>
+                <script>
+                    <xsl:call-template name="RenderViewerAPIJSFunction">
+                        <xsl:with-param name="viewerAPIPath" select="$apiPath"/>  
+                        <!-- one for each report set above -->
+                    </xsl:call-template>
+                </script> 
+                <script id="info-template" type="text/x-handlebars-template">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h4 class="text-normal strong inline-block right-30" >{{this.name}}</h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-right">
+                                <i class="fa fa-times closePanelButton left-30"></i>
+                            </div>
+                            <div class="clearfix"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{#if this.description}}
+                                <p><strong>Description: </strong>{{this.description}}</p>
+                                <br/>
+                            {{/if}}
+                            {{#each this.dataObjects}}
+                            <div class="dataObjBox">
+                                <strong>{{{essRenderInstanceMenuLinkLight this}}}</strong>
+                                <div class="dataObjBoxHeader">Data Object</div>
+                            </div>
+                            {{/each}}
+                            {{#each this.info_concepts}}
+                                <div class="dataObjBox">
+                                    <strong>{{{essRenderInstanceMenuLinkLight this}}}</strong>
+                                    <div class="dataObjBoxHeader">Information Concept</div>
+                                </div>
+                            {{/each}}
+                            {{#each this.infoViews}}
+                                 <div class="dataObjBox">
+                                     <strong>{{{essRenderInstanceMenuLinkLight this}}}</strong>
+                                     <div class="dataObjBoxHeader">Information View</div>
+                                 </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </script>
+                <script id="panel-template" type="text/x-handlebars-template">
+                    {{#each this}} 
+                        <div class="domain">
+                            <div class="headName">Domain</div> 
+                            <div class="bottom-10">
+                                <span class="impact large right-5">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                <i class="fa fa-info-circle">
+                                    <xsl:attribute name="id">{{this.id}}</xsl:attribute><xsl:attribute name="easType">domain</xsl:attribute>
+                                </i>
+                            </div>
+                            <div class="concept-wrapper">
+                            {{#each this.info_concepts}}
+                            <div class="concept">
+                                <div class="conceptheadName">Information Concept</div>
+                                <div class="bottom-10">
+                                    <span class="strong right-5">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                    <i class="fa fa-info-circle"><xsl:attribute name="id">{{this.id}}</xsl:attribute><xsl:attribute name="easType">concept</xsl:attribute></i>
+                                </div>                
+                                <div class="infoview-wrapper">
+                                {{#each this.infoViews}}
+                                    <div class="infoview">
+                                        <div class="viewheadName">Information View</div>
+                                        <div class="bottom-10">
+                                            <span class="right-5 small">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                            <i class="fa fa-info-circle">
+                                                <xsl:attribute name="id">{{this.id}}</xsl:attribute>
+                                                <xsl:attribute name="easType">view</xsl:attribute>
+                                            </i>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                                </div>
+                            </div>
+                            {{/each}}
+                            </div>
+                        </div>
+                    {{/each}}
+                </script>
 			</body>
 		</html>
 	</xsl:template>
-	
-	
-	<xsl:template name="infoReferenceModel">
-		<xsl:param name="infoConcepts"/>
-		<script type="text/javascript">
-				$('document').ready(function(){
-					 $(".gridModel_layerTitleContainerLabel").vAlign();
-					 $(".gridModel_object").vAlign();
-					 $(".gridModel_objectInactive").vAlign();
-				});
-		</script>
-		<xsl:for-each select="$allInfoDomains">
-			<xsl:sort select="own_slot_value[slot_reference = 'sequence_number']/value"/>
-			<xsl:variable name="thisInfoDomain" select="current()"/>
-			<xsl:variable name="infoDomainLabel">
-				<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="$thisInfoDomain"/>
-				</xsl:call-template>
-			</xsl:variable>
-			<xsl:variable name="relevantInfoConcepts" select="$infoConcepts[own_slot_value[slot_reference = 'info_concept_info_domain']/value = $thisInfoDomain/name]"/>
-			<xsl:choose>
-				<xsl:when test="(position() = 1)">
-					<xsl:call-template name="PrintFirstBusinessDomain">
-						<xsl:with-param name="busDomainLabel" select="$infoDomainLabel"/>
-					</xsl:call-template>
-				</xsl:when>
-				<xsl:when test="(position() &gt; 1)">
-					<xsl:call-template name="PrintOtherBusinessDomain">
-						<xsl:with-param name="busDomainLabel" select="$infoDomainLabel"/>
-					</xsl:call-template>
-				</xsl:when>
-			</xsl:choose>
-			<div class="gridModel_layerContentContainer backColour11 col-xs-12">
-				<xsl:apply-templates mode="PrintInfoConcept" select="$relevantInfoConcepts">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:apply-templates>
-			</div>
-			<div class="verticalSpacer_10px"/>
-		</xsl:for-each>
-	</xsl:template>
+<!-- add these 2 templates -->
+<xsl:template name="RenderViewerAPIJSFunction">
+        <xsl:param name="viewerAPIPath"/>  
+        //a global variable that holds the data returned by an Viewer API Report, one for each report
+        var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
+        
+        //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+       
+       var promise_loadViewerAPIData = function(apiDataSetURL) {
+            return new Promise(function (resolve, reject) {
+                if (apiDataSetURL != null) {
+                    var xmlhttp = new XMLHttpRequest(); 
+                    xmlhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 &amp;&amp; this.status == 200) { 
+                            var viewerData = JSON.parse(this.responseText);
+                            resolve(viewerData);
+                            $('#ess-data-gen-alert').hide();
+                        }
+                    };
+                    xmlhttp.onerror = function () {
+                        reject(false);
+                    };
+                    xmlhttp.open("GET", apiDataSetURL, true);
+                    xmlhttp.send();
+                } else {
+                    reject(false);
+                }
+            });
+        };
+        <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
+                <xsl:with-param name="linkClasses" select="$linkClasses"/>
+        </xsl:call-template>
+    $('document').ready(function () {
+        $('.infoPanel').hide();
+        var panelFragment = $("#panel-template").html();
+        panelTemplate = Handlebars.compile(panelFragment); 
 
+        var infoFragment = $("#info-template").html();
+        infoTemplate = Handlebars.compile(infoFragment); 
+        
 
+        Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+            return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        }); 
 
+            //get data
+            Promise.all([
+                    promise_loadViewerAPIData(viewAPIData) 
+                    ]).then(function(responses) {
+                        <!-- your code here --> 
+                        let infoDoms = responses[0].info_domains;
+                        let infoConcepts= responses[0].information_concepts;
+                        let informationViews=responses[0].information_views;
+                        let dataObjects=responses[0].data_objects;
+                        infoDoms.forEach((d)=>{
+                            let icArray=[];
+                            d.infoConcepts.forEach((e)=>{
+                                let match=infoConcepts.find((ic)=>{
+                                    return ic.id==e.id;
+                                })
+                                icArray.push(match);
+                            })
+                            d['info_concepts']=icArray;
+                        })
+                       // responses[0]=[]; 
 
-	<xsl:template name="referenceModel">
-		<xsl:param name="busDomains"/>
-		<xsl:param name="infoConcepts"/>
-		<script type="text/javascript">
-				$('document').ready(function(){
-					 $(".gridModel_layerTitleContainerLabel").vAlign();
-					 $(".gridModel_object").vAlign();
-					 $(".gridModel_objectInactive").vAlign();
-				});
-		</script>
-		<xsl:variable name="mappedBusDomains" select="$busDomains[name = $layeringTerms/own_slot_value[slot_reference = 'classifies_elements']/value]"/>
-		<xsl:variable name="unmappedBusDomains" select="$busDomains except $mappedBusDomains"/>
-		<xsl:for-each select="$mappedBusDomains">
-			<xsl:sort select="$layeringTerms[name = current()/own_slot_value[slot_reference = 'element_classified_by']/value][1]/own_slot_value[slot_reference = 'taxonomy_term_index']/value"/>
-			<xsl:variable name="busDomainLabel" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-			<xsl:variable name="relevantInfoConcepts" select="$infoConcepts[own_slot_value[slot_reference = 'belongs_to_business_domain_information']/value = current()/name]"/>
-			<xsl:choose>
-				<xsl:when test="(position() = 1)">
-					<xsl:call-template name="PrintFirstBusinessDomain">
-						<xsl:with-param name="busDomainLabel" select="$busDomainLabel"/>
-					</xsl:call-template>
-				</xsl:when>
-				<xsl:when test="(position() &gt; 1)">
-					<xsl:call-template name="PrintOtherBusinessDomain">
-						<xsl:with-param name="busDomainLabel" select="$busDomainLabel"/>
-					</xsl:call-template>
-				</xsl:when>
-			</xsl:choose>
-			<div class="gridModel_layerContentContainer backColour11 col-xs-12">
-				<xsl:apply-templates mode="PrintInfoConcept" select="$relevantInfoConcepts">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:apply-templates>
-			</div>
-			<div class="verticalSpacer_10px"/>
-		</xsl:for-each>
-		<xsl:for-each select="$unmappedBusDomains">
-			<xsl:variable name="busDomainLabel" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-			<xsl:variable name="relevantInfoConcepts" select="$infoConcepts[own_slot_value[slot_reference = 'belongs_to_business_domain_information']/value = current()/name]"/>
-			<xsl:call-template name="PrintOtherBusinessDomain">
-				<xsl:with-param name="busDomainLabel" select="$busDomainLabel"/>
+                        $('#modelHolder').html(panelTemplate(infoDoms))
+
+                        $('.fa-info-circle').off().on('click', function(){
+                            let thisId= $(this).attr('id');
+                            let eastype=$(this).attr('easType');
+                   
+                            let focusObject;
+                            if(eastype=='domain'){
+                                focusObject=infoDoms.find((d)=>{
+                                    return d.id==thisId
+                                })  
+                            }
+                            else
+                            if(eastype=='concept'){
+                                focusObject=infoConcepts.find((d)=>{
+                                    return d.id==thisId
+                                }) 
+                            }
+                            else
+                            if(eastype=='view'){
+                                focusObject=informationViews.find((d)=>{
+                                    return d.id==thisId
+                                })  
+
+                                focusObject.dataObjects.forEach((f)=>{
+                                    let thisDo=dataObjects.find((e)=>{
+                                        return e.id==f.id;
+                                    })
+                                    f['name']=thisDo.name;
+                                    f['className']='Data_Object'
+                                })
+
+                            }
+ 
+                            $('#infoData').html(infoTemplate(focusObject));
+                            $('.infoPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
+                    
+                            //$('#appModal').modal('show');
+                            $('.closePanelButton').on('click',function(){ 
+                                $('.infoPanel').hide();
+                            })
+                    })
+                    
+        })
+    })
+    </xsl:template>
+    <xsl:template name="GetViewerAPIPath">
+        <xsl:param name="apiReport"></xsl:param>
+
+        <xsl:variable name="dataSetPath">
+            <xsl:call-template name="RenderAPILinkText">
+                <xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+            </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+    </xsl:template>	
+    <xsl:template name="RenderJSMenuLinkFunctionsTEMP">
+		<xsl:param name="linkClasses" select="()"/>
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+		var esslinkMenuNames = {
+			<xsl:call-template name="RenderClassMenuDictTEMP">
+				<xsl:with-param name="menuClasses" select="$linkClasses"/>
 			</xsl:call-template>
-			<div class="gridModel_layerContentContainer backColour11 col-xs-12">
-				<xsl:apply-templates mode="PrintInfoConcept" select="$relevantInfoConcepts">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				</xsl:apply-templates>
-			</div>
-			<div class="verticalSpacer_10px"/>
-		</xsl:for-each>
-	</xsl:template>
+		}
+     
+		function essGetMenuName(instance) {  
+			let menuName = null;
+			if(instance.meta?.anchorClass) {
+				menuName = esslinkMenuNames[instance.meta.anchorClass];
+			} else if(instance.className) {
+				menuName = esslinkMenuNames[instance.className];
+			}
+			return menuName;
+		}
+		
+        Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){
 
-	<xsl:template name="PrintFirstBusinessDomain">
-		<xsl:param name="busDomainLabel"/>
-		<div class="gridModel_layerTitleContainerFullWidth_Rounded backColour11">
-			<h3 class="text-white">
-				<xsl:value-of select="$busDomainLabel"/>
-			</h3>
-		</div>
-	</xsl:template>
-
-	<xsl:template name="PrintOtherBusinessDomain">
-		<xsl:param name="busDomainLabel"/>
-		<div class="gridModel_layerTitleContainerFullWidth backColour11">
-			<h3 class="text-white">
-				<xsl:value-of select="$busDomainLabel"/>
-			</h3>
-		</div>
-	</xsl:template>
-
-	<xsl:template match="node()" mode="PrintInfoConcept">
-		<xsl:variable name="infoConceptName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<div class="gridModel_objectContainer">
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				<xsl:with-param name="divClass" select="'gridModel_object bg-white small'"/>
-			</xsl:call-template>
-		</div>
-	</xsl:template>
-
-
-
-
+			if(instance != null) {
+                let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+                } 
+                
+				return instanceLink;
+			} else {
+				return '';
+			}
+        });
+        
+        Handlebars.registerHelper('essRenderInstanceMenuLinkLight', function(instance){
+            console.log('i',instance)
+			if(instance != null) {
+                let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+                } 
+               
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
+    </xsl:template>
+    <xsl:template name="RenderClassMenuDictTEMP">
+            <xsl:param name="menuClasses" select="()"/>
+            <xsl:for-each select="$menuClasses">
+                <xsl:variable name="this" select="."/>
+                <xsl:variable name="thisMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+                "<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
+                </xsl:if>
+            </xsl:for-each>
+    </xsl:template>
 </xsl:stylesheet>

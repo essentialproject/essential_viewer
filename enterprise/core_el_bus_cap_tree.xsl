@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	 <xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
@@ -43,10 +42,7 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+ 
 	-->
 	<xsl:variable name="reportMenu" select="/node()/simple_instance[type = 'Report_Menu'][own_slot_value[slot_reference='report_menu_class']/value=('Project','Enterprise_Strategic_Plan')]"></xsl:variable>
 
@@ -173,7 +169,7 @@
 					}
 					
 					.appInfoButton {
-						position: absolute;
+						position: fixed;
 						bottom: 5px;
 						right: 5px;
 					}
@@ -192,7 +188,7 @@
 						color: #333;
 						border-radius: 10px;
 						border: 1px solid #ccc;
-						position: absolute;
+						position: fixed;
 						right: 3px;
 						bottom: 3px;
 						 
@@ -211,7 +207,7 @@
 						color: #333;
 						border-radius: 10px;
 						border: 1px solid #ccc;
-						position: absolute;
+						position: fixed;
 						right: 3px;
 						bottom: 3px;
 						 
@@ -230,7 +226,7 @@
 						color: #333;
 						border-radius: 10px;
 						border: 1px solid #ccc;
-						position: absolute;
+						position: fixed;
 						left: 3px;
 						bottom: 3px;
 					}
@@ -534,32 +530,19 @@
 						stroke-width: 2px;
 					}
 					.rectIcon{
-						position: absolute;
+						position: fixed;
 						bottom:3px;
 						right:3px;
 					}
 				</style>
-				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				-->
+		 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
-				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<!--	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-			-->
+				<!-- RM and filtering scope needs to be considered.  capability added but not hooked up -->
+				<!--	<xsl:call-template name="ViewUserScopingUI"></xsl:call-template> -->
+			  
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -773,13 +756,23 @@
 				</script>
 
 				<script id="divBox-template" type="text/x-handlebars-template">
-					<b>{{#if this.type}}{{#ifEquals this.type 'Application_Provider_Role'}}{{this.name}}{{else}}{{#essRenderInstanceLinkMenuOnly this type}}{{/essRenderInstanceLinkMenuOnly}}{{/ifEquals}}{{else}}{{this.name}}{{/if}}</b><br/>
-					<span style="font-size:5pt">{{this.type}}</span>
-					{{#ifEquals this.type 'Business_Capability'}}{{#if this.children}}{{else}}<span class="bc-eye"><i class="fa fa-eye"><xsl:attribute name="id">{{this.id}}</xsl:attribute></i></span>{{/if}}{{/ifEquals}}
+					<div>
+						<div class="small">{{#if this.type}}{{#ifEquals this.type 'Application_Provider_Role'}}{{this.name}}{{else}}{{#essRenderInstanceLinkMenuOnly this type}}{{/essRenderInstanceLinkMenuOnly}}{{/ifEquals}}{{else}}{{this.name}}{{/if}}</div>
+						<div class="xsmall text-muted">{{this.type}}</div>
+						{{#ifEquals this.type 'Business_Capability'}}
+							{{#if this.children}}
+								{{else}}
+									<div class="bc-eye">
+										<i class="fa fa-eye">
+											<xsl:attribute name="id">{{this.id}}</xsl:attribute>
+										</i>
+									</div>
+							{{/if}}
+						{{/ifEquals}}
 						{{#if this.children}} 
-							<span class="app-circle"><i class="fa fa-caret-right"></i></span>
+							<div class="app-circle"><i class="fa fa-caret-right"></i></div>
 						{{/if}}
-
+					</div>
 				</script>
 
 				<script id="appScore-template" type="text/x-handlebars-template">
@@ -1047,7 +1040,7 @@ $('#caps').on('change',function(){
 if(focusCap.length&gt;0){
 	//selectedCap(focusCap);
 	$('#caps').val(focusCap).trigger('change'); 
- }
+}
 
 function selectedCap(focus){
 let thisCap = workingArray.busCaptoAppDetails.find((d)=>{
@@ -1288,8 +1281,8 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 				nodeEnter.append('foreignObject')
 					.attr("x", -85)
 					.attr("y", -25)
-					.attr("width", 100)
-					.attr("height", 50) 
+					.attr("width", 120)
+					.attr("height", 60) 
 					.style('background-color',function(d){
 						let fillcolour;
 					
@@ -1328,11 +1321,11 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 					
 						return fillcolour ;
 					})
-					.style('border-radius','5pt')
+					.style('border-radius','4px')
 					.style('box-shadow', '2px 2px 4px #d3d3d3')
-					.style('padding','3pt')
-					.style('font-size','0.8em')
-					.style('line-height', '80%')
+					.style('padding','3px')
+					.style('font-size','0.85em')
+					.style('line-height', '1.1em')
 					.html(function(d) {  
 			 
 						 return divBoxTemplate(d.data);
@@ -1622,7 +1615,7 @@ thisProjs=thisProjs.filter((elem, index, self) => self.findIndex( (t) =>{return 
 		 
 				//create paired arrays
  
-				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain']);
+			//	essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'],'',false);
 			 
 			   removeEditorSpinner()
 			   $('.appInDivBoxL0').hide();
@@ -1641,6 +1634,18 @@ thisProjs=thisProjs.filter((elem, index, self) => self.findIndex( (t) =>{return 
 			let scopedCaps=[];
 
 var redrawView=function(){
+	essResetRMChanges();
+	let appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+	}
+	let busCapTypeInfo = {
+		"className": "Business_Capability",
+		"label": 'Business Capability',
+		"icon": 'fa-landmark'
+	}
+
 	workingCapId=0;
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
@@ -1652,209 +1657,13 @@ var redrawView=function(){
 	
 	let apps=appArray.applications;
  
-	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef]);
+	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef], appTypeInfo);
+	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef], busCapTypeInfo);
 	let appsToShow=[]; 
  
 	inScopeCapsApp=scopedCaps.resources; 
- 
-	let capSelectStyle= $('#hideCaps').text(); 
-	if(capSelectStyle=='Hide'){
-	 	localStorage.setItem("essentialhideCaps", "Hide");
-	$('.buscap').hide();
-	inScopeCapsApp.forEach((d)=>{
-		$('div[eascapid="'+d.id+'"]').parents().show();
-		$('div[eascapid="'+d.id+'"]').show();
-	 
-		});
-	}else
-	{	 
-		localStorage.setItem("essentialhideCaps", "Show");
-		$('.buscap').show(); 
-		$('.buscap').addClass("off-cap")
-		inScopeCapsApp.forEach((d)=>{
-		 
-			 $('div[eascapid="'+d.id+'"]').removeClass("off-cap");
-		 
-			});
-	}
-
-	let appMod = new Promise(function(resolve, reject) { 
-	 	resolve(appsToShow['applications']=scopedApps.resources);
-		 reject();
-	});
-
-	appMod.then((d)=>{
-
-		inScopeCapsApp.forEach((d)=>{ 
-			let filteredAppsforCap = d.apps.filter((id) => scopedApps.resourceIds.includes(id));
-			d['filteredApps']=	filteredAppsforCap;
-			
-		})
-		
-		appsToShow.applications.forEach((d)=>{
-	
-			let procsForApp =[]; 
-			let capforApp=[];
-			d.physP.forEach((pp)=>{ 
-				 processMap.forEach((php)=>{
-				 
-					if(php.pbpId ==pp)
-					{
-						procsForApp.push({"id":php.prId,"name":php.pr})
-						let cap=appToCap.filter((ac)=>{
-							return ac.procId ==php.prId;
-						});
-
-						if(cap.length &gt;0){
-						capforApp.push({"id":cap[0].bcId,"name":cap[0].bc})
-						}
-					};
-				});
-				let uniqueProcs = [...new Set(procsForApp)];
-				let uniqueCaps = [...new Set(capforApp)];
-				d['processes']=uniqueProcs;
-				d['caps']=uniqueCaps;
-			});
-			 
-				 
-		})	
-
-	}).then((e)=>{
-		let panelPos=$('#appSidenav').position().left
- 
-		if(parseInt(panelPos)+50 &lt;panelLeft){
-
-			let openCap= $('#capsId').attr('easid');
-			 getApps(openCap)
-		}
-<!--
-	$('.app-circle').on("click", function (d)
-		{ d.stopImmediatePropagation(); 
-
-				let selected = $(this).attr('easidscore')
- 
-				if(workingCapId!=selected){ 
-			//console.log('selected',selected)
-				getApps(selected);
-
-				$(".appInfoButton").on("click", function ()
-				{//console.log('appinfo',selected)
-					let selected = $(this).attr('easid')
-
-		 
-					let appToShow =workingAppsList.filter((d)=>{
-						return d.id==selected;	
-					});
-
-					let thisCaps = appToShow[0].caps.filter((elem, index, self) => self.findIndex(
-								(t) => {return (t.id === elem.id)}) === index);
-					let thisProcesses = appToShow[0].processes.filter((elem, index, self) => self.findIndex(
-									(t) => {return (t.id === elem.id)}) === index);
-					let thisServs = appToShow[0].services.filter((elem, index, self) => self.findIndex(
-										(t) => {return (t.id === elem.id)}) === index);							
-					appToShow[0]['capList']=thisCaps;
-					appToShow[0]['processList']=thisProcesses;
-					appToShow[0]['servList']=thisServs; 	 
-
-					//console.log(appToShow[0])
-					$('#appData').html(appTemplate(appToShow[0]));
-					$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
-
-					//$('#appModal').modal('show');
-					$('.closePanelButton').on('click',function(){ 
-						$('.appPanel').hide();
-					})
-				});
-
-				var thisf=$('*').filter(function() {
-					return $(this).data('level') !== undefined;
-				});
-
-				$(".saveApps").on('click', function(){
-					var apps={};
-					apps['Composite_Application_Provider']=rationalisationList;
-					sessionStorage.setItem("context", JSON.stringify(apps));
-					location.href='report?XML=reportXML.xml&amp;XSL='+rationReport[0].link+'&amp;PMA=bcm'
-				});
-				workingCapId=selected;
-			}
-			else
-			{	 
-				closeNav();
-				
-			}
-		})-->
-
-
-function getApps(capid){
-	 //console.log('capid',capid)
-	let thisCapAppList = inScopeCapsApp.filter(function (d)
-	{
-		return d.id == capid;
-	});
-  
-
-	appsToShow['applications']=scopedApps.resources;
-	
-	let filteredApps = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
-
-	let test = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
-	
-	let appArrayToShow=[];
-	filteredApps.forEach((app)=>{
-		let anApp=appArray.applications.filter((d)=>{
-			return d.id ==app;
-		})
-		
-		appArrayToShow.push(anApp[0]);
-	})
-
-	let panelData=[];
-		panelData['apps']=appArrayToShow;
-		let capName=inScopeCapsApp.filter((d)=>{return d.id==capid})
-		panelData['cap']=capid;
-		panelData['capName']=capName[0].name;
- 
-		$('#appData').html(appTemplate(panelData));
-
-	workingAppsList=appArrayToShow;
-
-	$('#appsList').empty();
-	$('#appsList').html(appListTemplate(panelData))
-	openNav(); 
-	thisCapAppList[0].apps.forEach((d)=>{ 
-		rationalisationList.push(d)
-	});
-	}
- 	//console.log('set app circle to 0')
-	//$('.app-circle').text('0')
-	/*	$('.app-circle').each(function() {
-			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
-		  
-			($(this).html() >= 2 &amp;&amp; $(this).html() &lt; 6) ? $(this).css({'background-color': '#e0beed', 'color': 'black'}): null;
-		  
-			$(this).html() >= 6 ? $(this).css({'background-color': '#d59deb', 'color': 'black'}) : null;
-		  });
-	*/
-		/*  inScopeCapsApp.forEach(function (d)
-		{
-			let appCount=d.filteredApps.length;
-			$('*[easidscore="' + d.id + '"]').html(appCount);
-			let colour='#fff';
-			let textColour='#fff';
-			if(appCount &lt;2){colour='#EDBB99'} 
-			else if(appCount &lt;6){colour='#BA4A00'} 
-			else{colour='#6E2C00'}
-			$('*[easidscore="' + d.id + '"]').css({'background-color':colour, 'color':textColour})
-	
-		});
-		*/ 
-	})
-
-
-	
 }
+
 
 function redrawView() {
 	

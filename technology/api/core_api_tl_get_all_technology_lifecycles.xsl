@@ -24,27 +24,39 @@
 		* 
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
-	<xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status')]"/>
+	<xsl:variable name="lifecycles" select="/node()/simple_instance[supertype=('Lifecycle_Status') or type='Lifecycle_Status']"/>
         
 	<xsl:variable name="products" select="/node()/simple_instance[type='Technology_Product']"/>
 	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	<xsl:variable name="allproducts" select="$products union $apps"/>
+
     <xsl:variable name="productLifecycles" select="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model')][own_slot_value[slot_reference='lifecycle_model_subject']/value=$allproducts/name]"/>
+	<xsl:key name="productLifecyclesKey" match="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model')]" use="own_slot_value[slot_reference='lifecycle_model_subject']/value"/>
     <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
+	<xsl:key name="lifecycleStatusUsagesKey" match="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage')]" use="own_slot_value[slot_reference='used_in_lifecycle_model']/value"/>
     <xsl:variable name="allSupplier" select="/node()/simple_instance[type = 'Supplier']"/>     
     <xsl:variable name="allTechstds" select="/node()/simple_instance[type = 'Technology_Provider_Standard_Specification']"/>
+	<xsl:key name="allTechstdsKey" match="node()/simple_instance[type='Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference='tps_standard_tech_provider_role']/value"/> 
     <xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>
 	<xsl:variable name="techProdRoleswithStd" select="$allTechProdRoles[name = $allTechstds/own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value]"/>
+	<xsl:key name="techProdRoleswithStdKey" match="node()/simple_instance[type='Technology_Product_Role']" use="own_slot_value[slot_reference='role_for_technology_provider']/value"/>
+	<xsl:key name="techProdRolestoStdKey" match="node()/simple_instance[type='Technology_Product_Role']" use="own_slot_value[slot_reference='	tpr_has_standard_specs']/value"/>
+	
 	<xsl:variable name="techCompwithStd" select="/node()/simple_instance[type='Technology_Component'][name = $techProdRoleswithStd/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-  
+	<xsl:key name="techCompwithStdKey" match="/node()/simple_instance[type='Technology_Component']" use="own_slot_value[slot_reference='realised_by_technology_products']/value"/>
+   
     <xsl:variable name="allTechProvUsage" select="/node()/simple_instance[type = 'Technology_Provider_Usage'][own_slot_value[slot_reference='provider_as_role']/value=$allTechProdRoles/name]"/>
     <xsl:variable name="allTechBuildArch" select="/node()/simple_instance[type = 'Technology_Build_Architecture'][own_slot_value[slot_reference='contained_architecture_components']/value=$allTechProvUsage/name]"/>
 	<xsl:variable name="prodDeploymentRole" select="/node()/simple_instance[type = 'Technology_Product_Build'][own_slot_value[slot_reference='technology_provider_architecture']/value=$allTechBuildArch/name]"/>
     <xsl:variable name="appDeployment" select="/node()/simple_instance[type = 'Application_Deployment'][own_slot_value[slot_reference='application_deployment_technical_arch']/value=$prodDeploymentRole/name]"/>
     <xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"/>
 	<xsl:variable name="geos" select="/node()/simple_instance[supertype = 'Geography']"/>
-   
-    
+
+	<xsl:key name="allTechProvUsageKey" match="/node()/simple_instance[type = 'Technology_Provider_Usage']" use="own_slot_value[slot_reference='provider_as_role']/value"/>
+    <xsl:key name="allTechBuildArchKey" match="/node()/simple_instance[type = 'Technology_Build_Architecture']" use="own_slot_value[slot_reference='contained_architecture_components']/value"/>
+    <xsl:key name="prodDeploymentRoleKey" match="/node()/simple_instance[type = 'Technology_Product_Build']" use="own_slot_value[slot_reference='technology_provider_architecture']/value"/>
+    <xsl:key name="appDeploymentKey" match="/node()/simple_instance[type = 'Application_Deployment']" use="own_slot_value[slot_reference='application_deployment_technical_arch']/value"/>
+	<xsl:key name="appDeployedKey" match="$apps" use="own_slot_value[slot_reference='deployments_of_application_provider']/value"/>
     <xsl:variable name="stdValue" select="/node()/simple_instance[type = 'Standard_Strength']"/>
      <!--  tech for app  -->
 
@@ -61,12 +73,21 @@
 	
 	<xsl:template match="node()" mode="getProducts">
     <xsl:variable name="this" select="current()"/>
-    <xsl:variable name="thisproductLifecycles" select="$productLifecycles[own_slot_value[slot_reference='lifecycle_model_subject']/value=current()/name]"/>
-    <xsl:variable name="thislifecycleStatusUsages" select="$lifecycleStatusUsages[own_slot_value[slot_reference='used_in_lifecycle_model']/value=$thisproductLifecycles/name]"/>
-    <xsl:variable name="thisSupplier" select="$allSupplier[name=$this/own_slot_value[slot_reference='supplier_technology_product']/value]"/>
-    <xsl:variable name="thisProdRoles" select="$techProdRoleswithStd[own_slot_value[slot_reference='role_for_technology_provider']/value=current()/name]"/>
-    <xsl:variable name="thisStd" select="$allTechstds[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value=$thisProdRoles/name]"/>
+   
+	<xsl:variable name="thisproductLifecycles" select="key('productLifecyclesKey', current()/name)"/> 
+	<xsl:variable name="thislifecycleStatusUsages" select="key('lifecycleStatusUsagesKey', $thisproductLifecycles/name)"/>
 	
+    <xsl:variable name="thisSupplier" select="$allSupplier[name=$this/own_slot_value[slot_reference='supplier_technology_product']/value]"/>
+    
+	<xsl:variable name="thisProdRoles" select="key('techProdRoleswithStdKey',current()/name)"/>
+	<xsl:variable name="thisStd" select="key('allTechstdsKey',$thisProdRoles/name)"/>
+	
+	<!--
+		<xsl:variable name="thisproductLifecycles2" select="$productLifecycles[own_slot_value[slot_reference='lifecycle_model_subject']/value=current()/name]"/>
+	<xsl:variable name="thislifecycleStatusUsages2" select="$lifecycleStatusUsages[own_slot_value[slot_reference='used_in_lifecycle_model']/value=$thisproductLifecycles/name]"/>
+	<xsl:variable name="thisProdRoles2" select="$techProdRoleswithStd[own_slot_value[slot_reference='role_for_technology_provider']/value=current()/name]"/>
+    <xsl:variable name="thisStd2" select="$allTechstds[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value=$thisProdRoles/name]"/>
+	-->
    {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
@@ -86,12 +107,20 @@
 }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="appJSONforProduct">
-        <xsl:variable name="thisProductsRole" select="$allTechProdRoles[own_slot_value[slot_reference='role_for_technology_provider']/value=current()/name]"/>
+        <xsl:variable name="thisProductsRole2" select="$allTechProdRoles[own_slot_value[slot_reference='role_for_technology_provider']/value=current()/name]"/>
+		<xsl:variable name="thisProductsRole" select="key('techProdRoleswithStdKey',current()/name)"/>
+		<xsl:variable name="thisTechRolesUsage" select="key('allTechProvUsageKey',$thisProductsRole/name)"/>
+		<xsl:variable name="thistechBuildArch" select="key('allTechBuildArchKey',$thisTechRolesUsage/name)"/>
+		<xsl:variable name="thisprodDeploymentRole" select="key('prodDeploymentRoleKey',$thistechBuildArch/name)"/>
+		<xsl:variable name="thisappDeployment" select="key('appDeploymentKey',$thisprodDeploymentRole/name)"/>
+		<xsl:variable name="thisApps" select="key('appDeployedKey',$thisappDeployment/name)"/>
+	<!--
         <xsl:variable name="thisTechRolesUsage" select="$allTechProvUsage[own_slot_value[slot_reference='provider_as_role']/value=$thisProductsRole/name]"/>
         <xsl:variable name="thistechBuildArch" select="$allTechBuildArch[own_slot_value[slot_reference='contained_architecture_components']/value=$thisTechRolesUsage/name]"/>
-        <xsl:variable name="thisprodDeploymentRole" select="$prodDeploymentRole[own_slot_value[slot_reference='technology_provider_architecture']/value=$thistechBuildArch/name]"/>
+    <xsl:variable name="thisprodDeploymentRole" select="$prodDeploymentRole[own_slot_value[slot_reference='technology_provider_architecture']/value=$thistechBuildArch/name]"/>
         <xsl:variable name="thisappDeployment" select="$appDeployment[own_slot_value[slot_reference='application_deployment_technical_arch']/value=$thisprodDeploymentRole/name]"/>
-        <xsl:variable name="thisApps" select="$apps[name=$thisappDeployment/own_slot_value[slot_reference='application_provider_deployed']/value]"/>
+
+        <xsl:variable name="thisApps" select="$apps[name=$thisappDeployment/own_slot_value[slot_reference='application_provider_deployed']/value]"/>-->
         <xsl:for-each select="$thisApps">
         {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -103,8 +132,12 @@
 </xsl:template>
 <xsl:template match="node()" mode="prodStandards">
 	<xsl:variable name="thisStyle" select="$elementStyle[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
-	<xsl:variable name="thisTPR" select="$techProdRoleswithStd[name=current()/own_slot_value[slot_reference='tps_standard_tech_provider_role']/value]"/>
-	<xsl:variable name="thisComponent" select="$techCompwithStd[name = $thisTPR/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
+	<xsl:variable name="thisTPR2" select="$techProdRoleswithStd[name=current()/own_slot_value[slot_reference='tps_standard_tech_provider_role']/value]"/>
+	<xsl:variable name="thisTPR" select="key('techProdRolestoStdKey',current()/name)"/>
+ 
+	<xsl:variable name="thisComponent2" select="$techCompwithStd[name = $thisTPR/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
+	<xsl:variable name="thisComponent" select="key('techCompwithStdKey',$thisTPR/name)"/>
+	
 	<xsl:variable name="thisStandard" select="$stdValue[name = current()/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 	<xsl:variable name="thisOrgs" select="$actors[name = current()/own_slot_value[slot_reference = 'sm_organisational_scope']/value]"/>
 	<xsl:variable name="thisGeos" select="$geos[name = current()/own_slot_value[slot_reference = 'sm_geographic_scope']/value]"/>

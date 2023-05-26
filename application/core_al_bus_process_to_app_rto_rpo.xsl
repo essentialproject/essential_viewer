@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	 <xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
@@ -43,9 +42,7 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
+ 
 	 rto_for_business_criticalities and rpo_for_business_criticalities
 	 Recovery_Time_Objective  slot ea_recovery_time_objective
 	 Recovery_Point_Objective slot  ea_recovery_point_objective  
@@ -600,27 +597,13 @@
 						padding: 0 10px;
 					}
 				</style>
-				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				-->
+			 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<!--	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-			-->
+				  
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -776,7 +759,7 @@
 						<div class="application-section">
 							<table>
 								<thead>
-									<tr><th width="300px">Application</th><th width="100px">RPO</th><th width="100px">RTO</th></tr>
+									<tr><th width="300px">Application</th><th width="100px">RTO</th><th width="100px">RPO</th></tr>
 								</thead>
 								{{#each this.applications}}
 								<tr>
@@ -872,12 +855,13 @@
 	 	showEditorSpinner('Fetching Data...');
 		$('document').ready(function ()
 		{
-			$('#rpTable tfoot th').each( function () {
+			console.log('in')
+			<!-- $('#rpTable tfoot th').each( function () {
 				var srchtitle = $(this).text();
 				$(this).html( '&lt;input type="text" placeholder="Search '+srchtitle+'" /&gt;' );
-			});
+			}); 
 
-<!--			let rpTable = $('#rpTable').dataTable({  
+			let rpTable = $('#rpTable').dataTable({  
 				"autoWidth" : false,
 				"columns": [
 					{ width: '250px'},
@@ -912,10 +896,18 @@
 			});
 
 			Handlebars.registerHelper('setRPO', function (arg1, arg2, options) {
-				let processScore=arg2.rpoNum;
+				let processScore=parseInt(arg2.rpoNum);
 				let thisScore=100
+ 
+				console.log('thisScore', thisScore)
+				console.log('processScore', processScore)
+				console.log('RPO thisScore=arg1.rpo.enumNum, processScore= arg2.rpoNum')
+				console.log('arg1', arg1)
+				console.log('arg2', arg2)
+				console.log('thisScore&lt;=processScore - showgreen')
+				console.log('thisScore&gt;processScore - showgred') 
 				if(arg1.rpo){
-					thisScore=arg1.rpo.enumNum;
+					thisScore=parseInt(arg1.rpo.enumNum);
 				}
 				
 				if(thisScore&lt;=processScore){
@@ -934,18 +926,25 @@
 
 			})
 			Handlebars.registerHelper('setRTO', function (arg1, arg2, options) {
-				let processScore=arg2.rtoNum;
+				let processScore=parseInt(arg2.rtoNum);
 				let thisScore=100
 				if(arg1.rto){
-					thisScore=arg1.rto.enumNum;
+					thisScore=parseInt(arg1.rto.enumNum);
 				}
-				
+	 			console.log('RTO thisScore=arg1.rto.enumNum, processScore= arg2.rtoNum')
+				console.log('arg1', arg1)
+				console.log('arg2', arg2)
+				console.log('thisScore', thisScore)
+				console.log('processScore', processScore)
+				console.log('thisScore&lt;=processScore - showgreen')
+				console.log('thisScore&gt;processScore - showgred')
+	 
 				if(thisScore&lt;=processScore){
 					return '<div class="rpoblob" style="background-color:green;color:#fff;border:2pt solid #fff">'+arg1.rto.enum+'</div>';
 				}
 				else
 				{
-					if(arg1.rpo){
+					if(arg1.rto){
 						return '<div class="rpoblob" style="background-color:red;color:#fff;border:2pt solid #fff">'+arg1.rto.enum+'</div>';
 					}
 					else{
@@ -1120,6 +1119,9 @@
 						let appMatch=responses[1].applications.find((f)=>{
 							return f.id == e;
 						}); 
+
+						
+					 
 						let rtoRpo=appsRTORPOVals.find((ap)=>{
 							return ap.id==e;
 						}) ;
@@ -1137,7 +1139,7 @@
 						appInfo.push(appMatch);
 					})
 
- 
+
 					let thisrtrpEnu= criticalEnums.find((e)=>{
 						return e.enumNum==d.criticalityNum
 					});
@@ -1153,12 +1155,13 @@
 					})
 					if(thisRto){}else{thisRto=[]}
 					if(thisRpo){}else{thisRpo=[]}
-				
-					workingArray.push({"id":d.id,"id":d.processid,"name":d.processName,"org":d.org, "applications":appInfo,"criticality":d.criticality,"criticalityNum":d.criticalityNum, "rpo":thisRpo.name,"rto":thisRto.name, "rpoNum":thisRpo.enumNum,"rtoNum":thisRto.enumNum, "enumColour": d.enumColour, "enumTextColour": d.enumTextColour})	
+
+
+					workingArray.push({"id":d.processid,"name":d.processName,"org":d.org, "orgid":d.orgid, "orgUserId": d.orgUserId, "applications":appInfo,"criticality":d.criticality,"criticalityNum":d.criticalityNum, "rpo":thisRpo.name,"rto":thisRto.name, "rpoNum":thisRpo.enumNum,"rtoNum":thisRto.enumNum, "enumColour": d.enumColour, "enumTextColour": d.enumTextColour})	
 					}	
 					else
 					{
-						workingArray.push({"id":d.id,"id":d.processid,"name":d.processName,"org":d.org,"criticality":"High","applications":appInfo,"criticality":d.criticality,"criticalityNum":d.criticalityNum, "enumColour": d.enumColour, "enumTextColour": d.enumTextColour})	
+						workingArray.push({"id":d.processid,"name":d.processName,"org":d.org, "orgid":d.orgid, "orgUserId": d.orgUserId, "criticality":"High","applications":appInfo,"criticality":d.criticality,"criticalityNum":d.criticalityNum, "enumColour": d.enumColour, "enumTextColour": d.enumTextColour})	
 					}
 						 
 				})
@@ -1186,8 +1189,8 @@
 						v.applications.forEach((e)=>{ 
 							apps.push(e) 
 						})
-				 				
-						procInfo={'criticality': v.criticality, 'criticalityNum': v.criticalityNum, 'enumColour': v.enumColour, 'enumTextColour': v.enumTextColour, 'id': v.id, 'name': v.name, 'org': v.org, 'rpo': v.rpo, 'rpoNum': v.rpoNum, rto: v.rto, rtoNum: v.rtoNum}
+				 			 
+						procInfo={'criticality': v.criticality, 'criticalityNum': v.criticalityNum, 'enumColour': v.enumColour, 'enumTextColour': v.enumTextColour, 'id': v.id, 'name': v.name, 'org': v.org,  'orgUserId': v.orgUserId, 'orgid': v.orgid, 'rpo': v.rpo, 'rpoNum': v.rpoNum, rto: v.rto, rtoNum: v.rtoNum}
 						
 					})
 					let newapps=[...new Set(apps)]; 
@@ -1200,44 +1203,9 @@
 				//newArray=newArray.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
  
 				workingArray=newArray;
-				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain']);
+				essInitViewScoping(redrawView,['Group_Actor'],'', true);
  
-				var apptable = $('#rpTable').DataTable({
-					scrollY: "350px",
-					scrollCollapse: true,
-					paging: false,
-					columns: [
-						{ width: '250px'},
-						{ width: '75px'},
-						{ width: '75px'}, 
-						{ width: '500px'} 
-					
-					  ],
-					  bSort : false  
-					});
-			
-					// Apply the search
-					apptable.columns().every( function () {
-						var that = this;
-				 
-						$( 'input', this.footer() ).on( 'keyup change', function () {
-							if ( that.search() !== this.value ) {
-								that
-									.search( this.value )
-									.draw();
-							}
-						} );
-					} );
-
-					$('.collapse').hide()
-					$('.action-btn').on('click',function(){
-						let thisId=$(this).attr('easidparent');
-						$('#'+thisId).toggle()
-					})
-					$('.paginate_button').on('click',function(){
-						$('pag')
-						$('.collapse').hide()
-					})
+				
 					
 
 					
@@ -1245,21 +1213,73 @@
 			{
 				//display an error somewhere on the page
 			});
-			
+var apptable;			
 
 var redrawView=function(){
+	essResetRMChanges();
+	let typeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+	}
  
-	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
-	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
-	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
-	let busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
+	let appOrgScopingDef = new ScopingProperty('orgUserId', 'Group_Actor');
+ 
+	scopedApps = essScopeResources(workingArray, [appOrgScopingDef], typeInfo);
+	 
+	if(apptable){
+		$('#rpTable').DataTable().destroy()
+		
+		apptable=null;
+		}
+
+		$('#rtorpotable').html(rowTemplate(scopedApps.resources));
 	
-	<!--scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef]);
-	-->
-  
-	$('#rtorpotable').html(rowTemplate(workingArray));
+	$('#rpTable tfoot th').each( function () {
+		var srchtitle = $(this).text();
+		$(this).html( '&lt;input type="text" placeholder="Search '+srchtitle+'" /&gt;' );
+	});
+
+	 apptable = $('#rpTable').DataTable({
+		scrollY: "350px",
+		scrollCollapse: true,
+		paging: false,
+		columns: [
+			{ width: '250px'},
+			{ width: '75px'},
+			{ width: '75px'}, 
+			{ width: '500px'} 
+		
+		  ],
+		  bSort : false  
+		});
+
+	
+
+
+		// Apply the search
+		apptable.columns().every( function () {
+			var that = this;
+	 
+		$( 'input', this.footer() ).on( 'keyup change', function () {
+				if ( that.search() !== this.value ) {
+					 
+					that
+						.search( this.value )
+						.draw();
+				}
+			} );
+		} );
+
+		$('.collapse').hide()
+		$('.action-btn').on('click',function(){
+			let thisId=$(this).attr('easidparent');
+			$('#'+thisId).toggle()
+		})
+		$('.paginate_button').on('click',function(){
+			$('pag')
+			$('.collapse').hide()
+		})
 }
 
 

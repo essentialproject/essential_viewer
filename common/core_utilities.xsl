@@ -40,7 +40,19 @@
 
 	<!--Setup Language Related Variables-->
 	<xsl:param name="i18n">en-gb</xsl:param>
-	<xsl:variable name="langFile">../language/<xsl:value-of select="$i18n"/>.xml</xsl:variable>
+	<xsl:param name="user-language">../user/language/<xsl:value-of select="$i18n"/>.xml</xsl:param>
+	<xsl:param name="core-language">../language/<xsl:value-of select="$i18n"/>.xml</xsl:param>
+	<xsl:variable name="langFile">
+		<xsl:choose>
+			<xsl:when test="doc-available($user-language)">
+				<xsl:value-of select="$user-language"/>
+			</xsl:when>
+			<xsl:when test="doc-available($core-language)">
+				<xsl:value-of select="$core-language"/>
+			</xsl:when>
+			<xsl:otherwise>../language/en-gb.xml</xsl:otherwise>
+		</xsl:choose>	
+	</xsl:variable>
 	<xsl:variable name="flagFile">
 		<xsl:choose>
 			<xsl:when test="string-length($i18n) = 0">language/flags/en-gb.png</xsl:when>
@@ -1141,24 +1153,55 @@
 	<xsl:template name="RenderMultiLangInstanceSlot">
 		<xsl:param name="theSubjectInstance"/>
 		<xsl:param name="displaySlot"/>
+		<xsl:param name="isRenderAsJSString" select="false()"/>
+		<xsl:param name="isForJSONAPI" select="false()"/>
 
 		<!-- First perform user clearance check -->
 		<xsl:choose>
 			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
-
 				<xsl:value-of>
 					<xsl:choose>
 						<xsl:when test="$currentLanguage/name = $defaultLanguage/name">
-							<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value"/>
-						</xsl:when>
+							<xsl:choose>
+								<xsl:when test="$isForJSONAPI">
+										<xsl:value-of select="eas:renderJSAPIText($theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value)"/>
+								</xsl:when>
+								<xsl:when test="$isRenderAsJSString">
+										<xsl:value-of select="eas:renderJSText($theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value"/>
+								</xsl:otherwise>
+							</xsl:choose>	
+						</xsl:when> 
 						<xsl:otherwise>
 							<xsl:variable name="instanceSynonym" select="$utilitiesAllSynonyms[(name = $theSubjectInstance/own_slot_value[slot_reference = 'synonyms']/value) and (own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name)]"/>
 							<xsl:choose>
 								<xsl:when test="count($instanceSynonym) > 0">
-									<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = $displaySlot]/value"/>
+									<xsl:choose>
+										<xsl:when test="$isForJSONAPI">
+												<xsl:value-of select="eas:renderJSAPIText($instanceSynonym[1]/own_slot_value[slot_reference = $displaySlot]/value)"/>
+										</xsl:when>
+										<xsl:when test="$isRenderAsJSString">
+												<xsl:value-of select="eas:renderJSText($instanceSynonym[1]/own_slot_value[slot_reference = $displaySlot]/value)"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$instanceSynonym[1]/own_slot_value[slot_reference = $displaySlot]/value"/>
+										</xsl:otherwise>
+									</xsl:choose>
 								</xsl:when>
 								<xsl:otherwise>
-									<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value"/>
+									<xsl:choose>
+										<xsl:when test="$isForJSONAPI">
+												<xsl:value-of select="eas:renderJSAPIText($theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value)"/>
+										</xsl:when>
+										<xsl:when test="$isRenderAsJSString">
+												<xsl:value-of select="eas:renderJSText($theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value)"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$theSubjectInstance/own_slot_value[slot_reference = $displaySlot]/value"/>
+										</xsl:otherwise>
+									</xsl:choose>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:otherwise>
@@ -1275,8 +1318,8 @@
 		<xsl:choose>
 			<xsl:when test="eas:isUserAuthZ($theSubjectInstance)">
 				<xsl:variable name="slotName">
-					<xsl:call-template name="GetDisplaySlotForClass">
-						<xsl:with-param name="theClass" select="$theSubjectInstance/type"/>
+					<xsl:call-template name="GetDisplaySlotForInstance">
+						<xsl:with-param name="theInstance" select="$theSubjectInstance"/>
 					</xsl:call-template>
 				</xsl:variable>
 				<xsl:value-of>
@@ -2132,41 +2175,51 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template name="GetDisplaySlotForClass">
-		<xsl:param name="theClass"/>
-
+	<xsl:template name="GetDisplaySlotForInstance">
+		<xsl:param name="theInstance"/>
+		
+		<xsl:variable name="theClass" select="$theInstance/type"/>
+		
+		<xsl:variable name="nameSlot">
+			<xsl:choose>
+				<xsl:when test="$theClass = 'Information_View'">view_label</xsl:when>
+				<xsl:when test="$theClass = 'Lifecycle_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Project_Lifecycle_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Codebase_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Deployment_Role'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Project_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Standardisation_Level'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Business_Criticality'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Deployment_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Planning_Action'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Planning_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Application_Purpose'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Application_Delivery_Model'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Project_Lifecycle_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Project_Approval_Status'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Requirement_Impact'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Secured_Action'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Report'">report_label</xsl:when>
+				<xsl:when test="$theClass = 'Editor'">report_label</xsl:when>
+				<xsl:when test="$theClass = 'Simple_Editor'">report_label</xsl:when>
+				<xsl:when test="$theClass = 'Taxonomy_Term'">taxonomy_term_label</xsl:when>
+				<xsl:when test="$theClass = 'Taxonomy'">taxonomy_display_label</xsl:when>
+				<xsl:when test="$theClass = 'Issue_Category'">enumeration_value</xsl:when>
+				<xsl:when test="$theClass = 'Business_Process_Flow_Decision'">business_process_arch_display_label</xsl:when>
+				<xsl:when test="$theClass = 'Data_Representation'">dr_technical_name</xsl:when>
+				<xsl:when test="$theClass = 'Data_Representation_Attribute'">dra_technical_name</xsl:when>
+				<xsl:when test="$theClass = 'Data_Object_Attribute'">data_attribute_label</xsl:when>
+				<xsl:when test="$theClass = 'Portal'">portal_label</xsl:when>
+				<xsl:when test="$theClass = 'Portal_Section'">portal_section_label</xsl:when>
+				<xsl:when test="$theClass = 'Portal_Panel'">portal_panel_label</xsl:when>
+				<xsl:when test="$theClass = 'Portal_Panel_Section'">portal_panel_section_label</xsl:when>
+				<xsl:when test="$theClass = 'PLAN_TO_ELEMENT_RELATION'">relation_name</xsl:when>
+				<xsl:otherwise>name</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
 		<xsl:choose>
-			<xsl:when test="$theClass = 'Information_View'">view_label</xsl:when>
-			<xsl:when test="$theClass = 'Lifecycle_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Project_Lifecycle_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Codebase_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Deployment_Role'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Project_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Standardisation_Level'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Business_Criticality'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Deployment_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Planning_Action'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Planning_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Application_Purpose'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Application_Delivery_Model'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Project_Lifecycle_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Project_Approval_Status'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Requirement_Impact'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Secured_Action'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Report'">report_label</xsl:when>
-			<xsl:when test="$theClass = 'Editor'">report_label</xsl:when>
-			<xsl:when test="$theClass = 'Simple_Editor'">report_label</xsl:when>
-			<xsl:when test="$theClass = 'Taxonomy_Term'">taxonomy_term_label</xsl:when>
-			<xsl:when test="$theClass = 'Taxonomy'">taxonomy_display_label</xsl:when>
-			<xsl:when test="$theClass = 'Issue_Category'">enumeration_value</xsl:when>
-			<xsl:when test="$theClass = 'Business_Process_Flow_Decision'">business_process_arch_display_label</xsl:when>
-			<xsl:when test="$theClass = 'Data_Representation'">dr_technical_name</xsl:when>
-			<xsl:when test="$theClass = 'Data_Representation_Attribute'">dra_technical_name</xsl:when>
-			<xsl:when test="$theClass = 'Data_Object_Attribute'">data_attribute_label</xsl:when>
-			<xsl:when test="$theClass = 'Portal'">portal_label</xsl:when>
-			<xsl:when test="$theClass = 'Portal_Section'">portal_section_label</xsl:when>
-			<xsl:when test="$theClass = 'Portal_Panel'">portal_panel_label</xsl:when>
-			<xsl:when test="$theClass = 'Portal_Panel_Section'">portal_panel_section_label</xsl:when>
+			<xsl:when test="string-length($theInstance/own_slot_value[slot_reference=$nameSlot]/value)"><xsl:value-of select="$nameSlot"/></xsl:when>
 			<xsl:otherwise>name</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	 <xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
@@ -35,8 +34,7 @@
  	<!-- END GENERIC LINK VARIABLES -->
  
     <!-- interim roadmap fix -->
-    <xsl:variable name="busProcessRoadmap" select="/node()/simple_instance[type='Business_Process']"/>
-	<!--
+    	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
@@ -55,10 +53,6 @@
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
         * 
     -->
-	<xsl:variable name="allRoadmapInstances" select="$busProcessRoadmap"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
  
 <!--	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 -->	<xsl:variable name="processData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"></xsl:variable>
@@ -137,27 +131,14 @@
 						justify-content: center;
 					}           
 				</style>
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
+	 
 				 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				 	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-		 
+			 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -191,6 +172,8 @@
 								<thead>
 									<tr>
 										<th>
+										</th>
+										<th>
 											<xsl:value-of select="eas:i18n('Business Process')"/>
 										</th>
 										<th>
@@ -209,6 +192,8 @@
 								</thead>
 								<tfoot>
 									<tr>
+										<th>
+										</th>
 										<th>
 											<xsl:value-of select="eas:i18n('Business Process')"/>
 										</th>
@@ -279,6 +264,9 @@
 						{{/each}}
 					</ul>                    
 				</script>    
+				<script id="select-template" type="text/x-handlebars-template">
+					{{#essRenderInstanceLinkSelect this 'Business_Process'}}{{/essRenderInstanceLinkSelect}}       
+				</script>
 		</html>
 	</xsl:template>
 
@@ -324,8 +312,7 @@
 				}
 			});
         }; 
-<!-- interim fix for roadmaps -->        
-var roadmapProcs=[<xsl:apply-templates select="$busProcessRoadmap" mode="roadmapProcs"/>];
+<!-- interim fix for roadmaps -->         
 <!-- end fix for roadmaps -->  
 var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 function showEditorSpinner(message) {
@@ -393,7 +380,63 @@ showEditorSpinner('Fetching Data...');
 		                return instanceLink;
 		            }
 		        }
-		    });
+			});
+			
+			Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
+
+				let targetReport = "<xsl:value-of select="$repYN"/>";
+		 
+				if (targetReport.length &gt; 1) {
+			 
+					if (instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+					 
+						if (linkMenuName != null) {
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+							let linkClass = 'context-menu-' + linkMenuName;
+							let linkId = instance.id + 'Link';
+							let linkURL = reportURL;
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+			
+						} else if (instanceLink != null) {
+							let linkURL = reportURL;
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+							let linkClass = 'context-menu-' + linkMenuName;
+
+							let linkId = instance.id + 'Link';
+						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+			
+							
+		
+							return instanceLink;
+						} else {
+							return '';
+						}
+					}
+				} else {
+		 
+					let thisMeta = meta.filter((d) => {
+		                return d.classes.includes(type)
+					});
+ 
+				 
+		            instance['meta'] = thisMeta[0]
+		            let linkMenuName = essGetMenuName(instance);
+		            let instanceLink = instance.name;
+		            if (linkMenuName != null) {
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkClass = 'context-menu-' + linkMenuName;
+		                let linkId = instance.id + 'Link';
+		                let linkURL = reportURL; 
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+			
+		                return instanceLink;
+		            }
+				}
+            });
+
 		    Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
 
 		        let thisMeta = meta.filter((d) => {
@@ -423,7 +466,7 @@ showEditorSpinner('Fetching Data...');
 			 
 			   busProcArray=responses[0].businessProcesses;
 			   busFamilyArray=responses[1];
-console.log(busProcArray)
+ 
 			   busFamilyArray.businessProcessFamilies.forEach((d)=>{
 					d.containedProcesses.forEach((e)=>{
 						let thispr=busProcArray.filter((bp)=>{
@@ -435,28 +478,12 @@ console.log(busProcArray)
 			   });
 
 			   meta=responses[0].meta
-		        busProcArray.forEach((d) => {
-		           
-					<!--required for roadmap-->
-		            var thisRoadmap = roadmapProcs.filter((rm) => {
-		                return d.id == rm.id;
-		            });
-
-					if(thisRoadmap[0]){
-						d['roadmap'] = thisRoadmap[0].roadmap;
-						}else{
-							d['roadmap'] = [];
-						} 
-		            <!--end required	for roadmap-->
-		           
+		        busProcArray.forEach((d) => { 
 		            d['meta'] = meta.filter((d) => {
 		                return d.classes.includes('Business_Process')
 		            })
 		        });
-
-		        roadmapProcs = [];
-
-
+  
 		        // Setup - add a text input to each footer cell
 		        $('#dt_Processes tfoot th').each(function () {
 		            var title = $(this).text();
@@ -472,6 +499,9 @@ console.log(busProcArray)
 		            sort: true,
 		            responsive: false,
 		            columns: [{
+							"width": "2%"
+						},
+						{
 		                    "width": "15%"
 		                },
 		                {
@@ -488,7 +518,12 @@ console.log(busProcArray)
 		                    "type": "html",
 		                }
 		            ],
-		            dom: 'Bfrtip',
+					dom: 'Bfrtip',
+					"columnDefs": [ {
+						"targets": 0,
+						"orderable": false
+						} ],
+					order: [[ 1, 'asc' ]],
 		            buttons: [
 		                'copyHtml5',
 		                'excelHtml5',
@@ -518,20 +553,20 @@ console.log(busProcArray)
 		            catalogueTable.columns.adjust();
 		        });
 
-		        <!-- *** OPTIONAL *** Register the table as having roadmap aware contents-->
-		            if (roadmapEnabled) {
-		                registerRoadmapDatatable(catalogueTable);
-		            }
-		        //setCatalogueTable(); 
-		        essInitViewScoping(redrawView);
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'Product_Concept', 'SYS_CONTENT_APPROVAL_STATUS'],'', true);
 
 		    });
 
 		    function renderCatalogueTableData(scopedData) {
 		        var processFragment = $("#process-name").html();
-		        var processTemplate = Handlebars.compile(processFragment);
+				var processTemplate = Handlebars.compile(processFragment);
+				
 				var actorFragment = $("#actors-name").html();
-		        var actorTemplate = Handlebars.compile(actorFragment);
+				var actorTemplate = Handlebars.compile(actorFragment);
+				
+				var selectFragment = $("#select-template").html();
+				var selectTemplate = Handlebars.compile(selectFragment);
+
 		        let inscopeBusProcs = [];
 		        inscopeBusProcs['businessProcesses'] = scopedData.businessProcesses
 		        var dataTableSet = [];
@@ -549,7 +584,9 @@ console.log(busProcArray)
 		            capLinkHTML = capabilityTemplate(inscopeBusProcs.businessProcesses[i]);
 					actorLinkHTML = actorTemplate(inscopeBusProcs.businessProcesses[i]);
 					familyLinkHTML = familyTemplate(inscopeBusProcs.businessProcesses[i]);
-					 
+					selectHTML=selectTemplate(inscopeBusProcs.businessProcesses[i]);  
+
+					dataTableRow.push(selectHTML); 
 		            dataTableRow.push(procNameHTML); 
 					dataTableRow.push(familyLinkHTML);
 					dataTableRow.push(aProc.description); 
@@ -571,35 +608,19 @@ console.log(busProcArray)
 		    }
 
 		    var redrawView = function () {
-
-		        let scopedRMProcesses = [];
-		        busProcArray.forEach((d) => {
-		            scopedRMProcesses.push(d)
-		        });
-		        let toShow = [];
-
-		        <!-- *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS-->
-		            if (roadmapEnabled) {
-		                //update the roadmap status of the caps passed as an array of arrays
-		                rmSetElementListRoadmapStatus([scopedRMProcesses]);
-
-		                <!-- *** OPTIONAL *** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME-->
-		                    //filter caps to those in scope for the roadmap start and end date
-		                    toShow = rmGetVisibleElements(scopedRMProcesses);
-		            } else {
-		                toShow = busProcArray;
-		            }
-
-		            <!-- VIEW SPECIFIC JS CALLS-->
-		        //update the catalogue
-
+				essResetRMChanges();
+				typeInfo = {
+					"className": "Business_Process",
+					"label": 'Business Process',
+					"icon": 'fa-chevron-double-right'
+				}
 
 		        let workingAppsList = [];
 		        let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 		        let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 		        let prodConceptScopingDef = new ScopingProperty('prodConIds', 'Product_Concept');
 
-		        let scopedProcesses = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef]);
+		        let scopedProcesses = essScopeResources(busProcArray, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef], typeInfo);
 
 		        let showProcesses = scopedProcesses.resources;
 
@@ -635,9 +656,5 @@ console.log(busProcArray)
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
     </xsl:template>
-    
-   <xsl:template match="node()" mode="roadmapProcs">
-      {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,
-    </xsl:text></xsl:if> </xsl:template>
-
+  
 </xsl:stylesheet>

@@ -42,7 +42,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Data_Subject', 'Business_Role', 'Info_Data_Management_Policy', 'Individual_Business_Role', 'Group_Business_Role')"/>
+	<xsl:variable name="linkClasses" select="('Data_Subject', 'Business_Role', 'Individual_Actor', 'Group_Actor', 'Info_Data_Management_Policy', 'Individual_Business_Role', 'Group_Business_Role')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- Get all of the required types of instances in the repository -->
@@ -51,14 +51,17 @@
 	<xsl:variable name="dataStakeholderRoleReportConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'report_constant_short_name']/value = 'Data Stakeholder Role Type')]"/>
 	<xsl:variable name="dataStakeholderRoleType" select="/node()/simple_instance[name = $dataStakeholderRoleReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
 
-	<xsl:variable name="allBusinessRoles" select="/node()/simple_instance[type = 'Individual_Business_Role' or type = 'Group_Business_Role']"/>
+	<xsl:variable name="allBusinessRoles" select="/node()/simple_instance[type = ('Individual_Business_Role','Group_Business_Role')]"/>
 	<xsl:variable name="dataStakeholderRoles" select="$allBusinessRoles[own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name]"/>
+	<xsl:variable name="dataStakeholderActors" select="/node()/simple_instance[type = ('Individual_Actor', 'Group_Actor')]"/>
 
 	<xsl:variable name="allSecurityPolicies" select="/node()/simple_instance[type = 'Security_Policy']"/>
 	<xsl:variable name="allSecurityClassifications" select="/node()/simple_instance[type = 'Security_Classification']"/>
 	<xsl:variable name="allDataMgmtPolicies" select="/node()/simple_instance[type = 'Info_Data_Management_Policy']"/>
 
-	<xsl:variable name="relevantBusinessRoles" select="$allBusinessRoles[not(own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name) and ((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>
+	<xsl:variable name="secBusinessRoles" select="$allBusinessRoles[not(own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name) and ((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>
+	<xsl:variable name="relevantSecurityActors" select="$dataStakeholderActors[((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>	
+	<xsl:variable name="relevantBusinessRoles" select="$secBusinessRoles, $relevantSecurityActors"/>
 
 	<xsl:variable name="allSecuredActions" select="/node()/simple_instance[type = 'Secured_Action']"/>
 	<xsl:variable name="createAction" select="$allSecuredActions[own_slot_value[slot_reference = 'name']/value = 'Create']"/>
@@ -304,6 +307,7 @@
 						<xsl:with-param name="theSubjectInstance" select="current()"/>
 						<xsl:with-param name="theXML" select="$reposXML"/>
 						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+						<xsl:with-param name="anchorClass" select="'text-white'"/>
 					</xsl:call-template>
 				</strong>
 
@@ -432,7 +436,7 @@
 			</xsl:choose>  -->
 
 			<xsl:variable name="relevantDMPolicies" select="$dmPolicies[(own_slot_value[slot_reference = 'dmp_assigned_info_data_object']/value = $dataObjectsForSubject/name) and (own_slot_value[slot_reference = 'dmp_responsible_roles']/value = $businessRole/name)]"/>
-			<xsl:variable name="stakeholderRoles" select="$dataStakeholderRoles[name = $relevantDMPolicies/own_slot_value[slot_reference = 'dmp_responsibility']/value]"/>
+			<xsl:variable name="stakeholderRoles" select="($dataStakeholderRoles, $relevantBusinessRoles)[name = $relevantDMPolicies/own_slot_value[slot_reference = 'dmp_responsibility']/value]"/>
 			<xsl:apply-templates mode="DataStakeholder" select="$stakeholderRoles">
 				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 			</xsl:apply-templates>
@@ -457,6 +461,7 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>
 				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+				<xsl:with-param name="anchorClass" select="'text-white'"/>
 			</xsl:call-template>
 		</p>
 	</xsl:template>

@@ -45,7 +45,7 @@
 	<!-- END GENERIC PARAMETERS -->
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Data_Object', 'Business_Role')"/>
+	<xsl:variable name="linkClasses" select="('Data_Object', 'Business_Role', 'Individual_Actor', 'Group_Actor')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 
@@ -58,12 +58,15 @@
 
 	<xsl:variable name="allBusinessRoles" select="/node()/simple_instance[type = 'Individual_Business_Role' or type = 'Group_Business_Role']"/>
 	<xsl:variable name="dataStakeholderRoles" select="$allBusinessRoles[own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name]"/>
+	<xsl:variable name="dataStakeholderActors" select="/node()/simple_instance[type = ('Individual_Actor', 'Group_Actor')]"/>
 
 	<xsl:variable name="allSecurityPolicies" select="/node()/simple_instance[type = 'Security_Policy']"/>
 	<xsl:variable name="allSecurityClassifications" select="/node()/simple_instance[type = 'Security_Classification']"/>
 	<xsl:variable name="allDataMgmtPolicies" select="/node()/simple_instance[type = 'Info_Data_Management_Policy']"/>
 
-	<xsl:variable name="relevantBusinessRoles" select="$allBusinessRoles[not(own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name) and ((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>
+	<xsl:variable name="secBusinessRoles" select="$allBusinessRoles[not(own_slot_value[slot_reference = 'is_business_role_type']/value = $dataStakeholderRoleType/name) and ((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>
+	<xsl:variable name="relevantSecurityActors" select="$dataStakeholderActors[((name = $allDataMgmtPolicies/own_slot_value[slot_reference = 'dmp_responsible_roles']/value) or (name = $allSecurityPolicies/own_slot_value[slot_reference = 'sp_actor']/value))]"/>	
+	<xsl:variable name="relevantBusinessRoles" select="$secBusinessRoles, $relevantSecurityActors"/>
 
 	<xsl:variable name="allSecuredActions" select="/node()/simple_instance[type = 'Secured_Action']"/>
 	<xsl:variable name="createAction" select="$allSecuredActions[own_slot_value[slot_reference = 'name']/value = 'Create']"/>
@@ -118,8 +121,13 @@
 				<xsl:call-template name="dataTablesLibrary"/>
 				<style type="text/css">
 					table.dataTable{
-						margin-top: 0px !important;
-					}</style>
+					margin-top: 0px !important;
+					}
+					.bg-midgrey {
+					background-color: #999!important;
+					color: #fff;
+					}
+				</style>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -202,7 +210,7 @@
 							<div>
 								<script>
 									$(document).ready(function(){								
-										var table = $('#dt_dataObjects').DataTable({
+									var table = $('#dt_dataObjects').DataTable({
 										scrollY: "350px",
 										scrollCollapse: true,
 										scrollX: true,
@@ -240,10 +248,10 @@
 		<xsl:param name="businessRoles"/>
 		<xsl:param name="dmPolicies"/>
 		<!--Setup Matrix Section-->
-		<table class="tableStyleMatrix dataTable table-header-background" id="dt_dataObjects">
+		<table class="table table-bordered table-header-background" id="dt_dataObjects">
 			<thead>
 				<tr>
-					<th class="tableStyleMatrixCorner cellWidth-140">&#160;</th>
+					<th class="tableStyleMatrixCorner cellWidth-140 vAlignMiddle">&#160;</th>
 					<xsl:apply-templates mode="DataObject" select="$dataObjects">
 						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 					</xsl:apply-templates>
@@ -406,7 +414,7 @@
 			</p>
 
 			<xsl:variable name="relevantDMPolicies" select="$dmPolicies[(own_slot_value[slot_reference = 'dmp_assigned_info_data_object']/value = $dataObject/name) and (own_slot_value[slot_reference = 'dmp_responsible_roles']/value = $businessRole/name)]"/>
-			<xsl:variable name="stakeholderRoles" select="$dataStakeholderRoles[name = $relevantDMPolicies/own_slot_value[slot_reference = 'dmp_responsibility']/value]"/>
+			<xsl:variable name="stakeholderRoles" select="($dataStakeholderRoles, $relevantBusinessRoles)[name = $relevantDMPolicies/own_slot_value[slot_reference = 'dmp_responsibility']/value]"/>
 			<xsl:apply-templates mode="DataStakeholder" select="$stakeholderRoles">
 				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 			</xsl:apply-templates>

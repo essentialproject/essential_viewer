@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+     <xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
 	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"></xsl:output>
 
 	<xsl:param name="param1"></xsl:param>
@@ -26,8 +25,6 @@
     -->
 	<xsl:variable name="styles" select="/node()/simple_instance[type = ('Element_Style')]"></xsl:variable>
 	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances">0</xsl:variable>
-	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"></xsl:variable>
 	<xsl:variable name="appsAPI" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 
 	<!--
@@ -152,27 +149,13 @@
                         float: left;
                     }​​​​​
 				</style> 
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"></xsl:with-param>
-				</xsl:call-template>
+			
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"></xsl:call-template>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"></xsl:with-param>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"></xsl:with-param>
-					</xsl:call-template>
-
-					<div class="clearfix"></div>
-				</div>
-				<!--ADD THE CONTENT-->
+			 	<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -373,7 +356,7 @@
                     let workingArray = responses[0]; 
                     filters=responses[0].filters; 
                     filters.sort((a, b) => (a.id > b.id) ? 1 : -1) 
-console.log(workingArray)
+ 
                     dynamicAppFilterDefs=filters?.map(function(filterdef){
                         return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
                     });
@@ -400,7 +383,7 @@ console.log(workingArray)
 
                     $('#timeBody').append(dataTemplate(timeJSON))
                
-                    redrawView()
+                   // redrawView()
 					$('#applyFilterButton').on('click',function(){ 
                        // showEditorSpinner('Fetching Data...');
                             let pattern=$('#applyFilter').val().toUpperCase(); 
@@ -416,7 +399,7 @@ console.log(workingArray)
                             }
                             inScopeApplications.applications=newList;
 							$('.ess-tag').hide();
-							redrawView()
+							redrawViewScope()
 					})	
 
                     $('#applyFilter').on('keyup',function(){
@@ -426,10 +409,12 @@ console.log(workingArray)
                                  return d.name.toUpperCase().includes(pattern)
                              })
                              inScopeApplications.applications=newList;
-                             redrawView()
+                             redrawViewScope()
                      })	
 
-                     essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters); 
+                    // essInitViewScoping(redrawView, ['Group_Actor'], '', true); 
+                   essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept'],'',true);
+
                 });
 
                 
@@ -438,34 +423,22 @@ console.log(workingArray)
             let scopedApps=[]; 
 
             var redrawView=function(){
+                essResetRMChanges();
+                let typeInfo = {
+                    "className": "Application_Provider",
+                    "label": 'Application',
+                    "icon": 'fa-desktop'
+                }
+
                 let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	            let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	            let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-
-					<xsl:if test="$isRoadmapEnabled">
-					// console.log('Redrawing View');
-					
-					//update the roadmap status of the applications and application provider roles passed as an array of arrays
-					rmSetElementListRoadmapStatus([applications.applications]);
-					
-					if(newList.length&gt;0){ 
-						inScopeApplications.applications =rmGetVisibleElements(newList);
-					}
-					else
-					{
-					//filter applications to those in scope for the roadmap start and end date
-					inScopeApplications.applications = rmGetVisibleElements(applications.applications);
-					}
-                    </xsl:if>
-                    $('.ess-tag').hide();
-                
-					//drawApps(inScopeApplications.applications)
-                    
-                    let appsList=inScopeApplications.applications;
-                   scopedApps = essScopeResources(inScopeApplications.applications, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-                   
-                   // console.log('inScopeApplications.applications', inScopeApplications.applications) 
  
+                    $('.ess-tag').hide();
+                 
+                    let appsList=inScopeApplications.applications;
+                   scopedApps = essScopeResources(appsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
+        console.log('sa', scopedApps.resources)
                      timeJSON.forEach((d)=>{
                         let appList = scopedApps.resources.filter((e)=>{
                             return d.id == e.dispositionId;
@@ -491,7 +464,7 @@ console.log(workingArray)
                     removeEditorSpinner();
 				}
 
-function redrawView() {
+function redrawViewScope() {
 	essRefreshScopingValues()
 }                
         </xsl:template>

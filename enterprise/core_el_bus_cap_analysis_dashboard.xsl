@@ -47,10 +47,7 @@
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
 		-->
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+ 
 	
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
@@ -114,7 +111,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.min.js"></script>
+				<script src="js/d3/d3.v5.9.7.min.js"></script>
 				<title>Business Capability Model</title>
 				<style>
 					.l0-cap{
@@ -245,7 +242,7 @@
 					
 					.sidenav .closebtn{
 						position: absolute;
-						top: 5px;
+						top: 42px;
 						right: 5px;
 						font-size: 14px;
 						margin-left: 50px;
@@ -253,7 +250,7 @@
 					
 					@media screen and (max-height : 450px){
 						.sidenav{
-							padding-top: 15px;
+							padding-top: 41px;
 						}
 					
 						.sidenav a{
@@ -380,6 +377,15 @@
 						background-color: #333;
 						color: #fff;
 						cursor: pointer;
+					}
+
+					.inscope-icon{
+						display: none;
+						position: absolute;
+						right: 3px;
+						bottom: 2px;
+						font-size: 0.8em;
+						color: rgb(41 91 138);
 					}
 
 					.lifecycle{
@@ -786,27 +792,13 @@
 						margin:0px; 	
 					}
 				</style>
-				<!--	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				-->
+ 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<!--	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-			-->
+			 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -859,10 +851,14 @@
 								</div>
 								<div class="top-10 bottom-10">
 									<div class="" id="keyHolder" style="display:none"/>
+									
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-4">
-								<div class="pull-right" id="blobLevel"/>
+								<div class="pull-right" id="blobLevel"/><br/><br/>
+								<div class="pull-right right-20 inscope-icon" id="scopeOn">
+									In scope of Filter:<xsl:text> </xsl:text><i class="fa fa-bookmark"></i>
+								</div>
 							</div>
 						<div id="comparePanel" style="display:none">
 							<div class="col-xs-6 col-lg-6">
@@ -963,6 +959,8 @@
 							{{#getApps this}}{{/getApps}} 
 								{{> l2CapTemplate}} 	
 								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		 
+							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>
+							
 						</div> 
 						
 						{{/each}}
@@ -980,7 +978,8 @@
 							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 							{{#getApps this}}{{/getApps}} 
 								{{> l3CapTemplate}}
-							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	 	 
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span> 	 
 						</div>
 						{{/each}}
 					</div>
@@ -997,7 +996,8 @@
 							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>	
 							{{#getApps this}}{{/getApps}} 				 
 								{{> l4CapTemplate}} 	
-							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		 
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		
+							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span> 
 						</div>
 						{{/each}}
 					</div>	
@@ -1013,7 +1013,8 @@
 						<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 						{{#getApps this}}{{/getApps}} 		
 							{{> l5CapTemplate}}
-							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>			 
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		
+							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>	 
 					</div>
 					{{/each}}
 					</div>
@@ -1032,6 +1033,7 @@
 							<div class="l5-caps-wrapper caplevel"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 									{{> l5CapTemplate}}
 								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+								<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>
 								</div>	
 						</div>
 						{{/each}}
@@ -1447,6 +1449,9 @@
 		var dynamicCapFilterDefs=[];
 		$('document').ready(function ()
 		{
+
+			$('#scopeOn').hide();
+
 			l0capFragment = $("#model-l0-template").html();
 			l0CapTemplate = Handlebars.compile(l0capFragment);
 			
@@ -1782,7 +1787,7 @@
 				let workingArray = responses[0];
 				svsArray = responses[3]
 				meta = responses[1].meta; 
- 
+			 
 				meta.push({"classes":["Project"],"menuId":"projGenMenu"})
 				filters=responses[1].filters;
 				capfilters=responses[0].filters;
@@ -1810,13 +1815,14 @@
 			 
 				busGoals.forEach((e)=>{
 					let capsList=[];
-					e.objectives.forEach((c)=>{
+					e.objectives?.forEach((c)=>{
 						c.caps.forEach((sc)=>{
 							capsList=[...capsList, ...sc.childCaps]
 						})
 					})
 					e['capsList']=capsList;
 				})
+				 
 		 $('#keyHolder').html(goalKeyTemplate(busGoals))
 
 		 $('.goalInfo').on('click',function(d){
@@ -1835,27 +1841,27 @@
 		 })
 
 
-
-
 				workingArray.busCapHierarchy.forEach((d)=>{
 			 
-					let capArr=responses[2].businessCapabilities.find((e)=>{
+					let capArr=responses[2].businessCapabilities?.find((e)=>{
 						return e.id==d.id;
 					}); 
-					d["order"]=parseInt(capArr.sequenceNumber);
-					if(capArr.positioninParent=='Front'){ 
-						d["position"]=2;
-					}
-					else
-					if(capArr.positioninParent=='Manage'){ 
-						d["position"]=1;
-					}
-					if(capArr.positioninParent=='Back'){ 
-						d["position"]=3;
+					if(capArr){
+						d["order"]=parseInt(capArr.sequenceNumber);
+						if(capArr.positioninParent=='Front'){ 
+							d["position"]=2;
+						}
+						else
+						if(capArr.positioninParent=='Manage'){ 
+							d["position"]=1;
+						}
+						if(capArr.positioninParent=='Back'){ 
+							d["position"]=3;
+						}
 					}
 					
 				});
-
+				 
 				workingArray.busCapHierarchy.sort(function (a, b) {   
 					return a.position - b.position || a.order - b.order;
 				});
@@ -1868,9 +1874,9 @@
 				else{
 					$('#pmKey').hide()
 				}
-			
-				 getArrayDepth(workingArray.busCapHierarchy);
 				 
+				 getArrayDepth(workingArray.busCapHierarchy);
+
 			<!-- add org ids for all the related apps for filtering -->
 				 workingArray.busCaptoAppDetails.forEach((d)=>{
 					$('#capjump').append($('&lt;option>', {
@@ -1882,13 +1888,15 @@
 						let matchApp=responses[1].applications.find((ap)=>{
 						 return ap.id==dap;
 						});
-					appOrgs=[...appOrgs, ...matchApp.orgUserIds];
+						if(matchApp){
+							appOrgs=[...appOrgs, ...matchApp.orgUserIds];
+						}
 					});
 			   
 					d['orgUserIds']=[...d.orgUserIds, ...appOrgs];
 					 
 				});
-
+			 
 				var sel = $('#capjump');
 				var selected = sel.val(); // cache selected value, before reordering
 				var opts_list = sel.find('option');
@@ -1991,10 +1999,12 @@
 				workingArray.busCaptoAppDetails.forEach((bc)=>{
 					//if infoConcepts in array then tell view to show
 					if(bc.infoConcepts){showInfo=1}
-					let capArr=responses[2].businessCapabilities.find((e)=>{
+					let capArr=responses[2].businessCapabilities?.find((e)=>{
 						return e.id==bc.id;
 					}); 
+					if(capArr){
 					bc["order"]=parseInt(capArr.sequenceNumber);
+					}
 					bc.processes.forEach((bp)=>{
 				 
 						bp.physP.forEach((pbp)=>{
@@ -2021,8 +2031,11 @@
 			    
 			   capMod.then((d)=>{
 				workingArray=[];
-				filters=[...capfilters, ...filters];
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], filters, capfilters);
+				<!-- filters=[...capfilters, ...filters];
+				console.log('filters', filters)
+				essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], filters, capfilters); -->
+				let allFilters=[...capfilters, ...filters];
+				essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], allFilters, true);
 			   });
 
 			  
@@ -2056,7 +2069,20 @@
 			let inScopeCapsApp=[];
 			let scopedCaps=[];
 
+const appTypeInfo = {
+	"className": "Application_Provider",
+	"label": 'Application',
+	"icon": 'fa-desktop'
+}
+const busCapTypeInfo = {
+	"className": "Business_Capability",
+	"label": 'Business Capability',
+	"icon": 'fa-landmark'
+}
+
 var redrawView=function(){
+	essResetRMChanges();
+
 	$('#capjump').prop('disabled', 'disabled');
 	workingCapId=0;
 	let workingAppsList=[];
@@ -2065,8 +2091,7 @@ var redrawView=function(){
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	let busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
-	
-	
+	 
 	let apps=appArray.applications;
 
 	if($('#retired').is(":checked")==false){
@@ -2074,16 +2099,22 @@ var redrawView=function(){
 			return d.lifecycle != "Retired";
 		})
 	}
-  
-	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
+   
+    
+	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+	
+	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
 	let appsToShow=[]; 
-	 
+ 
 	inScopeCapsApp=scopedCaps.resources; 
  
+	inScopeCapsApp=scopedCaps.resources;  
 	let capSelectStyle= $('#hideCaps').text(); 
 	if(capSelectStyle=='Hiding'){
 	localStorage.setItem("essentialhideCaps", "Hiding");
+
+<!-- logic, hide any apps out of scope,  hide any capabilities out of scope. -->
+
 
 	$('.buscap').hide();
 	inScopeCapsApp.forEach((d)=>{
@@ -2094,13 +2125,10 @@ var redrawView=function(){
 	{	 
 		localStorage.setItem("essentialhideCaps", "Showing");
 	 $('.buscap').show(); 
-	<!--	inScopeCapsApp.forEach((d)=>{
-		 console.log('inScopeCapsApp',inScopeCapsApp)
-			 $('div[eascapid="'+d.id+'"]').removeClass("off-cap");
-		 
-			});
-		-->		
+ 		
 	}
+
+
 
 	let appMod = new Promise(function(resolve, reject) { 
 	 	resolve(appsToShow['applications']=scopedApps.resources);
@@ -2108,7 +2136,7 @@ var redrawView=function(){
 	});
 
 	appMod.then((d)=>{
-
+	 
 		workingArrayAppsCaps.forEach((d)=>{ 
 			let filteredAppsforCap = d.apps.filter((id) => scopedApps.resourceIds.includes(id));
 			d['filteredApps']=	filteredAppsforCap;
@@ -2157,6 +2185,16 @@ var redrawView=function(){
 
 		$('.proj-circle').hide()
 		$('.goalbox').hide();
+ 
+		if(workingArrayAppsCaps.length &gt; scopedCaps.resources.length){
+			$('#scopeOn').show()
+			scopedCaps.resourceIds.forEach((s)=>{
+				$('[easidscope="'+s+'"]').show();
+			})
+		}else{
+			$('.inscope-icon').hide();
+			$('#scopeOn').hide();
+		}
 
 		$('body').on("click", '.proj-circle', function ()
 		{ 
@@ -2423,9 +2461,9 @@ panelData.apps.forEach((d)=>{
 	let appCount=0
 <!--	$('.app-circle').text('0')
 		$('.app-circle').each(function() {
-			console.log('addap',$(this).html() )
+		 
 			if($(this).html() ==0) {$(this).parent().addClass("off-cap")
-				console.log('added off-cap')
+			 
 				}
 
 			$(this).html() &lt; 2 ? $(this).css({'background-color': '#e8d3f0', 'color': 'black'}) : null;
@@ -2436,21 +2474,15 @@ panelData.apps.forEach((d)=>{
 		  });
 		-->
 		  
-	  
+	  	$('.buscap').addClass("off-cap")
 		  inScopeCapsApp.forEach((e)=>{
-			  
 			  $('*[easidscore="' + e.id + '"]').parent().removeClass("off-cap")
-		  
 		  })
 
 		  workingArrayAppsCaps.forEach(function (d)
 		{
-
 			compareScoreA=0;
 			compareScoreB=0; 
-	 
-		//	orgUserIds:
-
 			let thisAppArray=[]
 			d.filteredApps.forEach((app)=>{
 				let thisApps= appArray.applications.find((d)=>{
@@ -2532,6 +2564,15 @@ panelData.apps.forEach((d)=>{
 			else{colour='#6E2C00'}
 			$('*[easidscore="' + d.id + '"]').css({'background-color':colour, 'color':textColour})
 		  })
+
+<!--
+		  $('.buscap').hide()
+		 
+		  inScopeCapsApp.forEach((d)=>{
+	
+			$('*[eascapid="' + d.id + '"]').show()
+		  })
+		  -->
 		$('#capjump').prop('disabled', false);
 	})
 
@@ -2556,7 +2597,10 @@ $('#capjump').change(function(){
 		function getArrayDepth(arr){  
 			arr.forEach((d)=>{
 			levelArr.push(parseInt(d.level))	
-			getArrayDepth(d.childrenCaps);
+			if(d.childrenCaps){
+				getArrayDepth(d.childrenCaps);
+			}
+
 			 })
 		  }	  
 		     

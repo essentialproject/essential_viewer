@@ -2,7 +2,6 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
@@ -43,9 +42,7 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
+ 	
 	 
 	-->
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
@@ -287,6 +284,13 @@
 						color: #777
 					}
 					.fa-info-circle,.fa-question-circle {cursor: pointer;}
+					.retirebox{
+						display:inline-block;
+					}
+                    .enumKey{
+                        position: relative;
+                        top:0px;
+                    }
 				</style>
 				 
 			</head>
@@ -294,18 +298,7 @@
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<!--	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-			-->
+				 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -318,6 +311,7 @@
 										<span id="rootCap"></span>
 									</span>
 								</h1>
+                             
 							</div>
 							
 							
@@ -360,29 +354,44 @@
 								<select class="select2" id="level-selection" style="width: 160px;">
 								</select>-->
 								<div class="pull-left">
-									<label class="right-10">Overlay:</label>
+									<label class="right-10"><xsl:value-of select="eas:i18n('Overlay')"/>:</label>
 									<select class="select2 form-control" id="measure-selection" style="width: 160px;"/>
 								</div>
+                                <div class="pull-left left-5">
+									<label class="right-10"><xsl:value-of select="eas:i18n('Heatmap')"/>:</label>
+									<select class="select2 form-control" id="enum-selection" style="width: 160px;"/>
+								</div>
 								<div class="pull-left left-30 " id="simps">
-									<label class="right-10" style="position: relative; top: 2px;">Analyse:</label>
+									<label class="right-10" style="position: relative; top: 2px;"><xsl:value-of select="eas:i18n('Analyse')"/>:</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess"/> Via Process
+										<input type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess"/> <xsl:value-of select="eas:i18n('Via Process')"/>
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaApp" value="viaApp" checked="checked"/> Via Application
+										<input type="radio" name="appProcessSwitch" id="viaApp" value="viaApp" checked="checked"/><xsl:value-of select="eas:i18n('Via Application')"/>
 									</label>
 									<i class="fa fa-question-circle" style="position: relative; top: 2px;" id="helpMe"></i>
 								</div>
+								
 							</div>
+							
 							<div class="clearfix"/>
 							<div class="overlay-selection top-10" id="sqkey"/>
-							<div class="overlay-selection top-10" id="nokey">No Key Data Defined - set styles in repository</div>
+							<div class="overlay-selection top-10" id="nokey"><xsl:value-of select="eas:i18n('No Key Data Defined - set styles in repository')"/></div>
+							
 						</div>
 						<div class="col-sm-6">
 							<div class="pull-right"> 
-								<div id="levelsbox"/>
+							<div class="overlay-selection top-10 retirebox">
+								<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Show Retired')"/>:</strong>
+								<input type="checkbox" id="retired" name="retired"/>
+							</div>
+								<div id="levelsbox" class="retirebox"/>
+							
 							</div>
 						</div>
+                        <div class="col-xs-12">   
+                            <div class="pull-right enumKey" id="enumKey"/>
+                        </div>
 						<div class="col-xs-12 top-15" id="area"/>
 					</div>
 					<div class="appPanel" id="appPanel">
@@ -420,15 +429,15 @@
 							<span class="right-5">{{this.name}}</span><span class="badge badge-inverse">{{this.appList.resources.length}}</span>
 						</div>
 							<div class="clearfix"/>
-							<div class="appContainer">
-						 
+							<div class="appContainer"> 
+							 
 								{{#if this.appList.resources}}
 								{{#each this.appList.resources}}
 									<div class="app xsmall">
 										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	
 										<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
-										<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+										<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
 									<!--	<div class="bushealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.fitcolour}};  </xsl:attribute>.</div>
 										<div class="techhealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.techfitcolour}};  </xsl:attribute>.</div>-->
@@ -436,13 +445,26 @@
 										<div class="appTitle">{{this.name}}</div>
 									</div>
 								{{/each}}
+								{{#ifGreater this.appList.resources 0}}
+									{{#each this.diffs}}
+										<div class="app xsmall pull-right">
+											<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+											<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+											<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+											<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+											<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+											<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+										</div>
+									{{/each}}
+									{{else}}
+								{{/ifGreater}}
 								{{else}}
 								{{#each this.appList}} 
 									<div class="app xsmall">
 										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	
 										<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
-										<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+										<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
 									<!--	<div class="bushealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.fitcolour}};  </xsl:attribute>.</div>
 										<div class="techhealth"><xsl:attribute name="style">border:1pt solid #d3d3d3;background-color: {{this.techfitcolour}};  </xsl:attribute>.</div>-->
@@ -450,7 +472,25 @@
 										<div class="appTitle">{{this.name}}</div>
 									</div>
 								{{/each}}
+								{{#if this.appList}}
+								{{#ifGreater this.appList 0}}
+								{{#each this.diffs}}
+							
+									<div class="app xsmall pull-right">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+
+									{{/each}}
+								{{else}}
+								{{/ifGreater}}
 								{{/if}}
+							{{/if}}
+								
 							</div>
 							<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -466,17 +506,16 @@
 							{{else}}
 							<strong class="right-5">{{this.name}}</strong><span class="badge">{{this.appList.length}}</span>
 							{{/if}}
-						</div>
+						</div> 
 						<div class="clearfix"/>
-						<div class="appContainer"> 
-						
+						<div class="appContainer">  
+						 
 							{{#if this.appList.resources}}
-					 
 							{{#each this.appList.resources}}
 							
 								<div class="app xsmall">
 									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
-									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
 									 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
@@ -494,7 +533,7 @@
 						   {{#if ../this.appList.resources}}
 								<div class="app xsmall">
 									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
-									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
 									<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
@@ -509,6 +548,16 @@
 								{{/if}}
 							{{/each}}
 							{{/if}}
+							{{#each this.diffs}}
+									<div class="app xsmall">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+								{{/each}}
 						</div>
 						<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -534,7 +583,7 @@
 							
 								<div class="app xsmall">
 									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
-									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
 									 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
@@ -552,7 +601,7 @@
 						   {{#if ../this.appList.resources}}
 								<div class="app xsmall">
 									<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
-									<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+									<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 									<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 									<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
 									<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
@@ -567,6 +616,17 @@
 								{{/if}}
 							{{/each}}
 							{{/if}}
+							{{#each this.diffs}}
+									<div class="app xsmall pull-right">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
+										 {{../this.num}}
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+								{{/each}}
 						</div>
 						<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -576,7 +636,7 @@
 			<script id="app-only-template" type="text/x-handlebars-template">
 				<div class="app xsmall">
 					<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>
-					<xsl:attribute name="style">border-bottom:3pt solid {{this.lifecycleColor}}</xsl:attribute>
+					<xsl:attribute name="style">border-bottom:3pt solid {{this.bottomColour}}</xsl:attribute>
 					<xsl:attribute name="criticalityid">{{this.criticality}}</xsl:attribute>
 					<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute><xsl:attribute name="fittype">{{this.busfit}}</xsl:attribute>
 					<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
@@ -590,15 +650,15 @@
 				</div>
 			</script>
 			<script id="key-template" type="text/x-handlebars-template">
-				<div class="keyTitle">{{this.title}}:</div>
+				<div class="keyTitle"><small>{{this.name}}:</small></div>
 				  {{#each this.values}}
 						<div>
 							<xsl:attribute name="class">keySampleWide</xsl:attribute>
-							<xsl:attribute name="style">background-color:{{this.colour}}</xsl:attribute>
+							<xsl:attribute name="style">background-color:{{this.backgroundColor}}</xsl:attribute>
 						</div>
 						<div>
 							<xsl:attribute name="class">keySampleLabel</xsl:attribute>
-							{{this.shortname}}
+							<small>{{this.name}}</small>
 						</div>
 				  {{/each}}
 								
@@ -857,7 +917,13 @@
 			Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 			});
-			
+		
+			Handlebars.registerHelper('ifGreater', function (arg1, arg2, options) { 
+				if(!arg1){arg1=0} 
+				return (arg1.length &gt; arg2) ? options.fn(this) : options.inverse(this);
+			});
+		
+			 
 			Handlebars.registerHelper('inScopeApp', function (instance) {
 
 				let thisApp = appListScoped.resources.find((e)=>{
@@ -946,17 +1012,17 @@
 	 		promise_loadViewerAPIData(viewAPIDataSvcs)
 			]).then(function (responses)
 			{
-  
+            $('#enumKey').hide();
 			appsList=responses[1]
 			meta=responses[1].meta
 			squals=responses[3].serviceQualities; 
-	  
-		let codebase=responses[1].codebase;
-		let	delivery=responses[1].delivery;
-		let	lifecycles=responses[1].lifecycles;
-		
-		responses[1].applications.forEach((d)=>{
 
+			let codebase=responses[1].codebase;
+			let	delivery=responses[1].delivery;
+			let	lifecycles=responses[1].lifecycles;
+			
+			responses[1].applications.forEach((d)=>{
+                    d['bottomColour']='#e3e3e3';
 					let thisCode=codebase.find((e)=>{
 						return e.id == d.codebaseID
 					});
@@ -1035,7 +1101,12 @@
 		 
 			filters=responses[1].filters;
 			capfilters=responses[0].filters;
-
+ 
+			$("#enum-selection").append('&lt;option easid="None">None&lt;/option>'); 
+			for(i=0;i&lt;filters.length;i++){ 
+					$("#enum-selection").append(new Option(filters[i].name, filters[i].id));
+			}	 
+			$("#enum-selection").select2();
 			
 			responses[1].filters.sort((a, b) => (a.id > b.id) ? 1 : -1) 
 			dynamicAppFilterDefs=filters?.map(function(filterdef){
@@ -1063,7 +1134,7 @@
 				});
 
 			});
-			 
+			console.log('responses[0].busCaptoAppDetails',responses[0].busCaptoAppDetails) 
 			appsList.applications.forEach((app)=>{
 			 
 				let procsForApp =[]; 
@@ -1104,9 +1175,10 @@
 			})
 		
 
+
 				 busCaps=responses[0].busCapHierarchy;
 				 busCapApps =responses[0].busCaptoAppDetails;
-
+ 
 				busCaps.forEach(function(d){					 
 					getKids(d, appsList)
 					})
@@ -1125,6 +1197,10 @@
 						$("#level-selection").append(new Option("Level "+(i+1), i));
 						levelData.push({"id":i,"level":i, "name":i+1})
 				}	
+
+				$('#retired').on('change',function(){
+			 		redrawView()
+				})
 
 				$('#levelsbox').html(blobTemplate(levelData))
 				$("#measure-selection").empty();
@@ -1148,6 +1224,11 @@
 				$("#measure-selection").change(function(){
 					redrawScope()
 				})
+                $("#enum-selection").change(function(){
+                    $('#enumKey').slideUp();
+                    redrawScope()
+
+                })
 
 				$("[name='appProcessSwitch']").change(function(){
 					redrawScope()
@@ -1163,7 +1244,7 @@
 				});
 
 				let allFilters=[...responses[0].filters, ...responses[1].filters];
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION','SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], allFilters);
+			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS', 'ACTOR_TO_ROLE_RELATION','Product_Concept', 'Business_Domain'], allFilters, true);
 		
 			}). catch (function (error)
 			{
@@ -1182,16 +1263,27 @@
 				return 1 + depth
 			};
 
+var appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+}
+var busCapTypeInfo = {
+	"className": "Business_Capability",
+	"label": 'Business Capability',
+	"icon": 'fa-landmark'
+}
+
 function getChildrenToShow(dataSet,level){
- 
+	essResetRMChanges();
+	
 	var childrenArray=[];
 	dataSet.forEach(function(d){ 
 	 if(d.level &lt; level+1){
-	if(d.appList.length&gt;0){ 
-		 
-		thisscopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	 
-		scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+	
+		thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+ 
+		thisscopedApps.resources=thisscopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
 		let newAppList=[] 
 		d.appList.forEach((e)=>{
 			let mapApp=thisscopedApps.resources.find((g)=>{
@@ -1205,13 +1297,27 @@ function getChildrenToShow(dataSet,level){
 		newAppList=newAppList.sort((a, b) => a.name.localeCompare(b.name))
 
 		newAppList={"resources":newAppList};
-	   
-		if(d.level == lev){
-			childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
+	 
+		if(d.level == lev){ 
+			let diff=getDifference(d.appList, thisscopedApps.resources,  d.name);
+			let diffArr=[]; 
+	 
+			diff.forEach((f)=>{
+				let match =thisscopedApps.resources.find((g)=>{
+					return g.id==f.id
+				})
+				if(match){}else{
+					diffArr.push(f)
+					}
+				 
+			}) 
+	 
+			childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "diffs":diffArr, "num":4,  "allApps":d.allApps});
+			 
 		}
 		else{
-			thisscopedApps = essScopeResources(d.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	 
+			thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+  
 			scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
 			let newAppList=[] 
 			d.appList.forEach((e)=>{
@@ -1222,19 +1328,87 @@ function getChildrenToShow(dataSet,level){
 				newAppList.push(mapApp)
 				}
 			})
-	
+			
 			newAppList=newAppList.sort((a, b) => a.name.localeCompare(b.name))
 	
 			newAppList={"resources":newAppList};
-		 	childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
+ 
+			let diff=getDifference(d.allApps, thisscopedApps.resources,  d.name);
+			let diffArr=[];  
+			diff.forEach((f)=>{
+				let match =d.appList.find((g)=>{
+					return g.id==f.id
+				})
+				if(match){}else{
+					diffArr.push(f)
+					}
+				 
+			});
+ 
+			if(diffArr.length==0 &amp;&amp; newAppList.resources.length==0){
+				diffArr=d.thisappList
+			}
+			console.log('nm',d.name)
+  console.log('lev',lev +':'+d.level)
+
+  if(d.thisappList.length&gt;0){
+		 	
+// if no children caps get retired apps
+
+	if(d.childrenCaps.length==0){
+		console.log('d',d)
+		
+		let diffNotLeaf=getDifference(d.allApps, thisscopedApps.resources,  d.name);
 	 
+			let diffArrNotLeaf=[];  
+			diffNotLeaf.forEach((f)=>{
+				let match =d.thisappList.find((g)=>{
+					return g.id==f.id
+				})
+			
+				if(match){}else{
+					diffArrNotLeaf.push(f)
+					}
+				 
+			});
+	 
+		childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffNotLeaf, "num":6, "allApps":d.allApps});
+	}
+	else{
+		childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffArr, "num":5, "allApps":d.allApps});
+	
+	}
+	
+			
+  }else{
+	childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": [], "thisAppList": [], "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffArr, "num":51, "allApps":d.allApps});
+  }
 		}
-		}
+		 
 		}
 	});				
 	 
 	return childrenArray;		 
 	}
+
+function getDifference(array1, array2, num) { 
+ 
+	if(array1.resources){
+		array1=array1.resources;
+	}
+
+	
+		if(array1){
+		return array1.filter(object1 => {
+		  return !array2.some(object2 => {
+			return object1.id === object2.id;
+		  }); 
+		});
+		}
+		else{
+			return [];
+		}
+	  }
 
 function getKids(mod, appsList){
 	 
@@ -1247,25 +1421,30 @@ function getKids(mod, appsList){
 
 	let allAppList=[];	
 	let appList=[];	
+	<!-- get all apps for this cap and its children -->
 	thisApps.apps.forEach((e)=>{
 		let appDetail=appsList.applications.find((f)=>{
 			return f.id==e;
 		});
 		allAppList.push(appDetail);
 	});
+
+	<!-- get all apps for this cap only -->
 	thisApps.thisapps.forEach((e)=>{
 		let appDetail=appsList.applications.find((f)=>{
 			return f.id==e;
 		});
 		appList.push(appDetail);
 	}); 
+
 	allAppList=allAppList.sort((a, b) => a.name.localeCompare(b.name))
 	mod['appList']=allAppList;
-	mod['thisappList']=appList;
-	mod['workingappList']=appList;
-	mod['apps']=thisApps.apps;	
-	mod['thisCapAppsOnly']=appList;
+	mod['thisappList']=appList; 
+	mod['appsforCap']=thisApps.thisapps;	 
+	mod['allApps']=allAppList;
+ 
 	}
+
 	mod.childrenCaps.forEach(function(cap){
 		<!--
 			Javascript to get children apps - handled in API now
@@ -1273,12 +1452,12 @@ function getKids(mod, appsList){
 		let thisApps =busCapApps.find((bc)=>{
 			return bc.id==cap.id;
 		});
-	 
+	 <!--
 		if(thisApps){ 
-	<!--Only needed if recursivey gathering apps and children
+	//Only needed if recursivey gathering apps and children
 		thisAppArr=[...thisAppArr, ...thisApps.apps]
 		thisAppArr = [...new Set(thisAppArr)]; 
-	-->
+
 		//cap['thisApps']=thisApps.apps;
 		}
 		--> 
@@ -1289,7 +1468,7 @@ function getKids(mod, appsList){
 }						
 var lev;		 
 var redrawView=function(){
-  
+	
 	workingCapId=0;
  
 	appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
@@ -1297,66 +1476,193 @@ var redrawView=function(){
 	visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
-	
-	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
+	 
+	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
  
+	essResetRMChanges();
+
  let scopedCapsIds=scopedCaps.resourceIds
-lev=thisLevel;
- 
-				showArray=[]	
- 
-				if(lev=='All'){
-					showArray=busCaps;
-				}
-				else
-				{
-					busCaps.forEach(function(d){
-						let inScopeTest=scopedCapsIds.find((c)=>{
-							return c==d.id;
-						})
-						if(inScopeTest){
-						var thisArrChildren=[];
-						var thisHLApps;
-						appListScoped= essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-					 
-						if(lev==0){
-							scopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-							thisHLApps=scopedApps.resources; 
+ lev=thisLevel;
+ let thisSelected=$('#enum-selection').val();
+
+	if(thisSelected=='None'){
+		//do nothing
+	}else{
+		$('#enumKey').slideDown()
+	}
+                        
+let thisFilter=filters.find((f)=>{
+    return f.id ==thisSelected;
+})
+
+
+$('#enumKey').html(keyTemplate(thisFilter))
+        showArray=[]	
+
+        if(lev=='All'){
+            showArray=busCaps;
+        }
+        else
+        {
+        busCaps.forEach(function(d){
+            let inScopeTest=scopedCapsIds.find((c)=>{
+                return c==d.id;
+            })
+            if(inScopeTest){
+            var thisArrChildren=[];
+            var thisHLApps;
+            let filtereappsList= d.appList;
+            if($('#retired').is(":checked")==false){
+                filtereappsList= d.appList.filter((d)=>{
+                    return d.lifecycle != "Retired";
+                })
+            }
+
+        appListScoped= essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+        
+        if(lev==0){
+            scopedApps = essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+            thisHLApps=scopedApps.resources; 
+			scopedApps.resources.forEach((d)=>{
+
+				if(thisFilter){
+						 let thisColour=d[thisFilter.slotName];
+						 let selectedColour=thisFilter.values.find((c)=>{
+							 return c.id==thisColour[0]
+						 }) 
+						 if(selectedColour){ 
+							d.bottomColour=selectedColour.backgroundColor;
+						 }else{
+							d.bottomColour= '#e3e3e3';
+						 }
+						}else{
+							d.bottomColour= '#e3e3e3';
 						}
-						 
-						if(d.level &lt; (lev)){
-	  
-							d.childrenCaps.forEach(function(e){	 
+					})
+        }
+		
+            
+        if(d.level &lt; (lev)){
 
-								let inScopeTest=scopedCapsIds.find((c)=>{
-									return c==e.id;
-								})
-								if(inScopeTest){ 
-								var thisApps; 
-								
+            d.childrenCaps.forEach(function(e){	 
 
-								if(e.level == lev){
-									scopedApps = essScopeResources(e.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+                let inScopeTest=scopedCapsIds.find((c)=>{
+                    return c==e.id;
+                })
+                if(inScopeTest){ 
+                var thisApps; 
 
+                if(e.level == lev){
+                    let subfiltereappsList=e.appList;
+                    if($('#retired').is(":checked")==false){
+                        subfiltereappsList= e.appList.filter((d)=>{
+                            return d.lifecycle != "Retired";
+                        })
+                    }
+                    scopedApps = essScopeResources(subfiltereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+            
+                    scopedApps.resources.forEach((d)=>{
+
+						if(thisFilter){
+								 let thisColour=d[thisFilter.slotName];
+								 let selectedColour=thisFilter.values.find((c)=>{
+									 return c.id==thisColour[0]
+								 }) 
+								 if(selectedColour){ 
+									d.bottomColour=selectedColour.backgroundColor;
+								 }else{
+									d.bottomColour= '#e3e3e3';
+								 }
+								}else{
+									d.bottomColour= '#e3e3e3';
+								}
+							})             
 									scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-								 
-
-									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, "childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
+									let diff=getDifference(subfiltereappsList, scopedApps.resources, e.name);
+								
+										let diffArr=[]; 
+										diff.forEach((f)=>{
+											let match =scopedApps.resources.find((g)=>{
+												return g.id==f.id
+											})
+											if(match){}else{
+												diffArr.push(f)
+												}
+											
+										})				 
+										 
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps, "childrenCaps":getChildrenToShow(e.childrenCaps,lev), "diffs": diffArr,"num":1 });
 									}else{
-										scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+										let subfiltereappsList= e.thisappList
+										if($('#retired').is(":checked")==false){
+											subfiltereappsList= e.thisappList.filter((d)=>{
+												return d.lifecycle != "Retired";
+											})
+										}
+
+								scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+								scopedApps.resources.forEach((d)=>{
+
+									if(thisFilter){
+												let thisColour=d[thisFilter.slotName];
+												let selectedColour=thisFilter.values.find((c)=>{
+													return c.id==thisColour[0]
+												}) 
+												if(selectedColour){ 
+												d.bottomColour=selectedColour.backgroundColor;
+												}else{
+												d.bottomColour= '#e3e3e3';
+												}
+											}else{
+												d.bottomColour= '#e3e3e3';
+											}
+										})
 
 								scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+								let diff=getDifference(subfiltereappsList, scopedApps.resources,  e.name);
+							 
+								let diffArr=[]; 
+								diff.forEach((f)=>{
+									let match =d.thisappList.find((g)=>{
+										return g.id==f.id
+									})
+									if(match){}else{
+										diffArr.push(f)
+										}
+									
+								})	
+							
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps,
+									"childrenCaps":getChildrenToShow(e.childrenCaps,lev),  "diffs":diffArr,"num":2});
  
-									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, 
-									"childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
 									}
+									
 								}
 							})
 						 
 						} 
-						 
-						
-						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "thisCapAppsOnly":d.thisappList, "role":"l1"});
+
+						let filterApps=d.appList
+
+						if($('#retired').is(":checked")==false){
+							filterApps= d.appList.filter((d)=>{
+								return d.lifecycle != "Retired";
+							})
+						}
+						let diff=getDifference(filterApps,appListScoped.resources,  d.name);
+ 
+								let diffArr=[]; 
+								diff.forEach((f)=>{
+									let match =appListScoped.resources.find((g)=>{
+										return g.id==f.id
+									})
+									if(match){}else{
+										diffArr.push(f)
+										}
+									
+								})	
+								 
+						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "role":"l1","diffs":diffArr, "allApps":d.allApps, "num":3});
 					 
 						}
 					});
@@ -1366,6 +1672,7 @@ lev=thisLevel;
 				modelData=showArray; 
 	<!-- set colours-->  
 	$('#area').empty();
+	console.log('modelData',modelData)
 		   $('#area').html(modelTemplate(modelData));
 		
  
@@ -1414,10 +1721,10 @@ lev=thisLevel;
 	$('#sqkey').hide();
 	$('#noKey').css('display','block')
 }
- 
+   
 	let viaProcess=0;		
 		appsList.applications.forEach((app)=>{
-			
+  
 			let thisPerfMeasures=app.pm.filter((e)=>{ 
 				return e.categoryid.includes(measure)
 				//return e.categoryid==measure;

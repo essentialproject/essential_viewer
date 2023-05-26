@@ -43,10 +43,7 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	<xsl:variable name="allRoadmapInstances" select="$apps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+
 	-->
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
@@ -294,6 +291,9 @@
 						color: #777
 					}
 					.fa-info-circle,.fa-question-circle {cursor: pointer;}
+					.retirebox{
+						display:inline-block;
+					}
 				</style>
 				 
 			</head>
@@ -387,7 +387,11 @@
 						</div>
 						<div class="col-sm-6">
 							<div class="pull-right"> 
-								<div id="levelsbox"/>
+								<div class="overlay-selection top-10 retirebox">
+									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Show Retired')"/>:</strong>
+									<input type="checkbox" id="retired" name="retired"/>
+								</div>
+								<div id="levelsbox" class="retirebox"/>
 							</div>
 						</div>
 						<div class="col-xs-12 top-15" id="area"/>
@@ -443,6 +447,19 @@
 										<div class="appTitle">{{this.name}}</div>
 									</div>
 								{{/each}}
+								{{#ifGreater this.appList.resources 0}}
+								{{#each this.diffs}}
+									<div class="app xsmall pull-right">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+								{{/each}}
+								{{else}}
+							{{/ifGreater}}
 								{{else}}
 								{{#each this.appList}} 
 									<div class="app xsmall">
@@ -457,7 +474,24 @@
 										<div class="appTitle">{{this.name}}</div>
 									</div>
 								{{/each}}
+								{{#if this.appList}}
+								{{#ifGreater this.appList 0}}
+								{{#each this.diffs}}
+							
+									<div class="app xsmall pull-right">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										<xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+
+									{{/each}}
+								{{else}}
+								{{/ifGreater}}
 								{{/if}}
+							{{/if}}
 							</div>
 							<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -517,6 +551,16 @@
 								{{/if}}
 							{{/each}}
 							{{/if}}
+							{{#each this.diffs}}
+									<div class="app xsmall">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+								{{/each}}
 						</div>
 						<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -576,6 +620,17 @@
 								{{/if}}
 							{{/each}}
 							{{/if}}
+							{{#each this.diffs}}
+									<div class="app xsmall pull-right">
+										<xsl:attribute name="orgids">{{#each this.orgUserIds}}{{this}} {{/each}}</xsl:attribute>	 
+										<xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="appcapid">{{../this.id}}{{this.id}}</xsl:attribute> 
+										<xsl:attribute name="style">border:1pt solid #d3d3d3; background-color:#f5f5f5;</xsl:attribute>
+										 <xsl:attribute name="apptypeid">{{this.typeid}}</xsl:attribute>	
+										 {{../this.num}}
+										<div class="info"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easinfoid">{{this.id}}</xsl:attribute></i></div>
+										<div class="appTitle" style="color:#aaaaaa">{{this.name}}</div>
+									</div>
+								{{/each}}
 						</div>
 						<div class="clearfix"/>
 						{{> partialTemplate}}
@@ -867,6 +922,10 @@
 				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 			});
 			
+			Handlebars.registerHelper('ifGreater', function (arg1, arg2, options) { 
+				if(!arg1){arg1=0} 
+				return (arg1.length &gt; arg2) ? options.fn(this) : options.inverse(this);
+			});
 			Handlebars.registerHelper('inScopeApp', function (instance) {
 
 				let thisApp = appListScoped.resources.find((e)=>{
@@ -1135,6 +1194,10 @@
 						levelData.push({"id":i,"level":i, "name":i+1})
 				}	
 
+				$('#retired').on('change',function(){
+					redrawView()
+			   })
+
 				$('#levelsbox').html(blobTemplate(levelData))
 				$("#measure-selection").empty();
 				$("#measure-selection").append('&lt;option easid="None">None&lt;/option>'); 
@@ -1172,7 +1235,7 @@
 				});
 
 				let allFilters=[...responses[0].filters, ...responses[1].filters];
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION','SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], allFilters);
+			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION','SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], allFilters, true);
 		
 			}). catch (function (error)
 			{
@@ -1191,17 +1254,28 @@
 				return 1 + depth
 			};
 
+var appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+}
+var busCapTypeInfo = {
+		"className": "Business_Capability",
+		"label": 'Business Capability',
+		"icon": 'fa-landmark'
+}
+
 function getChildrenToShow(dataSet,level){
- 
+	essResetRMChanges();
+	
 	var childrenArray=[];
 	dataSet.forEach(function(d){ 
-	 if(d.level &lt; level+1){
-	if(d.appList.length&gt;0){ 
+	 if(d.level &lt; level+1){ 
 		 
-		thisscopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	 
-		scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-		let newAppList=[] 
+		thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+ 
+		thisscopedApps.resources=thisscopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+	 	let newAppList=[] 
 		d.appList.forEach((e)=>{
 			let mapApp=thisscopedApps.resources.find((g)=>{
 				return e.id==g.id;
@@ -1216,11 +1290,25 @@ function getChildrenToShow(dataSet,level){
 		newAppList={"resources":newAppList};
 	   
 		if(d.level == lev){
-			childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
+			let diff=getDifference(d.appList, thisscopedApps.resources,  d.name);
+			let diffArr=[]; 
+	 
+			diff.forEach((f)=>{
+				let match =thisscopedApps.resources.find((g)=>{
+					return g.id==f.id
+				})
+				if(match){}else{
+					diffArr.push(f)
+					}
+				 
+			}) 
+	 
+			childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "diffs":diffArr, "num":4,  "allApps":d.allApps});
 		}
 		else{
-			thisscopedApps = essScopeResources(d.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	 
+
+		thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+  
 			scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
 			let newAppList=[] 
 			d.appList.forEach((e)=>{
@@ -1235,15 +1323,83 @@ function getChildrenToShow(dataSet,level){
 			newAppList=newAppList.sort((a, b) => a.name.localeCompare(b.name))
 	
 			newAppList={"resources":newAppList};
-		 	childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level, "thisCapAppsOnly":d.thisappList,});
-	 
+
+			let diff=getDifference(d.allApps, thisscopedApps.resources,  d.name);
+			let diffArr=[];  
+			diff.forEach((f)=>{
+				let match =d.appList.find((g)=>{
+					return g.id==f.id
+				})
+				if(match){}else{
+					diffArr.push(f)
+					}
+				 
+			});
+ 
+			if(diffArr.length==0 &amp;&amp; newAppList.resources.length==0){
+				diffArr=d.thisappList
+			}
+			console.log('nm',d.name)
+  console.log('lev',lev +':'+d.level)
+
+  if(d.thisappList.length&gt;0){
+		 	
+// if no children caps get retired apps
+
+	if(d.childrenCaps.length==0){
+		console.log('d',d)
+		
+		let diffNotLeaf=getDifference(d.allApps, thisscopedApps.resources,  d.name);
+		console.log('diffNotLeaf', diffNotLeaf)
+			let diffArrNotLeaf=[];  
+			diffNotLeaf.forEach((f)=>{
+				let match =d.thisappList.find((g)=>{
+					return g.id==f.id
+				})
+			
+				if(match){}else{
+					diffArrNotLeaf.push(f)
+					}
+				 
+			});
+			console.log('diffArrNotLeaf', diffArrNotLeaf)
+		childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffNotLeaf, "num":6, "allApps":d.allApps});
+	}
+	else{
+		childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": newAppList, "thisAppList": d.appList, "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffArr, "num":5, "allApps":d.allApps});
+	
+	}
+	
+			
+  }else{
+	childrenArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"apps": d.apps,"appList": [], "thisAppList": [], "colour": d.colour,"childrenCaps":getChildrenToShow(d.childrenCaps,level), "level":level,  "diffs":diffArr, "num":51, "allApps":d.allApps});
+  }
 		}
-		}
+		 
 		}
 	});				
 	 
 	return childrenArray;		 
 	}
+
+function getDifference(array1, array2, num) { 
+ 
+	if(array1.resources){
+		array1=array1.resources;
+	}
+
+	
+		if(array1){
+		return array1.filter(object1 => {
+		  return !array2.some(object2 => {
+			return object1.id === object2.id;
+		  }); 
+		});
+		}
+		else{
+			return [];
+		}
+	  }
 
 function getKids(mod, appsList){
 	 
@@ -1271,9 +1427,8 @@ function getKids(mod, appsList){
 	allAppList=allAppList.sort((a, b) => a.name.localeCompare(b.name))
 	mod['appList']=allAppList;
 	mod['thisappList']=appList;
-	mod['workingappList']=appList;
-	mod['apps']=thisApps.apps;	
-	mod['thisCapAppsOnly']=appList;
+	mod['appsforCap']=thisApps.thisapps;	 
+	mod['allApps']=allAppList;
 	}
 	mod.childrenCaps.forEach(function(cap){
 		<!--
@@ -1307,7 +1462,7 @@ var redrawView=function(){
 	prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
 	
-	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
+	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
  
  let scopedCapsIds=scopedCaps.resourceIds
 lev=thisLevel;
@@ -1326,10 +1481,17 @@ lev=thisLevel;
 						if(inScopeTest){
 						var thisArrChildren=[];
 						var thisHLApps;
-						appListScoped= essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+						let filtereappsList= d.appList;
+						if($('#retired').is(":checked")==false){
+							filtereappsList= d.appList.filter((d)=>{
+								return d.lifecycle != "Retired";
+							})
+						}
+
+						appListScoped= essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
 					 
 						if(lev==0){
-							scopedApps = essScopeResources(d.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+							scopedApps = essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
 							thisHLApps=scopedApps.resources; 
 						}
 						 
@@ -1345,27 +1507,84 @@ lev=thisLevel;
 								
 
 								if(e.level == lev){
-									scopedApps = essScopeResources(e.appList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-
-									scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-								 
-
-									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, "childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
-									}else{
-										scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-
-								scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
- 
-									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "thisCapAppsOnly":e.thisappList, 
-									"childrenCaps":getChildrenToShow(e.childrenCaps,lev)});
+									let subfiltereappsList=e.appList;
+									if($('#retired').is(":checked")==false){
+										subfiltereappsList= e.appList.filter((d)=>{
+											return d.lifecycle != "Retired";
+										})
 									}
+									scopedApps = essScopeResources(subfiltereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+						 
+									scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+									let diff=getDifference(subfiltereappsList, scopedApps.resources, e.name);
+								
+										let diffArr=[]; 
+										diff.forEach((f)=>{
+											let match =scopedApps.resources.find((g)=>{
+												return g.id==f.id
+											})
+											if(match){}else{
+												diffArr.push(f)
+												}
+											
+										})				 
+										 
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps, "childrenCaps":getChildrenToShow(e.childrenCaps,lev), "diffs": diffArr,"num":1 });
+									}else{
+										let subfiltereappsList= e.thisappList
+										if($('#retired').is(":checked")==false){
+											subfiltereappsList= e.thisappList.filter((d)=>{
+												return d.lifecycle != "Retired";
+											})
+										}
+
+										scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+									 
+								scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+								let diff=getDifference(subfiltereappsList, scopedApps.resources,  e.name);
+							 
+								let diffArr=[]; 
+								diff.forEach((f)=>{
+									let match =d.thisappList.find((g)=>{
+										return g.id==f.id
+									})
+									if(match){}else{
+										diffArr.push(f)
+										}
+									
+								})	
+							
+									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps,
+									"childrenCaps":getChildrenToShow(e.childrenCaps,lev),  "diffs":diffArr,"num":2});
+ 
+									}
+									
 								}
 							})
 						 
 						} 
-						 
-						
-						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "thisCapAppsOnly":d.thisappList, "role":"l1"});
+
+						let filterApps=d.appList
+
+						if($('#retired').is(":checked")==false){
+							filterApps= d.appList.filter((d)=>{
+								return d.lifecycle != "Retired";
+							})
+						}
+						let diff=getDifference(filterApps,appListScoped.resources,  d.name);
+ 
+								let diffArr=[]; 
+								diff.forEach((f)=>{
+									let match =appListScoped.resources.find((g)=>{
+										return g.id==f.id
+									})
+									if(match){}else{
+										diffArr.push(f)
+										}
+									
+								})	
+								 
+						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "role":"l1","diffs":diffArr, "allApps":d.allApps, "num":3});
 					 
 						}
 					});

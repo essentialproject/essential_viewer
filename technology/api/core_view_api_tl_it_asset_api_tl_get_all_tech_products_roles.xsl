@@ -27,7 +27,7 @@
  	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
 	<xsl:template match="knowledge_base">
-        [<xsl:apply-templates select="$allTechProdRoles" mode="RenderTPRJSONList"/>]
+        {"tprs":[<xsl:apply-templates select="$allTechProdRoles" mode="RenderTPRJSONList"/>]}
 	</xsl:template>
 	  <xsl:template match="node()" mode="RenderTPRJSONList">
          { "id":"<xsl:value-of select="current()/name"/>", "techProdid":"<xsl:value-of select="current()/own_slot_value[slot_reference='role_for_technology_provider']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>

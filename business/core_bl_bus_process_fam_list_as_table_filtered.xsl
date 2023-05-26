@@ -581,6 +581,12 @@ showEditorSpinner('Fetching Data...');
 		    }
 
 		    var redrawView = function () {
+				essResetRMChanges();
+				typeInfo = {
+					"className": "Business_Process",
+					"label": 'Business Process',
+					"icon": 'fa-chevron-double-right'
+				}
 
 		        let scopedRMProcesses = [];
 		        busProcArray.forEach((d) => {
@@ -611,7 +617,7 @@ showEditorSpinner('Fetching Data...');
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 				
-		        let scopedProcesses = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, visibilityDef, domainScopingDef]);
+		        let scopedProcesses = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, visibilityDef, domainScopingDef], typeInfo);
 
 			 
 		        let showProcesses = scopedProcesses.resources;

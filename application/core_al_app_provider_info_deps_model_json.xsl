@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_doctype.xsl"/>
+	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
+ 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
@@ -625,7 +626,8 @@
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>  
+		 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -1128,7 +1130,7 @@ var depData, focusAppm, allAcqMethods, allSVCQualVals;
 var dataSet=[];
 var dependencyMap=[];
 var wwidth=$(window).width();
-
+var scopedApps=[];
 function setAcqMethod(dep) {
 	let acqMethod = allAcqMethods.find(am => am.id == dep.acqMethodId);
 	dep.acqMethod = acqMethod;
@@ -1172,8 +1174,20 @@ function removeEditorSpinner() {
 };
 
 // DO FROM APPS
+var appTypeInfo = {
+	"className": "Application_Provider",
+	"label": 'Application',
+	"icon": 'fa-desktop'
+}
+var appIntfcTypeInfo = {
+	"className": "Application_Provider_Interface",
+	"label": 'Application Interface',
+	"icon": 'fa-exchange'
+}
 var redrawView = function () {
- 
+
+	essResetRMChanges();
+	
 	$('#model').empty();
 
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
@@ -1181,8 +1195,7 @@ var redrawView = function () {
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION'); 
  
-	
- 	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+ 	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
 //	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef]);
   
 thefocusApp={};
@@ -1208,7 +1221,8 @@ $('#focus-app-name-lbl').text(thefocusApp.name);
 mainApp=thefocusApp.id
 setUpData(thefocusApp, totot, tot)
  
-let getKids=fullAppList.find((f)=>{
+console.log('scopedApps',scopedApps)
+let getKids=scopedApps.resources.find((f)=>{
 	return f?.id==thefocusApp.id;
 });
  
@@ -1231,8 +1245,11 @@ let viewAPISubData=viewPath+c;
 			})
 })
 
-
 }
+
+function redrawView() {
+		    essRefreshScopingValues()
+		}
 
 function getInfoforApp(theApp, dataFromAPI){
 	let tfaDependencies=[];
@@ -1388,8 +1405,7 @@ data.dependencies.fromInterfaces.forEach((e)=>{
 
 let lifeScopingDef = new ScopingProperty('lifecycleStatus', 'Lifecycle_Status');
  
-
-let scopedinterfaceFromApps = essScopeResources(interfaceFromApps, [lifeScopingDef]);
+let scopedinterfaceFromApps = essScopeResources(interfaceFromApps, [lifeScopingDef], appIntfcTypeInfo);
  
 
 let interfacesToAdd=[];
@@ -1479,10 +1495,16 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 ap['interfaces']=allInterfaces;
 });
 
-let scopedindirectApps = essScopeResources(indirectApps, [lifeScopingDef]);
+
+appTypeInfo = {
+	"className": "Application_Provider",
+	"label": 'Application',
+	"icon": 'fa-desktop'
+}
+let scopedindirectApps = essScopeResources(indirectApps, [lifeScopingDef], appTypeInfo);
  
 	
-let scopedinterfacesToAdd = essScopeResources(interfacesToAdd, [lifeScopingDef]);
+let scopedinterfacesToAdd = essScopeResources(interfacesToAdd, [lifeScopingDef], appIntfcTypeInfo);
  
 <!-- start -->
 interfacesToAdd.forEach((d)=>{
@@ -1907,43 +1929,6 @@ $(document).ready(function() {
 		
 })
 
-var currentExchangeType, currentAppInfoExchange, currentSource, currentTarget;
-
-function redraw(dataForMap){ 
- 
-	$('#model').append(ifaceListTemplate(dataForMap)).promise().done(function(){
-		
-		//add event listeners
-		$('.lineClick').on('click', function(e) {
-			currentAppInfoExchange=[];
-			let thisDepId = $(this).attr('eas-dep-id');
-	 
-			currentExchangeType = $(this).attr('eas-type');
-			let interfaceId = $(this).attr('eas-int-id');
- 
-			let selectedDep=dependencyMap.find((d)=>{
-				return d.depId == thisDepId;
-			})
-
-			//console.log('Interface ID', interfaceId);
-
-						 currentSource = selectedDep.source;
-						 
-						 currentAppInfoExchange['currentSource']=selectedDep.source;
-						 currentAppInfoExchange['currentTarget']=selectedDep.target;
-						 currentAppInfoExchange['infoReps'] = selectedDep.infoReps;	
-						 if(selectedDep.infoViews.length&gt;0){
-
-						 currentAppInfoExchange['infoViews'] = selectedDep.infoViews;	
-						 }	
-						currentTarget = selectedDep.target;	
- 
-			$('#info-exchanged-modal').modal('show');
-		});
-	});
-
-	 
-}
 
 </script>	
 		</html>
@@ -2009,12 +1994,51 @@ $('document').ready(function () {
 				});
 			 
 			//	 setUpData(DataSet);
-				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+				essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters, true);
 		
 
 
 			})
 		})
+
+
+var currentExchangeType, currentAppInfoExchange, currentSource, currentTarget;
+
+function redraw(dataForMap){ 
+ 
+	$('#model').append(ifaceListTemplate(dataForMap)).promise().done(function(){
+		
+		//add event listeners
+		$('.lineClick').on('click', function(e) {
+			currentAppInfoExchange=[];
+			let thisDepId = $(this).attr('eas-dep-id');
+	 
+			currentExchangeType = $(this).attr('eas-type');
+			let interfaceId = $(this).attr('eas-int-id');
+ 
+			let selectedDep=dependencyMap.find((d)=>{
+				return d.depId == thisDepId;
+			})
+
+			//console.log('Interface ID', interfaceId);
+
+						 currentSource = selectedDep.source;
+						 
+						 currentAppInfoExchange['currentSource']=selectedDep.source;
+						 currentAppInfoExchange['currentTarget']=selectedDep.target;
+						 currentAppInfoExchange['infoReps'] = selectedDep.infoReps;	
+						 if(selectedDep.infoViews.length&gt;0){
+
+						 currentAppInfoExchange['infoViews'] = selectedDep.infoViews;	
+						 }	
+						currentTarget = selectedDep.target;	
+ 
+			$('#info-exchanged-modal').modal('show');
+		});
+	});
+
+	 
+}
 	</xsl:template>
 
 	<xsl:template name="GetViewerAPIPath">

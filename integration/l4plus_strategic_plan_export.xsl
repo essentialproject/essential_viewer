@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xmlns:fn="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:eas="http://www.enterprise-architecture.org/essential">
-
+<xsl:import href="../common/core_js_functions.xsl"></xsl:import>  
  <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
 
 
@@ -144,7 +144,7 @@
  </Styles>
  <Worksheet ss:Name="Business Capabilities">
   <Table ss:ExpandedColumnCount="3"  x:FullColumns="1"
-   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($busProc)+8"/></xsl:attribute>
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="188"/>
    <Row ss:Index="2" ss:Height="21">
     <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Business Capabilities</Data></Cell>
@@ -177,7 +177,7 @@
  </Worksheet>
  <Worksheet ss:Name="Business Processes">
   <Table ss:ExpandedColumnCount="3"  x:FullColumns="1"
-   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($busProc)+8"/></xsl:attribute>
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="188"/>
    <Row ss:Index="2" ss:Height="21">
     <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Business Processes</Data></Cell>
@@ -210,7 +210,7 @@
  </Worksheet>
  <Worksheet ss:Name="Application Services">
   <Table ss:ExpandedColumnCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($appSvs)+8"/></xsl:attribute>
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="152"/>
    <Row ss:Index="2" ss:Height="21">
     <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Application Services</Data></Cell>
@@ -244,7 +244,7 @@
  </Worksheet>
  <Worksheet ss:Name="Organisation">
   <Table ss:ExpandedColumnCount="3"  x:FullColumns="1"
-   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($org)+8"/></xsl:attribute>
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="175"/>
    <Row ss:Index="2" ss:Height="21">
     <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Organisation</Data></Cell>
@@ -278,7 +278,7 @@
  </Worksheet>
  <Worksheet ss:Name="Applications">
   <Table ss:ExpandedColumnCount="3" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($apps)+8"/></xsl:attribute>
+   x:FullRows="1" ss:DefaultColumnWidth="65" ss:DefaultRowHeight="16">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="242"/>
    <Row ss:Index="2" ss:Height="21">
     <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Applications</Data></Cell>
@@ -385,7 +385,7 @@
 <Worksheet ss:Name="Objectives">
   <Table ss:ExpandedColumnCount="3" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s57" ss:DefaultColumnWidth="65"
-   ss:DefaultRowHeight="16"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count($obj)+8"/></xsl:attribute>
+   ss:DefaultRowHeight="16">
    <Column ss:Index="2" ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="336"/>
    <Column ss:StyleID="s57" ss:AutoFitWidth="0" ss:Width="565"/>
    <Row ss:AutoFitHeight="0"/>
@@ -995,11 +995,23 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisapps"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1075,11 +1087,22 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisapps"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/>
+  </xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1158,11 +1181,19 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisbusCap/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisbusCap"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1239,11 +1270,19 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisbusProc/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisbusProc"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1319,11 +1358,19 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisapps"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1399,11 +1446,22 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><!--<xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/>--></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+      <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisapps"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1479,11 +1537,22 @@
  <xsl:variable name="thisproject" select="$project[name=current()/own_slot_value[slot_reference='plan_to_element_change_activity']/value]"/> 
  
     <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisplan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisapps/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thischange/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisproject/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+      <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisplan"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisapps"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thischange"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='relation_description']/value"/></Data></Cell>
+       <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+         <xsl:with-param name="theSubjectInstance" select="$thisproject"/>
+         <xsl:with-param name="isRenderAsJSString" select="true()"/>
+     </xsl:call-template></Data></Cell>
    </Row>  
       </xsl:for-each> 
   </Table>
@@ -1532,14 +1601,20 @@
 <xsl:template match="node()" mode="catalogue">
     <Row ss:AutoFitHeight="0"  ss:Height="17">
     <Cell ss:Index="2"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>
  
 </xsl:template>   
  <xsl:template match="node()" mode="nameDesc">
     <Row ss:AutoFitHeight="0"  ss:Height="17">
-    <Cell ss:Index="2"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceDescription">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>
  
 </xsl:template>    
@@ -1547,8 +1622,12 @@
 <xsl:template match="node()" mode="progproj">
 <Row>
      <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceDescription">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/></Data></Cell>
    </Row>    
@@ -1560,12 +1639,18 @@
    
  <Row ss:Height="20">
     <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='ca_target_end_date_iso_8601']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisprojLife/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisprogramme/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisprojLife"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisprogramme"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>
 
   
@@ -1586,8 +1671,12 @@
     <xsl:template match="node()" mode="planstoProgrammesRow">
     <xsl:param name="plan"></xsl:param>   
     <Row>
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$plan/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$plan"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>
     </xsl:template>
     
@@ -1607,9 +1696,15 @@
  
  <Row ss:Height="20">
      <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$thisroadmap/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$thisroadmap"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceDescription">
+      <xsl:with-param name="theSubjectInstance" select="$thisroadmap"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/></Data></Cell>
    </Row>
@@ -1626,8 +1721,12 @@
 <xsl:template match="node()" mode="stratObjrow">
 <xsl:param name="strat"></xsl:param>    
    <Row ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="$strat/own_slot_value[slot_reference='name']/value"/></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$strat"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
    </Row>
 </xsl:template>   
     

@@ -2,7 +2,6 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
@@ -29,12 +28,11 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Process')"/>
+	<xsl:variable name="linkClasses" select="('Application_Provider', 'Composite_Application_Provider')"/>
 
 	<!-- START GENERIC LINK VARIABLES -->
  	<!-- END GENERIC LINK VARIABLES -->
- 
-	 <xsl:variable name="applicationsRoadmap" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/>
+  
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -55,10 +53,7 @@
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
 	-->
-	<xsl:variable name="allRoadmapInstances" select="$applicationsRoadmap"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+  
 	<xsl:variable name="appData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	   <xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"></xsl:call-template>
@@ -88,62 +83,50 @@
 				</xsl:for-each>
 				<style>
 					.CharacterContainer {
-                            text-align: center;
-                            font-size: 1.1em;
-                            line-height: 1.5em;
-                            background-color: #dfdfdf;
-                            color: white;
-                            cursor: pointer; 
-                            display:inline-block
-                            }
-                    .CharacterElement {
-                                margin: 10px;
-                                display:inline-block;
-                                cursor: pointer; 
-                            }
-                            
-                    .Inactive {
-                                color: grey;
-                                cursor: default;
-                            }
-                    .Active {
-                                font-size: 1.2em;
-                                font-weight:bold;
-                                color:#000;
-                                cursor: default;
-                            } 
-                    .list {padding-left:10px}   
+						text-align: center;
+						font-size: 1.2em;
+						line-height: 1.5em;
+						background-color: #fff;
+						color: #000;
+						cursor: pointer; 
+						display:inline-block
+						}
+				.CharacterElement {
+							margin: 1px;
+							display:inline-block;
+							cursor: pointer; 
+						}
+						
+				.Inactive {
+							color: #f0f0f0;
+							cursor: default;
+						}
+				.Active {
+							font-size: 1.2em;
+							font-weight:bold;
+							color:#000;
+							cursor: default;
+							background-color:#e1e1e1;
+						} 
+				.list {padding-left:10px}   
 
-                    .caps {
-						padding:1px;
-                        border-left: 2pt solid #3fceb9;
-                        font-size:1.1em;
-                        border-bottom:1pt solid #ffffff;
-                    }            
-                                   
+				.caps {
+					padding:1px;
+					border-left: 2pt solid #3fceb9;
+					font-size:1.1em; 
+				}        
+				.charBox{
+					display:inline-block;
+					border:1pt solid #d3d3d3;
+				}      
 				</style>
-			 	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				 
+			  
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-		
-				<!--ADD THE CONTENT-->
+			 	<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -168,12 +151,19 @@
 
 				<!-- caps template -->
 		
-            </body>
+			</body>
+			<script id="char-template" type="text/x-handlebars-template">
+				{{#each this}}
+				<div><xsl:attribute name="class">charBox CharacterElement {{#ifEquals @index 0}}Active{{/ifEquals}}</xsl:attribute><xsl:attribute name="easId">Letter{{#ifEquals this '.'}}dot{{else}}{{this}}{{/ifEquals}}</xsl:attribute>
+					{{this}}
+				</div>
+				{{/each}}
+			</script>
             <script id="list-template" type="text/x-handlebars-template">
                 {{#each this.caps}} 
-                        <div class="col-xs-4">
+                        <div class="col-xs-3">
                             <div class="caps bottom-5">
-                                <i class="fa fa-caret-right"> </i> {{#essRenderInstanceLink this 'Application_Provider'}}{{/essRenderInstanceLink}} 
+								{{#essRenderInstanceLinkSelect this 'Application_Capability'}}{{/essRenderInstanceLinkSelect}}{{#essRenderInstanceLink this 'Application_Capability'}}{{/essRenderInstanceLink}} 
                             </div>
                         </div>  
                  {{/each}}    
@@ -223,14 +213,15 @@
 				})
 				.map((x, i) => String.fromCharCode(65 + i));
 		}
-
+	 
 		let createNavigationList = _ => {
 			let abcChars = createArrayAtoZ();
-			let rest=["0","1","2","3","4","5","6","7","8","9","."]
-	 
+			let rest=["0","1","2","3","4","5","6","7","8","9",".","#"]
 			abcChars=abcChars.concat(rest); 
-			const navigationEntries = abcChars.reduce(createDivForCharElement, '');
-			$('#nav').append(navigationEntries);
+			//const navigationEntries = abcChars.reduce(createDivForCharElement, '');
+ 
+			$('#nav').append(charTemplate(abcChars))
+			
 		}
 
 		let createDivForCharElement = (block, charToAdd) => {
@@ -244,12 +235,19 @@
 
 		var characterToShow = 'A';
 		//interim fix for roadmaps/     
-		var roadmapCaps = [ <xsl:apply-templates select="$applicationsRoadmap" mode="roadmapCaps"/>];
-		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+	 	var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
 			listTemplate = Handlebars.compile(listFragment);
+
+			charFragment = $("#char-template").html();
+			charTemplate = Handlebars.compile(charFragment);
+
+			Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+			});
+
 			const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
 
 			function essGetMenuName(instance) {
@@ -264,7 +262,64 @@
 				}
 			 
 		        return menuName;
-		    }
+			}
+			
+
+			Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
+
+				let targetReport = "<xsl:value-of select="$repYN"/>";
+		 
+				if (targetReport.length &gt; 1) {
+			 
+					if (instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+					 
+						if (linkMenuName != null) {
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+							let linkClass = 'context-menu-' + linkMenuName;
+							let linkId = instance.id + 'Link';
+							let linkURL = reportURL;
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+			
+						} else if (instanceLink != null) {
+							let linkURL = reportURL;
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+							let linkClass = 'context-menu-' + linkMenuName;
+
+							let linkId = instance.id + 'Link';
+						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+			
+							
+		
+							return instanceLink;
+						} else {
+							return '';
+						}
+					}
+				} else {
+		 
+					let thisMeta = meta.filter((d) => {
+		                return d.classes.includes(type)
+					});
+ 
+				 
+		            instance['meta'] = thisMeta[0]
+		            let linkMenuName = essGetMenuName(instance);
+		            let instanceLink = instance.name;
+		            if (linkMenuName != null) {
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkClass = 'context-menu-' + linkMenuName;
+		                let linkId = instance.id + 'Link';
+		                let linkURL = reportURL; 
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+			
+		                return instanceLink;
+		            }
+				}
+            });
+
 			Handlebars.registerHelper('essRenderInstanceLink', function (instance,type) {
 
 				let targetReport = "<xsl:value-of select="$repYN"/>";
@@ -319,34 +374,19 @@
 				promise_loadViewerAPIData(viewAPIData) 
 			]).then(function (responses) {
 				meta = responses[0].meta;
-				workingArr = responses[0].applications  
-			 
+				workingArr = responses[0].applications   
  
-				workingArr.forEach((d) => {
-					 
-					//required for roadmap
-					var thisRoadmap = roadmapCaps.filter((rm) => {
-						return d.id == rm.id;
-					});
-
-					if (thisRoadmap[0]) {
-						d['roadmap'] = thisRoadmap[0].roadmap;
-					} else {
-						d['roadmap'] = [];
-					}
-					
+				workingArr.forEach((d) => { 
 					d['meta'] = meta.filter((d) => {
-						return d.classes.includes('Business_Process')
+						return d.classes.includes('Application_Provider')
 					})
 				});
-
-				roadmapCaps = [];
-
-				essInitViewScoping(redrawView);
+ 
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'],'', true);
 
 				$('.CharacterElement').on('click', function () {
 					$('.CharacterElement').removeClass('Active');
-					characterToShow = $(this).html();
+					characterToShow = $(this).html(); 
 					$(this).addClass('CharacterElement Active');
 					redrawView();
 				})
@@ -357,38 +397,28 @@
 
 
 			var redrawView = function () {
-				let scopedRMProcs = [];
-				workingArr.forEach((d) => {
-					scopedRMProcs.push(d)
-				});
-				let toShow = [];
-
-				// *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS
-				if (roadmapEnabled) {
-					//update the roadmap status of the caps passed as an array of arrays
-					rmSetElementListRoadmapStatus([scopedRMProcs]);
-
-					// *** OPTIONAL *** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME
-					//filter caps to those in scope for the roadmap start and end date
-					toShow = rmGetVisibleElements(scopedRMProcs);
-				} else {
-					toShow = workingArr;
-				}
-console.log(workingArr)
+				 
 				let workingAppsList = [];
 				let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 				let prodConceptScopingDef = new ScopingProperty('prodConIds', 'Product_Concept');
-				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 
-                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef]);
+				essResetRMChanges();
+				let typeInfo = {
+					"className": "Application_Provider",
+					"label": 'Application',
+					"icon": 'fa-desktop'
+				}
+				let scopedApps = essScopeResources(workingArr, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef], typeInfo);
 
 				let showApps = scopedApps.resources;
 
 				showApps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0))
+				 
 				caps = showApps.filter((d) => {
-					return d.name.toUpperCase().substr(0, 1) == characterToShow;
+					return d.name.toUpperCase().substr(0, 1) == characterToShow.trim();
 				})
 
 				let viewArray = {};
@@ -404,16 +434,17 @@ console.log(workingArr)
 				});
 
 				$('.CharacterElement').css({
-					"border-bottom": "0pt solid #ffffff",
-					"width": "15px"
+					"border-bottom": "1pt solid #d3d3d3",
+					"width": "22px",
+					"padding":"3px"
 				})
-
+			
 				let uniq = [...new Set(newChars)];
 				uniq.forEach((ch) => {
-					if(ch=='.'){ch='dot'}
-					$('.' + ch).css({
+					if(ch=='.'){ch='dot'} 
+					$('div [easId="Letter' + ch+'"]').css({
 						"border-bottom": "2pt solid red",
-						"width": "15px"
+						"width": "22px"
 					})
 				});
 
@@ -423,10 +454,7 @@ console.log(workingArr)
 		function redrawView() {
 			essRefreshScopingValues()
 		}
-
-
-
-
+  
 	</xsl:template>
 
 	<xsl:template name="GetViewerAPIPath">
@@ -441,6 +469,4 @@ console.log(workingArr)
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
 	</xsl:template>
-	<xsl:template match="node()" mode="roadmapCaps">
-			{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> </xsl:template>
-</xsl:stylesheet>
+ </xsl:stylesheet>

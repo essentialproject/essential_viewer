@@ -147,12 +147,13 @@
 
 							<div class="content-section">
 								<p>
-									<xsl:variable name="parentConceptName" select="$parentConcept/own_slot_value[slot_reference = 'name']/value"/>
-									<xsl:call-template name="RenderInstanceLink">
+									<xsl:for-each select="$parentConcept">
+									<i class="fa fa-caret-right"></i><xsl:text> </xsl:text><xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="$parentConcept"/>
 										<xsl:with-param name="theXML" select="$reposXML"/>
 										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-									</xsl:call-template>
+									</xsl:call-template><br/>
+								</xsl:for-each>
 								</p>
 							</div>
 							<hr/>
@@ -682,7 +683,7 @@
 					// Setup - add a text input to each footer cell
 					$('#dt_viewAttributes tfoot th').each( function () {
 					var title = $(this).text();
-					$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					$(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					} );
 					
 					var table = $('#dt_viewAttributes').DataTable({

@@ -160,7 +160,7 @@
 			 
                 		<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10" id="getExcel">Download Application Performance Measures as Excel</div> <br/>
    
-						<a class="noUL" href="https://enterprise-architecture.org/downloads_area/performance_measure_categories_setup_IMPORTSPEC.zip" download="performance_measure_categories_setup_IMPORTSPEC.zip">
+						<a class="noUL" href="integration/plus/performance_measure_categories_setup_IMPORTSPEC.zip" download="performance_measure_categories_setup_IMPORTSPEC.zip">
 
                 		<div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Application Performance Measures Import Specification</div>
 						</a><br/> 
@@ -690,7 +690,7 @@ excelSheet.push({
 	"name":"Perf Measure Cat 2 Class",
 	"worksheetNameNice":"Perf Measure Cat 2 Class",
 	"worksheetName":"Perf_Measure_Cat_2_Class",
-	"description":"Performance measure categories to classes they support. NOTE: Add Meta Class manually, these are the classes that the performance category applies to.",
+	"description":"Performance measure categories to classes they support. NOTE: Add Meta Class manually, these are the classes that the performance category applies to, they should be Application_Provider, Composite_Application_Provider or Application_Provider_Interface.",
 	"heading":[{"col":"B", "name":"Performance Measure Category"}, {"col":"C", "name":"Meta-Class"}],
 	"lookups":[{"column":"B","columnNum":"1", "lookUpSheet":"Perf Measure Categories", "lookupCol":"C", "val":"allPMCs"}],
 	"data":pmcCData

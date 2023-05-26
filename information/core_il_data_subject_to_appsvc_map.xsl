@@ -92,7 +92,11 @@
 				<style type="text/css">
 					table.dataTable{
 						margin-top: 0px !important;
-					}</style>
+					}
+					.bg-midgrey{
+						background-color: #999!important;
+					}
+				</style>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -177,7 +181,7 @@
 								<script>
 									$(document).ready(function(){								
 										var table = $('#dt_dataObjects').DataTable({
-										scrollY: "350px",
+										scrollY: $(window).innerHeight()-400,
 										scrollCollapse: true,
 										scrollX: true,
 										sScrollXInner: "<xsl:value-of select="140 + (140 * count($inScopeDataObjects))"/>px", <!--we need to calculate this value using the formula 140 +(140 x number of data subjects)//-->
@@ -211,11 +215,11 @@
 		<xsl:param name="appProRoles"/>
 
 		<!--Setup Matrix Section-->
-		<table class="tableStyleMatrix dataTable table-header-background" id="dt_dataObjects">
+		<table class="table table-bordered dataTable table-header-background" id="dt_dataObjects">
 			<thead>
 
 				<tr>
-					<th class="tableStyleMatrixCorner cellWidth-140 vAlignMiddle">&#160;</th>
+					<th>&#160;</th>
 					<xsl:apply-templates mode="DataObject" select="$dataObjects">
 						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 					</xsl:apply-templates>
@@ -234,7 +238,7 @@
 
 	<xsl:template match="node()" mode="DataObject">
 		<xsl:variable name="doName" select="own_slot_value[slot_reference = 'name']/value"/>
-		<th class="cellWidth-140 vAlignMiddle">
+		<th>
 			<xsl:call-template name="RenderInstanceLink">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="theXML" select="$reposXML"/>
@@ -251,7 +255,7 @@
 		<xsl:variable name="asName" select="own_slot_value[slot_reference = 'name']/value"/>
 
 		<tr>
-			<td class="bg-midgrey vAlignTop">
+			<td class="bg-midgrey">
 				<strong>
 					<xsl:call-template name="RenderInstanceLink">
 						<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -320,7 +324,7 @@
 			</xsl:choose>
 
 		</xsl:variable>
-		<td class="vAlignMiddle">
+		<td>
 			<p>
 				<!--		<xsl:value-of select="$appCRUD"/>  -->
 

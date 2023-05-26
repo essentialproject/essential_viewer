@@ -41,7 +41,9 @@
 	<xsl:key name="appToPhysDirect_key" match="$allApplicationsUsed" use="own_slot_value[slot_reference = 'app_pro_supports_phys_proc']/value"/>
 	<xsl:key name="applicationsAOU_key" match="$applicationsAOU" use="own_slot_value[slot_reference = 'stakeholders']/value"/>
 	<xsl:key name="allRoles_key" match="$allRoles" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
-	<xsl:key name="actor_key" match="$allActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+	<xsl:key name="actor_key" match="$allIndActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+
+	<xsl:key name="allactor_key" match="$allActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 	<xsl:key name="allactor2r_key" match="$allActor2RoleRelations" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/> 
 
 	<xsl:key name="allDocs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
@@ -91,10 +93,21 @@
 	<xsl:template match="knowledge_base">
 			 {"orgData":[<xsl:apply-templates select="$allOrgs" mode="getOrgs"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
 			 "orgRoles":[<xsl:apply-templates select="$allOrgs" mode="a2rs"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+			 "indivData":[<xsl:apply-templates select="$allIndActors" mode="getIndivduals"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+			 "a2r":[<xsl:apply-templates select="$allActor2RoleRelations" mode="geta2r"></xsl:apply-templates>],
+			 "roleData":[<xsl:apply-templates select="$allRoles" mode="getAllroles"></xsl:apply-templates>],
 			 "a2rs":[<xsl:apply-templates select="$allActor2RoleRelations" mode="a2rsOnly"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
-			 "version":"615"} 
+			 "version":"616"} 
 	</xsl:template>
-
+	<xsl:template mode="geta2r" match="node()">
+			<xsl:variable name="thisactor" select="key('allactor_key',current()/name)"/>	
+			<xsl:variable name="thisEmployeeRole" select="key('allRoles_key',current()/name)"/>		
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"actorId":"<xsl:value-of select="eas:getSafeJSString($thisactor/name)"/>",
+			"roleId":"<xsl:value-of select="eas:getSafeJSString($thisEmployeeRole/name)"/>"
+			}<xsl:if test="position()!=last()">,</xsl:if>
+			
+	</xsl:template>
  
 	<xsl:template mode="getOrgs" match="node()">
 		<xsl:variable name="orgName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
@@ -183,7 +196,8 @@
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 		</xsl:call-template>",
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
-		"roles":[<xsl:for-each select="$thisEmployeeRoles">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+		"roles":[<xsl:for-each select="$thisEmployeeRoles">{
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
@@ -238,16 +252,41 @@
 			</xsl:call-template>",
 		"actor":"<xsl:value-of select="$a2rs/name"/>", 
 		"a2rs":[<xsl:for-each select="$a2rs">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
-		"roles":[<xsl:for-each select="$thisroles">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"roles":[<xsl:for-each select="$thisroles">{
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
+	<xsl:template mode="getIndivduals" match="node()">	
+			<xsl:variable name="thisEmployeeA2Rs" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
+			<xsl:variable name="thisEmployeeRoles" select="key('allRoles_key',$thisEmployeeA2Rs/name)"/>	
+		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>",
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",  
+		"roles":[<xsl:for-each select="$thisEmployeeA2Rs">
+				<xsl:variable name="thissubEmployeeRoles" select="key('allRoles_key',current()/name)"/>
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"roleid":"<xsl:value-of select="eas:getSafeJSString($thissubEmployeeRoles/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$thissubEmployeeRoles"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template mode="getAllroles" match="node()">	
+		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>",
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 	
 	<xsl:template mode="a2rsOnly" match="node()">
 			<xsl:variable name="this" select="current()"/>
-			<xsl:variable name="thisactor2role" select="key('actor_key',current()/name)"/>
+			<xsl:variable name="thisactor2role" select="key('allactor_key',current()/name)"/>
 			<xsl:variable name="thisroles" select="key('allRoles_key',current()/name)"/>
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"actor":"<xsl:call-template name="RenderMultiLangInstanceName">

@@ -2,7 +2,6 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
@@ -55,11 +54,7 @@
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
         * 
     -->
-	<xsl:variable name="allRoadmapInstances" select="$busCapabilitiesRoadmap"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
- 
+
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="capsSimpleData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
     <xsl:template match="knowledge_base">
@@ -131,27 +126,13 @@
 						justify-content: center;
 					}           
 				</style>
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				 
+  		 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				 	<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-		 
+		 		 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -285,9 +266,7 @@
 					reject(false);
 				}
 			});
-        }; 
-<!-- interim fix for roadmaps -->        
-var roadmapCaps=[<xsl:apply-templates select="$busCapabilitiesRoadmap" mode="roadmapCaps"/>];
+        };  
 <!-- end fix for roadmaps -->  
 var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 function showEditorSpinner(message) {
@@ -388,17 +367,7 @@ showEditorSpinner('Fetching Data...');
 		            var thisCap = busCapInfo.businessCapabilities.filter((e) => {
 		                return d.id == e.id;
 					});
-					<!--required for roadmap-->
-		            var thisRoadmap = roadmapCaps.filter((rm) => {
-		                return d.id == rm.id;
-		            });
-
-					if(thisRoadmap[0]){
-						d['roadmap'] = thisRoadmap[0].roadmap;
-						}else{
-							d['roadmap'] = [];
-						} 
-		            <!--end required	for roadmap-->
+ 
 		            d['desc'] = thisCap[0].description;
 		            d['domain'] = {
 		                'name': thisCap[0].businessDomain,
@@ -470,12 +439,9 @@ showEditorSpinner('Fetching Data...');
 		            catalogueTable.columns.adjust();
 		        });
 
-		        <!-- *** OPTIONAL *** Register the table as having roadmap aware contents-->
-		            if (roadmapEnabled) {
-		                registerRoadmapDatatable(catalogueTable);
-		            }
+ 
 		        //setCatalogueTable(); 
-		        essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept']);
+		        essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept'],'',true);
 
 		    });
 
@@ -519,24 +485,20 @@ showEditorSpinner('Fetching Data...');
 		    }
 
 		    var redrawView = function () {
+				essResetRMChanges();
+				typeInfo = {
+					"className": "Business_Capability",
+					"label": 'Business Capability',
+					"icon": 'fa-landmark'
+				}
 
 		        let scopedRMCaps = [];
 		        busCapArr.forEach((d) => {
 		            scopedRMCaps.push(d)
 		        });
-		        let toShow = [];
+		        let toShow = busCapArr
 
-		        <!-- *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS-->
-		            if (roadmapEnabled) {
-		                //update the roadmap status of the caps passed as an array of arrays
-		                rmSetElementListRoadmapStatus([scopedRMCaps]);
-
-		                <!-- *** OPTIONAL *** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME-->
-		                    //filter caps to those in scope for the roadmap start and end date
-		                    toShow = rmGetVisibleElements(scopedRMCaps);
-		            } else {
-		                toShow = busCapArr;
-		            }
+	 
 
 		            <!-- VIEW SPECIFIC JS CALLS-->
 		        //update the catalogue
@@ -547,7 +509,7 @@ showEditorSpinner('Fetching Data...');
 				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 
-		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef]);
+		        let scopedCaps = essScopeResources(toShow, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef, visibilityDef], typeInfo);
 
 		        let showCaps = scopedCaps.resources;
 
@@ -584,8 +546,6 @@ showEditorSpinner('Fetching Data...');
 
     </xsl:template>
     
-   <xsl:template match="node()" mode="roadmapCaps">
-      {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,
-    </xsl:text></xsl:if> </xsl:template>
+ 
 
 </xsl:stylesheet>

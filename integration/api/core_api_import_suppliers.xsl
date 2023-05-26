@@ -35,7 +35,7 @@
 			<xsl:variable name="this" select="current()"/>
 		   {"id":"<xsl:value-of select="eas:getSafeJSString($this/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="$this"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
 				</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
  

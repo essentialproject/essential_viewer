@@ -345,7 +345,7 @@
 						// Setup - add a text input to each footer cell
 					    $('#dt_dataAttributes tfoot th').each( function () {
 					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					    } );
 						
 						var table = $('#dt_dataAttributes').DataTable({
@@ -492,7 +492,7 @@
 						// Setup - add a text input to each footer cell
 					    $('#dt_dataReps tfoot th').each( function () {
 					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					    } );
 						
 						var table = $('#dt_dataReps').DataTable({
@@ -576,7 +576,7 @@
 								
 								<xsl:variable name="dataRepLabel">
 									<xsl:choose>
-										<xsl:when test="string-length($dataRepTechnical) > 0">
+										<xsl:when test="string-length() > 0">
 											<xsl:value-of select="$dataRepTechnical"/>
 										</xsl:when>
 										<xsl:otherwise>

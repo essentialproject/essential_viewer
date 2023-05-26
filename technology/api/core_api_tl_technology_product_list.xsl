@@ -29,6 +29,8 @@
 <xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type = 'Technology_Delivery_Model']"/>
 <xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>   
 <xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
+<xsl:key name="allTechProdRolesKey" match="/node()/simple_instance[type='Technology_Product_Role']" use="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
+<xsl:key name="allTechCompKey" match="/node()/simple_instance[type='Technology_Component']" use="own_slot_value[slot_reference = 'realised_by_technology_products']/value"/>
 <!--<xsl:variable name="allTechSuppliers" select="/node()/simple_instance[type='Supplier']"/>	
 <xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>-->
 <xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
@@ -37,9 +39,7 @@
 <!--<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
 <xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 <xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>	-->
-<xsl:variable name="allRoadmapInstances" select="$allTechProds"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
+ 
     <!-- END ROADMAP VARIABLES -->
 	
 	
@@ -55,10 +55,11 @@
 
 		<xsl:variable name="theLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'vendor_product_lifecycle_status']/value]"/>
 		<xsl:variable name="theDeliveryModel" select="$allTechProdDeliveryTypes[name = current()/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
-	<!--	<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value"/>-->
+	<!--	<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value"/>
 		<xsl:variable name="thisTPR" select="$allTechProdRoles[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>
+	<xsl:variable name="thisTechComp" select="$allTechComponents[name=$thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/>-->
+		<xsl:variable name="thisTPR" select="key('allTechProdRolesKey', current()/name)"/> 
 	 <xsl:variable name="thisTechComp" select="$allTechComponents[name=$thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/> 
-		 
 		
 		
 	<!--	<xsl:variable name="theSupplier" select="$allTechSuppliers[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>-->
@@ -66,7 +67,7 @@
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
-		</xsl:variable><!--<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->{"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+		</xsl:variable>{"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="displayString" select="$thisName"/> 
 			</xsl:call-template>","supplier":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='supplier_technology_product']/value)"/>",	 <!--		"caps":[<xsl:for-each select="$thisTechCap">{<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->"comp":[<xsl:for-each select="$thisTPR"> 

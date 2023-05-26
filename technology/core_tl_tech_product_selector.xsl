@@ -1738,7 +1738,7 @@
 					    $('#dt_refArchList tfoot th').each( function (index) {
 					    	if(index > 0) {
 					        	var title = $(this).text();
-					        	$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        	$(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					        }
 					    } );
 						
@@ -1840,7 +1840,7 @@
 					    // Setup - add a text input to each footer cell
 					    <!--$('#dt_selectedRefArchs tfoot th').each( function () {
 					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					    } );-->
 						
 						selectedRefArchsTable = $('#dt_selectedRefArchs').DataTable({
@@ -1897,7 +1897,7 @@
 						// Setup - add a text input to each footer cell
 					    $('#dt_selectedTechProds tfoot th').each( function () {
 					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					    } );
 						
 						selectedTechProdsTable = $('#dt_selectedTechProds').DataTable({
@@ -1946,7 +1946,7 @@
 						// Setup - add a text input to each footer cell
 					     $('#dt_appTechArchsExport tfoot th').each( function () {
 					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 					    } );
 					    
 					    appTechArchsExportTable = $('#dt_appTechArchsExport').DataTable({

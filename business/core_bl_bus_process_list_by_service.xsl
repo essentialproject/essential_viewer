@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_roadmap_functions.xsl"/>
+ 	 <xsl:import href="../common/core_js_functions.xsl"></xsl:import>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -16,9 +16,11 @@
 	<!-- START GENERIC CATALOGUE PARAMETERS -->
 	<xsl:param name="targetReportId"/>
 	<xsl:param name="targetMenuShortName"/>
-	<xsl:param name="viewScopeTermIds"/>
+	<xsl:param name="viewScopeTermIds"/> 
 
 	<!-- END GENERIC CATALOGUE PARAMETERS -->
+    <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
+
 
 
 	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
@@ -30,15 +32,15 @@
 
 
 	<xsl:variable name="allBusProcesses" select="/node()/simple_instance[type = 'Business_Process']"/>
-	<xsl:variable name="allBusServices" select="/node()/simple_instance[own_slot_value[slot_reference = 'product_type_produced_by_process']/value = $allBusProcesses/name]"/>
-
+	<xsl:variable name="allBusServices" select="/node()/simple_instance[type='Product_Type'][own_slot_value[slot_reference = 'product_type_produced_by_process']/value = $allBusProcesses/name]"/>
+	<xsl:variable name="allInst" select="$allBusProcesses union $allBusServices"/>
+	<xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name=$allInst/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<xsl:key name="actorKey" match="/node()/simple_instance[type = 'Group_Actor']" use="own_slot_value[slot_reference = 'actor_plays_role']/value "/>
 	<xsl:variable name="busProcListByName" select="eas:get_report_by_name('Core: Business Process Catalogue by Name')"/>
 	<xsl:variable name="busProcListAsTable" select="eas:get_report_by_name('Core: Business Process Catalogue as Table')"/>
 	<xsl:variable name="busProcListByDomain" select="eas:get_report_by_name('Core: Business Process Catalogue by Business Domain')"/>
 	
-	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances" select="($allBusServices, $allBusProcesses)"/>
-	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
+ 
 	
 	<!--
 		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
@@ -84,30 +86,14 @@
 				</title>
 				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
-				
-				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
+ 
 
 			</head>
-			<body>
-				
-						
+			<body>  
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-					<div class="clearfix"></div>
-				</div>
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+				  
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -175,7 +161,7 @@
 							<script type="text/javascript">
 	
 								<!-- START VIEW SPECIFIC JAVASCRIPT VARIABLES -->
-								//global catalogu specific variables
+								//global cataloguE specific variables
 								var catalogueTable;
 								var busProcListTemplate, busSvcNameTemplate;
 								
@@ -201,8 +187,7 @@
 							  	var inScopeBusProcesses = {
 							  		busProcesses: busProcesses.busProcesses
 							  	}
-							  	<!-- END VIEW SPECIFIC JAVASCRIPT VARIABLES -->
-							  	
+							 
 							  	
 							  	//function to create the data structure needed to render table rows
 								function renderBusProcessTableData() {
@@ -218,14 +203,25 @@
 										var busSvcLinkHTML = busSvcNameTemplate(aBusSvc);
 										
 										//get the current list of bus processes that deliver the bus service
-										var busProcList = getObjectsByIds(inScopeBusProcesses.busProcesses, 'id', aBusSvc.processes);
+
+										let processesForSvc=[]
+									
+										aBusSvc.processes.forEach((e)=>{ 
+											let match=inScopeBusProcesses.busProcesses.find((f)=>{
+												return f.id==e;
+											}) 
+											processesForSvc.push(match)
+										})
+
+
+								//		var busProcList = getObjectsByIds(inScopeBusProcesses.busProcesses, 'id', aBusSvc.processes);
 										var busProcListJSON = {
-											busProcesses: busProcList
+											busProcesses: processesForSvc
 										}							
 										//Apply handlebars template
+ 
 										var busProcListHTML = busProcListTemplate(busProcListJSON);
-										
-										
+										 
 										dataTableRow.push(busSvcLinkHTML);
 										dataTableRow.push(aBusSvc.description);
 										dataTableRow.push(busProcListHTML);
@@ -249,31 +245,103 @@
 							  	<!-- ***REQUIRED*** JAVASCRIPT FUNCTION TO REDRAW THE VIEW WHEN THE ANY SCOPING ACTION IS TAKEN BY THE USER -->
 							  	//function to redraw the view based on the current scope
 								function redrawView() {
-									//console.log('Redrawing View');
+									// console.log('Redrawing View');
+									essResetRMChanges();
+									typeInfo = {
+										"className": "Product_Type",
+										"label": 'Business Service',
+										"icon": 'fa-hand-holding'
+									}
 									
-									<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
-									if(roadmapEnabled) {
-										//update the roadmap status of the busProcesses and application provider roles passed as an array of arrays
-										rmSetElementListRoadmapStatus([busProcesses.busProcesses, busServices.busServices]);
-										
-										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
-										//filter busProcesses to those in scope for the roadmap start and end date
-										inScopeBusServices.busServices = rmGetVisibleElements(busServices.busServices);
-										//inScopeBusProcesses.busProcesses = rmGetVisibleElements(busProcesses.busProcesses);
-									} else {
-										inScopeBusServices.busServices = busServices.busServices;
-									}	
-									
-									<!-- VIEW SPECIFIC JS CALLS -->
+							 
+									orgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor'); 
+									visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS'); 
+									busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
+								 
+									inScopeBusServices.busServices = essScopeResources(busServices.busServices, [orgScopingDef], typeInfo);
+									inScopeBusServices.busServices=inScopeBusServices.busServices.resources;
+ 
+								 	<!-- VIEW SPECIFIC JS CALLS -->
 									//update the catalogue
 									setBusProcessTable();
 									
 																						
 								}
 								
-								
+								var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 								$(document).ready(function(){
 								
+								const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+
+								function essGetMenuName(instance) { 
+								
+									let menuName = null;
+									if(instance){
+										if ((instance != null) &amp;&amp;
+											(instance.meta != null) &amp;&amp;
+											(instance.meta.classes != null)) {
+											menuName = instance.meta.menuId;
+										} else if (instance.classes != null) {
+											menuName = instance.meta.classes;
+										}
+											return menuName;
+										}
+									else{
+										return 'Business_Process';
+									}
+								}
+								Handlebars.registerHelper('essRenderInstanceLink', function (instance, type) {
+									
+									let meta =[
+										{"classes":["Product_Type"], "menuId":"prodTypeGenMenu"},
+										{"classes":["Business_Process"], "menuId":"busProcessGenMenu"}]
+
+									let targetReport = "<xsl:value-of select="$repYN"/>";
+									let linkMenuName = essGetMenuName(instance);
+									if (targetReport.length &gt; 1) {
+										let linkURL = reportURL;
+										let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+										let linkId = instance.id + 'Link';
+										instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+										return instanceLink;
+									} else {
+										let thisMeta = meta.filter((d) => {
+											return d.classes.includes(type)
+										});
+										if(instance){
+											instance['meta'] = thisMeta[0]
+											let linkMenuName = essGetMenuName(instance);
+											let instanceLink = instance.name;
+											if (linkMenuName != null) {
+												let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+												let linkClass = 'context-menu-' + linkMenuName;
+												let linkId = instance.id + 'Link';
+												let linkURL = reportURL;
+												instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+						
+												return instanceLink;
+											}
+										}
+									}
+								});
+								Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
+					
+									let thisMeta = meta.filter((d) => {
+										return d.classes.includes(type)
+									});
+									instance['meta'] = thisMeta[0]
+									let linkMenuName = essGetMenuName(instance);
+									let instanceLink = instance.name;
+									if (linkMenuName != null) {
+										let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+										let linkClass = 'context-menu-' + linkMenuName;
+										let linkId = instance.id + 'Link';
+										instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+										return instanceLink;
+									}
+								});
 									//START COMPILE HANDLEBARS TEMPLATES
 									
 									//Set up the html templates for technology products, components and capabilities
@@ -290,7 +358,7 @@
 									// Setup - add a text input to each footer cell
 								    $('#dt_busProcs tfoot th').each( function () {
 								        var title = $(this).text();
-								        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+								        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 								    } );
 									
 									catalogueTable = $('#dt_busProcs').DataTable({
@@ -335,14 +403,11 @@
 								    $(window).resize( function () {
 								        catalogueTable.columns.adjust();
 								    });
-								    
-								    <!-- ***OPTIONAL*** Register the table as having roadmap aware contents -->
-								    registerRoadmapDatatable(catalogueTable);
-								    
+ 
 								    //END INITIALISE UP THE CATALOGUE TABLE
 								    
 								    //DRAW THE VIEW
-								    redrawView();
+									essInitViewScoping(redrawView,['Group_Actor'], '',true);
 								});
 							</script>
 							<!-- START TEST DIVS -->
@@ -394,16 +459,15 @@
 				<script id="bus-process-bullets" type="text/x-handlebars-template">
 					<ul>
 						{{#busProcesses}}
-							<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A BULLET DOM ELEMENT -->
-							<xsl:call-template name="RenderHandlebarsRoadmapBullet"/>
+							 <i class="fa fa-caret-right"></i> {{#essRenderInstanceLink this 'Business_Process'}}{{/essRenderInstanceLink}}<br/>
 						{{/busProcesses}}
 					</ul>
 				</script>
 				
 				<!-- Handlebars template to render an individual business service as text-->
 				<script id="bus-service-name" type="text/x-handlebars-template">
-					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
-					<strong><xsl:call-template name="RenderHandlebarsRoadmapSpan"/></strong>
+			 
+					<strong>{{#essRenderInstanceLink this 'Product_Type'}}{{/essRenderInstanceLink}}</strong>
 				</script>
 				<!-- END HANDLEBARS TEMPLATES -->
 				
@@ -415,27 +479,42 @@
 	
 	<!-- START TEMPLATES TO RENDER THE JSON OBJECTS REQUIRED FOR THE VIEW -->
 	<xsl:template match="node()" mode="RenderBusProcessJSON">
-		
+	<xsl:variable name="thisA2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<xsl:variable name="thisActors" select="key('actorKey',$thisA2r/name)"/>	
 		{
-		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-		<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
+		   	"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			   </xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="isRenderAsJSString" select="true()"/> 
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
+			"orgUserIds":[<xsl:for-each select="$thisActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 	
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+			} <xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
 	
 	
 	
 	<xsl:template match="node()" mode="RenderBusServiceJSON">
-		
 		<xsl:variable name="thisBusProcs" select="$allBusProcesses[name = current()/own_slot_value[slot_reference = 'product_type_produced_by_process']/value]"/>
-		
-		
+		<xsl:variable name="thisA2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		<xsl:variable name="thisActors" select="key('actorKey',$thisA2r/name)"/>
 		{
-			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-		<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			processes: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusProcs"/>]
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+		   </xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"> 
+		   <xsl:with-param name="theSubjectInstance" select="current()"/>
+		  </xsl:call-template>",  
+		"orgUserIds":[<xsl:for-each select="$thisActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
+		"processes": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusProcs"/>],
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+
+		} <xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
 	
 	<!-- END TEMPLATES TO RENDER THE JSON OBJECTS REQUIRED FOR THE VIEW -->

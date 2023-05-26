@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
-	<xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	 <xsl:include href="../common/core_doctype.xsl"></xsl:include>
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
@@ -34,9 +33,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
  	<!-- END GENERIC LINK VARIABLES -->
- 
-	 <xsl:variable name="applicationsRoadmap">0</xsl:variable>
-
+   
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -55,14 +52,11 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
-	-->
-	<xsl:variable name="allRoadmapInstances" select="$applicationsRoadmap"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-	 
+	--> 	 
 	<xsl:variable name="appData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
     <xsl:variable name="appSvcData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Applications 2 Services']"></xsl:variable>
-
+	<xsl:variable name="appMartData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
+   
     <xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"></xsl:call-template>
 		<xsl:variable name="apiApps">
@@ -74,7 +68,13 @@
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$appSvcData"></xsl:with-param>
 			</xsl:call-template>
+		</xsl:variable> 
+		<xsl:variable name="apiAppsMart">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$appMartData"></xsl:with-param>
+			</xsl:call-template>
         </xsl:variable> 
+		
         
 		<html>
 			<head>
@@ -121,8 +121,15 @@
                                 color:#000;
                                 cursor: default;
                             } 
-                    .list {padding-left:10px}   
-
+					.list {padding-left:10px}  
+					.filtParent{
+						position:absolute;
+						top:-15px;
+						right:10px;
+					}   
+					.appTypes li{
+						display: inline;
+					}
                     .caps {
                         padding:3px;
                         border-left: 3pt solid #3fceb9;
@@ -142,43 +149,24 @@
 						position:relative;
 						border:1pt solid #d3d3d3;
 						border-radius:5px;
-						padding:5px;
+						padding:1px;
 						margin:2px;
 						min-width:90px;
 						text-align:center;
-						bachground-color:#fff;
+						background-color:#fff;
 						display:inline-block;
 					}
 					.btnOn{
 						background-color:#d3d3d3;
-					}     
-					 
-					.appTypes li{
-						display: inline;
-					}  
-					
+					}       
 				</style>
-			 	 <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				 
+			 	  
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-		
+			 	 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -186,59 +174,76 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Catalogue by Name')"/></span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Catalogue')"/></span>
 								</h1>
 							</div>
                         </div>
-						<xsl:call-template name="RenderDataSetAPIWarning"/>
-                        <div class="col-xs-12 ">
+						<div class="col-xs-12 ">
 							<div class="pull-right filtParent">
 								
 							<ul class="appTypes" style="z-index:10">Include:
-								<li ><input type="checkbox" id="appBtn" name="appBtn" value="apps"></input>
-								<label for="vehicle1"> Applications</label>  </li>
-								<li><input type="checkbox" id="moduleBtn" name="moduleBtn" value="modules"/>
-								<label for="vehicle2"> Modules</label>  </li>
-								<li><input type="checkbox" id="apiBtn" name="apiBtn" value="apis"/>
-								<label for="vehicle3"> APIs</label> </li>
+								<li ><input type="checkbox" id="appBtn" name="appBtn" value="apps" class="btnOn" checked="true"></input>
+								<label for="apps"> Applications</label>  </li>
+								<li><span id="modBut"><input type="checkbox" id="moduleBtn" name="moduleBtn" value="modules" class="btnOn" checked="true"/>
+								<label for="modules"> Modules</label>  </span></li>
+								<li><span id="apiBut"><input type="checkbox" id="apiBtn" name="apiBtn" value="apis"/>
+								<label for="apis"> APIs</label></span> </li>
 							</ul>
 						 
 							</div>
 						</div>
 						<div class="clearfix bottom-10"/>	
-						<div class="col-xs-12">	
- 
-                                <table class="table table-striped table-bordered" id="dt_Capabilities" >
+                        <div class="col-xs-12"> 
+                                <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" style="width: 100%;" id="dt_Capabilities">
                                         <thead>
                                             <tr>
+												<th>
+
+												</th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Application')"/>
                                                 </th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Description')"/>
                                                 </th>
-                                                <th>
+                                             	<th>
                                                     <xsl:value-of select="eas:i18n('Services')"/>
                                                 </th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Status')"/>
-                                                </th>
+												</th>
+												<th>
+													<xsl:value-of select="eas:i18n('Family')"/>
+												</th>
+												<th>
+														<xsl:value-of select="eas:i18n('Supplier')"/>
+												</th>
+											 
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
+												<th>
+														 
+												</th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Application')"/>
                                                 </th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Description')"/>
                                                 </th>
-                                                <th>
+                                               <th>
                                                     <xsl:value-of select="eas:i18n('Services')"/>
                                                 </th>
                                                 <th>
                                                     <xsl:value-of select="eas:i18n('Status')"/>
-                                                </th>
+												</th>
+												<th>
+													<xsl:value-of select="eas:i18n('Family')"/>
+												</th>
+												<th>
+														<xsl:value-of select="eas:i18n('Supplier')"/>
+												</th> 
                                             </tr>
                                         </tfoot>
                                         <tbody>
@@ -270,20 +275,30 @@
             </script>
             <script id="name-template" type="text/x-handlebars-template">
                 {{#essRenderInstanceLink this 'Application_Provider'}}{{/essRenderInstanceLink}}       
-          </script>
-          <script id="service-name" type="text/x-handlebars-template">
-            <!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
+		  </script>
+		  <script id="select-template" type="text/x-handlebars-template">
+			{{#essRenderInstanceLinkSelect this 'Application_Provider'}}{{/essRenderInstanceLinkSelect}}       
+	  	  </script>
+		  
+          <script id="service-name" type="text/x-handlebars-template"> 
             <ul>
             {{#each this.services}}
             <li>  {{#essRenderInstanceLinkMenuOnly this 'Application_Service'}}{{/essRenderInstanceLinkMenuOnly}}</li>
             {{/each}}
             </ul>
-        </script>    
+		</script>    
+		<script id="family-name" type="text/x-handlebars-template"> 
+            <ul> 
+			{{#each this.family}}	
+            <li>  {{this.name}}</li>
+            {{/each}}
+            </ul>
+        </script>   
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction">
                     <xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
                     <xsl:with-param name="viewerAPIPathAppsSvc" select="$apiAppsSvc"></xsl:with-param> 
-                    
+                    <xsl:with-param name="viewerAPIPathAppsMart" select="$apiAppsMart"></xsl:with-param>
 				</xsl:call-template>  
 			</script>
 		</html>
@@ -292,10 +307,13 @@
 
 	<xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPathApps"></xsl:param> 
-        <xsl:param name="viewerAPIPathAppsSvc"></xsl:param> 
+		<xsl:param name="viewerAPIPathAppsSvc"></xsl:param> 
+		<xsl:param name="viewerAPIPathAppsMart"></xsl:param> 
+		
 		//a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPathApps"/>';
-        var viewAPIDataSvc = '<xsl:value-of select="$viewerAPIPathAppsSvc"/>';
+		var viewAPIDataSvc = '<xsl:value-of select="$viewerAPIPathAppsSvc"/>';
+		var viewAPIDataMart = '<xsl:value-of select="$viewerAPIPathAppsMart"/>';
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL) {
@@ -322,11 +340,9 @@
 			});
 		};
 		 
-
-		var dynamicAppFilterDefs=[];	
-		var roadmapCaps = [ <xsl:apply-templates select="$applicationsRoadmap" mode="roadmapCaps"/>];
+		var dynamicAppFilterDefs=[];	 
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
- 
+		var catalogueTable
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
             listTemplate = Handlebars.compile(listFragment);
@@ -350,7 +366,64 @@
 				}
 			 
 		        return menuName;
-		    }
+			}
+			
+			
+			Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
+
+				let targetReport = "<xsl:value-of select="$repYN"/>";
+		 
+				if (targetReport.length &gt; 1) {
+			 
+					if (instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+					 
+						if (linkMenuName != null) {
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+							let linkClass = 'context-menu-' + linkMenuName;
+							let linkId = instance.id + 'Link';
+							let linkURL = reportURL;
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+			
+						} else if (instanceLink != null) {
+							let linkURL = reportURL;
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+							let linkClass = 'context-menu-' + linkMenuName;
+
+							let linkId = instance.id + 'Link';
+						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+			
+							
+		
+							return instanceLink;
+						} else {
+							return '';
+						}
+					}
+				} else {
+		 
+					let thisMeta = meta.filter((d) => {
+		                return d.classes.includes(type)
+					});
+ 
+				 
+		            instance['meta'] = thisMeta[0]
+		            let linkMenuName = essGetMenuName(instance);
+		            let instanceLink = instance.name;
+		            if (linkMenuName != null) {
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkClass = 'context-menu-' + linkMenuName;
+		                let linkId = instance.id + 'Link';
+		                let linkURL = reportURL; 
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+			
+		                return instanceLink;
+		            }
+				}
+            });
+
 			Handlebars.registerHelper('essRenderInstanceLink', function (instance,type) {
 
 				let targetReport = "<xsl:value-of select="$repYN"/>";
@@ -425,36 +498,41 @@
             let lifecycleArr=[]; 
 			Promise.all([
                 promise_loadViewerAPIData(viewAPIData),
-                promise_loadViewerAPIData(viewAPIDataSvc) 
+				promise_loadViewerAPIData(viewAPIDataSvc), 
+				promise_loadViewerAPIData(viewAPIDataMart)
 			]).then(function (responses) {
+				
 				meta = responses[0].meta;
 				filters=responses[0].filters;
                 workingArr = responses[0].applications;  
 				lifecycleArr = responses[0].lifecycles ;
+
+				if(responses[0].apis){
 				workingArr = [...workingArr, ...responses[0].apis];
-  
+				} 
+	
+				martApps=responses[2].applications;
+				responses[2]=[]; 
+		
 				workingArr.forEach((d)=>{ 
 					if(d.containedApp){
 						d.valueClass="Application_Provider";
 					}
+					let martMatch=martApps.find((e)=>{
+						return d.id==e.id;
+					})
+
+					d['family']=martMatch.family;
+					d['supplier']=martMatch.supplier;
 				})
+
+
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
                 svcArr=responses[1]; 
 				workingArr.forEach((d) => {
-					 
-					//required for roadmap
-					var thisRoadmap = roadmapCaps.filter((rm) => {
-						return d.id == rm.id;
-					});
-
-					if (thisRoadmap[0]) {
-						d['roadmap'] = thisRoadmap[0].roadmap;
-					} else {
-						d['roadmap'] = [];
-					}
-					
+					  
 					d['meta'] = meta.filter((d) => {
 						return d.classes.includes('Business_Process')
 					})
@@ -462,80 +540,25 @@
 				allAppArr = JSON.parse(JSON.stringify(workingArr))
 				 
                 roadmapCaps = [];
-               
-				
+                
+				//setCatalogueTable(); 
+				workingArr=allAppArr.filter((d)=>{
+					return (d.valueClass == ('Composite_Application_Provider')) ||
+					d.valueClass == ('Application_Provider')
+				})
+				let checkAP=workingArr.find((a)=>{
+					return a.valueClass=='Application_Provider';
+				})
+				let checkAPI=workingArr.find((a)=>{
+					return a.valueClass=='Application_Provider_Interface';
+				})
+ 
+				if(checkAP){$('#modBut').show()}else{$('#modBut').hide()}
+				if(checkAPI){$('#apiBut').show()}else{$('#apiBut').hide()} 
 
-                // Setup - add a text input to each footer cell
-		        $('#dt_Capabilities tfoot th').each(function () {
-		            var title = $(this).text();
-		            $(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
-		        });
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters,true);
 
-		        catalogueTable = $('#dt_Capabilities').DataTable({
-		            paging: false,
-		            deferRender: true,
-		            scrollY: 350,
-		            scrollCollapse: true,
-		            info: true,
-		            sort: true,
-		            responsive: false,
-		            columns: [
-		                {
-		                    "width": "20%"
-		                },
-		                {
-		                    "width": "40%"
-                        },
-                        {
-		                    "width": "20%",
-		                    "type": "html",
-		                },
-		                {
-		                    "width": "20%",
-		                    "type": "html",
-		                }
-		            ],
-		            dom: 'Bfrtip',
-		            buttons: [
-		                'copyHtml5',
-		                'excelHtml5',
-		                'csvHtml5',
-		                'pdfHtml5',
-		                'print'
-		            ]
-		        });
-
-
-		        // Apply the search
-		        catalogueTable.columns().every(function () {
-		            var that = this;
-
-		            $('input', this.footer()).on('keyup change', function () {
-		                if (that.search() !== this.value) {
-		                    that
-		                        .search(this.value)
-		                        .draw();
-		                }
-		            });
-		        });
-
-		        catalogueTable.columns.adjust();
-
-		        $(window).resize(function () {
-		            catalogueTable.columns.adjust();
-				});
-				
-
-		        <!-- *** OPTIONAL *** Register the table as having roadmap aware contents-->
-		            if (roadmapEnabled) {
-		                registerRoadmapDatatable(catalogueTable);
-		            }
-		        //setCatalogueTable(); 
-
-				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters);
-
-		$('#appBtn').on('click', function(){
-			console.log('hi')
+		$('#appBtn').off().on('click', function(){
 			if($('#appBtn').hasClass('btnOn')){
 			 
 				$('#appBtn').removeClass('btnOn')
@@ -546,7 +569,7 @@
 			}
 			setList()
 		});
-		$('#moduleBtn').on('click', function(){
+		$('#moduleBtn').off().on('click', function(){
 			if($('#moduleBtn').hasClass('btnOn')){
 				 
 				$('#moduleBtn').removeClass('btnOn')
@@ -557,7 +580,7 @@
 			}
 			setList()
 		})	
-		$('#apiBtn').on('click', function(){
+		$('#apiBtn').off().on('click', function(){
 			if($('#apiBtn').hasClass('btnOn')){
 				 
 				$('#apiBtn').removeClass('btnOn')
@@ -567,7 +590,8 @@
 				$('#apiBtn').addClass('btnOn')
 			}
 			setList()
-		})			
+		})	
+		
 	function setList(){
 		let wa=[];
 		workingArr=allAppArr
@@ -618,99 +642,175 @@
 		}
 		 
 		redrawView();
+
 	}		 
 			}).catch(function (error) {
 				//display an error somewhere on the page
             });
 
+var tblData;
+
             function renderCatalogueTableData(scopedData) {
+			 
 		        var serviceFragment = $("#service-name").html();
-		        var serviceTemplate = Handlebars.compile(serviceFragment);
- 
+				var serviceTemplate = Handlebars.compile(serviceFragment);
+
+				var familyFragment = $("#family-name").html();
+				var familyTemplate = Handlebars.compile(familyFragment);
+				  
+				var selectFragment = $("#select-template").html();
+				var selectTemplate = Handlebars.compile(selectFragment);
+		
 		        let inscopeApps = [];
-		        inscopeApps['apps'] = scopedData.apps
-		        var dataTableSet = [];
-		        var dataTableRow; 
+                inscopeApps['apps'] = scopedData.apps
+                 
 		        //Note: The list of applications is based on the "inScopeApplications" variable which ony contains apps visible within the current roadmap time frame
 		        for (var i = 0; inscopeApps.apps.length > i; i += 1) {
- 
+			
                 let appInf = svcArr.applications_to_services.find((d)=>{
                     return inscopeApps.apps[i].id == d.id
                 });
-
+                
 		            app = inscopeApps.apps[i];
        
                 let appLife= lifecycleArr.find((d)=>{ 
                     return d.id == app.lifecycle;
                 });
-               
+                
 if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText":"#000000"}}
-		           // inscopeApps.apps[i]['type'] = scopedData.type;
-		            dataTableRow = [];
+		          
 		            //get the current App
                     appNameHTML = nameTemplate(inscopeApps.apps[i]); 
-                   
+				 
 		            //Apply handlebars template
-                    appLinkHTML = serviceTemplate(appInf);
-                    appLifeHTML = lifeTemplate(appLife); 
-                    
-
-		            dataTableRow.push(appNameHTML);
-		            dataTableRow.push(app.description);  
-		            dataTableRow.push(appLinkHTML);
-                    dataTableRow.push(appLifeHTML);
-                    dataTableSet.push(dataTableRow);
-                    
-                   
+                    let appSvcHTML = serviceTemplate(appInf);
+					let appLifeHTML = lifeTemplate(appLife); 
+					let appFamilyHTML= familyTemplate(app);
+					selectHTML=selectTemplate(inscopeApps.apps[i]);  
+					
+					tblData.push({"select":selectHTML,"name":appNameHTML,"desc":app.description, "services": appSvcHTML ,"status":appLifeHTML,"family":appFamilyHTML,"supplier":app.supplier})
+                      
 		        }
 
-		        return dataTableSet;
+		        return tblData;
 		    }
 
             function setCatalogueTable(scopedData) {
-		        var tableData = renderCatalogueTableData(scopedData);
-		        catalogueTable.clear();
-		        catalogueTable.rows.add(tableData);
-		        catalogueTable.draw();
+                tblData=[];
+		       renderCatalogueTableData(scopedData); 
 		    }
-
+		
 			var redrawView = function () {
- 
-				let scopedRMProcs = [];
+				
+				let scopedAppList = [];
 				workingArr.forEach((d) => {
-					scopedRMProcs.push(d)
+					scopedAppList.push(d)
 				});
  
 				let toShow = []; 
-				// *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS
-				if (roadmapEnabled) {
-					//update the roadmap status of the caps passed as an array of arrays
-					rmSetElementListRoadmapStatus([scopedRMProcs]);
-
-					// *** OPTIONAL *** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME
-					//filter caps to those in scope for the roadmap start and end date
-					toShow = rmGetVisibleElements(scopedRMProcs);
-				} else {
-					toShow = workingArr;
-				}
-
+				  
                 let workingAppsList = []; 
                 let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
 
-				let scopedApps = essScopeResources(toShow, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+				essResetRMChanges();
+				let typeInfo = {
+					"className": "Application_Provider",
+					"label": 'Application',
+					"icon": 'fa-desktop'
+				}
+				let scopedApps = essScopeResources(scopedAppList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
 
 				let showApps = scopedApps.resources; 
-				let viewArray = {};
-
+				let viewArray = {}; 
 				viewArray['type'] = "<xsl:value-of select="$repYN"/>";
 				viewArray['apps'] = showApps;
 				$('#list').html(listTemplate(viewArray));
-                setCatalogueTable(viewArray)
+				setCatalogueTable(viewArray) 
 			 
+                $('#dt_Capabilities tfoot th').each(function () {
+		            var title = $(this).text();
+		            $(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
+		        });
 
+		        catalogueTable = $('#dt_Capabilities').DataTable({
+		            paging: false,
+		            deferRender: true,
+		            scrollY: 350,
+		            scrollCollapse: true,
+		            info: true,
+					sort: true,
+					destroy : true,
+		            responsive: false,
+					"data":tblData,
+					"stateSave": true,
+                    "columns":[
+						{
+                            "data" : "select",
+                            "width": "2%" 
+						},
+		                {
+                            "data" :  "name",
+                            "width": "15%"
+		                },
+		                {
+							"data" : "desc",
+							"width": "25%" 
+						},
+						{	"data":"services",
+							"width": "20%",
+							"visible": false
+						},
+						{	"data":"status",
+							"width": "20%", 
+							"visible": false					
+						},
+						{	"data":"family",
+							"width": "15%" 					
+						},
+						{	"data":"supplier",
+							"width": "10%", 
+							"visible": false					
+						}
+						],
+                        "columnDefs": [ {
+							"targets": 0,
+							"orderable": false
+							} ],
+						order: [[ 1, 'asc' ]],		
+		            dom: 'Bfrtip',
+					buttons: [ 
+						'colvis',
+		                'copyHtml5',
+		                'excelHtml5',
+		                'csvHtml5',
+		                'pdfHtml5',
+		                'print'
+		            ]
+		        });
+
+
+		        // Apply the search
+		        catalogueTable.columns().every(function () {
+		            var that = this;
+
+		            $('input', this.footer()).on('keyup change', function () {
+		                if (that.search() !== this.value) {
+		                    that
+		                        .search(this.value)
+		                        .draw();
+		                }
+		            });
+		        });
+
+		        catalogueTable.columns.adjust();
+
+		        $(window).resize(function () {
+		            catalogueTable.columns.adjust();
+		        });
+            
 			}
 		});
 
@@ -752,6 +852,4 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 			"lifecycle":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value)"/>"
 			}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> </xsl:template>
 
-	<xsl:template match="node()" mode="roadmapCaps">
-			{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if> </xsl:template>
 </xsl:stylesheet>

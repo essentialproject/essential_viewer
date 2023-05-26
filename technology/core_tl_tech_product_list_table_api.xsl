@@ -24,13 +24,13 @@
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Technology_Node', 'Technology_Capability')"/>
+    <xsl:variable name="linkClasses" select="('Technology_Node', 'Technology_Product', 'Technology_Component', 'Group_Actor')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
 	 
 	
 	<xsl:variable name="pageLabel">
-		<xsl:value-of select="eas:i18n('Technology Node Catalogue')"/>
+		<xsl:value-of select="eas:i18n('Technology Product Catalogue')"/>
 	</xsl:variable>
 
 	<xsl:variable name="anAPIReportProds" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Products and Suppliers']"/>
@@ -215,16 +215,19 @@
 				
             </xsl:call-template>
                 
-</script>		
+</script>	
+<script id="prod-bullet" type="text/x-handlebars-template">
+    {{#essRenderInstanceLinkMenuOnly this 'Technology_Component'}}  {{/essRenderInstanceLinkMenuOnly}}
+</script>	
 	<script id="prod-list-bullets" type="text/x-handlebars-template">
 						{{#each this.comp}}
-                            - {{{this.link}}} {{#if this.stdStyle}}<button><xsl:attribute name="class">btn btn-xs {{this.stdStyle}}</xsl:attribute>{{this.std}}</button><br/>{{else}}
+                            - {{#essRenderInstanceLinkMenuOnly this 'Technology_Component'}} {{/essRenderInstanceLinkMenuOnly}}{{#if this.stdStyle}}<button><xsl:attribute name="class">btn btn-xs {{this.stdStyle}}</xsl:attribute>{{this.std}}</button><br/>{{else}}
                             <button class="btn btn-xs"><xsl:attribute name="style">background-color:{{this.stdColour}};color:{{this.stdTextColour}}</xsl:attribute>{{this.std}}</button><br/>{{/if}}
 						{{/each}}
 	</script>	
 	<script id="cap-list-bullets" type="text/x-handlebars-template">
 						{{#each this.caps}}
-							- {{{this.link}}}<br/>
+							- {{this.name}}<br/>
 						{{/each}}
 	</script>			
 		</html>
@@ -248,7 +251,7 @@
   // the list of JSON objects representing the Suppliers in use across the enterprise
 
   var nodetable;
-  var nodes, prodListTemplate;
+  var nodes, prodListTemplate, prodTemplate;
   var inScopeNodes
   //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 
@@ -279,11 +282,49 @@
   };
 
 
-
+meta= [{"classes":["Technology_Product"], "menuId":"techProdGenMenu"},
+				{"classes":["Technology_Capability"], "menuId":"techCapGenMenu"},
+				{"classes":["Technology_Component"], "menuId":"techCompGenMenu"}
+                ] 
 
   $('document').ready(function() {
 
+    const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+    function essGetMenuName(instance) {
+        let menuName = null;
+        if ((instance != null) &amp;&amp;
+            (instance.meta != null) &amp;&amp;
+            (instance.meta.classes != null)) {
+            menuName = instance.meta.menuId;
+        } else if (instance.classes != null) {
+            menuName = instance.meta.classes;
+        }
+        return menuName;
+    }
 
+    Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
+ 
+        let thisMeta = meta.filter((d) => {
+            return d.classes.includes(type)
+        });
+      
+        instance['meta'] = thisMeta[0]
+     
+        let linkMenuName = essGetMenuName(instance);
+        let instanceLink = instance.name;
+        if (linkMenuName != null) {
+            let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+            let linkClass = 'context-menu-' + linkMenuName;
+            let linkId = instance.id + 'Link';
+            instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+
+            return instanceLink;
+        }
+    }); 
+
+ 
+    var prodFragment = $("#prod-bullet").html();
+    prodTemplate = Handlebars.compile(prodFragment);
 
       var prodListFragment = $("#prod-list-bullets").html();
       prodListTemplate = Handlebars.compile(prodListFragment);
@@ -366,8 +407,7 @@
                   inScopeTechProducts = {
                       "techProducts": techProducts.technology_products
                   };
-              console.log('techProducts');
-              console.log(techProducts)
+        
               // Setup - add a text input to each footer cell
 
               $('#dt_products tfoot th').each(function() {
@@ -480,11 +520,12 @@
               dataTableRow = [];
               //get the current App
               aProd = inScopeTechProducts.techProducts[i];
-
+ 
               aProdListHTML = prodListTemplate(aProd);
-              aCapListHTML = capListTemplate(aProd);
+              aCapListHTML = capListTemplate(aProd); 
+              aprodHTML= prodTemplate(aProd); 
               dataTableRow.push(aProd.supplier);
-              dataTableRow.push(aProd.link);
+              dataTableRow.push(aprodHTML);
               dataTableRow.push(aProdListHTML);
               dataTableRow.push(aCapListHTML);
 

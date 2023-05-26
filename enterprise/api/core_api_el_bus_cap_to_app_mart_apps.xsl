@@ -18,7 +18,8 @@
 <xsl:variable name="allAppSlots" select="$appSlots[own_slot_value[slot_reference=':SLOT-VALUE-TYPE']/value=$enumClass/name]"/> 
 <xsl:variable name="allEnumClass" select="$enumClass[name=$targetSlots]"/> 
 <xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"></xsl:variable>
-<xsl:variable name="allAPIs" select="/node()/simple_instance[(type = 'Application_Provider_Interface')]"></xsl:variable>
+<xsl:key name="appAppProvidersKey" match="$allAppProviders" use="name"/>
+ <xsl:variable name="allAPIs" select="/node()/simple_instance[(type = 'Application_Provider_Interface')]"></xsl:variable>
 <xsl:variable name="allChildCap2ParentCapRels" select="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']"/>
 <xsl:variable name="allLifecycleStatus" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
 <xsl:variable name="allLifecycleStatustoShow" select="$allLifecycleStatus[(own_slot_value[slot_reference='enumeration_sequence_number']/value &gt; -1) or not(own_slot_value[slot_reference='enumeration_sequence_number']/value)]"/>
@@ -35,9 +36,11 @@
 <xsl:variable name="appsWithCaps" select="$relevantApps union $relevantAppsviaAPR"/>
 <xsl:variable name="services" select="/node()/simple_instance[type='Application_Service'][name=$relevantAppProRoles/own_slot_value[slot_reference='implementing_application_service']/value]"/>
 <xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"></xsl:variable>
- 
+<xsl:variable name="requirementStatus" select="/node()/simple_instance[type = 'Requirement_Status']"></xsl:variable>
+
 <xsl:variable name="appOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Application Organisation User')]"/>
 <xsl:variable name="everyAppOrgUsers2Roles" select="/node()/simple_instance[(name = $allAppProviders/own_slot_value[slot_reference = 'stakeholders']/value)]"/>
+
 <xsl:variable name="allAppOrgUsers2Roles" select="/node()/simple_instance[(name = $appsWithCaps/own_slot_value[slot_reference = 'stakeholders']/value) and (own_slot_value[slot_reference = 'act_to_role_to_role']/value = $appOrgUserRole/name)]"/>	
 <xsl:variable name="allAppActors" select="$actors[name=$everyAppOrgUsers2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 <xsl:variable name="allSites" select="/node()/simple_instance[(type = 'Site')]"/>
@@ -58,12 +61,13 @@
 <xsl:variable name="unitOfMeasures" select="/node()/simple_instance[type = 'Unit_Of_Measure']"></xsl:variable>
 <xsl:variable name="criticalityStatus" select="/node()/simple_instance[type = 'Business_Criticality']"></xsl:variable>
 <xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"></xsl:variable>
-
+<xsl:key name="processActorKey" match="/node()/simple_instance[supertype = 'Actor']" use="own_slot_value[slot_reference='performs_physical_process']/value"/>
+<xsl:key name="processRoleKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference='performs_physical_process']/value"/>
 <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"></xsl:variable>
 <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"></xsl:variable>
 <xsl:variable name="manualDataEntry" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value='Manual Data Entry']"/> 
 <xsl:variable name="allAppStaticUsages" select="/node()/simple_instance[type = 'Static_Application_Provider_Usage']"/>
-
+<xsl:key name="allAppStaticUsagesNameKey" match="$allAppStaticUsages" use="name"/>
 <xsl:variable name="allContained" select="$allAppProviders[name=$allAppProviders/own_slot_value[slot_reference = 'contained_application_providers']/value]"/>
 <xsl:key name="static_usage_key" match="$allAppStaticUsages" use="own_slot_value[slot_reference = 'static_usage_of_app_provider']/value"/>
 <xsl:key name="family_key" match="/node()/simple_instance[type='Application_Family']" use="own_slot_value[slot_reference = 'groups_applications']/value"/>
@@ -76,6 +80,13 @@
  <xsl:variable name="relevantPhysProcsActorsIndirect" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION' and name=$processToAppRel/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
  <xsl:variable name="reportMenu" select="/node()/simple_instance[type = 'Report_Menu'][own_slot_value[slot_reference='report_menu_class']/value=('Business_Capability','Application_Capability','Application_Service','Application_Provider','Composite_Application_Provider','Group_Actor','Business_Process','Physical_Process')]"></xsl:variable>
  <!-- rationalisation view -->
+
+<xsl:variable name="regulationLink" select="/node()/simple_instance[type='REGULATED_COMPONENT_RELATION']"/> 
+<xsl:key name="regulationLink_key" match="/node()/simple_instance[type='REGULATED_COMPONENT_RELATION']" use="own_slot_value[slot_reference = 'regulated_component_to_element']/value"/>
+<xsl:variable name="regulation" select="/node()/simple_instance[type='Regulation']"/>   
+<xsl:key name="regulation_key" match="/node()/simple_instance[type = 'Regulation']" use="name"/>
+<xsl:key name="issue_key" match="/node()/simple_instance[type = 'Issue']" use="own_slot_value[slot_reference = 'related_application_elements']/value"/>
+
  <xsl:variable name="reportPath" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
  <xsl:variable name="reportPathInterface" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Information Dependency Model v2']"/>
  <xsl:key name="a2r_key" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
@@ -83,8 +94,11 @@
  <xsl:key name="physProcessActor_key" match="/node()/simple_instance[type = 'Physical_Process']" use="own_slot_value[slot_reference = 'process_performed_by_actor_role']/value"/>
  <xsl:key name="fromapu_key" match="/node()/simple_instance[type = ':APU-TO-APU-STATIC-RELATION']" use="own_slot_value[slot_reference = ':FROM']/value"/>
  <xsl:key name="toapu_key" match="/node()/simple_instance[type = ':APU-TO-APU-STATIC-RELATION']" use="own_slot_value[slot_reference = ':TO']/value"/>
+
  <xsl:variable name="allInboundStaticAppRels2" select="key('fromapu_key', $allAppStaticUsages/name)"/>
  <xsl:variable name="allOutboundStaticAppRels2" select="key('toapu_key', $allAppStaticUsages/name)"/>
+
+
  <xsl:variable name="allInboundStaticAppRels" select="$allInboundStaticAppRels2[not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/> 
  <xsl:variable name="allOutboundStaticAppRels" select="$allOutboundStaticAppRels2[not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/> 
 
@@ -153,29 +167,43 @@
 <!--<xsl:variable name="appStaticUsages" select="$allAppStaticUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $allCurrentApps/name]"/> -->
 <xsl:variable name="appStaticUsages" select="key('static_usage_key', $allCurrentApps/name)"/>
 
-<xsl:variable name="appInboundStaticAppRels2" select="key('fromapu_key', $appStaticUsages/name)"/>
-<xsl:variable name="appOutboundStaticAppRels2" select="key('toapu_key', $appStaticUsages/name)"/>
-<xsl:variable name="appInboundStaticAppRels" select="$appInboundStaticAppRels2[not(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/> 
-<xsl:variable name="appOutboundStaticAppRels" select="$appOutboundStaticAppRels2[not(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/> 
+<xsl:variable name="appInboundStaticAppRelsall" select="key('fromapu_key', $appStaticUsages/name)"/>
+<xsl:variable name="appInboundStaticAppRels" select="$appInboundStaticAppRelsall[not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>
+<xsl:variable name="appOutboundStaticAppRelsall" select="key('toapu_key', $appStaticUsages/name)"/>
+<xsl:variable name="appOutboundStaticAppRels" select="$appOutboundStaticAppRelsall[not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>
+
+<!--<xsl:variable name="appInboundStaticAppRels" select="$appInboundStaticAppRels2[not(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/> -->
+
 <!--
-<xsl:variable name="appInboundStaticAppRels" select="$allInboundStaticAppRels[(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name)]"/>-->
+<xsl:variable name="appInboundStaticAppRels" select="$allInboundStaticAppRels[(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name)]"/>
 <xsl:variable name="appInboundStaticAppUsages" select="$allAppStaticUsages[name = $appInboundStaticAppRels/own_slot_value[slot_reference = ':TO']/value]"/>
-<xsl:variable name="appInboundStaticApps" select="$allAppProviders[name = $appInboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
-<!--
-<xsl:variable name="appOutboundStaticAppRels" select="$allOutboundStaticAppRels[(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name)]"/> -->
-<xsl:variable name="appOutboundStaticAppUsages" select="$allAppStaticUsages[name = $appOutboundStaticAppRels/own_slot_value[slot_reference = ':FROM']/value]"/>
+<xsl:variable name="appInboundStaticApps" select="$allAppProviders[name = $appInboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>-->
+<xsl:variable name="appInboundStaticAppUsages" select="key('allAppStaticUsagesNameKey', $appInboundStaticAppRels/own_slot_value[slot_reference = ':TO']/value)"/>
+<xsl:variable name="appInboundStaticApps" select="key('appAppProvidersKey', $appInboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value)"/>
+
+ <!--
+<xsl:variable name="appOutboundStaticAppRels" select="$allOutboundStaticAppRels[(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name)]"/>
+
+ <xsl:variable name="appOutboundStaticAppUsages" select="$allAppStaticUsages[name = $appOutboundStaticAppRels/own_slot_value[slot_reference = ':FROM']/value]"/> -->
+ <xsl:variable name="appOutboundStaticAppUsages" select="key('allAppStaticUsagesNameKey', $appOutboundStaticAppRels/own_slot_value[slot_reference = ':FROM']/value)"/>
+ <xsl:variable name="appOutboundStaticApps" select="key('appAppProvidersKey', $appOutboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value)"/>
+<!-- 
 <xsl:variable name="appOutboundStaticApps" select="$allAppProviders[name = $appOutboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 <xsl:variable name="appInboundDepCount" select="eas:get_inbound_int_count($allCurrentApps)"/>
 <xsl:variable name="appOutboundDepCount" select="eas:get_outbound_int_count($allCurrentApps)"/>
-
+-->
 <xsl:variable name="stakeApp" select="key('appStakeholder_key',current()/own_slot_value[slot_reference = 'stakeholders']/value)"/>
 <xsl:variable name="aprKey" select="key('apr_key',current()/name)"/>
 <xsl:variable name="aprBusRelkey" select="key('aprBusRel_key',$aprKey/name)"/>
 <xsl:variable name="appBusRelDirectkey" select="key('appBusRelDirect_key',current()/name)"/>
 <xsl:variable name="allProcessedLinkedToApps" select="$aprBusRelkey union $appBusRelDirectkey"/>
 <xsl:variable name="physicalProcesskey" select="key('physicalProcess_key',$allProcessedLinkedToApps/name)"/>
-<xsl:variable name="thisrelevantActorsIndirect" select="$a2r[name=$physicalProcesskey/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
+<!--<xsl:variable name="thisrelevantActorsIndirect" select="$a2r[name=$physicalProcesskey/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
 <xsl:variable name="thisrelevantActorsDirect" select="$actors[name=$physicalProcesskey/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
+-->
+
+<xsl:variable name="thisrelevantActorsIndirect" select="key('processRoleKey',$physicalProcesskey/name)"></xsl:variable>
+<xsl:variable name="thisrelevantActorsDirect" select="key('processActorKey',$physicalProcesskey/name)"></xsl:variable>
 <xsl:variable name="thisrelevantActorsforA2R" select="$actors[name=$thisrelevantActorsIndirect/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"></xsl:variable>
 <xsl:variable name="allPhysicalProcessActors" select="$thisrelevantActorsforA2R/name union $thisrelevantActorsDirect/name"/>
 
@@ -189,8 +217,15 @@
 <xsl:variable name="siteGeosviaLoc" select="$allGeo[own_slot_value[slot_reference = 'gr_locations']/value=$siteGeos/name]"/>
 <xsl:variable name="siteCountries" select="$siteGeos[type='Geographic_Region'] union $siteGeosviaLoc"/>
 <xsl:variable name="appFamilies" select="key('family_key', current()/name)"/>
-		{
-		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+
+<!-- 
+<xsl:variable name="thisRegLink" select="$regulationLink[name=current()/own_slot_value[slot_reference = 'ea_subject_to_regulations']/value]"/>
+<xsl:variable name="thisRegs" select="$regulation[name=$thisRegLink/own_slot_value[slot_reference = 'regulated_component_regulation']/value]"/>
+-->
+<xsl:variable name="thisRegLink" select="key('regulationLink_key', current()/name)"/>
+<xsl:variable name="thisRegs" select="$regulation[name=$thisRegLink/own_slot_value[slot_reference = 'regulated_component_regulation']/value]"/>
+<xsl:variable name="thisIssues" select="key('issue_key', current()/name)"/>
+		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -210,12 +245,37 @@
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
 			</xsl:call-template>",  -->
-		"inI":"<xsl:value-of select="$appInboundDepCount"/>",
+		"regulations":[<xsl:for-each select="$thisRegs">
+		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"issues":[<xsl:for-each select="$thisIssues">
+			<xsl:variable name="thisrequirementStatus" select="$requirementStatus[name=current()/own_slot_value[slot_reference='requirement_status']/value]"/>	
+		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>",
+		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="current()"/>
+		</xsl:call-template>",
+		"status": "<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+			 <xsl:with-param name="theSubjectInstance" select="$thisrequirementStatus"/>
+		</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"inI":"<xsl:value-of select="count($appInboundStaticApps)"/>",
 		"inDataCount":[<xsl:for-each select="$appInboundStaticAppRels/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 		"inIList":[<xsl:for-each select="$appInboundStaticApps">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/>
 		<xsl:with-param name="isForJSONAPI" select="true()"/>
 		</xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
-		"outI":"<xsl:value-of select="$appOutboundDepCount"/>",  
+		"outI":"<xsl:value-of select="count($appOutboundStaticApps)"/>",  
 		<xsl:if test="$allContained[name=current()/name]">"containedApp":"Y",</xsl:if> 
 		<xsl:if test="own_slot_value[slot_reference='parent_application_provider']/value">"containedApp":"Y",</xsl:if>
 		"valueClass": "<xsl:value-of select="current()/type"/>",
@@ -308,7 +368,9 @@
  
 	<xsl:function name="eas:get_inbound_int_count" as="xs:integer">
 			<xsl:param name="app"/>
-	 		<xsl:variable name="appStaticUsages" select="$allAppStaticUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $app/name]"/> 
+		<!--	<xsl:variable name="appStaticUsages" select="key('static_usage_key', $app/name)"/>
+			 <xsl:variable name="appInboundStaticAppRels" select="key('toapu_key', $appStaticUsages/name)"/>-->
+	 		<xsl:variable name="appStaticUsages" select="$allAppStaticUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $app/name]"/>  
 	 		<xsl:variable name="appInboundStaticAppRels" select="$allInboundStaticAppRels[(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name)]"/>
 			<xsl:variable name="appInboundStaticAppUsages" select="$allAppStaticUsages[name = $appInboundStaticAppRels/own_slot_value[slot_reference = ':TO']/value]"/>
 			<xsl:variable name="appInboundStaticApps" select="$allAppProviders[name = $appInboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
@@ -323,6 +385,8 @@
 	
 			<xsl:variable name="appStaticUsages" select="$allAppStaticUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $app/name]"/>
 			<xsl:variable name="appOutboundStaticAppRels" select="$allOutboundStaticAppRels[(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name)]"/>
+			<!--<xsl:variable name="appStaticUsages" select="key('static_usage_key', $app/name)"/>
+			<xsl:variable name="appOutboundStaticAppRels" select="key('fromapu_key', $appStaticUsages/name)"/>-->
 			<xsl:variable name="appOutboundStaticAppUsages" select="$allAppStaticUsages[name = $appOutboundStaticAppRels/own_slot_value[slot_reference = ':FROM']/value]"/>
 			<xsl:variable name="appOutboundStaticApps" select="$allAppProviders[name = $appOutboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 			<xsl:variable name="outboundRelCount" select="count($appOutboundStaticApps)"/>
@@ -330,19 +394,7 @@
 			<xsl:value-of select="$outboundRelCount"/>
 	
 		</xsl:function>	
-		<xsl:function name="eas:get_outbound_int_apps" as="xs:integer">
-			<xsl:param name="app"/>
-	
-			<xsl:variable name="appStaticUsages" select="$allAppStaticUsages[own_slot_value[slot_reference = 'static_usage_of_app_provider']/value = $app/name]"/>
-			<xsl:variable name="appOutboundStaticAppRels" select="$allOutboundStaticAppRels[(own_slot_value[slot_reference = ':TO']/value = $appStaticUsages/name) and not(own_slot_value[slot_reference = ':FROM']/value = $appStaticUsages/name)]"/>
-			<xsl:variable name="appOutboundStaticAppUsages" select="$allAppStaticUsages[name = $appOutboundStaticAppRels/own_slot_value[slot_reference = ':FROM']/value]"/>
-			<xsl:variable name="appOutboundStaticApps" select="$allAppProviders[name = $appOutboundStaticAppUsages/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/> 
-			<xsl:for-each select="$appOutboundStaticApps">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isForJSONAPI" select="true()"/>
-		</xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>
-	
-		</xsl:function>	
+		
 		<xsl:template match="node()" mode="classMetaData"> 
 				<xsl:variable name="thisClasses" select="current()/own_slot_value[slot_reference='report_menu_class']/value"/>
 				{"classes":[<xsl:for-each select="$thisClasses">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>], "menuId":"<xsl:value-of select="current()/own_slot_value[slot_reference='report_menu_short_name']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
@@ -364,6 +416,11 @@
 			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
 			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
 		</xsl:call-template>",
+		"enum_name":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+		<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
+		<xsl:with-param name="displaySlot" select="'enumeration_value'"/>
+		<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
+		</xsl:call-template>",
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 				</xsl:template>	
@@ -380,4 +437,5 @@
 				"color":"#93592f",
 				"values": [{"id":"none", "name":"Not Set"},{"id":"true", "name":"True"},{"id":"false", "name":"False"} ]}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:template>			
+
 </xsl:stylesheet>

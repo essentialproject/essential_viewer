@@ -1966,7 +1966,19 @@
 			let inScopeCapsApp=[];
 			let scopedCaps=[];
 
+var appTypeInfo = {
+	"className": "Application_Provider",
+	"label": 'Application',
+	"icon": 'fa-desktop'
+}
+var busCapTypeInfo = {
+	"className": "Business_Capability",
+	"label": 'Business Capability',
+	"icon": 'fa-landmark'
+}
+
 var redrawView=function(){
+	essResetRMChanges();
  
 	workingCapId=0;
 	let workingAppsList=[];
@@ -1985,8 +1997,8 @@ var redrawView=function(){
 		})
 	}
   
-	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
-	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs));
+	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
 	let appsToShow=[]; 
 	 
 	inScopeCapsApp=scopedCaps.resources; 

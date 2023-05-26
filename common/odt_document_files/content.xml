@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+    xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+    xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+    xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+    xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+    xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+    xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+    xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML"
+    xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+    xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:ooo="http://openoffice.org/2004/office"
+    xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc"
+    xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#"
+    xmlns:officeooo="http://openoffice.org/2009/office" xmlns:tableooo="http://openoffice.org/2009/table"
+    xmlns:drawooo="http://openoffice.org/2010/draw"
+    xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
+    xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"
+    xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0"
+    xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0"
+    xmlns:css3t="http://www.w3.org/TR/css3-text/" office:version="1.2">
+    <office:scripts />
+    <office:font-face-decls>
+        <style:font-face style:name="OpenSymbol" svg:font-family="OpenSymbol" style:font-charset="x-symbol" />
+        <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="roman"
+            style:font-pitch="variable" />
+        <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;"
+            style:font-family-generic="swiss" style:font-pitch="variable" />
+        <style:font-face style:name="Arial1" svg:font-family="Arial" style:font-family-generic="system"
+            style:font-pitch="variable" />
+        <style:font-face style:name="Linux Libertine G" svg:font-family="&apos;Linux Libertine G&apos;"
+            style:font-family-generic="system" style:font-pitch="variable" />
+    </office:font-face-decls>
+    <office:automatic-styles>
+        <style:style style:name="tableStyle" style:family="table">
+            <style:table-properties style:width="6.2701in" fo:margin-left="0in" fo:margin-top="0in"
+                fo:margin-bottom="0in" fo:break-before="auto" fo:break-after="auto" table:align="left" />
+        </style:style>
+        <style:style style:name="tableColumn" style:family="table-column">
+            <style:table-column-properties style:column-width="2.0896in" />
+        </style:style> 
+        <style:style style:name="tableRow" style:family="table-row">
+            <style:table-row-properties fo:keep-together="auto" />
+        </style:style>
+        <style:style style:name="tableCell" style:family="table-cell">
+            <style:table-cell-properties style:vertical-align="" fo:padding="0.0694in" fo:border="1pt solid #000000" />
+        </style:style>
+        <style:style style:name="P1" style:family="paragraph" style:parent-style-name="Standard"
+            style:list-style-name="WWNum1">
+            <style:paragraph-properties fo:margin-left="0.5in" fo:margin-right="0in" fo:text-indent="-0.25in"
+                style:auto-text-indent="false" />
+        </style:style>
+        <style:style style:name="P2" style:family="paragraph" style:parent-style-name="Standard">
+            <style:paragraph-properties fo:margin-left="0in" fo:margin-right="0in" fo:margin-top="0in"
+                fo:margin-bottom="0in" loext:contextual-spacing="false" fo:line-height="100%" fo:text-align="start"
+                style:justify-single-word="false" fo:keep-together="auto" fo:orphans="0" fo:widows="0"
+                fo:text-indent="0in" style:auto-text-indent="false" fo:padding="0in" fo:border="none"
+                fo:keep-with-next="auto" />
+        </style:style>
+        <style:style style:name="P3" style:family="paragraph" style:parent-style-name="Heading_20_1"
+            style:master-page-name="Standard">
+            <style:paragraph-properties style:page-number="1" />
+        </style:style>
+        <style:style style:name="T1" style:family="text">
+            <style:text-properties style:text-underline-style="solid" style:text-underline-width="auto"
+                style:text-underline-color="font-color" />
+        </style:style>
+        <style:style style:name="T2" style:family="text">
+            <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" />
+        </style:style>
+        <style:style style:name="T3" style:family="text">
+            <style:text-properties style:text-underline-style="none" />
+        </style:style>
+    </office:automatic-styles>
+    <office:body>
+        <office:text>
+            <text:sequence-decls>
+                <text:sequence-decl text:display-outline-level="0" text:name="Illustration" />
+                <text:sequence-decl text:display-outline-level="0" text:name="Table" />
+                <text:sequence-decl text:display-outline-level="0" text:name="Text" />
+                <text:sequence-decl text:display-outline-level="0" text:name="Drawing" />
+            </text:sequence-decls>
+            <text:p text:style-name="P3">
+                <text:bookmark text:name="_z20232xxahq2" />Heading 1</text:p>
+            <text:p text:style-name="Standard">Some <text:span text:style-name="T1">text</text:span> with <text:span
+                    text:style-name="T2">bold</text:span>
+            </text:p>
+            <text:p text:style-name="Standard" />
+            <text:p text:style-name="Heading_20_2">
+                <text:bookmark text:name="_3bsbdj1163r" />Heading 2</text:p>
+            <text:list xml:id="list755119375" text:style-name="WWNum1">
+                <text:list-item>
+                    <text:p text:style-name="P1">Bullet 1</text:p>
+                </text:list-item>
+                <text:list-item>
+                    <text:p text:style-name="P1">Bullet 2</text:p>
+                </text:list-item>
+            </text:list>
+            <text:p text:style-name="Standard" />
+            <text:p text:style-name="Standard" />
+            <text:p text:style-name="Heading_20_3">
+                <text:bookmark text:name="_c5i6pjdehfnj" />Table</text:p>
+            <text:p text:style-name="Standard" />
+            <table:table table:name="Table1" table:style-name="tableStyle">
+                <table:table-column table:style-name="tableColumn" />
+                <table:table-column table:style-name="tableColumn" table:number-columns-repeated="2" />
+                <table:table-row table:style-name="tableRow">
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">Col1</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">Col2</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">Col3</text:p>
+                    </table:table-cell>
+                </table:table-row>
+                <table:table-row table:style-name="tableRow">
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">Row1</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">R1C2</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">R1C3</text:p>
+                    </table:table-cell>
+                </table:table-row>
+                <table:table-row table:style-name="tableRow">
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">Row2</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">R2C2</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="tableCell" office:value-type="string">
+                        <text:p text:style-name="P2">R2C3</text:p>
+                    </table:table-cell>
+                </table:table-row>
+            </table:table>
+            <text:p text:style-name="Standard" />
+        </office:text>
+    </office:body>
+</office:document-content>

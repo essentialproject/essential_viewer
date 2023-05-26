@@ -192,7 +192,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_techfunc tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_techfunc').DataTable({
@@ -303,7 +303,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_techcomps tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_techcomps').DataTable({
@@ -413,7 +413,7 @@
 										// Setup - add a text input to each footer cell
 									    $('#dt_techprinciples tfoot th').each( function () {
 									        var title = $(this).text();
-									        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+									        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 									    } );
 										
 										var table = $('#dt_techprinciples').DataTable({
@@ -557,7 +557,7 @@
 												// Setup - add a text input to each footer cell
 											    $('#dt_stakeholders tfoot th').each( function () {
 											        var title = $(this).text();
-											        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+											        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 											    } );
 												
 												var table = $('#dt_stakeholders').DataTable({

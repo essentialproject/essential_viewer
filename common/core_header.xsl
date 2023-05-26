@@ -383,6 +383,7 @@
 							<xsl:choose>
 								<xsl:when test="$eipMode = 'true'">
 									<li class="dropdown">
+										<style>#language_select > a {min-width:30px;min-height:15px;}#language_select > a > img {width:30px;height:15px;background-repeat:no-repeat;background-position:center;vertical-align:baseline;background-image:url("<xsl:value-of select="$flagFileImage"/>");}</style>
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown"><xsl:value-of select="$userData//user:firstname"/>&#160;<xsl:value-of select="$userData//user:lastname"/>&#160;<span class="caret"/></a>
 										<ul class="dropdown-menu" role="menu">
 											<li id="language_select">
@@ -392,7 +393,7 @@
 													<xsl:text>report?XML=reportXML.xml&amp;XSL=common/core_language_select.xsl&amp;LABEL=Select&#160;a&#160;Language&amp;currentPageLink=</xsl:text>
 													<xsl:value-of select="$currentPageEncodedURL"/>
 												</xsl:variable>
-												<a class="text-primary" href="{$languageSelectPageLink}"><xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;<img class="flagFix" src="{$flagFileImage}" alt="flag"/></a>
+												<a class="text-primary right-5" href="{$languageSelectPageLink}"><xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="flag"/></a>
 											</li>
 											<li class="divider"/>
 											<li>

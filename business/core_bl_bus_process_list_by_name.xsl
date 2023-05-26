@@ -1,19 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:import href="../common/core_rm_catalogue_functions.xsl"/>
-	<xsl:include href="../common/core_roadmap_functions.xsl"/>
-	<xsl:include href="../common/core_doctype.xsl"/>
-	<xsl:include href="../common/core_common_head_content.xsl"/>
-	<xsl:include href="../common/core_header.xsl"/>
-	<xsl:include href="../common/core_footer.xsl"/>
-	<xsl:include href="../common/datatables_includes.xsl"/>
+	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
+	 <xsl:include href="../common/core_doctype.xsl"></xsl:include>
+	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
+	<xsl:include href="../common/core_header.xsl"></xsl:include>
+	<xsl:include href="../common/core_footer.xsl"></xsl:include>
+	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
 
+	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"></xsl:output>
 
+	<xsl:param name="param1"></xsl:param>
 
-	<xsl:output method="html"/>
+	<!-- START GENERIC PARAMETERS --> 
+
+    <xsl:param name="viewScopeTermIds"/>
+    <xsl:param name="targetReportId"/>
+	<xsl:param name="targetMenuShortName"/> 
+
+	<!-- END GENERIC CATALOGUE PARAMETERS -->
+    <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
+
+	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
+	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
+
+	<!-- END GENERIC PARAMETERS -->
+
+	<!-- START GENERIC LINK VARIABLES -->
+	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="linkClasses" select="('Business_Process')"/>
+
+	<!-- START GENERIC LINK VARIABLES -->
+ 	<!-- END GENERIC LINK VARIABLES -->
+ 
+	 <xsl:variable name="busProcessRoadmap" select="/node()/simple_instance[type='Business_Process']"/>
 
 	<!--
-		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
+		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
 		*
@@ -31,220 +54,421 @@
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
 	-->
-	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
-	<!-- 06.11.2008 JWC	Migrated to XSL v2 -->
-	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
-	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
-	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
-	<!-- 08.04.2019 JP Updatedto be roadmap enabled -->
-
-	<!-- param4 = the optional taxonomy term used to scope the view -->
-	<xsl:param name="param4"/>
-
-	<!-- Get all of the Application Services in the repository -->
-
-	<!-- START GENERIC CATALOGUE PARAMETERS -->
-	<xsl:param name="targetReportId"/>
-	<xsl:param name="targetMenuShortName"/>
-	<xsl:param name="viewScopeTermIds"/>
-
-	<!-- END GENERIC CATALOGUE PARAMETERS -->
-
-
-	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
-	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
-	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
-	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="instanceClassName" select="('Business_Process')"/>
-	<xsl:variable name="allInstances" select="/node()/simple_instance[supertype = $instanceClassName or type = $instanceClassName]"/>
-	<xsl:variable name="linkClasses" select="('Business_Process')"/>
-	
-	<xsl:variable name="catalogueTitle" select="eas:i18n('Business Process Catalogue by Name')"/>
-	<xsl:variable name="catalogueSectionTitle" select="eas:i18n('Business Process Catalogue')"/>
-	<xsl:variable name="catalogueIntro" select="eas:i18n('Please click on one of the Business Processes below to navigate to the required view')"/>
-	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
-
-	<!-- START CATALOGUE SPECIFIC VARIABLES -->
-	<xsl:variable name="busProcListByServiceCatalogue" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue by Business Service')]"/>
-	<xsl:variable name="busProcListByDomain" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue by Business Domain')]"/>
-	<xsl:variable name="busProcListAsTable" select="/node()/simple_instance[(type = 'Report') and (own_slot_value[slot_reference = 'name']/value = 'Core: Business Process Catalogue as Table')]"/>
-	
-	<!-- END CATALOGUE SPECIFIC VARIABLES -->
-
-	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances" select="($allInstances)"/>
-	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-
-	<xsl:template match="knowledge_base">
-		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
-		<xsl:choose>
-			<xsl:when test="string-length($viewScopeTermIds) > 0">
-				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeInstances" select="$allInstances[own_slot_value[slot_reference = 'element_classified_by']/value = $viewScopeTerms/name]"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="BuildPage">
-					<xsl:with-param name="inScopeInstances" select="$allInstances"/>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template name="BuildPage">
-		<xsl:param name="pageLabel">
-			<xsl:value-of select="$catalogueTitle"/>
-		</xsl:param>
-		<xsl:param name="orgName">
-			<xsl:value-of select="eas:i18n('the enterprise')"/>
-		</xsl:param>
-		<xsl:param name="inScopeInstances"/>
-		<xsl:call-template name="docType"/>
+ 	 
+	<xsl:variable name="processData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"></xsl:variable>
+	   <xsl:template match="knowledge_base">
+		<xsl:call-template name="docType"></xsl:call-template>
+		<xsl:variable name="apiProcs">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$processData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable> 
 		<html>
 			<head>
-				<xsl:call-template name="commonHeadContent"/>
-                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<title>
-					<xsl:value-of select="$pageLabel"/>
-				</title>
-				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
-				<xsl:call-template name="dataTablesLibrary"/>
+				<xsl:call-template name="commonHeadContent"></xsl:call-template>
+				<xsl:for-each select="$linkClasses">
+					<xsl:call-template name="RenderInstanceLinkJavascript">
+						<xsl:with-param name="instanceClassName" select="current()"></xsl:with-param>
+						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
+					</xsl:call-template>
+				</xsl:for-each>
+                <title><xsl:value-of select="eas:i18n('Business Process Catalogue by Name')"/></title>
+              	<!--script to support smooth scroll back to top of page-->
+			 
+				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, WHERE REQUIRED -->
+				<xsl:for-each select="$linkClasses">
+					<xsl:call-template name="RenderInstanceLinkJavascript">
+						<xsl:with-param name="instanceClassName" select="current()"/>
+						<xsl:with-param name="targetMenu" select="()"/>
+					</xsl:call-template>
+				</xsl:for-each>
+				<style>
+					.CharacterContainer {
+                            text-align: center;
+                            font-size: 1.2em;
+                            line-height: 1.5em;
+                            background-color: #fff;
+                            color: #000;
+                            cursor: pointer; 
+                            display:inline-block
+                            }
+					.CharacterElement {
+                                margin: 1px;
+                                display:inline-block;
+                                cursor: pointer; 
+                            }
+                            
+                    .Inactive {
+                                color: #f0f0f0;
+                                cursor: default;
+                            }
+                    .Active {
+                                font-size: 1.2em;
+                                font-weight:bold;
+                                color:#000;
+                                cursor: default;
+								background-color:#e1e1e1;
+                            } 
+                    .list {padding-left:10px}   
 
-				<!--script to support smooth scroll back to top of page-->
-				<script type="text/javascript">
-					$(document).ready(function() {
-					    $('a.topLink').click(function(){
-					        $('html, body').animate({scrollTop:0}, 'slow');
-					        return false;
-					    });
-					});
-				</script>
-				
-				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				
+                    .caps {
+						padding:1px;
+                        border-left: 2pt solid #3fceb9;
+                        font-size:1.1em; 
+                    }        
+					.charBox{
+						display:inline-block;
+						border:1pt solid #d3d3d3;
+					}                 
+                                   
+				</style>
+			  
 			</head>
 			<body>
-				
-				
-				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, IF REQUIRED -->
-				<xsl:call-template name="RenderInstanceLinkJavascript">
-					<xsl:with-param name="instanceClassName" select="$instanceClassName"/>
-					<xsl:with-param name="targetMenu" select="$targetMenu"/>
-				</xsl:call-template>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
-				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-					<div class="clearfix"></div>
-				</div>
-				
+				<xsl:call-template name="Heading"></xsl:call-template>
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+				 
 				<!--ADD THE CONTENT-->
-				<a id="top"/>
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="page-header">
 								<h1>
-									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">
-										<xsl:value-of select="$pageLabel"/>
-									</span>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Process Catalogue by Name')"/></span>
 								</h1>
-								<div class="altViewName">
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Show by')"/>:&#160;</span>
-									<span class="text-primary">
-										<xsl:value-of select="eas:i18n('Name')"/>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListByDomain"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="'Business Domain'"/>
-										</xsl:call-template>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListByServiceCatalogue"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="'Business Service'"/>
-										</xsl:call-template>
-									</span>
-									<span class="text-darkgrey"> | </span>
-									<span class="text-darkgrey">
-										<xsl:call-template name="RenderCatalogueLink">
-											<xsl:with-param name="theCatalogue" select="$busProcListAsTable"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="targetReport" select="$targetReport"/>
-											<xsl:with-param name="targetMenu" select="$targetMenu"/>
-											<xsl:with-param name="displayString" select="'Table'"/>
-										</xsl:call-template>
-									</span>
-								</div>
 							</div>
-						</div>
-					</div>
-					<div class="row">
-						<!--Setup Description Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-list-ul icon-section icon-color"/>
-							</div>
+                        </div> 
+                        <div class="col-xs-12">
+ 
+                            <div id="nav" class="CharacterContainer"></div>
 
-							<h2 class="text-primary">
-								<xsl:value-of select="$catalogueSectionTitle"/>
-							</h2>
-
-							<p><xsl:value-of select="$catalogueIntro"/>.</p>
-
-							<div class="AlphabetQuickJumpLabel hidden-xs"><xsl:value-of select="eas:i18n('Go to')"/>:</div>
-							<div id="catalogue-section-nav" class="AlphabetQuickJumpLinks hidden-xs"/>
-							
-							<div class="clear"/>
-
-							<diV id="catalogue-section-container"/>							
-
-						</div>
-						<div class="clear"/>
-
-					</div>
-				</div>
-
-				<div class="clear"/>
-
+                            <div id="list" class="list top-15"></div>
+                        </div>
+                    </div>
+                </div>
+						
 				<!-- ADD THE PAGE FOOTER -->
-				<xsl:call-template name="Footer"/>
-				
-				<!-- ***REQUIRED*** CALL THE ROADMAP CATALOGUE XSL TEMPLATE TO RENDER COMMON JS FUNCTIONS AND HANDLEBARS TEMPLATES -->
-				<xsl:call-template name="RenderCatalogueByNameJS">
-					<xsl:with-param name="theInstances" select="$allInstances"/>
-					<xsl:with-param name="theRoadmapInstances" select="$allRoadmapInstances"/>
-					<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					<xsl:with-param name="theTargetReport" select="$targetReport"/>
-				</xsl:call-template>
-			</body>
+				<xsl:call-template name="Footer"></xsl:call-template>
+
+				<!-- caps template -->
+		
+            </body>
+			<script id="char-template" type="text/x-handlebars-template">
+				{{#each this}}
+				<div><xsl:attribute name="class">charBox CharacterElement {{#ifEquals @index 0}}Active{{/ifEquals}}</xsl:attribute><xsl:attribute name="easId">Letter{{#ifEquals this '.'}}dot{{else}}{{this}}{{/ifEquals}}</xsl:attribute>
+					{{this}}
+				</div>
+				{{/each}}
+			</script>
+            <script id="list-template" type="text/x-handlebars-template">
+                {{#each this.processes}} 
+                        <div class="col-xs-4">
+                            <div class="caps bottom-5">
+								{{#essRenderInstanceLinkSelect this 'Business_Process'}}{{/essRenderInstanceLinkSelect}}{{#essRenderInstanceLink this 'Business_Process'}}{{/essRenderInstanceLink}} 
+                            </div>
+                        </div>  
+                 {{/each}}    
+			</script>
+			<script>			
+				<xsl:call-template name="RenderViewerAPIJSFunction">
+                    <xsl:with-param name="viewerAPIPathProcs" select="$apiProcs"></xsl:with-param> 
+				</xsl:call-template>  
+			</script>
 		</html>
 	</xsl:template>
 
 
+	<xsl:template name="RenderViewerAPIJSFunction">
+		<xsl:param name="viewerAPIPathProcs"></xsl:param> 
+		//a global variable that holds the data returned by an Viewer API Report
+		var viewAPIData = '<xsl:value-of select="$viewerAPIPathProcs"/>';
+		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+		
+		var promise_loadViewerAPIData = function (apiDataSetURL) {
+			return new Promise(function (resolve, reject) {
+				if (apiDataSetURL != null) {
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function () {
+						if (this.readyState == 4 &amp;&amp; this.status == 200) {
+
+							var viewerData = JSON.parse(this.responseText);
+							resolve(viewerData);
+						}
+					};
+					xmlhttp.onerror = function () {
+						reject(false);
+					};
+
+					xmlhttp.open("GET", apiDataSetURL, true);
+					xmlhttp.send();
+				} else {
+					reject(false);
+				}
+			});
+		};
+		// numbering based on: http://www.matthiassommer.it/programming/frontend/alphabetical-list-navigation-with-javascript-html-and-css/
+		let createArrayAtoZ = _ => {
+			return Array
+				.apply(null, {
+					length: 26
+				})
+				.map((x, i) => String.fromCharCode(65 + i));
+		}
+
+		let createNavigationList = _ => {
+			let abcChars = createArrayAtoZ();
+			let rest=["0","1","2","3","4","5","6","7","8","9",".","#"]
+	 
+			abcChars=abcChars.concat(rest); 
+		//	const navigationEntries = abcChars.reduce(createDivForCharElement, '');
+		
+			$('#nav').append(charTemplate(abcChars))
+		}
+
+		let createDivForCharElement = (block, charToAdd) => {
+			if(charToAdd=='.'){
+				return block + "&lt;div id='CharacterElement' class='CharacterElement Inactive dot'>" + charToAdd + "&lt;/div>";
+			}else
+			{
+				return block + "&lt;div id='CharacterElement' class='CharacterElement Inactive " + charToAdd + "'>" + charToAdd + "&lt;/div>";
+			}
+		}
+  
+		var characterToShow = 'A';
+		//interim fix for roadmaps/     
+	 	var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+
+		$('document').ready(function () {
+			listFragment = $("#list-template").html();
+			listTemplate = Handlebars.compile(listFragment);
+
+			charFragment = $("#char-template").html();
+			charTemplate = Handlebars.compile(charFragment);
+
+			Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+			});
+
+			const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+
+			function essGetMenuName(instance) {
+		 
+		        let menuName = null;
+		        if ((instance != null) &amp;&amp;
+		            (instance.meta != null) &amp;&amp;
+		            (instance.meta.classes != null)) {
+		            menuName = instance.meta.menuId;
+		        } else if (instance.classes != null) {
+		            menuName = instance.meta.classes;
+				}
+			 
+		        return menuName;
+			}
+			
+			Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
+
+				let targetReport = "<xsl:value-of select="$repYN"/>";
+		 
+				if (targetReport.length &gt; 1) {
+			 
+					if (instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+					 
+						if (linkMenuName != null) {
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+							let linkClass = 'context-menu-' + linkMenuName;
+							let linkId = instance.id + 'Link';
+							let linkURL = reportURL;
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+			
+						} else if (instanceLink != null) {
+							let linkURL = reportURL;
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+							let linkClass = 'context-menu-' + linkMenuName;
+
+							let linkId = instance.id + 'Link';
+						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+			
+							
+		
+							return instanceLink;
+						} else {
+							return '';
+						}
+					}
+				} else {
+		 
+					let thisMeta = meta.filter((d) => {
+		                return d.classes.includes(type)
+					});
+ 
+				 
+		            instance['meta'] = thisMeta[0]
+		            let linkMenuName = essGetMenuName(instance);
+		            let instanceLink = instance.name;
+		            if (linkMenuName != null) {
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkClass = 'context-menu-' + linkMenuName;
+		                let linkId = instance.id + 'Link';
+		                let linkURL = reportURL; 
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+			
+		                return instanceLink;
+		            }
+				}
+			});
+			
+			Handlebars.registerHelper('essRenderInstanceLink', function (instance,type) {
+
+				let targetReport = "<xsl:value-of select="$repYN"/>";
+		 
+				if (targetReport.length &gt; 1) {
+			 
+					if (instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+						if (linkMenuName != null) {
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+							let linkClass = 'context-menu-' + linkMenuName;
+							let linkId = instance.id + 'Link';
+							let linkURL = reportURL;
+							instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+						} else if (instanceLink != null) {
+							let linkURL = reportURL;
+							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+							let linkClass = 'context-menu-' + linkMenuName;
+
+							let linkId = instance.id + 'Link';
+							instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
+
+							return instanceLink;
+						} else {
+							return '';
+						}
+					}
+				} else {
+		 
+		            let thisMeta = meta.filter((d) => {
+		                return d.classes.includes(type)
+					});
+				 
+		            instance['meta'] = thisMeta[0]
+		            let linkMenuName = essGetMenuName(instance);
+		            let instanceLink = instance.name;
+		            if (linkMenuName != null) {
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkClass = 'context-menu-' + linkMenuName;
+		                let linkId = instance.id + 'Link';
+		                let linkURL = reportURL;
+		                instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+				 
+		                return instanceLink;
+		            }
+				}
+			});
+			let busProcArr = [];
+			createNavigationList()
+			Promise.all([
+				promise_loadViewerAPIData(viewAPIData) 
+			]).then(function (responses) {
+				meta = responses[0].meta;
+				busProcArr = responses[0].businessProcesses  
+			 
+ 
+				busProcArr.forEach((d) => {
+					d['meta'] = meta.filter((d) => {
+						return d.classes.includes('Business_Process')
+					})
+				});
+
+				roadmapCaps = [];
+
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'Product_Concept', 'SYS_CONTENT_APPROVAL_STATUS'], '', true);
+
+
+				$('.CharacterElement').on('click', function () {
+					$('.CharacterElement').removeClass('Active');
+					characterToShow = $(this).html();
+					$(this).addClass('CharacterElement Active');
+					redrawScope();
+				})
+
+			}).catch(function (error) {
+				//display an error somewhere on the page
+			});
+
+
+			var redrawView = function () { 
+				essResetRMChanges();
+				typeInfo = {
+					"className": "Business_Process",
+					"label": 'Business Process',
+					"icon": 'fa-chevron-double-right'
+				}
+			 
+				let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
+				let prodConceptScopingDef = new ScopingProperty('prodConIds', 'Product_Concept');
+				let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
+
+				let scopedProc = essScopeResources(busProcArr, [capOrgScopingDef, geoScopingDef, prodConceptScopingDef, domainScopingDef], typeInfo);
+
+				let showProcs = scopedProc.resources; 
+				showProcs=showProcs.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0))
+				let chosenProcs = showProcs.filter((d) => {
+					return d.name.toUpperCase().substr(0, 1) == characterToShow.trim();
+				})
+			 
+				let viewArray = {};
+
+				viewArray['type'] = "<xsl:value-of select="$repYN"/>";
+				viewArray['processes'] = chosenProcs
+ 
+				$('#list').html(listTemplate(viewArray));
+ 
+				let newChars = [];
+				showProcs.forEach((d) => {
+					newChars.push(d.name.toUpperCase().substr(0, 1))
+				});
+
+				$('.CharacterElement').css({
+					"border-bottom": "1pt solid #d3d3d3",
+					"width": "22px",
+					"padding":"3px"
+				})
+
+				let uniq = [...new Set(newChars)];
+				uniq.forEach((ch) => {
+					if(ch=='.'){ch='dot'} 
+					$('div [easId="Letter' + ch+'"]').css({
+						"border-bottom": "2pt solid red",
+						"width": "22px"
+					})
+				});
+
+			}
+		});
+
+		function redrawScope() {
+			essRefreshScopingValues()
+		}
+ 
+	</xsl:template>
+
+	<xsl:template name="GetViewerAPIPath">
+		<xsl:param name="apiReport"></xsl:param>
+
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderAPILinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+	</xsl:template>
 </xsl:stylesheet>

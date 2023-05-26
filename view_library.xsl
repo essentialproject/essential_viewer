@@ -239,32 +239,32 @@
 										</div>-->
 									</div>
 									<div role="tabpanel" class="tab-pane" id="enterprise">
-										<xsl:apply-templates mode="Enterprise" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Enterprise" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $eaArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="business">
-										<xsl:apply-templates mode="Business" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Business" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $busArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="information">
-										<xsl:apply-templates mode="Information" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Information" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $infArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="application">
-										<xsl:apply-templates mode="Application" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Application" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $appArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="technology">
-										<xsl:apply-templates mode="Technology" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Technology" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $techArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>
 									<div role="tabpanel" class="tab-pane" id="support">
-										<xsl:apply-templates mode="Support" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+										<xsl:apply-templates mode="Support" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $supportArchViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name or own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name)]">
 											<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
 										</xsl:apply-templates>
 									</div>

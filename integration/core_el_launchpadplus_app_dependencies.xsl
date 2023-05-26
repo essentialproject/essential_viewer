@@ -165,12 +165,12 @@
 					<p>		
               <button id="genExcel" class="btn btn-default bg-primary text-white small bottom-10">Generate Application Dependency Launchpad File</button> <span class="appDepSpin"><i class="fa fa-cog fa-spin  fa-fw"></i> Loading...wait</span><br/></p>
               <p>
-                <a class="noUL" href="https://enterprise-architecture.org/downloads_area/app_dependency_import.zip" download="app_dependency_import.zip">
+                <a class="noUL" href="integration/plus/app_dependency_import.zip" download="app_dependency_import.zip">
                 <button id="downloadSpec" class="btn btn-default bg-secondary text-white small bottom-10">Get Application Dependency Import Specification</button>
                 </a> 
                 <br/>
                     
-                     <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Application_Dependencies.docx" download="LaunchpadPlus-Application_Dependencies.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                     <a href="integration/plus/LaunchpadPlus-Application_Dependencies.docx" download="LaunchpadPlus-Application_Dependencies.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
                
                  </p>   
                         </div>
@@ -519,7 +519,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R169C5</Range>
    <Type>List</Type>
-   <Value>Valid_Data_Aquisition_Methods</Value>
+   <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R169C6</Range>
@@ -679,7 +679,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R169C5</Range>
    <Type>List</Type>
-   <Value>Valid_Data_Aquisition_Methods</Value>
+    <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R169C6</Range>
@@ -844,7 +844,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R169C5</Range>
    <Type>List</Type>
-   <Value>Valid_Data_Aquisition_Methods</Value>
+    <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R169C6</Range>
@@ -1009,7 +1009,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C5:R169C5</Range>
    <Type>List</Type>
-   <Value>Valid_Data_Aquisition_Methods</Value>
+    <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R8C6:R169C6</Range>
@@ -1153,7 +1153,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C7:R9C7</Range>
          <Type>List</Type>
-         <Value>Valid_Data_Aquisition_Methods</Value>
+          <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
         </DataValidation>
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C8:R9C8</Range>
@@ -1291,7 +1291,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C7:R9C7</Range>
          <Type>List</Type>
-         <Value>Valid_Data_Aquisition_Methods</Value>
+          <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
         </DataValidation>
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C8:R9C8</Range>
@@ -1429,7 +1429,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C7:R9C7</Range>
          <Type>List</Type>
-         <Value>Valid_Data_Aquisition_Methods</Value>
+          <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
         </DataValidation>
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C8:R9C8</Range>
@@ -1562,7 +1562,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C7:R9C7</Range>
          <Type>List</Type>
-         <Value>Valid_Data_Aquisition_Methods</Value>
+          <Value>&quot;<xsl:for-each select="$allDataAcquisition"><xsl:value-of select="own_slot_value[slot_reference='name']/value"/><xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>&quot;</Value>
         </DataValidation>
         <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
          <Range>R8C8:R9C8</Range>
@@ -2040,8 +2040,8 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
           <xsl:variable name="aqmethod" select="$allDataAcquisition[name=$method]"/>
           <xsl:variable name="aqfreq" select="$allInfoQual[name=$freq]"/>
         {"id":"<xsl:value-of select="current()/name"/>",
-        "method":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aqmethod"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
-        "frequency":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aqfreq"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+        "method":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aqmethod[1]"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+        "frequency":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aqfreq[1]"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
         "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>"}<xsl:if test="not(position()=last())">,</xsl:if>
 </xsl:template>
 </xsl:stylesheet>  

@@ -347,7 +347,7 @@ var inScopeNodes
 		   
 			    $('#dt_server tfoot th').each( function () {
 			        var title = $(this).text();
-			        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+			        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 			    } );
 					 
 				nodetable = $('#dt_server').DataTable({

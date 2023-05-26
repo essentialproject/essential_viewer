@@ -55,9 +55,8 @@
 	<xsl:key name="objectives_key" match="/node()/simple_instance[type=('Information_Architecture_Objective', 'Technology_Architecture_Objective', 'Application_Architecture_Objective', 'Business_Objective')]" use="own_slot_value[slot_reference = 'objective_supported_by_strategic_plan']/value"/> 
 	<xsl:variable name="drivers" select="/node()/simple_instance[type=('Business_Driver', 'Application_Driver', 'Information_Driver', 'Technology_Driver')]"/>
 	
-	<!-- Set up the required link classes -->
-
-
+	<!-- Set up the required link classes --> 
+	<xsl:key name="projects2plan_key" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference = 'ca_planned_changes']/value"/>
 
 	<xsl:key name="projects_key" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference = 'contained_in_programme']/value"/>
 	<xsl:key name="budgets_key" match="/node()/simple_instance[type='Budget']" use="own_slot_value[slot_reference = 'budget_for_change_activity']/value"/>
@@ -122,6 +121,28 @@
 			"className":"<xsl:value-of select="current()/type"/>",
 			"validStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", 
 			"validEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>",
+			"planP2E":[<xsl:for-each select="$p2eforplan">
+				<xsl:variable name="thisAction" select="$planningActions[name=current()/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/> 
+				<xsl:variable name="ele" select="$allImpactedElements[name=current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+				<xsl:variable name="thisProj" select="key('projects2plan_key',current()/name)"/> 
+				{ 
+					"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"actionid":"<xsl:value-of select="eas:getSafeJSString($thisAction/name)"/>",
+				"projectId":"<xsl:value-of select="eas:getSafeJSString($thisProj/name)"/>",
+				"projectname":"<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="$thisProj"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>",
+				"action":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisAction"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",
+				"impactedElement":"<xsl:value-of select="eas:getSafeJSString($ele/name)"/>",
+				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="$ele"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
+			</xsl:for-each>],
 			"objectives":[<xsl:for-each select="$objectivesforplan">
 				{ "name":"<xsl:call-template name="RenderMultiLangInstanceName">
 						<xsl:with-param name="theSubjectInstance" select="current()"/>

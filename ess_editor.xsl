@@ -36,7 +36,7 @@
 	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = ($configEditorComponents, $targetEditor)/own_slot_value[slot_reference = ('viewer_code_libraries')]/value]"/>
 	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
 	
-	<xsl:variable name="linkClasses" select="$targetEditor/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class')]/value"/>
+	<xsl:variable name="linkClasses" select="($targetEditor, $configEditorComponents)/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class', 'editor_component_required_classes')]/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
 	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
 	<xsl:variable name="editorHeadContent" select="$targetEditor/own_slot_value[slot_reference = 'editor_included_head_content']/value"/>
@@ -237,20 +237,59 @@
 					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
 					
 					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
-					if(instance != null) {
-					let linkMenuName = essGetMenuName(instance);
-					let instanceLink = instance.name;
-					if(linkMenuName != null) {
-					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
-					let linkClass = 'context-menu-' + linkMenuName;
-					let linkId = instance.id + 'Link';
-					instanceLink = '<a target="_blank" href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
-					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
-					}
-					return instanceLink;
-					} else {
-					return '';
-					}
+						if(instance != null) {
+						let linkMenuName = essGetMenuName(instance);
+						let instanceLink = instance.name;
+						if(linkMenuName != null) {
+						let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+						let linkClass = 'context-menu-' + linkMenuName;
+						let linkId = instance.id + 'Link';
+						instanceLink = '<a target="_blank" href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+						<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+						}
+						return instanceLink;
+						} else {
+						return '';
+						}
+					});
+
+					Handlebars.registerHelper('essRenderInstancePropLink', function(instance, property){
+						if(instance &amp;&amp; instance[property]) {
+							let instanceProp = instance[property];
+							let linkMenuName = essGetMenuName(instanceProp);
+							let instanceLink = instanceProp.name;
+							if(linkMenuName != null) {
+								let linkHref = '?XML=reportXML.xml&amp;PMA=' + instanceProp.id + '&amp;cl=' + essLinkLanguage;
+								let linkClass = 'context-menu-' + linkMenuName;
+								let linkId = instanceProp.id + 'Link';
+								instanceLink = '<a target="_blank" href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instanceProp.name + '</a>';
+								<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+							}
+							return instanceLink;
+						} else {
+							return '';
+						}
+					});
+
+
+					Handlebars.registerHelper('essRenderInstanceLinkLabelSlot', function(instance, labelSlot){
+						if(instance) {
+							let instanceLabel = instance[labelSlot];
+							if(!instanceLabel) {
+								instanceLabel = instance.name;
+							}
+							let linkMenuName = essGetMenuName(instance);
+							let instanceLink = instanceLabel;
+							if(linkMenuName != null) {
+								let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+								let linkClass = 'context-menu-' + linkMenuName;
+								let linkId = instance.id + 'Link';
+								instanceLink = '<a target="_blank" href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instanceLabel + '</a>';
+							}
+							return instanceLink;
+						} else {
+							return '';
+						}
 					});
 					
 					
@@ -260,6 +299,14 @@
 					} else {
 					return '';
 					}
+					});
+
+					Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+						return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+					});
+
+					Handlebars.registerHelper('ifNotEquals', function (arg1, arg2, options) {
+						return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
 					});
 					
 					var essTableLinkTemplate;
@@ -439,15 +486,20 @@
 							<xsl:copy-of select="document(.)"/>
 						</xsl:when>
 						<xsl:otherwise>
-							<span>FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>
+							<span>EDITOR COMPONENT FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:for-each>
 
 				<xsl:for-each select="$configEditorJSLibPaths">
-					<xsl:if test="doc-available(.)">
-						<xsl:copy-of select="document(.)"/>
-					</xsl:if>
+					<xsl:choose>
+						<xsl:when test="doc-available(.)">
+							<xsl:copy-of select="document(.)"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<span>JS LIBRARY FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:for-each>
 				
 			</body>

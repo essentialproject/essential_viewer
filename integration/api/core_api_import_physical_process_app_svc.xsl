@@ -14,7 +14,8 @@
 	<xsl:variable name="apr" select="/node()/simple_instance[type=('Application_Provider_Role')][name=$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
 	<xsl:variable name="AppsViaService" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$apr/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="AppsDirect" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
-	 
+	<xsl:variable name="criticality" select="/node()/simple_instance[type=('Business_Criticality')]"/>
+
 	<xsl:key name="busProcess_key" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/>
 	<xsl:key name="appbr_key" match="/node()/simple_instance[type=('APP_PRO_TO_PHYS_BUS_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value"/>
 	<xsl:key name="apr_key" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'app_pro_role_supports_phys_proc']/value"/>
@@ -64,12 +65,14 @@
 	<xsl:variable name="thisorgviaa2r" select="$orgviaa2r[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	<xsl:variable name="thisorgdirect" select="$orgdirect[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:variable name="thisorgs" select="$thisorgdirect union $thisorgviaa2r"/>	
-
+	<xsl:variable name="thisCriticality" select="$criticality[name=current()/own_slot_value[slot_reference = 'bpt_business_criticality']/value]"/>
 	{  
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"processName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbpr"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"processCriticality":"<xsl:value-of select="$thisCriticality/own_slot_value[slot_reference = 'enumeration_value']/value"/>",
 		"org":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisorgs"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"orgid":"<xsl:value-of select="eas:getSafeJSString($thisorgs/name)"/>",
+		"orgUserId":["<xsl:value-of select="eas:getSafeJSString($thisorgs/name)"/>"],
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"processid":"<xsl:value-of select="eas:getSafeJSString($thisbpr/name)"/>",
 		"appsviaservice":[<xsl:for-each select="$thisapr">

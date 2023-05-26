@@ -1106,13 +1106,19 @@ capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
 			}		
 <!--
 var redrawView=function(){
+	essResetRMChanges();
+	let appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+	}
 	
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let apps=appArray.applications;
-	let scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
+	let scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef], appTypeInfo);
 	
 	let appsToShow=[];
 	console.log(scopedApps)

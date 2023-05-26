@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_roadmap_functions.xsl"/>
+	 <xsl:import href="../common/core_js_functions.xsl"></xsl:import>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -32,12 +32,8 @@
 	<xsl:variable name="allValueStreams" select="/node()/simple_instance[type = 'Value_Stream']"/>
 	<xsl:variable name="allVSInitiators" select="/node()/simple_instance[name = $allValueStreams/own_slot_value[slot_reference = 'vs_trigger_business_roles']/value]"/>
 	<xsl:variable name="allProductTypes" select="/node()/simple_instance[name = $allValueStreams/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
-
-	
-	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-	<xsl:variable name="allRoadmapInstances" select="($allValueStreams, $allProductTypes)"/>
-	<xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	
+	<xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name=$allValueStreams/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<xsl:key name="actorKey" match="/node()/simple_instance[type = 'Group_Actor']" use="own_slot_value[slot_reference = 'actor_plays_role']/value "/>
 	<!--
 		* Copyright © 2008-2018 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -81,35 +77,13 @@
 					<xsl:value-of select="eas:i18n('Value Stream Catalogue')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				
-				<!-- ***REQUIRED*** ADD THE JS LIBRARIES IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
-				
-				<xsl:call-template name="RenderCommonRoadmapJavscript">
-					<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-				</xsl:call-template>
-
+				 
 			</head>
-			<body>
-				
-						
+			<body> 
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
-				<!-- ***REQUIRED*** ADD THE ROADMAP WIDGET FLOATING DIV -->
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-					<div class="clearfix"></div>
-				</div>
+				<xsl:call-template name="Heading"/> 
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+				 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -142,7 +116,7 @@
 							<script type="text/javascript">
 	
 								<!-- START VIEW SPECIFIC JAVASCRIPT VARIABLES -->
-								//global catalogu specific variables
+								//global catalogue specific variables
 								var catalogueTable;
 								var instanceListTemplate, vsNameTemplate;
 								
@@ -195,15 +169,32 @@
 										var valStreamLinkHTML = vsNameTemplate(aValStream);
 										
 										//get the list of initiatos of the value stream
-										var prodTypeList = getObjectsByIds(inScopeProdTypes.productTypes, 'id', aValStream.products);
+										let prodList=[]
+									
+										aValStream.products.forEach((e)=>{ 
+											let match=inScopeProdTypes.productTypes.find((f)=>{
+												return f.id==e;
+											}) 
+											prodList.push(match)
+										})
+
+										var prodTypeList =prodList
 										var prodTypeListJSON = {
 											instances: prodTypeList
 										}							
 										//Apply handlebars template
-										var prodTypeListHTML = instanceListTemplate(prodTypeListJSON);
-										
+										var prodTypeListHTML = instanceListProductTemplate(prodTypeListJSON);
+										let initList=[]
+									
+										aValStream.initiators.forEach((e)=>{ 
+											let match=inScopeVSInitiators.vsInitiators.find((f)=>{
+												return f.id==e;
+											}) 
+											initList.push(match)
+										})
+
 										//get the list of initiatos of the value stream
-										var initiatorList = getObjectsByIds(inScopeVSInitiators.vsInitiators, 'id', aValStream.initiators);
+										var initiatorList = initList;
 										var initiatorListJSON = {
 											instances: initiatorList
 										}							
@@ -235,43 +226,100 @@
 							  	<!-- ***REQUIRED*** JAVASCRIPT FUNCTION TO REDRAW THE VIEW WHEN THE ANY SCOPING ACTION IS TAKEN BY THE USER -->
 							  	//function to redraw the view based on the current scope
 								function redrawView() {
-									//console.log('Redrawing View');
-									
-									if(roadmapEnabled) {
-										<!-- ***REQUIRED*** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS -->
-										//update the roadmap status of the value streams, products and initiators passed as an array of arrays
-										rmSetElementListRoadmapStatus([valStreams.valStreams, productTypes.productTypes, vsInitiators.vsInitiators]);
-										
-										<!-- ***OPTIONAL*** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME -->
-										//filter value streams to those in scope for the roadmap start and end date
-										inScopeValStreams.valStreams = rmGetVisibleElements(valStreams.valStreams);
-									} else {
-										inScopeValStreams.valStreams = valStreams.valStreams;
+									essResetRMChanges();
+									typeInfo = {
+										"className": "Value_Stream",
+										"label": 'Value Stream',
+										"icon": 'fa-chevron-right'
 									}
+									//console.log('Redrawing View');
+									orgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor'); 
+						
+									inScopeValStreams.valStreams  = essScopeResources(valStreams.valStreams, [orgScopingDef], typeInfo);
 									
+									inScopeValStreams.valStreams =inScopeValStreams.valStreams.resources;
+
 									<!-- VIEW SPECIFIC JS CALLS -->
 									//update the catalogue
 									setValStreamTable();
-									
-									<!--<!-\- START TEST DIV STYLING -\->
-									var testApp1 = getObjectById(inScopeValStreams.valStreams, 'id', 'essential_baseline_v62_it_asset_dashboard_Class21110');
-									refreshDOMRoadmapStyles('#testStyling1', vsNameTemplate, testApp1);
-
-								    
-								    var testApp2 = getObjectById(inScopeValStreams.valStreams, 'id', 'essential_baseline_v62_it_asset_dashboard_Class21092');
-								    refreshDOMRoadmapStyles('#testStyling2', vsNameTemplate, testApp2);				    
-								    <!-\- END TEST DIV STYLING -\->-->
 																						
 								}
 								
 								
 								$(document).ready(function(){
+									var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+									const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+
+								function essGetMenuName(instance) { 
+								
+									let menuName = null;
+									if(instance){
+										if ((instance != null) &amp;&amp;
+											(instance.meta != null) &amp;&amp;
+											(instance.meta.classes != null)) {
+											menuName = instance.meta.menuId;
+										} else if (instance.classes != null) {
+											menuName = instance.meta.classes;
+										}
+											return menuName;
+										}
+									else{
+										return 'Business_Process';
+									}
+								}
+								Handlebars.registerHelper('essRenderInstanceLink', function (instance, type) {
+									
+									let meta =[
+										{"classes":["Product_Type"], "menuId":"prodTypeGenMenu"},
+										{"classes":["Value_Stream"], "menuId":"valStreamGenMenu"}]
+ 
+									let linkMenuName = essGetMenuName(instance);
+									
+										let thisMeta = meta.filter((d) => {
+											return d.classes.includes(type)
+										});
+										if(instance){
+											instance['meta'] = thisMeta[0]
+											let linkMenuName = essGetMenuName(instance);
+											let instanceLink = instance.name;
+											if (linkMenuName != null) {
+												let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+												let linkClass = 'context-menu-' + linkMenuName;
+												let linkId = instance.id + 'Link';
+												let linkURL = reportURL;
+												instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+						
+												return instanceLink;
+											 
+										}
+									}
+								});
+								Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
+					
+									let thisMeta = meta.filter((d) => {
+										return d.classes.includes(type)
+									});
+									instance['meta'] = thisMeta[0]
+									let linkMenuName = essGetMenuName(instance);
+									let instanceLink = instance.name;
+									if (linkMenuName != null) {
+										let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+										let linkClass = 'context-menu-' + linkMenuName;
+										let linkId = instance.id + 'Link';
+										instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+										return instanceLink;
+									}
+								});
 								
 									//START COMPILE HANDLEBARS TEMPLATES
 									
 									//Set up the html templates for technology products, components and capabilities
 									var instanceListFragment   = $("#instance-bullets").html();
 									instanceListTemplate = Handlebars.compile(instanceListFragment);
+									
+									var instanceProductListFragment   = $("#instance-bullets-product").html();
+									instanceListProductTemplate = Handlebars.compile(instanceProductListFragment);
 									
 									var vsNameFragment   = $("#val-stream-name").html();
 									vsNameTemplate = Handlebars.compile(vsNameFragment);
@@ -283,7 +331,7 @@
 									// Setup - add a text input to each footer cell
 								    $('#dt_valStreams tfoot th').each( function () {
 								        var title = $(this).text();
-								        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+								        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 								    } );
 									
 									catalogueTable = $('#dt_valStreams').DataTable({
@@ -330,15 +378,12 @@
 								        catalogueTable.columns.adjust();
 								    });
 								    
-								    <!-- ***OPTIONAL*** Register the table as having roadmap aware contents -->
-									if(roadmapEnabled) {
-								    	registerRoadmapDatatable(catalogueTable);
-								    }
+								   
 								    
 								    //END INITIALISE UP THE CATALOGUE TABLE
 								    
 								    //DRAW THE VIEW
-								    redrawView();
+									essInitViewScoping(redrawView,['Group_Actor'], '',true);
 								});
 							</script>
 							<!-- START TEST DIVS -->
@@ -397,7 +442,16 @@
 					<ul>
 						{{#instances}}
 							<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A BULLET DOM ELEMENT -->
-							<xsl:call-template name="RenderHandlebarsRoadmapBullet"/>
+							<i class="fa fa-caret-right"></i> {{name}}<br/>
+						{{/instances}}
+					</ul>
+				</script>
+
+				<script id="instance-bullets-product" type="text/x-handlebars-template">
+					<ul>
+						{{#instances}}
+							<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A BULLET DOM ELEMENT -->
+							<i class="fa fa-caret-right"></i> {{#essRenderInstanceLink this 'Product_Type'}}{{/essRenderInstanceLink}}<br/>
 						{{/instances}}
 					</ul>
 				</script>
@@ -405,7 +459,8 @@
 				<!-- Handlebars template to render an individual application as text-->
 				<script id="val-stream-name" type="text/x-handlebars-template">
 					<!-- CALL THE ROADMAP HANDLEBARS TEMPLATE FOR A TEXT DOM ELEMENT -->
-					<xsl:call-template name="RenderHandlebarsRoadmapSpan"/>
+				 {{#essRenderInstanceLink this 'Value_Stream'}}{{/essRenderInstanceLink}}<br/>
+					
 				</script>
 				<!-- END HANDLEBARS TEMPLATES -->
 				
@@ -420,24 +475,32 @@
 		
 		{
 		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-		<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>
-		} <xsl:if test="not(position()=last())">,
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+		<xsl:with-param name="theSubjectInstance" select="current()"/>
+		   </xsl:call-template>"} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
 	
 	
 	
-	<xsl:template match="node()" mode="RenderValStreamJSON">
-		
+	<xsl:template match="node()" mode="RenderValStreamJSON">	
+		<xsl:variable name="thisA2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		<xsl:variable name="thisActors" select="key('actorKey',$thisA2r/name)"/>	
 		<xsl:variable name="thisInitiators" select="$allVSInitiators[name = current()/own_slot_value[slot_reference = 'vs_trigger_business_roles']/value]"/>
-		<xsl:variable name="thisProductTypes" select="$allProductTypes[name = current()/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
-		
-		
-		{
-			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-			<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theTargetReport" select="$targetReport"/><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
-			products: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisProductTypes"/>], 
-			initiators: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisInitiators"/>]
+		<xsl:variable name="thisProductTypes" select="$allProductTypes[name = current()/own_slot_value[slot_reference = 'vs_product_types']/value]"/>	
+		{ 
+			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+		   	</xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+			   <xsl:with-param name="isRenderAsJSString" select="true()"/> 
+				   <xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>",
+		    "products": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisProductTypes"/>], 
+			"initiators": [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisInitiators"/>],
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

@@ -61,7 +61,9 @@
 			"description": "<xsl:value-of select="$thisDesc"/>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"codebase": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'ap_codebase_status']/value"/>",
-			"delivery": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'ap_delivery_model']/value"/>"
+			"delivery": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'ap_delivery_model']/value"/>",
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>

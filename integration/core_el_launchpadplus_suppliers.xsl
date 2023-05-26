@@ -129,10 +129,10 @@
                                 <a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4plus_supplier_management.xsl&amp;CT=application/ms-excel&amp;FILE=supplier_management.xml&amp;cl=en-gb">
                                     <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Supplier Management as Excel</div>
                                 </a><br/>
-                                <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Suppliers_Contracts_Import_Spec_23_2_22.zip" download="Suppliers_Contracts_Import_Specv1a.zip">
+                                <a class="noUL" href="integration/plus/Suppliers_Contracts_Import_Spec_23_2_22.zip" download="Suppliers_Contracts_Import_Specv1a.zip">
                                     <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Supplier Management Import Specification</div>
                                 </a><br/>                                     
-                                    <a href="https://enterprise-architecture.org/downloads_area/Using_the_Supplier_Contracts_Launchpad_Plus.docx" download="Using_the_Supplier_Contracts_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                                    <a href="integration/plus/Using_the_Supplier_Contracts_Launchpad_Plus.docx" download="Using_the_Supplier_Contracts_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
                             </p>
 						</div>
             <div class="col-md-8">

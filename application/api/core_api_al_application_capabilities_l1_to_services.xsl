@@ -39,14 +39,12 @@
 	
 	<xsl:variable name="allAppCaps" select="/node()/simple_instance[type = 'Application_Capability']"/>
 	
-	<xsl:variable name="allAppServices" select="/node()/simple_instance[type = 'Application_Service']"/>
+	<xsl:variable name="allAppServices" select="/node()/simple_instance[type = ('Application_Service','Composite_Application_Service')]"/>
     <xsl:variable name="L0AppCaps" select="$allAppCaps[own_slot_value[slot_reference = 'element_classified_by']/value = $refLayers/name]"/>
 	<xsl:variable name="L1AppCaps" select="$allAppCaps[name = $L0AppCaps/own_slot_value[slot_reference = 'contained_app_capabilities']/value]"/>
+	<xsl:key name="allASKey" match="/node()/simple_instance[type = ('Application_Service','Composite_Application_Service')]" use="own_slot_value[slot_reference = 'realises_application_capabilities']/value"/>
 	<xsl:variable name="allAppProRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/>
-    <xsl:variable name="allRoadmapInstances" select="$allAppCaps"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
-    
+	<xsl:key name="allAPRKey" match="/node()/simple_instance[type='Application_Provider_Role']" use="own_slot_value[slot_reference = 'implementing_application_service']/value"/>
 	<xsl:template match="knowledge_base">
 		{
 			"application_capabilities": [
@@ -60,7 +58,8 @@
 	
 	
 	<xsl:template mode="RenderApplicationCapabilities" match="node()">
-		<xsl:variable name="appServices" select="$allAppServices[own_slot_value[slot_reference = 'realises_application_capabilities']/value = current()/name]"/>
+		<!--<xsl:variable name="appServices" select="$allAppServices[own_slot_value[slot_reference = 'realises_application_capabilities']/value = current()/name]"/>-->
+		<xsl:variable name="appServices" select="key('allASKey', current()/name)"/>
 		
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -72,11 +71,13 @@
 	</xsl:template>
 
     <xsl:template match="node()" mode="RenderAppServices">
-		<xsl:variable name="thisAppProRoles" select="$allAppProRoles[own_slot_value[slot_reference = 'implementing_application_service']/value = current()/name]"/>
+	<!--	<xsl:variable name="thisAppProRoles" select="$allAppProRoles[own_slot_value[slot_reference = 'implementing_application_service']/value = current()/name]"/>-->
+		<xsl:variable name="thisAppProRoles" select="key('allAPRKey',current()/name )"/>
 
 		<xsl:variable name="thisAppsIn" select="$thisAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
         
-		{<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
         "apps": [<xsl:for-each select="$thisAppsIn">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>

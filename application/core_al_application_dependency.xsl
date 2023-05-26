@@ -923,16 +923,28 @@ function removeEditorSpinner() {
 	$('#editor-spinner-text').text('')
 };
 
+var appTypeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+}
+var appIntfcTypeInfo = {
+	"className": "Application_Provider_Interface",
+	"label": 'Application Interface',
+	"icon": 'fa-exchange'
+}
+
 // DO FROM APPS
 var redrawView = function () {
- 
+	essResetRMChanges();
 
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION'); 
  
- 	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs));
+	
+ 	scopedApps = essScopeResources(fullAppList, [appOrgScopingDef, geoScopingDef,a2rScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
 //	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef]);
  
 let thefocusApp={};
@@ -1140,9 +1152,8 @@ data.dependencies.fromInterfaces.forEach((e)=>{
 });
 
 let lifeScopingDef = new ScopingProperty('lifecycleStatus', 'Lifecycle_Status');
- 
 
-let scopedinterfaceFromApps = essScopeResources(interfaceFromApps, [lifeScopingDef]);
+let scopedinterfaceFromApps = essScopeResources(interfaceFromApps, [lifeScopingDef], appIntfcTypeInfo);
  
 
 let interfacesToAdd=[];
@@ -1231,10 +1242,9 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 ap['interfaces']=allInterfaces;
 });
 
-let scopedindirectApps = essScopeResources(indirectApps, [lifeScopingDef]);
+let scopedindirectApps = essScopeResources(indirectApps, [lifeScopingDef], appTypeInfo);
  
-	
-let scopedinterfacesToAdd = essScopeResources(interfacesToAdd, [lifeScopingDef]);
+let scopedinterfacesToAdd = essScopeResources(interfacesToAdd, [lifeScopingDef], appIntfcTypeInfo);
  
 <!-- start -->
 interfacesToAdd.forEach((d)=>{

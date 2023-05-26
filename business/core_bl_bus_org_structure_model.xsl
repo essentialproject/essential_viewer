@@ -478,7 +478,7 @@
 				// Setup - add a text input to each footer cell
 			    $('#dt_orgs tfoot th').each( function () {
 			        var title = $(this).text();
-			        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+			        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
 			    } );
 				
 				var table = $('#dt_orgs').DataTable({
@@ -560,9 +560,15 @@
 				</tr>
 			</tfoot>
 			<tbody>
+			<xsl:for-each-group select="$inScopeOrgs[type = 'Group_Actor']" group-by="own_slot_value[slot_reference = 'name']/value">
+			<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
+			<xsl:apply-templates select="current-group()" mode="PrintOrganisationRows"/>
+			</xsl:for-each-group>
+		<!-- 
 				<xsl:apply-templates select="$inScopeOrgs[type = 'Group_Actor']" mode="PrintOrganisationRows">
 					<xsl:sort order="ascending" select="own_slot_value[slot_reference = 'name']/value"/>
 				</xsl:apply-templates>
+					-->
 			</tbody>
 		</table>
 	</xsl:template>

@@ -167,11 +167,11 @@
               <button id="genExcel" class="btn btn-default bg-primary text-white small bottom-10">Generate Framework Launchpad File</button>
               </p>
               <p>
-              <a class="noUL" href="https://enterprise-architecture.org/downloads_area/control_assessment_SPECv4.zip" download="control_assessment_SPECv4.zip">
+              <a class="noUL" href="integration/plus/control_assessment_SPECv4.zip" download="control_assessment_SPECv4.zip">
                 <button id="downloadSpec" class="btn btn-default bg-secondary text-white small bottom-10">Get Frameworks Import Specification</button>
                 </a> 
               <br/>
-                  <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Essential_Framework_Manager.docx" download="LaunchpadPlus-Essential_Framework_Manager.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                  <a href="integration/plus/LaunchpadPlus-Essential_Framework_Manager.docx" download="LaunchpadPlus-Essential_Framework_Manager.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
     
               </p>
 						</div>
@@ -419,7 +419,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 <script  id="compliance-tab" type="text/x-handlebars-template">
    <Worksheet ss:Name="Control Compliance Assessment">
    
-  <Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="13604" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" ss:ExpandedRowCount="13604" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s92" ss:DefaultColumnWidth="69"
    ss:DefaultRowHeight="15">
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="30"/>
@@ -432,6 +432,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="125"/>
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="121"/>
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="89"/>
+   <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="196"/>
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="196"/>
    <Row>
     <Cell ss:Index="10" ss:StyleID="s98"/>
@@ -450,6 +451,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
     <Cell ss:Index="9" ss:StyleID="s96"><Data ss:Type="String">ISO Format YYYY-MM-DD</Data></Cell>
     <Cell ss:StyleID="s25"/>
     <Cell ss:StyleID="s25"/>
+    <Cell ss:StyleID="s25"/>
    </Row>
    <Row ss:Height="40">
     <Cell ss:Index="2" ><Data ss:Type="String">Control ID</Data></Cell>
@@ -462,9 +464,11 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
     <Cell ><Data ss:Type="String">Assessment Date</Data></Cell>
     <Cell ><Data ss:Type="String">Outcome</Data></Cell>
     <Cell ><Data ss:Type="String">Comments</Data></Cell>
+    <Cell ><Data ss:Type="String">Description</Data></Cell>
    </Row>
    <Row>
     <Cell ss:Index="2" />
+    <Cell />
     <Cell />
     <Cell />
     <Cell />
@@ -489,7 +493,8 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
     <Cell ><Data ss:Type="String">{{this.assessments.0.assessmentDate}}</Data></Cell>
     <Cell ><Data ss:Type="String">{{this.assessments.0.assessmentOutcome}}</Data></Cell>
     <Cell ><Data ss:Type="String">{{#each this.assessments.0.assessmentComments}}{{this.name}}{{/each}}</Data></Cell>
-       
+    <Cell ><Data ss:Type="String">{{this.assessments.0.description}}</Data></Cell>
+      
    </Row>
        {{/each}}
      {{/each}}

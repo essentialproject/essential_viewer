@@ -2,7 +2,7 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"/>
-	<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
+	 <xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -39,8 +39,7 @@
 	<xsl:variable name="busDomains" select="/node()/simple_instance[type='Business_Domain']"/> 
 	<xsl:variable name="appServices" select="/node()/simple_instance[type='Application_Service']"/> 
 	<xsl:variable name="aprRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/> 
-	<xsl:variable name="purpose" select="/node()/simple_instance[type='Application_Purpose']"/> 
-	<xsl:variable name="applicationsRoadmap" select="$allApplications"/>
+	<xsl:variable name="purpose" select="/node()/simple_instance[type='Application_Purpose']"/>  
 	<xsl:variable name="a2r" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>
 	<xsl:variable name="actors" select="/node()/simple_instance[type='Group_Actor']"/>
 	<xsl:variable name="codebases" select="/node()/simple_instance[type='Codebase_Status']"/>
@@ -68,16 +67,34 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
+
+		Dagre D3 license
+		Copyright (c) 2013 Chris Pettitt
+
+		Permission is hereby granted, free of charge, to any person obtaining a copy
+		of this software and associated documentation files (the "Software"), to deal
+		in the Software without restriction, including without limitation the rights
+		to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+		copies of the Software, and to permit persons to whom the Software is
+		furnished to do so, subject to the following conditions:
+
+		The above copyright notice and this permission notice shall be included in
+		all copies or substantial portions of the Software.
+
+		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+		IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+		FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+		AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+		THE SOFTWARE.
 	-->
 	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
 	<!-- 06.11.2008 JWC	Migrated to XSL v2 -->
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
-	<xsl:variable name="allRoadmapInstances" select="$applicationsRoadmap"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>	
-
+  
 
 	<xsl:template match="knowledge_base">
 			<xsl:variable name="apiApps">
@@ -198,26 +215,13 @@
                         });
 
                 </script>
-				<xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
+				 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
+				<xsl:call-template name="Heading"/> 
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				<xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-				
-					<div class="clearfix"></div>
-				</div>
-		
+			 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -325,8 +329,7 @@
 	let depList=[];
 	let scopedAppsList=[];
 	let thisstyles, thisPurpose, thisFamily;
-	var roadmapApps = [ <xsl:apply-templates select="$applicationsRoadmap" mode="roadmapApps"/>];
- 
+  
 	$(document).ready(function(){
 		$('#infoModal').on('click', function(){
 			$('#explainModal').modal('show');
@@ -465,18 +468,14 @@ function getDependencies(focusCap,svcList, apps){
 		newAppList.forEach((e)=>{
 			letIn = coreAppList.find((g)=>{
 				return g.appId ==e.appId;
-			})
-			console.log('letIn',letIn)
-			console.log(typeof letIn)
+			}) 
 			if(typeof letIn=='undefined'){ 
 				e.col="#999"
 			}else{ 
 				e.col="#000"
 			}
  
-		})
-		console.log('newAppList',newAppList)
-		console.log('coreAppList',coreAppList)
+		}) 
 		newDepList=newDepList.filter((elem, index, self) => self.findIndex( (t) => {return (t.ApplicationID === elem.ApplicationID)}) === index)
 	 
 		createChart(newDepList, newAppList)
@@ -511,37 +510,32 @@ function getAppsArray(cap,svcList){
 }
 
 var redrawView = function () { 
+	
 				let scopedRMApps = [];
 				appList.forEach((d) => {
 					scopedRMApps.push(d)
 				});
-				let toShow = [];
-			 
-				// *** REQUIRED *** CALL ROADMAP JS FUNCTION TO SET THE ROADMAP STATUS OF ALL RELEVANT JSON OBJECTS
-				if (roadmapEnabled) {
-					//update the roadmap status of the caps passed as an array of arrays
-					rmSetElementListRoadmapStatus([scopedRMApps]);
-
-					// *** OPTIONAL *** CALL ROADMAP JS FUNCTION TO FILTER OUT ANY JSON OBJECTS THAT DO NOT EXIST WITHIN THE ROADMAP TIMEFRAME
-					//filter caps to those in scope for the roadmap start and end date
-					toShow = rmGetVisibleElements(scopedRMApps);
-				} else {
-					toShow = appList;
-				}
-
- 
+				let toShow =   appList;  
+				console.log('drawing',toShow)
 				let appOrgScopingDef = new ScopingProperty('stakeholdersA2R', 'ACTOR_TO_ROLE_RELATION');
 				let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
 				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 
-                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs));
+				essResetRMChanges();
+				let typeInfo = {
+					"className": "Application_Provider",
+					"label": 'Application',
+					"icon": 'fa-desktop'
+				}
+                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
  
 				scopedAppsList = scopedApps.resources;  
  
 				let thisId=$('#caps').val()
+				console.log('thisId',thisId)
 				if(thisId == 'all'){
-					
+					setCaps(thisId)
 						getDependencies(thisId,svcList, scopedAppsList)
 						
 					}
@@ -560,11 +554,11 @@ var redrawView = function () {
 
 <!-- create graph -->
 function createChart(depList, appList){
-	 console.log('appList2',appList)
+	 
 	var g;
 	g = new dagreD3.graphlib.Graph().setGraph({ rankdir: "LR"});
 let attachedApps=[];
-console.log('ddepList',depList)
+ 
 depList.forEach((d)=>{   
 	if(d.From.length&gt;0){
 		d.From.forEach((fr)=>{ 
@@ -599,12 +593,12 @@ depList.forEach((d)=>{
     t.id === value.id  
   ))
 )
- console.log('attachedApps',attachedApps)
-// States and transitions from RFC 793
+ 
+ 
  
 // Automatically label each of the nodes
 var nodes = []; 
- console.log('scopedAppsList',scopedAppsList)
+ 
 scopedAppsList.forEach((d)=>{
 
 	let includeApp=attachedApps.find((a)=>{
@@ -656,19 +650,18 @@ scopedAppsList.forEach((d)=>{
 	let appColour=appList.find((a)=>{
 		return a.appId==d.appId
 	})
-	console.log('appColour1',appColour)
+ 
 	if(typeof appColour=='undefined'){
 		 
 		let appColour={}
-		appColour['col']='red'
-		console.log('appColour2',appColour)
+		appColour['col']='red' ;
 	}else{
-		console.log('appColour3',appColour)
+	 
 	}
 	
 	 
  if(d.type !=='Application_Provider_Interface'){
-	console.log('appColour4',appColour)
+ 
 	if(typeof appColour=='undefined'){
 		niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:#999</xsl:attribute>Application</div>';
 		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.bgcolour+';color:'+thisCodeColour.colour+'</xsl:attribute>'+thisCodeColour.name +'</div>';
@@ -906,10 +899,7 @@ svg.attr('height', windowHeight-300);
 </xsl:if>
 
 </xsl:function>
-<xsl:template match="node()" mode="roadmapApps">
-	{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
-</xsl:template>
-
+ 
 <xsl:template match="node()" mode="elements">
 <xsl:variable name="thiselementStyle" select="$elementStyle[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -1035,20 +1025,7 @@ let tempApp=[];
 	thisFamily.forEach((d)=>{	
 		$('#family').append('<option value="'+d.id+'">'+d.name+'</option>');
 	});		
-
-	appList.forEach((d) => {
  
-					//required for roadmap
-					var thisRoadmap = roadmapApps.filter((rm) => {
-						return d.appId == rm.id;
-					});
- 
-					if (thisRoadmap[0]) {
-						d['roadmap'] = thisRoadmap[0].roadmap;
-					} else {
-						d['roadmap'] = [];
-					}
-	});
  	
 	appCapList=appCapList.sort((a, b) => (a.name > b.name) ? 1 : -1);
 	appList=appList.sort((a, b) => (a.appName > b.appName) ? 1 : -1);
@@ -1098,7 +1075,7 @@ let tempApp=[];
 
 	//createChart(depList, appList)
 
-	essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters);
+	essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters, true);
 
 	$('#codebase').on('change',function(){ 
 		redrawView();
@@ -1114,7 +1091,7 @@ let tempApp=[];
 	$('#family').on('change',function(){ 
 		redrawView();
 	});
-	redrawView();
+	//redrawView();
 			})
 		})
 	</xsl:template>

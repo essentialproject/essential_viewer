@@ -130,11 +130,11 @@
 
                 <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Strategic Plans as Excel</div>
                 </a><br/>
-                    <a class="noUL" href="https://enterprise-architecture.org/downloads_area/strategic_plans_importa.zip" download="strategic_plans_importa.zip">
+                    <a class="noUL" href="integration/plus/strategic_plans_importa.zip" download="strategic_plans_importa.zip">
 
                 <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Strategic Plans Import Specification</div>
 						</a><br/> 
-					<a href="https://enterprise-architecture.org/downloads_area/Using_the_Strategic_Plans_Launchpad_Plus.docx" download="Using_the_Strategic_Plans_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+					<a href="integration/plus/Using_the_Strategic_Plans_Launchpad_Plus.docx" download="Using_the_Strategic_Plans_Launchpad_Plus.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
 
                 </p>   
 						</div>

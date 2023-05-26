@@ -2,8 +2,7 @@
 
 <xsl:stylesheet version="3.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"/>
-	<xsl:import href="../common/core_el_ref_model_include.xsl"/>
-    <xsl:import href="../common/core_roadmap_functions.xsl"/>
+	 <xsl:import href="../common/core_el_ref_model_include.xsl"/> 
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -14,10 +13,17 @@
 
 	<xsl:param name="param1"/>
 
-	<!-- START GENERIC PARAMETERS -->
+	<!-- START GENERIC CATALOGUE PARAMETERS -->
+	<xsl:param name="targetReportId"/>
+	<xsl:param name="targetMenuShortName"/>
 	<xsl:param name="viewScopeTermIds"/>
 
-	<!-- END GENERIC PARAMETERS -->
+	<!-- END GENERIC CATALOGUE PARAMETERS -->
+
+
+	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
+	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
+	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
@@ -87,9 +93,7 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
-    <xsl:variable name="allRoadmapInstances" select="$allAppProviders"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
+ 
 
     <xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="capsSimpleData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
@@ -117,9 +121,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Business Capability - Application Fit</title>
-                <xsl:call-template name="RenderRoadmapJSLibraries">
-					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
-				</xsl:call-template>
+         
                 <style>
                 .cap{border:1pt solid #d3d3d3; 
                     height:auto;
@@ -171,19 +173,8 @@
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-                <xsl:if test="$isRoadmapEnabled">
-					<xsl:call-template name="RenderRoadmapWidgetButton"/>
-				</xsl:if>
-				<div id="ess-roadmap-content-container">
-					<!-- ***REQUIRED*** TEMPLATE TO RENDER THE COMMON ROADMAP PANEL AND ASSOCIATED JAVASCRIPT VARIABLES AND FUNCTIONS -->
-					<xsl:call-template name="RenderCommonRoadmapJavscript">
-						<xsl:with-param name="roadmapInstances" select="$allRoadmapInstances"/>
-						<xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/>
-					</xsl:call-template>
-					<div class="clearfix"></div>   
-				</div>
                 <xsl:call-template name="ViewUserScopingUI"/>
-				<!--ADD THE CONTENT-->
+			 	<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -248,7 +239,7 @@
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
-<script>
+                <script>
                              
                             var scoreColours=[<xsl:apply-templates mode="getColours" select="$allVals"/>];
                                     
@@ -281,7 +272,55 @@
                 "busCapId": "all",
                 "appId": "all"
            };
-            essInitViewState(filterState, initState);
+           essInitViewState(filterState, initState);
+
+           var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+           const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+
+       function essGetMenuName(instance) { 
+       
+           let menuName = null;
+           if(instance){
+               if ((instance != null) &amp;&amp;
+                   (instance.meta != null) &amp;&amp;
+                   (instance.meta.classes != null)) {
+                   menuName = instance.meta.menuId;
+               } else if (instance.classes != null) {
+                   menuName = instance.meta.classes;
+               }
+                   return menuName;
+               }
+           else{
+               return 'Business_Process';
+           }
+       }
+       Handlebars.registerHelper('essRenderInstanceLink', function (instance, type) {
+           
+           let meta =[
+               {"classes":["Application_Provider"], "menuId":"appProviderGenMenu"}]
+
+           let linkMenuName = essGetMenuName(instance);
+           
+               let thisMeta = meta.filter((d) => {
+                   return d.classes.includes(type)
+               });
+               if(instance){
+                   instance['meta'] = thisMeta[0]
+                   let linkMenuName = essGetMenuName(instance);
+                   let instanceLink = instance.name;
+                   if (linkMenuName != null) {
+                       let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+                       let linkClass = 'context-menu-' + linkMenuName;
+                       let linkId = instance.id + 'Link';
+                       let linkURL = reportURL;
+                       instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+
+                       return instanceLink;
+                    
+               }
+           }
+       });
+          
             $('#view').val(filterState.state.fitTypeId).trigger('change');
             
 
@@ -329,8 +368,8 @@
             });
 
 
-             essInitViewScoping(redrawView);
-            //redrawView();
+            essInitViewScoping(redrawView,['Group_Actor'], '',true);
+           
             //applySelect();
     
     $('#capFilter').change(function(){
@@ -467,6 +506,12 @@
         };
     
  var redrawView = function() {
+    essResetRMChanges();
+	let typeInfo = {
+		"className": "Application_Provider",
+		"label": 'Application',
+		"icon": 'fa-desktop'
+	}
 
     let appArrayList=[];
     
@@ -475,31 +520,21 @@
             appArrayList.push(e.subApps);
             });
         });
- <xsl:if test="$isRoadmapEnabled">
-     if(roadmapEnabled) {
-        rmSetElementListRoadmapStatus(appArrayList);
-        }
-    </xsl:if>
+ 
             bcm[0].l1BusCaps.forEach(function(d){
                 d.l2BusCaps.forEach(function(e){
                     let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
             console.log(e.subApps)  
-                    let scopedSubApps = essScopeResources(e.subApps, [appOrgScopingDef]);
+                    let scopedSubApps = essScopeResources(e.subApps, [appOrgScopingDef], typeInfo);
                     
-                    let appsForRM;
-                    if(roadmapEnabled) {
-                        appsForRM = rmGetVisibleElements(scopedSubApps.resources);
-                    }else {
-                    appsForRM = scopedSubApps.resources;
-                    }
+                 
             
-                    e['showApps']=appsForRM;
+                    e['showApps']=scopedSubApps;
               });
            });
       $('#capmodel').empty();
 	
-	console.log(bcmData.bcm[0]);
-	
+	console.log('bc', bcmData.bcm[0]); 
       $('#capmodel').append(capTemplate(bcmData.bcm[0]));  
         applySelect();
 }
@@ -558,7 +593,7 @@ function uniq_fast(a) {
                         			<div class="subCap">
                         				<div class="large strong bottom-10">{{this.name}}</div>
                         				<div class="row">
-                        					{{#each showApps}}
+                        					{{#each showApps.resources}}
 	                              			<div class="col-xs-4">
 	                              				<div class="app-wrapper bottom-10">
 		                                  			<div>
@@ -566,8 +601,7 @@ function uniq_fast(a) {
 		                                  				<xsl:attribute name="class">app xsmall {{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="id">{{../this.id}}{{this.id}}</xsl:attribute>
 		                                  				<xsl:attribute name="data-appid">{{this.id}}</xsl:attribute>
-														
-														{{{this.link}}}
+														{{#essRenderInstanceLink this 'Application_Provider'}}{{/essRenderInstanceLink}}
 		                                  			</div>  
 		                                  			<div class="appLife small">
 		                                  				<xsl:attribute name="style">background-color:{{this.lifecycleColor}};color: {{this.lifecycleText}}</xsl:attribute>
@@ -679,7 +713,8 @@ function uniq_fast(a) {
 	<xsl:template match="node()" mode="l1_caps">
         <xsl:variable name="thisCap" select="current()/name"></xsl:variable>
 		 <xsl:variable name="thisBusCapName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:call-template name="RenderMultiLangInstanceName"> 
+                <xsl:with-param name="isRenderAsJSString" select="true()"/> 
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 			</xsl:call-template>
 		</xsl:variable>
@@ -727,9 +762,6 @@ function uniq_fast(a) {
 		      "name": "<xsl:value-of select="$thisBusCapName"/>",
 		      "description": "<xsl:value-of select="$thisBusCapDescription"/>",
 		      "link": "<xsl:value-of select="$thisBusCapLink"/>",
-        "debug1":"<xsl:value-of select="count($sthisdirectProcessToAppRel)"/>",
-         "debug2":"<xsl:value-of select="count($sthisrelevantPhysProc2AppProRoles)"/>",
-        "subAppDirect":"<xsl:value-of select="$sthisrelevantApps/name"/>",
         "subApps":[
         <xsl:for-each select="$allProcs">
             <!-- GET APP IN THE RELATION USING sthisappsWithCaps -->
@@ -765,10 +797,27 @@ function uniq_fast(a) {
          <xsl:variable name="thisplannedChanges" select="$plannedChanges[own_slot_value[slot_reference='plan_to_element_ea_element']/value=$subthisrelevantApps/name]"/>
         <xsl:variable name="thisstratPlans" select="$stratPlans[own_slot_value[slot_reference='strategic_plan_for_elements']/value=$thisplannedChanges/name]"/>    
        <xsl:if test="$subthisrelevantApps union $subthisrelevantAppsDirect">    
-      {<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantApps"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantApps"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:when><xsl:otherwise> <xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="theDisplayInstance" select="$subthisrelevantAppsDirect"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template></xsl:otherwise></xsl:choose>,    
+      {<xsl:choose><xsl:when test="$subthisrelevantApps">	
+        "id": "<xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"></xsl:value-of>", 
+      "name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+        <xsl:with-param name="isRenderAsJSString" select="true()"/> 
+        <xsl:with-param name="theSubjectInstance" select="$subthisrelevantApps"/>
+         </xsl:call-template>",
+      "description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+         <xsl:with-param name="isRenderAsJSString" select="true()"/> 
+             <xsl:with-param name="theSubjectInstance" select="$subthisrelevantApps"/>
+          </xsl:call-template>",</xsl:when><xsl:otherwise>
+            "id": "<xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"></xsl:value-of>", 
+           "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+            <xsl:with-param name="isRenderAsJSString" select="true()"/>  
+          <xsl:with-param name="theSubjectInstance" select="$subthisrelevantApps"/>
+             </xsl:call-template>",
+          "description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+             <xsl:with-param name="isRenderAsJSString" select="true()"/> 
+                 <xsl:with-param name="theSubjectInstance" select="$subthisrelevantApps"/>
+              </xsl:call-template>",</xsl:otherwise></xsl:choose>   
           <!--  "id":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/></xsl:otherwise></xsl:choose>",-->
-            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",-->
-        "debug":"", 
+            "capappid":"<xsl:value-of select="eas:getSafeJSString($this)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantApps/name)"/><xsl:value-of select="eas:getSafeJSString($subthisrelevantAppsDirect/name)"/>",<!--"name":"<xsl:choose><xsl:when test="$subthisrelevantApps"><xsl:value-of select="eas:renderJSText($subthisrelevantApps/own_slot_value[slot_reference='name']/value)"/></xsl:when><xsl:otherwise><xsl:value-of select="eas:renderJSText($subthisrelevantAppsDirect/own_slot_value[slot_reference='name']/value)"/></xsl:otherwise></xsl:choose>",--> 
         "orgUserIds": [<xsl:for-each select="$thisOrgUserIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
         "busScore":"<xsl:value-of select="$busScore"/>", 
         "busFit":"<xsl:value-of select="$busFit"/>","busFitVal":"<xsl:value-of select="$thisBFValues/name"/>",
@@ -823,7 +872,14 @@ function uniq_fast(a) {
 		<xsl:variable name="thisLink">
 			<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>
 		</xsl:variable>
-		{<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+        "name": "<xsl:call-template name="RenderMultiLangInstanceName"> 
+        <xsl:with-param name="theSubjectInstance" select="current()"/>
+           </xsl:call-template>",
+        "description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+           <xsl:with-param name="isRenderAsJSString" select="true()"/> 
+               <xsl:with-param name="theSubjectInstance" select="current()"/>
+            </xsl:call-template>",
 		"link":"<xsl:value-of select="$thisLink"/>"}<xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
 
@@ -848,10 +904,7 @@ function uniq_fast(a) {
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
     </xsl:template>
-    <xsl:template match="node()" mode="roadmapCaps">
-            {<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,}<xsl:if test="not(position() = last())"><xsl:text>,
-          </xsl:text></xsl:if> 
-    </xsl:template>
+ 
     <xsl:template name="RenderViewerAPIJSFunction">
             <xsl:param name="viewerAPIPath"></xsl:param> 
             <xsl:param name="viewerAPIPathCaps"></xsl:param>
@@ -893,37 +946,7 @@ function uniq_fast(a) {
 
             $('document').ready(function () {
                 
-                const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
-    
-                function essGetMenuName(instance) {
-                    let menuName = null;
-                    if ((instance != null) &amp;&amp;
-                        (instance.meta != null) &amp;&amp;
-                        (instance.meta.classes != null)) {
-                        menuName = instance.meta.menuId;
-                    } else if (instance.classes != null) {
-                        menuName = instance.meta.classes;
-                    }
-                    return menuName;
-                }
-                
-                Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
-    
-                    let thisMeta = meta.filter((d) => {
-                        return d.classes.includes(type)
-                    });
-                    instance['meta'] = thisMeta[0]
-                    let linkMenuName = essGetMenuName(instance);
-                    let instanceLink = instance.name;
-                    if (linkMenuName != null) {
-                        let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
-                        let linkClass = 'context-menu-' + linkMenuName;
-                        let linkId = instance.id + 'Link';
-                        instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
-    
-                        return instanceLink;
-                    }
-                });
+               
                 let busCapArr = [];
                 Promise.all([
                     promise_loadViewerAPIData(viewAPIData),
@@ -939,17 +962,7 @@ function uniq_fast(a) {
                         var thisCap = busCapInfo.businessCapabilities.filter((e) => {
                             return d.id == e.id;
                         });
-                        <!--required for roadmap
-                        var thisRoadmap = roadmapCaps.filter((rm) => {
-                            return d.id == rm.id;
-                        });
-    
-                        if(thisRoadmap[0]){
-                            d['roadmap'] = thisRoadmap[0].roadmap;
-                            }else{
-                                d['roadmap'] = [];
-                            } 
-                         end required	for roadmap-->
+                        
                         d['desc'] = thisCap[0].description;
                         d['domain'] = {
                             'name': thisCap[0].businessDomain,
@@ -958,6 +971,45 @@ function uniq_fast(a) {
                         d['meta'] = meta.filter((d) => {
                             return d.classes.includes('Business_Capability')
                         })
+                    });
+
+                    var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+                    
+                    const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+    
+                    function essGetMenuName(instance) {
+                        let menuName = null;
+                        if ((instance != null) &amp;&amp;
+                            (instance.meta != null) &amp;&amp;
+                            (instance.meta.classes != null)) {
+                            menuName = instance.meta.menuId;
+                        } else if (instance.classes != null) {
+                            menuName = instance.meta.classes;
+                        }
+                        return menuName;
+                    }
+                    
+                    Handlebars.registerHelper('essRenderInstanceLink', function (instance, type) {
+                      
+                        let thisMeta = meta.filter((d) => {
+                            return d.classes.includes(type)
+                        });
+                        console.log('instance',instance) 
+                        if(instance){
+                            instance['meta'] = thisMeta[0]
+                            let linkMenuName = essGetMenuName(instance);
+                            let instanceLink = instance.name;
+                            if (linkMenuName != null) {
+                                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+                                let linkClass = 'context-menu-' + linkMenuName;
+                                let linkId = instance.id + 'Link';
+                                let linkURL = reportURL;
+                                instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '&amp;xsl=' + linkURL + '">' + instance.name + '</a>';
+        console.log('instanceLink',instanceLink)
+                                return instanceLink;
+                                
+                        }
+                    }
                     });
     
                 });

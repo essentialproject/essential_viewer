@@ -130,11 +130,11 @@
     
                                     <div class="downloadBtn btn btn-default bg-primary text-white small bottom-10">Download Technology Reference as Excel</div>
                                 </a><br/>
-                                 <a class="noUL" href="https://enterprise-architecture.org/downloads_area/Technology_Reference_Import.zip" download="Technology_Reference_Import.zip">
+                                 <a class="noUL" href="integration/plus/Technology_Reference_Import.zip" download="Technology_Reference_Import.zip">
     
                                     <div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Technology Reference Import Specification</div>
                                 </a><br/>
-                                 <a href="https://enterprise-architecture.org/downloads_area/LaunchpadPlus-Technology_Reference_worksheet.docx" download="LaunchpadPlus-Technology_Reference_worksheet.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+                                 <a href="integration/plus/LaunchpadPlus-Technology_Reference_worksheet.docx" download="LaunchpadPlus-Technology_Reference_worksheet.docx"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
                             </p>
 						</div>
             <div class="col-md-8">

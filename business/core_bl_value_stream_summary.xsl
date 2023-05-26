@@ -32,20 +32,30 @@
 	<!-- START VIEW SPECIFIC VARIABLES -->
 
 	<xsl:variable name="currentValueStream" select="/node()/simple_instance[name = $param1]"/>
-	<xsl:variable name="vsProductTypes" select="/node()/simple_instance[name = $currentValueStream/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
-	<xsl:variable name="vsValueStages" select="/node()/simple_instance[name = $currentValueStream/own_slot_value[slot_reference = 'vs_value_stages']/value]"/>
-	<xsl:variable name="allValueStageLabels" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'vsg_label']/value]"/>
-	<xsl:variable name="allStakeholderRoles" select="/node()/simple_instance[name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_business_roles', 'vsg_participants')]/value]"/>
+	<xsl:variable name="vsProductTypes" select="/node()/simple_instance[type='Product_Type'][name = $currentValueStream/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
+	<!--<xsl:variable name="vsValueStages" select="/node()/simple_instance[name = $currentValueStream/own_slot_value[slot_reference = 'vs_value_stages']/value]"/>-->
+	<xsl:key name="vsValueStagesKey" match="/node()/simple_instance[type='Value_Stage']" use="own_slot_value[slot_reference = 'vsg_value_stream']/value"/>
+	<xsl:variable name="vsValueStages" select="key('vsValueStagesKey',$currentValueStream/name)"/>
+
+	<xsl:key name="allValueStage2EmotionRelsKey" match="/node()/simple_instance[type='VALUE_STAGE_TO_EMOTION_RELATION']" use="own_slot_value[slot_reference = 'value_stage_to_emotion_from_value_stage']/value"/> 
+	<xsl:variable name="allValueStageLabels" select="/node()/simple_instance[type='Label'][name = $vsValueStages/own_slot_value[slot_reference = 'vsg_label']/value]"/>
+	<xsl:variable name="allStakeholderRoles" select="/node()/simple_instance[type=('Business_Role_Type','Business_Role')][name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_business_roles', 'vsg_participants')]/value]"/>
 	<xsl:variable name="allBusinessEvents" select="/node()/simple_instance[name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_events', 'vs_outcome_events', 'vsg_entrance_events', 'vsg_exit_events')]/value]"/>
 	<xsl:variable name="allBusinessConditions" select="/node()/simple_instance[name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_conditions', 'vs_outcome_conditions', 'vsg_entrance_conditions', 'vsg_exit_conditions')]/value]"/>
-	<xsl:variable name="allValueStage2EmotionRels" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'vsg_emotions']/value]"/>
-	<xsl:variable name="allEmotions" select="/node()/simple_instance[name = $allValueStage2EmotionRels/own_slot_value[slot_reference = 'value_stage_to_emotion_to_emotion']/value]"/>
-	<xsl:variable name="allValueStagePerfMeasures" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'performance_measures']/value]"/>
-	<xsl:variable name="allValueStageKPIValues" select="/node()/simple_instance[name = $allValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
-	<xsl:variable name="allValueStageKPIs" select="/node()/simple_instance[name = $allValueStageKPIValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
-	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
-	<xsl:variable name="allValueStageBusCaps" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
-
+	<xsl:variable name="allValueStage2EmotionRels" select="key('allValueStage2EmotionRelsKey',$vsValueStages/name)"/>
+	<!--<xsl:variable name="allValueStage2EmotionRels2" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'vsg_emotions']/value]"/>-->
+	<xsl:variable name="allEmotions" select="/node()/simple_instance[type='Customer_Emotion'][name = $allValueStage2EmotionRels/own_slot_value[slot_reference = 'value_stage_to_emotion_to_emotion']/value]"/>
+	<!--<xsl:variable name="allValueStagePerfMeasures" select="/node()/simple_instance[name = $vsValueStages/own_slot_value[slot_reference = 'performance_measures']/value]"/>-->
+	<xsl:key name="allValueStagePerfMeasuresKey" match="/node()/simple_instance[supertype=('Performance_Measure')]" use="own_slot_value[slot_reference = 'pm_measured_element']/value"/>
+	<xsl:variable name="allValueStagePerfMeasures" select="key('allValueStagePerfMeasuresKey', $vsValueStages/name)"/>
+	<xsl:variable name="allValueStageKPIValues" select="/node()/simple_instance[supertype=('Service_Quality_Value')][name = $allValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/>
+	<!--<xsl:variable name="allValueStageKPIs" select="/node()/simple_instance[name = $allValueStageKPIValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>-->
+	<xsl:key name="allValueStageKPIsKey" match="/node()/simple_instance[supertype=('Service_Quality')]" use="own_slot_value[slot_reference = 'sq_values']/value"/>
+	<xsl:variable name="allValueStageKPIs" select="key('allValueStageKPIsKey', $allValueStageKPIValues/name)"/>
+	
+	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[type='Service_Quality_Value'][name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
+	<xsl:variable name="allValueStageBusCaps" select="/node()/simple_instance[type=('Business_Capability')][name = $vsValueStages/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
+	<xsl:key name="allBusProcessKey" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'realises_business_capability']/value"/>
 	<xsl:variable name="DEBUG" select="''"/>
 
 	<xsl:template match="knowledge_base">
@@ -334,6 +344,7 @@
 						<div class="vs-arrow-header small">Value Stages</div>
 						<div class="vs-participants vs-detail-header small bg-lightblue-100">Participants</div>
 						<div class="vs-buscaps vs-detail-header small bg-lightblue-100">Supporting Business Capabilities</div>
+						<div class="vs-buscaps vs-detail-header small bg-lightblue-100">Supporting Business Processes</div>
 						<div class="vs-emotions vs-detail-header small bg-lightblue-100">Target Emotions</div>
 						<div class="vs-entrance-events vs-detail-header small bg-lightgreen-100">Entrance Events</div>
 						<div class="vs-entrance-conditions vs-detail-header small bg-lightgreen-100">Entrance Conditions</div>
@@ -372,6 +383,19 @@
 										</div>				        	
 									{{else}}
 										<div class="vs-buscaps vs-detail small vs-empty-detail">No Business Capabilities</div>				        	
+									{{/if}}
+
+									<!-- Supporting Bus Procs -->
+									{{#if busProcs.length}}
+										<div class="vs-buscaps vs-detail small bg-lightblue-20">
+											<ul>
+												{{#each busProcs}}
+													<li>{{{link}}}</li>
+												{{/each}}
+											</ul>
+										</div>				        	
+									{{else}}
+										<div class="vs-buscaps vs-detail small vs-empty-detail">No Business Processes</div>				        	
 									{{/if}}
 									
 									<!-- Target Emotions -->
@@ -461,8 +485,8 @@
 					var valueStreamHeaderTemplate, valueStageTemplate;
 					
 					var valueStream = <xsl:call-template name="RenderValueStreamJSON"/>;
-					
-					var valueStageDetailsClasses = ['vs-participants', 'vs-buscaps', 'vs-emotions', 'vs-entrance-events', 'vs-entrance-conditions', 'vs-exit-events', 'vs-exit-conditions', 'vs-kpis'];
+				 
+					var valueStageDetailsClasses = ['vs-participants', 'vs-buscaps', 'vs-emotions', 'vs-entrance-events', 'vs-entrance-conditions', 'vs-exit-events', 'vs-exit-conditions', 'vs-kpis', 'vs-busprocs'];
 					
 					function setValueStageDetailsHeights() {
 						var greatestHeight, theHeight, aDetailsClass;
@@ -518,7 +542,7 @@
 										</xsl:call-template>
 									</span>
 								</h1>
-								<xsl:value-of select="$DEBUG"/>
+							 <xsl:value-of select="$DEBUG"/>
 							</div>
 						</div>
 
@@ -575,11 +599,16 @@
 		<xsl:variable name="vsgEntranceConditions" select="$allBusinessConditions[name = $this/own_slot_value[slot_reference = 'vsg_entrance_conditions']/value]"/>
 		<xsl:variable name="vsgExitEvents" select="$allBusinessEvents[name = $this/own_slot_value[slot_reference = 'vsg_exit_events']/value]"/>
 		<xsl:variable name="vsgExitConditions" select="$allBusinessConditions[name = $this/own_slot_value[slot_reference = 'vsg_exit_conditions']/value]"/>
-		<xsl:variable name="vsgValueStage2EmotionRels" select="$allValueStage2EmotionRels[name = $this/own_slot_value[slot_reference = 'vsg_emotions']/value]"/>
+		<!--<xsl:variable name="vsgValueStage2EmotionRels" select="$allValueStage2EmotionRels[name = $this/own_slot_value[slot_reference = 'vsg_emotions']/value]"/>-->
+		<xsl:variable name="vsgValueStage2EmotionRels" select="key('allValueStage2EmotionRelsKey', $this/name)"/>
+		
 		<xsl:variable name="vsgEmotions" select="$allEmotions[name = $vsgValueStage2EmotionRels/own_slot_value[slot_reference = 'value_stage_to_emotion_to_emotion']/value]"/>
-		<xsl:variable name="vsgValueStagePerfMeasures" select="$allValueStagePerfMeasures[name = $this/own_slot_value[slot_reference = 'performance_measures']/value]"/>
+		<!--<xsl:variable name="vsgValueStagePerfMeasures" select="$allValueStagePerfMeasures[name = $this/own_slot_value[slot_reference = 'performance_measures']/value]"/>-->
+		<xsl:variable name="vsgValueStagePerfMeasures" select="key('allValueStagePerfMeasuresKey', $this/name)"/>
 		<xsl:variable name="vsgBusCaps" select="$allValueStageBusCaps[name = $this/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
-		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "busCaps": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusCaps"/> ], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="vsgBusProcs" select="key('allBusProcessKey',$vsgBusCaps/name)"/>
+		
+		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "busCaps": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusCaps"/> ], "busProcs":[ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusProcs"/>], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 
@@ -601,7 +630,9 @@
 
 	<xsl:template match="node()" mode="RenderKPIValueJSON">
 		<xsl:variable name="thisKPIVal" select="current()"/>
-		<xsl:variable name="thisKPI" select="$allValueStageKPIs[name = $thisKPIVal/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+	<!--	<xsl:variable name="thisKPI" select="$allValueStageKPIs[name = $thisKPIVal/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>-->
+		<xsl:variable name="thisKPI" select="key('allValueStageKPIsKey', $thisKPIVal/name)"/>
+		
 		<xsl:variable name="thisKPIUoM" select="$allValueStageKPIUoMs[name = $thisKPIVal/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
 		<xsl:variable name="thisKPIName">
 			<xsl:call-template name="RenderMultiLangInstanceName">

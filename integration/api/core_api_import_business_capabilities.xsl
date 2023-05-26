@@ -71,7 +71,8 @@
 		"positioninParent":"<xsl:value-of select="$businessCapabilitiesRole[name=$indirectCapsRelation/own_slot_value[slot_reference='buscap_to_parent_role']/value]/own_slot_value[slot_reference='name']/value"/>",
 		"sequenceNumber":"<xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/>",
 		"rootCapability":"<xsl:if test="$rootBusCap/name=current()/name"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:if>",
-		"businessDomain":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$busDomain"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"businessDomain":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$busDomain[1]"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"businessDomains":[<xsl:for-each select="$busDomain">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"documents":[<xsl:for-each select="$thisDocs">
 		<xsl:variable name="thisTaxonomyTerms" select="key('allTaxTerms_key',current()/name)"/>
 		{"id":"<xsl:value-of select="current()/name"/>",

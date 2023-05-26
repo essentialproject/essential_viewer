@@ -502,7 +502,9 @@
 			        objectsForSegment = getObjectsMatchingVal(objectList, propertyName, currentSegment.id);
 			        currentData[0] = currentSegment.name + ' [' + objectsForSegment.length + ']';
 			        currentData[1] = objectsForSegment.length;
-			        pieData.push(currentData);
+					if(currentData[1]&gt;0){
+			       	 pieData.push(currentData);
+					}
 			        //console.log("Count of " + propertyName + " for " + currentSegment.name + ": " + currentData[1]);
 			    };
 
@@ -510,7 +512,9 @@
 			    currentData = [];
 			    currentData[0] = 'Unknown [' + unknownObjects.length + ']';
 			    currentData[1] = unknownObjects.length;
-			    pieData.push(currentData);
+				if(currentData[1]&gt;0){
+			    	pieData.push(currentData);
+				}
 
 			    pieChart.series[0].data = pieData;
 			    pieChart.replot();

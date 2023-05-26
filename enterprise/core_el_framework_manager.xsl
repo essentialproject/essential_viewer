@@ -52,7 +52,7 @@
 	<xsl:key name="assessment_key" match="$assessment" use="own_slot_value[slot_reference = 'control_assessed_element']/value"/>
 	<xsl:key name="control_key" match="/node()/simple_instance[type='Control_Solution']" use="own_slot_value[slot_reference = 'control_solution_for_controls']/value"/>
 	<xsl:key name="control_assessment_key" match="/node()/simple_instance[type='Control_Solution_Assessment']" use="own_slot_value[slot_reference = 'assessed_control_solution']/value"/>
-
+	<xsl:key name="external_key" match="/node()/simple_instance[type='External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/>
 	<xsl:variable name="solutionBusinessElement" select="/node()/simple_instance[supertype=('Business_Logical', 'Business_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_business_elements']/value]"/>
 	<xsl:variable name="solutionApplicationElement" select="/node()/simple_instance[supertype=('Application_Logical', 'Application_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_application_elements']/value]"/>
 	<xsl:variable name="solutionTechnologyElement" select="/node()/simple_instance[supertype=('Technology_Logical', 'Technology_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_technology_elements']/value]"/>
@@ -961,22 +961,35 @@
 		</div>
 		<div class="modal-body">
 			{{#each this.assessments}} 
-			<table class="assessTable table table-striped">
+			<table class="assessTable table table-striped" style="border-bottom:2px solid #000000">
 				<tbody>
 					<tr>
-						<th><xsl:value-of select="eas:i18n('Assessment Date')"/></th>
-						<td colspan="3" class="infoTd">
+						<td width="25%"><b><xsl:value-of select="eas:i18n('Assessment Date')"/></b></td>
+						<td class="infoTd" width="25%">
 							<ul class="ess-list-tags">
 								<li class="roleBlob bg-lightblue-80" style="background-color: hsla(200, 80%, 80%, 1);color:#000">{{this.assessmentDate}}</li>
 							</ul>
 						</td>
+						<td width="25%"><b><xsl:value-of select="eas:i18n('Assessor')"/></b></td>
+						<td class="infoTd" width="25%">{{this.assessor}}</td>
+					</tr>
+					<tr> 
+					 	<td colspan="2" class="infoTd"><b><xsl:value-of select="eas:i18n('Description of Checks')"/></b>
+							<br/>
+							{{this.description}}
+						</td>
+						<td colspan="2" class="infoTd"><b><xsl:value-of select="eas:i18n('Evidence Found')"/></b>
+							<br/>
+							{{#if this.comments}}{{this.comments}}
+							
+							{{#if this.url}}
+							Evidence was found here: <a><xsl:attribute name="href">{{this.url}}</xsl:attribute>{{this.urlName}}</a>
+							{{/if}}
+							{{else}} - {{/if}}
+						</td>
 					</tr>
 					<tr>
-						<th><xsl:value-of select="eas:i18n('Assessor')"/></th>
-						<td colspan="3" class="infoTd">{{this.assessor}}</td>
-					</tr>
-					<tr>
-						<th><xsl:value-of select="eas:i18n('Finding')"/></th>
+						<td><b><xsl:value-of select="eas:i18n('Finding')"/></b></td>
 						<td colspan="3" class="infoTd">
 							<ul class="ess-list-tags">
 								<li class="roleBlob bg-lightblue-80" >
@@ -998,10 +1011,7 @@
 						<td colspan="3" class="infoTd"><ul class="ess-list-tags">{{#each this.plans}}<li class="planBlob">{{{essRenderInstanceMenuLink this}}}</li> {{/each}}</ul></td>
 					</tr>
 					{{/if}}
-					<tr>
-						<th><xsl:value-of select="eas:i18n('Comments')"/></th>
-						<td colspan="3" class="infoTd">{{#if this.comments}}{{this.comments}}{{else}} - {{/if}}</td>
-					</tr>
+					
 				</tbody>
 				
 			</table>  
@@ -1799,11 +1809,18 @@ function initPopoverTrigger()
 							<xsl:with-param name="isRenderAsJSString" select="true()"/>
 						</xsl:call-template>",
 						"elements":[<xsl:for-each select="$allThisElements">
-								{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+							<xsl:variable name="externalRef" select="key('external_key',current()/name)"/> 
+								{ 						
+									"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 								"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 											<xsl:with-param name="theSubjectInstance" select="current()"/>
 											<xsl:with-param name="isRenderAsJSString" select="true()"/>
-										</xsl:call-template>"
+										</xsl:call-template>",
+								"urlName":"<xsl:call-template name="RenderMultiLangInstanceName">
+									<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
+									<xsl:with-param name="isRenderAsJSString" select="true()"/>
+								</xsl:call-template>",
+								"url":"<xsl:value-of select="$externalRef/own_slot_value[slot_reference='external_reference_url']/value"/>"		
 										}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>],
@@ -1852,6 +1869,10 @@ function initPopoverTrigger()
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>",		
 		"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_solution_assessor']/value"/>",
 		"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
 		"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
@@ -1870,17 +1891,27 @@ function initPopoverTrigger()
 		<xsl:variable name="assessmentResult" select="$assessmentFinding[name=current()/own_slot_value[slot_reference='assessment_finding']/value]"/> 
 		<xsl:variable name="assessor" select="$actors[name=current()/own_slot_value[slot_reference='control_assessor']/value]"/>	
 		<xsl:variable name="thisComments" select="$commentary[name=current()/own_slot_value[slot_reference='assessment_comments']/value]"/>		
+		<xsl:variable name="externalRef" select="key('external_key',current()/name)"/> 
 		{"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
+		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>",				
 		"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_assessor']/value"/>",
 		"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
 		"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
 		"assessmentFinding":"<xsl:value-of select="$assessmentResult/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"targetRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_target_date_ISO8601']/value"/>",
 		"completedRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_completion_date_ISO8601']/value"/>",
+		"urlName":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>",
+		"url":"<xsl:value-of select="$externalRef/own_slot_value[slot_reference='external_reference_url']/value"/>", 
 		"plans":[<xsl:for-each select="$thisplans">{"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>

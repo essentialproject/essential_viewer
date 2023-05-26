@@ -100,7 +100,11 @@
 				<style type="text/css">
 					table.dataTable{
 						margin-top: 0px !important;
-					}</style>
+					}
+					.bg-midgrey{
+						background-color: #999!important;
+					}
+				</style>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -182,7 +186,7 @@
 								<script>
 									$(document).ready(function(){								
 										var table = $('#dt_dataSubjects').DataTable({
-										scrollY: "350px",
+										scrollY: $(window).innerHeight()-400,
 										scrollCollapse: true,
 										scrollX: true,
 										sScrollXInner: "<xsl:value-of select="140 + (140 * count($inScopeDataSubjects))"/>px", <!--we need to calculate this value using the formula 140 +(140 x number of data subjects)//-->
@@ -220,11 +224,11 @@
 		<xsl:param name="appProRoles"/>
 
 		<!--Setup Matrix Section-->
-		<table class="tableStyleMatrix dataTable table-header-background" id="dt_dataSubjects">
+		<table class="table table-bordered dataTable table-header-background" id="dt_dataSubjects">
 			<thead>
 
 				<tr>
-					<th class="tableStyleMatrixCorner cellWidth-140 vAlignMiddle">&#160;</th>
+					<th>&#160;</th>
 					<xsl:apply-templates mode="DataSubject" select="$dataSubjects">
 						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 					</xsl:apply-templates>
@@ -244,7 +248,7 @@
 
 	<xsl:template match="node()" mode="DataSubject">
 		<xsl:variable name="dsName" select="own_slot_value[slot_reference = 'name']/value"/>
-		<th class="cellWidth-140 vAlignMiddle">
+		<th>
 			<!--<a id="{$dsName}" class="text-white underline context-menu-dataSubject menu-1">
 				<xsl:call-template name="RenderLinkHref">
 					<xsl:with-param name="theInstanceID" select="name" />
@@ -272,7 +276,7 @@
 		<xsl:variable name="asName" select="own_slot_value[slot_reference = 'name']/value"/>
 
 		<tr>
-			<td class="bg-midgrey vAlignMiddle text-white">
+			<td class="bg-midgrey text-white">
 				<strong>
 					<!--<a id="{$asName}" class="text-white underline context-menu-appService menu-1">
 						<xsl:call-template name="RenderLinkHref">
@@ -351,7 +355,7 @@
 			</xsl:choose>
 
 		</xsl:variable>
-		<td class="vAlignMiddle">
+		<td>
 			<p>
 				<!--		<xsl:value-of select="$appCRUD"/>  -->
 

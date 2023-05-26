@@ -4,7 +4,8 @@
 	<xsl:include href="../../common/core_js_functions.xsl"/>
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/> 
-  <xsl:variable name="apps" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/>
+	<xsl:key name="appsKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="type"/>
+  <xsl:variable name="apps" select="key('appsKey', ('Application_Provider','Composite_Application_Provider'))"/>
   <xsl:variable name="dataSubjects" select="/node()/simple_instance[type='Data_Subject']"/>
   <xsl:variable name="dataObjects" select="/node()/simple_instance[type='Data_Object']"/>
   <xsl:variable name="dataRepresentations" select="/node()/simple_instance[type='Data_Representation']"/>
@@ -18,10 +19,12 @@
   <xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
   <xsl:variable name="allInfoViews" select="/node()/simple_instance[type = 'Information_View']"/>
   <xsl:key name="allInfoViewsKey" match="$allInfoViews" use="own_slot_value[slot_reference = 'refinement_of_information_concept']/value"/>
-  <xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name=$allInfoViews/own_slot_value[slot_reference='stakeholders']/value]"/>
+  <xsl:key name="a2rKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="name"/>
+ <!-- <xsl:variable name="a2r" select="key('a2rkey',$allInfoViews/own_slot_value[slot_reference='stakeholders']/value)"/>-->
   <xsl:key name="actor" match="/node()/simple_instance[type = ('Individual_Actor','Group_Actor')]" use="own_slot_value[slot_reference='actor_plays_role']/value"/>
   <xsl:key name="role" match="/node()/simple_instance[type = ('Individual_Business_Role','Group_Business_Role')]" use="own_slot_value[slot_reference='bus_role_played_by_actor']/value"/>	
-  
+  <xsl:key name="appprorequired_key" match="/node()/simple_instance[type = ('APP_PRO_TO_DATAOBJ_REQ_RELATION')]" use="own_slot_value[slot_reference='app_pro_to_dataobj_req_to_dataobj']/value"/>
+  <xsl:key name="appdorequired_key" match="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]" use="own_slot_value[slot_reference='ap_data_object_requirements']/value"/>
   <xsl:variable name="aptitdDataObjects" select="/node()/simple_instance[supertype='Data_Object_Type'][own_slot_value[slot_reference='app_pro_use_of_data_rep']/value=$aptitdrelation/name]"/>
 <xsl:key name="aptitd_key" match="$aptitdrelation" use="own_slot_value[slot_reference='apppro_to_inforep_to_datarep_to_datarep']/value"/>
 <xsl:key name="aptitdinforep_key" match="$aptitdrelation" use="own_slot_value[slot_reference='apppro_to_inforep_to_datarep_from_appro_to_inforep']/value"/>
@@ -32,6 +35,7 @@
 <xsl:key name="appsIRUsed_key" match="$apps" use="own_slot_value[slot_reference='uses_information_representation']/value"/>
   <xsl:variable name="infoViews" select="/node()/simple_instance[type='Information_View']"/>
   <xsl:key name="infoViews_key" match="$allInfoViews" use="own_slot_value[slot_reference = 'has_information_representations']/value"/>
+  <xsl:key name="infoViewsDO_key" match="$allInfoViews" use="own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value"/>
 
   <xsl:key name="infoReps_key" match="$infoRepresentations" use="own_slot_value[slot_reference = 'implements_information_views']/value"/>
   <xsl:key name="infoRepsfordataRep_key" match="$infoRepresentations" use="own_slot_value[slot_reference = 'supporting_data_representations']/value"/>
@@ -45,6 +49,7 @@
   <xsl:variable name="allActors" select="$actors union $individual"/>	
   <xsl:variable name="classifications" select="/node()/simple_instance[type=('Security_Classification')]"/>
   <xsl:variable name="role" select="/node()/simple_instance[type=('Group_Business_Role','Individual_Business_Role')]"/>	
+  <xsl:key name="actor2RoleKey" match="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]" use="name"/> 
   <xsl:variable name="actor2Role" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/> 
   <xsl:key name="actors_key" match="/node()/simple_instance[type=('Individual_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
   <xsl:key name="roles_key" match="/node()/simple_instance[type='Individual_Business_Role']" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
@@ -103,7 +108,9 @@
  <xsl:template match="node()" mode="dataObjects">
 	 <xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
 	 <xsl:variable name="parents" select="$dataSubjects[name=current()/own_slot_value[slot_reference='defined_by_data_subject']/value]"/>
-	 <xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<!-- <xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	 
 	 <xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
      <xsl:variable name="dataAttribute" select="key('dataAttribute_key',current()/name)"/>
 	 <xsl:variable name="sorApps" select="$apps[name=current()/own_slot_value[slot_reference='data_object_system_of_record']/value]"/>
@@ -112,8 +119,10 @@
 	 <xsl:variable name="thisInfoRepDataRepsDirect" select="key('infoRepsfordataRep_key', $thisDataReps/name)"/>
 	 
 	 <xsl:variable name="thisClassifications" select="$classifications[own_slot_value[slot_reference='sc_classified_information_resources']/value=current()/name]"/>
-	 <xsl:variable name="thisInfoViews" select="$allInfoViews[own_slot_value[slot_reference='info_view_supporting_data_objects']/value=current()/name]"/>
-	 <xsl:variable name="thisInfoReps" select="key('infoReps_key', $thisInfoViews/name)"/>
+	 <!--<xsl:variable name="thisInfoViews" select="$allInfoViews[own_slot_value[slot_reference='info_view_supporting_data_objects']/value=current()/name]"/>-->
+     <xsl:variable name="thisInfoViews" select="key('infoViewsDO_key', current()/name)"/>
+      
+     <xsl:variable name="thisInfoReps" select="key('infoReps_key', $thisInfoViews/name)"/>
 	 <xsl:variable name="thisDataRepsAPMapped" select="key('dataReptoAPIDP_key', $thisDataReps/name)"/>
 
 	 <xsl:variable name="allDataRepsViaAITD" select="$thisInfoRepDataReps union $thisDataRepsAPMapped union $thisInfoRepDataRepsDirect"/>
@@ -122,8 +131,9 @@
 	 <xsl:variable name="allRelevantInfoReps" select="$thisInfoReps union $alldataapp2inforeps"/>
 
 	 <xsl:variable name="thisInfoRepAppros" select="key('appproinfo_key', $allRelevantInfoReps/name)"/>
-	 
-     
+	 <xsl:variable name="thisAppDOReqRel" select="key('appprorequired_key', current()/name)"/>
+	 <xsl:variable name="thisAppDOReq" select="key('appdorequired_key', $thisAppDOReqRel/name)"/>
+      
     <!-- last two need to be org roles as the slots have been deprecated -->
 	{  
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -136,6 +146,8 @@
 	 "indivOwner":"<xsl:value-of select="$individual[name=current()/own_slot_value[slot_reference='data_object_individual_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
 	 "dataAttributes":[<xsl:for-each select="$dataAttribute">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","type":"<xsl:value-of select="$dataType[name=current()/own_slot_value[slot_reference='type_for_data_attribute']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	 "requiredByApps":[<xsl:for-each select="$thisAppDOReq">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "systemOfRecord":[<xsl:for-each select="$sorApps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "infoRepsToApps":[<xsl:for-each select="$thisInfoRepAppros"><xsl:variable name="apps" select="key('app_key',current()/name)"/>
@@ -185,7 +197,9 @@
   <xsl:template match="node()" mode="dataSubjects">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
 	<xsl:variable name="dos" select="key('dataObjects',current()/name)"/>
-	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<!--<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	
 	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
    <!-- last two need to be org roles as the slots have been deprecated -->
    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -222,7 +236,9 @@
  </xsl:template>	
  <xsl:template match="node()" mode="dataRepresentations">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
-	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<!--<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	
 	<xsl:variable name="docs" select="key('externalDoc_key', current()/name)"/>
 	<xsl:variable name="thisaptitd" select="key('aptitd_key', current()/name)"/>
 	<xsl:variable name="thisap2infoRep" select="key('ap2inforep_key', $thisaptitd/name)"/>
@@ -247,7 +263,9 @@
  </xsl:template>
  <xsl:template match="node()" mode="infoRepresentations">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
-	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<!--<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	
 	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
 	<xsl:variable name="thisInfoViews" select="key('infoViews_key',current()/name)"/>
 	<xsl:variable name="thiscat" select="$infoRepresentationCategory[name=current()/own_slot_value[slot_reference='inforep_category']/value]"/>
@@ -263,7 +281,9 @@
  </xsl:template>
  <xsl:template match="node()" mode="infoViews2">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
-	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+<!--	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	
 	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
 	<xsl:variable name="supporting_data_objects" select="own_slot_value[slot_reference='info_view_supporting_data_objects']/value"/>
    <!-- last two need to be org roles as the slots have been deprecated -->
@@ -294,10 +314,10 @@
 
 </xsl:template>
 <xsl:template match="node()" mode="infoViews">
-		<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		<xsl:variable name="thisa2r" select="key('a2rKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
 		<xsl:variable name="instanceName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>
 		<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
-		<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		 
 		<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
 		<xsl:variable name="supporting_data_objects" select="own_slot_value[slot_reference='info_view_supporting_data_objects']/value"/>
 		{ 
@@ -324,7 +344,9 @@
 </xsl:template>
 <xsl:template match="node()" mode="infDomains">
 	<xsl:variable name="syns" select="$synonyms[name=current()/own_slot_value[slot_reference='synonyms']/value]"/>
-	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+	<!--<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
+	<xsl:variable name="thisStakeholders" select="key('a2rKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
+	
 	<xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>  
    <!-- last two need to be org roles as the slots have been deprecated -->
    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
