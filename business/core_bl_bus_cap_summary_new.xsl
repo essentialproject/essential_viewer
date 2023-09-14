@@ -1415,15 +1415,15 @@
                                                     {{#each this.projects}}
                                                         <span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;<b>{{this.name}} </b><br/>
 														{{#each this.items}}
-														<span class="label label-warning"><xsl:value-of select="eas:i18n('What')"/></span>{{this.name}}<xsl:text> </xsl:text><span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span> &#160;{{this.action}} <br/>
+														<span class="label label-warning"><xsl:value-of select="eas:i18n('What')"/></span><xsl:text> </xsl:text>{{this.name}}<xsl:text> </xsl:text><span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span> &#160;{{this.action}} <br/>
 														{{/each}}
-                                                        <br/>
+                                                      
                                                         <span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160; {{this.proposedStartDate}} 
                                                         <span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{this.actualStartDate}} 
                                                         <span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160; {{this.targetEndDate}} 
                                                         <span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{this.forecastEndDate}}
 														   
-														<br/> 
+														<hr/>
                                                     {{/each}}
                                                     
                                                 </div>
@@ -1536,10 +1536,11 @@ $(document).ready(function() {
     <!-- caps template -->
 <script id="model-l0-template" type="text/x-handlebars-template">
     <div class="capModel">
+ 
         {{#each this}}
             <div class="l0-cap"><xsl:attribute name="id">{{id}}</xsl:attribute>
                 <span class="cap-label">{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</span>
-            <br/>  
+            <br/> 
                     {{> l1CapTemplate}}
                     
             </div>
@@ -2217,7 +2218,7 @@ let capElements=[];
 let processElements=[];
 let appElements=[];
 
-//console.log('focusCap',focusCap)
+console.log('focusCap',focusCap)
 //console.log('capDetail',capDetail)
 
 projectElementMap.forEach((element) => {
@@ -2272,7 +2273,18 @@ thisElements.forEach((d)=>{
  thisPlan = Array.from(new Set(thisPlan.map((item) => item.id))).map((id) => {
 	return thisPlan.find((item) => item.id === id);
   });
-  
+
+let plansMap = new Map(plans.allPlans?.map(plan => [plan.id, plan]));
+
+thisPlan.forEach((p) => {
+    let matchPlan = plansMap.get(p.id);
+
+    if (matchPlan) {
+        p['validStartDate'] = matchPlan.validStartDate;
+        p['validEndDate'] = matchPlan.validEndDate;
+    }
+});
+
 
         let thisStrat=strategyTable.filter((c)=>{
             return c.capid==focusCap.id
@@ -2493,8 +2505,6 @@ thisElements.forEach((d)=>{
 			focusCap['otherEnums']=filteredArray
 		}
 		 
-
- 
         let panelSet = new Promise(function(myResolve, myReject) { $('#mainPanel').html(panelTemplate(focusCap))
             myResolve();  
             myReject();
@@ -2548,11 +2558,25 @@ thisElements.forEach((d)=>{
         })
 
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){$($.fn.dataTable.tables(true)).DataTable() .columns.adjust();});
- 
-		if(focusCap.childrenCaps.length==0){$('#busCapModel').html('No sub-capabilities mapped')}
+ 	console.log('focusCap.childrenA',focusCap.childrenCaps)
+	console.log('focusCap.childrenB',focusCap.children)
+	if(focusCap.childrenCaps){
+		if(focusCap.childrenCaps?.length==0){
+			console.log('nocaps')
+			if(focusCap.children?.length&gt;0){
+				console.log('focusCap.children',focusCap.children)
+				$('#busCapModel').html(l0CapTemplate(focusCap.children));
+				}
+				else{
+				$('#busCapModel').html('No sub-capabilities mapped')
+			}
+		}
 		else{
         	$('#busCapModel').html(l0CapTemplate(focusCap.childrenCaps));
 		}
+	} else if(focusCap.children?.length&gt;0){
+		$('#busCapModel').html(l0CapTemplate(focusCap.children));
+	}
  
 		function debounce(func, wait, immediate) {
 			var timeout;

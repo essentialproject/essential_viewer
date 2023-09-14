@@ -723,7 +723,7 @@
 	             //listener for new need button
 	            $('#ess-panel-new-need-btn').on('click', function (e) {
 	            	essIdeas.createMode = essNeedCreateMode;
-	            	$('#ess-new-idea-el-title').text('New Idea');
+	            	$('#ess-new-idea-el-title').text('New Value Proposition');
 	            	$('#ess-new-idea-el-modal').modal().show();
 	            });
 	            
@@ -963,7 +963,7 @@
 	             //listener for new idea button
 	            $('#ess-panel-new-idea-btn').on('click', function (e) {
 	            	//clicked on new Need button
-	            	$('#ess-new-idea-el-title').text('New Option');
+	            	$('#ess-new-idea-el-title').text('New Proposal');
 	            	essIdeas.createMode = essIdeaCreateMode;
 	            	$('#ess-new-idea-el-modal').modal().show();            	
 	            });
@@ -1005,42 +1005,42 @@
 				  steps: [
 				    {
 				      title: "Ideation",
-				      content: "Ideation lets you capture freeform ideas and define, propose and rate options for their delivery as you navigate your portals",
+				      content: "Ideation lets you capture freeform Value Propositions and define, propose and rate Proposals for their delivery as you navigate your portals",
 				      target: "esshelp-ideation",
 				      placement: "left",
 				      yOffset: -15
 				    },
 				    {
-				      title: "Ideas",
-				      content: "An idea is a business need or issue that has the potential to be addressed through changes to your business, information/data, applications or technology",
+				      title: "Value Propositions",
+				      content: "A Value Proposition is a business need or issue that has the potential to be addressed through changes to your business, information/data, applications or technology",
 				      target: "esshelp-ideation-idea",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
-				      title: "Options",
+				      title: "Proposals",
 				      content: "Define one or more options for how ideas proposed by you or others can be realised",
 				      target: "esshelp-ideation-option",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
-				      title: "Option Description",
+				      title: "Proposal Description",
 				      content: "Provide an overall summary of a suggested option",
 				      target: "esshelp-ideation-description",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
-				      title: "Option Status",
-				      content: "Options are initially created with a Draft status and only visible to you, but can be changed to Proposed when ready to be rated by other users, or approved / rejected by an authorised user",
+				      title: "Proposal Status",
+				      content: "Proposals are initially created with a Draft status and only visible to you, but can be changed to Proposed when ready to be rated by other users, or approved / rejected by an authorised user",
 				      target: "esshelp-ideation-status",
 				      placement: "left",
 				      yOffset: -20
 				    },
 				    {
 				      title: "Proposed Changes",
-				      content: "Suggested changes to business, information/data, application or technology elements can be added to Options using the Add to Idea popup menu item",
+				      content: "Suggested changes to business, information/data, application or technology elements can be added to Proposals using the Add to Proposal popup menu item",
 				      target: "esshelp-ideation-changes",
 				      placement: "left",
 				      yOffset: -20
@@ -1063,18 +1063,18 @@
 			    function (resolve, reject) {
 			        try {
 			            let requestedNeed = new essNeed(needName, needDesc);
-			            essPromise_createAPIElement(essEssentialCoreApiUri, requestedNeed, 'business-needs', 'Business Need')
+			            essPromise_createAPIElement(essEssentialCoreApiUri, requestedNeed, 'business-needs', 'Value Proposition')
 			            .then(function (response) {
 			                let newNeed = response;
 			                addNewNeedDetails(newNeed);
 			                resolve(newNeed);
 			            }).catch (function (error) {
-			            	let createError = new Error('Failed to create the new Business Need:  ' + error.message);
+			            	let createError = new Error('Failed to create the new Value Proposition:  ' + error.message);
 			                reject(error);
 			            });
 			        }
 			        catch (error) {
-		                let createError = new Error('Failed to create the new Business Need:  ' + error.message);
+		                let createError = new Error('Failed to create the new Value Proposition:  ' + error.message);
 		                reject(createError);
 			        }
 			    });
@@ -1200,7 +1200,7 @@
 			    function (resolve, reject) {
 			        try {		            
 			            let ideaResourceUrl = 'business-needs/' + essIdeas.currentNeed.id + '/ideas';
-			            essPromise_deleteAPIElement(essEssentialCoreApiUri, essIdeas.currentIdea.id, ideaResourceUrl, 'Idea Option').then(function (response) {
+			            essPromise_deleteAPIElement(essEssentialCoreApiUri, essIdeas.currentIdea.id, ideaResourceUrl, 'Proposal').then(function (response) {
 			                let currentIdeaIdx = essIdeas.currentNeed.ideas.indexOf(essIdeas.currentIdea);
 			                essIdeas.currentNeed.ideas.splice(currentIdeaIdx, 1);
 			                
@@ -1422,15 +1422,15 @@
 			<div id="esshelp-ideation"><span class="xlarge text-primary">Ideation</span><i id="esshelp-ideation-trigger" class="fa fa-question-circle left-5 fa-align-xl"/></div>
 			<div id="idea-section" class="top-5">
 				<div>
-					<strong id="esshelp-ideation-idea">Idea</strong><i id="idea-info-trigger" class="fa fa-info-circle ess-idea-info-btn left-5" data-toggle="popover"/>
+					<strong id="esshelp-ideation-idea">Value Proposition</strong><i id="idea-info-trigger" class="fa fa-info-circle ess-idea-info-btn left-5" data-toggle="popover"/>
 					<div id="ess-idea-info" class="popover small"/>			
 					<div class="dropdown pull-right" style="position: relative;">
 						<i class="ess-idea-action fa fa-ellipsis-h dropdown-toggle" data-toggle="dropdown"/>
 						<ul class="dropdown-menu">
-						    <li><a id="ess-need-view-link"><i class="fa fa-eye right-5"/>View Idea</a></li>
-							<li id="ess-need-edit-menu"><a id="ess-need-edit-link" target="_blank"><i class="fa fa-pencil right-5"/>Edit Idea</a></li>
-							<li id="ess-need-delete-menu"><a id="ess-need-delete-link"><i class="fa fa-trash right-5"/>Delete Idea</a></li>
-							<li id="ess-need-catalogue-menu"><a id="ess-need-catalogue-link"><i class="fa fa-list-ul right-5"/>View All Ideas</a></li>
+						    <li><a id="ess-need-view-link" target="_blank"><i class="fa fa-eye right-5"/>View Value Proposition</a></li>
+							<li id="ess-need-edit-menu"><a id="ess-need-edit-link" target="_blank"><i class="fa fa-pencil right-5"/>Edit Value Proposition</a></li>
+							<li id="ess-need-delete-menu"><a id="ess-need-delete-link"><i class="fa fa-trash right-5"/>Delete Value Proposition</a></li>
+							<li id="ess-need-catalogue-menu"><a id="ess-need-catalogue-link"><i class="fa fa-list-ul right-5"/>View All Value Propositions</a></li>
 						</ul>
 					</div>
 					<!--<a id="ess-need-view-link" class="small pull-right">
@@ -1446,7 +1446,7 @@
 				<div>
 					<a class="top-5 small" id="ess-panel-new-need-btn">
 						<i class="fa fa-plus-circle right-5"/>
-						<span>New Idea</span>
+						<span>New Value Proposition</span>
 					</a>
 				</div>
 				<!--<a id="ess-need-edit-link" class="top-5 small pull-right" target="_blank">
@@ -1457,7 +1457,7 @@
 			</div>
 			<div class="top-10">
 				<div class="pull-left">
-					<strong id="esshelp-ideation-option">My Options</strong>
+					<strong id="esshelp-ideation-option">My Proposals</strong>
 				</div>
 				<div id="option-info-content" class="pull-left">
 					<i id="option-info-trigger" class="ess-idea-info-btn fa fa-info-circle left-5" data-toggle="popover"/>
@@ -1466,9 +1466,9 @@
 				<div id="ess-idea-option-menu" class="dropdown pull-right" style="position: relative;">
 					<i class="ess-idea-action fa fa-ellipsis-h dropdown-toggle" data-toggle="dropdown"/>
 					<ul class="dropdown-menu">
-					    <!--<li><a id="ess-option-view-link"><i class="fa fa-eye right-5"/>View Option</a></li>
-					    <li><a id="ess-option-edit-link" target="_blank"><i class="fa fa-pencil right-5"/>Edit Option</a></li>-->
-						<li><a id="ess-option-delete-link"><i class="fa fa-trash right-5"/>Delete Option</a></li>
+					    <!--<li><a id="ess-option-view-link"><i class="fa fa-eye right-5"/>View Proposal</a></li>
+					    <li><a id="ess-option-edit-link" target="_blank"><i class="fa fa-pencil right-5"/>Edit Proposal</a></li>-->
+						<li><a id="ess-option-delete-link"><i class="fa fa-trash right-5"/>Delete Proposal</a></li>
 					</ul>
 				</div>
 				<!--<a class="pull-right">
@@ -1482,7 +1482,7 @@
 			</select>
 			<a id="ess-panel-new-idea-btn" class="top-5 small">
 				<i class="fa fa-plus-circle right-5"/>
-				<span>New Option</span>
+				<span>New Proposal</span>
 			</a>
 			<div id="ess-idea-side-container">
 				<div class="top-10">

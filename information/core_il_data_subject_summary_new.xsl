@@ -794,8 +794,12 @@
 				promise_loadViewerAPIData(viewAPIDataDO) 
 				]).then(function (responses){  
 					allDS=responses[0];
-					let focusDS=allDS.data_subjects[0];
-					DOList=responses[1] ;
+					let focusDSid='<xsl:value-of select="$param1"/>';
+					let focusDS=allDS.data_subjects.find((f)=>{
+						return f.id==focusDSid
+					})
+				 
+					DOList=focusDS ;
 					
 					allDS.data_subjects.forEach((e)=>{
 						var option = new Option(e.name, e.id); 
@@ -803,6 +807,7 @@
 						})
 						
 					$('#subjectSelection').select2({width:'350px'}); 
+					$('#subjectSelection').val(focusDSid).change();
 					var panelFragment = $("#panel-template").html();
 					panelTemplate = Handlebars.compile(panelFragment);
 
@@ -811,7 +816,7 @@
 					});
 
 					Handlebars.registerHelper('ifContains', function(arg1, arg2, options) {
-						console.log(arg1)
+						 
 						if(arg1.roleName.includes(arg2)){
 							return '<label>'+arg1.roleName+'</label><ul class="ess-list-tags"><li>'+arg1.actorName+'</li></ul>'
 						}  
@@ -824,7 +829,7 @@
 	function redrawPage(focusDS) {
 	    console.log('redraw')
 	    let panelSet = new Promise(function (myResolve, myReject) {
-	        console.log('set')
+	    
 	        let stakes = d3.nest().key(function (d) {
 	            return d.type;
 	        }).key(function (d) {
@@ -845,7 +850,7 @@
 	        focusDS[ 'indStakeholder'] = stakes.find((e) => {
 	            return e.key == 'Individual_Actor'
 	        });
-	        console.log('ds', focusDS)
+	      
 	        focusDS.dataObjects.forEach((d) => {
 	            d[ 'className'] = 'Data_Object';
 	        })
@@ -859,7 +864,7 @@
 	    panelSet.then(function (response) {
 	        <!-- setGraph();
 	        -->
-	        console.log('stakeholdertable', stakeholdertable)
+	    
 	        if (stakeholdertable) {
 	            $('#dt_stakeholders').DataTable().destroy()
 	            
@@ -1293,7 +1298,7 @@
 					<xsl:with-param name="menuClasses" select="$linkClasses"/>
 				</xsl:call-template>
 			}
-		 console.log('esslinkMenuNames',esslinkMenuNames)
+	 
 			function essGetMenuName(instance) {  
 				let menuName = null;
 				if(instance.meta?.anchorClass) {

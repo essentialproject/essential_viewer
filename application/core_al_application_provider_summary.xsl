@@ -489,6 +489,11 @@
 					    padding: 10px;
 					    border-radius: 4px;
 					}
+					.node-location{
+						position: absolute;
+						bottom: 21px;
+						width: 278px;
+					}
 					.tech-item-wrapper{
 					    position: relative;
 					    padding: 5px;
@@ -1106,8 +1111,6 @@
 											{{/if}}
 									</div>
 									
-									
-									 
 								
 								</div>
 								{{#if this.stakeholders}}
@@ -1427,6 +1430,13 @@
 												{{/if}}
 											</div>
 										{{/each}}
+										<div class="node-location pull-right">
+											{{#each this.nodes}}
+												<span class="label label-primary">{{this.name}}</span>
+												<xsl:text> </xsl:text>
+												<span class="label label-success">{{this.site}}</span><br/>
+											{{/each}}
+										</div>
 										</div>
 									{{/each}}
 									</div>
@@ -1783,6 +1793,12 @@
 									<h3 class="text-primary"><i class="fa fa-comment right-10"></i>Other</h3>
 									<p>Other values against this application</p>
 									{{#each this.otherEnums}}
+									{{#ifEquals this.classNm 'distribute costs'}}
+									
+										{{#ifEquals ../this.otherEnums.length 1}}
+											<b>No additional enumerations set</b>
+										{{/ifEquals}}
+									{{else}}
 									<div class="bottom-10">
 										<label>{{this.classNm}}</label>
 										<span class="label label-default">
@@ -1792,7 +1808,9 @@
 											{{this.name}}
 										</span>
 									</div>
-									{{/each}}															
+									{{/ifEquals}}
+									{{/each}}		
+								 											
 								</div>
 							</div>
 						</div>
@@ -2254,7 +2272,7 @@
 				
 					pmc=responses[5].perfCategory; 
 					let pms=responses[5].applications;
-					pms.forEach((d)=>{ 
+					pms?.forEach((d)=>{ 
 						if(d.perfMeasures.length&gt;0){
 							d.perfMeasures.forEach((e)=>{
 								if(e.categoryid==''){ 
@@ -2327,7 +2345,11 @@
 						let thislife = appLifecycles.application_lifecycles.find((a)=>{
 							return a.id==ap.id
 						 })
-						 ap['lifecycles']=thislife.allDates;
+						 console.log('ap',ap)
+						 if(thislife){
+							console.log('thislife',thislife)
+						 	ap['lifecycles']=thislife.allDates;
+						 }
 						var option = new Option(ap.name, ap.id); 
 						$('#subjectSelection').append($(option)); 
 						
@@ -2373,7 +2395,7 @@
 						ap['orgstakeholders']=actorsNRoles.filter((f)=>{return f.type=='Group_Actor'});;
 			 
 						ap['pmScore']=0;
-						let thisPerfMeasures=pms.find((e)=>{
+						let thisPerfMeasures=pms?.find((e)=>{
 							return e.id==ap.id;
 						});
 						if(thisPerfMeasures){
@@ -2727,7 +2749,7 @@ stakeholdersList = d3.nest()
 
   focusApp['stakeholdersList']=stakeholdersList;
 
-  focusApp.lifecycles.forEach((e,i)=>{
+  focusApp.lifecycles?.forEach((e,i)=>{
 	  
 	let thisL=appLifecycles.lifecycleJSON.find((l)=>{
 		return e.id==l.id
@@ -2972,6 +2994,7 @@ focusApp.allServices.forEach((p)=>{
 	}
 })
  
+if(focusApp.pm){
 byPerfName = d3.nest()
 	.key(function(d) { return d.categoryid })
 	.entries(focusApp.pm) 
@@ -2984,7 +3007,7 @@ byPerfName=byPerfName.filter((d)=>{
 	return d.key!="";
 });
 focusApp['perfsGrp']=byPerfName
-
+}
 focusApp['lifecyclesKey']=appList.lifecycles
  
 $('#mainPanel').html(panelTemplate(focusApp))
@@ -3268,13 +3291,14 @@ if(doId=='all'){
 else{
 	$('.dataCard[doid!='+doId+']').hide()
 }
+<!--
 $('.appCard2').show();
 if(irId=='all'){ 
 }
 else{
 	$('.appCard2[irid!='+irId+']').hide()
 }
-
+-->
  
 
 });

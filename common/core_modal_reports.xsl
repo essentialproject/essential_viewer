@@ -804,7 +804,7 @@
 			<div class="modal-body">
 				<div class="row">
 					<div class="col-md-6">
-						<p class="impact large text-primary"><i class="fa fa-lightbulb-o right-5"/>Idea:</p>
+						<p class="impact large text-primary"><i class="fa fa-lightbulb-o right-5"/>Value Proposition:</p>
 						<select class="select2 ideaReqList" style="width: 100%;">
 							<xsl:attribute name="id"><xsl:value-of select="$prefix"/>IdeaReqList</xsl:attribute>
 							{{#each ideaReqs}}
@@ -814,21 +814,21 @@
 								</option>
 							{{/each}}
 						</select>
-						<button class="btn btn-sm btn-block btn-default top-10" id="modal-create-new-idea"><i class="fa fa-plus right-5"/>Create New Idea</button>
+						<button class="btn btn-sm btn-block btn-default top-10" id="modal-create-new-idea"><i class="fa fa-plus right-5"/>Create New Value Proposition</button>
 					</div>
 					<div class="col-md-6">
-						<p class="impact large text-primary"><i class="fa fa-check-circle right-5"/>Option:</p>
+						<p class="impact large text-primary"><i class="fa fa-check-circle right-5"/>Proposal:</p>
 						<select class="select2 ideaList" style="width: 100%;">
 							<xsl:attribute name="id"><xsl:value-of select="$prefix"/>IdeaList</xsl:attribute>
 							<option/>
 						</select>
-						<button class="btn btn-sm btn-block btn-default top-10" id="modal-create-new-option"><i class="fa fa-plus right-5"/>Create New Option</button>
+						<button class="btn btn-sm btn-block btn-default top-10" id="modal-create-new-option"><i class="fa fa-plus right-5"/>Create New Proposal</button>
 					</div>
 					<div class="col-xs-6">
 						<div id="create-idea-form" class="small top-10 bottom-10 new-simple-object-form hiddenDiv">
-							<label>Idea Name:</label>
+							<label>Value Proposition Name:</label>
 							<input id="create-idea-name" class="form-control" type="text" placeholder="Add Idea..."/>
-							<label class="top-5">Option Name:</label>
+							<label class="top-5">Proposal Name:</label>
 							<input id="create-option-name" class="form-control" type="text" placeholder="Add Option..."/>
 							<label class="top-5">Description:</label>
 							<textarea id="create-idea-desc" class="form-control" rows="2" placeholder="Add Description..."/>
@@ -843,7 +843,7 @@
 					</div>
 					<div class="col-xs-6">
 						<div id="create-option-only-form" class="small top-10 bottom-10 new-simple-object-form hiddenDiv">
-							<label>Option Name:</label>
+							<label>Proposal Name:</label>
 							<input id="create-option-only-name" class="form-control" type="text" placeholder="Add Name..."/>
 							<label class="top-5">Description:</label>
 							<textarea id="create-option-only-desc" class="form-control" rows="2" placeholder="Add Description..."/>

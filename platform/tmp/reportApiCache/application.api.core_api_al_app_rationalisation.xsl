@@ -1,9 +1,0 @@
-
-		{
-			"applications": [],
-			"services":[],
-			"codebase":[],
-			"currency":"$"
-        }
-		
-	

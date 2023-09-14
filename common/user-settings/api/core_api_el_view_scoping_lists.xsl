@@ -4,8 +4,10 @@
 	<xsl:output method="text" encoding="UTF-8"/>
 	
 	<xsl:variable name="geoTypeTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Region Type')]"/>
+	<xsl:variable name="regionType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Region')]"/>
 	<xsl:variable name="countryType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Country')]"/>
 	<xsl:variable name="allCountries" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name)]"/>
+	<xsl:variable name="allRegions" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $regionType/name)]"/>
 
  	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference = 'external_to_enterprise']/value !='true']"/>
  
@@ -55,6 +57,20 @@
 					"color":"hsla(320, 75%, 35%, 1)",
 					"values": [
 						<xsl:apply-templates mode="RenderBasicScopeJSON" select="$allCountries">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				},
+				{
+					"id": "<xsl:value-of select="$regionType/name"/>",
+					"name": "<xsl:value-of select="$regionType/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/>",
+					"valueClass": "Geographic_Region",
+					"description": "The list of Regions for the enterprise",
+					"isGroup": true,
+					"icon": "fa-globe",
+					"color":"hsla(39, 100%, 50%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderRegionGroupJSON" select="$allRegions">
 							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 						</xsl:apply-templates>
 					]
@@ -206,6 +222,23 @@
 			"group": [<xsl:apply-templates mode="RenderBasicScopeJSON" select="$thisinScopeChildActors">
 					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 				</xsl:apply-templates>]
+		}<xsl:if test="not(position() = last())">,
+		</xsl:if>
+	</xsl:template>
+
+		<xsl:template mode="RenderRegionGroupJSON" match="node()">
+		<xsl:variable name="this" select="current()"/>
+
+		<xsl:variable name="thisCountries" select="$allCountries[name = $this/own_slot_value[slot_reference = 'gr_contained_regions']/value]"/>
+		
+		{
+			"id": "<xsl:value-of select="$this/name"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",                 
+			"group": [
+				<xsl:apply-templates mode="RenderBasicScopeJSON" select="$thisCountries">
+					<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+				</xsl:apply-templates>
+			]
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>

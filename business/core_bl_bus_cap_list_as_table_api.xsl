@@ -177,7 +177,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Catalogue by Name')"/></span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Catalogue Table')"/></span>
 								</h1>
 							</div>
                         </div> 
@@ -259,7 +259,7 @@
                 </script>
                 <script id="domain-name" type="text/x-handlebars-template"> 
                      
-                      {{#essRenderInstanceLinkMenuOnly this.domain 'Business_Domain'}}{{this.domain}}{{/essRenderInstanceLinkMenuOnly}}<br/>
+                      {{#essRenderInstanceLinkMenuOnly this.domain 'Business_Domain'}}{{/essRenderInstanceLinkMenuOnly}}.<br/>
                    
                     
 				</script>    
@@ -513,6 +513,7 @@ showEditorSpinner('Fetching Data...');
 		            capNameHTML = nameTemplate(inscopeBusCaps.capabilities[i]);
 		            //Apply handlebars template
 		            capLinkHTML = processTemplate(inscopeBusCaps.capabilities[i]);
+					console.log('inscopeBusCaps.capabilities[i]',inscopeBusCaps.capabilities[i])
 		            domLinkHTML = domainTemplate(inscopeBusCaps.capabilities[i]);
 
 		            dataTableRow.push(domLinkHTML);

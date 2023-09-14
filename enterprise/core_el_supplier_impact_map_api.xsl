@@ -673,7 +673,7 @@
 	<xsl:template match="node()" mode="supplierOptions">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
-		<option id="{$thisid}">
+		<option id="{$thisid}"><xsl:attribute name="value"><xsl:value-of select="current()/name"/></xsl:attribute>
 			<xsl:attribute name="data-easid">
 				<xsl:value-of select="eas:getSafeJSString(current()/name)"/>
 			</xsl:attribute>
@@ -949,7 +949,12 @@ let tech=$(this).data('easid')
                     sortSupplierPlans(thisSupplier);
       
                      })
-     
+     let selected="<xsl:value-of select="$param1"/>";
+		console.log('selected',selected)
+		if(selected!=''){
+			$('#pickSuppliers').val(selected).trigger('change');
+
+		}
       
       function clearHighlight(){
                         $('.busRefModel-blob').css({'border-bottom':'1pt solid #aaa','box-shadow': '0px 0px 0px #000000','perspective': '0px'});    
@@ -1042,6 +1047,8 @@ let tech=$(this).data('easid')
         };
       
         });
+
+		
          })
            
 

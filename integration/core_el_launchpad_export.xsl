@@ -5859,6 +5859,25 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 		   		{{/each}}
 		  	{{/if}}
 		  {{/each}}
+         <Row ss:Height="17">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1185">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-3]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-3],'Business Processes'!C[-2],1,0)),&#34;Business Process must be already defined in Business Processes sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-3]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-3],Organisations!C[-3],1,0)),&#34;Organisation must be already defined in Organisations sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+         </Row>	
 	</Table>
 	  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
          <PageSetup>
@@ -6237,6 +6256,114 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 		  {{/each}}
 		  {{/if}}
 		  {{/each}}
+        <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
+          <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
+          <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
+          <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
+          <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
+          <Row ss:Height="17" ss:StyleID="s1032">
+            <Cell ss:Index="2" ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1172">
+               <Data ss:Type="String"></Data>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],Applications!C[-1],1,0)),&#34;Application must be already defined in Applications sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:StyleID="s1191"
+                  ss:Formula="=IF(RC[-2]&lt;&gt;&#34;&#34;,(IF(ISNA(VLOOKUP(RC[-2],'Application Services'!C[-2],1,0)),&#34;Application Service must be already defined in Application Services sheet&#34;,&#34;OK&#34;)),&#34;&#34;)">
+               <Data ss:Type="String"/>
+            </Cell>
+            <Cell ss:Index="8" ss:Formula="=CONCATENATE(RC[-6],&quot; as &quot;,RC[-5])"><Data
+               ss:Type="String"></Data></Cell>
+         </Row>
  </Table>
       <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
          <PageSetup>
@@ -9696,9 +9823,12 @@ $('#appDependencyCheck').on("change", function() {
 	} else {
       $('#appsi').show();  
       $('#infoXi').show();  
+      
 		if ($.isEmptyObject(applicationDependencies)) {
 		 if(viewAPIDataAppDependency==viewCheck){
 			 applicationDependencies = [{'description': '', 'name': ''}];
+
+          console.log('applicationDependencies',applicationDependencies)
 		     worksheetList.push({"id":70,"name":appDependencyTemplate(applicationDependencies)});
 			 }
 		 else
@@ -9707,8 +9837,12 @@ $('#appDependencyCheck').on("change", function() {
 					.then(function(response1) {
 		 				$('#appDps').css('color','#0aa20a')   
 						applicationDependencies =response1;
-						//console.log('applicationDependencies');
-						//console.log(applicationDependencies);
+						 //filter out APIs
+					      applicationDependencies.application_dependencies = applicationDependencies.application_dependencies.filter(d => {
+                      return d.sourceType !== "" &amp;&amp; d.targetType !== "";
+                     });
+
+ 
 					 worksheetList.push({"id":70,"name": appDependencyTemplate(applicationDependencies.application_dependencies)});	
 					}).catch (function (error) {
 						alert('Error - check you have the Core API: Import Application Dependency API set up')

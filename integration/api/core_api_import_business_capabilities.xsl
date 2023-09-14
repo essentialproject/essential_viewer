@@ -18,7 +18,8 @@
 	<xsl:variable name="productConcepts" select="/node()/simple_instance[type='Product_Concept']"/>
 	<xsl:key name="allDocs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
 	<xsl:key name="allTaxTerms_key" match="/node()/simple_instance[type = 'Taxonomy_Term']" use="own_slot_value[slot_reference = 'classifies_elements']/value"/> 
-	 
+	<xsl:key name="allkids_key" match="$businessCapabilities" use="own_slot_value[slot_reference = 'supports_business_capabilities']/value"/> 
+
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -56,6 +57,7 @@
 		<xsl:variable name="busDomain" select="$businessDomains[name=current()/own_slot_value[slot_reference='belongs_to_business_domain']/value] union $businessDomains[name=current()/own_slot_value[slot_reference='belongs_to_business_domains']/value]"/>
 		<xsl:variable name="eaScopedGeoIds" select="$countries[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]/name"/>
 		<xsl:variable name="thisrelevantInfoConcepts" select="$bcInfoConcepts[name=current()/own_slot_value[slot_reference='business_capability_requires_information']/value]"/>
+		<xsl:variable name="childList" select="key('allkids_key',current()/name)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -73,6 +75,11 @@
 		"rootCapability":"<xsl:if test="$rootBusCap/name=current()/name"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template></xsl:if>",
 		"businessDomain":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$busDomain[1]"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"businessDomains":[<xsl:for-each select="$busDomain">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"children":[<xsl:for-each select="$childList">{"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"documents":[<xsl:for-each select="$thisDocs">
 		<xsl:variable name="thisTaxonomyTerms" select="key('allTaxTerms_key',current()/name)"/>
 		{"id":"<xsl:value-of select="current()/name"/>",

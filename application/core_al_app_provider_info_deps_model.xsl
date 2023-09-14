@@ -63,7 +63,7 @@
 	<xsl:variable name="currentAppName" select="$topApp/own_slot_value[slot_reference = 'name']/value"/>
 
 	<!-- Get all Data Sets needed to minimise having to traverse the whole document -->
-	<xsl:variable name="allApp2InfoReps" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_RELATION']"/>
+	<xsl:variable name="allApp2InfoReps" select="/node()/simple_instance[type = ('APP_PRO_TO_INFOREP_RELATION','APP_PRO_TO_INFOREP_EXCHANGE_RELATION')]"/>
 	<xsl:variable name="allAcquisitionMethods" select="/node()/simple_instance[type = 'Data_Acquisition_Method']"/>
 	<xsl:variable name="allInfoReps" select="/node()/simple_instance[type = 'Information_Representation']"/>
 	<xsl:variable name="allInfoRepAtts" select="/node()/simple_instance[type = 'Information_Representation_Attribute']"/>
@@ -695,8 +695,11 @@ $( document ).ready(function() {
 											<!-- Feed Information from source systems -->
 											<xsl:for-each select="$anInFeedSet">
 												<xsl:variable name="anApu2Apu" select="current()"/>
-												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
+												
+												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 
 												<xsl:choose>
 													<xsl:when test="count($anInfoReps) > 0">
@@ -750,9 +753,10 @@ $( document ).ready(function() {
 
 												<xsl:for-each select="$anInboundToMWFeedSet">
 													<xsl:variable name="anApu2Apu" select="current()"/>
-													<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-													<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
-
+												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 													<xsl:choose>
 														<xsl:when test="count($anInfoReps) > 0">
 
@@ -901,9 +905,10 @@ $( document ).ready(function() {
 
 												<xsl:for-each select="$anOutboundToMWFeedSet">
 													<xsl:variable name="anApu2Apu" select="current()"/>
-													<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-													<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
-
+												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 													<xsl:choose>
 														<xsl:when test="count($anInfoReps) > 0">
 															<xsl:for-each select="$anInfoReps">
@@ -951,9 +956,10 @@ $( document ).ready(function() {
 										<td class="col-xs-3">
 											<xsl:for-each select="$anOutFeedSet">
 												<xsl:variable name="anApu2Apu" select="current()"/>
-												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
-
+												<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 												<xsl:choose>
 													<xsl:when test="count($anInfoReps) > 0">
 														<xsl:for-each select="$anInfoReps">
@@ -1096,9 +1102,10 @@ $( document ).ready(function() {
 									<td colspan="3" class="col-xs-9">
 										<xsl:for-each select="$aDirectRels">
 											<xsl:variable name="anApu2Apu" select="current()"/>
-											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-											<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
-
+											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 											<xsl:choose>
 												<xsl:when test="count($anInfoReps) > 0">
 													<xsl:for-each select="$anInfoReps">
@@ -1163,9 +1170,10 @@ $( document ).ready(function() {
 									<td colspan="3" class="col-xs-9">
 										<xsl:for-each select="$aDirectRels">
 											<xsl:variable name="anApu2Apu" select="current()"/>
-											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value]"/>
-											<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep)"/>
-
+											<xsl:variable name="anApp2InfoRep" select="$allApp2InfoReps[name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforeps', 'atire_app_pro_to_inforep')]/value]"/>
+												<xsl:variable name="anApp2InfoRepviaExchange" select="$allApp2InfoReps[name = $anApp2InfoRep/own_slot_value[slot_reference = 'atire_app_pro_to_inforep']/value]"/>
+												<xsl:variable name="anApp2InfoRepX" select="$allApp2InfoReps[name = $anApp2InfoRepviaExchange/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep')]/value]"/>
+												<xsl:variable name="anInfoReps" select="eas:getInfoRepsFromRelation($anApp2InfoRep union $anApp2InfoRepviaExchange)"/>
 											<xsl:choose>
 												<xsl:when test="count($anInfoReps) > 0">
 													<xsl:for-each select="$anInfoReps">
@@ -1583,7 +1591,7 @@ $( document ).ready(function() {
 	<xsl:function name="eas:getInfoRepsFromRelation" as="node()*">
 		<xsl:param name="theRelationshipList"/>
 
-		<xsl:variable name="anInfoRepList" select="$allInfoReps[name = $theRelationshipList/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
+		<xsl:variable name="anInfoRepList" select="$allInfoReps[name = $theRelationshipList/own_slot_value[slot_reference = ('app_pro_to_inforep_to_inforep', 'atire_app_pro_to_inforep')]/value]"/>
 		<xsl:variable name="anInfoRepAttList" select="$allInfoRepAtts[name = $theRelationshipList/own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value]"/>
 
 		<xsl:variable name="aParentInfoRepList" select="$allInfoReps[own_slot_value[slot_reference = 'contained_information_representation_attributes']/value = $anInfoRepAttList/name]"/>

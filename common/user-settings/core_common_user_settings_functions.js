@@ -156,8 +156,8 @@ class PlannedChange {
 
 //Function call by Views/Editors to initialise the scoping capability and then call the callback function
 function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRMEnabled) {
-    console.log('initfilterClassList',initfilterClassList)
-    console.log('isRMEnabled',isRMEnabled)
+   // console.log('initfilterClassList',initfilterClassList)
+    // console.log('isRMEnabled',isRMEnabled)
     scopeInitialised = true;
     if(!isRMEnabled){
         isRMEnabled = false;
@@ -185,7 +185,7 @@ function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRM
         $('#pauseRoadmap').addClass('rm-btn-disabled');
         $('#resetRoadmap').addClass('rm-btn-disabled'); */
     }
-    console.log('essRoadmapEnabled',essRoadmapEnabled)
+   // console.log('essRoadmapEnabled',essRoadmapEnabled)
     if(initfilterClassList) {
         essFilterClassList = initfilterClassList;
     }
@@ -344,6 +344,8 @@ function essSetScopingDropdowns() {
 //@selectedValId = the string value ID of the instance to be used as a filter
 //@isExcludeFilter = boolean defining whether the filter is to be applied as an exclusion (default is false)
 function essAddFilter(thisCatId, selectedValId, isExcludeFilter) {
+    //console.log(thisCatId+":"+selectedValId +":")
+    //console.log(essScopingLists);
     let scopingCat = essScopingLists.find(cat => cat.id == thisCatId);
     let valObj = scopingCat?.values.find(val => val.id == selectedValId);
     if(valObj != null) {
@@ -367,6 +369,10 @@ function essRemoveFilter(thisValId) {
             essRefreshScopingValues();
         }
     }
+}
+
+function essGetScope(){
+    return essUserScope
 }
 
 // Function to add the scoping event listeners
@@ -567,7 +573,7 @@ function essFilterResources(scopedResources, scopeForProperty, scopingProperty) 
         //console.log('In Scope for Include?', isIncludeInScope);
         return isIncludeInScope && isExcludeInScope;
     });
-    console.log('filteredResources',filteredResources)
+   // console.log('filteredResources',filteredResources)
     return filteredResources;
 }
 
@@ -1047,7 +1053,7 @@ function rmInitDates() {
 }
 
 function initRoadmapEnUI() {
-    console.log('ROADMAP REF DATA:', essRMApiData);
+  //  console.log('ROADMAP REF DATA:', essRMApiData);
 
     $('#playRoadmap').on('click', function(evt) {
         //start roadmap animation
@@ -1089,7 +1095,7 @@ function initRoadmapEnUI() {
     
     $('#rmActiveButton').on('click', function(evt){
         if ($(this).hasClass("rmActive")){
-            console.log('Roadmap Inactive');          
+           // console.log('Roadmap Inactive');          
             essRoadmapEnabled = false;
             $(this).removeClass('btn-success');
             $(this).addClass('btn-danger');
@@ -1102,7 +1108,7 @@ function initRoadmapEnUI() {
             $('#roadmap-filter-count-wrapper').addClass('text-muted');
         } else
         {
-           console.log('Roadmap Active');
+         //  console.log('Roadmap Active');
             essRoadmapEnabled = true;
             $(this).removeClass('btn-danger');
             $(this).addClass('btn-success');
@@ -1299,8 +1305,8 @@ var easTimeMachine={
         .then(function(responses) {    
             essRMApiData.plans = responses[0].plans;
             essRMApiData.rpp = responses[1];
-            console.log('responses[0]',responses[0])
-            console.log('responses[1]',responses[1])
+         //   console.log('responses[0]',responses[0])
+         //   console.log('responses[1]',responses[1])
             onGotLayers();
         });
     },
@@ -1335,7 +1341,7 @@ var easTimeMachine={
             //otherwise, it is in scope
             return true;
         });
-        console.log('NEW IN SCOPE CHANGE DATA: ', inScopePlans);
+      //  console.log('NEW IN SCOPE CHANGE DATA: ', inScopePlans);
         rmRefreshInScopeChanges();
         essRMInScopeChanges = essRMInScopeChanges.concat(inScopePlans.map(chg => new PlannedChange(chg, inScopeInstances, typeInfo)));
         easTimeMachine.updateRMInScopeChangesUI();
@@ -1406,9 +1412,18 @@ function renderRoadmapPanel(){
 
 
 function rmRefreshInScopeChanges() {
+    if(essRMInScopeChanges){
+        let uniqueArray = Object.values(essRMInScopeChanges.reduce((acc, cur) => {
+            acc[JSON.stringify(cur)] = cur;
+            return acc;
+        }, {}));
+        essRMInScopeChanges = uniqueArray;
+    }
     if(!essRMInScopeChangesTable) {
         rmCreateInScopeChangesTable();
     } else {
+       
+   
         essRMInScopeChangesTable.clear().draw();
 		essRMInScopeChangesTable.rows.add(essRMInScopeChanges); // Add new data
 		essRMInScopeChangesTable.columns.adjust().draw(); // Redraw the DataTable

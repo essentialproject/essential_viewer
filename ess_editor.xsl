@@ -236,6 +236,15 @@
 					
 					const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
 					
+					Handlebars.registerHelper('essGetInstanceProp', function(instance, property){
+						if(instance &amp;&amp; instance[property]) {
+							let instanceProp = instance[property];
+							return instanceProp;
+						} else {
+							return null;
+						}
+					});
+
 					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
 						if(instance != null) {
 						let linkMenuName = essGetMenuName(instance);
@@ -307,6 +316,10 @@
 
 					Handlebars.registerHelper('ifNotEquals', function (arg1, arg2, options) {
 						return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
+					});
+
+					Handlebars.registerHelper('essReplaceUnderscores', function(aString){
+						return aString?.replaceAll('_', ' ');
 					});
 					
 					var essTableLinkTemplate;

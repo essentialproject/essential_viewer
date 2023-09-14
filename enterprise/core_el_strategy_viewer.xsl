@@ -55,23 +55,26 @@
  	<!-- param4 = the optional taxonomy term used to scope the view -->
 	<xsl:param name="param4"/>
 
-    <xsl:variable name="busDriver" select="/node()/simple_instance[type='Business_Driver']"/>
+<xsl:variable name="busDriver" select="/node()/simple_instance[type='Business_Driver']"/>	
 	
-	
-    <xsl:variable name="goalTaxonomy" select="/node()/simple_instance[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
-    <xsl:variable name="allBusObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
+<xsl:variable name="goalTaxonomy" select="/node()/simple_instance[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
+<xsl:variable name="allBusObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
     
-	<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
-    <xsl:variable name="busGoals" select="$allStrategicGoals"/>
+<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
+<xsl:variable name="busGoals" select="$allStrategicGoals"/>
      
-    
-
 <xsl:key name="drvKey" match="$busDriver" use="own_slot_value[slot_reference = 'bd_motivated_objectives']/value"/>
 <xsl:key name="oldGlsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
 <xsl:key name="busGlsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
 <xsl:key name="busObjKey" match="$allBusObjectives" use="own_slot_value[slot_reference = 'objective_supports_objective']/value"/>
 <xsl:key name="busObjNewKey" match="$allBusObjectives" use="own_slot_value[slot_reference = 'objective_supports_goals']/value"/>
 <xsl:key name="newglsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'goal_supported_by_objectives']/value"/>
+
+<xsl:key name="p2eKey" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="type"/>
+<xsl:variable name="p2es" select="key('p2eKey','PLAN_TO_ELEMENT_RELATION')"/>
+<xsl:variable name="eleKey" select="/node()/simple_instance[name=$p2es/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+<xsl:variable name="planningActions" select="/node()/simple_instance[type='Planning_Action']"/>
+
 
     <!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
  
@@ -254,6 +257,7 @@
 						font-size: 115%;
 						font-weight: 700;
 						display: inline-block;
+						max-width: calc(100% - 150px);
 					}
 					.detail-outer-type {
 						opacity: 0.75;
@@ -371,6 +375,7 @@
                     .popover {
                     	max-height: 400px;
                     	max-width: 600px;
+						min-width: 400px;
                     	font-size: 90%;
                     	overflow-y: auto;
                     	overflow-x: hidden;
@@ -624,7 +629,7 @@
 									{{#each this.plans}}
 										{{#each this.plan2elements}}
 											<li>
-												{{this.name}}
+												<span class="label label-info">{{this.action}}</span> {{this.element}}
 											</li>
 										{{/each}}
 									{{/each}}
@@ -754,7 +759,7 @@
 				let strategyMap= {"strategy":{ "vision": "some about the text for the organisation","drivers":[<xsl:apply-templates select="$busDriver" mode="strategydrivers"/>],
 				"goals":[<xsl:apply-templates select="$busGoals" mode="goals"/>],
 				"objectives":[<xsl:apply-templates select="$allBusObjectives" mode="objs"/>]}};
-				
+				console.log('strategyMap',strategyMap)
 				//console.log('strategyMap', strategyMap)
 				//console.log('orgs', orgs)
 				
@@ -1116,6 +1121,18 @@
         </xsl:call-template>",
     "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",	
     "className":"<xsl:value-of select="current()/type"/>",
+	
+	<xsl:variable name="ele" select="$eleKey[name=current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+	"element":"<xsl:call-template name="RenderMultiLangInstanceName">
+            <xsl:with-param name="theSubjectInstance" select="$ele"/>
+            <xsl:with-param name="isRenderAsJSString" select="true()"/>
+    		<xsl:with-param name="isForJSONAPI" select="true()"/>
+        </xsl:call-template>",
+	"action":"<xsl:call-template name="RenderMultiLangInstanceName">
+            <xsl:with-param name="theSubjectInstance" select="$planningActions[name=current()/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>
+            <xsl:with-param name="isRenderAsJSString" select="true()"/>
+    		<xsl:with-param name="isForJSONAPI" select="true()"/>
+        </xsl:call-template>",	
     "id":"<xsl:value-of select="current()/name"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
     "projects":[<xsl:for-each select="$thisProjects">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
             <xsl:with-param name="theSubjectInstance" select="current()"/>

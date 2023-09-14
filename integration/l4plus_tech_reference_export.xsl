@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xmlns:fn="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns:eas="http://www.enterprise-architecture.org/essential">
-
   <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" media-type="application/ms-excel"/>
-
 
 	<!--
         * Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -29,13 +27,43 @@
     <xsl:variable name="phyProc" select="/node()/simple_instance[type = 'Physical_Process']"/>
 	<xsl:variable name="busProc" select="/node()/simple_instance[type = 'Business_Process']"/>
      <xsl:variable name="appSvs" select="/node()/simple_instance[type = 'Application_Service']"/>
-	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>  
+	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
     <xsl:variable name="techProds" select="/node()/simple_instance[type = ('Technology_Product')]"/>  
     <xsl:variable name="techComps" select="/node()/simple_instance[type = ('Technology_Component')]"/> 
     <xsl:variable name="ref" select="/node()/simple_instance[type = ('Lifecycle_Status')][own_slot_value[slot_reference='name']/value='Reference']"/> 
     <xsl:variable name="techComposite" select="/node()/simple_instance[type = ('Technology_Composite')][own_slot_value[slot_reference='technology_component_lifecycle_status']/value=$ref/name]"/> 
     <xsl:variable name="org" select="/node()/simple_instance[type = ('Group_Actor','Individual_Actor')]"/> 
     <xsl:variable name="obj" select="/node()/simple_instance[type = 'Business_Objective']"/>
+    <xsl:variable name="tsq" select="/node()/simple_instance[type = 'Technology_Service_Quality']"/>
+     <xsl:key name="env" match="/node()/simple_instance[type = 'Deployment_Role']" use="name"/>
+   
+    <xsl:key name="tsqv" match="/node()/simple_instance[type = 'Technology_Service_Quality_Value']" use="own_slot_value[slot_reference='usage_of_service_quality']/value"/>
+    <xsl:key name="style" match="/node()/simple_instance[type = 'Element_Style']" use="own_slot_value[slot_reference='style_for_elements']/value"/>
+    <xsl:key name="appDep" match="/node()/simple_instance[type = 'Application_Deployment']" use="own_slot_value[slot_reference='application_provider_deployed']/value"/>
+    <xsl:key name="tpb" match="/node()/simple_instance[type = 'Technology_Product_Build']" use="name"/>
+    <xsl:key name="tba" match="/node()/simple_instance[type = 'Technology_Build_Architecture']" use="own_slot_value[slot_reference='describes_technology_provider']/value"/>
+    <xsl:key name="tpu" match="/node()/simple_instance[type = 'Technology_Provider_Usage']" use="own_slot_value[slot_reference='used_in_technology_provider_architecture']/value"/>
+    
+    <xsl:key name="tpr" match="/node()/simple_instance[type = 'Technology_Product_Role']" use="name"/> <!--provider_as_role-->
+    <xsl:key name="tc" match="/node()/simple_instance[type = 'Technology_Component']" use="own_slot_value[slot_reference='realised_by_technology_products']/value"/>
+    <xsl:key name="tp" match="/node()/simple_instance[type = 'Technology_Product']" use="own_slot_value[slot_reference='implements_technology_components']/value"/>
+
+  <!--  
+    Technology_Product_Build
+    Technology_Provider_Usage
+    Technology_Provider_Usage
+    :TPU-TO-TPU-RELATION
+Deployment_Role
+
+Technology_Build_Architecture
+Technology_Component
+Technology_Product
+Technology_Product_Role
+-->
+
+
+
+
 	<xsl:template match="knowledge_base">
         
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
@@ -1290,6 +1318,7 @@
     <Cell ss:StyleID="s91"><Data ss:Type="String">Check To Tech Product</Data></Cell>
     <Cell ss:StyleID="s91"><Data ss:Type="String">Check To Tech Component</Data></Cell>
    </Row>
+    
    <Row ss:AutoFitHeight="0" ss:Height="7"/>
    
   
@@ -1316,12 +1345,18 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R68C2:R3000C2</Range>
+   <Range>R8C2:R3000C2</Range>
    <Type>List</Type>
    <Value>Applications!R8C3:R2010C3</Value>
   </DataValidation>
+    <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R8C3:R40C3</Range>
+   <Type>List</Type>
+   <UseBlank/>
+   <Value>Valid_Environments</Value>
+  </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R68C6:R3000C6,R68C4:R3000C4</Range>
+   <Range>R8C6:R3000C6,R8C4:R3000C4</Range>
    <Type>List</Type>
    <Value>'Technology Products'!R8C3:R2010C3</Value>
   </DataValidation>
@@ -1331,7 +1366,7 @@
    <Value>'Technology Components'!R8C3:R2010C3</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R68C7:R3300C7</Range>
+   <Range>R8C5:R3300C5, R8C7:R3300C7</Range>
    <Type>List</Type>
    <Value>'Technology Components'!R8C3:R3010C3</Value>
   </DataValidation>
@@ -1345,12 +1380,10 @@
  </Worksheet>
  <Worksheet ss:Name="Technology Service Qualities">
   <Names>
-   <NamedRange ss:Name="Tech_Delivery_Models"
-    ss:RefersTo="='Technology Service Qualities'!R7C3:R24C3"/>
+ 
   </Names>
   <Table ss:ExpandedColumnCount="7" x:FullColumns="1"
-   x:FullRows="1" ss:StyleID="s92" ss:DefaultColumnWidth="65"
-   ss:DefaultRowHeight="16">
+    ss:StyleID="s92" ss:DefaultColumnWidth="65">
    <Column ss:Index="2" ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="131"/>
    <Column ss:StyleID="s92" ss:AutoFitWidth="0" ss:Width="252"/>
@@ -1362,14 +1395,23 @@
     <Cell ss:Index="2" ss:MergeAcross="2" ss:StyleID="s134"><Data ss:Type="String">Technology Service Qualities</Data></Cell>
    </Row>
    <Row ss:Index="6" ss:AutoFitHeight="0" ss:Height="20">
-    <Cell ss:Index="2" ss:StyleID="s67"><Data ss:Type="String">ID</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Name</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Description</Data></Cell>
-    <Cell ss:StyleID="s94"><Data ss:Type="String">Name Translation</Data></Cell>
-    <Cell ss:StyleID="s94"><Data ss:Type="String">Description Translation</Data></Cell>
-    <Cell ss:StyleID="s94"><Data ss:Type="String">Language</Data></Cell>
+    <Cell ss:Index="2"><Data ss:Type="String">ID</Data></Cell>
+    <Cell><Data ss:Type="String">Name</Data></Cell>
+    <Cell><Data ss:Type="String">Description</Data></Cell>
+    <Cell><Data ss:Type="String">Name Translation</Data></Cell>
+    <Cell><Data ss:Type="String">Description Translation</Data></Cell>
+    <Cell><Data ss:Type="String">Language</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="8"/>
+ <Row ss:Index="7" ss:AutoFitHeight="0" ss:Height="20">
+    <Cell ss:Index="2"><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+   <xsl:apply-templates select="$tsq" mode="tsq"/>
+
  
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1391,7 +1433,7 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R8C7:R127C7</Range>
+   <Range>R8C7:R40C7</Range>
    <Type>List</Type>
    <UseBlank/>
    <Value>Languages</Value>
@@ -1475,7 +1517,7 @@
     <Cell ss:StyleID="s94"><Data ss:Type="String">Language</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="7"/>
-   
+   <xsl:apply-templates select="$tsq" mode="tsqv"/>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -1516,7 +1558,252 @@
     <Cell ss:Index="4" ss:StyleID="s67"><Data ss:Type="String">App Pro Role</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="9"/>
-   
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+     <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+     <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
+    <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s125"
+     ss:Formula="=CONCATENATE('Tech Service Qual Vals'!RC[1], &quot; - &quot;, 'Tech Service Qual Vals'!RC[2])"><Data
+      ss:Type="String"></Data><NamedCell
+      ss:Name="Tech_Svc_Quality_Values"/></Cell>
+   </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -2849,6 +3136,79 @@
     <Cell><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
    </Row>
  
-</xsl:template>    
+</xsl:template>  
+<xsl:template match="node()" mode="tsq">  
+ <Row ss:AutoFitHeight="0" ss:Height="20"><xsl:attribute name="ss:Index"><xsl:value-of select="position()+7"/></xsl:attribute>
+    <Cell ss:Index="2" ><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
+    <Cell ><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+</xsl:template>
+<xsl:template match="node()" mode="tsqv">  
+   <xsl:variable name="thisSQ" select="current()"/> 
+   <xsl:variable name="thistsqv" select="key('tsqv',current()/name)"/>
+   <xsl:for-each select="$thistsqv">
+   <xsl:variable name="thisstyle" select="key('style',current()/name)"/>
+   <Row ss:AutoFitHeight="0" ss:Height="27">
+    <Cell/>
+    <Cell ><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$thisSQ/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$thisstyle/own_slot_value[slot_reference='element_style_colour']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$thisstyle/own_slot_value[slot_reference='element_style_class']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_score']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row> 
+   </xsl:for-each>
+</xsl:template>
+<!--
+<xsl:template match="node()" mode="tapps">
+  <xsl:variable name="thisappDep" select="key('appDep',current()/name)"/>
+  <xsl:variable name="thispb" select="key('tpb', $thisappDep/own_slot_value[slot_reference='application_deployment_technical_arch']/value"/>
+<Row ss:AutoFitHeight="0" ss:Height="20">
+    <Cell ss:StyleID="s84"/>
+    <Cell ss:StyleID="s88"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="String"><xsl:value-of select="$thisappDep/own_slot_value[slot_reference='application_deployment_role']/value"/>onment</Data></Cell>
+    <Cell ss:StyleID="s90"><Data ss:Type="String">From Technology Product</Data></Cell>
+    <Cell ss:StyleID="s90"><Data ss:Type="String">From Technology Component</Data></Cell>
+    <Cell ss:StyleID="s90"><Data ss:Type="String">To Technology Product</Data></Cell>
+    <Cell ss:StyleID="s90"><Data ss:Type="String">To Technology Component</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check Application</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check Environment</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check From Tech Product</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check From Tech Component</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check To Tech Product</Data></Cell>
+    <Cell ss:StyleID="s91"><Data ss:Type="String">Check To Tech Component</Data></Cell>
+   </Row>
+</xsl:template>-->
+<xsl:template match="node()" mode="tapps">
+  <xsl:variable name="thisappDep" select="key('appDep',current()/name)"/>
+  <xsl:variable name="thispb" select="key('tpb', $thisappDep/own_slot_value[slot_reference='application_deployment_technical_arch']/value)"/> 
+  <xsl:variable name="tba2" select="key('tba',$thispb/name)"/>
+  <xsl:variable name="tpu2" select="key('tpu',$tba2/name)"/>
+  <xsl:variable name="tpr2" select="key('tpr', $tpu2/own_slot_value[slot_reference='provider_as_role']/value)"/><!--provider_as_role-->
+    <xsl:variable name="tc2" select="key('tc',$tpr2/name)"/>
+    <xsl:variable name="tp2" select="key('tp',$tc2/name)"/>
+<Row ss:AutoFitHeight="0" ss:Height="20">
+    <Cell ss:StyleID="s84"/>
+    <Cell ss:StyleID="s88"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$thisappDep/name"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$thispb/name"/></Data></Cell>
+    <Cell><Data ss:Type="String">From Technology Component</Data></Cell>
+    <Cell><Data ss:Type="String">To Technology Product<xsl:value-of select="$tp2/name"/></Data></Cell>
+    <Cell><Data ss:Type="String">To Technology Component<xsl:value-of select="$tpr2/name"/></Data></Cell>
+    <Cell><Data ss:Type="String">Check Application</Data></Cell>
+    <Cell><Data ss:Type="String">Check Environment</Data></Cell>
+    <Cell><Data ss:Type="String">Check From Tech Product</Data></Cell>
+    <Cell><Data ss:Type="String">Check From Tech Component</Data></Cell>
+    <Cell><Data ss:Type="String">Check To Tech Product</Data></Cell>
+    <Cell><Data ss:Type="String">Check To Tech Component</Data></Cell>
+   </Row>
+</xsl:template>
 
 </xsl:stylesheet>

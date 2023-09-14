@@ -60,12 +60,15 @@
 		 <xsl:variable name="currentLFCName"> <xsl:call-template name="RenderCurrentLFCUName"><xsl:with-param name="lfcUsages" select="$lfcUsages"></xsl:with-param></xsl:call-template> </xsl:variable> 
 		{ 
 		"id": "<xsl:value-of select="eas:getSafeJSString($thisTPR/name)"/>",
+		"osid": "<xsl:value-of select="$thisTPR/name"/>",
 		"techProdid": "<xsl:value-of select="eas:getSafeJSString($thisTechProdid)"/>",
+		"ostpid": "<xsl:value-of select="$thisTPR/name"/>",
         "techProdName": "<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
                 <xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"techCompid": "<xsl:value-of select="eas:getSafeJSString($thisTechCompid)"/>",
+		"ostcid": "<xsl:value-of select="$thisTPR/name"/>",
 		<xsl:value-of select="$currentLFCName"/>
 		"standard": [<xsl:for-each select="$thisTechProdStandard">
 				<xsl:variable name="thisTechStd" select="$allTechStandards[name=current()/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>		 

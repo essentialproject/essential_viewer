@@ -56,6 +56,8 @@
 	<xsl:variable name="acquire" select="$dataAquisition[name=$thisInfo/own_slot_value[slot_reference='atire_acquisition_method']/value]"/>
     {"source":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$sourceApp"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	"target":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$targetApp"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	"sourceType":"<xsl:value-of select="$sourceApp/type"/>",
+	"targetType":"<xsl:value-of select="$targetApp/type"/>",
 	"info":[<xsl:if test="$sourceApp"><xsl:if test="$targetApp"><xsl:for-each select="$thisInfo"><xsl:variable name="thisAppInfoRep" select="$apptoInfoReps[name=current()/own_slot_value[slot_reference='atire_app_pro_to_inforep']/value]"/>
 	<xsl:variable name="thisInfoRep" select="$infoReps[name=$thisAppInfoRep/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value]"/> 	 
 	 {

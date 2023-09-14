@@ -1693,22 +1693,23 @@
 <xsl:template match="node()" mode="stratPlans">
       
     <xsl:variable name="thisroadmap" select="/node()/simple_instance[type='Roadmap'][own_slot_value[slot_reference='roadmap_strategic_plans']/value=current()/name]"/>   
- 
+ <xsl:variable name="this" select="current()"/>
+ <xsl:for-each select="$thisroadmap">
  <Row ss:Height="20">
      <Cell ss:Index="2" ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
-      <xsl:with-param name="theSubjectInstance" select="$thisroadmap"/>
-      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
-    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
       <xsl:with-param name="theSubjectInstance" select="current()"/>
       <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
+    <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceName">
+      <xsl:with-param name="theSubjectInstance" select="$this"/>
+      <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:call-template name="RenderMultiLangInstanceDescription">
-      <xsl:with-param name="theSubjectInstance" select="$thisroadmap"/>
+      <xsl:with-param name="theSubjectInstance" select="current()"/>
       <xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/></Data></Cell>
     <Cell ss:StyleID="s61"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/></Data></Cell>
    </Row>
-
+</xsl:for-each>
   
 </xsl:template>    
 <xsl:template match="node()" mode="stratObj">

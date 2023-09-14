@@ -61,8 +61,8 @@
 <xsl:variable name="unitOfMeasures" select="/node()/simple_instance[type = 'Unit_Of_Measure']"></xsl:variable>
 <xsl:variable name="criticalityStatus" select="/node()/simple_instance[type = 'Business_Criticality']"></xsl:variable>
 <xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"></xsl:variable>
-<xsl:key name="processActorKey" match="/node()/simple_instance[supertype = 'Actor']" use="own_slot_value[slot_reference='performs_physical_process']/value"/>
-<xsl:key name="processRoleKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference='performs_physical_process']/value"/>
+<xsl:key name="processActorKey" match="/node()/simple_instance[supertype = 'Actor']" use="own_slot_value[slot_reference='performs_physical_processes']/value"/>
+<xsl:key name="processRoleKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference='performs_physical_processes']/value"/>
 <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"></xsl:variable>
 <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"></xsl:variable>
 <xsl:variable name="manualDataEntry" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value='Manual Data Entry']"/> 
@@ -86,6 +86,8 @@
 <xsl:variable name="regulation" select="/node()/simple_instance[type='Regulation']"/>   
 <xsl:key name="regulation_key" match="/node()/simple_instance[type = 'Regulation']" use="name"/>
 <xsl:key name="issue_key" match="/node()/simple_instance[type = 'Issue']" use="own_slot_value[slot_reference = 'related_application_elements']/value"/>
+<xsl:key name="issue_keynew" match="/node()/simple_instance[type = 'Issue']" use="own_slot_value[slot_reference = 'sr_requirement_for_elements']/value"/>
+
 
  <xsl:variable name="reportPath" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
  <xsl:variable name="reportPathInterface" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Information Dependency Model v2']"/>
@@ -205,7 +207,7 @@
 <xsl:variable name="thisrelevantActorsIndirect" select="key('processRoleKey',$physicalProcesskey/name)"></xsl:variable>
 <xsl:variable name="thisrelevantActorsDirect" select="key('processActorKey',$physicalProcesskey/name)"></xsl:variable>
 <xsl:variable name="thisrelevantActorsforA2R" select="$actors[name=$thisrelevantActorsIndirect/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"></xsl:variable>
-<xsl:variable name="allPhysicalProcessActors" select="$thisrelevantActorsforA2R/name union $thisrelevantActorsDirect/name"/>
+<xsl:variable name="allPhysicalProcessActors" select="$thisrelevantActorsforA2R union $thisrelevantActorsDirect"/>
 
 <xsl:variable name="processSites" select="$allSites[name = $physicalProcesskey/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
 <xsl:variable name="allOrgUserIds" select="distinct-values($eaScopedOrgUserIds/name union $thisOrgUserIds/name union $allPhysicalProcessActors/name)"/> 
@@ -224,12 +226,17 @@
 -->
 <xsl:variable name="thisRegLink" select="key('regulationLink_key', current()/name)"/>
 <xsl:variable name="thisRegs" select="$regulation[name=$thisRegLink/own_slot_value[slot_reference = 'regulated_component_regulation']/value]"/>
-<xsl:variable name="thisIssues" select="key('issue_key', current()/name)"/>
-		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+<xsl:variable name="thisOldIssues" select="key('issue_key', current()/name)"/>
+<xsl:variable name="thisNewIssues" select="key('issue_keynew', current()/name)"/>
+<xsl:variable name="thisIssues" select="$thisNewIssues union $thisOldIssues"/>
+		{
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>",
+		"class":"<xsl:value-of select="current()/type"/>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
@@ -246,11 +253,13 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
 			</xsl:call-template>",  -->
 		"regulations":[<xsl:for-each select="$thisRegs">
-		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+		{	
+			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
 		"name": "<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -262,6 +271,7 @@
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
 		</xsl:call-template>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			 <xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -307,6 +317,7 @@
 		 "id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>",
 		 "lifecycleId": "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='apr_lifecycle_status']/value)"></xsl:value-of>",
 		 "serviceId": "<xsl:value-of select="eas:getSafeJSString($thisserviceskey/name)"></xsl:value-of>",
+		 "className":"<xsl:value-of select="current()/type"/>",
 		 "serviceName": "<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 				 <xsl:with-param name="theSubjectInstance" select="$thisserviceskey"/>
@@ -412,7 +423,7 @@
 		"icon": "fa-circle",
 		"color":"#93592f",
 		"values": [
-		<xsl:for-each select="$releventEnums">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:for-each select="$releventEnums"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
 			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
 		</xsl:call-template>",
@@ -421,6 +432,7 @@
 		<xsl:with-param name="displaySlot" select="'enumeration_value'"/>
 		<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
 		</xsl:call-template>",
+		"sequence":"<xsl:value-of select="own_slot_value[slot_reference='enumeration_sequence_number']/value"/>", 
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 				</xsl:template>	

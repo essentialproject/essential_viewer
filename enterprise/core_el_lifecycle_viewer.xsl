@@ -1194,15 +1194,21 @@ else{
 		yearArr.push({"yr":parseInt(startYear)+i, "date":dy, "pos":getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy)});
 	}
 
+let validLifes=[]
 				workingArr.forEach((d)=>{  
+				 
 								let thislifeByType = d3.nest()
 									.key(function(d) { return d.type; })
 									.entries(d.allDates);
  
+					thislifeByType= thislifeByType.filter((e)=>{
+						return e.key !=''
+					})
+ 
 								thislifeByType.forEach((life)=>{
 								 
 									for(let i=0;i&lt;life.values.length;i++){
-									 
+									 validLifes.push(life.values[i].id)
 										let sequ = lifecycleJSON.find((lf)=>{
 											return lf.id == life.values[i].id;
 										}) ;
@@ -1211,7 +1217,7 @@ else{
 									
 								life.values.sort((a, b) => parseFloat(a.seq) - parseFloat(b.seq));	
 
-								for(let i=0;i&lt;life.values.length;i++){  
+								for(let i=0;i&lt;life.values?.length;i++){  
 		
 									if(typeof life.values[i+1]!= 'undefined'){
 										life.values[i]['endDate']=life.values[i+1].dateOf;
@@ -1237,8 +1243,19 @@ else{
 	let lifeType=lifeByType.filter((d)=>{
 		return d.key ==thisLife;
 	});
-	
-	$('#key').html(keyTemplate(lifeType[0]));
+	 uniqueArray = [...new Set(validLifes)];
+ 
+	 let keys=[]
+	 uniqueArray.forEach((e)=>{
+			let match = lifeType[0].values.find((f)=>{
+				return f.id==e
+			})
+
+			if(match){keys.push(match)}
+	 })
+ 
+	let keyInfo={"values":keys}
+	$('#key').html(keyTemplate(keyInfo));
 				 
 
 	let productsToShow=[];

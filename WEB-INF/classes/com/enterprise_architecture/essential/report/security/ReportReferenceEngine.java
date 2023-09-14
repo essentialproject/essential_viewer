@@ -25,6 +25,7 @@ package com.enterprise_architecture.essential.report.security;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -503,7 +504,11 @@ public class ReportReferenceEngine
             
             // Add the JSON payload to the request body
 			MultipartEntityBuilder aMultiPartEntity = MultipartEntityBuilder.create();
-			aMultiPartEntity.addTextBody(ESSENTIAL_REF_API_PARAMETER_NAME, theJsonPayload, ContentType.MULTIPART_FORM_DATA);
+			/**
+             * Add the JSON payload to the request body
+             * DK/NW 2023/03/22 - set character encoding to UTF-8 to fix issues with encoding non-ASCII chrs
+             */
+			aMultiPartEntity.addTextBody(ESSENTIAL_REF_API_PARAMETER_NAME, theJsonPayload, ContentType.create("application/json", StandardCharsets.UTF_8));
 			anAPIPost.setEntity(aMultiPartEntity.build());
 			return doHttpRequest(anAPIPost, theApiKey, theAuthorisation, theRepositoryId);
         } 

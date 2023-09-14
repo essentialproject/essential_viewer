@@ -1171,7 +1171,8 @@
             {"id":"<xsl:value-of select="$thisItem/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisItem"/>
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>", "stratplanid":"<xsl:value-of select="$thisStratPlan/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisStratPlan"/></xsl:call-template>"},
+			</xsl:call-template>","changeid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","changename":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>","changeStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_actual_start_date_iso_8601']/value"/>","changeEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_forecast_end_date_iso_8601']/value"/>",  
+            "stratPlans":[<xsl:for-each select="$thisStratPlan">{"stratplanid":"<xsl:value-of select="current()/name"/>","stratplanname":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]},
         </xsl:if>
         </xsl:for-each>
     </xsl:template> 
@@ -1182,7 +1183,7 @@
                     <tr><th>Element</th><th></th><th>Change Activity</th><th></th><th>Strategic Plan</th></tr>
              {{#each this}}
                     <tr><td>{{{name}}}</td><td style="text-align:center"><i class="fa fa-arrow-circle-right"></i><br/><span class="small">being implemented by</span></td><td>{{{changename}}}<br/>
-                        <span class="label label-primary">{{#if changeStartDate}}{{changeStartDate}}{{else}}Not Defined{{/if}}</span><xsl:text> </xsl:text><span class="label label-primary">{{#if changeEndDate}}{{changeEndDate}}{{else}}Not Defined{{/if}}</span></td><td  style="text-align:center"><i class="fa fa-arrow-circle-right"></i><br/><span class="small">supporting plan</span></td><td>{{{stratplanname}}}</td></tr>
+                        <span class="label label-primary">{{#if changeStartDate}}{{changeStartDate}}{{else}}Not Defined{{/if}}</span><xsl:text> </xsl:text><span class="label label-primary">{{#if changeEndDate}}{{changeEndDate}}{{else}}Not Defined{{/if}}</span></td><td  style="text-align:center"><i class="fa fa-arrow-circle-right"></i><br/><span class="small">supporting plan(s)</span></td><td>{{#each this.stratPlans}}<i class="fa fa-caret-right"></i><xsl:text> </xsl:text> {{{stratplanname}}}<br/>{{/each}}</td></tr>
              {{/each}}
                 </table>    
              {{else}}

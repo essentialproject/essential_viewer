@@ -33,6 +33,7 @@
 	<xsl:variable name="modelSubjectName">
 		<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="$modelSubject"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
 		</xsl:call-template>
 	</xsl:variable>
 
@@ -335,6 +336,7 @@
 		<xsl:variable name="eventLabel">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable> elements.push( new StartEventShape({ id: '<xsl:value-of select="$eventId"/>'}).setText('<xsl:value-of select="$eventLabel"/>') );<xsl:text>
 			
@@ -346,6 +348,7 @@
 		<xsl:variable name="eventLabel">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable> elements.push( new GoalEventShape({ id: '<xsl:value-of select="$eventId"/>'}).setText('<xsl:value-of select="$eventLabel"/>') );<xsl:text>
 			
@@ -363,6 +366,7 @@
 		<xsl:variable name="busProcName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isRenderAsJSString" select="true()"/>
 			</xsl:call-template>
 		</xsl:variable> elements.push( new Shape({ id: '<xsl:value-of select="$busProcId"/>', attrs: { image: { 'xlink:href': '<xsl:value-of select="$busRoleIconPath"/>' } } }).setText('<xsl:value-of select="$busProcName"/>') );<xsl:text>
 			
@@ -553,7 +557,7 @@
 		<xsl:variable name="inputBusProc2Info" select="$allProcess2InfoRels[(own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value = $modelSubject/name) and (own_slot_value[slot_reference = 'busproctype_reads_infoview']/value = 'Yes')]"/>
 		<xsl:variable name="inputInfo" select="$allInfoViews[name = $inputBusProc2Info/own_slot_value[slot_reference = 'busproctype_to_infoview_to_infoview']/value]"/>
 
-		<xsl:variable name="outputBusProc2Info" select="$allProcess2InfoRels[(own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value = $modelSubject/name) and (own_slot_value[slot_reference = 'busproctype_updates_infoview']/value = 'Yes')]"/>
+		<xsl:variable name="outputBusProc2Info" select="$allProcess2InfoRels[(own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value = $modelSubject/name) and (own_slot_value[slot_reference = ('busproctype_updates_infoview', 'busproctype_creates_infoview')]/value = 'Yes')]"/>
 		<xsl:variable name="outputInfo" select="$allInfoViews[name = $outputBusProc2Info/own_slot_value[slot_reference = 'busproctype_to_infoview_to_infoview']/value]"/>
 
 

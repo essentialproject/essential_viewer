@@ -190,7 +190,7 @@
 						border: 1px solid #ccc;
 						position: fixed;
 						right: 3px;
-						bottom: 3px;
+						top: 3px;
 						 
 					}
 					.app-circle-more {
@@ -209,7 +209,7 @@
 						border: 1px solid #ccc;
 						position: fixed;
 						right: 3px;
-						bottom: 3px;
+						top: 3px;
 						 
 					}
 					.bc-eye{
@@ -1080,7 +1080,24 @@ thisCap.processes.forEach((d)=>{
     let thisProc = responses[2].process_to_apps.find((e)=>{
         return e.processid == d.id;
     });
-	 
+     
+
+let procs=[];
+    let allthisProc = responses[2].process_to_apps.forEach((e)=>{
+        if(e.processid == d.id){
+			procs.push(e)	
+		};
+    });
+ 
+for (let i = 1; i &lt; procs.length; i++) {
+  procs[0].appsviaservice = procs[0].appsviaservice.concat(procs[i].appsviaservice);
+}
+
+// Remove the merged objects from the array
+procs.splice(1);
+
+thisProc=procs[0];
+
  
 if(thisProc){
  

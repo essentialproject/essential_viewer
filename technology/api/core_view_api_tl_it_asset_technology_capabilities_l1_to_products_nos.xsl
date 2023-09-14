@@ -65,6 +65,7 @@
 	
 
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"osid":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
@@ -74,6 +75,11 @@
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
 		"tprs":"<xsl:value-of select="count($thistechTPRs)"/>",
+		"tprIds":[<xsl:for-each select="$thistechTPRs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"ostprid":"<xsl:value-of select="current()/name"/>",
+		"ostechprodId":"<xsl:value-of select="current()/own_slot_value[slot_reference='role_for_technology_provider']/value"/>",
+		"tprid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"techprodId":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='role_for_technology_provider']/value)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"usersList":[<xsl:for-each select="$thistechOrgActor">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>	
 

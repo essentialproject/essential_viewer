@@ -164,7 +164,9 @@
 
                 		<div class="downloadBtn btn btn-default bg-secondary text-white small bottom-10">Download Application Performance Measures Import Specification</div>
 						</a><br/> 
-
+						<br/>								   
+						<a href="integration/plus/LaunchpadPlus-Essential_Application_KPIs.pdf" download="LaunchpadPlus-Essential_Application_KPIs.pdf"><h4><i class="fa fa-book"></i> Documentation</h4></a> 
+					
                 </p>   
 						</div>
             <div class="col-md-8">
@@ -288,7 +290,7 @@
 			showEditorSpinner('Fetching Data...'); 
  
 			var perfCategory=[<xsl:apply-templates select="$perfCategory" mode="perfCategory"/>];
- 
+ console.log('perfCategory',perfCategory)
 			var excelSheet=[];
 		 	$('document').ready(function (){
                  <!-- Excel handlebars functions -->
@@ -893,12 +895,13 @@ console.log('zip',zip)
 <xsl:variable name="thisperfCategorySQs" select="$perfCategorySQs[name=current()/own_slot_value[slot_reference = 'pmc_service_qualities']/value]"/>
 <xsl:variable name="thispmc" select="$classes[name=current()/own_slot_value[slot_reference = 'pmc_measures_ea_classes']/value]"/>
 <xsl:variable name="thispmcClass" select="$classes[name=current()/own_slot_value[slot_reference = 'enumeration_value_for_classes']/value]"/>
-	{"id":"<xsl:value-of select="current()/name"/>",
+	{
+		"id":"<xsl:value-of select="current()/name"/>",
 	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",
 	 "type": "<xsl:value-of select="current()/type"/>",
 	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="false()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
 	 "classes":[<xsl:for-each select="$thispmc">{"id":"<xsl:value-of select="current()/name"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-	 "enumClass":"<xsl:value-of select="$thispmcClass/own_slot_value[slot_reference='name']/value"/>",
+	 "enumClass":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'enumeration_value_for_classes']/value"/>",
 	 "seqNo":"<xsl:value-of select="$thispmcClass/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>",
 	 "shortName":"<xsl:value-of select="$thispmcClass/own_slot_value[slot_reference='short_name']/value"/>",
 	 "sqs":[<xsl:for-each select="$thisperfCategorySQs">{"id":"<xsl:value-of select="current()/name"/>",

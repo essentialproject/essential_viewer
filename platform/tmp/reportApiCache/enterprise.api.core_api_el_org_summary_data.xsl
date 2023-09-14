@@ -1,4 +1,0 @@
-
-			 {"orgData":[],
-			 "appsList":[]} 
-	

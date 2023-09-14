@@ -39,6 +39,9 @@
 		"sites": [
 		<xsl:apply-templates mode="getSitesJSON" select="$allSites"/>
 		],
+		"busModels": [
+		<xsl:apply-templates mode="RenderBasicInstanceJSON" select="$allBusModels"/>
+		],
 		"busEnvCategories": [
 		<xsl:apply-templates mode="getBusinssEnvCategoriesJSON" select="$allBusEnvCategories"/>
 		],

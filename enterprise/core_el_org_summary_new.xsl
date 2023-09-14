@@ -1837,7 +1837,7 @@
 				   appData=responses[1];
 				   physProc=responses[2];  
 				  let orgProductTypes=[];
-				 
+				 console.log('apis')
 				   products.forEach((prod)=>{
 				 
 					   prod.processes.forEach((e)=>{
@@ -1861,10 +1861,10 @@
 					   })
 					   
 				   })
-  
+  	 console.log('orgData')
 				   modelData=[]
 				   orgData.forEach((d)=>{
- 
+  console.log('d',d)
 					 if(orgRoles.length&gt;0){
 						let thisRoles=orgRoles.find((or)=>{
 							return or.id==d.id;
@@ -1894,7 +1894,7 @@
 						})
 					}
 					d['childrenOrgs']=childrenOrgs;
-			 
+console.log('childrenOrgs')
 					   let allAppsUsed=[];
 					   let allBusProcs=[];
 					   let allSubOrgs=[];
@@ -1903,39 +1903,42 @@
 					   let allBusProcsParent=[];
 					   let allParentOrgs=[];
 					   let allSitesParent=[];
+console.log('aou')		
 					   d.applicationsUsedbyOrgUser.forEach((e)=>{
 						 allAppsUsed.push(e)
 					   })
 					   d.applicationsUsedbyProcess.forEach((e)=>{
 						allAppsUsed.push(e)
 					  });
-				 	 
-					  d.businessProcess.forEach((e)=>{
+ 		 	 
+					  d.businessProcess?.forEach((e)=>{
 						  e['className']='Business_Process';
 						allBusProcs.push(e)
 					  }); 
-			 	
+		console.log('site')			 	
 					  if(d.site){
 						d.site.forEach((e)=>{
 							allSites.push(e)
 						});
 						}
-					 if(d.parentOrgs.length&gt;0){
-						d.parentOrgs.forEach((e)=>{
-						 	
+		console.log('parentOrgs', d.parentOrgs)						
+					 if(d.parentOrgs?.length&gt;0){
+						d.parentOrgs?.forEach((e)=>{
+						 	console.log('e', e)			
 							let thisOrg=orgData.find((f)=>{
 								return f.id == e
 							});
-						 
+						 if(thisOrg){
 							allParentOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-							 
+							  }
+							  console.log('getParents')
 							getParents(thisOrg, allAppsUsedParent, allBusProcsParent, allParentOrgs, allSitesParent)
-							  
+						
 						   });
 						  
 						 } 
 
-						if(d.childOrgs.length&gt;0){
+						if(d.childOrgs?.length&gt;0){
 
 					   d.childOrgs.forEach((e)=>{
 					 
@@ -1944,14 +1947,14 @@
 						});
 					 
 						allSubOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-				 
+				 console.log('getChildren')	
 						getChildren(thisOrg, allAppsUsed, allBusProcs, allSubOrgs, allSites)
 						  
 					   })
 					   
 					}
 					
-
+console.log('filter')		
 					   allAppsUsed=allAppsUsed.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allAppsUsedParent=allAppsUsedParent.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allBusProcs=allBusProcs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
@@ -1983,7 +1986,7 @@
 					
 					});
 					
-			 
+			  	 console.log('select')
 				//	$('.selectOrgBox').val(focusID);  
 				//	$('.selectOrgBox').trigger('change');
 					
@@ -2226,13 +2229,15 @@ function getChildren(arr, allApp, allBus, allOrgs, allSites){
 		  });
 	}
 	if(arr.childOrgs){ 
-		arr.childOrgs.forEach((e1)=>{  
+		if(arr.length&gt;0){
+		arr.childOrgs?.forEach((e1)=>{  
 			let thisOrg=orgData.find((f)=>{
 				return f.id == e1
 			}); 
 			allOrgs.push({"id":thisOrg.id, "name":thisOrg.name})
 			getChildren(thisOrg, allApp, allBus, allOrgs, allSites)
 		})
+		}
 	}
 	
 }	
@@ -2245,11 +2250,13 @@ function getParents(arr, allApp, allBus, allOrgs, allSites){
 			allApp.push(f)
 	  }) 
 	   }
+	 
 	   if(arr.applicationsUsedbyProcess){
 		arr.applicationsUsedbyProcess.forEach((f)=>{
 			allApp.push(f)
 	  })
-	   } 
+	   }
+	     
 	   if(arr.businessProcess){
 		arr.businessProcess.forEach((e)=>{
 		allBus.push(e)
@@ -2260,15 +2267,21 @@ function getParents(arr, allApp, allBus, allOrgs, allSites){
 			allSites.push(e)
 		  });
 	}
+ 
 	if(arr.childOrgs){ 
-		arr.parentOrgs.forEach((e1)=>{  
+ 
+		if(arr.length&gt;0){
+		arr.parentOrgs?.forEach((e1)=>{  
 			let thisOrg=orgData.find((f)=>{
 				return f.id == e1
 			}); 
+ 
+			if(thisOrg){
 			allOrgs.push({"id":thisOrg.id, "name":thisOrg.name})
-		 
+			}
 			getParents(thisOrg, allApp, allBus, allOrgs, allSites)
 		})
+		 }
 	}
  
 }			

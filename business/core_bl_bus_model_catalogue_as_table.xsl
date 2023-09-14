@@ -136,10 +136,10 @@
 				sort: true,
 				responsive: true,
 				columns: [
+					{ "width": "20%" },
+					{ "width": "20%" },
 				    { "width": "25%" },
-				    { "width": "35%" },
-				    { "width": "20%" },
-				    { "width": "20%" }
+				    { "width": "35%" }
 				  ],
 				dom: 'Bfrtip',
 			    buttons: [
@@ -176,32 +176,32 @@
 			<thead>
 				<tr>
 					<th>
+						<xsl:value-of select="eas:i18n('Business Domain')"/>
+					</th>
+					<th>
+						<xsl:value-of select="eas:i18n('Initiative')"/>
+					</th>
+					<th>
 						<xsl:value-of select="eas:i18n('Business Model')"/>
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Description')"/>
-					</th>
-					<th>
-						<xsl:value-of select="eas:i18n('Business Domain')"/>
-					</th>
-					<th>
-						<xsl:value-of select="eas:i18n('Initiatives')"/>
-					</th>
+					</th>					
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<th>
+						<xsl:value-of select="eas:i18n('Business Domain')"/>
+					</th>
+					<th>
+						<xsl:value-of select="eas:i18n('Initiative')"/>
+					</th>
+					<th>
 						<xsl:value-of select="eas:i18n('Business Model')"/>
 					</th>
 					<th>
 						<xsl:value-of select="eas:i18n('Description')"/>
-					</th>
-					<th>
-						<xsl:value-of select="eas:i18n('Business Domain')"/>
-					</th>
-					<th>
-						<xsl:value-of select="eas:i18n('Initiatives')"/>
 					</th>
 				</tr>
 			</tfoot>
@@ -220,20 +220,6 @@
 		<xsl:variable name="thisBusDomain" select="$allBusDomains[name = $this/own_slot_value[slot_reference = 'bm_business_domain']/value]"/>
 		<xsl:variable name="thisInitiatives" select="$allInitiatives[own_slot_value[slot_reference = 'initiative_business_models']/value = $this/name]"/>
 		<tr>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-					<xsl:with-param name="targetMenu" select="$targetMenu"/>
-					<xsl:with-param name="targetReport" select="$targetReport"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-			</td>
 			<td>
 				<xsl:choose>
 					<xsl:when test="count($thisBusDomain) = 0">
@@ -289,6 +275,20 @@
 						</ul>
 					</xsl:otherwise>
 				</xsl:choose>
+			</td>
+			<td>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="targetMenu" select="$targetMenu"/>
+					<xsl:with-param name="targetReport" select="$targetReport"/>
+				</xsl:call-template>
+			</td>
+			<td>
+				<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
 			</td>
 		</tr>
 	</xsl:template>

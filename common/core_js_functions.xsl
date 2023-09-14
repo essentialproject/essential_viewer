@@ -910,6 +910,10 @@
 		"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 	
+	<xsl:template mode="RenderAsIsElementIDListForJs" match="node()">
+		"<xsl:value-of select="current()/name"/>"<xsl:if test="not(position() = last())">, </xsl:if>
+	</xsl:template>
+	
 	
 	<xsl:template mode="RenderEnumerationJSONList" match="node()">
 		

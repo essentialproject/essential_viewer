@@ -7,6 +7,9 @@
 	<xsl:variable name="applications" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/> 
 	<xsl:variable name="a2r" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')][name=$applications/own_slot_value[slot_reference = 'stakeholders']/value]"/>
 	<xsl:variable name="actor" select="/node()/simple_instance[type=('Group_Actor')][name=$a2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/> 
+	<xsl:variable name="appOwner" select="/node()/simple_instance[type=('Group_Business_Role')][own_slot_value[slot_reference = 'name']/value='Application Organisation Owner']"/>
+	 
+	<xsl:key name="actorKey" match="/node()/simple_instance[type=('Group_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
  
 	 
 	<!--
@@ -36,9 +39,14 @@
 
 <xsl:template match="node()" mode="apporg">
 	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-	<xsl:variable name="thisactor" select="$actor[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/> 
+	<!--<xsl:variable name="thisactor" select="$actor[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/> -->
+	<xsl:variable name="thisactor" select="key('actorKey', $thisa2r/name)"/> 
+	<xsl:variable name="thisa2rOwner" select="$thisa2r[own_slot_value[slot_reference = 'act_to_role_to_role']/value=$appOwner/name]"/> 
+	<xsl:variable name="thisOwnerActors" select="key('actorKey', $thisa2rOwner/name)"/> 
+	
 	{	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"actors":[<xsl:for-each select="$thisactor">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+		"owner":[<xsl:for-each select="$thisOwnerActors">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
+		"actors":[<xsl:for-each select="$thisactor">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
 		,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

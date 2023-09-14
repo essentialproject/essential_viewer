@@ -48,6 +48,7 @@
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
     <xsl:variable name="rationalAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App Rationalisation API']"/>
     <xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
+    <xsl:variable name="procsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"></xsl:variable>
 
 
 	<xsl:template match="knowledge_base">
@@ -62,6 +63,12 @@
 				<xsl:with-param name="apiReport" select="$appsData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
+        <xsl:variable name="apiProcs">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$procsData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+        
 		<html>
 			<head>
               <script src="js/d3/d3_4-11/d3.min.js"/>
@@ -708,13 +715,19 @@ font-size:0.7em;
 							});
 							
                             Handlebars.registerHelper('nameSubString', function(name) {
-								return name.substring(0, 14);
+                              
+                                if(name){
+								    return name.substring(0, 14);
+                                }
+                                else{
+                                    return '-'
+                                }
 							});
 
                     
 							Handlebars.registerHelper('getCost', function(cost, options) {
 								if (cost != null){
-									return parseInt(cost).toLocaleString();
+									return Math.floor(cost).toLocaleString();
 								}
 								else {return '-'}
 							});
@@ -988,6 +1001,8 @@ font-size:0.7em;
             <xsl:call-template name="RenderViewerAPIJSFunction">
                 <xsl:with-param name="viewerAPIPath" select="$apiPath"/> 
                 <xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param>
+                <xsl:with-param name="viewerAPIPathProcs" select="$apiProcs"></xsl:with-param>
+                
             </xsl:call-template>
             </script>
 
@@ -1039,7 +1054,7 @@ font-size:0.7em;
 			                <div id="processes" class="tab-pane fade">
 			                    <p class="strong">This Application supports the following Business Processes:</p>
 			                    <div>
-		                            {{#each processList}}
+		                            {{#each processesList}}
 		                            <div class="ess-tag ess-tag-default">{{name}}</div>   
 		                            {{/each}}
 			                    </div>
@@ -1313,11 +1328,13 @@ font-size:0.7em;
     </xsl:template>
     <xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPath"/> 
-        <xsl:param name="viewerAPIPathApps"/> 
+        <xsl:param name="viewerAPIPathApps"/>
+        <xsl:param name="viewerAPIPathProcs"/> 
         
         //a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
         var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>';
+        var viewAPIDataProcs = '<xsl:value-of select="$viewerAPIPathProcs"/>';
         //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
        
        var promise_loadViewerAPIData = function(apiDataSetURL) {
@@ -1387,67 +1404,68 @@ font-size:0.7em;
                   }
                        
                function selectApp(appl){
-                  $("#appServs").empty();
-                              focusServices=[];  
-                              focusServicesWithProcess=[];  
-                              focusProcesses=[]; 
-                              count=0;
-                                  var appSelected = appoptions.filter(function(d) {
-                                          return d.key === appl;
-                                      });
-  
-                              $("#appServs > tbody").empty();          
-                                  <![CDATA[ $("#appServs").append("<ul>");]]>
-                                    console.log('appSelected',appSelected)
-                                  appSelected.forEach(function(item) {
-                                    console.log('item',item)
-                                      services= item.values[0].allServices;     
-                                      services.forEach(function(item){
-                                        console.log('item2',item)
-                                        if(item.serviceId!=''){
-                                          focusServices.push({"selectId":item.serviceId});     
-                                          var servSelectedApps = serviceJSON.filter(function(d) {
-  
-                                          return d.serviceId === item.serviceId;
-                                      });
-                                    
-           
-                                      console.log('servSelectedApps',servSelectedApps)
-                                  var appsUsingService = servSelectedApps[0].applications;
-                                  var appsCount = (appsUsingService.length)-1;
-                                  count=count+1;        
-                                                                                             
-                                   <![CDATA[ $("#appServs").append("<li class='servs'><i class='fa fa-li essicon-radialdots'></i> "+item.service+"</li>"); ]]>                     
-                                    focusServicesWithProcess.push(item.processes);
-                                     }
-                                  });
-  
-                                  });
-                              focusedServices=count; 
- 
-                  for(i=0;i&lt;focusServicesWithProcess.length;i++){
-                      focusServicesWithProcess[i].forEach(function(item) {focusProcesses.push(item.process)});
-                  };
+                    var appServs = $("#appServs");
+                    var emptyTbody = $("<tbody></tbody>");
+                    appServs.empty().append(emptyTbody.clone());
+                    
+                    focusServices = [];
+                    focusServicesWithProcess = [];
+                    focusProcesses = [];
+                    count = 0;
+
+                    var appSelected = appoptions.filter(function(d) {
+                        return d.key === appl;
+                    });
+
+                    var servicesHtml = appSelected.map(function(item) {
+                        var services = item.values[0].allServices.filter(function(item) {
+                        return item.serviceId !== '';
+                        });
+
+                        focusServices.push(...services.map(function(service) {
+                        return { "selectId": service.serviceId };
+                        }));
+
+                        focusServicesWithProcess.push(services.map(function(service) {
+                        return service.processes;
+                        }));
+
+                        return services.map(function(service) {
+                        return '<li class="servs"><i class="fa fa-li essicon-radialdots"></i> ' + service.service + '</li>';
+                        }).join('');
+                    }).join('');
+
+                    appServs.append("<ul>" + servicesHtml + "</ul>");
+
+                    count = focusServices.length;
+                    focusedServices = count;
+
+                    focusProcesses = focusServicesWithProcess.reduce(function(acc, item) {
+                        return acc.concat(item.map(function(service) {
+                        return service.process;
+                        }));
+                    }, []);
+
               };        
                                    
-             
-              function getRelevantApps(){
- 
-                        Apps=[];
-      
-                              for(i=0;i &lt; serviceJSON.length;i++){
-                              if(focusServices){
-                               for(j=0;j &lt; focusServices.length;j++){
-                                 if(serviceJSON[i].serviceId==focusServices[j].selectId){
-                                      for(k=0;k &lt; serviceJSON[i].applications.length;k++){
-                                          Apps.push(serviceJSON[i].applications[k]);
-                                          }
-                                      }
-                                  }
-                                }
-                             }
-                      }
-              
+              function getRelevantApps() {
+                    const relevantApps = new Set();
+
+                    serviceJSON.forEach(service => {
+                        if (focusServices) {
+                        focusServices.forEach(focusService => {
+                            if (service.serviceId === focusService.selectId) {
+                            service.applications.forEach(app => {
+                                relevantApps.add(app);
+                            });
+                            }
+                        });
+                        }
+                    });
+
+                    Apps= Array.from(relevantApps);
+                }
+
               
               
               function getAllApps(){
@@ -1485,41 +1503,72 @@ font-size:0.7em;
                               var servicesHTML=''; 
                               var switchApp = '';                        
                               var svcMatch=[];
-                              for(j=0;j &lt; thisapp[0].allServices.length;j++){
-                                  for(k=0;k &lt; focusServices.length;k++){ 
-                                      if(thisapp[0].allServices[j].serviceId==focusServices[k].selectId){ 
-                                              num = num+1;         
-                                              svcMatch.push({"id":thisapp[0].allServices[j].serviceId, "name":thisapp[0].allServices[j].service})
-                                          for(l=0;l&lt;focusProcesses.length;l++)
-                                                  {
-                                             if(thisapp[0].allServices[j].processes){
-                                              for(m=0;m &lt; thisapp[0].allServices[j].processes.length;m++){
-                                             
-                                                  if(thisapp[0].allServices[j].processes[m].process===focusProcesses[l]){
-                                                      businessProcMap.push(thisapp[0].application)
-                                                        }
-                                                          }
-                                                      }
-                                                  }
-                                              }
-                                          }
-                                      }
-                                      thisapp[0]['matchedServices']= svcMatch                                         
+                      
+                             var allServices = thisapp[0]?.allServices ?? [];
+                                                                    
+                                        var focusServicesLength = focusServices.length;
+                                        var focusProcessesLength = focusProcesses.length;
+
+                                        for (j = 0; j &lt; allServices.length; j++) {
+                                        var currentService = allServices[j];
+
+                                        for (k = 0; k &lt; focusServicesLength; k++) {
+                                            var currentFocusService = focusServices[k];
+
+                                            if (currentService?.serviceId == currentFocusService.selectId) {
+                                            num++;
+                                            svcMatch.push({ "id": currentService.serviceId, "name": currentService.service });
+
+                                            if (currentService?.processes) {
+                                                for (l = 0; l &lt; focusProcessesLength; l++) {
+                                                var currentFocusProcess = focusProcesses[l];
+
+                                                for (m = 0; m &lt; currentService.processes.length; m++) {
+                                                    if (currentService.processes[m].process === currentFocusProcess) {
+                                                    businessProcMap.push(thisapp[0].application);
+                                                    }
+                                                }
+                                                }
+                                            }
+                                            }
+                                        }
+                                        }
+
+                                        if (currentService?.processes) {
+                                        for (l = 0; l &lt; focusProcessesLength; l++) {
+                                            var currentFocusProcess = focusProcesses[l];
+
+                                            for (m = 0; m &lt; currentService.processes.length; m++) {
+                                            if (currentService.processes[m].process === currentFocusProcess) {
+                                                businessProcMap.push(thisapp[0].application);
+                                            }
+                                            }
+                                        }
+                                        }
+
+                                        if(thisapp[0]){
+                                              thisapp[0]['matchedServices']= svcMatch                                         
+                                        }
                                   }  
-                           
+                             if(thisapp[0]){
                               appid = thisapp[0].id;
                               score=((num/thisapp[0].allServices.length)*100);
 
                               var colour;
                               if(score &lt; 25){colour='#f5a5a5'}else if(score &gt; 75){colour='#97f0bd'} else {colour='#f5d79d'};
                               appS=[];                    
-                              for(j=0;j &lt; thisapp[0].services.length;j++)
-                                  {for(k=0;k &lt; focusServices.length;k++)
-                                      {
-                                          if(thisapp[0].services[j].serviceId==focusServices[k].selectId)
-                                          {appS.push({"selectId":thisapp[0].services[j].serviceId,"name":thisapp[0].services[j].service})} 
-                                      }  
-                                  };
+                           
+                            var services = thisapp[0].services;
+                            var focusServiceIds = focusServices.map(function(service) {
+                                 return service.selectId;
+                            });
+                            
+                            appS = services.filter(function(service) {
+                                return focusServiceIds.includes(service.serviceId);
+                            }).map(function(service) {
+                                return { "selectId": service.serviceId, "name": service.service };
+                            });
+
  
                               if(thisapp[0].services.length &lt;= num){
                               thisapp[0]['switch']=true}else{thisapp[0]['switch']=false}
@@ -1529,7 +1578,7 @@ font-size:0.7em;
                               thisapp[0]['commodity']=thisapp[0].capsCount;
                               thisapp[0]['differentiating']=thisapp[0].capsValue;
                               thisapp[0]['numServicesUsed']=thisapp[0].services.length;
-                              thisapp[0]['costValue']=currency+parseInt(thisapp[0].cost).toLocaleString()
+                              thisapp[0]['costValue']=currency+Math.floor(thisapp[0].cost).toLocaleString()
                               thisapp[0]['serviceMatch']=appS;
                               thisapp[0]['currency']=currency;
                               thisapp[0]['interface']=thisapp[0].services;
@@ -1625,11 +1674,8 @@ font-size:0.7em;
   
                               interfaceoutput.innerHTML = 0;
                               $('#myInterfaceRange').attr("max", highestinterface);
-  // start ########
-                       
-
-                    // end ###################          
-
+  
+                            }
                           
                       };
                     
@@ -1637,41 +1683,38 @@ font-size:0.7em;
                                 let appToShow =appJSON2.filter((d)=>{
                                             return d.id==appId;	
                                         })
-                                       
-                                        let appsOverlap=[] 
-                                        let worker=appToShow[0].overlappingApplications
-                                         
-                                        worker.forEach((svc)=>{
-                                            svc.apps.forEach((app)=>{
-                                                console.log('app',app)
-                                            let appName=appJSON2.find((e)=>{
-                                                return e.id==app.id;
-                                            })
-                                            console.log('appName',appName)
-                                            app['name']=appName.name;
-                                            appsOverlap.push(app);
-                                            })
-                                        }) 
+                                    
+                                    let appLookup = {};
+                                    appJSON2.forEach(app => {
+                                    appLookup[app.id] = app.name;
+                                    });
 
-                                        var servCount = d3.nest()
-                                        .key(function(d) { return d.name; })
-                                        .rollup(function(v) { return v.length; })
-                                        .entries(appsOverlap); 
-                                        servCount.sort((a,b) => b.value - a.value);
-console.log('servCount',servCount)
-                                       getMax=d3.max(servCount, d => d.value)
+                                    let appsOverlap = appToShow[0].overlappingApplications.flatMap(svc =>
+                                    svc.apps.map(app => {
+                                        let appName = appLookup[app.id];
+                                        app['name'] = appName;
+                                        return app;
+                                    })
+                                    );
 
-                                        servCount.forEach((d)=>{
-                                            if(getMax - d.value &lt; 2){
-                                                if(d.key != appToShow[0].application){
-                                                d['candidate']='Yes';
-                                                }
+                                    var servCount = d3.nest()
+                                    .key(function(d) { return d.name; })
+                                    .rollup(function(v) { return v.length; })
+                                    .entries(appsOverlap); 
+                                    servCount.sort((a,b) => b.value - a.value);
+
+                                    getMax=d3.max(servCount, d => d.value)
+
+                                    servCount.forEach((d)=>{
+                                        if(getMax - d.value &lt; 2){
+                                            if(d.key != appToShow[0].application){
+                                            d['candidate']='Yes';
                                             }
-                                        })
-                                        console.log('appToShow[0]',appToShow[0])
-                                        console.log('appToShow[0].application',appToShow[0].application)
+                                        }
+                                    })
+                                        
                                         appToShow[0]['appMap']=servCount;
-                                  
+           
                                         $('#appData').html(appTemplate(appToShow[0]));
                                         $('#appPanel').show( "blind",  { direction: 'down', mode: 'show' },200 );
                                         
@@ -1833,12 +1876,15 @@ console.log('servCount',servCount)
             Promise.all([
                 promise_loadViewerAPIData(viewAPIData),
                 promise_loadViewerAPIData(viewAPIDataApps),
+                 promise_loadViewerAPIData(viewAPIDataProcs)
                  
             ])
             .then(function(responses) {
+
                 //after the data is retrieved, set the global variable for the dataset and render the view elements from the returned JSON data (e.g. via handlebars templates)
                 let viewAPIData = responses[0];
                 let appsData = responses[1];
+
                 //render the view elements from the first API Report
             
                 //render the view elements from the second API Report
@@ -1869,7 +1915,15 @@ console.log('servCount',servCount)
 
                 }) 
               for (const a of appJSON2) {
-
+                let processes=[]
+       
+                a.physP.forEach((p)=>{
+                    let match=responses[2].process_to_apps.find((e)=>{
+                        return p=e.id; 
+                    })
+                    processes.push({"id":match.processid, "name":match.processName, "className":"Business_Process"})
+                })
+                a['processesList']=processes;
                 a['totalIntegrations']=parseInt(a.inI)+parseInt(a.outI);
                 a['scenarioCostNum']=((a.totalIntegrations*4)+(a.physP.length*2))*600;
                 a['scenarioCost'] = currency+a.scenarioCostNum;
@@ -1895,18 +1949,26 @@ console.log('servCount',servCount)
                 }else{
                     a['status']='Not Set'
                 }
-                const match = appJSON.find((b) => a.id === b.id);
-                if (match) {
-                    if(match.cost){
+                let appLookup = {};
+                appJSON.forEach(app => {
+                appLookup[app.id] = app;
+                });
+
+                if (appLookup.hasOwnProperty(a.id)) {
+                    let match = appLookup[a.id];
+
+                    if (match.cost) {
                         a.cost = match.cost;
                     }
-                     
-                    if(match.services){ 
-                        a['allServices'] = match.services
+
+                    if (match.services) {
+                        a.allServices = match.services;
                     }
-                    a['overlappingApplications']=match.overlappingApplications;
-                    a['processList']=match.processList;
+
+                   a.overlappingApplications = match.overlappingApplications;
+                    a.processList = match.processList;
                 }
+
                 
               }
             
@@ -1917,14 +1979,7 @@ console.log('servCount',servCount)
               $('#rate').val(fteRate)
              
               $('#appPanel').hide();
- <!-- v1           appoptions = d3.nest()
-                            .key(function(d) { return d.id; })
-                            .entries(appJSON);               
 
-            appSum = appJSON.reduce(function(sum, d) {
-                  return sum + parseInt(d.cost);
-                }, 0);
--->
                 appoptions = d3.nest()
                 .key(function(d) { return d.id; })
                 .entries(appJSON2);               
@@ -1932,27 +1987,35 @@ console.log('servCount',servCount)
                 appSum = appJSON2.reduce(function(sum, d) {
                     return sum + parseInt(d.cost);
                 }, 0);    
- 
+
             services =d3.nest()
                 .key(function(d) { return d.service; })
                 .entries(serviceJSON);  
    
-                services.forEach((s)=>{ 
-                   let match= serviceJSON.find((sv)=>{
-                        return s.key==sv.service
-                    })  
-                    s['id']=match.serviceId;
-                })
+                let serviceLookup = {};
+                serviceJSON.forEach(sv => {
+                   serviceLookup[sv.service] = sv.serviceId;
+                });
+
+                services.forEach(s => {
+                    let match = serviceLookup[s.key];
+                    if (match) {
+                        s.id = match;
+                    }
+                });
+
         
             servicesList=services
-            allStatus=  appJSON2.map(function (d) {return d.status;}) ;  
-       
-            let unique = allStatus.filter((item, i, ar) => ar.indexOf(item) === i)
-			unique=sortList(unique);
-  
-            for(i=0;i &lt; unique.length; i++){
-                $('#SLs').append('<option id="s'+unique[i].replace(/\s/g, '')+'" name="s'+unique[i].replace(/\s/g, '')+'" value="'+unique[i]+'">'+unique[i]+'</option>');
-            }
+            let allStatusSet = new Set(appJSON2.map(d => d.status));
+            let unique = Array.from(allStatusSet);
+            unique = sortList(unique);
+
+            let optionsHtml = unique.map(status => {
+            let id = "s" + status.replace(/\s/g, '');
+            return '&lt;option id="' + id + '" name="' + id + '" value="' + status + '">' + status + '&lt;/option>';
+            }).join('');
+
+            $('#SLs').append(optionsHtml);
 
 
             $('#SLs').on('change',function(){
@@ -1962,17 +2025,15 @@ console.log('servCount',servCount)
                 updateCards();
             });
 
-            for(i=0;i&lt; appJSON2.length; i++){
-                $('#application').append('<option name="'+appJSON2[i].id+'" value="'+appJSON2[i].id+'">'+appJSON2[i].name+'</option>');
-            }
-            
-            for(i=0;i&lt; serviceJSON.length; i++){
-                $('#selBox').append('<option name="'+serviceJSON[i].serviceId+'" value="'+serviceJSON[i].serviceId+'">'+serviceJSON[i].service+'</option>');
-            }
+            let applicationOptionsHtml = appJSON2.map(app => ' &lt;option name="' + app.id + '" value="' + app.id + '">' + app.name + '&lt;/option>').join('');
+            $('#application').append(applicationOptionsHtml);
 
-            for(i=0;i&lt; codebaseJSON.length; i++){
-                $('#ticks').append('<option name="'+codebaseJSON[i].id+'" value="'+codebaseJSON[i].id+'">'+codebaseJSON[i].name+'</option>');
-            }
+            let selBoxOptionsHtml = serviceJSON.map(service => ' &lt;option name="' + service.serviceId + '" value="' + service.serviceId + '">' + service.service + '&lt;/option>').join('');
+            $('#selBox').append(selBoxOptionsHtml);
+
+            let ticksOptionsHtml = codebaseJSON.map(codebase => ' &lt;option name="' + codebase.id + '" value="' + codebase.id + '">' + codebase.name + '&lt;/option>').join('');
+            $('#ticks').append(ticksOptionsHtml);
+
               
 
   function sortList(arr){
@@ -2012,29 +2073,32 @@ if(thisAppType=='Scenario'){
             return f.app2==thisApp;
         })
 
-        console.log('appScenarioArray send',appScenarioArray)
 
         var getScenApp=appJSON2.find(function(d){   
             return d.id==thisScenario.app1; 
         });
-        console.log('getScenApp',getScenApp)
-        
-     
-        console.log('matchedOpportunity',matchedOpportunity) 
+
         otherChanges.push({"svcid":"", "service":"Primary", "id": getScenApp.id,"appname": getScenApp.name, "action":"Enhance"})
-            thisScenario.differences?.forEach((f)=>{
-              
-               if(f.options){
-                   if(f.options[0]){
-                   f.options[0]['action']="Enhance";
-                   f.options[0]['id']=f.options[0].appid;
-                   otherChanges.push({"svcid":f.serviceId, "service":f.service, "id": f.options[0].appid,"appname": f.options[0].appName, "action":"Enhance"})
-                   }
-               }
-           }) 
+        thisScenario.differences?.forEach(f => {
+            if (f.options?.[0]) {
+                const { appid, appName } = f.options[0];
+                f.options[0] = {
+                action: "Enhance",
+                id: appid,
+                ...f.options[0]
+                };
+                otherChanges.push({
+                svcid: f.serviceId,
+                service: f.service,
+                id: appid,
+                appname: appName,
+                action: "Enhance"
+                });
+            }
+            });
+
         clickedArray.push({"id":thisApp,"action":"Retire", "otherChanges":otherChanges});
   
-        console.log('otherChanges',otherChanges)
 }
  
       if(theColourIs==='rgb(211, 211, 211)'){
@@ -2126,16 +2190,19 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
                             }else{
                             $('#carriedApps').show()
                             var selectArray=[];
-          console.log('carriedApps',carriedApps)
-						carriedApps.Composite_Application_Provider.forEach(function(d){
-					
-							var thisApp=appJSON2.filter(function(e){
-								return e.id==d;
-							});
-					    selectArray.push({val : thisApp[0].id, text: thisApp[0].name});
-					 
-						});
-                        console.log('selectArray',selectArray)    
+         
+                            let appLookup = {};
+                            appJSON2.forEach(app => {
+                               appLookup[app.id] = app.name;
+                            });
+
+                            carriedApps.Composite_Application_Provider.forEach(function(d) {
+                            if (appLookup.hasOwnProperty(d)) {
+                                selectArray.push({ val: d, text: appLookup[d] });
+                            }
+                            });
+
+                  
 					selectArray.sort(function(a, b){
 						if(a.text &lt; b.text) { return -1; }
 						if(a.text > b.text) { return 1; }
@@ -2175,42 +2242,47 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
             });
 
             function compareApps(apps1, apps2) {
-                let missing=[];
-                let count = 0;
-                for (let i = 0; i &lt; apps1.length; i++) {
-                  for (let j = 0; j &lt; apps2.length; j++) { 
-                    if (apps1[i].serviceId === apps2[j].serviceId) {
-                      count++; 
-                    } 
-                  }
-                }
+                let apps1Set = new Set(apps1.map(app => app.serviceId));
+                let apps2Set = new Set(apps2.map(app => app.serviceId));
 
-                const totalapps = apps1.length + apps2.length - count;
-                const matchPercentage = count / apps1.length * 100;
-                const inversePercentage= count / apps2.length * 100;
+                let commonServiceIds = [...apps1Set].filter(serviceId => apps2Set.has(serviceId));
+                let count = commonServiceIds.length;
+
+                const totalApps = apps1.length + apps2.length - count;
+                const matchPercentage = (count / apps1.length) * 100;
+                const inversePercentage = (count / apps2.length) * 100;
+
                 return { count, matchPercentage, inversePercentage };
-              }
+            }
+
       
           function scenarioBuilder(data){
           
             let scenarioArray=[];
             // loop through all pairs of people and count the number of people who have similar apps
                 let numMatches = 0;
-                for (let i = 0; i &lt; data.length - 1; i++) {
-                    for (let j = i + 1; j &lt; data.length; j++) {
-               
-                          let uniqueArray1 = data[i].allServices.filter(obj => !data[j].allServices.find(o => o.serviceId === obj.serviceId));
-                          let uniqueArray2 = data[j].allServices.filter(obj => !data[i].allServices.find(o => o.serviceId === obj.serviceId));
-                     
-                        let { count, matchPercentage, inversePercentage } = compareApps(data[i].allServices, data[j].allServices);
-                        
+                data.forEach((data1, i) => {
+                    data.slice(i + 1).forEach(data2 => {
+                        let uniqueArray1 = data1.allServices.filter(obj => !data2.allServices.find(o => o.serviceId === obj.serviceId));
+                        let uniqueArray2 = data2.allServices.filter(obj => !data1.allServices.find(o => o.serviceId === obj.serviceId));
+
+                        let { count, matchPercentage, inversePercentage } = compareApps(data1.allServices, data2.allServices);
+
                         if (count > 0) {
                         numMatches++;
-                    scenarioArray.push({"app1": data[i].id,"app2": data[j].id, "overlap":count, "percentage": matchPercentage.toFixed(2), "inversePercentage":inversePercentage.toFixed(2) ,"complexity": data[i].complexity, "differences":uniqueArray1});
+                        scenarioArray.push({
+                            "app1": data1.id,
+                            "app2": data2.id,
+                            "overlap": count,
+                            "percentage": matchPercentage.toFixed(2),
+                            "inversePercentage": inversePercentage.toFixed(2),
+                            "complexity": data1.complexity,
+                            "differences": uniqueArray1
+                        });
                         }
-                
-                    }
-                }
+                    });
+                    });
+
 
                 var scenarios1 = d3.nest()
                     .key(function(d) { return d.app1; }) 
@@ -2281,8 +2353,13 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
                         return (parseInt(prev.cost) > parseInt(current.cost)) ? prev : current
                       });
 
-                    var costBig=30/highestScore.cost;
- 
+
+                    var costBig
+                        if(highestScore.cost !='0'){
+                            costBig=30/highestScore.cost;
+                        }else{
+                            costBig=30
+                        }
    
                     // Set up the dimensions of the chart
                   
@@ -2335,8 +2412,13 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
                         .attr("cx", function(d) { return x(d.mapping); })
                         .attr("cy", function(d) { return y(d.complexity); })
                         .attr("r", function(d) { 
-   
-                                return costBig*parseInt(d.cost); })
+                        
+                                if(d.cost!='0'){
+                                return costBig*parseInt(d.cost);
+                                }else{
+                                    return 10
+                                }
+                                 })
                         .on("click", function(d) { 
                            
                            focusApp=allScenarios.find((e)=>{
@@ -2405,16 +2487,25 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
             let thisApp=appJSON2.find((e)=>{
                 return e.id==app.key
             }) 
-            console.log('app',app)
-            app.values.forEach((d)=>{
-                let matches=appJSON2.find((e)=>{
-                    return e.id==d.app2
-                })
-                if(matches){ 
-                
-                mappings.push({"app": thisApp.name, "app1id":d.app1,"app2id":d.app2, "percentage":d.percentage, "app2":matches.name,  "inversePercentage":d.inversePercentage})
-                }
-            })
+         
+            let appLookup = {};
+            appJSON2.forEach(app => {
+            appLookup[app.id] = app.name;
+            });
+
+            app.values.forEach(d => {
+            if (appLookup.hasOwnProperty(d.app2)) {
+                mappings.push({
+                "app": thisApp.name,
+                "app1id": d.app1,
+                "app2id": d.app2,
+                "percentage": d.percentage,
+                "app2": appLookup[d.app2],
+                "inversePercentage": d.inversePercentage
+                });
+            }
+            });
+
           
             let matchApp=appJSON2.find((e)=>{
                 return e.id==app.key

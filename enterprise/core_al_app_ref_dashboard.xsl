@@ -923,10 +923,11 @@
 								</div>
 								<div id="buscapabilities" class="tab-pane fade">
 									<p class="strong">This application supports the following Business Capabilities:</p>
+									<div class='pull-right'><i class="fa fa-random"></i> Mapped via Process</div>
 									<div>
 									{{#if busCapsImpacting}}
 									{{#each busCapsImpacting}}
-										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}} {{#ifEquals this.source 'Process'}}<i class="fa fa-random"></i>{{/ifEquals}}</div>
 									{{/each}} 
 									{{else}}
 										<p class="text-muted">None Mapped</p>
@@ -1386,12 +1387,19 @@ $('#hideCaps').on('click',function(){
 		workingArray = responses[2]; 
 		stdStyles = responses[2].stdStyles;
 		meta = responses[1].meta;
+		appfilters = responses[1].filters
+		appfilters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+		dynamicAppFilterDefs=appfilters?.map(function(filterdef){
+			return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+		});
+
 		workingArray.capability_hierarchy.forEach((f) => {
 			workingArrayCaps.push(f.id)
 		});
 
 		console.log('workingArray',workingArray)
 		workingCaps = responses[0];
+		console.log('w',workingCaps)
 		workingSvcs = responses[0].application_services;
 
 		appCaps = responses[4].application_capabilities_services;
@@ -1446,7 +1454,7 @@ $('#hideCaps').on('click',function(){
 			capMod.then((d) => {
 				workingArray = [];
 				
-				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION', 'SYS_CONTENT_APPROVAL_STATUS'],'',true);
+				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION', 'SYS_CONTENT_APPROVAL_STATUS'],appfilters,true);
 
 				
 			});
@@ -1604,6 +1612,18 @@ $('#hideCaps').on('click',function(){
 										return d.id == selected;
 									});
 
+								let appBusCaps=[]
+									workingCaps.busCaptoAppDetails.forEach((e)=>{
+										let appmatch=e.apps.find((f)=>{
+											return f==appToShow[0].id
+
+										})
+										if(appmatch){
+											appBusCaps.push(e)
+										}
+									})
+
+									console.log('apc',appBusCaps)
 									let thisProcesses = appToShow[0].physP.filter((elem, index, self) => self.findIndex(
 										(t) => {
 											return (t === elem)
@@ -1664,7 +1684,7 @@ $('#hideCaps').on('click',function(){
 										return (t.id === elem.id)
 									}) === index)
 									console.log('thisAppCapArray',thisAppCapArray)
-
+									console.log('appBusCaps',appBusCaps)
 									let busCapImpact=[];
 									thisAppCapArray.forEach((c)=>{
 										let thisAC=workingArrayAppsCaps.find((ac)=>{
@@ -1681,12 +1701,19 @@ $('#hideCaps').on('click',function(){
 									busCapImpact = busCapImpact.filter((elem, index, self) => self.findIndex((t) => {
 										return (t.id === elem.id)
 									}) === index)
+											console.log('busCapImpact',busCapImpact)
+												console.log('busCapImpact0',busCapImpact[0])
+									let acMeta=busCapImpact[0].meta;
+							 
+									 appBusCaps.map(obj => ({ ...obj, type:'Business_Capability', source:'Process' }));
+let allCaps=[...appBusCaps, ...busCapImpact]
 
+									console.log('allCaps',allCaps)
 									appToShow[0]['processList'] = procListTosShow;
 									appToShow[0]['servList'] = servsArr;
 									appToShow[0]['servUsedList'] = thisUsedServs;
 									appToShow[0]['capsImpacting'] = thisAppCapArray;
-									appToShow[0]['busCapsImpacting'] = busCapImpact;
+									appToShow[0]['busCapsImpacting'] = allCaps;
 									console.log('appToShow',appToShow) 
 									$('#appData').html(appTemplate(appToShow[0]));
 									$('.appPanel').show("blind", {

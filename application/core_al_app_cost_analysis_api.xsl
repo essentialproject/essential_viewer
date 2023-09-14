@@ -698,7 +698,7 @@
 							"label": 'Application',
 							"icon": 'fa-desktop'
 						}
-						let scopedApps = essScopeResources(appsList, [visibilityDef, appOrgScopingDef,geoScopingDef], typeInfo);
+						let scopedApps = essScopeResources(appsList, [visibilityDef, appOrgScopingDef,geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
 		
 						 <!--
 						 <xsl:if test="$isRoadmapEnabled"> 
@@ -743,7 +743,7 @@
 			    
           
         var diffLevels, diffLevelColours, costTypes, costTypeColours 
-        
+        var dynamicAppFilterDefs=[];
         var eipMode = <xsl:value-of select="$isEIPMode"/>;
         var canAccessCostClasses = <xsl:value-of select="$isAuthzForCostClasses"/>;
         
@@ -761,6 +761,15 @@
 					a = Object.assign(a,match)
 					   
 				})
+
+				filters=responses[0].filters; 
+
+				filters.sort((a, b) => (a.id > b.id) ? 1 : -1)		 
+ 
+				dynamicAppFilterDefs=filters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+
  		if(!eipMode || canAccessCostClasses) {
 
  
@@ -782,7 +791,7 @@
 				   		      
 					         
 					    //DRAW THE VIEW
-						essInitViewScoping(redrawView, ['Group_Actor',  'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'],'',true);
+						essInitViewScoping(redrawView, ['Group_Actor',  'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'].concat(dynamicAppFilterDefs),filters,true);
 
 					  //  redrawView(inScopeApplications.applications);
         				$('#page-spinner').hide();

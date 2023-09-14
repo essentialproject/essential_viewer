@@ -5,6 +5,7 @@
 	<xsl:include href="../common/core_common_head_content.xsl"></xsl:include>
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
+    <xsl:include href="../common/core_handlebars_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"></xsl:output>
 
@@ -226,7 +227,7 @@
                         <td class="tabcolumn">
                             {{#each this.apps}}
                                 <div class="ess-tag ess-tag-dotted"><xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:attribute name="style">border: 2pt solid {{this.colour}}</xsl:attribute>
-                                    {{this.name}}
+                                    {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
                                 </div>
                             {{/each}}  
                         </td>
@@ -288,7 +289,7 @@
     <xsl:template name="RenderViewerAPIJSFunction">
             <xsl:param name="viewerAPIPath"></xsl:param> 
             
-             
+         	<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>    
             //a global variable that holds the data returned by an Viewer API Report
             var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
  

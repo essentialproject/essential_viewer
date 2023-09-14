@@ -1445,19 +1445,19 @@
 						var techCapBlobs = {
 							techCapabilities: techCapList
 						};
-						$("#techCapFootprintDiv").html(techCapBlobTemplate(techCapBlobs));
-						
-						//re-initialise the popups				
-						$('.fa-info-circle').click(function() {
-							$('[role="tooltip"]').remove();
-						});
-						$('.fa-info-circle').popover({
-							container: 'body',
-							html: true,
-							trigger: 'click',
-							content: function(){
-								return $(this).next().html();
-							}
+						$("#techCapFootprintDiv").html(techCapBlobTemplate(techCapBlobs)).promise().done(function(){
+							//re-initialise the popups				
+							$('.fa-info-circle').click(function() {
+								$('[role="tooltip"]').remove();
+							});
+							$('.fa-info-circle').popover({
+								container: 'body',
+								html: true,
+								trigger: 'click',
+								content: function(){
+									return $(this).next().html();
+								}
+							});
 						});
 					}
 					 
@@ -1499,21 +1499,21 @@
 						var theTechProds = aTechComp.techProducts;
 						
 						//Update the set of selectable Technology Products
-						$("#tech-prod-selection").html(techProdTemplate(selectedTechComp));
+						$("#tech-prod-selection").html(techProdTemplate(selectedTechComp)).promise().done(function(){
+							//re-initialise the popups				
+							$('.fa-info-circle').click(function() {
+								$('[role="tooltip"]').remove();
+							});
+							$('.fa-info-circle').popover({
+								container: 'body',
+								html: true,
+								trigger: 'click',
+								content: function(){
+									return $(this).next().html();
+								}
+							});
+						});
 						$("#userInstruction").html('Drag Product Here');
-						
-						//re-initialise the popups				
-						$('.fa-info-circle').click(function() {
-							$('[role="tooltip"]').remove();
-						});
-						$('.fa-info-circle').popover({
-							container: 'body',
-							html: true,
-							trigger: 'click',
-							content: function(){
-								return $(this).next().html();
-							}
-						});
 						
 					}
 					

@@ -274,6 +274,7 @@
 				
 			});
 		</script>
+		<!--
 		<div id="subject-approval-bar" class="row bg-warning approvalBarRow hiddenDiv">
 			<div class="col-xs-12">
 				<div class="approvalsBarWrapper">
@@ -296,7 +297,7 @@
 				</div>
 			</div>
 		</div>
-		
+		-->
 		
 	</xsl:template>
 

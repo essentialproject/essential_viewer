@@ -82,6 +82,7 @@
 			const essEssentialSystemApiUri = '/essential-system/v1';
 			const essEssentialAuditApiUri = '/essential-system/audit/v1';
 			const essEssentialCoreApiUri = '/essential-core/v1';
+			const essEssentialUtilv3ApiUri = '/essential-utility/v3';
 			const essEssentialReferenceApiUri = '<xsl:value-of select="$noSQLEssentialRefStoreUri"/>';
 			const essEssentialRefBatchApiUri = '<xsl:value-of select="$noSQLEssentialRefBatchStoreUri"/>';
 

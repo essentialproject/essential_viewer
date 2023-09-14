@@ -220,7 +220,7 @@
 
 				<!-- Get the set of relationships to Application Providers -->
 				<!-- 06.11.2008 JWC replaced TO slot with the refactored apppro_to_physbus_to_busproc slot -->
-				<xsl:variable name="appPhysProRels" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION' and own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcs/name]"/>
+				<xsl:variable name="appPhysProRels" select="$allPhysProc2AppProRoles[type = 'APP_PRO_TO_PHYS_BUS_RELATION' and own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcs/name]"/>
 
 				<!-- Get the set of Application Providers -->
 				<!-- 06.11.2008 JWC replaced the FROM slot with the refactored apppro_to_physbus_from_apppro slot -->
@@ -341,13 +341,16 @@
 
 		<!-- Get the set of relationships to Application Providers -->
 		<!-- 06.11.2008 JWC replaced TO slot with the refactored apppro_to_physbus_to_busproc slot -->
-		<xsl:variable name="appPhysProRels" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION' and own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcs]"/>
+		<xsl:variable name="appPhysProRels" select="$allPhysProc2AppProRoles[type = 'APP_PRO_TO_PHYS_BUS_RELATION' and own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcs]"/>
 
 		<!-- Get the set of Application Providers -->
 		<!-- 06.11.2008 JWC replace the FROM slot with the apppro_to_physbus_from_apppro slot -->
     
-		<xsl:variable name="appProRoles" select="/node()/simple_instance[name = $appPhysProRels/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
-		<xsl:variable name="app_Provs" select="/node()/simple_instance[name = $appProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="appProRoles" select="$allAppProRoles[name = $appPhysProRels/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+		<xsl:variable name="appProDirect" select="$allAppProviders[name = $appPhysProRels/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+		<xsl:variable name="appProvsApr" select="$allAppProviders[name = $appProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+		<xsl:variable name="app_Provs" select="$appProvsApr union $appProDirect"/>
+	
 		<xsl:variable name="prov_list_size" select="count($app_Provs)"/>
     
 
@@ -605,7 +608,9 @@
 				<xsl:variable name="physProcs" select="$allPhysProcs[name = $currentProc/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
 				<xsl:variable name="appPhysProRels" select="$allPhysProc2AppProRoles[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $physProcs/name]"/>
 				<xsl:variable name="appProRoles" select="$allAppProRoles[name = $appPhysProRels/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
-				<xsl:variable name="appProvs" select="$allAppProviders[name = $appProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+				<xsl:variable name="appProDirect" select="$allAppProviders[name = $appPhysProRels/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+				<xsl:variable name="appProvsApr" select="$allAppProviders[name = $appProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
+				<xsl:variable name="appProvs" select="$appProvsApr union $appProDirect"/>
 				<xsl:variable name="totalSoFar" select="$totalRows + max((1, count($appProvs)))"/>
 				<xsl:value-of select="eas:get_total_rowspan_for_buscap($capProcesses except $currentProc, $totalSoFar)"/>
 			</xsl:when>

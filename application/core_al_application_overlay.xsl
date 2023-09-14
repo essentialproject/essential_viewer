@@ -879,6 +879,7 @@
 		};
 		$('.appPanel').hide();
 		var appListScoped;
+		var thisscopedApps=[];
 		var modelData, meta;
 		var busCapApps=[];
 		var thisLevel=1;
@@ -996,6 +997,7 @@
 			var geoScopingDef;
 			var visibilityDef;
 			var prodConceptDef;
+            var scopedAppsList; 
 			var busDomainDef 
 			var emergencyColour=[{"id":"ec1","elementColour":"#ffffff","elementBackgroundColour":"#ff0000"},{"id":"ec2","elementColour":"#000000","elementBackgroundColour":"#ffa700"},{"id":"ec3","elementColour":"#000000","elementBackgroundColour":"#fff400"},{"id":"ec4","elementColour":"#000000","elementBackgroundColour":"#a3ff00"},{"id":"ec5","elementColour":"#000000","elementBackgroundColour":"#2cba00"},{"id":"ec5","elementColour":"#000000","elementBackgroundColour":"#cff27e"},{"id":"ec6","elementColour":"#000000","elementBackgroundColour":"#f2dd6e"},{"id":"ec7","elementColour":"#000000","elementBackgroundColour":"#e5b25d"},{"id":"ec8","elementColour":"#000000","elementBackgroundColour":"#a3ff00"},{"id":"ec9","elementColour":"#000000","elementBackgroundColour":"#b87d4b"},{"id":"ec10","elementColour":"#000000","elementBackgroundColour":"#523a34"}] 
 			$('.appPanel').hide();
@@ -1134,7 +1136,7 @@
 				});
 
 			});
-			console.log('responses[0].busCaptoAppDetails',responses[0].busCaptoAppDetails) 
+		
 			appsList.applications.forEach((app)=>{
 			 
 				let procsForApp =[]; 
@@ -1244,7 +1246,7 @@
 				});
 
 				let allFilters=[...responses[0].filters, ...responses[1].filters];
-			essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS', 'ACTOR_TO_ROLE_RELATION','Product_Concept', 'Business_Domain'], allFilters, true);
+			essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS', 'ACTOR_TO_ROLE_RELATION','Product_Concept', 'Business_Domain'], allFilters, true);
 		
 			}). catch (function (error)
 			{
@@ -1275,15 +1277,19 @@ var busCapTypeInfo = {
 }
 
 function getChildrenToShow(dataSet,level){
-	essResetRMChanges();
+ 
 	
 	var childrenArray=[];
 	dataSet.forEach(function(d){ 
 	 if(d.level &lt; level+1){
 	
-		thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
- 
-		thisscopedApps.resources=thisscopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+		  let thisAllArray = d.allApps.filter(appB => {
+              return scopedAppsList.resources.some(appA => appA.id === appB.id);
+            });
+
+            thisscopedApps['resources']=thisAllArray
+
+		thisscopedApps.resources=thisscopedApps.resources?.sort((a, b) => a.name.localeCompare(b.name))
 		let newAppList=[] 
 		d.appList.forEach((e)=>{
 			let mapApp=thisscopedApps.resources.find((g)=>{
@@ -1299,7 +1305,7 @@ function getChildrenToShow(dataSet,level){
 		newAppList={"resources":newAppList};
 	 
 		if(d.level == lev){ 
-			let diff=getDifference(d.appList, thisscopedApps.resources,  d.name);
+			let diff=getDifference(d.appList, thisscopedApps.resources,  d.name, 4);
 			let diffArr=[]; 
 	 
 			diff.forEach((f)=>{
@@ -1316,12 +1322,17 @@ function getChildrenToShow(dataSet,level){
 			 
 		}
 		else{
-			thisscopedApps = essScopeResources(d.allApps, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
-  
-			scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
+		  let thisAllArray = d.allApps.filter(appB => {
+              return scopedAppsList.resources.some(appA => appA.id === appB.id);
+            });
+
+            thisscopedApps['resources']=thisAllArray
+
+
+			thisscopedApps.resources=thisscopedApps.resources?.sort((a, b) => a.name.localeCompare(b.name))
 			let newAppList=[] 
 			d.appList.forEach((e)=>{
-				let mapApp=thisscopedApps.resources.find((g)=>{
+				let mapApp=thisscopedApps.resources?.find((g)=>{
 					return e.id==g.id;
 				})
 				if(mapApp){
@@ -1333,7 +1344,7 @@ function getChildrenToShow(dataSet,level){
 	
 			newAppList={"resources":newAppList};
  
-			let diff=getDifference(d.allApps, thisscopedApps.resources,  d.name);
+			let diff=getDifference(d.allApps, thisscopedApps.resources,  d.name, 5);
 			let diffArr=[];  
 			diff.forEach((f)=>{
 				let match =d.appList.find((g)=>{
@@ -1348,17 +1359,16 @@ function getChildrenToShow(dataSet,level){
 			if(diffArr.length==0 &amp;&amp; newAppList.resources.length==0){
 				diffArr=d.thisappList
 			}
-			console.log('nm',d.name)
-  console.log('lev',lev +':'+d.level)
+
 
   if(d.thisappList.length&gt;0){
 		 	
 // if no children caps get retired apps
 
 	if(d.childrenCaps.length==0){
-		console.log('d',d)
+
 		
-		let diffNotLeaf=getDifference(d.allApps, thisscopedApps.resources,  d.name);
+		let diffNotLeaf=getDifference(d.allApps, thisscopedApps.resources,  d.name, 6);
 	 
 			let diffArrNotLeaf=[];  
 			diffNotLeaf.forEach((f)=>{
@@ -1391,19 +1401,21 @@ function getChildrenToShow(dataSet,level){
 	return childrenArray;		 
 	}
 
-function getDifference(array1, array2, num) { 
- 
+function getDifference(array1, array2, num, id) { 
+
 	if(array1.resources){
 		array1=array1.resources;
 	}
 
 	
 		if(array1){
-		return array1.filter(object1 => {
-		  return !array2.some(object2 => {
-			return object1.id === object2.id;
-		  }); 
-		});
+			if(array2){
+				return array1.filter(object1 => {
+				return !array2.some(object2 => {
+					return object1.id === object2.id;
+				}); 
+				});
+			}
 		}
 		else{
 			return [];
@@ -1468,18 +1480,21 @@ function getKids(mod, appsList){
 }						
 var lev;		 
 var redrawView=function(){
-	
+	console.log('redraw')
 	workingCapId=0;
- 
+
 	appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 	visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
-	 
-	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
- 
+
 	essResetRMChanges();
+	
+	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
+    scopedAppsList= essScopeResources(appsList.applications, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
+ 
+let scopedApps;
 
  let scopedCapsIds=scopedCaps.resourceIds
  lev=thisLevel;
@@ -1495,8 +1510,8 @@ let thisFilter=filters.find((f)=>{
     return f.id ==thisSelected;
 })
 
-
 $('#enumKey').html(keyTemplate(thisFilter))
+
         showArray=[]	
 
         if(lev=='All'){
@@ -1517,12 +1532,18 @@ $('#enumKey').html(keyTemplate(thisFilter))
                     return d.lifecycle != "Retired";
                 })
             }
+            let newfilteredAppArray = filtereappsList.filter(appB => {
+              return scopedAppsList.resources.some(appA => appA.id === appB.id);
+            });
 
-        appListScoped= essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
-        
+            appListScoped=newfilteredAppArray
+
         if(lev==0){
-            scopedApps = essScopeResources(filtereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
-            thisHLApps=scopedApps.resources; 
+            scopedApps =appListScoped
+            
+			console.log('scopedApps',scopedApps)
+			scopedApps['resources']=scopedApps
+			thisHLApps=scopedApps.resources; 
 			scopedApps.resources.forEach((d)=>{
 
 				if(thisFilter){
@@ -1559,8 +1580,13 @@ $('#enumKey').html(keyTemplate(thisFilter))
                             return d.lifecycle != "Retired";
                         })
                     }
-                    scopedApps = essScopeResources(subfiltereappsList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
-            
+
+                    let newsubfilteredAppArray = subfiltereappsList.filter(appB => {
+                      return scopedAppsList.resources.some(appA => appA.id === appB.id);
+                    });
+        
+                   let scopedApps=[];
+                    scopedApps['resources'] = newsubfilteredAppArray;
                     scopedApps.resources.forEach((d)=>{
 
 						if(thisFilter){
@@ -1578,18 +1604,20 @@ $('#enumKey').html(keyTemplate(thisFilter))
 								}
 							})             
 									scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-									let diff=getDifference(subfiltereappsList, scopedApps.resources, e.name);
+									let diff=getDifference(subfiltereappsList, scopedApps.resources, e.name,1);
 								
 										let diffArr=[]; 
-										diff.forEach((f)=>{
-											let match =scopedApps.resources.find((g)=>{
-												return g.id==f.id
-											})
-											if(match){}else{
-												diffArr.push(f)
-												}
-											
-										})				 
+										if(diff){
+											diff.forEach((f)=>{
+												let match =scopedApps.resources.find((g)=>{
+													return g.id==f.id
+												})
+												if(match){}else{
+													diffArr.push(f)
+													}
+												
+											})		
+										}		 
 										 
 									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps, "childrenCaps":getChildrenToShow(e.childrenCaps,lev), "diffs": diffArr,"num":1 });
 									}else{
@@ -1599,9 +1627,11 @@ $('#enumKey').html(keyTemplate(thisFilter))
 												return d.lifecycle != "Retired";
 											})
 										}
-
-								scopedApps = essScopeResources(e.thisappList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
-								scopedApps.resources.forEach((d)=>{
+                                let newAppList = e.thisappList.filter(appB => {
+                                    return scopedAppsList.resources.some(appA => appA.id === appB.id);
+                                });
+								scopedApps = newAppList;
+                                scopedApps.resources?.forEach((d)=>{
 
 									if(thisFilter){
 												let thisColour=d[thisFilter.slotName];
@@ -1618,19 +1648,21 @@ $('#enumKey').html(keyTemplate(thisFilter))
 											}
 										})
 
-								scopedApps.resources=scopedApps.resources.sort((a, b) => a.name.localeCompare(b.name))
-								let diff=getDifference(subfiltereappsList, scopedApps.resources,  e.name);
+								scopedApps.resources=scopedApps.resources?.sort((a, b) => a.name.localeCompare(b.name))
+								let diff=getDifference(subfiltereappsList, scopedApps.resources,  e.name, 2);
 							 
 								let diffArr=[]; 
-								diff.forEach((f)=>{
-									let match =d.thisappList.find((g)=>{
-										return g.id==f.id
-									})
-									if(match){}else{
-										diffArr.push(f)
-										}
-									
-								})	
+								if(diff){
+									diff.forEach((f)=>{
+										let match =d.thisappList.find((g)=>{
+											return g.id==f.id
+										})
+										if(match){}else{
+											diffArr.push(f)
+											}
+										
+									})	
+								}
 							
 									thisArrChildren.push({"id": e.id,"name": e.name,"link":e.link,"thisappList":e.appList,"appList":scopedApps,"colour":"#ddd","role":2,"level": e.level, "allApps":e.allApps,
 									"childrenCaps":getChildrenToShow(e.childrenCaps,lev),  "diffs":diffArr,"num":2});
@@ -1649,18 +1681,21 @@ $('#enumKey').html(keyTemplate(thisFilter))
 								return d.lifecycle != "Retired";
 							})
 						}
-						let diff=getDifference(filterApps,appListScoped.resources,  d.name);
+
+						let diff=getDifference(filterApps,appListScoped,  d.name, 3);
  
 								let diffArr=[]; 
+							if(diff){
 								diff.forEach((f)=>{
-									let match =appListScoped.resources.find((g)=>{
+									let match =appListScoped.find((g)=>{
 										return g.id==f.id
 									})
 									if(match){}else{
 										diffArr.push(f)
 										}
 									
-								})	
+								})
+							}	
 								 
 						showArray.push({"id": d.id,"name": d.name,"link": d.link,"description": d.description,"level": d.level,"thisappList": d.appList,"appList":thisHLApps,"colour": d.colour,"childrenCaps":thisArrChildren, "role":"l1","diffs":diffArr, "allApps":d.allApps, "num":3});
 					 
@@ -1672,7 +1707,7 @@ $('#enumKey').html(keyTemplate(thisFilter))
 				modelData=showArray; 
 	<!-- set colours-->  
 	$('#area').empty();
-	console.log('modelData',modelData)
+
 		   $('#area').html(modelTemplate(modelData));
 		
  
@@ -1882,6 +1917,7 @@ app['capsScore']=capAppsScores;
 			})
 
 		   })		 
+         
 	}
 
 

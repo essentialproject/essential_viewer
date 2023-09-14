@@ -2,7 +2,7 @@
 <!-- All Copyright © 2016 Enterprise Architecture Solutions Limited. Not for redistribution.-->   
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:easlang="http://www.enterprise-architecture.org/essential/language" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:functx="http://www.functx.com" xmlns:fn="http://www.w3.org/2005/xpath-functions">
 	<xsl:import href="../application/core_al_app_cost_revenue_functions.xsl"/> 
-	 <xsl:include href="../common/core_doctype.xsl"/>
+ 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:import href="../common/core_js_functions.xsl"></xsl:import>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -262,7 +262,7 @@
 				// Setup - add a text input to each footer cell
 			    $('#dt_apps tfoot th').each( function () {
 			        var title = $(this).text();
-			        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
+			        $(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
 			    } );
 				
 				var table = $('#dt_apps').DataTable({
@@ -698,7 +698,7 @@
 							"label": 'Application',
 							"icon": 'fa-desktop'
 						}
-						let scopedApps = essScopeResources(appsList, [visibilityDef, appOrgScopingDef,geoScopingDef], typeInfo);
+						let scopedApps = essScopeResources(appsList, [visibilityDef, appOrgScopingDef,geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
 		
 						 <!--
 						 <xsl:if test="$isRoadmapEnabled"> 
@@ -743,16 +743,15 @@
 			    
           
         var diffLevels, diffLevelColours, costTypes, costTypeColours 
-        
+        var dynamicAppFilterDefs=[];
         var eipMode = <xsl:value-of select="$isEIPMode"/>;
         var canAccessCostClasses = <xsl:value-of select="$isAuthzForCostClasses"/>;
         
         $('document').ready(function () {
-		 
+			console.log('HELLO')
 			Promise.all([
                 promise_loadViewerAPIData(viewAPIDataApps)
 			]).then(function (responses) { 
-	 
 				applications.forEach((a)=>{
 					let match=responses[0].applications.find((aa)=>{
 						return aa.id==a.id;
@@ -762,6 +761,15 @@
 					a = Object.assign(a,match)
 					   
 				})
+
+				filters=responses[0].filters; 
+
+				filters.sort((a, b) => (a.id > b.id) ? 1 : -1)		 
+ 
+				dynamicAppFilterDefs=filters?.map(function(filterdef){
+					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+				});
+
  		if(!eipMode || canAccessCostClasses) {
 
  
@@ -781,9 +789,9 @@
 				         });		
 				         $('#main-cost-section').removeClass('hiddenDiv');
 				   		      
-					        let filters=responses[0].filters; 
+					         
 					    //DRAW THE VIEW
-						essInitViewScoping(redrawView, ['Group_Actor',  'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'],filters,true);
+						essInitViewScoping(redrawView, ['Group_Actor',  'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'].concat(dynamicAppFilterDefs),filters,true);
 
 					  //  redrawView(inScopeApplications.applications);
         				$('#page-spinner').hide();

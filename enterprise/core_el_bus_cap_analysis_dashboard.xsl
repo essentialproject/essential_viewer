@@ -857,7 +857,7 @@
 							<div class="col-xs-12 col-md-4">
 								<div class="pull-right" id="blobLevel"/><br/><br/>
 								<div class="pull-right right-20 inscope-icon" id="scopeOn">
-									In scope of Filter:<xsl:text> </xsl:text><i class="fa fa-bookmark"></i>
+							<!--		In scope of Filter:<xsl:text> </xsl:text><i class="fa fa-bookmark"></i> -->
 								</div>
 							</div>
 						<div id="comparePanel" style="display:none">
@@ -958,9 +958,10 @@
 							<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 							{{#getApps this}}{{/getApps}} 
 								{{> l2CapTemplate}} 	
-								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		 
+								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+								<!--	 
 							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>
-							
+							-->
 						</div> 
 						
 						{{/each}}
@@ -979,7 +980,9 @@
 							{{#getApps this}}{{/getApps}} 
 								{{> l3CapTemplate}}
 							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+							<!--
 							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span> 	 
+							-->
 						</div>
 						{{/each}}
 					</div>
@@ -997,7 +1000,9 @@
 							{{#getApps this}}{{/getApps}} 				 
 								{{> l4CapTemplate}} 	
 							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		
+							<!--
 							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span> 
+							-->
 						</div>
 						{{/each}}
 					</div>	
@@ -1013,8 +1018,10 @@
 						<span class="compare-circle "><xsl:attribute name="easidcompare">{{id}}</xsl:attribute></span>
 						{{#getApps this}}{{/getApps}} 		
 							{{> l5CapTemplate}}
-							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>		
+							<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+							<!--	
 							<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>	 
+							-->
 					</div>
 					{{/each}}
 					</div>
@@ -1033,7 +1040,9 @@
 							<div class="l5-caps-wrapper caplevel"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="level">{{#getLevel this.level}}{{/getLevel}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
 									{{> l5CapTemplate}}
 								<div class="goalbox ">{{#setGoals this}}{{/setGoals}}</div>	
+								<!--
 								<span class="inscope-icon"><xsl:attribute name="easidscope">{{id}}</xsl:attribute><i class="fa fa-bookmark"></i></span>
+								-->
 								</div>	
 						</div>
 						{{/each}}
@@ -1835,7 +1844,7 @@
 			$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
 	
 			//$('#appModal').modal('show');
-			$('.closePanelButton').on('click',function(){ 
+			$(document).on('click','.closePanelButton', function(){ 
 				$('.appPanel').hide();
 			})
 		 })
@@ -2222,6 +2231,7 @@ var redrawView=function(){
 		}
 	$('.app-circle').on("click", function (d)
 		{ d.stopImmediatePropagation(); 
+			$('.appPanel').hide();
 			$('.appRatButton').show();
 				let selected = $(this).attr('easidscore')
  

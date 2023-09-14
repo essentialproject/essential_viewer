@@ -34,6 +34,10 @@
 	<xsl:key name="allGroupActorsKey" match="$grpAct" use="type"/>	
 	<xsl:key name="allSuppliers" match="/node()/simple_instance[type='Supplier']" use="name"/>	
 	<xsl:variable name="allGroupActors" select="key('allGroupActorsKey','Group_Actor')"/>	
+ 
+	<xsl:key name="allAppInstances" match="/node()/simple_instance[type='Application_Software_Instance']" use="own_slot_value[slot_reference = 'instance_of_application_deployment']/value"/>	
+	<xsl:key name="allAppNodes" match="/node()/simple_instance[type='Technology_Node']" use="own_slot_value[slot_reference = 'contained_technology_instances']/value"/>	
+	<xsl:key name="siteNames" match="/node()/simple_instance[type='Site']" use="name"/>
 
 	<xsl:key name="allGroupActorsNameKey" match="$grpAct" use="name"/>	 
 	<xsl:variable name="production" select="/node()/simple_instance[type='Deployment_Role'][own_slot_value[slot_reference = 'name']/value = 'Production']"/>	
@@ -262,6 +266,8 @@
 				<xsl:variable name="aTechBuildArch" select="$allTechBuildArchs[name = $aTechBuild/own_slot_value[slot_reference = 'technology_provider_architecture']/value]"/>-->
 		<xsl:variable name="aTechProUsageList" select="key('tprole_key',$aTechBuildArch/name)"/>  
 				<xsl:variable name="thisdeploymentRole" select="key('aDRNameKey', current()/own_slot_value[slot_reference='application_deployment_role']/value)"/> 
+				<xsl:variable name="thisInstance" select="key('allAppInstances', current()/name)"/>
+				<xsl:variable name="thisNodes" select="key('allAppNodes', $thisInstance/name)"/>
 				<!-- <xsl:variable name="thisdeploymentRole" select="$deploymentRole[name=current()/own_slot_value[slot_reference='application_deployment_role']/value]"/>-->
 				{
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -281,7 +287,14 @@
 						"compname":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$aTechComp"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	
 						}<xsl:if test="position()!=last()">,</xsl:if>
-					</xsl:for-each>]
+					</xsl:for-each>],
+				"nodes":[<xsl:for-each select="$thisNodes">
+						<xsl:variable name="thisSite" select="key('siteNames', current()/own_slot_value[slot_reference='technology_deployment_located_at']/value)"/>
+						{
+						"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+						"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+						"site":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisSite"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>		
 				}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>]
 		}<xsl:if test="position()!=last()">,</xsl:if>

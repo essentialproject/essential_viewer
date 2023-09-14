@@ -168,7 +168,8 @@
                         </tr> 
                         <tr>
                             <td>App to Tech Products</td>
-                            <td>Maps the technology products to components and to applications</td>
+                            <td>Maps the technology products to components and to applications. <br/>
+							<small>Note: This sheet does not export from the repository and should be used for loading data only</small></td>
                         </tr> 
                         <tr>
                             <td>Technology Service Qualities</td>

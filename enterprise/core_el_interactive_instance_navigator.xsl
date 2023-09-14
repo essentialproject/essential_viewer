@@ -538,11 +538,11 @@ var g=g1.setGraph({});
 
 // Automatically label each of the nodes
 
-states.forEach(function(state) { g.setNode(state.id, { label: state.name, class:state.id }); });
+states.forEach(function(state) { g.setNode(state.id, { label: state.name, easid:state.id }); });
 
 data.nodes.forEach(function(d) { g.setEdge(d.parent, d.child,{ label: "",curve: d3.curveBasis}); });	
  
- 
+ console.log('states',states)
 var res=dagreD3.graphlib.json.write(g1);
  		
 g.nodes().forEach(function(v) {
@@ -603,9 +603,9 @@ svg.selectAll('.node').on('click', function(d) {
 		getNode(newIdToCall,newIdToCall,2);
 
 	});	 
-	<!-- svg.select('#'+fcsNode).selectAll('rect').style('fill','#eab0e3')-->
+	<!-- svg.select('#'+fcsNode).selectAll('rect').style('fill','#eab0e3')
 		d3.selectAll("."+focusId).style("fill", "#3c763d");
-		d3.selectAll("."+focusId+">rect").style("fill", "#dff0d8").style("stroke", "#3c763d");
+		d3.selectAll("."+focusId+">rect").style("fill", "#dff0d8").style("stroke", "#3c763d");-->
  		
 };       
     </xsl:template>

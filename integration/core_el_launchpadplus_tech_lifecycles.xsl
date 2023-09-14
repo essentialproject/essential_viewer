@@ -153,11 +153,14 @@
                                 <tbody>
                                 <tr>
                                     <td>Tech Prod Vendor Lifecycle</td>
-                                    <td>Vendor lifecycles for the technology products</td>
+                                    <td>Vendor lifecycles for the technology products<br/>
+										<small>Note this does not export the lifecycle dates, this is for import only</small>
+									</td>
                                 </tr>  
                                 <tr>
                                     <td>Tech Prod Internal Lifecycle</td>
-                                    <td>Internal lifecycles and dates, duplicate the whole row for a new lifecycle status and date</td>
+                                    <td>Internal lifecycles and dates, duplicate the whole row for a new lifecycle status and date<br/>
+										<small>Note this does not export the lifecycle dates, this is for import only</small></td>
                                 </tr> 
                                 <tr>
                                     <td>Internal Tech Prod Lifecycle</td>

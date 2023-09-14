@@ -202,6 +202,7 @@
 								var tl;
 								function onLoad()
 								{
+									SimileAjax.History.enabled = false;
 									var tl_el = document.getElementById("tl");
 									var theme1 = Timeline.ClassicTheme.create();
 									theme1.autoWidth = true;

@@ -377,11 +377,14 @@
 							</xsl:call-template>
 						</td>
 						<td>
+						 <xsl:for-each select="$userSites">
 							<xsl:call-template name="RenderInstanceLink">
-								<xsl:with-param name="theSubjectInstance" select="$userSites"/>
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
 								<xsl:with-param name="theXML" select="$reposXML"/>
 								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
 							</xsl:call-template>
+							<br/>
+						</xsl:for-each>
 						</td>
 					</tr>
 				</xsl:for-each>

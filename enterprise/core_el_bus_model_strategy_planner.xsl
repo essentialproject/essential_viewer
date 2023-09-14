@@ -2,8 +2,8 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"/>
-	<xsl:import href="core_model_graph_js_functions.xsl"/>
-	<xsl:import href="core_el_roadmap_excel_export.xsl"/>
+	<xsl:import href="core_model_graph_js_functions_v2.xsl"/>
+	<!--<xsl:import href="core_el_roadmap_excel_export.xsl"/>-->
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -186,7 +186,7 @@
 						<xsl:with-param name="newWindow" select="true()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title><xsl:value-of select="eas:i18n('Strategy Planner')"/></title>
+				<title><xsl:value-of select="eas:i18n('Business Model Strategy Planner')"/></title>
 
 				<!-- modal javascript library -->
 				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
@@ -216,14 +216,6 @@
 					}); 
 				</script>
 				
-				
-				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				
-				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.1.2.js"/>
-				
 				<style type="text/css">
 					
 					.section-title{
@@ -247,6 +239,29 @@
 						padding: 5px;
 						text-align: center;
 						border-radius: 0px;
+						<!--border: 1px solid #666;-->
+						position: relative;
+						display: table;
+						font-size: 12px;
+					}
+					
+					
+					.product_Outer{
+						width: 140px;
+						float: left;
+						margin: 0 15px 15px 0;
+						box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 4px 0px;
+						opacity: 1;
+						-webkit-transition: opacity 1000ms linear;
+						transition: opacity 1000ms linear;
+					}
+					
+					.product_Box{
+						width: 100%;
+						height: 60px;
+						padding: 5px;
+						text-align: center;
+						border-radius: 5px;
 						<!--border: 1px solid #666;-->
 						position: relative;
 						display: table;
@@ -781,6 +796,7 @@
 					
 					<!-- Dynamic User defined JSON objects -->
 					var dynamicUserData = {
+						currentBusModelId: <xsl:choose><xsl:when test="string-length($param1) > 0">"<xsl:value-of select="$param1"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>,
 						currentStrategicPlan: null,
 						currentPlanningActions: null,
 						roadmap: null,
@@ -1861,25 +1877,25 @@
 						$('#busCapValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(aBusCap.valueStreams.length > 0) { 
+						if(aBusCap.valueStreams.length > 0) {
 							var initVS = aBusCap.valueStreams[0];
 							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([aBusCap.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([aBusCap.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(aBusCap.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([aBusCap.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([aBusCap.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(aBusCap.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -1890,24 +1906,24 @@
 						$('#busCapValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#busCapValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							//console.log('Phys Proc Count: ' + physProcsForVSIds.length);
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2060,26 +2076,26 @@
 						$('#busProcessValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(aBusProcess.valueStreams.length > 0) { 
+						if(aBusProcess.valueStreams.length > 0) {
 							var initVS = aBusProcess.valueStreams[0];
 							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([aBusProcess.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([aBusProcess.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(aBusProcess.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData)); 
+							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([aBusProcess.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([aBusProcess.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(aBusProcess.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS,
 								thisModal: 'busProcessModal'
 							}
-							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(aBusProcess.valueStageIds, modalHeatmap);
@@ -2089,24 +2105,24 @@
 						$('#busProcessValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#busProcessValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData)); 
+							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS,
 								thisModal: 'busProcessModal'
 							}
-							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2259,25 +2275,25 @@
 						$('#orgValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anOrg.valueStreams.length > 0) { 
+						if(anOrg.valueStreams.length > 0) {
 							var initVS = anOrg.valueStreams[0];
 							$("#orgValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anOrg.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anOrg.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anOrg.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData)); 
+							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([anOrg.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([anOrg.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(anOrg.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(anOrg.valueStageIds, modalHeatmap);
@@ -2287,23 +2303,23 @@
 						$('#orgValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#orgValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#orgValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#orgValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData)); 
+							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2471,23 +2487,23 @@
 						$('#appServiceValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anAppService.valueStreams.length > 0) { 
+						if(anAppService.valueStreams.length > 0) {
 							var initVS = anAppService.valueStreams[0];
 							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anAppService.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anAppService.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anAppService.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(anAppService.valueStageIds, modalHeatmap);
 							
 							<!--//set the list of relevant apps for the selectd Value Stream
-							var appProRolesForVSIds = getArrayIntersect([anAppService.appProRoleIds, initVS.appProRoleIds]); 
+							var appProRolesForVSIds = getArrayIntersect([anAppService.appProRoleIds, initVS.appProRoleIds]);
 							var appProRolesForVS = getObjectsByIds(anAppService.appProRoles, "id", appProRolesForVSIds);
 							var appsForVSIds = getObjectIds(appProRolesForVS, "appId");
 							var appsForVS = getObjectsByIds(anAppService.applications, "id", appsForVSIds);-->
@@ -2499,15 +2515,15 @@
 						$('#appServiceValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#appServiceValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2520,7 +2536,7 @@
 						var appData = {
 							applications: anAppService.applications
 						}
-						$("#appServiceModalServiceTBody").html(appRowTemplate(appData)); 
+						$("#appServiceModalServiceTBody").html(appRowTemplate(appData));
 						
 						
 						$('.modalReviewBtn').on('click', function (evt) {
@@ -2671,25 +2687,25 @@
 						$('#appValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anApp.valueStreams.length > 0) { 
+						if(anApp.valueStreams.length > 0) {
 							var initVS = anApp.valueStreams[0];
 							$("#appValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anApp.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anApp.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anApp.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([anApp.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([anApp.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(anApp.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -2700,24 +2716,24 @@
 						$('#appValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#appValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#appValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#appValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							//console.log('Phys Proc Count: ' + physProcsForVSIds.length);
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -2900,7 +2916,7 @@
 					<!-- function to render the content for the detail of a strategic plan -->
 					function showStrategicPlanTableDetail ( d ) {
 					    // `d` is the original data object for the row
-						return stratPlanDetailsTemplate(d); 
+						return stratPlanDetailsTemplate(d);
 					}
 					
 					<!-- function to update the contents of the Strategic Plans table -->
@@ -3195,8 +3211,8 @@
 							gantt.config.min_duration = 7*24*60*60*1000;  // 1 week minimum duration
 							gantt.config.date_scale = "%Y";
 							gantt.config.fit_tasks = true;
-							gantt.config.start_date = new Date(2018, 01, 01);
-							gantt.config.end_date = new Date(2021, 12, 31);
+							gantt.config.start_date = new Date(2019, 01, 01);
+							gantt.config.end_date = new Date(2025, 12, 31);
 							
 							var textEditor = {type: "text", map_to: "text"};
 							gantt.config.columns=[
@@ -3419,15 +3435,12 @@
 						<!-- Initialise the roadmap object -->
 						dynamicUserData.roadmap = newRoadmap();
 										
-						
+						let productFragment   = $("#product-template").html();
+						productTemplate = Handlebars.compile(productFragment);
+						$("#productsContainer").html(productTemplate(viewData));
 		
 						//Initialise the Initiave and Bus Model drop down boxes
 						initInitiatives();
-						
-						var dropdownFragment   = $("#dropdown-list-template").html();
-						dropdownTemplate = Handlebars.compile(dropdownFragment);
-						$("#initiativeSelect").html(dropdownTemplate(viewData.initiatives));
-						
 						
 						$('#initiativeSelect').select2({
 							theme: "bootstrap",
@@ -3441,22 +3454,60 @@
 					
 						<!-- add event listeneers to the Initiative drop down -->
 						$('#initiativeSelect').on('change', function (evt) {
-							var initId = $(this).val();
-							var thisInit = viewData.initiatives.find(anInit => anInit.id == initId);
+							let initId = $(this).val();
+							let thisInit = viewData.initiatives.find(anInit => anInit.id == initId);
 							if(thisInit != null) {
-								$("#busModelSelect").html(dropdownTemplate(thisInit.businessModels));
-								$("#busModelSelect").prop('disabled', false);
+								$("#busModelSelect").html(dropdownTemplate(thisInit.businessModels)).promise().done(function(){
+									$("#busModelSelect").prop('disabled', false);
+									
+									if(dynamicUserData.currentBusModelId) {
+										let initBMId = dynamicUserData.currentBusModelId;
+										let thisBusModel = thisInit.businessModels.find(bm => bm.id == initBMId);
+										if(thisBusModel) {
+											dynamicUserData.currentBusModelId = null;
+											$('#busModelSelect').val(initBMId).trigger('change');
+										}
+									}
+								});
 							}
 						});
 						
 						<!-- add event listeneers to the Bus Models drop down -->
 						$('#busModelSelect').on('change', function (evt) {
-							var bmId = $(this).val();
-							var thisBM = viewData.businessModels.find(aBM => aBM.id == bmId);
+							let bmId = $(this).val();
+							let thisBM = viewData.businessModels.find(aBM => aBM.id == bmId);
 							if(thisBM != null) {
 								dynamicUserData.roadmap['businessModel'] = thisBM;
 								$("#roadmapNameInput").prop('disabled', false);
 								$("#roadmapDescInput").prop('disabled', false);
+								let thisProdTypes = [];
+								if(thisBM.prodTypeIds) {
+									thisProdTypes = viewData.allProductTypes.filter(aPT => thisBM.prodTypeIds.indexOf(aPT.id) >= 0);
+								}
+								viewData.productTypes = thisProdTypes;
+								$("#productsContainer").html(productTemplate(viewData)).promise().done(function(){
+									$('.fa-info-circle').click(function() {
+										$('[role="tooltip"]').remove();
+									});
+									$('.fa-info-circle').popover({
+										container: 'body',
+										html: true,
+										trigger: 'click',
+										content: function(){
+											return $(this).next().html();
+										}
+									});
+								});
+							}
+						});
+						
+						var dropdownFragment   = $("#dropdown-list-template").html();
+						dropdownTemplate = Handlebars.compile(dropdownFragment);
+						$("#initiativeSelect").html(dropdownTemplate(viewData.initiatives)).promise().done(function(){
+							if(dynamicUserData.currentBusModelId) {
+								let initBMId = dynamicUserData.currentBusModelId;
+								let initInit = viewData.initiatives.find(anInit => anInit.busModelIds.indexOf(initBMId) >= 0);
+								$("#initiativeSelect").val(initInit.id).trigger('change');
 							}
 						});
 					
@@ -3478,6 +3529,11 @@
 						  $('#roadmapDescriptionLabel').text(roadmapDesc);
 						  dynamicUserData.roadmap.description = roadmapDesc;
 						});
+					
+						<!-- START STRATEGIC PLAN DEFINITION SECTIONS -->
+						<!-- Initialise strategic goals handlebars template -->
+						
+
 					
 						<!-- START STRATEGIC PLAN DEFINITION SECTIONS -->
 						<!-- Initialise strategic goals handlebars template -->
@@ -3869,8 +3925,21 @@
 							};-->
 							
 							//if validation is passed, add the current plan to the list of plans and reset the current plan
-							if(thisErrors.length == 0) {						
-								exportRoadmapExcel();
+							if(thisErrors.length == 0) {
+								console.log(dynamicUserData);
+								let newEssRodmapData = new essRoadmap(dynamicUserData.roadmap, dynamicUserData.strategicPlans);
+								console.log('NEW ROADMAP');
+								console.log(newEssRodmapData);
+								console.log(JSON.stringify(newEssRodmapData));
+								
+								essPromise_createAPIElement('/essential-utility/v3',newEssRodmapData,'instances','Roadmap')
+									.then(function(response){
+									
+									console.log('Roadmap Created');
+									console.log(response);
+								});
+								
+								//exportRoadmapExcel();
 							} else {
 								var errorList = {
 									title: 'Missing Roadmap Details',
@@ -3912,6 +3981,79 @@
 						$('.equalHeight1').matchHeight();
 						
 					});
+					
+					class essPlanForElement {
+					constructor(changedElement) {
+					this.className = "PLAN_TO_ELEMENT_RELATION";
+					if(changedElement.planningNotes) {
+					this.relation_description = changedElement.planningNotes;
+					}
+					this.name = "";
+					this.plan_to_element_ea_element = {
+						"id": changedElement.id,
+						"className": changedElement.type.essClass
+					}
+					this.plan_to_element_change_action = {
+						'id': changedElement.planningAction.id,
+						'className': 'Planning_Action'
+					}
+					}
+					}
+					
+					class essStratPlan {
+						constructor(plan) {
+							this.className = "Enterprise_Strategic_Plan";
+							if(plan.description) {
+								this.description = plan.description;
+							}
+							this.strategic_plan_valid_from_date_iso_8601 = plan.excelStartDate;
+							this.strategic_plan_valid_to_date_iso_8601 = plan.excelEndDate;
+							this.name = plan.name;
+							this.strategic_plan_status = {
+								"className": "Planning_Status",
+								"name": "Proposed Plan"
+							}
+							if(plan.objectives) {
+								let thisObjs = [];							
+								plan.objectives.forEach(function(obj) {
+									thisObjs.push({
+										"id": obj.id,
+										"className": "Business_Objective"
+									});   
+								});
+								this.strategic_plan_supports_objective = thisObjs;
+							}
+							this.strategic_plan_for_elements = plan.changedElements.map(change => new essPlanForElement(change));
+						}
+					}
+					
+					class essBusModelConfig {
+						constructor( roadmap) {
+							this.className = "Business_Model_Configuration";
+							if(roadmap.description) {
+								this.description = roadmap.description;
+							}
+							this.name = roadmap.name;
+							this.bmc_for_business_model = {
+								"className": "Business_Model",
+								"id": roadmap.businessModel.id
+							}
+						}
+					}
+					
+					class essRoadmap {
+						constructor(roadmap, plans) {
+							this.className = "Roadmap";
+							this.description = 'Roadmap for the implementation of ' + roadmap.name;
+							this.name = roadmap.name + ' Roadmap';
+							this.roadmap_subject = new essBusModelConfig(roadmap);
+							this.roadmap_strategic_plans = plans.map(plan => new essStratPlan(plan));
+							this.system_content_lifecycle_status = {
+								"className": "SYS_CONTENT_APPROVAL_STATUS",
+								"name": "SYS_CONTENT_IN_DRAFT"
+							}
+						}
+					}
 					<!-- END PAGE DRAWING FUNCTIONS -->
 				</script>
 				<style>
@@ -4938,7 +5080,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Strategy Planner')"/></span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Model Strategy Planner')"/></span>
 									<span id="roadmapNameTitle" class="text-primary"/>
 								</h1>
 							</div>
@@ -4973,13 +5115,13 @@
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
-								<div class="workflowStep" id="step5" onclick="menuSelect(5);setTimeout(initRoadmapExcel, 600);">
+								<!--<div class="workflowStep" id="step5" onclick="menuSelect(5);setTimeout(initRoadmapExcel, 600);">
 									<div class="workflowID bg-black">5</div>
-									<div class="worksflowTitle bg-lightgrey">Download Roadmap</div>
+									<div class="worksflowTitle bg-lightgrey">Create Roadmap</div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
-								</div>
+								</div>-->
 							</div>
 							<div class="clearfix"/>
 							<div class="workFlowContent top-20" id="step1Content">
@@ -4994,9 +5136,9 @@
 							<div class="workFlowContent top-20 hiddenDiv" id="step4Content">
 								<xsl:call-template name="RenderRoadmapSection"/>
 							</div>
-							<div class="workFlowContent top-20 hiddenDiv" id="step5Content">
+							<!--<div class="workFlowContent top-20 hiddenDiv" id="step5Content">
 								<xsl:call-template name="RenderResultsSection"/>
-							</div>
+							</div>-->
 						</div>			
 						<div class="col-xs-12">
 							<hr/>
@@ -5030,7 +5172,7 @@
 				<option/>
 			</select>
 			<br/>
-			<label for="roadmapNameInput" class="impact top-20">Value Drop Name:</label>
+			<label for="roadmapNameInput" class="impact top-20">Roadmap Name:</label>
 			<input id="roadmapNameInput" disabled="true" class="form-control bottom-10" placeholder="Enter a name"/>
 			<label for="roadmapDescInput" class="impact">Description:</label>
 			<textarea id="roadmapDescInput" disabled="true" class="form-control bottom-10" placeholder="Enter a description"/>
@@ -5066,6 +5208,27 @@
 					</div>
 				</div>
 			{{/goals}}
+		</script>
+		
+		
+		<!-- Handlebars template to render a product -->
+		<script id="product-template" type="text/x-handlebars-template">
+			{{#productTypes}}
+			<div class="product_Outer">
+				<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
+				<div class="product_Box bg-darkblue-80">
+					<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_inner</xsl:text></xsl:attribute>
+					<div class="blob_Label">
+						<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_label</xsl:text></xsl:attribute>
+						{{{link}}}
+					</div>
+					<i class="fa fa-info-circle infoButton"/>
+					<div class="hiddenDiv">
+						<span>{{description}}</span>
+					</div>
+				</div>
+			</div>
+			{{/productTypes}}
 		</script>
 		
 		<!-- Handlebars template to render the list of value streams -->
@@ -5272,6 +5435,13 @@
 				<div class="dashboardPanel bg-offwhite">
 					<!-- STRATEGIC GOALS CONTAINER -->
 					<div id="goalsContainer"/>					
+				</div>
+				<div class="clearfix"></div>
+				
+				<h3 class="section-title bg-black"><xsl:value-of select="eas:i18n('Products')"/></h3>
+				<div class="dashboardPanel bg-offwhite">
+					<!-- PRODUCTS CONTAINER -->
+					<div id="productsContainer"/>					
 				</div>
 				<div class="clearfix"></div>
 				
@@ -5633,8 +5803,17 @@
 		<div class="row">
 			<div class="col-xs-12 col-md-12">
 				<h3 class="section-title bg-black"><xsl:value-of select="eas:i18n('Roadmap Planner')"/></h3>
-				<p class="large"><span class="impact">Name: </span><span id="roadmapNameLabel" class="text-primary impact"/></p>
-				<p><span class="impact">Description: </span><span id="roadmapDescriptionLabel"/></p>
+				<div class="row">
+					<div class="col-md-10">
+						<p class="large"><span class="impact">Name: </span><span id="roadmapNameLabel" class="text-primary impact"/></p>
+						<p><span class="impact">Description: </span><span id="roadmapDescriptionLabel"/></p>
+					</div>
+					<div class="col-md-2">
+						<div class="pull-right">
+							<button id="exportRoadmapBtn" class="btn bg-darkgreen-100">Create Roadmap</button>
+						</div>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-sm-6 col-md-8 col-lg-9">
 						<div class="dashboardPanel bg-offwhite" style="height: 451px;">	
@@ -5655,7 +5834,7 @@
 	
 	<!-- TEMPLATE TO RENDER THE ROADMAP DOWNLOAD SECTION -->
 	<xsl:template name="RenderResultsSection">
-		<xsl:call-template name="RenderRoadmapExcel"/>
+		<!--<xsl:call-template name="RenderRoadmapExcel"/>-->
 		<div class="row">
 			<div class="col-xs-12 col-md-12">
 				<h3 class="section-title bg-black"><xsl:value-of select="eas:i18n('Download Roadmap Content')"/></h3>
@@ -5685,6 +5864,10 @@
 			planningActions: [
 				<xsl:apply-templates mode="getPlanningActionsJSON" select="$allPlanningActions"><xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/></xsl:apply-templates>
 			],
+			allProductTypes: [
+				<xsl:apply-templates mode="getProdTypesJSON" select="$allBusModelProdTypes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>
+			],
+			productTypes: [],
 			goals: [
 				<xsl:apply-templates mode="getBusinssGoalsJSON" select="$allBusinessGoals"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>
 			],
@@ -5735,9 +5918,9 @@
 		<xsl:variable name="thisBusModelIds" select="$this/own_slot_value[slot_reference = 'initiative_business_models']/value"/>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		id: "<xsl:value-of select="$this/name"/>",
 		name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		busModelIds:  [<xsl:for-each select="$thisBusModelIds">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
+		busModelIds:  [<xsl:for-each select="$thisBusModelIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
 	
@@ -5751,9 +5934,19 @@
 		<xsl:variable name="thisBusModelProdTypes" select="$allBusModelProdTypes[name = $thisBusModelArchProdUsages/own_slot_value[slot_reference = 'bmpu_used_product']/value]"/>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		id: "<xsl:value-of select="$this/name"/>",
 		name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		prodTypeIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusModelProdTypes"/>]
+		prodTypeIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusModelProdTypes"/>]
+		}<xsl:if test="not(position()=last())">,</xsl:if> 
+	</xsl:template>
+	
+	<!-- Template for rendering the list of Product Types  -->
+	<xsl:template match="node()" mode="getProdTypesJSON">
+		<xsl:variable name="this" select="current()"/>
+		{
+		id: "<xsl:value-of select="$this/name"/>",
+		description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
 	
@@ -5764,7 +5957,7 @@
 		<xsl:variable name="this" select="current()"/>
 
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>"
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
@@ -5779,11 +5972,11 @@
 		<xsl:variable name="thisBusinessObjectives" select="$allBusinessObjectives[own_slot_value[slot_reference = 'objective_supports_objective']/value = $this/name]"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="anchorClass">text-white</xsl:with-param><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
+			objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
 			objectives: [],
 			inScope: false,
 			isSelected: false
@@ -5797,12 +5990,12 @@
 		<xsl:variable name="thisSupportedBusinessGoals" select="$allBusinessGoals[name = $this/own_slot_value[slot_reference = 'objective_supports_objective']/value]"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			targetDate: "<xsl:value-of select="$this/own_slot_value[slot_reference = 'bo_target_date_iso_8601']/value"/>",
-			goalIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisSupportedBusinessGoals"/>],
+			goalIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisSupportedBusinessGoals"/>],
 			inScope: true
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
@@ -5850,21 +6043,21 @@
 		<xsl:variable name="kpiScore" select="eas:getKPIScoreAverage($thisCustomerJourneyPhases, 0, 0)"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			ref: "busCap<xsl:value-of select="index-of($allBusCapabilities, $this)"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			type: elementTypes.busCap,
-			goalIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessGoals"/>],
-			objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
-			physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysicalProcesses"/>],
-			appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
-			applicationIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisApplications"/>],
-			customerJourneyIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneys"/>],
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
-			valueStreamIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStreams"/>],
-			valueStageIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"/>],
+			goalIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessGoals"/>],
+			objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
+			physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysicalProcesses"/>],
+			appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
+			applicationIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisApplications"/>],
+			customerJourneyIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneys"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			valueStreamIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStreams"/>],
+			valueStageIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStages"/>],
 			overallScores: <xsl:choose>
 				<xsl:when test="count($thisCustomerJourneyPhases) > 0">
 					{
@@ -5950,22 +6143,22 @@
 		<xsl:variable name="kpiScore" select="eas:getKPIScoreAverage($thisCustomerJourneyPhases, 0, 0)"/>
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		id: "<xsl:value-of select="$this/name"/>",
 		index: <xsl:value-of select="position() - 1"/>,
 		name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		type: elementTypes.busProcess,
-		busCapIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessCapabilities"/>],
-		goalIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessGoals"/>],
-		objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
-		physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysicalProcesses"/>],
-		appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
-		applicationIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisApplications"/>],
-		customerJourneyIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneys"/>],
-		customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
-		valueStreamIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStreams"/>],
-		valueStageIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"/>],
+		busCapIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessCapabilities"/>],
+		goalIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessGoals"/>],
+		objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
+		physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysicalProcesses"/>],
+		appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
+		applicationIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisApplications"/>],
+		customerJourneyIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneys"/>],
+		customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+		valueStreamIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStreams"/>],
+		valueStageIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStages"/>],
 		overallScores: <xsl:choose>
 			<xsl:when test="count($thisCustomerJourneyPhases) > 0">
 				{
@@ -6001,7 +6194,7 @@
 		],
 		editorId: "busProcessModal",
 		inScope: false,
-		planningActionIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPlanningActions"/>],
+		planningActionIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPlanningActions"/>],
 		planningActions: null,
 		planningAction: null,
 		planningNotes: "",
@@ -6028,7 +6221,7 @@
 		<xsl:choose>
 			<xsl:when test="count($thisCJPs) > 0">
 				{
-					id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+					id: "<xsl:value-of select="$this/name"/>",
 					cxScore: <xsl:value-of select="$custExperienceScore"/>,
 					cxStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($custExperienceScore)"/>",
 					cxStyle: <xsl:value-of select="eas:getCXScoreStyle($custExperienceScore)"/>,
@@ -6042,7 +6235,7 @@
 			</xsl:when>
 			<xsl:otherwise>
 				{
-					id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+					id: "<xsl:value-of select="$this/name"/>",
 					cxScore: 0,
 					cxStyleClass: "<xsl:value-of select="$noHeatmapStyle"/>",
 					cxStyle: cxStyles.undefined,
@@ -6069,7 +6262,7 @@
 		</xsl:variable>
 		
 		{
-			l0BusCapId: "<xsl:value-of select="eas:getSafeJSString($rootBusCap/name)"/>",
+			l0BusCapId: "<xsl:value-of select="$rootBusCap/name"/>",
 			l0BusCapName: "<xsl:value-of select="$rootBusCapName"/>",
 			l0BusCapLink: "<xsl:value-of select="$rootBusCapLink"/>",
 			l1BusCaps: [
@@ -6090,7 +6283,7 @@
 		<xsl:variable name="L1Caps" select="$allBusCapabilities[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 		
 		{
-			busCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			busCapId: "<xsl:value-of select="current()/name"/>",
 			busCapName: "<xsl:value-of select="$currentBusCapName"/>",
 			busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
 			l2BusCaps: [	
@@ -6140,7 +6333,7 @@
 		
 		
 		{
-			busCapId: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			busCapId: "<xsl:value-of select="current()/name"/>",
 			busCapName: "<xsl:value-of select="$currentBusCapName"/>",
 			busCapLink: "<xsl:value-of select="$currentBusCapLink"/>",
 			isDifferentiator: <xsl:value-of select="$isDifferentiator"/>,
@@ -6191,34 +6384,34 @@
 		
 
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			type: elementTypes.physProcess,
-			busCapId: "<xsl:value-of select="eas:getSafeJSString($thisBusinessCap[1]/name)"/>",
+			busCapId: "<xsl:value-of select="$thisBusinessCap[1]/name"/>",
 			busCapLink: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisBusinessCap[1]"/></xsl:call-template>",
-			busProcessId: "<xsl:value-of select="eas:getSafeJSString($thisBusinessProcess/name)"/>",
+			busProcessId: "<xsl:value-of select="$thisBusinessProcess/name"/>",
 			busProcessRef: "<xsl:if test="count($thisBusinessProcess) > 0">busProc<xsl:value-of select="index-of($allBusinessProcess, $thisBusinessProcess)"/></xsl:if>",
 			busProcessName: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisBusinessProcess"/></xsl:call-template>",
 			busProcessDescription: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisBusinessProcess"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			busProcessLink: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisBusinessProcess"/></xsl:call-template>",
-			orgId: "<xsl:value-of select="eas:getSafeJSString($thisOrganisation/name)"/>",
+			orgId: "<xsl:value-of select="$thisOrganisation/name"/>",
 			orgRef: "<xsl:if test="count($thisOrganisation) > 0">org<xsl:value-of select="index-of($allOrganisations, $thisOrganisation)"/></xsl:if>",
 			orgName: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisOrganisation"/></xsl:call-template>",
 			orgDescription: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisOrganisation"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			orgLink: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisOrganisation"/></xsl:call-template>",
-			appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
-			applicationIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisApplications"/>],
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
+			applicationIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisApplications"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
 			customerJourneyPhases: [],
-			planningActionIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPlanningActions"/>],
+			planningActionIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPlanningActions"/>],
 			planningActions: [],
 			planningAction: null,
 			editorId: "physProcModal",
-			emotionScore: <xsl:value-of select="$emotionScore"/>, 
-			cxScore: <xsl:value-of select="$custExperienceScore"/>, 
-			kpiScore: <xsl:value-of select="$kpiScore"/>, 
-			emotionStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($emotionScore)"/>", 
+			emotionScore: <xsl:value-of select="$emotionScore"/>,
+			cxScore: <xsl:value-of select="$custExperienceScore"/>,
+			kpiScore: <xsl:value-of select="$kpiScore"/>,
+			emotionStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($emotionScore)"/>",
 			emotionIcon: "<xsl:value-of select="eas:getEmotionScoreIcon($emotionScore)"/>",
-			cxStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($custExperienceScore)"/>", 
+			cxStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($custExperienceScore)"/>",
 			kpiStyleClass: "<xsl:value-of select="eas:getSQVScoreStyle($kpiScore)"/>"
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
@@ -6273,20 +6466,20 @@
 
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			index: <xsl:value-of select="position() - 1"/>,
 			type: elementTypes.organisation,
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-			objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
-			physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysProcs"/>],
-			appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
-			applicationIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisApplications"/>],
-			customerJourneyIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneys"/>],
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
-			valueStreamIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStreams"/>],
-			valueStageIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"/>],
+			objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
+			physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysProcs"/>],
+			appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
+			applicationIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisApplications"/>],
+			customerJourneyIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneys"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			valueStreamIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStreams"/>],
+			valueStageIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStages"/>],
 			overallScores: <xsl:choose>
 				<xsl:when test="count($thisCustomerJourneyPhases) > 0">
 					{
@@ -6322,7 +6515,7 @@
 			],
 			editorId: "orgModal",
 			inScope: false,
-			planningActionIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPlanningActions"/>],
+			planningActionIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPlanningActions"/>],
 			planningActions: null,
 			planningAction: null,
 			planningNotes: "",
@@ -6378,19 +6571,19 @@
 		
 		
 		{
-		id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		id: "<xsl:value-of select="$this/name"/>",
 		index: <xsl:value-of select="position() - 1"/>,
 		type: elementTypes.appService,
 		name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 		link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
-		objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
-		physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysProcs"/>],
-		appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"/>],
-		customerJourneyIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneys"/>],
-		customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
-		valueStreamIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStreams"/>],
-		valueStageIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"/>],
+		objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
+		physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysProcs"/>],
+		appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisAppProRoles"/>],
+		customerJourneyIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneys"/>],
+		customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+		valueStreamIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStreams"/>],
+		valueStageIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStages"/>],
 		overallScores: <xsl:choose>
 			<xsl:when test="count($thisCustomerJourneyPhases) > 0">
 				{
@@ -6428,7 +6621,7 @@
 		techHealthStyle: "<xsl:value-of select="$thisTechHealthStyle"/>",
 		editorId: "appServiceModal",
 		inScope: false,
-		planningActionIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPlanningActions"/>],
+		planningActionIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPlanningActions"/>],
 		planningActions: null,
 		planningAction: null,
 		planningNotes: "",
@@ -6455,20 +6648,20 @@
 		<xsl:variable name="thisCustomerJourneyPhases" select="$allCustomerJourneyPhases[own_slot_value[slot_reference = 'cjp_supporting_phys_processes']/value = $thisPhysicalProcesses/name]"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			type: elementTypes.appProRole,
-			appId: "<xsl:value-of select="eas:getSafeJSString($thisApplication/name)"/>",
+			appId: "<xsl:value-of select="$thisApplication/name"/>",
 			appRef: "<xsl:if test="count($thisApplication) > 0">app<xsl:value-of select="index-of($allApplications, $thisApplication)"/></xsl:if>",
 			appName: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>",
 			appDescription: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			appLink: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>",
-			serviceId: "<xsl:value-of select="eas:getSafeJSString($thisAppService/name)"/>",
+			serviceId: "<xsl:value-of select="$thisAppService/name"/>",
 			serviceRef: "<xsl:if test="count($thisAppService) > 0">appService<xsl:value-of select="index-of($allAppServices, $thisAppService)"/></xsl:if>",
 			serviceName: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisAppService"/></xsl:call-template>",
 			serviceDescription: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$thisAppService"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			serviceLink: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisAppService"/></xsl:call-template>",
-			physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysicalProcesses"/>],
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysicalProcesses"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
 			customerJourneyPhases: [],
 			editorId: "appProRoleModal",
 			planningAction: null,
@@ -6516,28 +6709,28 @@
 		<xsl:variable name="thisValueStreams" select="$allValueStreams[own_slot_value[slot_reference = 'vs_value_stages']/value = $thisValueStages/name]"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			type: elementTypes.application,
 			index: <xsl:value-of select="position() - 1"/>,
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			techHealthScore: 8,
-			objectiveIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisBusinessObjectives"/>],
+			objectiveIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisBusinessObjectives"/>],
 			objectives: null,
-			appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisAppProRoles"/>],
+			appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisAppProRoles"/>],
 			appProRoles: null,
-			physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysicalProcesses"/>],
+			physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysicalProcesses"/>],
 			physProcesses: null,
-			organisationIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisOrganisations"/>],
+			organisationIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisOrganisations"/>],
 			organisations: null,
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
 			customerJourneyPhases: [],
-			valueStreamIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStreams"/>],
+			valueStreamIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStreams"/>],
 			valueStreams: null,
-			valueStageIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisValueStages"/>],
+			valueStageIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisValueStages"/>],
 			editorId: "appModal",
-			planningActionIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPlanningActions"/>],
+			planningActionIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPlanningActions"/>],
 			planningActions: null,
 			planningAction: null,
 			planningNotes: "",
@@ -6571,14 +6764,14 @@
 		<xsl:variable name="thisProdTypeIds" select="$this/own_slot_value[slot_reference = 'vs_product_types']/value"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			valueStages: [<xsl:apply-templates mode="getValueStageJSON" select="$thisValueStages"><xsl:sort select="own_slot_value[slot_reference = 'vsg_index']/value"/></xsl:apply-templates>],
-			physProcessIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhysProcs"/>],
-			appProRoleIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
-			prodTypeIds: [<xsl:for-each select="$thisProdTypeIds">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
+			physProcessIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhysProcs"/>],
+			appProRoleIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisPhyProcAppProRoles"/>],
+			prodTypeIds: [<xsl:for-each select="$thisProdTypeIds">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">, </xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
 	
@@ -6600,11 +6793,11 @@
 		<xsl:variable name="cxStyleClass" select="eas:getEnumerationScoreStyle($custExperienceScore)"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
-			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
+			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],
 			customerJourneyPhases: [],
 			emotionScore: <xsl:value-of select="$emotionScore"/>,
 			cxScore: <xsl:value-of select="$custExperienceScore"/>,
@@ -6642,11 +6835,11 @@
 		<xsl:variable name="kpiScore" select="eas:getServiceQualityScoreAverage($thisCustomerSvcQualVals)"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$cjpLabel"/></xsl:call-template>",
-			customerJourneyId: "<xsl:value-of select="eas:getSafeJSString($thisCustomerJourney/name)"/>",
+			customerJourneyId: "<xsl:value-of select="$thisCustomerJourney/name"/>",
 			cxScore: <xsl:value-of select="$cxScore"/>,
 			emotionScore: <xsl:value-of select="$emotionScore"/>,
 			kpiScore: <xsl:value-of select="$kpiScore"/>
@@ -6658,7 +6851,7 @@
 		<xsl:variable name="this" select="current()"/>
 		
 		{
-			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+			id: "<xsl:value-of select="$this/name"/>",
 			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>"
@@ -6946,6 +7139,10 @@
 			<xsl:otherwise><xsl:value-of select="$kpiHighStyle"/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:function>
+	
+	<xsl:template mode="RenderAsIsElementIDListForJs" match="node()">
+		"<xsl:value-of select="current()/name"/>"<xsl:if test="not(position() = last())">, </xsl:if>
+	</xsl:template>
 	
 	<!-- END UTILITY TEMPLATES AND FUNCTIONS -->
 

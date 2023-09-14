@@ -50,7 +50,8 @@
     <xsl:key name="roles_key" match="/node()/simple_instance[type=('Individual_Business_Role','Group_Business_Role')]" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
     
 	<xsl:key name="milestone_key" match="/node()/simple_instance[type='Change_Milestone']" use="own_slot_value[slot_reference = 'cm_change_activity']/value"/>
-	
+	<xsl:key name="planToProj_key" match="/node()/simple_instance[supertype='Strategic_Plan']" use="own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value"/>
+	 
  
 	<xsl:key name="objectives_key" match="/node()/simple_instance[type=('Information_Architecture_Objective', 'Technology_Architecture_Objective', 'Application_Architecture_Objective', 'Business_Objective')]" use="own_slot_value[slot_reference = 'objective_supported_by_strategic_plan']/value"/> 
 	<xsl:variable name="drivers" select="/node()/simple_instance[type=('Business_Driver', 'Application_Driver', 'Information_Driver', 'Technology_Driver')]"/>
@@ -119,6 +120,7 @@
 				</xsl:call-template>",	
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"className":"<xsl:value-of select="current()/type"/>",
+			"dependsOn":[<xsl:for-each select="current()/own_slot_value[slot_reference = 'depends_on_strategic_plans']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 			"validStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", 
 			"validEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>",
 			"planP2E":[<xsl:for-each select="$p2eforplan">
@@ -292,6 +294,8 @@
 				<xsl:variable name="thisBudgetElements" select="key('budget_elements_key',$thisBudget/name)"/>
 				<xsl:variable name="thisCost" select="key('costs_key',current()/name)"/>
 				<xsl:variable name="thisCostElements" select="key('cost_elements_key',$thisCost/name)"/>
+				<xsl:variable name="thisStratPlans" select="key('planToProj_key',current()/name)"/>
+
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -313,6 +317,11 @@
 					"startDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
 					"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>"
 					}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],		
+			"strategicPlans":[<xsl:for-each select="$thisStratPlans">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],		
 			"stakeholders":[<xsl:for-each select="$thisStakeholders">
 			<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
 			<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
@@ -339,6 +348,8 @@
 			"actualStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'ca_actual_start_date_iso_8601']/value"/>",
 			"forecastEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'ca_forecast_end_date_iso_8601']/value"/>",
 			"lifecycleStatus":"<xsl:choose><xsl:when test="$thisProjStatus/own_slot_value[slot_reference = 'name']/value"><xsl:value-of select="$thisProjStatus/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise>Unknown</xsl:otherwise></xsl:choose>",
+			"lifecycleStatusID":"<xsl:value-of select="$thisProjStatus/name"/>",
+			"lifecycleStatusOrder":"<xsl:choose><xsl:when test="$thisProjStatus/own_slot_value[slot_reference = 'enumeration_sequence_number']/value"><xsl:value-of select="$thisProjStatus/own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/></xsl:when><xsl:otherwise>9</xsl:otherwise></xsl:choose>",
 			"approvalStatus":"<xsl:choose><xsl:when test="$thisApprovalStatus"><xsl:value-of select="$thisApprovalStatus/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise>Not Set</xsl:otherwise></xsl:choose>",
 			"approvalId":"<xsl:value-of select="eas:getSafeJSString($thisApprovalStatus/name)"/>",
 			"p2e":[<xsl:for-each select="$thisP2E">{ 

@@ -2961,6 +2961,21 @@
     <Cell ss:StyleID="s1145"/>
     <Cell ss:StyleID="s1146"/>
    </Row>
+     <Row ss:AutoFitHeight="0" ss:Height="8" ss:StyleID="s1139">
+    <Cell ss:Index="2" ss:StyleID="s1141"/>
+    <Cell ss:StyleID="s1073"/>
+    <Cell ss:StyleID="s1140"
+     ss:Formula="=IF(RC[-1]&lt;&gt;&quot;&quot;, CONCATENATE(RC[-2], &quot; - &quot;, RC[-1], &quot; - &quot;, RC[3], &quot; - &quot;, TEXT(RC[4], &quot;yyyy-mm-dd&quot;)), &quot;&quot;)"><Data
+      ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="s1073"/>
+    <Cell ss:StyleID="s1142"/>
+    <Cell ss:StyleID="s1135"/>
+    <Cell ss:StyleID="s1144"/>
+    <Cell ss:StyleID="s1144"/>
+    <Cell ss:StyleID="s1144"/>
+    <Cell ss:StyleID="s1145"/>
+    <Cell ss:StyleID="s1146"/>
+   </Row>
       <xsl:apply-templates select="$contracts" mode="contract"/>  
    <Row>
     <Cell ss:Index="2" ss:StyleID="s1089"><Data ss:Type="String"></Data></Cell>

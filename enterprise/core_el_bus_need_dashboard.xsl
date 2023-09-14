@@ -282,13 +282,19 @@
 											<div class="row">
 												<div class="col-md-12 top-20">
 													<div class="row">
-														<div class="col-md-6">
+														<div class="col-md-4">
+															<div class="large fontBold">Business Models</div>
+															<div id="need-busmodel-content">
+																<ul id="need-busmodel-list"/>
+															</div>
+														</div>
+														<div class="col-md-4">
 															<div class="large fontBold">Geographic Scope</div>
 															<div id="need-country-content">
 																<ul id="need-country-list"/>
 															</div>
 														</div>
-														<div class="col-md-6">
+														<div class="col-md-4">
 															<div class="large fontBold">Organisational Scope</div>
 															<div id="need-org-content">
 																<ul id="need-org-list"/>
@@ -555,6 +561,14 @@
 					{{/if}}
 				</script>
 				
+				
+				<script id="plan-roadmaps-template" type="text/x-handlebars-template">
+					<option/>
+					{{#each this}}
+						<option><xsl:attribute name="value">{{id}}</xsl:attribute>{{name}}</option>
+					{{/each}}
+				</script>
+				
 				<!-- Div for the ERROR modal -->
 				<div class="modal fade" id="need-confirm-modal" tabindex="-1" role="dialog" aria-labelledby="need-confirm-modal-label" data-backdrop="static" data-keyboard="true">
 					<div class="modal-dialog">
@@ -574,7 +588,10 @@
 					</div>
 				</div>
 				
-				<!-- Div for the ERROR modal -->
+				<!-- Add bootstrap datepicker libraries -->
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
+				<!-- Div for the Create Plan/Project modal -->
 				<div class="modal fade" id="create-plan-project-modal" tabindex="-1" role="dialog" aria-labelledby="plan-project-modal-label" data-backdrop="static" data-keyboard="true">
 					<div class="modal-dialog">
 						<div class="modal-content" id="plan-project-modal-content">
@@ -586,10 +603,23 @@
 								<div class="col-md-12">
 									<div class="alert alert-success">Would you like to create a Strategic Plan and a Project for this idea in the current repository?</div>
 								</div>
-								<div class="col-md-12">
+								<div id="ess-plan-roadmap-container" class="col-md-12">
+									<input id="ess-create-plan-roadmap-checkbox" type="checkbox" class="pull-left" checked="checked" disabled="disabled"/>
+									<label for="ess-plan-roadmap-list" class="fontBold">Roadmap</label>
+									<select id="ess-plan-roadmap-list" class="form-control bottom-10" style="width:100%;"/>
+								</div>
+								<div class="col-md-12 top-10">
 									<input id="ess-create-plan-checkbox" type="checkbox" class="pull-left" checked="checked" disabled="disabled"/>
 									<label for="ess-plan-name" class="fontBold">Strategic Plan Name</label>
 									<input type="text" id="ess-plan-name" class="form-control bottom-10" placeholder="Enter a name"/>
+								</div>
+								<div class="col-md-6">
+									<label for="ess-need-from-date" class="fontBold">Starting From Date</label>
+									<div><input class="date-picker form-control bottom-10" data-provide="datepicker" id="ess-need-from-date"/></div>
+								</div>
+								<div class="col-md-6">
+									<label for="ess-need-by-date" class="fontBold">Completed By Date</label>
+									<div><input class="date-picker form-control bottom-10" data-provide="datepicker" id="ess-need-by-date"/></div>
 								</div>
 								<div class="col-md-12">
 									<input id="ess-create-project-checkbox" type="checkbox" class="pull-left" checked="checked"/>
@@ -620,28 +650,27 @@
 				
 				<script type="text/javascript">
 					class StrategicPlan {
-					    constructor(planName, anIdea, plannedChanges, aProject) {
+					    constructor(planName, anIdea, plannedChanges, aProject, startDate, endDate) {
 					        this.name = planName;
 					        this.description = anIdea.description;
 					        this.plannedChanges = plannedChanges;
+					        this['start-date'] = startDate;
+					        this['end-date'] = endDate;
 					        if(aProject != null) {
 					        	this.supportingProjects = [aProject];
-					       	}
-					        this.meta = {};
-					        this.meta.createdOn = moment().toISOString();
-					        this.meta.createdBy = {};
-					        this.meta.createdBy.id = essViewer.user.id;
+					       }
 					    }
 					}
 					
 					class Project {
-					    constructor(name, description) {
+					    constructor(name, description, startDate, endDate) {
 					        this.name = name;
 					        this.description = description;
-					        this.meta = {};
-					        this.meta.createdOn = moment().toISOString();
-					        this.meta.createdBy = {};
-					        this.meta.createdBy.id = essViewer.user.id;
+					        let thisDates = {
+						        "planned-start": startDate,
+						        "planned-end": endDate
+					        }
+					        this.dates = thisDates;
 					    }
 					}
 					
@@ -651,10 +680,6 @@
 					        this.rationale = anIdeaChange.rationale;
 					        this.change = anIdeaChange.change;
 					        this.project = project;
-					        this.meta = {};
-					        this.meta.createdOn = moment().toISOString();
-					        this.meta.createdBy = {};
-					        this.meta.createdBy.id = essViewer.user.id;
 					    }
 					}
 					
@@ -717,6 +742,23 @@
 					        this.comment = comment;
 					        this.rating = rating;
 					    }
+					}
+					
+					function updateReqDatePicker(datePickerId, aDate) {
+						if((aDate != null) &amp;&amp; (aDate.length > 0)) {
+							$('#' + datePickerId).datepicker('update', new Date(aDate));
+						} else {
+							$('#' + datePickerId).datepicker('update', '');
+						}
+					}
+					
+					function getDatePickerISODate(datePickerId) {
+						let thisDate = $('#' + datePickerId).datepicker('getDate');
+						if(thisDate) {
+							return moment(thisDate).format('YYYY-MM-DD');
+						} else {
+							return null;
+						}
 					}
 					
 					//function to calculate the average rat8ings for the ideas asociated with teh current need
@@ -960,6 +1002,15 @@
 					
 					
 					var createProjectFromIdea = function(thisIdea) {
+						let rmId;
+						if(allIdeaRoadmaps &amp;&amp; allIdeaRoadmaps.length > 0) {
+							rmId = $('#ess-plan-roadmap-list').val();
+							if((rmId == null) || (rmId.length == 0)) {
+								$('#ess-create-plan-error').text('A roadmap must be selected');
+								return;
+							}
+						}
+						
 						let planName = $('#ess-plan-name').val();
 						if((planName == null) || (planName.length == 0)) {
 							$('#ess-create-plan-error').text('The strategic plan must have a name');
@@ -967,22 +1018,25 @@
 						}
 					
 						let promiseList = [];
+						let startDate = getDatePickerISODate('ess-need-from-date');
+						let endDate = getDatePickerISODate('ess-need-by-date');
+						let projectName = 'Project: ' + thisIdea.name;
+						let projectDesc = thisIdea.description;		
+						let tempProject;
 						
 						if($('#ess-create-project-checkbox').prop('checked')) {
-							let projectName = $('#ess-project-name').val();
+							projectName = $('#ess-project-name').val();
 							if((projectName == null) || (projectName.length == 0)) {
 								$('#ess-create-plan-error').text('The project must have a name');
 								return;
 							}
-							let projectDesc = thisIdea.description;
-							let tempProject = new Project(projectName, projectDesc);
+							projectDesc = thisIdea.description;
+							tempProject = new Project(projectName, projectDesc, startDate, endDate);
 							promiseList.push(essPromise_createAPIElement(essEssentialCoreApiUri, tempProject, 'projects', 'Project'));
+						} else {
+							tempProject = new Project(projectName, projectDesc, startDate, endDate);
 						}
-						
-						let projectName = 'Project: ' + thisIdea.name;
-						let projectDesc = thisIdea.description;
-						let tempProject = new Project(projectName, projectDesc);
-						
+		
 						Promise.all(promiseList)
 						//essPromise_createAPIElement(essEssentialCoreApiUri, tempProject, 'projects', 'Project')
 						.then(function(responses) {
@@ -997,9 +1051,35 @@
 								plannedChanges.push(newChange);
 							});
 							
-							let tempPlan = new StrategicPlan(planName, thisIdea, plannedChanges, newProject);
+							let tempPlan = new StrategicPlan(planName, thisIdea, plannedChanges, newProject, startDate, endDate);
 							essPromise_createAPIElement(essEssentialCoreApiUri, tempPlan, 'strategic-plans', 'Strategic Plan')
 							.then(function(planResponse) {
+								//Add the new plan to any selecetd roadmap
+								if(rmId &amp;&amp; allIdeaRoadmaps) {
+									let thisRM = allIdeaRoadmaps.find(rm => rm.id == rmId);
+									if(thisRM != null) {
+										if(thisRM.roadmap_strategic_plans == null) {
+											thisRM.roadmap_strategic_plans = [];
+										}
+										thisRM.roadmap_strategic_plans.push(planResponse);
+										let updateRMObject = {
+											"id": thisRM.id,
+											"className": "Roadmap",
+											"roadmap_strategic_plans": thisRM.roadmap_strategic_plans.map(function(aSP) {
+												return {
+													"id": aSP.id,
+													"className": "Enterprise_Strategic_Plan"
+												}
+											})
+										}
+										essPromise_updateAPIElement(essEssentialUtilv3ApiUri, updateRMObject, 'instances', 'Roadmap')
+										.then(function(roadmapResponse) {
+											console.log('UPDATED  ROADMAP');
+											console.log(roadmapResponse);
+										});
+									}
+								}
+													
 								//update the status of the current need to 'In Planning'
 								let needPlanUrl = 'business-needs/' + currentNeed.id + '/plan';
 								essPromise_updateAPIElement(essEssentialCoreApiUri, currentNeed, needPlanUrl, 'Idea')
@@ -1209,8 +1289,8 @@
 						
 						$('#create-plan-project-modal').on('show.bs.modal', function (event) {
 							if(currentNeed != null) {           	      
-								$('#ess-plan-name').val('Plan for ' + currentNeed.name);
-								$('#ess-project-name').val('Project: ' + currentNeed.name);
+								$('#ess-plan-name').val('Plan for ' + approvedIdea.name);
+								$('#ess-project-name').val('Project: ' + approvedIdea.name);
 							}
 						});
 						
@@ -1222,6 +1302,7 @@
 					    
 					    let instanceListFragment = $("#need-instance-bullet-template").html();
 					    let instanceListTemplate = Handlebars.compile(instanceListFragment);
+					    
 					    
 					    //add handlebars helper for comment ratings
 					    Handlebars.registerHelper("renderRating", function(aRating) {
@@ -1280,6 +1361,12 @@
 					    } else {
 					    	$('#need-rationale-content').html('<span class="top-20"><em><xsl:value-of select="eas:i18n('No target rationale defined')"/></em></span>');
 					    }
+					    
+					    if((currentNeed.targetBusinessModels != null) &amp;&amp; (currentNeed.targetBusinessModels.length > 0)) {
+					    	$('#need-busmodel-list').html(instanceListTemplate(currentNeed.targetBusinessModels));
+						} else {
+							$('#need-busmodel-content').html('<span class="top-20"><em><xsl:value-of select="eas:i18n('No target business models defined')"/></em></span>');
+						}
 					    
 					    if((currentNeed.targetGeoScope != null) &amp;&amp; (currentNeed.targetGeoScope.length > 0)) {
 					    	$('#need-country-list').html(instanceListTemplate(currentNeed.targetGeoScope));
@@ -1439,9 +1526,54 @@
 						});	
 						
 						
+						updateReqDatePicker('ess-need-from-date', currentNeed.requiredFromDate);
+						$('#ess-need-from-date').datepicker()
+						.on('changeDate', function(e) {
+							if(e.date == null) {
+								//display an error
+								$('#ess-create-plan-error').text('A starting date must be provided');
+								//reset the date picker to the previous value
+								updateReqDatePicker('ess-need-from-date', currentNeed.requiredFromDate);
+							} else {
+								let dateString = moment(e.date).format('YYYY-MM-DD');
+								let currentDate = moment().format('YYYY-MM-DD');
+								if(dateString &lt; currentDate) {
+									//show an error
+									$('#ess-create-plan-error').text('The starting date cannot be in the past');
+									//reset the date picker to the previous value
+									updateReqDatePicker('ess-need-from-date', currentNeed.requiredFromDate);
+									return;
+								}
+							}
+						});
+						
+						
+						updateReqDatePicker('ess-need-by-date', currentNeed.requiredByDate);
+						$('#ess-need-by-date').datepicker()
+						.on('changeDate', function(e) {
+							if(e.date == null) {
+								//display an error
+								$('#ess-create-plan-error').text('A planned completion date must be provided');
+								//reset the date picker to the previous value
+								updateReqDatePicker('ess-need-by-date', currentNeed.requiredByDate);
+							} else {
+								let dateString = moment(e.date).format('YYYY-MM-DD');
+								let currentDate = moment().format('YYYY-MM-DD');
+								if(dateString &lt; currentDate) {
+									//show an error
+									$('#ess-create-plan-error').text('The planned completion date cannot be in the past');
+									//reset the date picker to the previous value
+									updateReqDatePicker('ess-need-by-date', currentNeed.requiredByDate);
+									return;
+								}
+							}
+						});
+						
+						
 						$('#essCreatePlanLaterBtn').click(function(){
 							$('#create-plan-project-modal').modal('hide');
 						});
+						
 						
 						$('#essCreatePlanCreateBtn').click(function(){
 							$(this).html('Updating...');
@@ -1472,18 +1604,54 @@
 					var currentIdeas = [];
 					var currentIdeaComments = [];
 					var allIdeas = {};
+					var allIdeaRoadmaps;
 					
 					$('document').ready(function(){
 						showViewSpinner('Loading data...');
+						let roadmapUrlSlotParams = encodeURI('name^roadmap_subject^bmc_for_business_model^roadmap_strategic_plans');
 						Promise.all([
 							essPromise_getAPIElement(essEssentialCoreApiUri, 'business-needs', currentNeedId, 'Business Need'),
 							essPromise_getFileredPropNoSQLElements(essEssentialReferenceApiUri, 'business-need-ratings', 'idea-ratings', 'requirementId', currentNeedId, 'Idea Rating'),
-							essPromise_getFileredPropNoSQLElements(essEssentialReferenceApiUri, 'approval-comments', 'approval-decision-comments', 'contextId', currentNeedId, 'Approval Decision Comment')
+							essPromise_getFileredPropNoSQLElements(essEssentialReferenceApiUri, 'approval-comments', 'approval-decision-comments', 'contextId', currentNeedId, 'Approval Decision Comment'),
+							essPromise_getAPIElements(essEssentialUtilv3ApiUri, 'classes/Roadmap/instances?maxdepth=2&amp;' + roadmapUrlSlotParams, 'Roadmaps')
 						])
 						.then(function (responses) {
 							currentNeed = responses[0];
 							needRatings = responses[1]['instances'];
 							
+							
+							if(currentNeed.targetBusinessModels &amp;&amp; currentNeed.targetBusinessModels.length > 0) {
+								let potentialRoadmaps = responses[3]['instances'];
+								let busModelIds = currentNeed.targetBusinessModels.map(bm => bm.id);
+								allIdeaRoadmaps = potentialRoadmaps.filter(function(aRM) {
+									if(aRM.roadmap_subject &amp;&amp; aRM.roadmap_subject.bmc_for_business_model) {
+										return busModelIds.indexOf(aRM.roadmap_subject.bmc_for_business_model.id) >= 0;
+									} else {
+										return false;
+									}
+								});
+								
+								allIdeaRoadmaps.sort(function(a, b){
+									if (a.name &lt; b.name) {return -1;}
+									if (b.name > a.name) {return 1;}
+									return 0;
+								});
+								let planRoadmapsFragment = $("#plan-roadmaps-template").html();
+								let planRoadmapsTemplate = Handlebars.compile(planRoadmapsFragment);
+								$('#ess-plan-roadmap-list').select2({
+									allowClear: true,
+									placeholder: "Select a Roadmap",
+									theme: "bootstrap"						  
+								});
+								$('#ess-plan-roadmap-list').html(planRoadmapsTemplate(allIdeaRoadmaps)).promise().done(function(){
+								
+								});
+							} else {
+								$('#ess-plan-roadmap-container').hide();
+							}
+							console.log('ROADMAPS');
+							console.log(allIdeaRoadmaps);
+												
 							let allIdeaComments = responses[2]['instances'];
 							currentIdeaComments = allIdeaComments.filter(function(aCmt) {
 								return (aCmt.decision != ess_APPROVAL_STATII.propose) &amp;&amp; (aCmt.decision != ess_APPROVAL_STATII.draft);

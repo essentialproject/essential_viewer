@@ -1,4 +1,0 @@
-
-		{"businessCapabilities":[],
-		 "version":"614"}
-	

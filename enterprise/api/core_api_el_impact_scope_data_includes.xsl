@@ -152,6 +152,9 @@
 	<xsl:variable name="allGeoRegions" select="$allSiteGeoRegions union $allLocationGeoRegions"/>
 	<xsl:variable name="allParentGeoRegions" select="$theGeoRegions[own_slot_value[slot_reference = 'gr_contained_regions']/value = $allGeoRegions/name]"/>
 
+	<!-- Business Models -->
+	<xsl:variable name="allBusModels" select="/node()/simple_instance[type = 'Business_Model']"/>
+
 	
 	<!-- Value Streams -->
 	<xsl:variable name="allValueStages" select="/node()/simple_instance[type = 'Value_Stage']"/>
