@@ -120,8 +120,8 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-               <script src="js/d3/d3.v5.9.7.min.js"></script>
-               <script src="js/generic-radar/radar.js"></script>
+               <script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+               <script src="js/generic-radar/radar.js?release=6.19"></script>
 
 				<title>Application Strategic Radar</title>
                 <xsl:call-template name="dataTablesLibrary"/>
@@ -156,7 +156,8 @@
 							</select>
 						-->
 							<div class="clearfix"></div>
-							<xsl:if test="not($lifecycleStatus)"><p><br/>Missing Data: Please Set Enumeration Sequence Numbers for Lifecycles</p></xsl:if> 
+							<xsl:if test="not($lifecycleStatus)"><p><br/><xsl:value-of select="eas:i18n('
+')"/>Missing Data: Please Set Enumeration Sequence Numbers for Lifecycles')"/></p></xsl:if> 
 							<svg id="radar"></svg>
 
 							<script>

@@ -121,8 +121,8 @@
 				</xsl:call-template>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
-				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css?release=6.19"/>
+				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -133,8 +133,8 @@
 				
 				<!--<xsl:call-template name="RenderGDPRDashboardJSLibraries"/>-->
 				
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
 					    event.preventDefault();
@@ -143,30 +143,30 @@
 				</script>
 				
 				<!-- Start JointJS Diagramming Libraries and Styles-->
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>	
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>	
 
 				<!-- Start Slider libraries and styles -->
-				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js"></script>
-				<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css"/>
+				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js?release=6.19"></script>
+				<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css?release=6.19"/>
 				
 				<!-- Start Service Quality Gauge library -->
-				<script type="text/javascript" src="js/gauge.min.js"></script>
+				<script type="text/javascript" src="js/gauge.min.js?release=6.19"></script>
 				
 				<!-- Start Drag and Drop Libraries and Styles -->
-				<script type="text/javascript" src="js/dragula/dragula.min.js"></script>
-				<link rel="stylesheet" href="js/dragula/dragula.min.css"/>
+				<script type="text/javascript" src="js/dragula/dragula.min.js?release=6.19"></script>
+				<link rel="stylesheet" href="js/dragula/dragula.min.css?release=6.19"/>
 				
 				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				
 				<style type="text/css">
 					.Rect{
@@ -2203,7 +2203,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Standard Technology Product Selector</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Standard Technology Product Selector')"/></span>
 								</h1><xsl:value-of select="$DEBUG"/>
 							</div>
 						</div>
@@ -2211,35 +2211,35 @@
 							<div class="workflowNavigation">
 								<div class="workflowStep" id="step1" onclick="menuSelect(1)">
 									<div class="workflowID bg-black">1</div>
-									<div class="worksflowTitle bg-darkgrey">Introduction</div>
+									<div class="worksflowTitle bg-darkgrey"><xsl:value-of select="eas:i18n('Introduction')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div> 
 								<div class="workflowStep" id="step2" onclick="menuSelect(2);setTimeout(refreshServiceQualitySliders, 600);">
 									<div class="workflowID bg-black">2</div>
-									<div class="worksflowTitle bg-lightgrey">Select Technology Capabilities</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Select Technology Capabilities')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step3" onclick="menuSelect(3);setTimeout(redrawRefArchListTable, 600);showHelpButton();">
 									<div class="workflowID bg-black">3</div>
-									<div class="worksflowTitle bg-lightgrey">Select Reference Architectures</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Select Reference Architectures')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step4" onclick="menuSelect(4);;setTimeout(updateSelectedRefArchsList, 600);">
 									<div class="workflowID bg-black">4</div>
-									<div class="worksflowTitle bg-lightgrey">Select Technology Products</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Select Technology Products')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step5" onclick="menuSelect(5);setTimeout(redrawSelectedTechProductsTable, 600);setTimeout(setAppTechArchExportTable, 600);">
 									<div class="workflowID bg-black">5</div>
-									<div class="worksflowTitle bg-lightgrey">Review Results</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Review Results')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
@@ -2309,15 +2309,15 @@
 			</div>
 		</script>
 		
-		<h2 class="text-primary bottom-15">Welcome to the Technology Product Selector</h2>
-		<p class="lead"><strong>This report assists you in the selection of appropriate and standards compliant Technology Products needed to implement a given Shared Platform.</strong></p>
+		<h2 class="text-primary bottom-15"><xsl:value-of select="eas:i18n('Welcome to the Technology Product Selector')"/></h2>
+		<p class="lead"><strong><xsl:value-of select="eas:i18n('This report assists you in the selection of appropriate and standards compliant Technology Products needed to implement a given Shared Platform.')"/></strong></p>
 		<!-- Modal -->
 		<div class="modal fade" id="appModal" role="dialog" aria-labelledby="myModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&#215;</span></button>
-						<h2 class="modal-title text-primary" id="myModalLabel">New Shared Platform Details</h2>
+						<h2 class="modal-title text-primary" id="myModalLabel"><xsl:value-of select="eas:i18n('New Shared Platform Details')"/></h2>
 					</div>
 					<div class="modal-body">
 						<h4 class="bottom-15">Enter details for the new Shared Platform</h4>
@@ -2341,7 +2341,7 @@
 			</div>
 		</div>
 		<div class="appSelection dashboardPanel bg-offwhite bottom-30 pull-left">
-			<p class="lead">Please select or create the Shared Platform to be implemented:</p>
+			<p class="lead"><xsl:value-of select="eas:i18n('Please select or create the Shared Platform to be implemented')"/></p>
 			<select id="applicationList" style="width:40%;"/>
 			<div class="clearfix bottom-15"/>
 			<div id="app-selection"/>

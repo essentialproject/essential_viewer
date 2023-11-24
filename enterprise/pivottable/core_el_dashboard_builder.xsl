@@ -58,20 +58,20 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Dashboard Editor</title>
-				<link rel="stylesheet" href="js/chartjs/Chart.css"/>
-				<script src="js/chartjs/Chart.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/pivot/pivot.css"/>
-				<script type="text/javascript" src="js/plotly/plotly-basic-latest.min.js"/>
-				<script type="text/javascript" src="js/pivot/pivot.js"/>
-				<script type="text/javascript" src="js/plotly/plotly_renderers.js"/>
-				<script src="js/pivot/nrecopivottableext.js"/>
-				<link href="js/pivot/nrecopivottableext.css" rel="stylesheet"/>
-				<!--<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_api_catalogue.js"/>
-				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_app_list.js"/>
-				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_buscap_list.js"/>
-				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_org_list.js"/>
-				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_georegion_list.js"/>
-				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_qualifier_list.js"/>-->
+				<link rel="stylesheet" href="js/chartjs/Chart.css?release=6.19"/>
+				<script src="js/chartjs/Chart.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/pivot/pivot.css?release=6.19"/>
+				<script type="text/javascript" src="js/plotly/plotly-basic-latest.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/pivot/pivot.js?release=6.19"/>
+				<script type="text/javascript" src="js/plotly/plotly_renderers.js?release=6.19"/>
+				<script src="js/pivot/nrecopivottableext.js?release=6.19"/>
+				<link href="js/pivot/nrecopivottableext.css?release=6.19" rel="stylesheet"/>
+				<!--<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_api_catalogue.js?release=6.19"/>
+				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_app_list.js?release=6.19"/>
+				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_buscap_list.js?release=6.19"/>
+				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_org_list.js?release=6.19"/>
+				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_georegion_list.js?release=6.19"/>
+				<script type="text/javascript" src="enterprise/pivottable/easdata/dashboard_builder_qualifier_list.js?release=6.19"/>-->
 				<style>
 					.dialog
 					{
@@ -338,7 +338,7 @@
 						right: 5px;
 					}
 				</style>
-				<script type="text/javascript" src="enterprise/pivottable/easDashboardEditorv1.js"/>
+				<script type="text/javascript" src="enterprise/pivottable/easDashboardEditorv1.js?release=6.19"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

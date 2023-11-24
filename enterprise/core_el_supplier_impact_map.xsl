@@ -97,7 +97,7 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<script type="text/javascript" src="js/d3/d3.v2.min.js"/>
+				<script type="text/javascript" src="js/d3/d3.v2.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -105,9 +105,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Supplier Map</title>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
-				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
+				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"/>
 
 				<style>
 					.tile-stats{

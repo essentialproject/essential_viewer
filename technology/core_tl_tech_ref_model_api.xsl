@@ -98,9 +98,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Technology Reference Model</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js?release=6.19"/>
 				<style>
 					.dashboardPanel{
 						padding: 10px;
@@ -160,6 +160,8 @@
 						border-radius:5px;
 						border:1pt solid #d3d3d3;
 						padding:2px;
+						padding-left:4px;
+						padding-right:4px
 
 					}
 				
@@ -183,6 +185,38 @@
 					var stdStrength=[<xsl:apply-templates select="$stdStrength" mode="stdStrength"/>];
 					console.log('stdStrength',stdStrength)
 				 
+					function generateCSS(arr) {
+						let cssString = `.status-container {
+						padding: 8px;
+						border-radius: 4px;
+						color: #fff; /* Default white color for text */
+						font-weight: bold;
+					}\n\n`;
+					
+						arr.forEach(item => {
+							// Convert status to kebab-case for the class name
+							const className = item.cls
+							cssString += `.${className} {\n`;
+							if (item.statusColour) cssString += `    color: ${item.statusColour};\n`;
+							if (item.statusBgColour) cssString += `    background-color: ${item.statusBgColour};\n`;
+							cssString += `}\n\n`;
+						});
+					
+						return cssString;
+					}
+					
+					function addCSSStylesToDOM(cssString) {
+						const styleEl = document.createElement('style');
+						styleEl.textContent = cssString;
+						document.head.appendChild(styleEl);
+					}
+
+					const cssStyles = generateCSS(stdStrength);
+					console.log(cssStyles);
+					
+					// Add the generated CSS to the DOM
+					addCSSStylesToDOM(cssStyles);
+					
 		 
 					// the list of JSON objects representing the delivery models for technology products
 				  	var techDeliveryModels = [<xsl:apply-templates select="$allTechProdDeliveryTypes" mode="RenderEnumerationJSONList"/>];
@@ -593,6 +627,7 @@
 						if(currentTechDomain != null) {
 							console.log('currentTechDomain', currentTechDomain)
 							setTechDomainProducts(currentTechDomain);
+
 							$("#techRefModelContainer").html(techDomainTemplate(currentTechDomain)).promise().done(function(){
 						        $('.tech-domain-up').click(function(){
 									//currentTechDomain = null;
@@ -670,16 +705,10 @@
 					
             	]).then(function(responses) {
 			            businessUnits = responses[0];                  
-						console.log('businessUnits');		 
-						console.log(businessUnits)  ;
-					techProducts = responses[1];  
-			            console.log('techProds');		 
+					
+					techProducts = responses[1];  		 
 					 
-						console.log(techProducts)
 					techProdRoles = responses[2];  
-			            console.log('tpr');	
-			 
-					console.log(techProdRoles)
 					
 					var tpr = techProdRoles.techProdRoles; 
                     for(var i=0; i &lt; techComponents.techComponents.length;i++) {
@@ -775,6 +804,11 @@
 						
 						var techDomainFragment = $("#tech-domain-template").html();
 						techDomainTemplate = Handlebars.compile(techDomainFragment);
+
+						Handlebars.registerHelper('getCls', function(arg1) {
+							return arg1.split(' ').join('-');
+						}); 
+						
 						
 						drawDashboard();
 					});
@@ -896,7 +930,7 @@
 																						<tbody>
 																						{{#each this.standards}}
 																						<tr><td>
-																						<div><xsl:attribute name="class">stdlabel {{this.status}} </xsl:attribute><xsl:attribute name="style">background-color:{{this.statusBgColour}}; color: {{this.statusColour}}</xsl:attribute>{{this.status}}</div>
+																						<div><xsl:attribute name="class">stdlabel {{#getCls this.status}}{{/getCls}}</xsl:attribute>{{this.status}}</div>
 																						</td>
 																						<td>{{#if this.scopeGeo}}
 																							{{#each this.scopeGeo}}
@@ -1620,6 +1654,7 @@
     </xsl:template> 
 	<xsl:template match="node()" mode="stdStrength">
 			{"status":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'enumeration_value']/value"/>",
+			"cls":"<xsl:value-of select="translate(current()/own_slot_value[slot_reference = 'enumeration_value']/value, ' ','-')"/>",
 				"statusColour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>",
 				"statusBgColour":"<xsl:value-of select="eas:get_element_style_colour(current())"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>

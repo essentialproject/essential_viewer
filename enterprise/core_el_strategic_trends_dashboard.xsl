@@ -91,13 +91,13 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
+				<script type="text/javascript" src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
-				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css?release=6.19"/>
+				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js?release=6.19"/>
 
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

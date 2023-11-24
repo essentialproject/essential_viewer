@@ -81,9 +81,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Technology Reference Model</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js?release=6.19"/>
 				
 
 				<xsl:call-template name="summaryRefModelLegendInclude"/>

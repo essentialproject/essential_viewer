@@ -106,9 +106,9 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-				<script src="js/d3/d3.v5.7.0.min.js"/>
-                <script src="js/dagre/dagre.min.js"></script>
-				<script src="js/dagre/dagre-d3.min.js"></script> 
+				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
+                <script src="js/dagre/dagre.min.js?release=6.19"></script>
+				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script> 
  
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

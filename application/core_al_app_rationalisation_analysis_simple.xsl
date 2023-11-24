@@ -71,11 +71,11 @@
         
 		<html>
 			<head>
-              <script src="js/d3/d3_4-11/d3.min.js"/>
+              <script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-                <script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
+                <script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css?release=6.19"/>
 
                 <xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -596,8 +596,8 @@ font-size:0.7em;
 }
 
                       </style>
-                <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+                <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
                 <script>
                         var appCardTemplate;
                         var svgwidth 
@@ -806,14 +806,14 @@ font-size:0.7em;
 		                            	<div class="col-xs-2">
 		                        			<h3 class="text-primary"><xsl:value-of select="eas:i18n('Search by')"/>:</h3>
 		                        	
-											<label><input class="radio-inline" type="radio" name="focusType" value="radioApp" onclick="showFocusType()" checked="checked" id="radioApp"/>Application</label>
-											<label><input class="radio-inline" type="radio" name="focusType" value="radioService"  onclick="showFocusType()"/>Service</label>
+											<label><input class="radio-inline" type="radio" name="focusType" value="radioApp" onclick="showFocusType()" checked="checked" id="radioApp"/><xsl:value-of select="eas:i18n('Application')"/></label>
+											<label><input class="radio-inline" type="radio" name="focusType" value="radioService"  onclick="showFocusType()"/><xsl:value-of select="eas:i18n('Service')"/></label>
 		                        	
 											<div id="appSearch" class="top-15">
-											    <h3 class="text-primary" style="display:inline-block">Focus Application</h3>
+											    <h3 class="text-primary" style="display:inline-block"><xsl:value-of select="eas:i18n('Focus Application')"/></h3>
 											    <div class="form-group span-3">
 													<select id="application" class="form-control select2" style="width:90%;">
-											           <option value="1selectOne" selected="true" disabled="true">Select an Application</option>
+											           <option value="1selectOne" selected="true" disabled="true"><xsl:value-of select="eas:i18n('Select an Application')"/></option>
 											           <!-- <xsl:apply-templates select="$apps" mode="getOptions">
 											                <xsl:sort select="upper-case(own_slot_value[slot_reference='name']/value)" order="ascending"/>
 											            </xsl:apply-templates>
@@ -825,7 +825,16 @@ font-size:0.7em;
 									            
 											<div id="servSearch" class="top-15 hiddenDiv"> 
 											    <h3  class="text-primary" style="display:inline-block"><xsl:value-of select="eas:i18n('Select Services')"/></h3>
-												<select class="servicesNew select2" name="servicesOnlt" multiple="multiple" style="width:100%;" id="selBox">
+												<br/>By Platform<sup><i class="fa fa-info-circle platformInfo"></i>
+                                                    <div class="text-default small hiddenDiv">
+                                                        e.g. An HR System - Modelled as Composite Application Service, i.e. a collection of services
+                                                    </div></sup>
+                                              
+                                                <select class="servicesCompNew select2" name="servicesCompositOnlt" multiple="multiple" style="width:100%;" id="selCompBox">
+											       
+												</select>
+                                                By Service
+                                                <select class="servicesNew select2" name="servicesOnlt" multiple="multiple" style="width:100%;" id="selBox">
 											       
 												</select>
 											    <button class="btn btn-sm btn-default top-5" onclick="selectNewApp();showInfoTooltips();">Go</button>
@@ -833,8 +842,8 @@ font-size:0.7em;
 											<div id="services" class="top-15"> 
 												<h3 class="text-primary"><xsl:value-of select="eas:i18n('Services')"/></h3>
 												<ul id="appServs" class="small fa-ul"/>
-												<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default">Hide</button>
-												<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default">Show</button>
+												<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Hide')"/></button>
+												<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Show')"/></button>
 											</div>
 											<div id="carriedApps" style="display:none;border:1pt solid #d3d3d3;border-radius:3px;padding:3px" class="top-15"> 
 												<h4><xsl:value-of select="eas:i18n('Application Basket')"/></h4>
@@ -847,15 +856,15 @@ font-size:0.7em;
 				                            <div id="filters">
 				                            <h3 class="text-primary pull-left"><xsl:value-of select="eas:i18n('Filters')"/></h3>
 											<div style="width:100%;text-align:right">
-												<button class="btn btn-xs btn-default left-5" id="reset" onclick="ResetAll()" style="display: inline-block;">Reset All Filters</button>
+												<button class="btn btn-xs btn-default left-5" id="reset" onclick="ResetAll()" style="display: inline-block;"><xsl:value-of select="eas:i18n('Reset All Filters')"/></button>
 											</div>
 											<div class="clearfix"></div>
 											<div class="row">
 												<div class="col-md-2 col-lg-2">
 													
 				                                    <div>
-														<button class="btn btn-sm btn-default left-5" id="primeHide" onclick="$('#primeHide').hide();$('#primeShow').show();showPrime('on')">Off</button>
-														<button class="btn btn-sm btn-default left-5" id="primeShow" onclick="$('#primeHide').show();$('#primeShow').hide();showPrime('off')" style="display:none">On</button></div>
+														<button class="btn btn-sm btn-default left-5" id="primeHide" onclick="$('#primeHide').hide();$('#primeShow').show();showPrime('on')"><xsl:value-of select="eas:i18n('Off')"/></button>
+														<button class="btn btn-sm btn-default left-5" id="primeShow" onclick="$('#primeHide').show();$('#primeShow').hide();showPrime('off')" style="display:none"><xsl:value-of select="eas:i18n('On')"/></button></div>
 													</div>
 												
 													<div class="col-md-2 col-lg-2">
@@ -940,7 +949,7 @@ font-size:0.7em;
 											</div>
 		                           	 		<hr class="tight"/>
 											<div id="key" class="bottom-15 small" xstyle="display:none">
-												<strong class="right-10">Legend:</strong>
+												<strong class="right-10"><xsl:value-of select="eas:i18n('Legend')"/></strong>
 				                                
 												<i class="fa fa-exchange right-5 textBlue"></i><xsl:value-of select="eas:i18n('Candidates for Replacement by Focus App')"/>
 				                                <span class="left-5 right-5">|</span>
@@ -1822,7 +1831,7 @@ font-size:0.7em;
                function showClass(thisVal){ ;
                   $('.'+thisVal).show();
                       }
-  var allScenarios, ideasArray;
+  var allScenarios, ideasArray, compserv;
         $('document').ready(function () {
             $('#compBox').hide();
             appFragment = $("#app-template").html();
@@ -1892,6 +1901,7 @@ font-size:0.7em;
 
               appJSON=viewAPIData.applications;
               appJSON2=appsData.applications;
+              compserv=appsData.compositeServices;
               if(appJSON2.length&gt;250){ 
                 $('#insightTab').remove(); 
               }
@@ -2028,6 +2038,11 @@ font-size:0.7em;
             let applicationOptionsHtml = appJSON2.map(app => ' &lt;option name="' + app.id + '" value="' + app.id + '">' + app.name + '&lt;/option>').join('');
             $('#application').append(applicationOptionsHtml);
 
+            
+            let selBoxCompOptionsHtml = compserv?.map(service => ' &lt;option name="' + service.id + '" value="' + service.id + '">' + service.name + '&lt;/option>').join('');
+       
+            $('#selCompBox').append(selBoxCompOptionsHtml);
+
             let selBoxOptionsHtml = serviceJSON.map(service => ' &lt;option name="' + service.serviceId + '" value="' + service.serviceId + '">' + service.service + '&lt;/option>').join('');
             $('#selBox').append(selBoxOptionsHtml);
 
@@ -2044,6 +2059,30 @@ font-size:0.7em;
             });
             return arr
   }          
+
+  $('#selCompBox').on('change', function() {
+    // Get the selected value
+    var selectedValue = $(this).val(); 
+    // Find the corresponding object in compServ
+
+    $('#selBox option').prop('selected', false); 
+  
+    selectedValue.forEach((sel)=>{
+    var selectedObj = compserv.find(obj => obj.id === sel);
+
+    // Deselect all options in selBox
+         
+        // Select the options in selBox based on containedService
+        if (selectedObj &amp;&amp; selectedObj.containedService) {
+            selectedObj.containedService.forEach(function(serviceId) {
+                $('#selBox option[value="' + serviceId + '"]').prop('selected', true);
+            });
+
+            // Refresh the selBox to reflect changes (needed for some select2 versions)
+            $('#selBox').trigger('change');
+        }
+    })
+});
 
     $('#application').on('change', function(){
         let thisApp=$(this).val();

@@ -97,7 +97,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<!--script to turn the app providers list into columns-->
 				<script>				
 					$(function(){					
@@ -142,7 +142,7 @@
 									</span>
 								</h1>
 								<div class="altViewName">
-									<span class="text-primary">Show by:&#160;Name</span>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('Show by')"/>&#160;<xsl:value-of select="eas:i18n('Name')"/></span>
 									<span class="text-darkgrey"> | </span>
 									<span class="text-darkgrey">
 										<xsl:call-template name="RenderCatalogueLink">

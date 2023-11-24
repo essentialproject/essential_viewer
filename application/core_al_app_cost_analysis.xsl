@@ -98,7 +98,7 @@
         </xsl:variable>
 		<html>
 			<head>
-				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
+				<script src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
 				<xsl:call-template name="commonHeadContent"/>
        <!--         <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template> -->
 				<xsl:call-template name="dataTablesLibrary"/>
@@ -108,17 +108,17 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Cost Analysis</title>
-				<script language="javascript" type="text/javascript" src="js/excanvas.js"/>
-				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
-                <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<title><xsl:value-of select="eas:i18n('Application Cost Analysis')"/></title>
+				<script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"/>
+				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?release=6.19"/>
+                <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				<style>
 					.pieChartContainer{
 					    width: 50%;
@@ -192,21 +192,21 @@
                         <div class="clearfix"/>
 						<div id="main-cost-section" class="col-xs-12 hiddenDiv">
 							<div class="pieChartContainer">
-								<h2 class="text-primary">Cost By Type</h2>
+								<h2 class="text-primary"><xsl:value-of select="eas:i18n('Cost By Type')"/></h2>
 								<div class="pieChart" id="costTypePieChart"/>
 							</div>
 							<div class="pieChartContainer">
-								<h2 class="text-primary">Cost by Differentiation Level</h2>
+								<h2 class="text-primary"><xsl:value-of select="eas:i18n('Cost by Differentiation Level')"/></h2>
 								<div class="pieChart" id="diffLevelPieChart"/>
 							</div>
 							<div class="clearfix"/>
 							<hr/>
 							<div class="pull-right">
-							<button class="btn btn-primary tops" easid="10">Show Top 10</button>
+							<button class="btn btn-primary tops" easid="10"><xsl:value-of select="eas:i18n('Show Top 10')"/></button>
 							<xsl:text> </xsl:text>
-							<button class="btn btn-primary tops" easid="20">Show Top 20</button>
+							<button class="btn btn-primary tops" easid="20"><xsl:value-of select="eas:i18n('Show Top 20')"/></button>
 							<xsl:text> </xsl:text>
-							<button class="btn btn-primary tops" easid="all">Show All</button>
+							<button class="btn btn-primary tops" easid="all"><xsl:value-of select="eas:i18n('Show All')"/></button>
 							</div>
 							<xsl:call-template name="applicationTable"/>
 						</div>

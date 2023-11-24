@@ -103,17 +103,17 @@
 				<title><xsl:value-of select="eas:i18n('CxO Presentation Generator')"/></title>
 				
 				<!-- d3 library -->
-				<script src="js/d3/d3.v5.9.7.min.js"/>
-				<script src="js/d3/d3-selection-multi.min.js"/>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"/>
+				<script src="js/d3/d3-selection-multi.min.js?release=6.19"/>
 				
 				<!-- filepond file upload library -->
-				<link href="js/filepond/filepond.min.css" rel="stylesheet"/>
-				<script src="js/filepond/filepond.min.js"/>
-				<script src="js/filepond/filepond-plugin-file-validate-type.min.js"/>
+				<link href="js/filepond/filepond.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/filepond/filepond.min.js?release=6.19"/>
+				<script src="js/filepond/filepond-plugin-file-validate-type.min.js?release=6.19"/>
 				
 				<!-- modal javascript library -->
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
@@ -123,17 +123,17 @@
 				</script>
 
 				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 								
 				
 				<!-- Start widget template files -->
 				<xsl:apply-templates mode="RenderWidgetTemplateFileImport" select="$allWidgetTemplates"/>
-				<!--<script src="svg-widget-templates/core-static-donut-widget.js"/>-->			
+				<!--<script src="svg-widget-templates/core-static-donut-widget.js?release=6.19"/>-->			
 				
 				<!-- Start widget files -->
 				<xsl:apply-templates mode="RenderWidgetFileImport" select="$allWidgets"/>
-				<!--<script src="application/widgets/core-al-app-dep-model-donut.js"/>-->
+				<!--<script src="application/widgets/core-al-app-dep-model-donut.js?release=6.19"/>-->
 				
 				
 				<style type="text/css">
@@ -347,13 +347,13 @@
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment/moment.js"/>
+				<script type="text/javascript" src="js/moment/moment.js?release=6.19"/>
 				
 				<!-- zip library -->
-				<script type="text/javascript" src="js/jszip/jszip.min.js"/>
+				<script type="text/javascript" src="js/jszip/jszip.min.js?release=6.19"/>
 				
 				<!-- file saver library -->
-				<script type="text/javascript" src="js/FileSaver.min.js"/>
+				<script type="text/javascript" src="js/FileSaver.min.js?release=6.19"/>
 				
                 <script>
                 	var widgetSelectionTemplate, widgetPreviewTemplate, widgetEditTemplate, widgetTextEditorTemplate, presentationEditorTemplate, presItemTemplate, slideEditorTemplate, slideTemplate, slideWidgetTemplate, confirmModalTemplate, selectedWidgetTemplate, realSlideTemplate, filePond;

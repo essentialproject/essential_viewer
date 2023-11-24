@@ -70,10 +70,10 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Roadmap Timeline</title>
-				<script src="js/vis/vis.js"/>
-				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"/>
-				<link rel="stylesheet" href="js/jquery.qtip.min.css"/>
-				<script src="js/jquery.qtip.min.js"/>
+				<script src="js/vis/vis.js?release=6.19"/>
+				<link href="js/vis/vis.css?release=6.19" rel="stylesheet" type="text/css"/>
+				<link rel="stylesheet" href="js/jquery.qtip.min.css?release=6.19"/>
+				<script src="js/jquery.qtip.min.js?release=6.19"/>
 				<script>
 					$(document).ready(function(){
 						$('#lifecycleLegend').show();

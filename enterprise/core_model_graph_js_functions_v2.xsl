@@ -108,9 +108,9 @@
 			{{/if}}
 		</script>
 		
-		<!--<script src="js/d3/d3.v5.7.0.min.js"/>-->
-		<script type="text/javascript" src="js/d3/d3.v5.9.7.min.js"/>
-		<script type="text/javascript" src="js/dagre/dagre-d3.min.js"/>
+		<!--<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>-->
+		<script type="text/javascript" src="js/d3/d3.v5.9.7.min.js?release=6.19"/>
+		<script type="text/javascript" src="js/dagre/dagre-d3.min.js?release=6.19"/>
 		
 		<script>
 			var data = {

@@ -128,19 +128,15 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <!--<xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>-->
-                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<!-- Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment/moment.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				<!-- Bootstrap integer spinner -->
-				<script type="text/javascript" src="user/js/bootstrap-input-spinner.js"/>
-
+				<script type="text/javascript" src="js/bootstrap-input-spinner.js?release=6.19"/>
 				<!-- Year Picker UI component -->
-				<link rel="stylesheet" href="js/yearpicker/yearpicker.css"/>
-				<script type="text/javascript" src="js/yearpicker/yearpicker.js"/>
+				<link rel="stylesheet" href="js/yearpicker/yearpicker.css?release=6.19"/>
+				<script type="text/javascript" src="js/yearpicker/yearpicker.js?release=6.19"/>
 				
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -281,7 +277,7 @@
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
-							<h1 class="text-primary"><xsl:value-of select="eas:i18n('Supplier Contract Management')"/></h1>
+							<h1 class="text-primary"><xsl:value-of select="eas:i18n('Supplier License Management')"/></h1>
 							<hr/>
 						</div>
 						<div class="col-xs-12">
@@ -299,8 +295,8 @@
 									<div class="row">										
 										<div class="col-md-4">
 											<div class="bottom-10">
-												<label class="radio-inline"><input type="radio" name="supplierType" id="contractSupplier" class="contractSupplier" value="contract" checked="checked"/>Contract Suppliers/Resellers</label>	
-												<label class="radio-inline"><input type="radio" name="supplierType" id="productSupplier" class="productSupplier" value="product"/>Product/Service Suppliers</label>																						
+												<label class="radio-inline"><input type="radio" name="supplierType" id="contractSupplier" class="contractSupplier" value="contract" checked="checked"/><xsl:value-of select="eas:i18n('Contract Suppliers/Resellers')"/></label>	
+												<label class="radio-inline"><input type="radio" name="supplierType" id="productSupplier" class="productSupplier" value="product"/><xsl:value-of select="eas:i18n('Product/Service Suppliers')"/></label>																						
 											</div>
 											<div>
 												<strong class="right-10"><xsl:value-of select="eas:i18n('Filter Suppliers')"/>:</strong>

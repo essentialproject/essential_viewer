@@ -1,0 +1,1174 @@
+v3.7.2 - 08-18-2023
+
+  * add separate bundle files for each theme and base CSS to distributed package
+  * apps.BPMNEditor: add dataObject BPMN shape to stencil, enable touchpad zoom and pan
+  * apps.OrgChart: fix shapes namespacing
+  * dia.CommandManager: fix undo after adding Cells with hierarchical relationship
+  * ui.Inspector: fix `unsetProperty()` method so that it uses `Cell.removeProp()`
+  * ui.Inspector: fix to throw an error when encountering an expression using an unregistered custom primitive operator
+  * ui.Navigator: fix error occurring after a `scroll` event when the Navigator is not rendered
+  * ui.PaperScroller: fix to set panning inertia velocity at zero on drag start
+  * ui.Selection: fix to trigger `selection-box` events when Paper is not interactive
+  * ui.Selection: fix to prevent dragging the selection while the user interacts with other Cells
+  * ui.Stencil: fix `groups` option inheritance, fix non-uniform behavior of `layout` callback
+  * layout.PortLabel: fix passing of `label.position.args.attrs` in `inside`, `outside`, `radial` layouts
+  * connectors.jumpover: fix to prevent stacked links from causing jumps
+  * util.breakText: fix to prevent NO_SPACE characters from appearing in the result
+
+v3.7.1 - 06-26-2023
+
+  * demo.Isometric: add new demo as example of isometric projection
+  * ui.Inspector: fix for SelectButtonGroup widget when `multi: true` is used with options `source` callback
+  * ui.Inspector: fix dependency path resolution
+  * dia.LinkView: fix element detection when using `snapLinkSelf: true`
+  * dia.Cell: fix the depth-first algorithm in `getEmbeddedCells()` method
+  * dia.Cell: fix `toFront()` and `toBack()` methods to keep embedded elements on top of parents
+
+v3.7.0 - 05-17-2023
+
+  * Improve support for foreign objects in SVG
+  * Add Foreign Object tutorial
+  * Upgrade jQuery dependency (v3.6.4)
+  * apps.AST: rewrite using TypeScript
+  * apps.Chatbot: improve zooming with `pinch` and `pan` Paper events
+  * apps.Chatbot: fix error occurring when using CommandManager in React apps
+  * apps.KitchenSink: fix to also initiate Selection lasso when user clicks on a cell while holding SHIFT key
+  * demo.CustomEmbedding: add new demo to illustrate custom embedding functionality
+  * demo.CustomShapes: add new demo to illustrate creating custom shapes
+  * demo.DWDM: add new demo as an example of a network graphical view (Dense Wavelength-Division Multiplexing)
+  * demo.Flowchart: add new demo to illustrate `rightAngle` router and `straight` connector
+  * demo.FTA: revamp demo to illustrate custom highlighter, `straight` connector, and alignment options of `dia.Paper.transformToFitContent()`
+  * demo.ROI: add new demo to illustrate working with foreign objects
+  * dia.CommandManager: fix to prevent modifying provided undo/redo stack object in `fromJSON()`
+  * format.Raster: add `fillFormControls` option to export HTML form control elements (<input>, <select>, <textarea>) with their current values
+  * format.Raster: fix to handle image URL conversion errors
+  * format.SVG: add `fillFormControls` option to export HTML form control elements (<input>, <select>, <textarea>) with their current values
+  * format.SVG: fix to handle image URL conversion errors
+  * format.SVG: fix to support HTML <img> elements inside SVG <foreignObject> element
+  * graphUtils: add `toAdjacencyList()` method
+  * ui.Clipboard: add `deep` option to `copyElements()` to also copy all embedded descendants of provided cells
+  * ui.ContextToolbar: add touch support
+  * ui.Dialog: fix wrong positioning while dragging
+  * ui.FreeTransform: fix to remove unprefixed `user-drag` CSS property
+  * ui.Halo: fix to remove unprefixed `user-drag` CSS property
+  * ui.Halo: fix to always pass Halo `cid` when changing a model
+  * ui.Inspector: allow specifying `options` parameter via a `source` callback
+  * ui.PaperScroller: fix to stop panning after mouse was released outside the window
+  * ui.PathDrawer: add `enableCurves` option
+  * ui.RadioGroup: add new component
+  * ui.Selection: allow integration with PaperScroller for purposes of selecting, translating, and resizing
+  * ui.Selection: add `allowCellInteraction` option
+  * ui.Selection: fix to remove unprefixed `user-drag` CSS property
+  * ui.Snaplines: add `canSnap` callback option with `isDefaultInteractionPrevented` check
+  * ui.Snaplines: add `additionalSnapPoints` callback option
+  * ui.Stencil: use the same `cellNamespace` as the target Paper
+  * ui.Stencil: add support for Links
+  * ui.Stencil: add API to initiate stencil dragging
+  * ui.TextEditor: fix caret position to prevent missing first letter when typing fast in Chrome on Windows
+  * ui.Toolbar: trigger `input` and `change` events for widgets (checkbox, toggle, inputText, inputNumber, textarea)
+  * ui.Toolbar: fix to prevent propagation of widget events if widget name is undefined
+  * ui.Tooltip: add extra evaluation logic for constructor `content` parameter of function type
+  * ui.TreeLayoutView: use the same `cellNamespace` as the target Paper
+  * ui.TreeLayoutView: add `layoutFunction` callback option
+  * shapes.bpmn2.Pool: add `getLanesIds()` and `getParentLaneId()` methods
+  * shapes.bpmn2.Pool: use `null` instead of empty string for missing values in `customId` and `parentId` lane metrics
+  * shapes.bpmn2.Pool: fix some HeaderedPool headers not being rendered with default markup in Chrome
+  * shapes.chart.Matrix: fix column width measurement for column labels and row dividers
+  * shapes.chart.Matrix: fix to apply label attributes
+  * shapes.standard.Record: fix to add `item-id` to icons
+  * shapes.standard.Record: add selectors for targeting icons
+  * layout.PortLabel: fix to center position of labels in outside/inside oriented layouts
+  * layout.PortLabel: fix to correctly set vertical position of text labels
+  * layout.PortLabel: fix to stop sending redundant information for `manual` layout
+  * layout.TreeLayout: add `symmetrical` option to ensure that distance between children of the same element is the same
+  * layout.TreeLayout: add `removeElement()` method
+  * dia.Paper: add `overflow` option
+  * dia.Paper: add `transformToFitContent()` method
+  * dia.Paper: change `scaleContentToFit()` into an alias of `transformToFitContent()`
+  * dia.Paper: add `verticalAlign` and `horizontalAlign` options to `transformToFitContent()`
+  * dia.Paper: add `element:magnet:pointerdown`, `element:magnet:pointermove` and `element:magnet:pointerup` events
+  * dia.Paper: improve event handling of form control elements inside <foreignObject> elements
+  * dia.Paper: add `preventDefaultViewAction` option
+  * dia.Paper: add `drawGridSize` option
+  * dia.Paper: add `autoFreeze` option
+  * dia.Paper: fix to trigger render callbacks and event when `requireView()` is called
+  * dia.Paper: fix to send `mousewheel` events when CTRL key is pressed while there are no `paper:pinch` subscribers
+  * dia.Paper: fix to auto-rotate target markers as expected when using `marker.markup`
+  * dia.Paper: fix event handlers to correctly receive `dia.Event` on touch screens
+  * dia.Paper: fix event handlers so that `originalEvent` always points to a native event
+  * dia.Paper: fix to trigger `element:magnet:pointerclick` when user clicks an invalid magnet
+  * dia.Paper: fix to hide tools and highlighters when associated cell view is detached
+  * dia.Paper: fix to throw an error when `unfreeze()` is called on a paper which has been removed
+  * dia.Paper: fix to allow immediate propagation on `pointerup`
+  * dia.ElementView: fix to correctly update port nodes with `ref` on size change
+  * dia.ElementView: fix to prevent double rendering of ports when CSS selectors are enabled
+  * dia.LinkView: enable link label dragging on touch screens in async mode
+  * dia.LinkView: fix to take `defaultLabel.size` into account for link label size calculations
+  * dia.LinkView: fix to remember initial cursor offset from label anchor coordinates when dragging
+  * dia.LinkView: fix incorrect rotation of labels using `keepGradient` and `absoluteOffset` options
+  * dia.LinkView: fix to prevent label jumping while being dragged along straight-line Curve links
+  * dia.CellView: add `preventDefaultInteraction()` and `isDefaultInteractionPrevented()` methods
+  * dia.CellView: fix link update if connected element changes at the same time the connection is made
+  * dia.CellView: fix to return correct target under the pointer for pointer events
+  * dia.CellView: fix to get correct `ref` node bounding box
+  * dia.Element: add `fitToChildren()` and `fitParent()` methods
+  * dia.Element: change `fitEmbeds()` into an alias of `fitToChildren()`
+  * dia.Element: add `expandOnly` and `shrinkOnly` options to `fitToChildren()` and `fitParent()`
+  * dia.Cell: fix to always send `propertyPath` and `propertyValue` options when calling `prop()`
+  * dia.Cell: fix inconsistent merging behavior in `prop()`
+  * dia.Cell: fix to preserve stacking of nested cells when `toFront()`/`toBack()` is called
+  * dia.Cell: fix to prevent Cell `id` from being `undefined`
+  * linkTools.Anchor: fix to trigger `mouseleave` event after drag-and-drop interaction
+  * highlighters.mask: fix to prevent copying of `class` attribute to <mask> elements
+  * connectionPoints.boundary: add option to disable automatic magnet lookup within <g> elements
+  * connectors.straight: add new connector, and deprecate `normal` and `rounded` connectors
+  * routers.rightAngle: add new router, and deprecate `oneSide` router
+  * dia.attributes: add `props` special attribute for setting various HTML form control properties
+  * dia.attributes: fix to prevent error when `title` is used on element with a text node
+  * dia.ports: fix to apply port layout transformations before ref nodes bbox measuring
+  * dia.ports: fix to apply port layout attributes to text element
+  * dia.HighlighterView: fix to prevent highlighter mounting to unmounted cell views
+  * util: remove lodash util functions
+  * util.breakText: support `lineHeight` in px units
+  * util.normalizeEvent: fix to always return a `dia.Event`
+  * util.parseDOMJSON: add logic to process JSON with string array items as HTML text nodes
+  * util.svg: keep correct order of HTML text nodes when parsing <foreignObject> to JSON
+  * util.svg: fix to use lowercase for `tagName` of HTML elements when parsing <foreignObject> to JSON
+  * util.svg: fix `textContent` to contain HTML text nodes from all descendants when parsing <foreignObject> to JSON
+  * util.svg: fix to prevent setting empty `textContent` when parsing <foreignObject> to JSON
+  * Geometry: fix `getSubdivisions()` method for straight-line Curve objects
+
+v3.6.3 - 12-09-2022
+
+  * apps.RichTextEditor: fix the pinch to zoom direction
+  * ui.TreeLayoutView: make sure dragging works on touch devices
+  * dia.Paper: preserve contextmenu events hierarchy
+  * dia.Paper: fix element user-drag property
+  * Vectorizer: fix RegEx to avoid potential ReDoS attacks
+  * Geometry: fix RegEx to avoid potential ReDoS attacks
+
+v3.6.2 - 11-29-2022
+
+  * apps.OrgChart: reconnect children on member removal
+  * ui.Inspector: prevent exception on list and object focus
+  * ui.Selection: take elements interactivity into account when translating
+  * ui.PaperScroller: prevent zoom level decimal fraction representation error
+  * dia.Cell: prevent exception when `removeProp()` called on non-existing top-level attribute
+  * linkTools.Segments: fix non-orthogonal edge cases
+  * Vectorizer: fix removing & toggling multiple classes at once
+  * Vectorizer: remove deprecated hasFeature check
+  * fix types for `ui.Selection`, `ui.Clipboard` and `ui.Tooltip`
+
+v3.6.1 - 10-20-2022
+
+  * ui.Widget: fix a too general input color CSS rule
+  * dia.Cell: fix `isEmbeddedIn()` with `deep` option set to `false`
+  * util.svg: support embedded expressions
+  * util.svg: prevent `className` set to `null`
+
+v3.6.0 - 10-14-2022
+
+  * remove SVGPathSeg polyfill
+  * apps.MindMap: add new app
+  * apps.RichTextEditor: add new app
+  * apps.TeamOrder: add new app
+  * apps.Dijkstra: revamp app
+  * demo.Sequence: add editing capabilities
+  * demo.ELK: hide details when zoomed out
+  * ui.Clipboard: add `pasteCellsAtPoint` method
+  * ui.Clipboard: allow passing custom model flags
+  * ui.Clipboard: fix z-index assignment in `pasteCells()`
+  * ui.ContextToolbar: add `position` and `anchor` option
+  * ui.ContextToolbar: add `scale` option
+  * ui.ContextToolbar: triggers `close` event
+  * ui.Dialog: prevent 3rd party libraries to override visibility
+  * ui.Dialog: triggers `close` event
+  * ui.FreeTransform: fix rotation on touch devices
+  * ui.Halo: fix memory leak while validating forking
+  * ui.Halo: `clone` option can duplicate nested cells
+  * ui.Halo: triggers `close` event
+  * ui.Inspector: update focus behavior, add `focusField()` option
+  * ui.Inspector: triggers `close` event
+  * ui.Keyboard: add `filter` option
+  * ui.Lightbox: triggers `close` event
+  * ui.Selection: add `contextmenu` action
+  * ui.Selection: fix lasso coordinates while scrolling
+  * ui.Selection: add `translateConnectedLinks` option
+  * ui.Selection: add `preserveAspectRatio` option
+  * ui.Snaplines: add `enable()`, `disable()`, `isDisabled()` API
+  * ui.Stencil: automatically disable the snaplines
+  * ui.TextEditor: fix cursor position in Firefox
+  * ui.TextEditor: add missing theme CSS styles
+  * ui.TextEditor: position the textarea before focus
+  * ui.TextEditor: improve URL annotations
+  * ui.TextEditor: the appearance of the cursor reflects the current annotation
+  * ui.TextEditor: add `onKeydown` and `onOutsidePointerdown` option callbacks
+  * ui.TextEditor: add `normalizeAnnotations`, `getCombinedAnnotationAttrsBetweenIndexes` and `getCombinedAnnotationAttrsAtIndex` static methods
+  * ui.TextEditor: add `isLineStart`, `isLineEnding`,  `isEmptyLine` static methods
+  * ui.TextEditor: add `updateCaret` and `startSelecting` methods.
+  * ui.Tooltip: add `show()`, `hide()`, `toggle()` and `isVisible()` methods
+  * ui.TreeLayoutView: add `enable()`, `disable()`, `isDisabled(`) API
+  * ui.TreeLayoutView: add additional info to validateConnection callback
+  * ui.PaperScroller: fix `scrollWhileDragging` `padding` option
+  * ui.PaperScroller: support RTL direction
+  * ui.PathDrawer: replace SVGPathSeg API with Geometry
+  * ui.PathEditor: replace SVGPathSeg API with Geometry
+  * ui.Popup: add `position`, `anchor` and `arrowPosition` options
+  * ui.Popup: add `scale` option
+  * ui.widgets: add input color widget
+  * shapes.bpmn: re-use participant SVGTextElements in `Choreography` to allow text editing
+  * shapes.standard: fix automatic resize after item removal in `Record`
+  * shapes.vsm: add `Value Stream Mapping` set of shapes
+  * dia.Paper: support `pointerdblclick` on touch devices
+  * dia.Paper: consistent firing of `contextmenu` event
+  * dia.Paper: fix memory leak (layers not being removed)
+  * dia.Paper: 2-axis-scroll / pinch-to-zoom support
+  * dia.Paper: add `snapLinksSelf` option to snap arrowheads to the anchor and vertices
+  * dia.ElementView: `findPortNode()` search for all port nodes
+  * dia.ElementView: add `portRoot` and `labelRoot` selectors
+  * dia.ElementView: fix `getNodeMatrix()` and `getNodeBBox()` for elements with rotatable group
+  * dia.CellView: passing cellView instance to attribute's set, qualify, position and offset methods
+  * dia.Cell: throw exception on embedding of an embedded cell
+  * dia.HighlighterView: add `removeAll()` static method
+  * dia.HighlighterView: add UPDATE_ATTRIBUTES property
+  * elementTools: add `scale` option
+  * elementTools.HoverConnect: new connection tool displayed on mouseover
+  * elementTools.Button: enable `calc()` expression for `x` and `y`
+  * linkTools: add `scale` option
+  * linkTools.HoverConnect: new connection tool displayed on mouseover
+  * linkTools.Connect: fix touch support
+  * connectors.Curve: add `rotate` option
+  * layout.Port:  enable the use of the `calc()` expression for port positioning
+  * highlighters.list: add a new highlighter to render a dynamic list of icons
+  * highlighters.mask: fix rotation and position for nodes within rotatable group
+  * highlighters.stroke: fix rotation and position for nodes within rotatable group
+  * dia.attributes: `calc()` expression supports division
+  * dia.attributes: enable `calc()` expression for `width` and `height` for `textWrap` attribute
+  * dia.attributes: `fontSize` and `strokeWidth` use `calc()`
+  * dia.attributes: prevent negative values for dimension attributes
+  * dia.attributes: use cached segments subdivisions for calculating the connection stubs
+  * mvc.Listener:  add new class for attaching multiple event listeners on multiple objects.
+  * util.svg: tagged SVG template
+  * util.breakText: add `preserveSpaces` options
+  * util.guid: can be called without an object argument
+  * util.getRectPoint: add utility to get a point on a rect from given keyword
+  * Vectorizer: `text()` reads empty line heights from annotations
+
+v3.5.0 - 02-25-2022
+
+  * apps.Yamazumi3D: add new app
+  * apps.Kanban: add new app
+  * apps.DataMapping: convert to TS/ES6, scrollable list, item decorators
+  * apps.Planogram: show a label with product count while resizing
+  * apps.KitchenSink: add ReactJS version
+  * apps.TreeStencil: fix disappearing links
+  * demo.Curves: add new demo
+  * demo.Fills: add new demo
+  * dia.CommandManager: add squashUndo and squashRedo
+  * dia.CommandManager: add stackLimit option, lower the memory usage
+  * dia.CommandManager: add toJSON() and fromJSON()
+  * format.SVG: convertImagesToDataUris option uses minimum number of network requests
+  * format.Visio: existing shapes from the Visio template are preserved
+  * ui.ContextToolbar: fix target option could throw an error
+  * ui.FreeTransform: trigger events while resize/rotate
+  * ui.Halo: fix pie type halo for all browser zoom levels
+  * ui.Inspector: add value path to the operator callback
+  * ui.Inspector: add container option
+  * ui.PaperScroller: add borderless option
+  * ui.SelectBox: respect target boundaries
+  * ui.StackLayoutView: new drag & drop UI for stack bar charts
+  * shapes.standard: prevent collapse/expand via contextmenu in RecordView
+  * shapes.standard.Record: add maxLineCount to itemText attribute
+  * layout.StackLayout: new automatic layout for stack bar charts
+  * dia.Paper: add `labelsLayer` option
+  * dia.Paper: add `getFitToContentArea()`
+  * dia.Paper: fix embedding mode with rotated elements
+  * dia.Paper: fix adding a new cell with an id of previously removed cell in the async mode
+  * dia.Paper: cancel previous background image load
+  * dia.Paper: improve markers, gradients and patterns
+  * dia.Paper: migrate mousewheel/DOMMouseScroll to wheel
+  * dia.Paper: fix update priority stats
+  * dia.Paper: improve `connectionStrategy` with `snapLinks` enabled
+  * dia.Paper: make sure `paper:mouseleave` event is always triggered
+  * dia.Element: `position()` allows `restrictedArea` to be used without `deep` option
+  * dia.Cell: `embed()` and `unembed()` to accept an array of cells
+  * dia.Cell: fix stopTransitions() without path argument
+  * dia.Cell: stopping the transition does not require waiting for the transition to start
+  * dia.Link: add hasLabels() method
+  * elementTools.Connect: a new tool to create links from an element
+  * elementTools.Control: a new tool to modify an arbitrary attribute
+  * linkTools.Connect:  a new tool to create links from a link
+  * linkTools.Vertices: allow vertex removal on touch devices
+  * linkTools.Anchor: allow anchor reset on touch devices
+  * linkTools.Vertices: fix creation and immediate dragging of a vertex on touch devices
+  * connectors.curve: add new curved connector
+  * dia.attributes: add `x` and `y` properties to `calc()` expression
+  * dia.attributes: support negative number addition/subtraction in `calc()` expression
+  * dia.attributes: support nested `calc()` functions
+  * dia.HighlighterView: add `z` option to control the stacking order of the highlighters
+  * dia.ToolsView: add `z` option to control the stacking order of the tools
+  * mvc.View: support double tap event on touch devices
+  * mvc.View: allow views to have no theme
+  * Vectorizer: allow whitespace and line terminator characters in the constructor
+  * Geometry: implement intersection between all objects
+  * Geometry: add Polygon object
+
+v3.4.1 - 09-24-2021
+
+  * Add List Demo (element with a vertical list of items)
+  * apps.Database: add remove and arrowhead link tools
+  * apps.Chatbot: various fixes
+  * Various TypeScript improvements
+  * ui.SelectBox: fix CSS syntax
+  * ui.Stencil: fix paperDragOptions defined as a function
+  * dia.Paper: skip update of connected links when isolate flag used
+  * dia.LinkView: optimize connector only update
+  * dia.CellView: update typings for ES6 class extension
+  * dia.Cell: support preinitilize() lifecycle method
+  * dia.Cell:  fix toJSON() when defaults() is defined as a method
+  * connectors.jumpover: prevent unnecessary route recalculations
+  * util: prevent prototype pollution in `setByPath()`
+  * Vectorizer: fix multi-line text line heights when 100% of the line is annotated
+
+v3.4.0 - 08-19-2021
+
+  * apps.TreeStencil: add new application
+  * apps.Tokens: add new application
+  * apps.Database: add new application
+  * apps.BPMNEditor: add Swimlane Tools
+  * Add VueJS 3.0 Demo
+  * Add Carrier Frequency Bandwidth Demo
+  * Add TypeScript shape definition tutorial
+  * Remove polyfill for XMLHttpRequest support of IE9
+  * format.GEXF: support more visualization attributes
+  * format.Print: export format.print() to allow no side-effects
+  * format.Raster: add `toCanvas` method
+  * format.Visio: take SVG transformation into account in default export
+  * format.Visio: improve SVG attributes parsing during export
+  * format.Visio: fix exported pages not using paper size as intended
+  * format.Visio: add compression method to VisioArchive.toVSDX method
+  * graphUtils: make accessible without the side effect
+  * elementTools: add Pool SwimlaneBoundary and SwimlaneTransform
+  * ui.Clipboard: fix passing options via constructor
+  * ui.Clipboard: fix pasteCells() resetting copyElements() options
+  * ui.FreeTransform: minWidth, minHeight, maxWidth, maxHeight can be defined as a function
+  * ui.Halo: option clone() is used for fork validation
+  * ui.Inspector: prevent exception when an attribute binding is used inside a list
+  * ui.Inspector: fix content editable XSS security issue
+  * ui.Inspector: add read-only option for content-editable
+  * ui.Inspector: fix material theme styles
+  * ui.PaperScroller: implement inertia dragging
+  * ui.Selection: fix resizing multiple rotated elements
+  * ui.Snaplines: add `usePaperGrid` option
+  * ui.Stencil: support paper validateUnmbedding() option
+  * layout.TreeLayout: fix vertices for negative `firstChildGap`
+  * shapes.bpmn2.Pool: take rotation into account in getLanesFromPoint and getMilestoneFromPoint
+  * shapes.bpmn2.Pool: remove unnecessary top padding from milestone line and bottom padding from sub-lanes
+  * shapes.bpmn2.Pool: fix getMilestoneBBox() returning only the header size
+  * shapes.bpmn2.Pool: add `labelAlignment` and `labelMargin` attributes
+  * shapes.bpmn2.Pool: support custom lane and milestone id
+  * shapes.standard.Record: fix `itemOverflow` for items with multi-group span
+  * dia.Paper - add allowNegativeBottomRight option to fitToContent()
+  * dia.Paper - add routerNamespace and connectorNamespace options, document missing namespace options
+  * dia.Paper - add validateUnembedding() option
+  * dia.Paper - add missing frontParentOnly option documentation
+  * dia.Graph - fix order of cells in getElements() and getLinks()
+  * dia.Cell - add option to use DFS to index embedded cells in toFront() and toBack()
+  * dia.CellView - allow `presentationAttributes` and `initFlag` to be defined as a function
+  * dia.attributes - add calc() function to be used in various SVG attributes
+  * util.breakText - fix wrapping when the last word contains a hyphen
+  * routers.manhattan - improve points comparison performance
+  * routers.manhattan - add isPointObstacle option
+  * Geometry - split to files
+  * Geometry.Rect - add methods to find a union of rectangles or points
+  * Geometry.Rect - add `update` method
+
+v3.3.0 - 02-11-2021
+
+ * Prevent prototype pollution DoS - lodash v4.17.20, fix util.setByPath() and fix util.unsetByPath()
+ * app.visio.BPMNImport
+ * app.visio.BPMNExport
+ * app.visio.ProcessImport
+ * app.visio.OrgChartImport
+ * app.visio.DefaultImport
+ * app.Planogram - new example application (ES6 and TypeScript version)
+ * app.ChatBot - <chatbot> component, enable virtual rendering
+ * app.BPMNEditor - uses BPMN2 shapes
+ * app.OrgChart - redesign (ES6 and TypeScript version)
+ * app.Layout - redesign (ES6 and TypeScript version)
+ * apps.Collapsible - improve viewport matching; indicate that, export to png being processed
+ * demo.ELK - add Eclipse Layout Kernel demo
+ * demo.Container - add collapse/expand container demo
+ * demo.Typescript - show class style shape definition
+ * demo.HTML - implement z-index sorting
+ * add Element Tools tutorial
+ * format.Visio - export and import to/from MSVisio VSDX file format.
+ * ui.FreeTransform: add `resizeGrid` option
+ * ui.Inspector: `when` conditions for generic nested objects and objects within lists
+ * ui.Inspector: use forEach() instead of forIn() for array
+ * ui.PaperScroller - set max size to prevent an infinite loop
+ * ui.PaperScroller - trigger `scroll` event
+ * ui.Snaplines - improve integration with PaperScroller
+ * ui.Stencil: add drag & drop events + API
+ * ui.Stencil: add container option
+ * ui.Stencil: add filter() method
+ * ui.TreeLayoutView - add drag & drop API; show stencil integration
+ * ui.TreeLayoutView - validatePosition() option
+ * shapes.BPMN2 - new set of BPMN v2 shapes
+ * shapes.standard.Record - preserve groups after removeItem()
+ * shapes.standard.Record - set dry run for building the markup
+ * dia.Paper - add snapLabels option
+ * dia.Paper - restrictTranslate option defined as function returning a function
+ * dia.Element - prevent unnecessary rounding errors in resize()
+ * dia.Element - add insertPort() to support inserting port at a given position
+ * dia.Link - fix order of points in getPolyline()
+ * dia.LinkView - prevent connection validation on magnets previously validated
+ * dia.CellView - fix update order of nodes when 'ref' in use
+ * dia.ToolsView - enable adding tool to a view, which has not been rendered
+ * util.breakText - fix height for a text with empty lines
+ * highlighters - new API, add mask highlighter
+ * highlighters.stroke - add useFirstSubpath option
+ * routers.manhattan - fix scan directions order
+ * dia.attributes - add magnetSelector, highlighterSelector, containerSelector
+ * dia.attributes - textWrap takes letter-spacing into account
+ * Vectorizer - add createSVGStyle() and createCDATASection() static methods
+ * Geometry - add getSubpaths() to Path
+ * Geometry - add round() methods
+
+v3.2.0 - 06-10-2020
+
+ * upgrade `jQuery` dependency (v3.5.1)
+ * add Chatbot application (VueJS, Angular9, React Redux)
+ * add shapes.Measurements (Distance & Angle)
+ * add KitchenSink in Angular9, VueJS and VueTs
+ * apps.DataMapping: show translucent copy of an element being dragged
+ * apps.Layout: implement dragging of embedded elements
+ * shapes.Standard - support element ports with `Record` shapes
+ * format.GridLayout - add `setAttributes`, `verticalAlign`, `horizontalAlign`, `rowGap`, `columnGap` options
+ * ui.FreeTransform - support asynchronous updates
+ * ui.FreeTransform - add `usePaperScale`, `resizeDirections` and `padding` options
+ * ui.Halo - `magnet` option callback receives event argument
+ * ui.Inspector - relative `when` expressions for nested objects and lists
+ * ui.Inspector - add `updateCellOnClose` option
+ * ui.Inspector - make sure fields are saved before close
+ * ui.Navigator - add `useContentBBox` option
+ * ui.Navigator - add `freeze()`, `unfreeze()`
+ * ui.Navigator - trigger `pan:start`, `pan:stop`, `zoom:start`, `zoom:stop` events
+ * ui.PaperScroller - add `scrollWhileDragging` option
+ * ui.PaperScroller - `padding` option callback accepts paper scroller instance
+ * ui.PaperScroller - `positionContent()`, `scrollToContent()` accepts `useModelGeometry` option
+ * ui.PaperScroller - fix paper size after `zoomToRect()`
+ * ui.PaperScroller - fix `autoResizePaper` option for synchronous rendering mode
+ * ui.Stencil - add `freeze()`, `unfreeze()`
+ * ui.Stencil - add `contentOptions` and `canDrag` options
+ * ui.Stencil - add `stencil-filtered` CSS class when stencil is filtered
+ * ui.Stencil - fix listeners not being unbound after drag end
+ * ui.Tooltip - add `container` option
+ * ui.Tooltip - fix default `template` option
+ * dia.Paper - add `beforeRender` and `afterRender` options, add `hasScheduledUpdates()`, trigger `render:done` in sync mode
+ * dia.Paper - fix missing initial `render:done` event
+ * dia.Paper - prevent the prototype options modification, persist functions passed as options
+ * dia.Paper - `scaleContentToFit()` padding option accepts object
+ * dia.Paper - fix `isMounted` argument of `viewport()` option
+ * dia.Paper - dynamic link update priorities (fix for "link connected to other two links" update bug)
+ * dia.Element - port removal runs in batch
+ * dia.Element - add `getGroupPorts()`
+ * dia.Element - prevent exception in `getPointFromConnectedLink()` when port does not exist
+ * dia.LinkView - fix never ending batch for legacy link tools
+ * dia.LinkView - add `requestConnectionUpdate()`
+ * dia.LinkView - trigger `link:snap:connect` and `link:snap:disconnect` events
+ * dia.LinkView - prevent exception when labels and connection require update
+ * dia.LinkView - measure snap distance for links from magnet's boundary
+ * dia.LinkView - add `getEndConnectionPoint()`
+ * mvc.View - add DETACHABLE property to ignore viewport matching, FLAG_INSERT & FLAG_REMOVE defined on per view basis
+ * linkTools.Anchor: add `resetAnchor` option
+ * linkTools.Segments: add `stopPropagation` option
+ * connectionPoints.anchor - add `align` and `alignOffset` options
+ * attributes.textWrap: add `maxLineCount` option
+ * util.breakText - retain new line characters, add `maxLineCount` option
+ * util.sanitizeHTML: sanitize attribute values with "data:" and "vbscript:"
+ * Geometry - add `parallel()` to Line, add `serialize()` to Point and Line
+ * various Typescript fixes
+
+v3.1.1 - 10-30-2019
+
+  * apps.KitchenSinkTS - fix build process, improve selection, enable autoToggle
+
+v3.1.0 - 10-28-2019
+
+  * add elementTools - Button, Remove, Boundary
+  * add DynamicStencil app
+  * improve low-level performance for large graphs
+  * fix ES5 dependencies
+  * app.KitchenSink - fix focus on input[range], improve selection
+  * connectors.jumpover - add `radius` option to make corners rounded
+  * dia.attributes - add `stubs` option to `connection` attribute
+  * dia.attributes - add `displayEmpty` for text elements
+  * dia.CommandManager - trigger `stack` events
+  * dia.CellView - prevent DOM exceptions when invalid attrs provided
+  * dia.Element - make sure only elements are taken into account in fitEmbeds()
+  * dia.Graph - fix bfs() stop condition
+  * dia.LinkView - fix label rendering after multiple changes made to model
+  * dia.LinkView - fix missing `pointerup` event for non-interactive labels
+  * dia.Paper - validateMagnet() callback has `evt` argument
+  * dia.Paper - ignore viewport when removing views, register unmounted views on render
+  * dia.ToolView - support reusable tools
+  * dia.ToolView - prevent `contextmenu` event (uses paper.options.guard now)
+  * format.Raster - add beforeSerialize() option
+  * layout.DirectedGraph - remove unnecessary vertices
+  * linkTools.Boundary - padding can be defined separately for each side
+  * ui.ContextToolbar - fix immediate closing in IE
+  * ui.Clipboard - fix for ES6
+  * ui.Halo - fix link Halo position when the paper is transformed
+  * ui.Inspector - various fixes to content-editable input
+  * ui.Keyboard - expose key maps (allow adding custom keys)
+  * ui.PaperScroller - add zoomToRect(), improve zoomToFit()
+  * ui.PathEditor - fix `doubleclick` action in IE
+  * ui.PathEditor - event handlers receive event
+  * ui.SelectButtonGroup - fix default noSelectionValue for multiple-choice
+  * ui.Selection - make `createSelectionBox()` and `destroySelectionBox()` public
+  * ui.Selection - fix visibility of the contentBox without content
+  * ui.TextEditor - fix selection of empty lines, fix selection boundaries
+  * ui.TextEditor - fix the cursor position for empty text (displayEmpty attribute)
+  * ui.Toolbar - widgets can be disabled/enabled (programmatically/automatically)
+  * ui.Tooltip - add animation option
+  * ui.Widgets - fix `zoomSlider` widget resetting custom zoom level (out-of-range)
+  * Vectorizer - fix e2c() overflowing the stack in normalizePathData()
+  * Geometry - add simplify() to Polyline (remove redundant points)
+
+v3.0.1 - 08-12-2019
+
+  * changes to config options are respected
+  * fix ESM for shapes.charts and layout.ForceDirected
+  * apps.KitchenSink - fix toolbar bindings
+  * apps.Collapsible - redesign
+  * dia.Paper - ensure SVG document has id
+  * dia.Paper - fix viewport matching for links
+  * dia.Paper - pass Backbone model options to view update (cell removal & `z` change)
+  * dia.CellView -  fix `mouseleave` event in async mode
+  * dia.CellView - properly separate elements and ports CSS selectors
+  * dia.Graph - make `hasActiveBatches()` use the same logic for various signatures
+  * ui.Navigator: improve panning and zooming
+  * ui.Halo - fix graph batches during actions
+  * ui.TextEditor - improve selection interactions
+  * ui.TextEditor - fix cursor position for empty text
+  * ui.TextEditor - fix selection in MSEdge
+  * linkTools.Vertices - fix vertexAdding option
+
+v3.0.0 - 06-01-2019
+
+  * add Collapsible application
+  * upgrade dependencies (Backbone v1.4.0, Dagre v0.8.4, Graphlib v2.1.6, jQuery v3.4.1)
+  * compatibility warnings (https://github.com/clientIO/joint/releases/tag/v3.0.0)
+  * full support for ES Modules
+  * support for Link to Link connections
+  * ui.TreeLayoutView - add `validateConnection`, `reconnectElements`, `translateElements`, `paperConstructor` and `paperOptions` options
+  * ui.PaperScroller - define `contentOptions` as a function
+  * ui.PaperScroller - fix unnecessary scrollbars
+  * ui.Stencil - define `search' option as a function
+  * ui.Stencil - trigger `group:open` and `group:close` events
+  * ui.SelectButtonGroup - add `singleDeselect` and `noSelectionValue` option
+  * ui.Clipboard: fix copy&paste with localStorage
+  * ui.Halo - support for connectionStrategy
+  * ui.Halo - add `rotateEmbeds` options
+  * ui.Inspector - fix content-editable sanitizing
+  * format.Print - prevent other plugins from being printed
+  * layout.ForceDirected - add `x`, `y` options, `graph` accepts an array of cells
+  * layout.TreeLayout - add `getLayoutBBox()`
+  * layout.TreeLayout - fix `BL`, `TL`, `BR`, `TR` layout link routes not taking element `margin` into account
+  * dia.CommandManager - fix batch commands sorting
+  * dia.Paper - async mode revamped (viewport matching, rendering progress) [breaking change]
+  * dia.Paper - cells are rendered into the `paper.cells` (previously called `paper.viewport`), transformations are applied to `paper.layers` (parent of `paper.cells`) [breaking change]
+  * dia.Paper - implement viewport matching (remove views from the DOM when not in the viewport) via `viewport` option and checkViewport()
+  * dia.Paper - add freeze(), unfreeze(), isFrozen() and option `frozen` to stop/start views updates
+  * dia.Paper - add requireView(), dumpViews(), updateViews() to force views to update
+  * dia.Paper - add sorting options (none, approximate, exact)
+  * dia.Paper - add `anchorNamespace`, `linkAnchorNamespace`, `connectionPointNamespace`, `defaultLinkAnchor` options
+  * dia.Paper - add `useModelGeometry` for scaleContentToFit(), fitToContent(), getContentBBox(), getContentArea()
+  * dia.Paper - add `contentArea` for scaleContentToFit(), fitToContent()
+  * dia.Paper - fitToContent() returns area (g.Rect) of the content
+  * dia.Graph - add `indirect` option for getNeighbors(), getConnectedLinks(), isNeighbor() for link-link connections
+  * dia.Graph - getBBox() accepts no parameters and returns the bounding box of the entire graph [breaking change]
+  * dia.Graph - getCellsBBox(cells) does not ignore links passed via `cells` parameter [breaking change]
+  * dia.Link - add `priority` attribute for anchors
+  * dia.Link - add getSourceCell(), getTargetCell(), getPolyline(), getSourcePoint(), getTargetPoint(), getBBox()
+  * dia.Link - getSourceElement() and getTargetElement() finds also indirect elements
+  * dia.Link - add angle, keepGradient and ensureLegibility options for labels
+  * dia.ElementView - add findPortNode()
+  * dia.LinkView - properly revert `pointer-events` attribute after a link interaction
+  * dia.LinkView - add root node selector for string markup
+  * dia.CellView - keep a dragged always view under the pointer (esp. when `restrictTranslate` in use)
+  * dia.CellView - make sure `cell:mouseleave` and `cell:mouseenter` events are always called when the mouse leaves/enters a cell
+  * dia.CellView - fix referenced bounding box for nodes outside the rotatable group
+  * dia.CellView - listening for underlying model changes switched from a specific attribute change (e.g. `change:size`) to a general `change` event [breaking change]
+  * dia.CellView - remove deprecated getStrokeBBox() [breaking change]
+  * dia.Cell - add generateId(), generatePortId()
+  * anchors - modelCenter anchor accepts `dx`, `dy` options
+  * linkAnchors - add anchors for link-link connections (ratio, length, perpendicular, closest)
+  * linkTools - add `stopPropagation` option for Vertices tool
+  * shapes.bpmn - add `data-flow-type` and `data-icon-type` attributes
+  * shapes.standard - add `standard.InscribedImage` shape
+  * shapes.standard - fix `itemOverflow` change and highlighting for Record
+  * shapes.basic - remove deprecated `PortsModelInterface` and `PortsViewInterface` [breaking change]
+  * util - breakText() prefers breaking words at hyphens
+  * util - nextFrame() extra parameters are appended to the arguments the callback receives
+  * Vectorizer - change `xmlns` to `svg` namespace, add correct `xmlns` namespace [breaking change]
+  * Vectorizer - fix translateAndAutoOrient() for edge cases
+  * Geometry - add divideAt() and divideAtLength() for paths
+  * Geometry - supports scientific notation for paths defined via SVGPath data
+  * Geometry - add Line.prototype.angle(), Point.prototype.chooseClosest()
+  * Geometry - add containsPoint() for Polyline, Path, Curve and Line
+  * Geometry - fix Path.prototype.closestPoint() ending in an infinite loop
+  * Geometry - add random()
+
+v2.4.0 - 11-12-2018
+  * add DataMapping & Layout applications
+  * add KitchenSink applications integrated with Angular6 and React
+  * ui.ContextToolbar - add vertical option
+  * ui.Inspector - add renderLabel() option
+  * ui.Inspector - add max and min options for lists
+  * ui.Inspector - options callbacks (validateInput, renderFieldContent, getFieldValue) now receive the inspector reference
+  * ui.Inspector - fix nested lists issues and create() method when a cellView was passed
+  * ui.Inspector - enable editing arbitrary Backbone.Model
+  * ui.Stencil - allow custom element views for cells (in the stencil and while dragging)
+  * ui.Toolbar - fix actions being triggered twice on touch devices
+  * ui.PathDrawer - add snapRadius options
+  * format.Print - improve cross-browsers printing
+  * dia.Graph - getCellsBBox() takes cells' rotation into account
+  * dia.Graph - fix cell removal after dry flag passed
+  * dia.Paper - support relative dimensions (e.g. width='100%')
+  * dia.Paper - add stopDelegation interactive option
+  * dia.Paper - add magnetThreshold option (create a link when the pointer leaves the magnet)
+  * dia.Paper - allow to stop propagation of paper events
+  * dia.Element - add removePorts()
+  * dia.ElementView - add element:magnet:pointerclick, element:magnet:dblpointerclick, element:magnet:contextmenu events
+  * dia.ElementView - fix embeddingMode for Lodash v4+
+  * dia.ElementView - fix cell:pointerclick in Chrome after DOM change
+  * dia.LinkView - prevent multiple validate connections for already snapped magnets
+  * dia.LinkView - fix label rendering in IE
+  * dia.Cell - JSON Markup accepts textContent and groupSelector properties
+  * dia.CellView - presentation attributes (attrs) are now applied in the given order
+  * mvc.View - prevent multiple onRender() calls
+  * mvc.View - add findAttribute()
+  * mvc.View - prevent className undefined
+  * dia.attributes - add ellipsis option for textWrap
+  * dia.atributes - add refWidth2 and refHeight2
+  * shapes.standard - add Record, BorderedRecord and HeaderedRecord for displaying structured data
+  * shapes.charts - add hideFillBoundaries, showRightFillBoundary, fillPadding, ticks option for y axis for Plot charts
+  * shapes.bpmn: fix text position for Activity shape in IE
+  * shapes.standard - add background to BorderedImage
+  * shapes.standard - add InscribedImage shape
+  * shapes.pn - fix PlaceView
+  * connectionPoints.Boundary - fix for non-graphical elements
+  * routers.manhattan - prevent rounding errors, add padding option
+  * routers.orthogonal - add padding option
+  * utils - normalize event.target in normalizeEvent() for <use> tag in IE
+  * utils - improve parseCssNumeric() for restrictUnit parameter
+  * Vectorizer - add isSVGGraphicsElement()
+  * fix touch interactions
+  * fix legacy PortsViewInterface
+  * various Typescript fixes
+  * refer canvg dependency by a version instead of tarball URL
+
+v2.3.3 - 08-02-2018
+  * add "Getting Started" guide
+  * reconfigure eslint
+  * dia.Element - fix hasPorts() when no items defined
+  * dia.LinkView - stop preventing propagation for legacy link tools events
+  * ui.TextEditor - add Typescript definitions
+  * ui.Inspector - make select-box and color-palette invalid when no value selected
+  * ui.Dialog - update Typescript definitons
+  * ui.LightBox - fix buttons options
+
+v2.3.2 - 06-29-2018
+  * VectorEditor - enable shape rotation
+  * ui.Halo - prevent handles from interacting on contextmenu event
+  * ui.Inspector - fix item removal for nested lists
+  * dia.CellView - fix ambigious magnet selector
+  * dia.LinkView - trigger missing link:pointerdown event on label pointerdown
+  * dia.LinkView - fix connection update for loop links
+  * dia.Link - improve reparenting (loop link embeds into the connected element, link connected to an ancestor and its decendant embeds into the ancestor)
+  * dia.Graph - getConnectedLinks() does not contain enclosed links (not necessary embedded links), add includeEnclosed option to get all connected links
+  * dia.Paper - fix cell:contextmenu event
+  * dia.Paper - fix missing magnet reference for validateConnection()
+  * dia.LinkView - fix backwards compatibility for linkConnectionPoint option signature
+  * dia.attributes - fix textWrap attribute
+  * Geometry - improve polyline parsing
+  * improve advanced tutorials
+
+v2.3.1 - 05-08-2018
+  * dia.CellView - fix magnet lookup based on the port property
+  * docs - fix broken links
+
+v2.3.0 - 05-04-2018
+  * KitchenSink revamped
+  * AST app revamped
+  * VectorEditor app does not scale strokes in IE
+  * update Tutorials
+  * format.Print - print custom areas and posters or show a preview
+  * ui.PaperScroller - add positionContent(), positionElement(), positionPoint(), scrollToContent() and getClientSize()
+  * ui.Selection - honors paper's restricted area
+  * ui.Inspector - prevent model's properties removal for the lists (properties not being edited by the inspector stay untouched)
+  * ui.Inspector - add overwrite option per input
+  * ui.Inspector - prevent multiple updates on a single input change
+  * ui.LightBox - add downloadable, fileName, downloadAction and buttons options
+  * ui.PathEditor - fix removeAnchorPoint bug
+  * format.SVG - fix CSS2 properties not having an indexed property setter in FF
+  * shapes.Standard - add new set of high-performance elements and links
+  * dia.LinkView - new flexible definitions based on geometric representation
+  * dia.LinkView - refactor event handlers
+  * dia.LinkView - introduce anchors, connectionPoints and connectionStrategy
+  * dia.LinkView - add getConnection(), getSerializedConnection(), getConnectionSubdivisions(), getPointAtRatio(), getTangentAtLength(), getTangentAtRatio() getClosestPoint() and getClosestPointLength()
+  * dia.LinkView - add getVertexIndex(), getLabelCoordinates()
+  * dia.Link - add vertex API
+  * dia.Link - add label API and allow define a default label
+  * dia.Link - add source(), target(), router(), connector()
+  * dia.Link - fix default label font color (IE)
+  * anchors - ready-to-use anchors (center, top, bottom, left, right, topLeft, topRight, bottomLeft, bottomRight, perpendicular, midSide)
+  * connectionPoints - ready-to-use connection points (anchor, bbox, rectangle, boundary),
+  * connectionStrategies - predefined connection strategies (defaulAnchor, pinAbsolute, pinRelative)
+  * dia.ElementView - allow element's rotation without rotatable group
+  * dia.ElementView - refactor event handlers
+  * dia.ElementView - apply vector-effect: non-scaling-stroke to nodes inside ths scalable group only
+  * dia.Element - add angle()
+  * dia.CellView - render markup from JSON (link, element, ports and labels)
+  * dia.Cell - avoid unnecessary z-index changes during toFront or toBack
+  * dia.Cell - fix removeProp() on arrays
+  * dia.ToolsView - set of tools for a link
+  * dia.ToolView - base class for a single link tool
+  * linkTools - ready-to-use tools (vertices, segments, anchor, arrowhead, boundary, remove button)
+  * dia.Paper - complete set of events
+  * dia.Paper - add allowLink option to revert/remove invalid links
+  * dia.Paper - add getContentArea()
+  * dia.Paper - findParentBy option can be defined as a function
+  * dia.Paper - consequitive pointerdown, pointermove and pointerup can share event data
+  * dia.Paper - fire pointerup event on touchcancel
+  * dia.Paper - improve preventing image dragging in FireFox
+  * dia.Graph - fromJSON() does not ignore dry option anymore
+  * dia.attributes - sourceMarker, targetMarker and vertextMarker receive default stroke, fill and opacity values from its context
+  * dia.attributes - add refRInscribed, refRCircumscribed, refD, refPoints, title, textVerticalAnchor attributes
+  * dia.attributes - add connection, atConnectionLength, atConnectionRatio
+  * routers.Manhattan - adaptive grid for pathfinding
+  * routers - supports anchors (don't necessary start and end in the center of the magnet)
+  * layout.DirectedGraph - prevent undesired input cells sorting
+  * layout.GridLayout - prevent undesired input cells sorting
+  * layout.TreeLayout - prevent maximum call stack size exceed
+  * layout.PortLabel - fix manual position
+  * Vectorizer - add toGeometryShape(), normalizePathData(), tagName() and id to prototype
+  * Vectorizer - add transformLine() and transformPolyline()
+  * Vectorizer - text() accepts textVerticalAnchor option
+  * Vectorizer - improve Kappa value
+  * Geometry - add Path and Curves
+  * Geometry - add Polyline bbox(), scale(), translate(), clone() and serialize()
+  * Geometry - implement intersections of line with various shapes
+  * Geometry - add Point lerp() for linear interpolation
+  * shapes.basic.TextBlock - sanitize text
+  * util - normalizeSides() validates input and accepts horizontal and vertical attributes
+  * util - add parseDOMJSON(), dataUriToBlob(), downloadBlob(), downloadDataUri() and isPercentage()
+  * util - toggleFullscreen() - fix canceling fullscreen in an iframe
+
+v2.2.0 - 10-23-2017
+  * Rappid compatible with Lodash v4
+  * add TypeScript definitions
+  * KitchenSink - fix Safari link connection points bug, fix svg/png export performance
+  * OrgChart - improve demo with new `event` attribute
+  * VectorEditor - add new demo demonstrating PathEditor and PathDrawer
+  * ui.PathEditor - new plugin for editing paths
+  * ui.PathDrawer - new plugin for drawing paths
+  * ui.Halo - prevent errors when halo removed while dragging
+  * ui.Halo - add `magnet` option for specifying link source/target magnet
+  * ui.Inspector - fix content-editable focus in Firefox
+  * ui.Inspector - allow `type` property to be edited
+  * ui.Inspector - select-box, color-palette and select-button-group options can be defined as path
+  * ui.Inspector - enable `when` expressions for groups
+  * ui.Inspector - fix "ui.Inspector: can not read value of removed select-box" error
+  * ui.Selection - `selection-box` event handlers called with `x` and `y` coordinates
+  * ui.Stencil - fix clone position while dragging
+  * ui.Stencil - add `paperOptions` option to modify stencil papers
+  * ui.Stencil - fix scrolling on touch devices
+  * ui.PaperScroller - improve transitions in IE
+  * ui.Keyboard - support for function keys
+  * format.Raster - fix for `image` tags without href attr
+  * format.Raster - add check for size limit of canvas
+  * format.SVG - add `area`, `useComputedStyles` and `stylesheet` options
+  * format.SVG - honors the current prefix for the viewport selector
+  * layout.GridLayout: add `deep`, `parentRelative` options
+  * layout.GridLayout: add `compact` type for `columnWidth` and `rowHeight`
+  * layout.TreeLayout: add `firstChildGap` element attribute
+  * shapes.BPMN - add `ratio` option for Pool lanes
+  * shapes.BPMN - fix Choreography rendering issues and links in Firefox
+  * Geometry - add Polyline with pointAtLength(), length(), closestPointLength(), closestPoint() and convexHull()
+  * Geometry - add cross(), dot(), squaredDistance(), closestPoint(), closestPointNormalizedLength(), vector(), vectorAngle(), angleBetween() to Point
+  * Vectorizer - add children() and getBBox()
+  * Vectorizer - fix parseTransformString() and matrixToTransformString()
+  * Vectorizer - make the text `y` coordinate based on the first line `line-height` in text()
+  * Vectorizer - add option to define the end-of-line character for text()
+  * layout.DirectedLayout - add ability to position labels
+  * layout.DirectedLayout - fix bug when the elements passed do not include their parents
+  * dia.Paper - add `clickThreshold`, `moveThreshold` and `preventDefaultBlankAction` options
+  * dia.Paper - add cancelRenderViews() for async mode
+  * dia.CellView - do not reset node's transform attribute if no transform applied update()
+  * dia.Element - position() can be called with { deep: true } option to set position of the embeds
+  * dia.attributes - `text` attribute takes `x` into account
+  * dia.attributes - add `event` for easier events handling on CellViews and `resetOffset` for paths to start at 0,0
+  * dia.LinkView - stop triggering link:connect/link:disconnnect when connection not allowed
+  * dia.LinkView - can sendToken() backwards
+  * highlighters.Stroke - fix for magnets inside scalable group and with zero width or height
+  * layout.PortLabel: fix manual position
+v2.1.0 - 03-31-2017
+  * update jQuery v3.1.1
+  * Geometry - improve Point/Rect prototype.round(precision) - fix coordinates being converted to a string after round() with a precision called, allow negative precision
+  * Geometry - add Rect inflate(), bottomLine(), topLine(), leftLine() and rightLine()
+  * Geometry - Point offset() and difference() accept both a point and x,y coordinates
+  * Geometry - add Line equals()
+  * Geometry - Line intersection() renamed to intersect() and calculates intersection points with another line or rectangle
+  * Vectorizer - stop accessing deprecated `nodeName` and `nodeValue` attribute properties
+  * Vectorizer - add prototype.contains() method
+  * Vectorizer - add matrixToTransformString() method as opposed to transformStringToMatrix()
+  * Vectorizer - add ensureId() method
+  * Vectorizer - add appendTo() method
+  * Vectorizer - V(node); does not set automatically id on the node anymore
+  * Vectorizer - text() with content doesn't set invalid display: null on node anymore
+  * Vectorizer - fix convertRectToPathData() for rounded rectangles
+  * dia.attributes - add namespace for defining custom attributes, allow camelCase attribute style
+  * dia.attributes - new attributes `sourceMarker`, `targetMarker`, `vertexMarker`, `textWrap`, `refRx`, `refRy`, `refCx`, `refCy`, `refX2`, `refY2`
+  * dia.attributes - improve `text` attribute performance on cellView update
+  * dia.attributes - fix mixing various attributes (e.g. `transform`, `refX` and `refDx` now add up)
+  * dia.Paper - add defineGradient(), defineFilter(), defineMarker() and isDefined() methods
+  * dia.Paper - fix async rendering when cell was previously member of different graph.
+  * dia.Paper - improve grid precision, added new grid patterns, update drawGrid() options definition.
+  * dia.Paper - `blank:pointerup` event is fired only after a preceeding `blank:pointerdown` event
+  * dia.Paper - add paperToLocalPoint(), clientToLocalPoint(), pageToLocalPoint(), localToPaperPoint(), localToPagePoint() and localToClientPoint().
+  * dia.Paper - add paperToLocalRect(), clientToLocalRect(), pageToLocalRect(), localToPaperRect(), localToClientRect() and localToPageRect()
+  * dia.Paper - add clientOffset() and pageOffset()
+  * dia.Cell - make cell.attr() work as getter
+  * dia.Cell - prop(), removeProp() accept also path defined as an array
+  * dia.Element - add size(), getPortPositions() methods
+  * dia.Element - rotate() doesn't translate embeddeded cells anymore
+  * dia.Link - allow arbitrary shapes for labels
+  * dia.LinkView - fix link translating when embedded and has no marker
+  * dia.LinkView - set correct port and selector on the link
+  * mvc.View - prevent extend() from modifying prototype propertires
+  * ports events `ports:add` and `ports:remove` triggered when port is added to element/removed from element
+  * utils - fix toggleFullScreen() in IE
+  * utils - breakText() takes the lineHeight style into account
+  * util - change cells() wrapper also accept a single cell
+  * highlighter.Stroke - allow multiple strokes to be applied to a single cellView magnet, prevent memory leaks
+  * connectors.jumpover - fix on graph `reset`
+  * ui.PaperScroller - add `transitionToPoint()`, `transitionToRect()`, `lock()` and `unlock()`
+  * ui.PaperScroller - fix autoresize in async paper mode
+  * ui.TextEditor: deselect text on remove
+  * ui.Stencil - capture pointer events for magnet=passive
+  * ui.Widgets - fix `toggle` change event multiple triggering
+  * ui.FreeTransform - add `clearAll`, `clearOnBlankPointerdown` options
+  * ui.Halo - add `clearOnBlankPointerdown` option
+  * storage.Local - fix duplicate keys in index
+  * QAD - rewrite demo to use port API
+  * Constellation - add new transitions demo
+v2.0.1 - 12-01-2016
+  * make compatibility changes towards jQuery 3.1
+  * shapes.TextBlock - fix `SVGForeignObject` detection
+  * dia.Graph - fix graph references stored on cells (when a cell added to another graph)
+  * layout.GridLayout - fix cell's graph references overriden by the layout
+  * Vectorizer - remove deprecated attributes' `nodeValue` and `nodeName` calls
+  * Vectorizer - fix `convertToPathData()` for polyline.
+  * KitchenSink - add various port shapes
+  * KitchenSink - improve mousewheel zooming
+  * BPMN Editor - fix stencil tooltips
+  * joint.ui.Inspector - add missing 'equal' primitive documentation
+  * ui.Navigator - make sure links are always rendered after elements
+  * ui.Selectbox - fix the default option target
+  * dia.CommandManager - account for graph changes
+  * layout.TreeLayout - fix prevSiblingGap for first BR/BL sibling
+  * dia.CommandManager - make sure changes on newly added cells are executed after the element is added
+
+v2.0.0 - 09-20-2016
+  * Update dependencies - jQuery 2.2.4, Backbone 1.2.3
+  * Rappid works with Content-Security-Policy header now
+  * CSS class prefix `joint-` for all Rappid views (breaking change)
+  * introduces themes for Rappid views (default, material, modern, dark)
+  * ui.Keyboard - new plugin for keyboard handling
+  * ui.Toolbar - new plugin for creating toolbars
+  * ui.Selection (previously ui.SelectionView) - reacts to the underlaying collection, Simplified API
+  * ui.Selection - added `allowTranslation` and `rotateAngleGrid`option
+  * ui.Selection - add `resize` handle for group resizing
+  * layout.TreeLayout - added BR,BL,TR,TL layouts
+  * layout.TreeLayout - add `prevSiblingGap` and `nextSiblingGap` element parameters
+  * layout.TreeLayout - `filter` is applied also on root elements
+  * layout.DirectedGraph - returns a bbox and accept an array of elements
+  * layout.GridLayout.layout() - accept an array of elements
+  * layout.GridLayout.layout() - add `marginX` and `marginY` options
+  * ui.Stencil - integrates layout.GridLayout for laying out the elements
+  * ui.Inspector - added static helper create/close, save open/closed groups state
+  * ui.Inspector - added 'equal' operator, added `content-editable` input
+  * ui.Tooltip - simplify initialization - one rules them all, settings is read from the the DOM element attributes
+  * dia.CommandManager - allow passing original options when undo/redo
+  * ui.PaperScroller - do not use margins & padding to position the paper inside the paperScroller
+  * com.ChannelHub.route - supports async behavior
+  * ui.Clipboard - allow pasting cells multiple times
+  * ui.Clipboard - add `cutElements` method
+  * ui.Halo - supports links now
+  * ui.Halo - added `bbox` option for defining the halo size and position.
+  * ui.SelectBox - element with options respects the viewport boundaries
+  * dia.LinkView - unify `link:options` event signature with the rest of events (breaking change)
+  * dia.ElementView - fix resizing without scalable group, re-render element when markup change
+  * dia.Element - make it easy to add ports to an arbitrary element, introduced API for ports manipulation
+  * shapes.devs.Model - uses new port API internally. shapes.basic.PortsViewInterface, shapes.basic.PortsInterface are marked as `deprecated`
+  * layout.Port - various layouts for positioning ports
+  * layout.PortLabel - various layouts for positioning labels relatively to ports
+  * util.deepSupplement, util.supplement, util.mixin, util.deepMixin marked as `deprecated`. Use lodash _.defaultsDeep, _.defaults, _.assign, _.mixin instead
+  * Added new utility method util.template(html) to be used the same as underscore/lodash's _.template() method
+  * Update/improve the documentation
+  * other bug fixes and improvements
+
+v1.7.2 - 07-04-2016
+  * ui.Inspector: fix option `multiple` for select input
+  * ui.Selection: can be used without passing in a model
+  * ui.PaperScroller: fix getVisibleArea() for zoomed papers
+  * ui.Halo: Fix cloning/forking/linking with async rendering
+  * com.Channel: support async behaviour, fix infinite notify bug
+  * dia.Graph: findModelsInArea accept `rect` as a pure object
+  * ui.Clipboard: fix pasting order of cells when useLocalStorage enabled
+  * utils: prevent FF from throwing an uncaught exception when element is not measurable in breakText()
+  * ui.Tooltip: respects viewport in IE
+  * fix white-space characters with ISO-8859-1
+  * update jQuery to v2.2.4
+
+v1.7.1 - 03-03-2016
+  * format.SVG: Fix invalid XML entity in Safari
+  * shapes.BPMN: Fixes for Internet Explorer
+  * ui.Clipboard: Fix for copy/paste between tabs
+  * ui.Lightbox: Position and resize when image is loaded
+  * ui.SelectionView: improve rotating, fix rotating with negative coordinates, add rotateAngleGrid option
+
+v1.7.0 - 12-19-2015
+  * dia.Graph introduces new functions for traversing graphs: dfs(), bfs(), search(), isSuccessor(), isPredecessor(), getPredecessors(), getSuccessors(), isNeighbor(), isSource(), isSink(), getSources(), getSinks(), getSubgraph(), getFirstCell(), getLastCell() and getCells()
+  * new functions for cloning cells dia.Graph.cloneCells(), dia.Graph.cloneSubgraph()
+  * dia.Element.resize() function has been extended with 'direction' option allowing for resizing to any side
+  * new convenient methods for getting source/target elements added to dia.Link: getSourceElement() and getTargetElement()
+  * dia.Paper has a new option 'multiLinks' that when set to false, prevents from creating multiple links between the same elements
+  * dia.Paper has a new option function 'guard' that allows for preventing the paper from handling UI events
+  * dia.Paper.findViewsInArea() has been extended with 'strict' option that when set, returns only views that are contained within the area passed in the argument
+  * Vectorizer adds a new method 'transformPoint()' for a convenient way transform points via SVG transformation matrices
+  * Geometry adds a new function rect.union()
+  * new utility function added: joint.util.setAttributesBySelector() for setting attributes on DOM elements referenced by a selector
+  * dia.Element and dia.Link has a new function getAncestors() that returns an array of ancestor cells
+  * dia.Link has a new method hasLoop() for checking whether the link is a loop-link
+  * dia.LinkView enables for setting a custom markup for its secondary tools (enabled via the 'doubleLinkTools' option)
+  * dia.Graph getNeighbors() function extended with 'inbound' and 'outbound' options
+  * dia.Graph has a new translate() method for translating all elements in the graph
+  * ui.TextEditor extended with a new advanced option 'textareaAttributes' that can be useful in rare sitations such as for compatibility with jQuery UI
+  * ui.TextEditor now uses native text selections which are way faster and better looking and 'useNativeSelection' option as a way to disable native selections and fallback to the old selections
+  * ui.Halo adds new convenient methods addHandles() and removeHandles() for adding/removing all handles in one go
+  * ui.Halo introduces 'pieToggles' option for setting more toggle buttons for the 'pie' Halo type and toggleState() for changing the state of the pie menu
+  * routers.manhattan introduces new options 'startDirections', 'endDirections' to control what direction a link can start/end; and 'excludeTypes' to ignore certain element types as obstacles
+  * routers and connectors can now be defined directly on links as functions
+  * layout.TreeLayout has been improved and offers not only left-to-right but also right-to-left, top-to-bottom and bottom-to-top layouts, even on a per-node basis!
+  * layout.TreeLayout reads element attributes siblingRank, direction, margin and offset (that can also be re-mapped) allowing for a fine control of the layout engine
+  * layout.DirectedGraph adds a new option 'resizeClusters' to resize and reposition clusters so that they fit their children
+  * ui.PaperScroller has new functions scroll(), scrollToElement() and centerElement() for programmatic scrolling of the paper viewport
+  * ui.SelectBox has new methods enable(), disable() and isDisabled()
+  * methods added to dia.Paper by format.Raster plugin (toPNG(), toJPEG()) accept an object in the 'padding' option (with top/bottom/left/right) for setting different padding for each side
+  * ui.SelectionView adds 'strictSelection' option that when set, selects only elements that are fully contained in the selected area (instead of just intersecting it)
+  * service icon added to BPMN shapes
+  * links are now much faster when used with manhattan router
+  * fixed a critical bug in upcoming Google Chrome which removed the native getTransformToElement() method on SVG elements
+  * other bug fixes and improvements
+
+v1.6.0 - 09-08-2015
+  * ui.FlashMessage new widget for displaying flash messages
+  * ui.Ligthbox new widget for displaying lightboxes
+  * ui.ContextToolbar widget plugin for displaying small toolbar below HTML/SVG elements
+  * ui.Popup new widget for displaying arbitrary HTML in a popup
+  * ui.SelectBox marks selected item as hovered right after open
+  * ui.SelectBox adds placeholder option
+  * ui.SelectBox adds selectBoxOptionsClass for adding CSS class to the generated container
+  * ui.TextEditor adds support for rich-text editing and easier setup
+  * ui.TextEditor auto-detecting URLs in text and their annotation
+  * ui.TextEditor adds placeholder option
+  * ui.TextEditor adds new selection getters getSelectionStart(), getSelectionEnd(), getSelectionRange(), getSelectionLength(), getSelection()
+  * ui.TextEditor select all text on triple-click
+  * ui.TextEditor adds 'focus' option for disabling focus to be placed on the internal textarea
+  * ui.TextEditor passes 'textEditor' client ID when setting properties on cells
+  * ui.TextEditor introduces new 'textareaAttributes' option for defining custom attributes on the internal textarea (can be used to fix jQuery UI compatibility)
+  * ui.TextEditor was completely refactored overall. The old API still works but an easier to use API was introduced
+  * ui.Inspector adds multiOpenGroups option enabling multiple groups to be open at the same time
+  * ui.Inspector triggers group:close and group:open events to notify when groups get closed/opened
+  * ui.Inspector marks empty groups with 'empty' class name
+  * ui.Inspector introduces previewMode option that when set, makes select-box, select-button-group and color-palette types trigger changes with dry flag set
+  * ui.Inspector introduces custom operators (apart from the built-in primitive one such as 'eq', 'lt', ...) for more flexible definition of what fields should be hidden based on other fields
+  * layout.TreeLayout now takes into account 'margin' property set on elements (extending the current set 'siblingRank', 'rankDir', 'hidden' and 'offsetX')
+  * removed dependency on Handlebars
+  * add minWidth, maxWidth, minHeight and maxHeight to ui.FreeTransform
+  * add allowOrthogonalResize, allowRotation and preserveAspectRatio options to ui.FreeTransform
+  * add hasHandle() method to ui.Halo
+  * ui.Halo introduces 'attrs' object when adding handles via addHandle() to set custom attributes on the generated handles HTML
+  * ui.Halo introduces 'attrs' object for each button to set custom attributes on the generated button HTML
+  * ui.Halo introduces new types 'toolbar', 'pie' and 'surrounding'
+  * ui.Halo boxContent now accepts either a function or a string or a falsy value
+  * ui.Halo introduces clearAll option that when false, does not clear other Halos when initialized
+  * ui.Halo introduces 'clone' option that can be passed a function that should clone an element when needed
+  * ui.Halo sets 'selected' CSS class to handles that are being selected
+  * ui.Halo introduces 'icon' and 'iconSelected' options on handles for specifying icons for both unselected and selected states
+  * ui.Halo has a new method isOpen() for checking whether it's open or not
+  * ui.Halo adds selectHandle(), deselectHandle(), toggleHandle() and deselectAllHandles() methods
+  * ui.Tooltip sets 'rendered' class once rendered to allow CSS animations to be set
+  * fixed ui.Tooltip for scrolled page
+  * ui.SelectionView now does a proper cleanup when removed, including unbinding DOM event listeners
+  * ui.Stencil implements seamless drag&drop with highlighting right during the dragging action, not only after drop
+  * ui.Stencil adds setPaper() method allowing for dynamically switching the target paper
+  * ui.Stencil is now better integrated with ui.PaperScroller that can be passed to it in the 'paper' option allowing the ui.Stencil to better recognize elements dropped outside the paper area
+  * fixed using multiple ui.Navigator widgets on the same page
+  * fixed joint.shapes.bpmn.Pool label position and text overflow in other BPMN shapes
+  * new include schema with rappid.js and rappid.css
+  * improvements in KitchenSink (previously called Rappid demo) and BPMNEditor demo applications
+  * layout.DirectedGraph upgrades Dagre to v0.7.1
+  * layout.DirectedGraph introduces new option 'resizeClusters' to reposition and resize cluster elements (parents of other elements) so that they embody their children
+  * cells get removeProp() method for removing - possibly nested - properties
+  * cells get new addTo() method as a syntactic sugar for adding them to joint.dia.Graph
+  * prop() methods on cells now accepts 'undefined' as a value (instead of behaving like a getter)
+  * remove() method now correctly propagates the options object to all listeners
+  * routers.Manhattan router was improved to cope with hierarchical diagrams with embedded elements and does not consider ancestors of elements as obstacles
+  * routers.Manhattan router got smarter, finding better paths between source and target of a link
+  * new router for links 'oneSide' that always routes links to/from a certain side specified
+  * new 'jumpover' connector type
+  * Vectorizer adds sample() method for interpolating any SVG path with discrete equidistant points
+  * Vectorizer adds convertToPath(), convertToPathData() and findIntersection() functions
+  * Vectorizer adds findAnnotationsAtIndex(), findAnnotationsBetweenIndexes() and shiftAnnotations() helper functions manipulating text annotations (see Vectorizer:text())
+  * Vectorizer now sets 'v-line' class to all text lines rendered with text() and 'v-empty-line' for lines that are empty
+  * Vectorizer find() now returns an array of vectorizer elements, not the DOM NodeList
+  * Vectorizer V() function now throws an error if invalid markup is given to it making wrong shape definitons visible to the programmer
+  * Vectorizer bbox() now does not round values making calculations more precise
+  * Geometry adds rect:equals(), rect:snapToGrid() and rect:intersect() functions
+  * Geometry adds clone() method to all objects
+  * new events in joint.dia.Paper link:pointerdown, link:pointerdown, link:pointermove, link:pointerup, element:pointerdown, element:pointermove, element:pointerup
+  * new events in joint.dia.Paper cell:contextmenu and blank:contextmenu
+  * new maxWidth and maxHeight options in joint.dia.Paper fitToContent() method
+  * joint.dia.Paper adds labelMove option to the 'interactive' object for enabling moving labels via UI
+  * joint.dia.Paper findViewByModel() significantly improved performance
+  * fixes in joint.dia.Paper async rendering
+  * new 'restrictTranslate' option in joint.dia.Paper for restricting movement of elements
+  * joint.dia.Paper introduces new 'cellViewNamespace' option for declaring custom namespace for views (defaults to 'joint.shapes')
+  * joint.dia.Paper 'elementView' and 'linkView' options can be now functions
+  * joint.dia.Paper introduces new 'defaultRouter' and 'defaultConnector' options
+  * joint.dia.Paper introduces new 'linkPinning' option to disable creating links without source/target
+  * joint.dia.Paper now ignores mouse events that are not relevant (events that do not target the internal SVG document or a cell)
+  * joint.dia.Paper remove() make a proper cleanup of all views
+  * fixed using multiple joint.dia.Paper objects on the same page so that they don't share any options
+  * fixed normalization of touch events that now expose stopPropagation() and preventDefault() as all other events do
+  * new method findModelsUnderElement() in joint.dia.Graph for finding elements below another element
+  * joint.dia.Graph fixes the fetch() method
+  * joint.dia.Graph introduces new 'cellNamespace' option for declaring custom namespace for models (defaults to 'joint.shapes')
+  * joint.dia.Graph adds new method getCells()
+  * joint.dia.Graph getNeighbors() method improved and extended with 'deep' option to better support hierarchical diagrams containing embedded elements
+  * joint.dia.Link adds offset property on labels and implements dragging labels off the links
+  * joint.dia.Element adds fitEmbeds() method for resizing the element so that it fits all the embedded elements inside it
+  * joint.dia.ElementView getBBox() now returns the rect object of Geometry library that directly exposes various math functions for rectangles
+  * new joint.util.getElementBBox() function for getting a bounding box of both HTML and SVG elements
+  * new joint.util.normalizSides() function
+  * new joint.util.sortElements() function for sorting DOM elements
+  * add an optional context parameter to joint.util.nextFrame()
+  * new filters joint.filter.outline and joint.filter.highlight
+  * special JointJS attributes ref-x, ref-y, ref-width and ref-height can be specified in percentages
+  * joint.dia.Link routers and connector can be now specified as functions
+  * source code passed through JSCS checker, fixed coding style and indentation
+  * Lodash upgraded to the latest version v3.10.1
+  * Backbone upgraded to v1.2.1
+  * make JointJS compatible with Browserify, Webpack and RequireJS
+  * other fixes and improvements
+
+v1.5.1 - 02-23-2015
+  * ui.Tooltip 'trigger' option (values: 'click', 'focus', 'hover' [default], 'manual')
+  * ui.Tooltip 'viewport' option (e.g. viewport: { selector: '.mycontainer', padding: 10 } keeps the tooltip within boundaries of .mycontainer)
+  * create a clean version (sans Handlebars) of ui.Halo, ui.Stencil, ui.Inspector and ui.FreeTransform
+  * ui.Stencil 'dropAnimation' option (if true, drop to invalid area returns element back to stencil in an animated fashion)
+  * ui.Stencil now disregards elements dropped into the stencil area
+  * ui.SelectBox new widget for creating dropdowns (with keyboard navigation support and different opening options)
+  * ui.ColorPalette new widget for color palette dropdown
+  * ui.SelectButtonGroup new widget for creating group of buttons (with multi or single selection support)
+  * ui.Inspector has new built-in types (select-box, select-button-group and color-palette)
+  * improvements in ui.SelectionView
+  * ui.SelectionView now adds a method destroyAllSelectionBoxes()
+  * improvements in ui.PaperScroller panning
+  * ui.Inspector introduces renderFieldContent() and getFieldValue() options for easier custom defined fields
+  * propagate options object in dia.Paper async mode
+  * ui.PaperScroller adds contentOptions, baseWidth and baseHeight options
+  * dia.Paper enables specifying paddings in fitToContent()
+  * layout.TreeLayout prevents relayout when cloning
+  * ui.Stencil triggers 'drop:invalid' event when element is dropped outside the paper area
+  * dia.Paper adds clientToLocalPoint() method
+  * ui.Stencil now properly cleans up all the internal papers in remove()
+  * ui.SelectionView fixes selection of unexisting views
+  * other small bug fixes and improvements
+
+v1.5.0 - 02-03-2015
+  * ui.TextEditor plugin for inline editing texts
+  * layout.TreeLayout plugin for auto-layouting graphs in a tree
+  * ui.TreeLayoutView plugin for interacting with trees
+  * ui.Dialog plugin displaying both modal and non-modal dialog boxes
+  * ui.Navigator plugin for displaying interactive small view into a large diagram
+  * storage.Local plugin for storing graphs, cells and any other documents in local storage
+  * alg.Dijkstra plugin for an efficient finding of the shortest path in a graph
+  * alg.PriorityQueue plugin implementing the priority queue data structure
+  * charts.Matrix for visualization co-occurences in a matrix
+  * improvements and bug fixes in ui.Inspector
+  * bug fixes in format.SVG and format.PNG export plugins
+  * add cell:highlight and cell:unhilight events to dia.Paper for custom highlithing
+  * add isEmbeddedIn() method to dia.Element and dia.Link
+  * introduce "deep" option in toFront() and toBack() methods on cells
+  * introduce validateEmbedding() optional function on dia.Paper
+  * add getCommonAncestor() method to dia.Graph
+  * add reparent() method to dia.Link
+  * add getEmbeddedCells() with "deep", "breadthFirst" options to dia.Element
+  * extend getConnectedLink() method on dia.Graph with "deep" option
+  * add "filter" option to ui.Snaplines
+  * add joint.util.breakText() function for auto-breaking text into lines
+  * add getBBox() method to dia.Graph for finding the compound bounding box of more elements
+  * add cell:mouseover and cell:mouseout events to dia.Paper
+  * add isLink() method to cells for a quick check if cell is a link or an element
+  * add shortestPath() method to dia.GraphUtils
+  * add new special attributes "ref-width" and "ref-height"
+  * add support for text along paths to Vectorizer and also via cell attrs
+  * add new options parameter to dia.Element:translate()
+  * add "useModelGeometry" parameter to ui.SelectionView
+  * add new "fitToContent" options "minWidth" and "minHeight" in dia.Paper
+  * expose "defs", "viewport" and "svg" properties on dia.Paper
+  * add example application on using JointJS/Rappid with AngularJS
+  * many other improvements and bug fixes
+
+v1.4.0 - 15-09-2014
+  * introduce chart.Pie shape for displaying interactive Pie Charts
+  * introduce chart.Knob shape for displaying knobs
+  * add new ui.Snaplines plugin for helping aligning elements
+  * introduce instant full-text search in ui.Stencil
+  * introduce rotateAngleGrid option in ui.Halo for specifying the rotation snapping angle
+  * extend interactive option in dia.Paper for finer control over the interactivity of links
+  * improve interaction with Halo tools on touch devices
+  * fix and improve SVG and Raster exports
+  * introduce tools in ui.SelectionView for group manipulation the same way as in ui.Halo
+  * add getBBox(elements) method to dia.Graph for returning bounding box of all the elements in the parameter
+  * allow embedding links to elements in order to translate their vertices if the parent moves
+  * introduce translate() method on links for translating all vertices (and source/target if they are points)
+  * add extra parameter in dia.Element rotate() method for rotating around custom origin
+  * introduce linkConnectionPoint() function in dia.Paper options for custom definition of link sticky points
+  * introduce findView() method on cells for easier lookup of paper views
+  * introduce addTo() method on cells for quicker adding cells to the graph
+  * introduce scaleContentToFit() method on dia.Paper
+  * add openAsPNG() method to format.Raster plugin
+  * improve ui.PaperScroller zoom() method
+  * implement sendToken() method on the link view for sending animated tokens along links
+  * add prop() method to elements and links for easier setting of custom data, potentially nested
+  * upgrade Backbone to v1.1.2
+  * allow external function for setting positions and vertices in layout.DirectedGraph plugin
+  * introduce dia.GraphUtils plugin with constructTree() function for constructing trees from JSON
+  * add min, max and step attributes to the number type in ui.Inspector
+  * introduce markAvailable option on dia.Paper for highlighting available elements/ports while reconnecting
+  * extend padding option in format.Print plugin to allow for setting different padding for different sides
+  * introduce expressions in Inspector when clause
+  * introduce origin option and setOrigin() on dia.Paper
+  * simplify initialization of ui.PaperScroller
+  * introduce useModelGeometry option in ui.Halo
+  * add basic.Rhombus shape
+  * allow for value/content pair definitions of the options list of the select type in Inspector
+  * add new geometry functions: point.bearing, point.reflection, line.bearing, line.pointAt, rect.containsRect, rect.normalize, rect.bbox
+  * plenty of other bug fixes and improvements

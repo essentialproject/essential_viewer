@@ -250,8 +250,8 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.v2.min.js" type="application/javascript"/>
-				<script src="js/d3/timeknots.js" type="application/javascript"/>
+				<script src="js/d3/d3.v2.min.js?release=6.19" type="application/javascript"/>
+				<script src="js/d3/timeknots.js?release=6.19" type="application/javascript"/>
 				<script type="text/javascript">
 				$('document').ready(function(){
 					 $(".compModelContent").vAlign();

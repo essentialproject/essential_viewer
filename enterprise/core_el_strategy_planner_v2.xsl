@@ -101,8 +101,8 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
-				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css?release=6.19"/>
+				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -113,25 +113,25 @@
 				<title><xsl:value-of select="eas:i18n('Strategy Planner')"/></title>
 
 				<!-- modal javascript library -->
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				
 				<!-- Start Service Quality Gauge library -->
-				<script type="text/javascript" src="js/gauge.min.js"></script>
+				<script type="text/javascript" src="js/gauge.min.js?release=6.19"></script>
 				
 				<!-- Start JointJS Diagramming Libraries and Styles-->
-				<!--<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/jointjs/lodash.min.js"/>
-				<script src="js/jointjs/backbone-min.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>	-->
+				<!--<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/jointjs/lodash.min.js?release=6.19"/>
+				<script src="js/jointjs/backbone-min.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.min.js?release=6.19"/>	-->
 				
 				<!-- gannt chart library -->
-				<script src="js/dhtmlxgantt/dhtmlxgantt.js"></script>
-				<link href="js/dhtmlxgantt/dhtmlxgantt.css" rel="stylesheet"/>
-				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>
+				<script src="js/dhtmlxgantt/dhtmlxgantt.js?release=6.19"></script>
+				<link href="js/dhtmlxgantt/dhtmlxgantt.css?release=6.19" rel="stylesheet"/>
+				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css?release=6.19"/>
 					
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
@@ -139,14 +139,6 @@
 					    $(this).ekkoLightbox({always_show_close: false});
 					}); 
 				</script>
-				
-				
-				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				
-				<!-- Start Templating Libraries -->
-				<script type="javascript" src="js/handlebars.min-v4.7.7.js"/>
 				
 				<style type="text/css">
 					
@@ -617,8 +609,8 @@
 				
 				<!--<xsl:call-template name="refModelStyles"/>-->
 				
-				<script src="js/FileSaver.min.js"></script>
-				<script src="js/jszip/jszip.min.js"></script>
+				<script src="js/FileSaver.min.js?release=6.19"></script>
+				<script src="js/jszip/jszip.min.js?release=6.19"></script>
 				
 				<script>
 					
@@ -3897,7 +3889,7 @@
 										.then(function(response){
 											//console.log('Roadmap Created');
 											console.log(response);
-											$('#createRoadmapBtn').text('Roadmap Created');
+											$('#createRoadmapBtn').text('Created!');
 											$('#createRoadmapBtn').prop("disabled", true);
 										})
 										.catch(function (error) {
@@ -5054,35 +5046,35 @@
 							<div class="workflowNavigation">
 								<div class="workflowStep" id="step1" onclick="menuSelect(1)">
 									<div class="workflowID bg-black">1</div>
-									<div class="worksflowTitle bg-darkgrey">Introduction</div>
+									<div class="worksflowTitle bg-darkgrey"><xsl:value-of select="eas:i18n('Introduction')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div> 
 								<div class="workflowStep" id="step2" onclick="menuSelect(2);setTimeout(initRoadmapScopeView, 600);">
 									<div class="workflowID bg-black">2</div>
-									<div class="worksflowTitle bg-lightgrey">Define Roadmap Scope</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Define Roadmap Scope')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step3" onclick="menuSelect(3);clearGraphModel();setTimeout(initStrategicPlansView, 600);">
 									<div class="workflowID bg-black">3</div>
-									<div class="worksflowTitle bg-lightgrey">Define Strategic Plans</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Define Strategic Plans')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step4" onclick="menuSelect(4);setTimeout(initRoadmapGantt, 600);">
 									<div class="workflowID bg-black">4</div>
-									<div class="worksflowTitle bg-lightgrey">Define Roadmap</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Define Roadmap')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
 								</div>
 								<div class="workflowStep" id="step5" onclick="menuSelect(5);setTimeout(initRoadmapExcel, 600);">
 									<div class="workflowID bg-black">5</div>
-									<div class="worksflowTitle bg-lightgrey">Export Roadmap</div>
+									<div class="worksflowTitle bg-lightgrey"><xsl:value-of select="eas:i18n('Export Roadmap')"/></div>
 									<div class="workflowArrow bg-darkgrey">
 										<i class="fa fa-chevron-right left-10"/>
 									</div>
@@ -5129,13 +5121,13 @@
 	
 	
 	<xsl:template name="introPage">
-		<h2 class="text-primary bottom-15">Welcome to the Strategy Planner</h2>
-		<p class="lead"><strong>This report assists you in the definition of an architecture strategy as a Roadmap of Strategic Plans.</strong></p>
+		<h2 class="text-primary bottom-15"><xsl:value-of select="eas:i18n('Welcome to the Strategy Planner')"/></h2>
+		<p class="lead"><strong><xsl:value-of select="eas:i18n('This report assists you in the definition of an architecture strategy as a Roadmap of Strategic Plans.')"/></strong></p>
 		<div class="appSelection dashboardPanel bg-offwhite bottom-30 pull-left">
-			<p class="lead">Please provide a name and description for the Roadmap to be defined.</p>
-			<label for="roadmapNameInput" class="impact top-20">Roadmap Name:</label>
+			<p class="lead"><xsl:value-of select="eas:i18n('Please provide a name and description for the Roadmap to be defined.')"/></p>
+			<label for="roadmapNameInput" class="impact top-20"><xsl:value-of select="eas:i18n('Roadmap Name:')"/></label>
 			<input id="roadmapNameInput" class="form-control bottom-10" placeholder="Enter a name"/>
-			<label for="roadmapDescInput" class="impact">Description:</label>
+			<label for="roadmapDescInput" class="impact"><xsl:value-of select="eas:i18n('Description:')"/></label>
 			<textarea id="roadmapDescInput" class="form-control bottom-10" placeholder="Enter a description"/>
 		</div>
 	</xsl:template>
@@ -5878,7 +5870,7 @@
 					<xsl:if test="$eipMode">
 						<div class="col-md-2">
 							<div class="pull-right">
-								<button id="createRoadmapBtn" disabled="true" class="btn bg-darkgreen-100">Create Roadmap</button>
+								<button id="createRoadmapBtn" disabled="true" class="btn bg-darkgreen-100">Create Roadmaps and Plans in Repository</button>
 							</div>
 						</div>
 					</xsl:if>

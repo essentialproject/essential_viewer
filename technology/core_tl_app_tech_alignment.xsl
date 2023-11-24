@@ -196,20 +196,20 @@
 						<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
 					</xsl:call-template>
 				</title>
-				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
-				<script src="js/jquery-migrate-1.4.1.min.js"></script>
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
-				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
-				<script src="js/jquery.tools.min.js" type="text/javascript"/>
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css?release=6.19"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19"></script>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>
+				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js?release=6.19"/>
+				<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
 				<style type="text/css">
 					.Rect{
 						pointer-events: none;
@@ -973,7 +973,7 @@
 	<xsl:template name="legend">
 		<xsl:variable name="relevantLifecycleStatii" select="$allLifecycleStatii[name = $allTechProdRoles/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
 		<div class="keyContainer">
-			<div class="keySampleLabel">Strategic Alignment Legend: </div>
+			<div class="keySampleLabel"><xsl:value-of select="eas:i18n('Strategic Alignment Legend')"/></div>
 			<xsl:for-each select="$allLifecycleStatii">
 				<xsl:sort select="own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>
 				<xsl:variable name="statusLabel" select="current()/own_slot_value[slot_reference = 'enumeration_value']/value"/>
@@ -1006,7 +1006,7 @@
 			<div class="keySampleWide">
 				<xsl:attribute name="style">background-color: <xsl:value-of select="$noStatusColour"/>;</xsl:attribute>
 			</div>
-			<div class="keySampleLabel">Undefined</div>
+			<div class="keySampleLabel"><xsl:value-of select="eas:i18n('Undefined')"/></div>
 		</div>
 	</xsl:template>
 

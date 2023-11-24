@@ -73,7 +73,7 @@
                      text { font: 10px sans-serif; pointer-events: none; }
 
                     </style>
-				<script src="js/d3/d3.v5.7.0.min.js"/>
+				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
 			</head>
 			<body>
 	
@@ -88,7 +88,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Capability to Application Deployments for </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Capability to Application Deployments for ')"/></span>
 									<span class="text-primary"><xsl:value-of select="$thisBusCap/own_slot_value[slot_reference='name']/value"/></span>
 								</h1>
 							</div>
@@ -96,11 +96,11 @@
 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-						<span class="right-15"><i class="fa fa-circle right-5" style="color:#848ced"/>Business Capability</span> 	
-                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#a2a2aa"/>Business Process </span>	
-                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#40d040"/>Application Services</span>
-                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#fac769"/>Application</span>
-                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#e27878"/>Application Deployments</span>
+						<span class="right-15"><i class="fa fa-circle right-5" style="color:#848ced"/><xsl:value-of select="eas:i18n('Business Capability')"/></span> 	
+                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#a2a2aa"/><xsl:value-of select="eas:i18n('Business Process')"/></span>	
+                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#40d040"/><xsl:value-of select="eas:i18n('Application Services')"/></span>
+                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#fac769"/><xsl:value-of select="eas:i18n('Application')"/></span>
+                        <span class="right-15"><i class="fa fa-circle right-5" style="color:#e27878"/><xsl:value-of select="eas:i18n('Application Deployments')"/></span>
 						<div class="simple-scroller">
 							<svg id="model" height="100%" width="100%"/>
 						</div>

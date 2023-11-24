@@ -41,7 +41,7 @@
 	<xsl:variable name="defaultScopeColour">#666</xsl:variable>
 
 	<xsl:template name="ViewUserSettingsUI">
-		<script type="text/javascript" src="common/user-settings/core_common_user_settings_functions.js"/>
+		<script type="text/javascript" src="common/user-settings/core_common_user_settings_functions.js?release=6.19"/>
 		<script>
 			const essUserSettingsPublishTimestamp = '<xsl:value-of select="$aScopeTimestamp"/>';
 			const essUserSettingsRepoId = '<xsl:value-of select="$scopingRepoID"/>';
@@ -79,7 +79,7 @@
 				float: left;
 				padding: 0px 15px;
 				border-bottom: 1px solid #ccc;
-				background-color: #eee;
+				background-color: #f6f6f6;
 				z-index: 999;
 			}
 			#scope-bar {
@@ -793,11 +793,11 @@
 		</div>-->
 
 		<!-- JQuery Month Picker plug-in -->
-		<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-			<link href="js/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
-		<link href="js/jquery-ui-month-picker/MonthPicker.min.css" rel="stylesheet" type="text/css" />
-		<script type="text/javascript" src="js/jquery.maskedinput.min.js"/>
-		<script type="text/javascript" src="js/jquery-ui-month-picker/MonthPicker.min.js"/>
+		<link href="js/jquery-ui/jquery-ui.min.css?release=6.19" rel="stylesheet" type="text/css" />
+			<link href="js/jquery-ui/jquery-ui.theme.min.css?release=6.19" rel="stylesheet" type="text/css" />
+		<link href="js/jquery-ui-month-picker/MonthPicker.min.css?release=6.19" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="js/jquery.maskedinput.min.js?release=6.19"/>
+		<script type="text/javascript" src="js/jquery-ui-month-picker/MonthPicker.min.js?release=6.19"/>
 	</xsl:template>
 
 	<xsl:template name="GetReportFilterExcludedSlots">

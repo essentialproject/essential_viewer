@@ -114,8 +114,8 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title><xsl:value-of select="eas:i18n('Business Capability Summary')"/></title>
-				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
-				<script src="js/d3/d3.min.js"></script>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
+				<script src="js/d3/d3.min.js?release=6.19"></script>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

@@ -153,27 +153,27 @@
 				<title><xsl:value-of select="eas:i18n('Strategic Implication Dashboard')"/>: <xsl:value-of select="$thisImplLabel"/></title>
 				
 				<!-- gannt chart library -->
-				<script src="js/dhtmlxgantt/dhtmlxgantt.js"/>
-				<link href="js/dhtmlxgantt/dhtmlxgantt.css" rel="stylesheet"/>
-				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>
+				<script src="js/dhtmlxgantt/dhtmlxgantt.js?release=6.19"/>
+				<link href="js/dhtmlxgantt/dhtmlxgantt.css?release=6.19" rel="stylesheet"/>
+				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css?release=6.19"/>
 				
 				<!-- Date formatting library -->
-				<script type="text/javascript" src="js/moment/moment.js"/>
+				<script type="text/javascript" src="js/moment/moment.js?release=6.19"/>
 				
 				
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>
 				
 				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				
 				<!-- Start Templating Libraries -->
-				<script src="js/handlebars-v4.1.2.js"/>
+				<script src="js/handlebars-v4.1.2.js?release=6.19"/>
 				
 				<!-- Chart library -->
-				<script src="js/chartjs/Chart.min.js"/>
+				<script src="js/chartjs/Chart.min.js?release=6.19"/>
 				
 				<style type="text/css">
 					

@@ -31,7 +31,8 @@
 
 	<xsl:variable name="allInfoConcepts" select="/node()/simple_instance[type = 'Information_Concept']"/>
 	<xsl:variable name="currentInfoObject" select="/node()/simple_instance[name = $param1]"/>
-	<xsl:variable name="viewAttributes" select="/node()/simple_instance[name = $currentInfoObject/own_slot_value[slot_reference = 'contained_view_attributes']/value]"/>
+	<xsl:variable name="viewAttributes" select="/node()/simple_instance[type='Information_View_Attribute'][name = $currentInfoObject/own_slot_value[slot_reference = 'contained_view_attributes']/value]"/>
+	<xsl:key name="viewAttributesKey" match="/node()/simple_instance[type='Information_View_Attribute']" use="own_slot_value[slot_reference = 'contained_view_attributes']/value"/> 
 	<xsl:variable name="infoObjectName" select="$currentInfoObject/own_slot_value[slot_reference = 'view_label']/value"/>
 	<xsl:variable name="implementingInfoReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_information_views']/value = $currentInfoObject/name]"/>
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
@@ -45,6 +46,8 @@
 	<xsl:variable name="allActors" select="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]"/>
 	<xsl:variable name="allRoles" select="/node()/simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]"/>
 	<xsl:variable name="dataStakeholderRoleType" select="/node()/simple_instance[(type = 'Business_Role_Type') and (own_slot_value[slot_reference = 'name']/value = 'Data Stakeholder')]"/>
+	<xsl:key name="syns" match="/node()/simple_instance[(type = 'Synonym')]" use="name"/>
+	<xsl:variable name="synonyms" select="key('syns', $currentInfoObject/own_slot_value[slot_reference='synonyms']/value)"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -76,7 +79,7 @@
 				<title>
 					<xsl:value-of select="eas:i18n('Information View Summary')"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<script>
 					$(function(){
 						$('#impactedOrgs').columnize({columns: 2});		
@@ -134,6 +137,7 @@
 							</div>
 							<hr/>
 						</div>
+							
 
 						<!--Setup Parent Info Concept Section-->
 						<div class="col-xs-12">
@@ -158,7 +162,25 @@
 							</div>
 							<hr/>
 						</div>
-						
+						<!--Show Synonyms-->
+					<div class="col-xs-12">
+						<div class="sectionIcon">
+							<i class="fa fa-globe icon-section icon-color"/>
+						</div>
+
+						<h2 class="text-primary">
+							<xsl:value-of select="eas:i18n('Synonyms')"/>
+						</h2>
+
+						<div class="content-section">
+							<p>
+								<xsl:for-each select="$synonyms">
+								<i class="fa fa-caret-right"></i><xsl:text> </xsl:text><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template><br/>
+							</xsl:for-each>
+							</p>
+						</div>
+						<hr/>
+					</div>
 						<!--Setup Data Attributes Section-->
 						<div class="col-xs-12">
 							<div class="sectionIcon">
@@ -175,7 +197,7 @@
 							<hr/>
 						</div>
 
-
+				
 
 						<!--Setup Data Objects Section-->
 						<div class="col-xs-12">

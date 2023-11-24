@@ -91,6 +91,7 @@
 			<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>", 
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"supplierId":"<xsl:value-of select="eas:getSafeJSString($theSupplier/name)"/>",	
 			"caps":[<xsl:for-each select="$thisTechCap">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
@@ -115,14 +116,15 @@
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","std":"<xsl:choose><xsl:when test="$thisStandardStrengths"><xsl:value-of select="$thisStandardStrengths/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise>No Standard Defined</xsl:otherwise></xsl:choose>","stdStyle":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_class']/value"/>",
 		"stdColour":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_colour']/value"/>",
 		"stdTextColour":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each><xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-			"supplier":"<xsl:call-template name="RenderInstanceLinkForJS">
+		"supplierId":"<xsl:value-of select="eas:getSafeJSString($theSupplier/name)"/>",	
+		"supplier":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$theSupplier"/>
 			</xsl:call-template>",
 			"status": "<xsl:value-of select="translate($theLifecycleStatus/name, '.', '_')"/>",
 			"statusScore": <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
 			"delivery": "<xsl:value-of select="translate($theDeliveryModel/name, '.', '_')"/>",
-			"techOrgUsers": [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
-		} <xsl:if test="not(position()=last())">,
+			"techOrgUsers": [<xsl:for-each select="$thsTechUsers">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="not(position()=last())">,
 		</xsl:if>
 	</xsl:template>
 	

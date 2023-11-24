@@ -34,10 +34,10 @@
         <html>
             <head>
             	<xsl:call-template name="commonHeadContent"/>
-				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-            	<script src="js/d3/d3_4-11/d3.min.js"></script>
-			 	<script src="js/dagre/dagre.min.js"></script>
-                <script src="js/dagre/dagre-d3.min.js"></script>	
+				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
+            	<script src="js/d3/d3_4-11/d3.min.js?release=6.19"></script>
+			 	<script src="js/dagre/dagre.min.js?release=6.19"></script>
+                <script src="js/dagre/dagre-d3.min.js?release=6.19"></script>	
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderEditorInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

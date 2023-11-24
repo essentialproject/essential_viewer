@@ -19,32 +19,34 @@
     <xsl:param name="viewScopeTermIds"/>
 	<xsl:variable name="elementStyle"  select="/knowledge_base/simple_instance[type='Element_Style']"></xsl:variable>
 	<xsl:variable name="labels"  select="/knowledge_base/simple_instance[type=('Label','Commentary')]"></xsl:variable>
-    <xsl:variable name="PMC"  select="/knowledge_base/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='name']/value='RMIT Health']"></xsl:variable>
-    <xsl:key name="PMCPerformance" match="/knowledge_base/simple_instance[supertype='Performance_Measure']" use="own_slot_value[slot_reference='pm_category']/value"></xsl:key>
+
+	<xsl:key name="labelsKey" match="/knowledge_base/simple_instance[type=('Label','Commentary')]" use="name"/>
+
  	<xsl:key name="apps" match="/knowledge_base/simple_instance[supertype='Application_Provider']" use="own_slot_value[slot_reference='performance_measures']/value"></xsl:key>
  	<xsl:key name="sqvs" match="/knowledge_base/simple_instance[supertype='Service_Quality_Value']" use="name"></xsl:key>
 	<xsl:key name="sqs" match="/knowledge_base/simple_instance[supertype='Service_Quality']" use="name"></xsl:key>
 	<xsl:key name="sqvlsbysq" match="/knowledge_base/simple_instance[supertype='Service_Quality_Value']" use="own_slot_value[slot_reference='usage_of_service_quality']/value"></xsl:key> 
     <xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
     <xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Value_Stream','Composite_Application_Provider','Group_Actor')"/>
-	<xsl:variable name="custJourney"  select="/knowledge_base/simple_instance[type='Value_Stream']"></xsl:variable>
+	<xsl:variable name="valueStream"  select="/knowledge_base/simple_instance[type='Value_Stream']"></xsl:variable>
 	<xsl:key name="vsphase" match="/knowledge_base/simple_instance[type='Value_Stage']" use="own_slot_value[slot_reference='vsg_value_stream']/value"></xsl:key>
 	<xsl:variable name="roles" select="/knowledge_base/simple_instance[type=('Business_Role','Business_Role_Type')]"/>
-	<xsl:key name="product" match="/knowledge_base/simple_instance[type='Product_Type']" use="name"></xsl:key>
+	<xsl:key name="rolesKey" match="/knowledge_base/simple_instance[type=('Business_Role','Business_Role_Type')]" use="name"/>
+	<xsl:key name="product" match="/knowledge_base/simple_instance[type=('Product_Type','Composite_Product_Type')]" use="name"></xsl:key>
     <xsl:template match="knowledge_base">
         	<xsl:call-template name="docType"/> 
 			<xsl:variable name="apiBCM">
-				<xsl:call-template name="GetViewerAPIPath">
+				<xsl:call-template name="GetViewerAPIPathTemplate">
 					<xsl:with-param name="apiReport" select="$busCapData"></xsl:with-param>
 				</xsl:call-template>
 			</xsl:variable>
 			<xsl:variable name="apiApps">
-				<xsl:call-template name="GetViewerAPIPath">
+				<xsl:call-template name="GetViewerAPIPathTemplate">
 					<xsl:with-param name="apiReport" select="$appsData"></xsl:with-param>
 				</xsl:call-template>
 			</xsl:variable>
 			<xsl:variable name="apiAppProc">
-				<xsl:call-template name="GetViewerAPIPath">
+				<xsl:call-template name="GetViewerAPIPathTemplate">
 					<xsl:with-param name="apiReport" select="$appProcData"></xsl:with-param>
 				</xsl:call-template>
 			</xsl:variable>       
@@ -58,7 +60,7 @@
 						<xsl:with-param name="newWindow" select="true()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Value Streams</title>
+				<title>Value Stream Application Mapping</title>
 				<style>
 				.ess-vs-row {
 					display: flex;
@@ -70,7 +72,7 @@
 					background-color: #477c98;
 					border: 1px solid #d3d3d3;
 					color: #ffffff;
-					flex-grow: 1;
+					<!--flex-grow: 1;-->
 					text-align: center;
 				}
 				
@@ -78,8 +80,7 @@
 					padding: 2px;
 					background-color: #82bedf;
 					border: 1px solid #d3d3d3;
-					color: #ffffff;
-					flex-grow: 1;
+					color: #ffffff; 
 				
 				}
 				
@@ -89,11 +90,31 @@
 					border: 1px solid #d6d6d6;
 					<!--flex-grow: 1;-->
 				}
+
+				.ess-vs-column-desc {
+					border: 1pt solid #d3d3d3;
+					color: #000000;
+					border-radius: 6px;
+					padding:3px;
+					margin-bottom:2px;
+					<!--flex-grow: 1;-->
+				}
+
+				 
+				.vsd {
+					border: 1pt solid #d3d3d3;
+					color: #000000;
+					border-radius: 6px;
+					padding: 3px;
+					font-size: 0.9em;
+					flex-grow: 1;
+					margin: 2px;
+				}
 				
 				.ess-vs-first-column {
 					width: 37px;
 					border: 0;
-					flex-shrink: 0;
+					flex: none;
 				}
 				
 				.appvs {
@@ -193,8 +214,9 @@
 				}
 				.ess-flat-card-title {
 					padding: 2px;
-					background-color: #efefef;
 					font-size: 0.8em;
+					position: absolute;
+					top: 5px;
 				}
 				.ess-flat-card-body {
 					padding: 2px;
@@ -256,6 +278,7 @@
 					display: inline-block;
 					width: 60%;
 					text-align: left;
+					vertical-align: top;
 				}
 				.enumText {
 					font-size: 8pt;
@@ -263,14 +286,40 @@
 					width: 40%;
 					vertical-align: top;
 				}
-				.vsd {
-					border: 1pt solid #d3d3d3;
-					color: #000000;
-					border-radius: 6px;
-					padding: 3px;
-					font-size: 0.9em;
-					flex-grow: 1;
-					margin: 2px;
+				.eas-logo-spinner {
+					display: flex; 
+					justify-content: center; 
+				}
+				#editor-spinner {
+					height: 100vh; 
+					width: 100vw; 
+					position: fixed; 
+					top: 0; 
+					left:0; 
+					z-index:999999; 
+					background-color: hsla(255,100%,100%,0.75); 
+					text-align: center; 
+				}
+				#editor-spinner-text{
+					width: 100vw; 
+					z-index:999999; 
+					text-align: center; 
+					}
+				.spin-text {
+					font-weight: 700; 
+					animation-duration: 1.5s; 
+					animation-iteration-count: infinite; 
+					animation-name: logo-spinner-text; 
+					color: #aaa; 
+					float: left; 
+				}
+				.spin-text2 {
+					font-weight: 700; 
+					animation-duration: 1.5s; 
+					animation-iteration-count: infinite; 
+					animation-name: logo-spinner-text2; 
+					color: #666; 
+					float: left; 
 				}
 				</style>
 			</head>
@@ -279,26 +328,36 @@
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
 				<div class="container-fluid">
 					<div class="clearfix top-30"/>
-					<div class="text-primary xlarge strong top-10"><xsl:value-of select="eas:i18n('Value Stream')"/></div>
+					<div class="text-primary xlarge strong top-10"><xsl:value-of select="eas:i18n('Value Stream Application Mapping')"/></div>
 					<div>
 						<select id="vs"/>
-						<button class="btn btn-default btn-sm left-15" id="expandButton">Show Detail</button>
-						<button  class="btn btn-default btn-sm left-5" id="shrinkButton">Hide Detail</button>
+						<button class="btn btn-default btn-sm left-15" id="expandButton"><xsl:value-of select="eas:i18n('Show Detail')"/></button>
+						<button  class="btn btn-default btn-sm left-5" id="shrinkButton"><xsl:value-of select="eas:i18n('Hide Detail')"/></button>
 					</div>
+					<div id="editor-spinner" class="hidden"> 
+						<div class="eas-logo-spinner" style="margin: 100px auto 10px auto; display: inline-block;"> 
+							<div class="spin-icon" style="width: 60px; height: 60px;"> 
+								<div class="sq sq1"/><div class="sq sq2"/><div class="sq sq3"/> 
+								<div class="sq sq4"/><div class="sq sq5"/><div class="sq sq6"/> 
+								<div class="sq sq7"/><div class="sq sq8"/><div class="sq sq9"/> 
+							</div>                       
+						</div> 
+						<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/> 
+					</div>  
 					<div class="top-10" id="tabcontainer"/>
 			
 					<script id="columnSet-template" type="text/x-handlebars-template">
 						<div class="bottom-5">
-							<b>Name:</b> {{#essRenderInstanceReportLink this.vs}}{{/essRenderInstanceReportLink}}
+							<b><xsl:value-of select="eas:i18n('Name')"/>:</b> {{#essRenderInstanceReportLink this.vs}}{{/essRenderInstanceReportLink}}
 						</div>
 						<div class="bottom-5">
-							<b>Description:</b> {{this.vs.description}}
+							<b><xsl:value-of select="eas:i18n('Description')"/>:</b> {{this.vs.description}}
 						</div>
-						<div class="bottom-5"><b>Products:</b> {{#each this.vs.products}}
+						<div class="bottom-5"><b><xsl:value-of select="eas:i18n('Products')"/>:</b> {{#each this.vs.products}}
 							<span class="label label-primary right-5">{{this.name}}</span>{{/each}}
 						</div>
 						<div class="bottom-5">
-							<b>Capabilities:</b> 
+							<b><xsl:value-of select="eas:i18n('Capabilities')"/>:</b> 
 							{{#each this.vs.buscaps}}
 								<span class="label label-info right-5">{{this.name}}</span>
 							{{/each}}
@@ -307,7 +366,7 @@
 						<div class="ess-vs-row top-15">
 							<div class="ess-vs-column ess-vs-first-column"></div>
 							{{#each this.vsps}}
-								<div class="ess-vs-header"><xsl:attribute name="style">flex-basis: {{../colWidth}}%;</xsl:attribute>{{participants}}</div>
+								<div class="ess-vs-header"><xsl:attribute name="style">flex-basis: {{../colWidth}}px;</xsl:attribute>{{participants}}</div>
 							{{/each}}
 						</div>
 						<div class="ess-vs-row">
@@ -317,9 +376,9 @@
 							{{/each}}
 						</div>
 						<div class="ess-vs-row">
-							<div class="ess-vs-column ess-vs-first-column"></div>
+							<div class="ess-vs-column ess-vs-first-column" ></div>
 							{{#each this.vsps}}
-							<div class="vsd"><xsl:attribute name="style">flex-basis: {{../colWidth}}px;</xsl:attribute><span class="vstext">{{this.description}}</span></div>
+							<div class="ess-vs-column-desc "><xsl:attribute name="style">flex-basis: {{../colWidth}}px;</xsl:attribute><span class="vstext">{{this.description}}</span></div>
 							{{/each}}
 						</div>
 						<div class="holder" style="overflow-y: auto;height: 95vh">
@@ -364,7 +423,8 @@
 														<div>
 													</div>
 												</div>
-												<div class="enumText">Disposition:</div>
+												{{#if time}}
+												<div class="enumText"><xsl:value-of select="eas:i18n('Disposition')"/>:</div>
 												<div class="enumVals">
 													<i>
 														<xsl:attribute name="class">fa {{time.icon}}</xsl:attribute>
@@ -372,14 +432,18 @@
 													</i>
 													{{time.name}}
 												</div>
-												<div class="enumText">Delivery:</div>
+												{{/if}}
+												{{#if appDel}}
+												<div class="enumText"><xsl:value-of select="eas:i18n('Delivery')"/>:</div>
 												<div class="enumVals">
 													<i>
 														<xsl:attribute name="class">fa {{appDel.icon}}</xsl:attribute>
 														<xsl:attribute name="style">color:{{appDel.backgroundColor}}</xsl:attribute>
 													</i>
 													{{appDel.name}}</div>
-												<div class="enumText">Codebase:</div>
+												{{/if}}
+												{{#if codebase}}
+												<div class="enumText"><xsl:value-of select="eas:i18n('Codebase')"/>:</div>
 												<div class="enumVals">
 													<i>
 														<xsl:attribute name="class">fa {{codebase.icon}}</xsl:attribute>
@@ -387,7 +451,9 @@
 													</i>
 													{{codebase.name}}
 												</div>
-												<div class="enumText">Lifecycle:</div>
+												{{/if}}
+												{{#if life}}
+												<div class="enumText"><xsl:value-of select="eas:i18n('Lifecycle')"/>:</div>
 												<div class="enumVals">
 													<i>
 														<xsl:attribute name="class">fa {{life.icon}}</xsl:attribute>
@@ -395,6 +461,7 @@
 													</i>
 													{{life.name}}
 												</div>
+												{{/if}}
 											</div>	
 										</div>			
 									</div>					 
@@ -411,22 +478,24 @@
 			        // Compile the Handlebars template
 					<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
 														
-			
-						
+					function showEditorSpinner(message){
+						$('#editor-spinner-text').text(message);                             
+						$('#editor-spinner').removeClass('hidden');                          
+					};
+					 
+					function removeEditorSpinner(){
+						$('#editor-spinner').addClass('hidden'); 
+						$('#editor-spinner-text').text(''); 
+					};
+					showEditorSpinner('Fetching Data');
 			        // Render the template with the data and append to the row-container div
 						$(document).ready(function(){
-						<!--	var html = template(data);
-						document.getElementById("tabcontainer").innerHTML = html;
-			-->
 								window.addEventListener('load', (event) => {
 									// After page is loaded, add click event to the expandButton
 									document.getElementById('expandButton').addEventListener('click', function() {
-										// Iterate over all .app divs
-										var appDivs = document.querySelectorAll('.appvs');
-										appDivs.forEach(function(div) {
-											// Add a class to expand the div
-											div.classList.add('expanded');
-										});
+										 
+										$('.appvs').addClass('expanded')
+										 
 										$('.smallCard').fadeOut('slow', function() {
 											// Show big card, fade in, and add rotation animation
 											$('.bigCard').fadeIn('slow', function() {
@@ -435,14 +504,8 @@
 										});
 									});
 									document.getElementById('shrinkButton').addEventListener('click', function() {
-										// Iterate over all .app divs
-										var appDivs = document.querySelectorAll('.appvs');
-										appDivs.forEach(function(div) {
-											// Add a class to expand the div
-											div.classList.remove('expanded');
-										});
-										$('.bigCard').fadeOut('fast', function() {
-											// Show big card, fade in, and add rotation animation
+										$('.appvs').removeClass('expanded')
+										$('.bigCard').fadeOut('fast', function() { 
 											$('.smallCard').fadeIn('slow', function() {
 											 
 											});
@@ -450,11 +513,7 @@
 									});
 								})
 							})
-							<!--
-									appDivs.forEach(function(div) {
-										div.classList.toggle('expanded');
-									});
-							-->
+							
 			 	</script>
 				</div>
            	<xsl:call-template name="Footer"/> 
@@ -510,11 +569,42 @@
 			});
 		};
 		let selectedId='<xsl:value-of select="$param1"/>'
-		let vs=[<xsl:apply-templates select="$custJourney" mode="vs"/>];
-		let style=[<xsl:apply-templates select="$elementStyle" mode="elementStyle"/>]
-	 
+		let vs=[<xsl:apply-templates select="$valueStream" mode="vs"/>];
+	let style=[<xsl:apply-templates select="$elementStyle" mode="elementStyle"/>]
+	
 		var apps;
-		var vstemplate 
+		var vstemplate, filters; 
+
+		function getSlot(sltnm, id){
+			let slot=filters.find((e)=>{
+				return e.slotName==sltnm
+			})
+		
+			let res=slot?.values.find((r)=>{
+				return r.id==id;
+			})
+			if(res){
+			 
+				const idExists = style.some(s => s.ids.includes(id));
+			 
+				if (idExists) {
+				res['icon']=idExists.icon || 'fa-circle';
+				} else{
+					res['icon']='fa-circle';
+					res['backgroundColor']='#d3d3d3';
+				}
+			}
+
+			return res || "";
+		}
+
+		function setAppAttributes(app, getSlot) {
+			app['appDel'] = getSlot('ap_delivery_model', app.ap_delivery_model[0]);
+			app['time'] = getSlot('ap_disposition_lifecycle_status', app.ap_disposition_lifecycle_status[0]);
+			app['codebase'] = getSlot('ap_codebase_status', app.ap_codebase_status[0]);
+			app['life'] = getSlot('lifecycle_status_application_provider', app.lifecycle_status_application_provider[0]);
+		  }
+
 		$('document').ready(function ()
 	{
 		    var source = document.getElementById("columnSet-template").innerHTML;
@@ -545,14 +635,17 @@
 	    promise_loadViewerAPIData(viewAPIDataAppsProcs) 
 	    ]).then(function (responses)
 	    {
+			removeEditorSpinner()
 			caps=responses[0].busCaptoAppDetails;
 			apps=responses[1].applications;
-			let filters=responses[1].filters;
+
+			filters=responses[1].filters;
 			dynamicAppFilterDefs=filters?.map(function(filterdef){
 				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 			});
-			console.log('responses[2]',responses[2])
-			console.log('vs',vs)	
+		 
+	vs=vs.sort((a, b) => a.name &lt; b.name ? -1 : (a.name > b.name ? 1 : 0));
+ 	
 	vs.forEach((v)=>{
 		$('#vs').append('&lt;option value="'+v.id+'">'+v.name+'&lt;/option>')
 	})
@@ -560,86 +653,117 @@
 		placeholder: 'Select...'
 	});
 	$('#vs').val(selectedId).change();
-			function getSlot(sltnm, id){
-				let slot=filters.find((e)=>{
-					return e.slotName==sltnm
-				})
-		
-				let res=slot.values.find((r)=>{
-					return r.id==id;
-				})
-				if(res){
-				 
-					const idExists = style.some(s => s.ids.includes(id));
-				 
-					if (idExists) {
-					res['icon']=idExists.icon || 'fa-circle';
-					} else{
-						res['icon']='fa-circle';
-						res['backgroundColor']='#d3d3d3';
-					}
-				}
-	
-				return res || "";
-			}
+			
 			const addvsorgsProperty = (array) => apps.map(item => ({ ...item, vsorgs: [] }));
 	
 			// Call the function with the originalArray
 			 apps = addvsorgsProperty(apps);
 			 
 	const capMap = new Map(caps.map(f => [f.id, f]));
-	const styleMap = new Map(style.map(s => [s.ids[0], s]));
-	
-	vs.forEach(d => {
-		let vsBusCaps=[];
-	  d.vsps.forEach(e => {
-	    const mappedApps = [];
-	
-	    e.busCaps.forEach(c => {
-	      const capMatch = capMap.get(c);
-	
-	      if (capMatch &amp;&amp; capMatch.physP) {
-			vsBusCaps.push(capMatch)
-	        const processToAppMap = new Map(responses[2].process_to_apps.map(e => [e.id, e]));
-	
-	        capMatch.physP.forEach(process => {
-	          apps.forEach(app => {
-	            let appDel = getSlot('ap_delivery_model', app.ap_delivery_model[0]);
-	            let time = getSlot('ap_disposition_lifecycle_status', app.ap_disposition_lifecycle_status[0]);
-				let life = getSlot('lifecycle_status_application_provider', app.lifecycle_status_application_provider[0]);
-				let codebase = getSlot('ap_codebase_status', app.ap_codebase_status[0]);
-				
-				
-	/*
-	            const styleExists = styleMap.get(appDel.id);
-	            if (styleExists) {
-	              appDel.icon = styleExists.icon;
-	            }
-	*/
-	            app['appDel'] = appDel;
-	            app['time'] = time;
-				app['codebase']= codebase;
-				app['life']= life;
-	
-	
-	            if (app.physP.includes(process)) {
-	              const procOrg = processToAppMap.get(process);
-	
-	              if (procOrg) {
-	                app.vsorgs.push({ "id": procOrg.orgid, "name": procOrg.org });
-	                mappedApps.push(app);
-	              }
-	            }
-	          });
-	        });
-	      }
-	    });
-	
-	    e['apps'] = mappedApps;
-	    e.apps = [...new Map(e.apps.map(item => [item.id, item])).values()];
+	const styleMap = new Map(style.map(s => [s.ids[0], s])); 
+	const busProcessToAppMap = new Map();
+
+		responses[2].process_to_apps.forEach(e => {
+		if (busProcessToAppMap.has(e.processid)) {
+			busProcessToAppMap.get(e.processid).push(e);
+		} else {
+			busProcessToAppMap.set(e.processid, [e]);
+		}
+		});
+ 
+	const processToAppMap = new Map(responses[2].process_to_apps.map(e => [e.id, e]));
+
+	function addVsOrgs(match, procOrg) { 
+		match.vsorgs = match.vsorgs || [];
+		match.vsorgs.push({ "id": procOrg.orgid, "name": procOrg.org });
+	  }
+	  
+	  // Create a mapping for quick look-up
+	 
+	  const appsMap = new Map(apps.map(app => {
+		return [app.id, { ...app, vsorgs: [] }];
+	  }));
+	 
+	  vs.forEach(d => {
+		let thisVsOrgs=[];
+ 
+		let vsBusCaps = [];
+		
+		d.vsps.forEach(e => {
+		  const mappedApps = new Map();
+		
+		  e.busProcs.forEach(p => {
+	 
+			const procOrg = busProcessToAppMap.get(p);
+		 
+			if (procOrg) {
+				procOrg.forEach((or)=>{
+					thisVsOrgs.push({ "id": or.orgid, "name": or.org })
+					or.appsdirect?.forEach(a => {
+						const match = appsMap.get(a.id);
+				 
+						if (match) {
+							match.vsorgs.push({ "id": or.orgid, "name": or.org });
+						//addVsOrgs(match, procOrg);
+						mappedApps.set(match.id, match);
+						}
+					});
+		
+					or.appsviaservice?.forEach(a => {
+						const match = appsMap.get(a.appid);
+					 
+						if (match) {
+							match.vsorgs.push({ "id": or.orgid, "name": or.org });
+						//addVsOrgs(match, procOrg);
+						mappedApps.set(match.id, match);
+						}
+					});
+				})
+			}
+		  });
+		
+		 if(e.busProcs.length==0){
+		  e.busCaps.forEach(c => {
+			const capMatch = capMap.get(c);
+			
+			if (capMatch &amp;&amp; capMatch.physP) {
+			  vsBusCaps.push(capMatch); 
+			  capMatch.physP.forEach(process => {
+			 
+				thisVsOrgs.push({ "id": process.orgid, "name": process.org })
+				apps.forEach(app => {
+					
+				  if (app.physP.includes(process)) {
+					
+					const procOrg = processToAppMap.get(process);
+
+					//setAppAttributes(app, getSlot);
+		
+					if (procOrg) {
+					  
+							app.vsorgs.push({ "id": procOrg.orgid, "name": procOrg.org });
+				 
+					 // addVsOrgs(app, procOrg);
+					  mappedApps.set(app.id, app);
+					}
+				  }
+				});
+			  });
+			}
+		  });
+
+		}
+
+		
+		  e['apps'] = Array.from(mappedApps.values());
+		});
+		
+		vsBusCaps = [...new Map(vsBusCaps.map(item => [item.id, item])).values()];
+
+		d['buscaps'] = vsBusCaps;
+		d['inScopeOrgs']=thisVsOrgs;
 	  });
-	  d['buscaps']=vsBusCaps;
-	});
+	  
 	
 	
 			essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION','SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], filters, true);
@@ -683,26 +807,52 @@
 		  function groupAppsByOrgAndvsP(data) {
 			const result = {};
 			const vspNames = data.vsps.map(vsp => vsp.name);
-			
+			 
+			let inScopeOrgs=data.inScopeOrgs;
 			data.vsps.forEach(vsp => {
 			  vsp.apps?.forEach(app => {
 				app.vsorgs.forEach(org => {
-					orgInfo.push({"id":org.id, "name":org.name})
+					
+					if (inScopeOrgs.some(inScopeOrg => inScopeOrg.id === org.id)) {
+						orgInfo.push({"id": org.id, "name": org.name});
+					}
+					
+				 
 				  const orgName = org.id;
 				  const vspName = vsp.name; 	
 			 
-				  if (!result[orgName]) {
-					result[orgName] = {};
-					// Initialize all vsP names with empty arrays for this org
-					vspNames.forEach(name => {
-					  result[orgName][name] = [];
+				  // Preprocess scopedapps.resources into a Map for O(1) lookups
+				  const scopedAppsMap = new Map();
+				  scopedapps.resources.forEach(obj => {
+					scopedAppsMap.set(obj.id, obj);
+				  });
+				  
+				  // Prepare a template for result[orgName]
+				  const emptyOrgTemplate = {};
+				  vspNames.forEach(name => {
+					emptyOrgTemplate[name] = [];
+				  });
+				  
+				  data.vsps.forEach(vsp => {
+					const vspName = vsp.name;
+					
+					vsp.apps?.forEach(app => {
+					  app.vsorgs.forEach(org => {
+						const orgName = org.id;
+				  
+						// Initialize using a pre-created empty template
+						if (!result[orgName]) {
+						  result[orgName] = JSON.parse(JSON.stringify(emptyOrgTemplate));
+						}
+				  
+						// Use the pre-created Map for faster lookup
+						if (scopedAppsMap.has(app.id)) {
+						  result[orgName][vspName].push(app);
+						}
+					  });
 					});
-				  }
-				  const objectWithId = scopedapps.resources.find(obj => obj.id === app.id);
-				 
-				  if(objectWithId){
-				  	result[orgName][vspName].push(app);
-				  }
+				  });
+				  
 				});
 			  });
 			
@@ -730,6 +880,10 @@
 		  transformedData.forEach((f)=>{
 			f.vsps.forEach((l)=>{
 		    	l.apps = [...new Map(l.apps.map(item => [item.id, item])).values()];
+				
+				l.apps.forEach((a)=>{
+					setAppAttributes(a, getSlot);
+				})
 			})
 		  })
 		  	let dataSet={}
@@ -742,79 +896,46 @@
 		  dataSet["item"]=[];
 		  dataSet['vsps']=selected.vsps;
 		  dataSet['colWidth']=vspWidth;
-		   
-		  transformedData.forEach((f,i)=>{
-			 
-			let orgi=orgInfo.find((e)=>{
-				return e.id==f.orgName
-			})
-			f['name']=orgi.name;
-			f['className']='Group_Actor';
-			f.id=orgi.id;
-			f['width']=vspWidth
+		  
+		  // Create a map from orgInfo for O(1) lookups
+		  const orgInfoMap = new Map(orgInfo.map(e => [e.id, e]));
+		  
+		  // Loop through transformedData
+		  transformedData.forEach((f, i) => {
+			const orgi = orgInfoMap.get(f.orgName);
 			
-				dataSet.item.push(f)
-			
-		  })
+			if (orgi) { // make sure orgi is defined
+			  f['name'] = orgi.name;
+			  f['className'] = 'Group_Actor';
+			  f.id = orgi.id;
+			  f['width'] = vspWidth;
+		  
+			  dataSet.item.push(f);
+			}
+		  });
+		  
 		  }else{
 		
-			dataSet['msg']='Either no capabilities are mapped, or the capabilities in scope have no applications mapped';
+			dataSet['msg']='Either no physical processes are mapped or they have no applications mapped';
 		  }
 		  dataSet['vs']=selected;
-	console.log('dataSet',dataSet)
-	
+
+		  let allCaps=dataSet.vs.buscaps
+		
+		  vsBusCaps = [...new Map(allCaps.map(item => [item.id, item])).values()];
+
+		  dataSet.vs.busCaps=vsBusCaps;
+		 
 		  $('#tabcontainer').html(vstemplate(dataSet)); 
 	 
-		  $('#vs').on('change', function(){
+		  $('#vs').off().on('change', function(){
 			selectedId=$(this).val()
 			redrawView();
 		  })
 		}
 	
 		</xsl:template>
-	<xsl:template match="node()" mode="info">
-	<xsl:variable name="thisPMs" select="key('PMCPerformance', current()/name)"/>
-	<xsl:variable name="thissqs" select="key('sqs', current()/own_slot_value[slot_reference='pmc_service_qualities']/value)"/>
-	{"id":"<xsl:value-of select="current()/name"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-	            <xsl:with-param name="theSubjectInstance" select="current()"/>
-	            <xsl:with-param name="isRenderAsJSString" select="true()"/>
-	</xsl:call-template>",
-	"className":"<xsl:value-of select="current()/type"/>",
-	"measures":[<xsl:for-each select="$thisPMs">
-	<xsl:variable name="thisapps" select="key('apps', current()/name)"/>
-	<xsl:variable name="thissqvs" select="key('sqvs', current()/own_slot_value[slot_reference='pm_performance_value']/value)"/>
-	<xsl:variable name="thissqvssub" select="$thissqvs[name=thissqs/own_slot_value[slot_reference='pm_performance_value']/value]"/>
-	<xsl:variable name="thissqvlsbysq" select="key('sqvlsbysq',$thissqs/name)"/>
-	<xsl:variable name="thissqvfilter" select="$thissqvs[name=$thissqvlsbysq/name]"/>
-				{
-				"id":"<xsl:value-of select="current()/name"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-				"app":"<xsl:value-of select="$thisapps/name"/>",
-				"appname":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="$thisapps"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-				
-				"sqvs":[<xsl:apply-templates select="$thissqvfilter" mode="sqvs"/>]
-				 }<xsl:if test="position()!=last()">,</xsl:if>
-</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
-</xsl:template>
-<xsl:template match="node()" mode="sqvs">
-				{
-				"id":"<xsl:value-of select="current()/name"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-				"style":"<xsl:value-of select="current()[1]/own_slot_value[slot_reference='element_styling_classes']/value"/>",
-				"score":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_score']/value"/>",
-				"value":"<xsl:value-of select="current()/own_slot_value[slot_reference='service_quality_value_value']/value"/>",
-				 }<xsl:if test="position()!=last()">,</xsl:if>
-</xsl:template>
+	
 <xsl:template match="node()" mode="vs">
 	<xsl:variable name="vsp" select="key('vsphase',current()/name)"/>
 	<xsl:variable name="prod" select="key('product',current()/own_slot_value[slot_reference='vs_product_types']/value)"/>
@@ -829,14 +950,16 @@
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 		</xsl:call-template>",
-		"products":[<xsl:apply-templates select="$prod" mode="vsp"/>],
-		"buscaps":[<xsl:apply-templates select="$prod" mode="vsp"/>],
+		"products":[<xsl:apply-templates select="$prod" mode="vsp"/>], 
 		"vsps":[<xsl:apply-templates select="$vsp" mode="vsp"/>]
 	}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="vsp">
+<!--	
 	<xsl:variable name="lbl" select="$labels[name=current()/own_slot_value[slot_reference='vsg_label']/value]"/>
-	<xsl:variable name="thisRoles" select="$roles[name=current()/own_slot_value[slot_reference='vsg_participants']/value]"/>
+	<xsl:variable name="thisRoles" select="$roles[name=current()/own_slot_value[slot_reference='vsg_participants']/value]"/>-->
+	<xsl:variable name="lbl" select="key('labelsKey',current()/own_slot_value[slot_reference='vsg_label']/value)"/>
+	<xsl:variable name="thisRoles" select="key('rolesKey', current()/own_slot_value[slot_reference='vsg_participants']/value)"/>
 	{
 		"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
@@ -855,7 +978,9 @@
 			<xsl:with-param name="theSubjectInstance" select="$lbl"/>
 			<xsl:with-param name="isRenderAsJSString" select="true()"/>
 </xsl:call-template>",
-		"busCaps":[<xsl:for-each select="current()/own_slot_value[slot_reference='vsg_required_business_capabilities']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+		"busCaps":[<xsl:for-each select="current()/own_slot_value[slot_reference='vsg_required_business_capabilities']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"busProcs":[<xsl:for-each select="current()/own_slot_value[slot_reference='vs_supporting_bus_processes']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 	}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 

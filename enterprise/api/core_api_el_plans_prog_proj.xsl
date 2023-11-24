@@ -202,6 +202,10 @@
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isForJSONAPI" select="true()"/>
 				</xsl:call-template>",
+			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",		
 			"className":"<xsl:value-of select="current()/type"/>",
 			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -278,7 +282,8 @@
 			</xsl:for-each>],	
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"strategicPlans":[<xsl:for-each select="current()/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-			"className":"<xsl:value-of select="current()/type"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+			"className":"<xsl:value-of select="current()/type"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>  
 	
 	<xsl:template match="node()" mode="projects"> 
@@ -301,6 +306,10 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
+			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",	
 			"orgUserIds":[<xsl:for-each select="$thisStakeholdersOrgs">
 					<xsl:variable name="thisActors" select="key('orgs_key',current()/name)"/> 
 					"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>"<xsl:if test="position()!=last()">,</xsl:if>

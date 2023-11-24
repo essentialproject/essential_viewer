@@ -59,7 +59,7 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<title><xsl:value-of select="eas:i18n('Application Change Analysis')"/> - <xsl:value-of select="eas:i18n('Application Interface')"/>: <xsl:value-of select="eas:i18n('Select Application')"/></title>
-				<script type="text/javascript" src="js/autocolumn.js"/>
+				<script type="text/javascript" src="js/autocolumn.js?release=6.19"/>
 				<!--script to turn the app providers list into columns-->
 				<script>
 						$(function(){

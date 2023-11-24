@@ -96,7 +96,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Lifecycle Viewer</title>
-				<script src="js/d3/d3.v5.9.7.min.js"></script>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
 					
 			<style>
 				/*------ General Style ------*/

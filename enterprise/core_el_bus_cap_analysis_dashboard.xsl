@@ -111,7 +111,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.v5.9.7.min.js"></script>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
 				<title>Business Capability Model</title>
 				<style>
 					.l0-cap{
@@ -226,11 +226,11 @@
 					}
 					
 					.sidenav{
-						height: calc(100vh - 41px);
+						height: calc(100vh - 76px);
 						width: 350px;
 						position: fixed;
 						z-index: 1;
-						top: 41px;
+						top: 76px;
 						right: 0;
 						background-color: #f6f6f6;
 						overflow-x: hidden;
@@ -242,7 +242,7 @@
 					
 					.sidenav .closebtn{
 						position: absolute;
-						top: 42px;
+						top: 5px;
 						right: 5px;
 						font-size: 14px;
 						margin-left: 50px;
@@ -1050,7 +1050,7 @@
 				</script>
 				<script id="blob-template" type="text/x-handlebars-template">
 					<div class="blobBoxTitle right-10"> 
-						<strong>Select Level:</strong>
+						<strong><xsl:value-of select="eas:i18n('Select Level')"/>:</strong>
 					</div> 
 					{{#each this}}
 					<div class="blobBox">
@@ -2627,16 +2627,16 @@ $('#capjump').change(function(){
 		}
 	
 		/*Auto resize panel during scroll*/
-		$('window').scroll(function() {
+		$(window).scroll(function () {
 			if ($(this).scrollTop() &gt; 40) {
-				$('#appSidenav').css('position','fixed');
-				$('#appSidenav').css('height','calc(100%)');
-				$('#appSidenav').css('top','0');
+				$('#appSidenav').css('position', 'fixed');
+				$('#appSidenav').css('height', 'calc(100% - 38px)');
+				$('#appSidenav').css('top', '38px');
 			}
 			if ($(this).scrollTop() &lt; 40) {
-				$('#appSidenav').css('position','fixed');
-				$('#appSidenav').css('height','calc(100% - 40px)');
-				$('#appSidenav').css('top','41px');
+				$('#appSidenav').css('position', 'fixed');
+				$('#appSidenav').css('height', 'calc(100% - 38px)');
+				$('#appSidenav').css('top', '76px');
 			}
 		});
 

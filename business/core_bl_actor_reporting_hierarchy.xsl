@@ -140,9 +140,9 @@
 								});
 							</script>
 
-				<script language="javascript" src="js/jit-yc.js" type="text/javascript"/>
-				<script language="javascript" src="js/org_tree.js" type="text/javascript"/>
-				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
+				<script language="javascript" src="js/jit-yc.js?release=6.19" type="text/javascript"/>
+				<script language="javascript" src="js/org_tree.js?release=6.19" type="text/javascript"/>
+				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<style>
 					.text{
 						margin: 7px;
@@ -413,8 +413,8 @@
 						<div class="col-xs-12">
 							<div class="page-header">
 								<h1>
-									<span class="text-primary">View: <xsl:value-of select="$DEBUG"/></span>
-									<span class="text-darkgrey">Team Reporting Hierarchy - <span class="text-primary"><xsl:value-of select="$rootOrgName"/></span></span>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/> <xsl:value-of select="$DEBUG"/></span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Team Reporting Hierarchy')"/> - <span class="text-primary"><xsl:value-of select="$rootOrgName"/></span></span>
 								</h1>
 							</div>
 						</div>
@@ -422,26 +422,26 @@
 							<div class="sectionIcon">
 								<i class="fa fa-sitemap icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Reporting Hierarchy</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Reporting Hierarchy')"/></h2>
 							<div class="content-section">
-								<p>This view shows the reporting lines for the people in the <strong><xsl:value-of select="$rootOrgName"/></strong> team.</p>
+								<p><xsl:value-of select="eas:i18n('This view shows the reporting lines for the people in the ')"/><strong><xsl:value-of select="$rootOrgName"/></strong> <xsl:value-of select="eas:i18n('team.')"/></p>
 								<br/>
 								<div class="pull-left">
 									<div class="pull-left">
-										<strong>Tree Orientation:&#160;&#160;</strong>
+										<strong><xsl:value-of select="eas:i18n('Tree Orientation')"/>&#160;&#160;</strong>
 									</div>
 									<div class="pull-left">
 										<form style="*margin-top: -2px;">
-											<label for="r-top">Top </label>
+											<label for="r-top"><xsl:value-of select="eas:i18n('Top ')"/></label>
 											<input checked="checked" id="r-top" name="orientation" type="radio" value="top"/>
 											<span>&#160;&#160;&#160;</span>
-											<label for="r-left">Left </label>
+											<label for="r-left"><xsl:value-of select="eas:i18n('Left ')"/></label>
 											<input id="r-left" name="orientation" type="radio" value="left"/>
 										</form>
 									</div>
 									<div class="horizSpacer_70px pull-left"/>
 									<div class="pull-left ">
-										<strong>Click to:&#160;&#160;</strong>
+										<strong><xsl:value-of select="eas:i18n('Click to')"/>&#160;&#160;</strong>
 									</div>
 									<div class="pull-left">
 										<form style="*margin-top: -2px;">
@@ -505,7 +505,7 @@
 								<i class="fa fa-users icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Catalogue</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Catalogue')"/></h2>
 
 							<div class="content-section">
 								<xsl:choose>
@@ -538,7 +538,7 @@
 									</xsl:when>
 									<xsl:otherwise>
 										<p>
-											<em>No individuals captured as members of the <xsl:value-of select="$rootOrgName"/> team</em>
+											<em><xsl:value-of select="eas:i18n('No individuals captured as members of the ')"/><xsl:value-of select="$rootOrgName"/><xsl:value-of select="eas:i18n(' team')"/></em>
 										</p>
 									</xsl:otherwise>
 								</xsl:choose>

@@ -167,18 +167,18 @@
 						<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
 					</xsl:call-template>
 				</title>
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
-				<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<link href="ext/shared/custom.css" type="text/css" rel="stylesheet"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
+				<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
+				<link href="ext/shared/custom.css?release=6.19" type="text/css" rel="stylesheet"/>
 				<style type="text/css">
 					.Rect{
 						pointer-events: none;

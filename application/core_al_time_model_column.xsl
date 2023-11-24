@@ -183,7 +183,7 @@
 								</div>
 								<div class="col-sm-6">
 									<div class="pull-right top-10 bottom-5">
-										<strong class="right-10">Legend:</strong>
+										<strong class="right-10"><xsl:value-of select="eas:i18n('Legend')"/></strong>
 										<div class="ess-tag-key ess-tag-default">
 											<a><xsl:value-of select="eas:i18n('Active Application')"></xsl:value-of></a>
 										</div>

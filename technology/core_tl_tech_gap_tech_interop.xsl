@@ -60,7 +60,7 @@
 				<title>
 					<xsl:value-of select="eas:i18n('Technology Component Interoperability Change Analysis Catalogue')"/>
 				</title>
-				<script type="text/javascript" src="js/autocolumn.js"/>
+				<script type="text/javascript" src="js/autocolumn.js?release=6.19"/>
 				<!--script to turn the app providers list into columns-->
 				<script>
 						$(function(){

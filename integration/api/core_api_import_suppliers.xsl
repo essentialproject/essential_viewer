@@ -73,6 +73,10 @@
 		"processes":[<xsl:for-each select="$thisProcesses">
 		<xsl:variable name="thisProcess" select="key('processes',current()/name)"/>
 				{"id":"<xsl:value-of select="current()/name"/>",
+				 "busProc":{"id":"<xsl:value-of select="$thisProcess/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$thisProcess"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>","className":"<xsl:value-of select="$thisProcess/type"/>"},
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 							<xsl:with-param name="theSubjectInstance" select="$thisProcess"/>
 							<xsl:with-param name="isRenderAsJSString" select="true()"/>

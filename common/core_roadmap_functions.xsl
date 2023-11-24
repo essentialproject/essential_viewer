@@ -92,16 +92,16 @@
 		
 		<xsl:if test="$roadmapEnabled">
 			<!-- MONTH PICKER LIBRARIES AND STYLESHEETS -->
-			<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-			<link href="js/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
-			<link href="js/jquery-ui-month-picker/MonthPicker.min.css" rel="stylesheet" type="text/css" />
-			<!--<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"/>-->
-			<script type="text/javascript" src="js/jquery.maskedinput.min.js"/>
-			<script type="text/javascript" src="js/jquery-ui-month-picker/MonthPicker.min.js"/>
+			<link href="js/jquery-ui/jquery-ui.min.css?release=6.19" rel="stylesheet" type="text/css" />
+			<link href="js/jquery-ui/jquery-ui.theme.min.css?release=6.19" rel="stylesheet" type="text/css" />
+			<link href="js/jquery-ui-month-picker/MonthPicker.min.css?release=6.19" rel="stylesheet" type="text/css" />
+			<!--<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js?release=6.19"/>-->
+			<script type="text/javascript" src="js/jquery.maskedinput.min.js?release=6.19"/>
+			<script type="text/javascript" src="js/jquery-ui-month-picker/MonthPicker.min.js?release=6.19"/>
 			
 			<!-- TIMELINE LIBRARIES AND STYLESHEETS -->
-			<link rel="stylesheet" href="js/jquery-timeline/timeline.min.css"/>
-			<script type="text/javascript" src="js/jquery-timeline/timeline.min.js"/>
+			<link rel="stylesheet" href="js/jquery-timeline/timeline.min.css?release=6.19"/>
+			<script type="text/javascript" src="js/jquery-timeline/timeline.min.js?release=6.19"/>
 			
 		</xsl:if>
 	</xsl:template>

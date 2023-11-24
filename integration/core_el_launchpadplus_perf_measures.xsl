@@ -110,9 +110,9 @@
 					<xsl:value-of select="eas:i18n('Launchpad Performance Measures Manager')"/>
 				</title>
 
-				<script src="js/d3/d3.v5.9.7.min.js"></script>
-				<script src="js/FileSaver.min.js"></script>
-				<script src="js/jszip/jszip.min.js"></script>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<script src="js/FileSaver.min.js?release=6.19"></script>
+				<script src="js/jszip/jszip.min.js?release=6.19"></script>
 				
 				<style type="text/css">
  	

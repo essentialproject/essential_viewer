@@ -72,9 +72,9 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"/>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.2/dagre.min.js" integrity="sha256-bESIX7mFp0f+eu+bIDzVkzvyViIyWCaX7p40Q+fRtkQ=" crossorigin="anonymous"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js?release=6.19"/>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.2/dagre.min.js?release=6.19" integrity="sha256-bESIX7mFp0f+eu+bIDzVkzvyViIyWCaX7p40Q+fRtkQ=" crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js?release=6.19"></script>
                 
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

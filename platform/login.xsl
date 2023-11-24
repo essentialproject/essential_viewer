@@ -62,7 +62,7 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<link href="platform/login_styles.css" rel="stylesheet" type="text/css"/>
+				<link href="platform/login_styles.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<title>Essential Cloud Login</title>
 			</head>
 			<body>

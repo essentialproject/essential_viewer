@@ -101,10 +101,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-                <script src="js/d3/d3.min.js"></script>
-                <script src="js/chartjs/Chart.min.js"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
-				<script src="js/pptxgenjs/dist/pptxgen.bundle.js"></script>
+                <script src="js/d3/d3.min.js?release=6.19"></script>
+                <script src="js/chartjs/Chart.min.js?release=6.19"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
+				<script src="js/pptxgenjs/dist/pptxgen.bundle.js?release=6.19"></script>
 				<title>Application Dashboard</title>
 				<style>
 					html {
@@ -1170,7 +1170,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 				//$('#filtersHolder').html(filtersTemplate(filters));
  
-				$('#chartsArea').html(chartTemplate(filters));
+				//$('#chartsArea').html(chartTemplate(filters));
 				$('#chart-quick-links').html(quickLinksTemplate(filters));
 
 				//$('.filters').select2();
@@ -1251,12 +1251,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				  return response.json();
 				} else {
 				 console.log('No settings File');
-				 essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+				 essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
 				}
 			  })
 			  .then(data => {
+				 
 				settings=data;
-				essInitViewScoping	(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
+				essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region',  'SYS_CONTENT_APPROVAL_STATUS'], filters);
 			  })
 			  .catch(error => console.error(error));
 			
@@ -1270,6 +1271,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  
 
 function redraw(apps){
+	console.log('reda')
 //do apps stuff
  
 $('#appBox').html(appBoxTemplate(apps))
@@ -1279,8 +1281,7 @@ var appCount = d3.nest()
   .entries(apps); 
 
 }
-
-console.log('s',settings)
+ 
 var charts = [];
 var chartData=[];
 function drawChart(canvasId, type, labels, inputData, title, colours, detailedData, ctype) {
@@ -1364,6 +1365,7 @@ $(document).on('click', '.appInfoButton',function ()
 
 
 		let appFilters=[];
+		
 		filters.forEach((d)=>{
 			 <!-- hardcoded as these are already in the view, may want to remove another time -->
 			if(d.name=='Codebase Status' || d.name=='Application Delivery Model'){}
@@ -1431,15 +1433,33 @@ var redrawView=function(){
 				}
 		
 				$('#appVal').text(scopedApps.resources.length)
+				if(settings){
+					console.log('settings1',settings)
+					filters.forEach((d)=>{
+						
+							let checkType=settings?.app_dashboard?.find((e)=>{
+								return e.id==d.id;
+							})
+							if(checkType){
+								d['order']=checkType.order
+							}
+						})
+						filters=filters.sort((a, b) => a.order - b.order);
+					console.log('filters1',filters)
+				}
+				
+console.log('filters',filters)
+filters=filters.sort((a, b) => a.order - b.order);
+$('#chartsArea').html(chartTemplate(filters));
 				filters.forEach((d)=>{
-					console.log('d',d)
+					
 					let checkType=settings?.app_dashboard?.find((e)=>{
 						return e.id==d.id;
 					})
 				
 					let type='doughnut';
 					if(checkType){type=checkType.type}
-					console.log('checkType',checkType)
+			 
 					var filterCount = d3.nest()
 					.key(function(e) {return e[d.slotName]}) 
 					.entries(scopedApps.resources);
@@ -1450,7 +1470,7 @@ var redrawView=function(){
 					let hoverData=[];
 					
 					let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
-                   
+                   console.log('filterCount',filterCount)
 					filterCount.forEach((e,i)=>{  
 					 
 							let thisFilter=d.values.find((f)=>{return f.id==e.key})
@@ -1474,7 +1494,7 @@ var redrawView=function(){
 							$('div[name="'+checkType.id+'"]').hide()
 							$('a[easlinkid="'+checkType.id+'"]').hide()
 						}
-			 
+			 console.log('d..',d)
 							drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
 						 
 					//console.log('chartData',  chartData);
@@ -1505,16 +1525,16 @@ var redrawView=function(){
 						let slide = pres.addSlide();
 						selected=$(this).attr('easid');
 						let clrs=[]
-						console.log('chartData[selected].colours',chartData[selected].colours)
+			 
 						chartData[selected].colours.forEach((c)=>{
-							console.log('c',c)
+							 
 							if(c){
 								clrs.push(c.slice(1))
 							}else{
 								clrs.push('#d3d3d3')
 							}
 						})
-						console.log('chartData[selected]',chartData[selected])
+						 
 						let checkPresType=settings?.app_dashboard?.find((e)=>{
 							return e.id==chartData[selected].name.replace(/ /g,"_");
 						})
@@ -1529,7 +1549,7 @@ var redrawView=function(){
 							prestype=pres.ChartType[checkPresType.type]
 						}
 					
- console.log('chartData',chartData)
+ 
 						slide.addChart(prestype, [chartData[selected]], { 
 							x: 0.2,
 							y: 0.2,

@@ -84,9 +84,9 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Footprint Comparison</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<title><xsl:value-of select="eas:i18n('Application Footprint Comparison')"/></title>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				
 				<xsl:call-template name="refModelLegendInclude"/>
 				<xsl:call-template name="appRefModelComparisonInclude"/>
@@ -441,14 +441,14 @@
 					</script>
 					<div class="col-xs-6 col-lg-6">
 						<label>
-							<span>Application 1</span>
+							<span><xsl:value-of select="eas:i18n('Application 1')"/></span>
 						</label>
 						<select id="leftAppList" class="form-control" style="width:100%"/>	
 						<div class="leftAppColour" style="width:100%">&#160;</div>
 					</div>
 					<div class="col-xs-6 col-lg-6">
 						<label>
-							<span>Application 2</span>
+							<span><xsl:value-of select="eas:i18n('Application 2')"/></span>
 						</label>
 						<select id="rightAppList" class="form-control" style="width:100%"/>	
 						<div class="rightAppColour" style="width:100%">&#160;</div>

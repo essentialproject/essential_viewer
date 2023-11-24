@@ -91,7 +91,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Launchpad Exporter</title> 
-				<script src="js/FileSaver.min.js"/>
+				<script src="js/FileSaver.min.js?release=6.19"/>
 				<style>
 				.minText {font-size:0.8em;
 						  vertical-align: top;

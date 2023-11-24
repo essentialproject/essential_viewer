@@ -87,10 +87,10 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<!--script to turn the app providers list into columns-->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				<style>
 					.productElement{
 						border: 1pt solid #ccc;

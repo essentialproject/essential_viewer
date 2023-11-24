@@ -144,11 +144,11 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Business Strategy Footprint</title>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
-				<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<!--<script src="js/jquery.columnizer.js" type="text/javascript"/>-->
-				<link href="ext/shared/custom.css" rel="stylesheet" type="text/css"/>
+				<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
+				<!--<script src="js/jquery.columnizer.js?release=6.19" type="text/javascript"/>-->
+				<link href="ext/shared/custom.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<!--script to turn a list into columns-->
 				<!--<script>
 					$(function(){

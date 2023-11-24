@@ -63,15 +63,15 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Cost Summary for <xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$app"/></xsl:call-template></title>
-				<script language="javascript" type="text/javascript" src="js/excanvas.js"/>
-				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
+				<title><xsl:value-of select="eas:i18n('Application Cost Summary for ')"/><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$app"/></xsl:call-template></title>
+				<script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"/>
+				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?release=6.19"/>
 				<style>
 					.pieChartContainer{
 					    width: 50%;
@@ -143,7 +143,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-list icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Description</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Description')"/></h2>
 
 							<div class="content-section">
 								<p>
@@ -171,7 +171,7 @@
 								<i class="fa fa-bar-chart icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Differentiation Level</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Differentiation Level')"/></h2>
 
 							<div class="content-section">
 								<p>
@@ -198,7 +198,7 @@
 								<i class="fa essicon-radialdots icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Application Services</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Application Services')"/></h2>
 
 							<div class="content-section">
 								<xsl:choose>
@@ -228,7 +228,7 @@
 								<i class="fa fa-table icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Costs</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Costs')"/></h2>
 
 							<div class="content-section">
 								<xsl:choose>

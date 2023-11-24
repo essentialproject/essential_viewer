@@ -112,7 +112,7 @@
 			<title>
 				<xsl:value-of select="$pageLabel" />
 			</title>
-			<script src="js/showhidediv.js" type="text/javascript" /> 
+			<script src="js/showhidediv.js?release=6.19" type="text/javascript" /> 
 			<xsl:for-each select="$linkClasses">
 				<xsl:call-template name="RenderInstanceLinkJavascript">
 					<xsl:with-param name="instanceClassName" select="current()" />
@@ -265,25 +265,25 @@
       -->
 
 									<div style="float: left">
-										<span style="font-size:8pt;color:black" id="buts">Business</span><br />
+										<span style="font-size:8pt;color:black" id="buts"><xsl:value-of select="eas:i18n('Business')"/></span><br />
 										<a data-toggle="collapse" href="#collapse1" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle">
 											<i class="fa fa-building-o"></i><span class="indicator-dot">
 												<xsl:value-of select="count($allBusPrinciples)" />
 											</span>
 										</a>
-										<span style="font-size:8pt;color:black" id="apps">Application</span><br />
+										<span style="font-size:8pt;color:black" id="apps"><xsl:value-of select="eas:i18n('Application')"/></span><br />
 										<a data-toggle="collapse" href="#collapse2" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle">
 											<i class="fa fa-tablet"></i><span class="indicator-dot">
 												<xsl:value-of select="count($allAppPrinciples)" />
 											</span>
 										</a>
-										<span style="font-size:8pt;color:black" id="info">Information</span><br />
+										<span style="font-size:8pt;color:black" id="info"><xsl:value-of select="eas:i18n('Information')"/></span><br />
 										<a data-toggle="collapse" href="#collapse3" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle"><span class="indicator-dot">
 												<xsl:value-of select="count($allInfoPrinciples)" />
 											</span>
 											<i class="fa fa-file-code-o"></i>
 										</a>
-										<span style="font-size:8pt;color:black" id="tech">Technology</span><br />
+										<span style="font-size:8pt;color:black" id="tech"><xsl:value-of select="eas:i18n('Technology')"/></span><br />
 										<a data-toggle="collapse" href="#collapse4" aria-expanded="true" aria-controls="collapseOne" class="nb-btn-circle"><span class="indicator-dot">
 												<xsl:value-of select="count($allTechPrinciples)" />
 											</span>
@@ -298,10 +298,10 @@
 						</div>
 						<div class="col-xs-11">
 							<ul class="nav nav-tabs">
-								<li class="active"><a data-toggle="tab" href="#bus">Business</a></li>
-								<li><a data-toggle="tab" href="#app">Application</a></li>
-								<li><a data-toggle="tab" href="#techdiv">Technology</a></li>
-								<li><a data-toggle="tab" href="#infodiv">Information</a></li>
+								<li class="active"><a data-toggle="tab" href="#bus"><xsl:value-of select="eas:i18n('Business')"/></a></li>
+								<li><a data-toggle="tab" href="#app"><xsl:value-of select="eas:i18n('Application')"/></a></li>
+								<li><a data-toggle="tab" href="#techdiv"><xsl:value-of select="eas:i18n('Technology')"/></a></li>
+								<li><a data-toggle="tab" href="#infodiv"><xsl:value-of select="eas:i18n('Information')"/></a></li>
 							</ul>
 							<div class="tab-content">
 								<div id="bus" class="tab-pane fade in active">

@@ -79,10 +79,10 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Class Browser</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Class Browser')"/></span>
 								</h1>
 								<xsl:text> </xsl:text>
-								<h3>Enter Instance ID: <xsl:text> </xsl:text><input name="classid" onChange="window.location='report?XML=reportXML.xml&amp;XSL=integration/instance_overview.xsl&amp;PMA='+this.value"/>
+								<h3><xsl:value-of select="eas:i18n('Enter Instance ID ')"/><xsl:text> </xsl:text><input name="classid" onChange="window.location='report?XML=reportXML.xml&amp;XSL=integration/instance_overview.xsl&amp;PMA='+this.value"/>
 								</h3>
 							</div>
 						</div>
@@ -92,23 +92,23 @@
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Instance Information</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Instance Information')"/></h2>
 							<div class="content-section">
-								<h3><strong>Selected Object</strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/own_slot_value[slot_reference = 'name']/value"/></h3>
-								<h3><strong>Object Type</strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/type"/></h3>
-								<h3><strong>ID: <xsl:value-of select="$param1"/></strong></h3>
+								<h3><strong><xsl:value-of select="eas:i18n('Selected Object')"/></strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/own_slot_value[slot_reference = 'name']/value"/></h3>
+								<h3><strong><xsl:value-of select="eas:i18n('Object Type')"/></strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisObject/type"/></h3>
+								<h3><strong><xsl:value-of select="eas:i18n('ID ')"/><xsl:value-of select="$param1"/></strong></h3>
 								<table class="table table-bordered table-striped">
-									<th>Slot Name</th>
-									<th>Slot Value</th>
-									<th>Target Object Name</th>
+									<th><xsl:value-of select="eas:i18n('Slot Name')"/></th>
+									<th><xsl:value-of select="eas:i18n('Slot Value')"/></th>
+									<th><xsl:value-of select="eas:i18n('Target Object Name')"/></th>
 									<xsl:apply-templates select="$thisObject/own_slot_value" mode="slots">
 										<xsl:sort select="slot_reference" order="ascending"/>
 									</xsl:apply-templates>
 								</table>
 
-								<h3>Potential Slots not Populated</h3>
+								<h3><xsl:value-of select="eas:i18n('Potential Slots not Populated')"/></h3>
 								<table class="table table-bordered table-striped">
-									<th>Slot Name</th>
+									<th><xsl:value-of select="eas:i18n('Slot Name')"/></th>
 									<xsl:apply-templates select="$thisObjectClass/template_slot" mode="classslots">
 										<xsl:sort select="." order="ascending"/>
 									</xsl:apply-templates>

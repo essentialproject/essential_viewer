@@ -71,7 +71,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Application Dependency Model</title>
-				<script src="js/d3/d3.v5.7.0.min.js"/>
+				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
 			<style>
 				.lineClick {
 					cursor: pointer;
@@ -585,41 +585,41 @@
 					text-overflow: ellipsis;
 					}
 
-				.eas-logo-spinner {​​​​​​​​​
-					    display: flex;
-					    justify-content: center;
-					}​​​​​​​​​
-					#editor-spinner {​​​​​​​​​
-					    height: 100vh;
-					    width: 100vw;
-					    position: fixed;
-					    top: 0;
-					    left:0;
-					    z-index:999999;
-					    background-color: hsla(255,100%,100%,0.75);
-					    text-align: center;
-					}​​​​​​​​​
-					#editor-spinner-text {​​​​​​​​​
-					    width: 100vw;
-					    z-index:999999;
-					    text-align: center;
-					}​​​​​​​​​
-					.spin-text {​​​​​​​​​
-					    font-weight: 700;
-					    animation-duration: 1.5s;
-					    animation-iteration-count: infinite;
-					    animation-name: logo-spinner-text;
-					    color: #aaa;
-					    float: left;
-					}​​​​​​​​​
-					.spin-text2 {​​​​​​​​​
-					    font-weight: 700;
-					    animation-duration: 1.5s;
-					    animation-iteration-count: infinite;
-					    animation-name: logo-spinner-text2;
-					    color: #666;
-					    float: left;
-					}​​​​​​​​​
+				.eas-logo-spinner {
+					  display: flex;
+					  justify-content: center;
+					}
+					#editor-spinner {
+					  height: 100vh;
+					  width: 100vw;
+					  position: fixed;
+					  top: 0;
+					  left:0;
+					  z-index:999999;
+					  background-color: hsla(255,100%,100%,0.75);
+					  text-align: center;
+					}
+					#editor-spinner-text {
+					  width: 100vw;
+					  z-index:999999;
+					  text-align: center;
+					}
+					.spin-text {
+					  font-weight: 700;
+					  animation-duration: 1.5s;
+					  animation-iteration-count: infinite;
+					  animation-name: logo-spinner-text;
+					  color: #aaa;
+					  float: left;
+					}
+					.spin-text2 {
+					  font-weight: 700;
+					  animation-duration: 1.5s;
+					  animation-iteration-count: infinite;
+					  animation-name: logo-spinner-text2;
+					  color: #666;
+					  float: left;
+					}
 			</style>	
 
 			</head>
@@ -1386,20 +1386,21 @@ let interfaceFromApps=[]
 data.dependencies.fromInterfaces.forEach((e)=>{
 
 	e.receivesFrom.forEach((f)=>{ 
-         
-       let rxFr= {"acqMethodId":f.acqMethodId,
-       "className":f.className,
-       "dependencyId":f.dependencyId, 
-	   "lifecycleStatus":f.lifecycleStatus, 
-        "hasInfo": f.hasInfo,
-        "id": f.id,
-        "interfaces": f.interfaces,
-        "acqMethodId": f.acqMethodId,
-		"svcQualValIds": f.svcQualValIds,
-        "name": f.name,
-        "usageId":f.usageId};
+       if(f.className){
+		let rxFr= {"acqMethodId":f.acqMethodId,
+		"className":f.className,
+		"dependencyId":f.dependencyId, 
+		"lifecycleStatus":f.lifecycleStatus, 
+			"hasInfo": f.hasInfo,
+			"id": f.id,
+			"interfaces": f.interfaces,
+			"acqMethodId": f.acqMethodId,
+			"svcQualValIds": f.svcQualValIds,
+			"name": f.name,
+			"usageId":f.usageId};
 
-		interfaceFromApps.push(rxFr)
+			interfaceFromApps.push(rxFr)
+	   }
 	});
 });
 
@@ -1448,7 +1449,7 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 		return e.id != ap.key
 	});
 	if(newAppsViaInterfaces.length&gt; 0){
-      
+		if(d.className){
         let thisi= {
                     "acqMethodId": d.acqMethodId,
 					"svcQualValIds": d.svcQualValIds,
@@ -1468,11 +1469,13 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 		newAppsViaInterfaces[0]["interfaces"]=thisi;
 
 		indirectApps.push(newAppsViaInterfaces[0])
+		}
 	}
 
 
 
 	if(relInterfaces.length&gt; 0){
+	 if(d.className){
         let thisi2= {
                     "acqMethodId": d.acqMethodId,
 					"svcQualValIds": d.svcQualValIds,
@@ -1487,7 +1490,8 @@ data.dependencies.fromInterfaces.forEach((d)=>{
 					"sendsTo":d.sendsTo,
                     "usageId":d.usageId
                      } 
-		allInterfaces.push(thisi2)
+			allInterfaces.push(thisi2)
+			}
 	}
 	});
 	
@@ -1526,7 +1530,7 @@ let interfaceToApps=[]
 data.dependencies.toInterfaces.forEach((e)=>{
 
     e.sendsTo.forEach((f)=>{ 
-         
+		if(f.className){
          let rxTo= {"acqMethodId":f.acqMethodId,
          "className":f.className,
          "dependencyId":f.dependencyId, 
@@ -1540,6 +1544,7 @@ data.dependencies.toInterfaces.forEach((e)=>{
           "usageId":f.usageId};
   
           interfaceToApps.push(rxTo)
+		}
       });
 });
 
@@ -1584,8 +1589,8 @@ data.dependencies.toInterfaces.forEach((d)=>{
 	//console.log('relInterfaces',relInterfaces)
 	//console.log('newAppsViaInterfaces',newAppsViaInterfaces)
 	if(newAppsViaInterfaces.length&gt; 0){
- 
-        let thisi= {
+		if(d.className){
+        	let thisi= {
                     "acqMethodId": d.acqMethodId,
 					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
@@ -1603,10 +1608,12 @@ data.dependencies.toInterfaces.forEach((d)=>{
 		newAppsViaInterfaces[0]["interfaces"]=thisi
 
 		indirectToApps.push(newAppsViaInterfaces[0])
+			}
 	}
 
 	if(relInterfaces.length&gt; 0){
-        let thisi2= {
+		if(d.className){
+        	let thisi2= {
                     "acqMethodId": d.acqMethodId,
 					"svcQualValIds": d.svcQualValIds,
                     "className": d.className,
@@ -1621,6 +1628,7 @@ data.dependencies.toInterfaces.forEach((d)=>{
                     "usageId":d.usageId
                      } 
 		allToInterfaces.push(thisi2)
+				}
 	}
 	});
 	//console.log('allToInterfaces',allToInterfaces)
@@ -1853,7 +1861,7 @@ $(document).ready(function() {
 		Handlebars.registerHelper('getFocusHeight', function (arg1, arg2, options) {
  
 			let tot = arg1 ;
-			return Math.max(minFocusHeight, (tot * 31));
+			return Math.max(minFocusHeight, (tot * 32)+10);
 		});
 		
 		Handlebars.registerHelper('getTextRow', function (arg1, options) {

@@ -78,7 +78,7 @@
 					<xsl:value-of select="eas:i18n('Data Object Summary')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<script>
 					$(function(){
 						$('#impactedOrgs').columnize({columns: 2});		

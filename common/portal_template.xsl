@@ -96,8 +96,8 @@
 				<title>
 					<xsl:value-of select="$portalLabel"/>
 				</title>
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
 					    event.preventDefault();

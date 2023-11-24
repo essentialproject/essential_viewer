@@ -112,9 +112,9 @@
 					<xsl:value-of select="$appName"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.2.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jquery.vector-map.js" type="text/javascript"/>
-				<script src="js/world-en.js" type="text/javascript"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.2.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jquery.vector-map.js?release=6.19" type="text/javascript"/>
+				<script src="js/world-en.js?release=6.19" type="text/javascript"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -202,7 +202,7 @@
 								<i class="fa fa-users icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Stakeholders</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Stakeholders')"/></h2>
 
 							<div class="content-section">
 								<xsl:choose>
@@ -226,7 +226,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-user icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Users</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Users')"/></h2>
 							<div class="content-section">
 								<xsl:choose>
 									<xsl:when test="count($thisAppUser2Roles) > 0">
@@ -250,7 +250,7 @@
 								<i class="fa essicon-server icon-section icon-color"/>
 							</div>
 
-							<h2 class="text-primary">Servers</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Servers')"/></h2>
 
 							<div class="content-section">
 								<xsl:choose>

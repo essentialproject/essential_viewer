@@ -90,7 +90,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.min.js"></script>
+				<script src="js/d3/d3.min.js?release=6.19"></script>
 				<title>Application Reference Model</title>
 				<style>
 					.l0-cap{
@@ -181,11 +181,11 @@
 					}
 					
 					.sidenav{
-						height: calc(100vh - 41px);
+						height: calc(100vh - 76px);
 						width: 350px;
 						position: fixed;
 						z-index: 1;
-						top: 41px;
+						top: 76px;
 						right: 0;
 						background-color: #f6f6f6;
 						overflow-x: hidden;
@@ -197,7 +197,7 @@
 					
 					.sidenav .closebtn{
 						position: absolute;
-						top: 43px;
+						top: 5px;
 						right: 5px;
 						font-size: 14px;
 						margin-left: 50px;
@@ -602,6 +602,13 @@
 						color:#d3d3d3;  
 
 					}
+				.popover {
+					max-width: 400px;
+					}
+
+				.platformService{
+					background-color: #ddb0e1;	
+				}
 				</style>
 			 
 			</head>
@@ -635,20 +642,28 @@
 								<div id="editor-spinner-text" class="text-center xlarge strong spin-text2"/>
 							</div>	
 							<div id="blobLevel" ></div>
-							<div class="pull-right Key">
-								<b>Caps Style:</b><button class="btn btn-xs btn-secondary" id="hideCaps">Showing</button><xsl:text> </xsl:text>
-								<b>Application Usage Key</b>: <i class="fa fa-square shigh"></i> - High<xsl:text> </xsl:text> <i class="fa fa-square smed"></i> - Medium <xsl:text> </xsl:text> <i class="fa fa-square slow"></i> - Low
-						
+							<div class="clearfix"/>
+							<div class="pull-right" style="width:350px">
+									<xsl:value-of select="eas:i18n('Platform')"/><sup><i class="fa fa-info-circle platformInfo"></i><xsl:text> </xsl:text>
+										<div class="text-default small hiddenDiv">
+											<xsl:value-of select="eas:i18n('e.g. An HR System - Modelled as Composite Application Service, i.e. a collection of services')"/>
+										</div></sup>
+									<select class="select2" name="servicesCompositOnlt" multiple="multiple" id="selCompBox">
+									</select>
+									<div class="pull-right Key" style="position:absolute;top:-5px;right:20px">
+										<b><xsl:value-of select="eas:i18n('Caps Style')"/>:</b><button class="btn btn-xs btn-secondary" id="hideCaps"><xsl:value-of select="eas:i18n('Showing')"/></button><xsl:text> </xsl:text>
+										<b><xsl:value-of select="eas:i18n('Application Usage Key')"/></b>:&#160;<i class="fa fa-square shigh"></i>&#160;-&#160;<xsl:value-of select="eas:i18n('High')"/>&#160;&#160;<i class="fa fa-square smed"></i>&#160;-&#160;<xsl:value-of select="eas:i18n('Medium')"/>&#160;&#160;<i class="fa fa-square slow"></i>&#160;-&#160;<xsl:value-of select="eas:i18n('Low')"/>
+								</div>
+							</div>
 						</div>
-						</div>
-						<div class="col-xs-12" id="keyHolder">
+						<div class="col-xs-12" id="keyHolder" >
 
 						</div>
 
 						<div class="col-xs-12" id="capModelHolder">
 						</div>
 						<div id="appSidenav" class="sidenav">
-							<button class="btn btn-default appRatButton bottom-15 saveApps"><i class="fa fa-external-link right-5 text-primary "/>View in Rationalisation</button>
+							<button class="btn btn-default appRatButton bottom-15 saveApps"><i class="fa fa-external-link right-5 text-primary "/><xsl:value-of select="eas:i18n('View in Rationalisation')"/></button>
 							<a href="javascript:void(0)" class="closebtn text-default" onclick="closeNav()">
 								<i class="fa fa-times"></i>
 							</a>
@@ -763,7 +778,7 @@
 				</script>	
 				<script id="blob-template" type="text/x-handlebars-template">
 					<div class="blobBoxTitle right-10"> 
-						<strong>Select Level:</strong>
+						<strong><xsl:value-of select="eas:i18n('Select Level')"/></strong>
 					</div> 
 					{{#each this}}
 					<div class="blobBox">
@@ -791,21 +806,21 @@
 								<i class="fa fa-info-circle helpMe"></i>
 							</a>
 							<div class="popover">
-								<div class="strong">Help</div>
-								<div class="text-muted">The information on the applications that provide this application service. <br/>
-								The <b>Application Lifecycle</b> is the lifecycle status of the application<br/>
-								<b>Application Service Lifecycle</b> is the lifecycle of the application use of this service (Application Provider Role)<br/>
-								This will only appear if you have the data captured<br/>
+								<div class="strong"><xsl:value-of select="eas:i18n('Help')"/></div>
+								<div class="text-muted"><xsl:value-of select="eas:i18n('The information on the applications that provide this application service')"/>. <br/>
+								<xsl:value-of select="eas:i18n('The')"/>&#160;<b><xsl:value-of select="eas:i18n('Application Lifecycle')"/></b>&#160;<xsl:value-of select="eas:i18n('is the lifecycle status of the application')"/><br/>
+								<b><xsl:value-of select="eas:i18n('Application Service Lifecycle')"/></b>&#160;<xsl:value-of select="eas:i18n('is the lifecycle of the application use of this service (Application Provider Role)')"/><br/>
+								<xsl:value-of select="eas:i18n('This will only appear if you have the data captured')"/><br/>
 								
 								<p>
-								Once an application is expanded (click the arrow by the application name) you can see some basic information and also where <br/>
-								any organisation standards exist for this application/service mapping.
+								<xsl:value-of select="eas:i18n('Once an application is expanded (click the arrow by the application name) you can see some basic information and also where <br/>
+									any organisation standards exist for this application/service mapping.')"/>
 								</p>
-								<p class="small">Note: Click this pop-up to close it</p>
+								<p class="small"><xsl:value-of select="eas:i18n('Note: Click this pop-up to close it')"/></p>
 								</div>
 							</div>
-							<span class="appsvc-circle ">S</span>: Application Service Lifecycle<br/>
-							<span class="appsvc-circle ">A</span>: Application Lifecycle 
+							<span class="appsvc-circle ">S</span>:&#160;<xsl:value-of select="eas:i18n('Application Service Lifecycle')"/><br/>
+							<span class="appsvc-circle ">A</span>:&#160;<xsl:value-of select="eas:i18n('Application Lifecycle')"/> 
 						</span>
 						{{#each this.apps}}
 							 
@@ -1029,8 +1044,9 @@
 			</script>
 <script>
 
-
   $(document).ready(function() {
+
+	showInfoTooltips()
     var scrollFunction = function() {
       var scrollPosition = $(this).scrollTop();
       if(scrollPosition == 0) {
@@ -1368,7 +1384,7 @@ $('#hideCaps').on('click',function(){
 	var workingsvcArray;
 	var workingArrayCaps = [];
 	var workingArrayAppsCaps;
-	var workingCaps;
+	var workingCaps, compserv;
 
 	var appToCap = [];
 	var processMap = [];
@@ -1388,18 +1404,25 @@ $('#hideCaps').on('click',function(){
 		stdStyles = responses[2].stdStyles;
 		meta = responses[1].meta;
 		appfilters = responses[1].filters
+
+		compserv=responses[1].compositeServices;
+		
 		appfilters.sort((a, b) => (a.id > b.id) ? 1 : -1)
 		dynamicAppFilterDefs=appfilters?.map(function(filterdef){
 			return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 		});
 
+
+		let selBoxCompOptionsHtml = compserv?.map(service => ' &lt;option name="' + service.id + '" value="' + service.id + '">' + service.name + '&lt;/option>').join('');
+       
+		$('#selCompBox').append(selBoxCompOptionsHtml);
+		$('#selCompBox').select2({width:'250px'})
+		 
 		workingArray.capability_hierarchy.forEach((f) => {
 			workingArrayCaps.push(f.id)
 		});
 
-		console.log('workingArray',workingArray)
 		workingCaps = responses[0];
-		console.log('w',workingCaps)
 		workingSvcs = responses[0].application_services;
 
 		appCaps = responses[4].application_capabilities_services;
@@ -1424,11 +1447,12 @@ $('#hideCaps').on('click',function(){
 
 			level = Math.max(...levelArr);
 			levelArr = [];
-			for (i = 0; i  &lt; level ; i++) {
+			for (i = 0; i  &lt; level+1 ; i++) {
 				levelArr.push({
 					"level": i + 1
 				});
 			};
+
 			$('#blobLevel').html(blobTemplate(levelArr))
 
 			$('.blob').on('click', function () {
@@ -1512,7 +1536,7 @@ $('#hideCaps').on('click',function(){
 		"label": 'Business Capability',
 		"icon": 'fa-landmark'
 	}
-
+var scopedService;
 	var redrawView = function () { 
 			essResetRMChanges();
 
@@ -1529,7 +1553,13 @@ $('#hideCaps').on('click',function(){
 
 			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef], appTypeInfo);
 			scopedCaps = essScopeResources(workingArrayAppsCaps, [visibilityDef], busCapTypeInfo);
-			scopedService = essScopeResources(workingsvcArray, [geoScopingDef, visibilityDef], appSvcTypeInfo);
+
+			workingsvcArray.forEach(obj => {
+				delete obj.filteredAPRs;
+			});
+
+			scopedService = essScopeResources(workingsvcArray, [visibilityDef], appSvcTypeInfo);
+
 			let appsToShow = [];
 			inScopeCapsApp = scopedCaps.resources;
 			$('.svcLozenge').removeClass("off-cap")
@@ -1555,6 +1585,7 @@ $('#hideCaps').on('click',function(){
 			});
 
 			appMod.then((d) => {
+		
 					inScopeCapsApp.forEach((c) => {
 						// reduce services to reflect filter
 						let filteredAppSvcsforCap = c.supportingServices.filter((id) => scopedService.resourceIds.includes(id));
@@ -1568,6 +1599,7 @@ $('#hideCaps').on('click',function(){
 						});
  
 						// reduce apps to reflect filter
+						
 						filteredAPRs.forEach((d) => {
 							let filteredApps = [];
 							d.APRs.forEach((f) => {
@@ -1579,6 +1611,7 @@ $('#hideCaps').on('click',function(){
 								}
 							})
 							d['filteredAPRs'] = filteredApps
+
 						})
 
 						c['filteredSvcs'] = filteredAppSvcsforCap;
@@ -1623,7 +1656,6 @@ $('#hideCaps').on('click',function(){
 										}
 									})
 
-									console.log('apc',appBusCaps)
 									let thisProcesses = appToShow[0].physP.filter((elem, index, self) => self.findIndex(
 										(t) => {
 											return (t === elem)
@@ -1683,8 +1715,7 @@ $('#hideCaps').on('click',function(){
 									thisAppCapArray = thisAppCapArray.filter((elem, index, self) => self.findIndex((t) => {
 										return (t.id === elem.id)
 									}) === index)
-									console.log('thisAppCapArray',thisAppCapArray)
-									console.log('appBusCaps',appBusCaps)
+								
 									let busCapImpact=[];
 									thisAppCapArray.forEach((c)=>{
 										let thisAC=workingArrayAppsCaps.find((ac)=>{
@@ -1701,20 +1732,17 @@ $('#hideCaps').on('click',function(){
 									busCapImpact = busCapImpact.filter((elem, index, self) => self.findIndex((t) => {
 										return (t.id === elem.id)
 									}) === index)
-											console.log('busCapImpact',busCapImpact)
-												console.log('busCapImpact0',busCapImpact[0])
+										
 									let acMeta=busCapImpact[0].meta;
 							 
-									 appBusCaps.map(obj => ({ ...obj, type:'Business_Capability', source:'Process' }));
-let allCaps=[...appBusCaps, ...busCapImpact]
+									 appBusCaps.map(obj => ({ ...obj, type:'Business_Capability', source:'Process' }));	
+									let allCaps=[...appBusCaps, ...busCapImpact]
 
-									console.log('allCaps',allCaps)
 									appToShow[0]['processList'] = procListTosShow;
 									appToShow[0]['servList'] = servsArr;
 									appToShow[0]['servUsedList'] = thisUsedServs;
 									appToShow[0]['capsImpacting'] = thisAppCapArray;
 									appToShow[0]['busCapsImpacting'] = allCaps;
-									console.log('appToShow',appToShow) 
 									$('#appData').html(appTemplate(appToShow[0]));
 									$('.appPanel').show("blind", {
 										direction: 'down',
@@ -1759,8 +1787,7 @@ function getApps(svcid) {
 		let appIn = scopedApps.resources.find((app) => {
 			return app.id == d.appId;
 		});
- console.log('ai',appIn)
- console.log('d',d)
+
 if(d.lifecycle){
 		appIn['tosvcLifecycle'] = d.lifecycle;
 }
@@ -1786,7 +1813,7 @@ if(appIn){
 	});
 
 	panelData['apps'] = scopedAPRs
- console.log('panelData',panelData)
+ 
 	$('#appData').html(appTemplate(panelData));
 
 	$('#appsList').empty();
@@ -1830,11 +1857,12 @@ $('.app-circle').each(function () {
 });
 
 scopedService.resources.forEach(function (d) {
- 
+
 let appCount = 0
 if (d.filteredAPRs) {
-appCount = d.filteredAPRs.length;
+	appCount = d.filteredAPRs.length;
 }
+
  
 d['svcscore']=appCount;
 $('*[easidscore="' + d.id + '"]').html(appCount);
@@ -1883,6 +1911,21 @@ $('.app-circle').each(function () {
 
 }
 
+	$('#selCompBox').on('change', function() {
+		// Get the selected value
+		var selectedValue = $(this).val(); 
+		// Find the corresponding object in compServ
+		$('.svcLozenge').removeClass('platformService');
+		$('#selBox option').prop('selected', false); 
+		
+		selectedValue.forEach((sel)=>{
+			var selectedObj = compserv.find(obj => obj.id === sel);
+			selectedObj.containedService.forEach(function(s) {
+				$('[eassvcid="'+s+'"]').addClass('platformService');
+			})
+		})
+	})
+
 });
 
 function getArrayDepth(arr) {
@@ -1903,16 +1946,16 @@ function closeNav() {
 }
 
 /*Auto resize panel during scroll*/
-$('window').scroll(function () {
+$(window).scroll(function () {
 	if ($(this).scrollTop() &gt; 40) {
 		$('#appSidenav').css('position', 'fixed');
-		$('#appSidenav').css('height', 'calc(100%)');
-		$('#appSidenav').css('top', '0');
+		$('#appSidenav').css('height', 'calc(100% - 38px)');
+		$('#appSidenav').css('top', '38px');
 	}
 	if ($(this).scrollTop() &lt; 40) {
 		$('#appSidenav').css('position', 'fixed');
-		$('#appSidenav').css('height', 'calc(100% - 40px)');
-		$('#appSidenav').css('top', '41px');
+		$('#appSidenav').css('height', 'calc(100% - 38px)');
+		$('#appSidenav').css('top', '76px');
 	}
 });
 
@@ -1922,6 +1965,18 @@ function toggleMiniPanel(element) {
 	$(element).parent().parent().nextAll('.mini-details').slideToggle();
 	$(element).toggleClass('fa-caret-right');
 	$(element).toggleClass('fa-caret-down');
+};
+
+function showInfoTooltips(){
+	$('[role="tooltip"]').remove();
+	$('.fa-info-circle').popover({
+		container: 'body',
+		html: true,
+		trigger: 'click',
+		content: function(){
+			return $(this).next().html();
+		}
+	});
 };
 
 	</xsl:template>

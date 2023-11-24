@@ -55,9 +55,17 @@
 	<!--	<xsl:variable name="thisSupplier" select="$allTechSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
 		<xsl:variable name="thisTechProdRoles" select="$allTechProdRoles[own_slot_value[slot_reference = 'role_for_technology_provider']/value = current()/name]"/>
 		-->	
-		{
-			<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-			<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		{ 
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>",
+			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 			"supplierId": "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='supplier_technology_product']/value)"/>"<!--, 
 			components: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisTechProdRoles"/>]-->
 		} <xsl:if test="not(position()=last())">,

@@ -60,10 +60,11 @@
 	<xsl:key name="inScopeCostComponentKey" match="/node()/simple_instance[type=('Adhoc_Cost_Component','Annual_Cost_Component','Monthly_Cost_Component','Quarterly_Cost_Component')]" use="own_slot_value[slot_reference = 'cc_cost_component_of_cost']/value"/>
 	<xsl:variable name="costType" select="/node()/simple_instance[(type = 'Cost_Component_Type')]"/>
 	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
-	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
+	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
    <xsl:variable name="costCategory" select="/node()/simple_instance[(type = 'Cost_Category')]"/>
    <xsl:key name="allDocs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
    <xsl:key name="allTaxTerms_key" match="/node()/simple_instance[type = 'Taxonomy_Term']" use="own_slot_value[slot_reference = 'classifies_elements']/value"/> 
+   <xsl:variable name="allCurrency" select="/node()/simple_instance[(type = 'Currency')]"/>
 	
 	<!--
 		<xsl:variable name="allAppDeployments" select="/node()/simple_instance[own_slot_value[slot_reference = 'application_provider_deployed']/value = $applicationProviders/name][own_slot_value[slot_reference = 'application_deployment_role']/value = $production/name]"/>
@@ -119,7 +120,10 @@
 			"application_functions":[<xsl:apply-templates select="$applicationFunctions" mode="appFuncs"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 			"application_technology":[<xsl:apply-templates select="$applicationProviders" mode="appTech"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 			"applications":[<xsl:apply-templates select="$applicationProviders" mode="appData"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
-			"stdStyles":[<xsl:apply-templates select="$eleStyles" mode="styles"/>]
+			"stdStyles":[<xsl:apply-templates select="$eleStyles" mode="styles"/>],
+			"ccy":[<xsl:apply-templates mode="renderCurrencies" select="$allCurrency">
+				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+			</xsl:apply-templates>]
 		}<!-- note this app info here is additonal to that in the integration ans the bus cap app mart-->
 	</xsl:template>
 	
@@ -162,9 +166,13 @@
 			{"id":"<xsl:value-of select="current()/name"/>",
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="false()"/>
+			</xsl:call-template>",
+			"documentLink":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
-			"documentLink":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>",
 			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'erl_date_iso_8601']/value"/>",
 			"type":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'name']/value"/>",
 			"index":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'taxonomy_term_index']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
@@ -303,7 +311,6 @@
 		<!--<xsl:variable name="thisSupplier" select="$suppliers[name=current()/own_slot_value[slot_reference='ap_supplier']/value]"/> -->
 		<xsl:variable name="thisAppFamily" select="$appFamily[name=current()/own_slot_value[slot_reference='type_of_application']/value]"/>
 		<xsl:variable name="thisSupplier" select="key('allSuppliers', current()/own_slot_value[slot_reference='ap_supplier']/value)"/>
-		
 		<xsl:variable name="inScopeCosts" select="key('inScopeCostsKey',current()/name)"/>
 		<xsl:variable name="inScopeCostComponents" select="key('inScopeCostComponentKey',$inScopeCosts/name)"/>
 		<xsl:variable name="thisDocs" select="key('allDocs_key',current()/name)"/>
@@ -329,15 +336,17 @@
 				"costs":[<xsl:for-each select="$inScopeCostComponents"> 
 				<xsl:variable name="parentCost" select="key('costForCat_key',current()/name)"/>
 				<xsl:variable name="costCat" select="$costCategory[name=$parentCost/own_slot_value[slot_reference='cost_category']/value]"/>
-						{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>", 
+				<xsl:variable name="thisCostCurrency" select="$allCurrency[name=$parentCost/own_slot_value[slot_reference='cost_currency']/value]"/>
+						{"name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>", 
 						"cost":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/>",
 						"costType":"<xsl:value-of select="current()/type"/>",
+						"ccy_code":"<xsl:choose><xsl:when test="$thisCostCurrency"><xsl:value-of select="$thisCostCurrency/own_slot_value[slot_reference='currency_code']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$currency/own_slot_value[slot_reference='currency_code']/value"/></xsl:otherwise></xsl:choose>",
+						"currency":"<xsl:choose><xsl:when test="$thisCostCurrency"><xsl:value-of select="$thisCostCurrency/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$currency/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:otherwise></xsl:choose>",
 						<xsl:if test="$costCat"> 
 						"costCategory":"<xsl:value-of select="$costCat/own_slot_value[slot_reference='enumeration_value']/value"/>",
 						</xsl:if>
 						"fromDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
 						"toDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>",
-						"currency":"<xsl:value-of select="$currency"/>",
 						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position()=last())">,</xsl:if>           
 					</xsl:for-each>],
 				"maxUsers":"<xsl:value-of select="current()/own_slot_value[slot_reference='ap_max_number_of_users']/value"/>",
@@ -345,6 +354,17 @@
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
 			}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template mode="renderCurrencies" match="node()">                           
+	   {   "id": "<xsl:value-of select="current()/name"/>",
+		   "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+					   <xsl:with-param name="theSubjectInstance" select="current()"/>
+					   <xsl:with-param name="isForJSONAPI" select="true()"/>
+				   </xsl:call-template>",
+			"default":"<xsl:value-of select="current()/own_slot_value[slot_reference='currency_is_default']/value"/>",
+			"exchangeRate":"<xsl:value-of select="current()/own_slot_value[slot_reference='currency_exchange_rate']/value"/>"	   
+				   
+		} <xsl:if test="not(position()=last())">,</xsl:if>
 </xsl:template>
 	<xsl:template match="node()" mode="styles">
 			<xsl:variable name="thisStyle" select="$eleStyles[name=current()[0]/own_slot_value[slot_reference='element_styling_classes']/value]"/>

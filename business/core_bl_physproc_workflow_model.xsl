@@ -147,7 +147,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.zoomable.js"/>
+				<script type="text/javascript" src="js/jquery.zoomable.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

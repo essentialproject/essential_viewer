@@ -5,21 +5,20 @@
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/>
     <xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')][name=$param1]"/>
-    <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $allAppProviders/name]"/>
+ <!--   <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $allAppProviders/name]"/>-->
+	<xsl:key name="inScopeCostsKey" match="/node()/simple_instance[type='Cost']" use="own_slot_value[slot_reference = 'cost_for_elements']/value"/>
+	<xsl:variable name="inScopeCosts" select="key('inScopeCostsKey', $allAppProviders/name)"/>
 <!--
 	<xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
 	<xsl:variable name="inScopeCostInstances" select="$inScopeCosts union $inScopeCostComponents"></xsl:variable>
 --><xsl:variable name="costType" select="/node()/simple_instance[(type = 'Cost_Component_Type')]"/>
 	<xsl:variable name="currencyType" select="/node()/simple_instance[(type = 'Report_Constant')][own_slot_value[slot_reference = 'name']/value='Default Currency']"/>
-	<xsl:variable name="currency" select="/node()/simple_instance[(type = 'Currency')][name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
+	<xsl:variable name="allCurrency" select="/node()/simple_instance[(type = 'Currency')]"/>
+	<xsl:variable name="currency" select="$allCurrency[name=$currencyType/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]/own_slot_value[slot_reference='currency_symbol']/value"/>
+
     <!--
  <xsl:variable name="isAuthzForCostInstances" select="eas:isUserAuthZInstances($thisinScopeCostInstances)"/>
    -->
-
-    
-    <xsl:variable name="allRoadmapInstances" select="$allAppProviders"/>
-    <xsl:variable name="isRoadmapEnabled" select="eas:isRoadmapEnabled($allRoadmapInstances)"/>
-	<xsl:variable name="rmLinkTypes" select="$allRoadmapInstances/type"/>
     <!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -42,7 +41,9 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	
     	<xsl:template match="knowledge_base">
-		{
+		{	"ccy":[<xsl:apply-templates mode="RenderCurrencies" select="$allCurrency">
+			<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+		</xsl:apply-templates>],
 			"applicationCost": [
 				<xsl:apply-templates mode="RenderApplications" select="$allAppProviders">
 					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
@@ -53,10 +54,27 @@
     <xsl:template mode="RenderApplications" match="node()">                           
          <xsl:variable name="inScopeCosts" select="/node()/simple_instance[own_slot_value[slot_reference = 'cost_for_elements']/value = $allAppProviders/name]"/>
         <xsl:variable name="inScopeCostComponents" select="/node()/simple_instance[name = $inScopeCosts/own_slot_value[slot_reference = 'cost_components']/value]"/>
-		{
-			<xsl:call-template name="RenderRoadmapJSONPropertiesForAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,
+		
+		{	"id": "<xsl:value-of select="current()/name"/>",
+			"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>",
+			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",
+			"costccy":[<xsl:for-each select="$inScopeCosts"> 
+				<xsl:variable name="thisCostCurrency" select="$allCurrency[name=current()/own_slot_value[slot_reference='cost_currency']/value]"/>
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				"ccy":"<xsl:value-of select="$thisCostCurrency/own_slot_value[slot_reference='currency_code']/value"/>"}<xsl:if test="not(position()=last())">,</xsl:if> </xsl:for-each>],	
             "costs":[<xsl:for-each select="$inScopeCostComponents">
-                    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>","cost":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/>","currency":"<xsl:value-of select="$currency"/>"}<xsl:if test="not(position()=last())">,</xsl:if>           
+					<xsl:variable name="thisCurrency" select="$allCurrency[name=current()/own_slot_value[slot_reference='cc_cost_currency']/value]"/>
+                    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+					"ccy":"<xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='currency_code']/value"/>",
+					"name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>","cost":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/>","currency":"<xsl:choose><xsl:when test="$thisCurrency/own_slot_value[slot_reference='currency_code']/value"><xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$currency"/></xsl:otherwise></xsl:choose>",
+					"startDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
+					"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>"}<xsl:if test="not(position()=last())">,</xsl:if>           
                 </xsl:for-each>]
         <!--
 		"change":"<xsl:choose><xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"></xsl:when>	<xsl:otherwise>
@@ -71,6 +89,17 @@
                              </xsl:choose>"
 -->		} <xsl:if test="not(position()=last())">,</xsl:if>
 	</xsl:template>
+	<xsl:template mode="RenderCurrencies" match="node()">                           
+	   {   "id": "<xsl:value-of select="current()/name"/>",
+		   "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+					   <xsl:with-param name="theSubjectInstance" select="current()"/>
+					   <xsl:with-param name="isForJSONAPI" select="true()"/>
+				   </xsl:call-template>",
+			"default":"<xsl:value-of select="current()/own_slot_value[slot_reference='currency_is_default']/value"/>"	   
+				   
+		} <xsl:if test="not(position()=last())">,</xsl:if>
+	</xsl:template>
+	
 
      <xsl:function as="xs:float" name="eas:get_cost_components_total">
         <xsl:param name="costComponents"/>
@@ -95,4 +124,3 @@
     </xsl:function>
 </xsl:stylesheet>
    
-

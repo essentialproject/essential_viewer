@@ -84,7 +84,7 @@
 						stroke: #ccc;
 						stroke-width: 2px;
 					}</style>
-				<script src="js/d3/d3_4-11/d3.min.js"/>
+				<script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -97,7 +97,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Capability to Application Deployments: <xsl:call-template name="RenderMultiLangInstanceName">
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Capability to Application Deployments ')"/> <xsl:call-template name="RenderMultiLangInstanceName">
 										<xsl:with-param name="theSubjectInstance" select="$thisBusCap"/>
 										<xsl:with-param name="isRenderAsJSString" select="true()"/>
 									</xsl:call-template></span>
@@ -107,8 +107,8 @@
 
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-							<i class="fa fa-circle" style="color:red"/> Business Capability <i class="fa fa-circle" style="color:#a2a2aa"/> Business Process <i class="fa fa-circle" style="color:#40d040"/> Application Services <i class="fa fa-circle" style="color:#fac769"/> Application <i class="fa fa-circle" style="color:#e27878"/> Application Deployments<br/>
-							<i>Note: Shaded circles have more data, hover on name to offset and increase font</i>
+							<i class="fa fa-circle" style="color:red"/> <xsl:value-of select="eas:i18n('Business Capability')"/> <i class="fa fa-circle" style="color:#a2a2aa"/> <xsl:value-of select="eas:i18n('Business Process')"/> <i class="fa fa-circle" style="color:#40d040"/> <xsl:value-of select="eas:i18n('Application Services')"/> <i class="fa fa-circle" style="color:#fac769"/> <xsl:value-of select="eas:i18n('Application')"/> <i class="fa fa-circle" style="color:#e27878"/> <xsl:value-of select="eas:i18n('Application Deployments')"/><br/>
+							<i><xsl:value-of select="eas:i18n('Note: Shaded circles have more data, hover on name to offset and increase font')"/></i>
 							<div class="simple-scroller">
 								<div id="model"/>
 								<script>

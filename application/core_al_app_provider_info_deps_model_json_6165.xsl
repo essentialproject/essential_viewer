@@ -70,7 +70,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Application Dependency Model</title>
-				<script src="js/d3/d3.v5.7.0.min.js"/>
+				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
 			<style>
 				.lineClick {
 					cursor: pointer;

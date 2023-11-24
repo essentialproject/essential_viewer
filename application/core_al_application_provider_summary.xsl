@@ -29,7 +29,7 @@
 	<xsl:variable name="targetReport" select="'REPORT_NAME_SLOT_VALUE'"/> -->
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname('MENU_SHORT_NAME_SLOT_VALUE')"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Data_Subject', 'Data_Object', 'Data_Object_Attribute', 'Group_Actor', 'Individual_Actor', 'Application_Provider', 'Application_Service', 'Group_Business_Role', 'Individual_Business_Role', 'Business_Process', 'Composite_Application_Provider', 'Data_Representation', 'Data_Representation_Attribute')"/>
+	<xsl:variable name="linkClasses" select="('Data_Subject', 'Data_Object', 'Supplier', 'Data_Object_Attribute', 'Group_Actor', 'Individual_Actor', 'Application_Provider', 'Application_Service', 'Group_Business_Role', 'Individual_Business_Role', 'Business_Process', 'Composite_Application_Provider', 'Data_Representation', 'Data_Representation_Attribute','Information_Representation', 'Technology_Product','Technology_Node','Data_Object','Project', 'Enterprise_Strategic_Plan')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<xsl:variable name="currentDataObject" select="/node()/simple_instance[name = $param1]"/>
@@ -130,17 +130,17 @@
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Application Summary')"/></title>
 
-				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
-				<script src="js/chartjs/Chart.min.js"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
-				<link href="js/chartjs/Chart.css" type="text/css" rel="stylesheet"></link>
-				<script src="js/d3/d3.v5.9.7.min.js"></script>
-				<script src="js/dagre/dagre-d3.min.js"></script>
-				<script src="js/FileSaver.min.js"></script>
-				<script src="js/jszip/jszip.min.js"></script>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
+				<script src="js/chartjs/Chart.min.js?release=6.19"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
+				<link href="js/chartjs/Chart.css?release=6.19" type="text/css" rel="stylesheet"></link>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script>
+				<script src="js/FileSaver.min.js?release=6.19"></script>
+				<script src="js/jszip/jszip.min.js?release=6.19"></script>
 
 				<style type="text/css">
-					.headerName > .select2 {top: -3px; font-size: 28px;}
+					.headerName > .select2 {top: -3px; font-size: 25px;}
 					.headerName > .select2 > .selection > .select2-selection {height: 32px;}
 					.dataTables_filter{
 					    clear: both;
@@ -678,7 +678,11 @@
 					    color: #666;
 					    float: left;
 					}
-					​​​​​​​​​​​ 
+					.label-eas{
+						border: 1pt solid #d3d3d3;
+						padding: 2px;
+						font-size: 1.0em;
+					}
 					
 					g.type-TK > rect{
 					    fill: #00ffd0;
@@ -783,6 +787,176 @@
 						right:2px;
 						font-size:0.9em;
 
+					  }
+
+					  .summary-container {
+						width: 100%;
+						margin: auto;
+						display: flex;
+						flex-direction: column;
+						justify-content: center;
+						align-items: center;
+						height: auto;
+						font-family: arial, "Source Sans 3";
+					  }
+					  
+					  .service-box {
+						width: 100%;
+						height: auto;
+						padding: 2.5rem 3rem;
+						margin: 0.8rem;
+						display: flex;
+						flex-direction: column;
+						background-color: #fefefe;
+						-webkit-box-shadow: inset 0px 4px 11px 0px rgba(166, 166, 166, 0.25);
+						-moz-box-shadow: inset 0px 4px 11px 0px rgba(166, 166, 166, 0.25);
+						box-shadow: inset 0px 4px 11px 0px rgba(166, 166, 166, 0.25);
+						border-radius: 0.8rem;
+					  }
+					  
+					  .header {
+						display: flex;
+						align-items: baseline;
+						color: rgb(179, 46, 64);
+						font-family: "Source Sans 3";
+						justify-content: flex-start;
+						margin-bottom: 0.3rem;
+					  }
+					  .header .fa-solid {
+						margin-right: 0.9rem;
+						font-size: 1.2rem;
+					  }
+					  p.app-header {
+						margin-bottom: 0;
+						margin-left:5px;
+						font-size: 1.5em;
+						font-weight: 600;
+						font-family: arial;
+					  }
+					  
+					  .sub-text {
+						font-size: 1em;
+						margin-bottom: 1rem;
+					  }
+					  
+					  .pill-badge-container {
+						display: flex;
+						justify-content: flex-start;
+						align-items: center;
+						margin-bottom: 2rem;
+					  }
+					  .key {
+						font-weight: 900;
+						font-size: 0.9rem;
+						margin-right: 0.7rem;
+						margin-bottom: 0;
+					  }
+					  span.service-container-badge {
+						margin-right: 0.3rem;
+						color: black;
+						font-size: 0.75em;
+						padding: 0.35rem 1rem;
+					  }
+					  
+					  /***Card container**/
+					  .service-card-container {
+						display: flex;
+						align-items: center;
+						flex-wrap: wrap;
+						flex-direction: row;
+					  }
+					  .service-card-container .card {
+						min-width: 190px;
+						width: 190px;
+						text-align: center;
+						margin-right: 1.5rem;
+						margin-bottom: 1.5rem;
+						border-radius: 15px;
+						border: none;
+						-webkit-box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
+						-moz-box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
+						box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
+					  }
+					  .service-card-container .card .c-header {
+						height: 8.5vh;
+						padding: 0.8em;
+						background-color: #f6f6f6;
+						display: flex;
+						justify-content: center;
+						align-items: flex-start;
+						text-align: center;
+						width: 100%;
+						margin: 0 auto;
+						border-radius: 15px 15px 0 0;
+					  }
+					  .service-card-container .card .c-header p {
+						font-weight: 600;
+						font-size: 0.85em;
+						margin-bottom: 0;
+						line-height: 1.5rem;
+					  }
+					  .service-card-container .card .c-body {
+						padding: 0.8rem 0.9rem;
+						font-size: 0.8em;
+						line-height: 1.2em;
+						color: #5c5c5c;
+						height: 10vh;
+						overflow-y: scroll;
+						margin-bottom: 1rem;
+						font-weight: 400; 
+					  }
+					  .service-card-container .card .c-footer {
+						height: 3vh;
+						background-color: #f6f6f6;
+						border-radius: 0 0 15px 15px;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						 
+					  }
+					  .service-card-container .card .c-footer p {
+						font-size: 0.8em;
+						margin-bottom: 0;
+						font-weight: 800;
+					  }
+					  .service-card-container .card .c-footer .footer-badge {
+						font-size: 0.5em;
+						background-color: #69c9ff;
+					  }
+					  
+					  /** Alternate services styling **/
+					  
+					  .alternate-service-container .card .c-body {
+						text-align: left;
+						height: 13.8vh;
+					  }
+					  .alternate-service-container .card .c-body ul {
+						list-style: none;
+						padding-left: 0px;
+					  }
+					  .alternate-service-container .card .c-body li {
+						margin: 0.3rem 0;
+					  }
+					  .alternate-service-container .card .c-body li a {
+						text-decoration: none;
+						color: #2f2f2f;
+					  }
+					  .alternate-service-container .card .c-body li i {
+						color: #b32e40;
+						padding-right: 0.5rem;
+					  }
+					  
+					  .alternate-service-container .card .c-body li a:hover {
+						text-decoration: underline;
+					  }
+					  .alternate-service-container .sub-text {
+						margin-bottom: 2rem;
+					  }
+					  .pill-badges{
+						font-size:1.2em;
+					  }
+					  .whiteLabel a{
+						color: #ffffff !important;
 					  }
 				</style>
 				 
@@ -1051,7 +1225,7 @@
 									{{/if}}
 									{{#if this.supplier}}
 									<label>Application Supplier</label>
-									<div class="ess-string">{{this.supplier.name}}</div>
+									<div class="ess-string">{{#essRenderInstanceMenuLink this.supplier}}{{/essRenderInstanceMenuLink}}</div>
 									{{/if}}
 									{{#if this.family}}
 									<label>Application Family</label>
@@ -1122,6 +1296,16 @@
 										{{/each}}
 									<div class="clearfix bottom-10"></div>  
 								</div> 
+								{{/if}}
+								{{#if this.children}}
+								<div class="col-xs-12"/>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-sites right-10"></i>Contained Applications</h3>
+									{{#each this.children}}
+									<span class="label label-eas" style="border-bottom:2pt solid #0078ff59">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+									{{/each}}
+								</div>
+									
 								{{/if}}
 								<div class="col-xs-12"/>
 								{{#if this.classifications}}
@@ -1336,7 +1520,7 @@
 									<tbody>
 									{{#each this.processInfo}}
 										<tr>
-											<td><span class="label labelProcess">{{this.name}}</span></td>
+											<td>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</td>
 											<td><span class="label labelOrg">{{this.org}}</span></td>
 											<td><span class="label label-success">{{this.svcName}}</span></td>
 											<td>
@@ -1373,7 +1557,8 @@
 										
 									{{#each this.db}}
 										<i class="fa fa-database"></i>
-										{{this.infoRep.name}}<br/>
+									
+										{{#essRenderInstanceMenuLink this.infoRep}}{{/essRenderInstanceMenuLink}}<br/>
 									{{/each}}
 								</div>
 								{{/if}}
@@ -1396,7 +1581,7 @@
 											<div class="impact large bottom-10">{{this.name}}</div>
 										{{#each this.products}}
 											<div class="tech-item-wrapper">
-												<div class="tech-item-label">{{this.prodname}}</div>
+												<div class="tech-item-label">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
 												<div class="xsmall">
 													<div class="tech-item-label-sub">
 														{{this.compname}}
@@ -1430,9 +1615,10 @@
 												{{/if}}
 											</div>
 										{{/each}}
-										<div class="node-location pull-right">
+										  
+										<div class="pull-left">
 											{{#each this.nodes}}
-												<span class="label label-primary">{{this.name}}</span>
+												<span class="label label-primary whiteLabel">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
 												<xsl:text> </xsl:text>
 												<span class="label label-success">{{this.site}}</span><br/>
 											{{/each}}
@@ -1461,20 +1647,21 @@
 									</div>
 								</div>
 								<div class="superflex">
-									<div class="chart-container">
-										<canvas id="costByType-chart" ></canvas>
+									<div class="col-xs-6">
+										<div class="chart-container">
+											<canvas id="costByType-chart" ></canvas>
+										</div>
 									</div>
+									<div class="col-xs-5">
+										<div class="chart-container">
+											<canvas id="costByFrequency-chart" ></canvas>
+										</div>
+									</div> 
 								</div>
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<div class="chart-container">
-										<canvas id="costByFrequency-chart" ></canvas>
-									</div>
-								</div>
-								<div class="col-xs-12"/>
-								<div class="superflex">
-									<div class="full-width-chart-container" style="margin-bottom: 50px;">
-										<canvas id="costByMonth-chart" height="50px"></canvas>
+									<div class="full-width-chart-container" style="margin-bottom: 70px;">
+										<canvas id="costByMonth-chart" height="70px"></canvas>
 									</div>
 								</div>
 								<div class="col-xs-12"/>
@@ -1500,106 +1687,118 @@
 						{{/if}}
 						{{#if this.allServices.0.serviceName}}
 						<div class="tab-pane" id="appservices">
-								<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Application Services</h2>
-								<div class="parent-superflex">
-									<div class="superflex">
-										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Application Services</h3>
-										<p>Application Services for this application with lifecycle status and function supported</p>
-										<div class="top-10 bottom-10">
-											<strong>Key:</strong>&#160;
-											<div class="keyLozenge" style="background-color:#d3d3d3;color:#000000;">Not Set</div>
-											{{#each this.lifecyclesKey}}
-												<div class="keyLozenge"><xsl:attribute name="style">background-color:{{this.colour}};color:{{this.colourText}};</xsl:attribute>{{this.shortname}}</div> 
-											{{/each}}
-										</div>
-										<div class="clearfix"/>
-										<div class="ess-flat-card-wrapper">
-											{{#each this.allServices}}
-												
-											<div class="ess-flat-card"><xsl:attribute name="style">{{#getLifeColour this.lifecycleId 'Lifecycle_Status'}}{{/getLifeColour}}</xsl:attribute>
-													<div class="ess-flat-card-title">
-														<div><strong>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}
-														</strong></div>
-													</div>
-													<div class="ess-flat-card-body">
-														<div class="ess-desc"><p>{{this.description}}</p></div>
-														 <div class="ess-flat-card-widget-wrapper">
-															<div class="ess-flat-card-widget">
-																<!--<i class="fa fa-connect"></i>-->
-																{{#if this.functions}}
-																<div>{{this.functions.length}}
-																	{{#ifEquals this.functions.length 1}}
-																		Function
-																		{{else}}
-																		Functions
-																	{{/ifEquals}} 
-																	<a tabindex="-1" class="popover-trigger" data-toggle="popover">
-																		<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
-																		<i class="fa fa-info-circle"></i>
-																	</a>
-																	<div class="popover">
-																		<h5 class="strong">Functions</h5>
-																		<p class="small text-muted">{{#each this.functions}}<i class="fa fa-angle-right"></i> {{this.name}}<br/>{{/each}}</p>
-																	</div>
-																</div> 
-																{{/if}}
-																{{#if this.processes}}
-																<div>{{this.processes.length}} 
-																		{{#ifEquals this.processes.length 1}}
-																		Process
-																		{{else}}
-																		Processes
-																		{{/ifEquals}}
-																		<a tabindex="-1" class="popover-trigger" data-toggle="popover">
-																			<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
-																			<i class="fa fa-info-circle"></i>
-																		</a>
-																		<div class="popover">
-																			<h5 class="strong">Processes</h5>
-																			<p class="small text-muted">{{#each this.processes}}<i class="fa fa-angle-right"></i> {{#essRenderInstanceLinkOnly this 'Business_Process'}}{{/essRenderInstanceLinkOnly}}<br/>{{/each}}</p>
-																		</div>
-																	</div> 
-																	{{/if}}
-															</div>
-															 
-														</div> 
-													</div>
-												<!--	<div class="clearfix"/>
-													<div class="ess-flat-card-footer bg-orange-100">
-														<i class="fa fa-ticket right-5"></i>
-														<span></span>
-													</div>
-												-->
+							<div class="summary-container">
+								<!--service container-->
+								<div class="service-container service-box">
+								  <div class="header">
+									<i class="fa fa-desktop" style="padding-right: 0.5rem"></i>
+									<p class="app-header"><xsl:text> </xsl:text> Application Services</p>
+								  </div>
+								  <div class="sub-text">
+									Application Services for this application with lifecycle status and
+									function supported
+								  </div>
+								  <div class="pill-badge-container">
+									<p class="key">Key:</p>
+									<div class="pill-badges">
+										{{#each this.lifecyclesKey}}
+												<span
+												class="service-container-badge badge rounded-pill"><xsl:attribute name="style">background-color:{{this.colour}};color:{{this.colourText}};</xsl:attribute>{{this.shortname}}</span> 
+										{{/each}}
+									 
+									</div>
+								  </div>
+								  <div class="service-card-container">
+									{{#each this.allServices}}
+									<div class="card">
+									  <div class="c-header"><xsl:attribute name="style">{{#getLifeColour this.lifecycleId 'Lifecycle_Status'}}{{/getLifeColour}}</xsl:attribute>
+										<p>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</p>
+									  </div>
+									  <div class="c-body">
+										{{this.description}}
+									  </div>
+									  <div class="c-footer">
+										<p>
+										  {{#if this.functions}}
+											<div style="font-size:0.8em">
+												<small>
+												{{this.functions.length}}
+												{{#ifEquals this.functions.length 1}}
+													Function
+													{{else}}
+													Functions
+												{{/ifEquals}} 
+												</small>
+												<a tabindex="-1" class="popover-trigger" data-toggle="popover">
+													<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
+													<i class="fa fa-info-circle fa-xs"></i>
+												</a>
+												<div class="popover">
+													Functions
+													<p class="small text-muted">{{#each this.functions}}<i class="fa fa-angle-right"></i> {{this.name}}<br/>{{/each}}</p>
+												</div> 
+											</div> 
+										{{/if}}
+										{{#if this.processes}}
+											<div style="margin-left:5px; font-size:0.8em">
+												<small>
+												{{this.processes.length}} 
+												{{#ifEquals this.processes.length 1}}
+												Process
+												{{else}}
+												Processes
+												{{/ifEquals}}
+												</small>
+												<a tabindex="-1" class="popover-trigger" data-toggle="popover">
+													<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
+													<i class="fa fa-info-circle fa-xs"></i>
+												</a>
+												<div class="popover">
+													<h5 class="strong">Processes</h5>
+													<p class="small text-muted">{{#each this.processes}}<i class="fa fa-angle-right"></i> {{#essRenderInstanceLinkOnly this 'Business_Process'}}{{/essRenderInstanceLinkOnly}}<br/>{{/each}}</p>
 												</div>
-											{{/each}}	
-										</div>
+											</div> 
+											{{/if}}
+										</p>
+									  </div>
 									</div>
-									<div class="superflex">
-											<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Alternative Application Services</h3>
-											<p>Application Services this application has which are also provided by other applications</p>
-											<div class="ess-flat-card-wrapper">
-												{{#each this.allServices}}
-													<div class="ess-flat-card"> 
-														<div class="ess-flat-card-title" style="font-size:0.9em;">
-															<strong>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</strong>
-														</div>
-														<div class="ess-flat-card-body" style="text-align:left;">
-															<ul class="fa-ul">
-																{{#each this.otherAppsProviding}}
-																{{#ifEquals this.name ../../name}}
-																{{else}}
-																	<li><i class="fa fa-angle-right fa-li"></i>{{#essRenderInstanceLinkOnly this 'Application_Provider'}}{{/essRenderInstanceLinkOnly}}</li>
-																{{/ifEquals}}	
-																{{/each}}
-															</ul>
-														</div>
-													</div>
-												{{/each}}
-											</div>
-									</div>
-									
+									{{/each}}
+						  
+								  </div>
 								</div>
-	
+						  
+								<!--alternate service container-->
+								<div class="alternate-service-container service-box">
+								  <div class="header">
+									<i class="fa-solid fa-display" style="padding-right: 0.5rem"></i>
+									<p class="app-header">Alternative Application Services</p>
+								  </div>
+								  <div class="sub-text">
+									Application Services this application has which are also provided by other applications
+								  </div>
+						  
+								  <div class="service-card-container alternate">
+									{{#each this.allServices}}
+									<div class="card">
+									  <div class="c-header">
+										<p>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</p>
+									  </div>
+									  <div class="c-body">
+										<ul class="fa-ul">
+											{{#each this.otherAppsProviding}}
+											{{#ifEquals this.name ../../name}}
+											{{else}}
+												<li><i class="fa fa-angle-right fa-li"></i>{{#essRenderInstanceLinkOnly this 'Application_Provider'}}{{/essRenderInstanceLinkOnly}}</li>
+											{{/ifEquals}}	
+											{{/each}}
+										</ul>
+									  </div>
+									</div>
+									{{/each}}
+								  </div>
+								</div>
+							  </div>
+							
 							</div>
 						{{/if}}
 						{{#if this.lifecycles}}	
@@ -1680,13 +1879,13 @@
 									<p>Plans and projects that impact this application</p>
 									<h4>Plans</h4>
 									{{#each this.plans}}
-										<span class="label label-success">Plan</span>&#160;<strong>{{this.name}}</strong>&#160;
+										<span class="label label-success">Plan</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>&#160;
 										<span class="label label-default">From</span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}Not Set	{{/if}}
 										<span class="label label-default">To</span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}Not Set  	{{/if}}
 										<br/>
 									{{/each}}
 									{{#each this.aprplans}} 
-										<span class="label label-success">Plan</span>&#160;<strong>{{this.name}}</strong> &#160;
+										<span class="label label-success">Plan</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong> &#160;
 										<span class="label label-default">From</span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}Not Set	{{/if}}
 										<span class="label label-default">To</span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}Not Set  	{{/if}}
 										<br/>
@@ -1694,7 +1893,7 @@
 									{{#if this.projects}}
 									<h4>Projects</h4>
 									{{#each this.projects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{this.name}} </strong>
+										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
 										<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
 										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
@@ -1704,7 +1903,7 @@
 									
 									{{/each}}
 									{{#each this.aprprojects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{this.name}} </strong>
+										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
 										<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
 										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
@@ -1717,7 +1916,7 @@
 									{{#if this.aprprojects}} 
 									<h4>Projects</h4>
 									{{#each this.aprprojects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{this.name}} </strong>
+										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
 										<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
 										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
@@ -1737,9 +1936,9 @@
 									<p>Projects impacting this application and actions they are taking on this application </p>
 									{{#if this.projectElements}}
 									{{#each this.projectElements}}
-										<span class="label label-success">Plan</span>&#160;{{this.plan}}&#160;
+										<span class="label label-success">Plan</span>&#160;{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
 										<br/>
-										<span class="label label-primary">Project</span>&#160;{{this.projectName}}&#160;<br/>
+										<span class="label label-primary">Project</span>&#160;{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.projForeStart}}{{this.projForeStart}} {{else}} Not Set{{/if}} 
 											<span class="label label-default">Actual Start</span> &#160;{{#if this.projActStart}}{{this.projActStart}} {{else}} Not Set{{/if}} 
 											<span class="label label-default">Target End</span>&#160;{{#if this.projTargEnd}}{{this.projTargEnd}} {{else}} Not Set{{/if}} 
@@ -1752,7 +1951,7 @@
 									{{#each this.aprprojectElements}}
 										<span class="label label-success">Plan</span>&#160;{{this.plan}}&#160;
 										<br/>
-										<span class="label label-primary">Project</span>&#160;{{this.name}}&#160;<br/>
+										<span class="label label-primary">Project</span>&#160;{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}&#160;<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} Not Set{{/if}}
 											<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}} 
 											<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}}  {{else}} Not Set{{/if}}
@@ -1765,9 +1964,9 @@
 									{{else}}
 									{{#if this.aprprojectElements}}
 									{{#each this.aprprojectElements}}
-										<span class="label label-success">Plan</span>&#160;{{this.plan}}&#160;
+										<span class="label label-success">Plan</span>{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
 										<br/>
-										<span class="label label-primary">Project</span>&#160;{{this.name}}&#160;<br/>
+										<span class="label label-primary">Project</span>{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
 										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} Not Set{{/if}}
 											<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}} 
 											<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}}  {{else}} Not Set{{/if}}
@@ -1801,12 +2000,21 @@
 									{{else}}
 									<div class="bottom-10">
 										<label>{{this.classNm}}</label>
-										<span class="label label-default">
-											<xsl:attribute name="style">
-												{{#if this.BackgroundColor}}background-color:{{this.backgroundColor}};{{/if}}{{#if this.colour}}color:{{this.colour}};{{/if}}
-											</xsl:attribute>
-											{{this.name}}
-										</span>
+										{{#ifEquals this.name 'True'}}
+												<i class="fa fa-check-circle" style="color:green"></i>
+												{{else}}
+												{{#ifEquals this.name 'False'}}
+												<i class="fa fa-times-circle" style="color:red"></i>
+												{{else}}
+											 
+												<span class="label label-default">
+													<xsl:attribute name="style">
+														{{#if this.backgroundColor}}background-color:{{this.backgroundColor}};{{/if}}{{#if this.colour}}color:{{this.colour}};{{/if}}
+													</xsl:attribute>
+														{{this.name}}
+												</span>
+											{{/ifEquals}}
+										{{/ifEquals}}		
 									</div>
 									{{/ifEquals}}
 									{{/each}}		
@@ -1925,11 +2133,11 @@
 												<xsl:attribute name="doid">{{this.dataObjectId}}</xsl:attribute>
 												<xsl:attribute name="classifid">{{#each this.classifications}}{{this.id}}{{/each}}</xsl:attribute> 
 												<!--<span class="leadText">Data Object</span>:<strong>{{this.dataObject}}</strong>-->
-												<div class="large impact bottom-5">{{{this.dataObject}}}</div>
+												<div class="large impact bottom-5">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
 												{{#each this.values}}
 												<div class="appCard2">
 													<xsl:attribute name="irid">{{this.idirep}}</xsl:attribute>
-													<div class="bottom-5"><strong>Appears in: </strong><span class="label label-link bg-darkgrey">{{this.nameirep}}</span></div>
+													<div class="bottom-5"><strong>Appears in: </strong><span class="label label-link bg-darkgrey">{{#essRenderInstanceMenuLink this.irInfo}}{{/essRenderInstanceMenuLink}}</span></div>
 													{{#if this.datarepsimplemented}}
 													<span class="dbicon">{{this.category}}</span>
 													<span class="classiflist">{{#each ../this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}</span>
@@ -2109,7 +2317,7 @@
 			var focusAppId='<xsl:value-of select="$param1"/>'
 			var allDO=[];
 			var appList=[];
-			var byPerfName; 
+			var byPerfName, defaultCcy; 
 			var stakeholdertable, interfaceReport;
 			var stakeholdertable2, costTotalTemplate; 
 			var pmc, procServices,table, costtable, appServiceList;
@@ -2163,10 +2371,10 @@
 					})
 
 					if(itemVals){
-					return 'border-bottom: 15px solid '+itemVals.backgroundColor
+					return 'border-bottom: 3px solid '+itemVals.backgroundColor
 					}
 					else{
-						return 'border-bottom: 15px solid #d3d3d3';
+						return 'border-bottom: 3px solid none';
 					}
 
 				});
@@ -2222,10 +2430,10 @@
 					interfaceReport=appList.reports.filter((d)=>{return d.name=='appInterface'});
 					let thefocusApp=appList.applications.find((e)=>{return e.id==focusAppId});
  
-
 					let appDataMap=[];
-			
-	
+			//console.log('appMart',appMart)
+			defaultCurrency = appMart.ccy.find(currency => currency.default === "true");
+			//console.log('defaultCurrency',defaultCurrency)
 					<!-- create project pairs for speed -->
 					
 					plans.allProject.forEach((p)=>{
@@ -2300,21 +2508,28 @@
 					 
 							let theDrs=[]
 							e.dataReps.forEach((f)=>{
+								f['className']='Data_Representation';
 								let thisDr=DRList.find((dr)=>{
 									return dr.id ==f.id;
 								}); 
 								theDrs.push(thisDr)
 							});
 							e['dataReps']=theDrs
-
+							
+							e.infoRepsToApps.forEach((rep)=>{
+								rep['irInfo']={"name":rep.nameirep, "id":rep.idirep, "className":"Information_Representation"};
+							})
+						
 							var nested_apps = d3.nest()
 								.key(function(f) { return f.name; })
 								.entries(e.infoRepsToApps);
 								nested_apps=nested_apps.sort((a, b) => a.key.localeCompare(b.key))
  
 							e['appsArray']=nested_apps;
+					
 
 							e.infoRepsToApps.forEach((ap)=>{
+								ap['className']='Data_Representation';
 								appDataMap.push({"id":ap.appid, "dataObjects":e})
 							})
 						});
@@ -2345,9 +2560,9 @@
 						let thislife = appLifecycles.application_lifecycles.find((a)=>{
 							return a.id==ap.id
 						 })
-						 console.log('ap',ap)
+						
 						 if(thislife){
-							console.log('thislife',thislife)
+							
 						 	ap['lifecycles']=thislife.allDates;
 						 }
 						var option = new Option(ap.name, ap.id); 
@@ -2367,6 +2582,9 @@
 								if(filtered){ 
 									filtered[0]['dataObject']=am.name;
 									filtered[0]['dataObjectId']=am.id;
+									filtered[0]['className']='Data_Object';
+									filtered[0]['name']=am.name;
+									filtered[0]['id']=am.id;
 									filtered[0]['classifications']=am.classifications;
 									thisAppArray.push(filtered[0]);
 									if(am.classifications[0]){
@@ -2440,6 +2658,11 @@
 
 					Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
 						return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+					});
+
+					Handlebars.registerHelper('test', function(arg1) {
+						console.log('test', arg1)
+						 
 					});
 
 					Handlebars.registerHelper('YPos', function(arg1,arg2, options) {
@@ -2518,7 +2741,12 @@
 	});
 
 function redrawPage(focusApp){ 
-	//console.log('focusApp',focusApp)
+	
+	if (focusApp.children) {
+		focusApp.children = focusApp.children.map(d => appList.applications.find(f => d === f.id)).filter(Boolean);
+	}
+ 
+ 
 let panelSet = new Promise(function(myResolve, myReject) {
  
 let filterenumerationValues=[];
@@ -2563,22 +2791,28 @@ if(focusApp){
 
 	//console.log('thisTech',thisTech)
 	let key=[];
-	thisTech.environments.forEach((e)=>{
-		e.products=e.products.filter((elem, index, self) => self.findIndex( (t) =>{return (t.tpr === elem.tpr)})=== index)
+	thisTech?.environments?.forEach((e)=>{
+		e.products=e.products?.filter((elem, index, self) => self.findIndex( (t) =>{return (t.tpr === elem.tpr)})=== index)
 
 		e.products.forEach((t)=>{
+			t['className']='Technology_Product';
 			let thistechProds=techProds.techProdRoles?.find((p)=>{
 				return p.id==t.tpr;
 			}); 
-			
+			 t['id']=t.prod;
+			 t['name']=t.prodname;
 			if(thistechProds){
-			
+				
 				t['standards']=thistechProds.standard
 				t.standards?.forEach((d)=>{
 					key.push({"id":d.id, "name":d.status,"colour":d.statusBgColour, "colourText":d.statusColour})
 				})
 			}
 		})
+
+		e.nodes.forEach(node => {
+			node.className = 'Technology_Node';
+		  });
 
 	}); 
  
@@ -2587,6 +2821,12 @@ if(focusApp){
 	focusApp['stdkey']=key;
 	focusApp['applicationTechnology']=thisTech;
 
+	allDO.app_infoRep_Pairs = allDO.app_infoRep_Pairs.map(item => ({
+		...item,
+		className: 'Information_Representation'
+	}));
+
+	
 	let thisDB=allDO.app_infoRep_Pairs.filter((ap)=>{
 		return ap.appId==focusApp.id &amp;&amp; ap.persisted=='true';
 	})
@@ -2603,6 +2843,8 @@ if(focusApp){
 		 thisPlanElementMap=planElementMap.filter((d)=>{
 			return d.id!=e.id;
 		})
+		e['planInfo']={"id":e.planid, "name":e.plan, "className":"Enterprise_Strategic_Plan"};
+		e['projectInfo']={"id":e.projectID, "name":e.projectName, "className":"Project"}
 	})
  
 	let thisPlanElements=planElementMap.filter((p)=>{
@@ -2637,12 +2879,12 @@ if(focusApp){
 	let thisaprProj=[];
 	let thisaprPlan=[]; 
 	focusApp.allServices.forEach((f)=>{
-	let thisaprElements=projectElementMap.filter((p)=>{
+	let thisaprElements=projectElementMap?.filter((p)=>{
 		return p.impactedElement == f.id
 	})
  
 	let thisPlanElementMap
-	thisaprElements.forEach((e)=>{
+	thisaprElements?.forEach((e)=>{
 		 thisPlanElementMap=planElementMap.filter((d)=>{
 			return d.id!=e.id;
 		})
@@ -2660,6 +2902,8 @@ if(focusApp){
 		let thisProjDetail=plans.allProject.find((p)=>{
 			return d.projectID==p.id
 		})
+		d['planInfo']={"id":d.planid, "name":d.plan, "className":"Enterprise_Strategic_Plan"};
+		d['projectInfo']={"id":d.projectID, "name":d.projectName, "className":"Project"}
 		 
 		thisProjDetail['plan']=d.plan;
 		thisProjDetail['planId']=d.planid;
@@ -2715,7 +2959,7 @@ if(focusApp.physP){
 				return e.id==sv.id;
 			})
 	 	
-			allProcsforApps.push({"id":thisProcess.id,"name":thisProcess.processName,"orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
+			allProcsforApps.push({"id":thisProcess.id,"name":thisProcess.processName, "className": "Business_Process", "orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
 		})
 
 		}else{
@@ -2787,9 +3031,7 @@ focusApp['orgStakeholdersList']=orgStakeholdersList;
 let appDetail=appMart.applications.find((d)=>{
 	return d.id==focusApp.id
 });
-
-
-console.log('appDetail',appDetail)
+ 
 if(appDetail.documents){
 	let docsCategory = d3.nest()
 	.key(function(d) { return d.type; })
@@ -2885,7 +3127,9 @@ let momentStartFinYear = moment(fromDateArray[0]);
 let momentEndFinYear = moment(toDateArray[toDateArray.length-1]);  
 if(momentEndFinYear &lt; moment()) {momentEndFinYear=moment()}
 let costChartRowList=[];
+let costCurrency;
 	appDetail.costs?.forEach(function(aCost) {
+		costCurrency=aCost.ccy_code;
 		if(!aCost.toDate){aCost['toDate']=momentEndFinYear.format('YYYY-MM-DD')}
 		if(!aCost.fromDate  || aCost.fromDate == ''){aCost['fromDate']=momentStartFinYear.format('YYYY-MM-DD')}
 		if((aCost.fromDate != null) &amp;&amp; (aCost.toDate != null)) {
@@ -2912,9 +3156,10 @@ let costChartRowList=[];
 		for(i=0;i&lt;aCost.monthCount;i++){
 			costChartRow.push(aCost.monthlyAmount)
 		}
-	 
+	
 		costChartRowList.push(costChartRow)
 })
+
 let monthsListCount = Math.max(momentEndFinYear.diff(momentStartFinYear, 'months', true), 0);
 let monthsList=[];
 
@@ -2930,6 +3175,7 @@ for(i=0;i&lt;monthsListCount+1;i++){
 	})
 	sumsList[i] = tot;
 }
+
 cbcLabels=[];
 cbcVals=[];
  
@@ -2972,8 +3218,14 @@ focusApp.allServices.forEach((p)=>{
 	let otherAppsProviding=appServiceList.find((e)=>{
 		return e.key==p.serviceId;
 	})
-
+ 
 	if(otherAppsProviding){
+		otherAppsProviding.values = otherAppsProviding.values.map(app => {
+			return {
+				...app,
+				id: app.appid
+			};
+		});
 		p['otherAppsProviding']=otherAppsProviding.values;
 	}
   
@@ -3182,6 +3434,8 @@ new Chart(document.getElementById("costByType-chart"), {
     }
 });
  
+ 
+
 new Chart(document.getElementById("costByMonth-chart"), {
     type: 'bar',
     data: {
@@ -3189,15 +3443,30 @@ new Chart(document.getElementById("costByMonth-chart"), {
       datasets: [
         {
           label: "Cost Per Month",
-          backgroundColor:  "#f5aa42",
+          backgroundColor: "#f5aa42",
           data: sumsList
         }
       ]
-	},
-	options: {
-		responsive: true 
+    },
+    options: {
+		responsive: true,
+		scales: {
+		  yAxes: [{
+			ticks: {
+			  beginAtZero: true,
+			  callback: function(value) {
+				 
+				return new Intl.NumberFormat('en-US', { style: 'currency', currency: costCurrency }).format(value);
+			  }
+			}
+		  }]
+		},
+		plugins: {
+			labels: false // Disable the labels plugin for this chart
+		  }
 	  }
 });
+
 }
 
 
@@ -3225,7 +3494,9 @@ if(focusApp.thisAppArray){
 			classSelectData.push(c)
 		})
 		doSelectData.push({"name": d.dataObject, "id": d.dataObjectId})
+		
 		d.values.forEach((ir)=>{
+			ir['irInfo']={"name": ir.nameirep, "id": ir.idirep, "className":"Information_Representation"};
 			irSelectData.push({"name": ir.nameirep, "id": ir.idirep}) 
 		})
 	});
@@ -3323,7 +3594,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (this.readyState == 4 &amp;&amp; this.status == 200) {
-                ////console.log(prefixString);
+                //console.log(prefixString);
                 resolve(this.responseText);
             }
         };
@@ -3916,7 +4187,6 @@ let selected=$(this).val();
 let focusApp=appList.applications.find((f)=>{
 	return f.id==selected;
 });
- 
  
 redrawPage(focusApp);
 });

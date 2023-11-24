@@ -1,0 +1,29 @@
+{
+  "name": "joint-vsm-shapes",
+  "version": "3.7.2",
+  "private": true,
+  "description": "JointJS Value Stream Mapping Shapes",
+  "homepage": "https://www.jointjs.com/jointjs-plus",
+  "author": {
+    "name": "client IO",
+    "url": "http://client.io"
+  },
+  "main": "dist/joint-vsm-shapes.js",
+  "keywords": [],
+  "licenses": [
+    {
+      "type": "Rappid v2.0",
+      "url": "https://www.jointjs.com/license"
+    }
+  ],
+  "dependencies": {
+    "jointjs": "~3.7.5"
+  },
+  "volta": {
+    "node": "16.18.1",
+    "npm": "8.19.2"
+  },
+  "types": "dist/joint-vsm-shapes.d.ts",
+  "scripts": {},
+  "devDependencies": {}
+}

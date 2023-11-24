@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<errorsourcedoc xmlns="http://www.enterprise-architecture.org/essential/errorview" 
+<errorsourcedoc xmlns="http://www.enterprise-architecture.org/essential/errorview"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.enterprise-architecture.org/essential/errorview essentialErrorDoc.xsd">
-    <!-- 
+    <!--
         * Copyright (c)2011 Enterprise Architecture Solutions ltd.
-        * This file is part of Essential Architecture Manager, 
+        * This file is part of Essential Architecture Manager,
         * the Essential Architecture Meta Model and The Essential Project.
         *
         * Essential Architecture Manager is free software: you can redistribute it and/or modify
@@ -19,17 +19,17 @@
         *
         * You should have received a copy of the GNU General Public License
         * along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
-        * 
+        *
         Schema for the error XML document that is used as the transform source for the Essential Error View
     -->
     <!-- 09.11.2011    JWC    1st coding-->
-    
-    <viewerversion>6.18.7</viewerversion>
+
+    <viewerversion>6.19</viewerversion>
     <sourceapp>Essential Viewer 6</sourceapp>
-    
+
     <admincontacts>
         <contact>info@enterprise-architecture.org</contact>
         <contact>information@enterprise-architecture.org</contact>
     </admincontacts>
-    
+
 </errorsourcedoc>

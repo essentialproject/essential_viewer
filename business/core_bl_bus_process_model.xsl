@@ -142,7 +142,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -151,12 +151,12 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<!--Dependencies for JointJS UML Diagram-->
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
 				<style>
 					#paper{

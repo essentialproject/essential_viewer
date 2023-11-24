@@ -29,7 +29,7 @@
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="apis" select="/node()/simple_instance[type='Application_Provider_Interface']"/>
-	<xsl:variable name="linkClasses" select="('Business_Process', 'Application_Provider', 'Composite_Application_Provider','Business_Capability')"/>
+	<xsl:variable name="linkClasses" select="('Business_Process','Supplier', 'Application_Provider', 'Composite_Application_Provider','Business_Capability', 'Application_Service')"/>
 
 	<!-- START GENERIC LINK VARIABLES -->
  	<!-- END GENERIC LINK VARIABLES -->
@@ -56,7 +56,8 @@
 	<xsl:variable name="appData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
     <xsl:variable name="appSvcData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Applications 2 Services']"></xsl:variable>
 	<xsl:variable name="appMartData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
-   
+	<xsl:variable name="orgData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Group Actors']"></xsl:variable>
+
     <xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"></xsl:call-template>
 		<xsl:variable name="apiApps">
@@ -74,7 +75,11 @@
 				<xsl:with-param name="apiReport" select="$appMartData"></xsl:with-param>
 			</xsl:call-template>
         </xsl:variable> 
-		
+				<xsl:variable name="apiOrgs">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$orgData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
         
 		<html>
 			<head>
@@ -137,8 +142,8 @@
                         font-size:1.1em;
                         border-bottom: 2pt solid #ffffff;
                     }            
-                    table.table-bordered.dataTable tbody th,
-                    table.table-bordered.dataTable tbody td {
+                    .dataTable th,
+                    .dataTable td {
                     	word-break: break-word;
 					}  
 					.filtParent{
@@ -159,7 +164,7 @@
 					}
 					.btnOn{
 						background-color:#d3d3d3;
-					}       
+					}
 				</style>
 			 	  
 			</head>
@@ -182,75 +187,31 @@
 						<div class="col-xs-12 ">
 							<div class="pull-right filtParent">
 								
-							<ul class="appTypes" style="z-index:10">Include:
+							<ul class="appTypes" style="z-index:10"><xsl:value-of select="eas:i18n('Include')"/>
 								<li ><input type="checkbox" id="appBtn" name="appBtn" value="apps" class="btnOn" checked="true"></input>
-								<label for="apps"> Applications</label>  </li>
+								<label for="apps"><xsl:value-of select="eas:i18n(' Applications')"/></label>  </li>
 								<li><input type="checkbox" id="moduleBtn" name="moduleBtn" value="modules" class="btnOn" checked="true"/>
-								<label for="modules"> Modules</label>  </li>
+								<label for="modules"><xsl:value-of select="eas:i18n(' Modules')"/></label>  </li>
 								<li><input type="checkbox" id="apiBtn" name="apiBtn" value="apis"/>
-								<label for="apis"> APIs</label> </li>
+								<label for="apis"><xsl:value-of select="eas:i18n(' APIs')"/></label> </li>
 							</ul>
 						 
 							</div>
 						</div>
 						<div class="clearfix bottom-10"/>	
                         <div class="col-xs-12"> 
-                                <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" style="width: 100%;" id="dt_Capabilities">
-                                        <thead>
-                                            <tr>
-												<th>
-
-												</th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Application')"/>
-                                                </th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Description')"/>
-                                                </th>
-                                             	<th>
-                                                    <xsl:value-of select="eas:i18n('Services')"/>
-                                                </th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Status')"/>
-												</th>
-												<th>
-													<xsl:value-of select="eas:i18n('Family')"/>
-												</th>
-												<th>
-														<xsl:value-of select="eas:i18n('Supplier')"/>
-												</th>
-											 
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-												<th>
-														 
-												</th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Application')"/>
-                                                </th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Description')"/>
-                                                </th>
-                                               <th>
-                                                    <xsl:value-of select="eas:i18n('Services')"/>
-                                                </th>
-                                                <th>
-                                                    <xsl:value-of select="eas:i18n('Status')"/>
-												</th>
-												<th>
-													<xsl:value-of select="eas:i18n('Family')"/>
-												</th>
-												<th>
-														<xsl:value-of select="eas:i18n('Supplier')"/>
-												</th> 
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
-                                            
-                                        </tbody>
-                                    </table>
+                            <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" id="dt_Capabilities">
+								<thead>
+									<tr id="headerRow">
+										<!-- Headers will be appended here -->
+									</tr>
+								</thead>
+								<tfoot>
+									<tr id="footerRow">
+										<!-- Footers will be appended here -->
+									</tr>
+								</tfoot>
+							</table>
                         </div>
                     </div>
                 </div>
@@ -265,6 +226,28 @@
             <script id="life-template" type="text/x-handlebars-template">
                <button class="btn btn-sm"><xsl:attribute name="style">color:{{this.colourText}};background-color:{{this.colour}}</xsl:attribute>{{this.shortname}}</button>
             </script>
+			<script id="enum-template" type="text/x-handlebars-template">
+				{{#if this.enum_name}}
+				<button class="btn btn-sm"><xsl:attribute name="style">color:{{this.colour}};background-color:{{this.backgroundColor}}</xsl:attribute>{{this.enum_name}}</button>
+				{{else}}
+					{{#if this.name}}
+						{{#ifEquals this.name 'true'}}
+							<i class="fa fa-check-circle" style="color:green;font-size:1.2em"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Yes')"/>
+						{{else}}
+							{{#ifEquals this.name 'false'}}
+								<i class="fa fa-times-circle" style="color:#51b9d9;font-size:1.2em"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('No')"/>
+							{{else}}
+								{{#if this.name}}
+									{{this.name}}							
+								{{/if}}
+							{{/ifEquals}}
+						{{/ifEquals}}
+						{{else}}
+							Not Set
+					{{/if}}
+				{{/if}}
+			 </script>
+			
             <script id="list-template" type="text/x-handlebars-template">
                 {{#each this.caps}} 
                         <div class="col-xs-4">
@@ -280,6 +263,14 @@
 		  <script id="select-template" type="text/x-handlebars-template">
 			{{#essRenderInstanceLinkSelect this 'Application_Provider'}}{{/essRenderInstanceLinkSelect}}       
 	  	  </script>
+			<script id="stakeholder-template" type="text/x-handlebars-template">
+				{{#each this}}
+					<i class="fa fa-circle fa-sm"></i><small><xsl:text> </xsl:text>{{this.actor}} as {{this.role}}</small><br/>
+				{{/each}}      
+			</script>
+		    <script id="supplier-template" type="text/x-handlebars-template">
+				{{this.name}}      
+				</script>
 		  
           <script id="service-name" type="text/x-handlebars-template"> 
             <ul>
@@ -300,6 +291,7 @@
                     <xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
                     <xsl:with-param name="viewerAPIPathAppsSvc" select="$apiAppsSvc"></xsl:with-param> 
                     <xsl:with-param name="viewerAPIPathAppsMart" select="$apiAppsMart"></xsl:with-param>
+					<xsl:with-param name="viewerAPIPathOrgs" select="$apiOrgs"></xsl:with-param>  
 				</xsl:call-template>  
 			</script>
 		</html>
@@ -310,11 +302,12 @@
         <xsl:param name="viewerAPIPathApps"></xsl:param> 
 		<xsl:param name="viewerAPIPathAppsSvc"></xsl:param> 
 		<xsl:param name="viewerAPIPathAppsMart"></xsl:param> 
-		
+		<xsl:param name="viewerAPIPathOrgs"></xsl:param>
 		//a global variable that holds the data returned by an Viewer API Report
         var viewAPIData = '<xsl:value-of select="$viewerAPIPathApps"/>';
 		var viewAPIDataSvc = '<xsl:value-of select="$viewerAPIPathAppsSvc"/>';
 		var viewAPIDataMart = '<xsl:value-of select="$viewerAPIPathAppsMart"/>';
+		var viewAPIDataOrgs = '<xsl:value-of select="$viewerAPIPathOrgs"/>';  
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL) {
@@ -340,8 +333,19 @@
 				}
 			});
 		};
-		 
 
+		function getSlot(sltnm, id){
+			let slot=filters.find((e)=>{
+				return e.slotName==sltnm
+			}) 
+			let res=slot?.values.find((r)=>{
+				return r.id==id;
+			})
+		 
+			return res || "";
+		}
+
+		var table
 		var dynamicAppFilterDefs=[];	 
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 		var catalogueTable
@@ -354,6 +358,9 @@
             
             lifeFragment = $("#life-template").html();
             lifeTemplate = Handlebars.compile(lifeFragment);
+
+			enumFragment = $("#enum-template").html();
+			enumTemplate = Handlebars.compile(enumFragment);
 
 			const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
 
@@ -476,6 +483,12 @@
 		            }
 				}
             });
+
+			Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+				//console.log(arg1)
+				//console.log(arg2)
+				return (arg1.toLowerCase() == arg2.toLowerCase()) ? options.fn(this) : options.inverse(this);
+			}); 
             
             Handlebars.registerHelper('essRenderInstanceLinkMenuOnly', function (instance, type) {
 
@@ -498,29 +511,164 @@
             let workingArr = []; 
             let svcArr=[];
             let lifecycleArr=[]; 
+			var colSettings=[];
 			Promise.all([
                 promise_loadViewerAPIData(viewAPIData),
 				promise_loadViewerAPIData(viewAPIDataSvc), 
-				promise_loadViewerAPIData(viewAPIDataMart)
+				promise_loadViewerAPIData(viewAPIDataMart),
+				promise_loadViewerAPIData(viewAPIDataOrgs)
 			]).then(function (responses) {
 				meta = responses[0].meta;
 				filters=responses[0].filters;
                 workingArr = responses[0].applications;  
+				orgsRolesList=responses[3].a2rs;
+
+				slotNames = filters.map(obj => ({
+					"id": obj.slotName,
+					"name": obj.name
+				}));
+
+				 colSettings=[
+			{
+				"data" : "select",
+				"title": "Select",
+				"width": "50px",
+				"visible": true 
+			},
+			{
+				"data" :  "name",
+				"title": "Name",
+				"width": "200px",
+				"visible": true
+			},
+			{
+				"data" : "desc",
+				"title": "Description",
+				"width": "400px",
+				"visible": true 
+			},
+			{	"data":"services",
+				"title": "Services",
+				"width": "200px",
+				"visible": true
+			},
+			{	"data":"family",
+				"title": "Family",
+				"width": "200px",
+				"visible": false 					
+			},
+			{	"data":"supplier",
+				"title":"Supplier",
+				"width": "200px", 
+				"visible": true					
+			},
+			{	"data":"stakeholders",
+				"width": "200px", 
+				"visible": false,
+				"title": "Stakeholders"					
+			}
+			
+			];
+
+			slotNames.forEach((d)=>{
+				colSettings.push({	"data":d.id,
+					"title":d.name,
+					"width": "200px", 
+					"visible": false					
+				})
+			})
+
 				lifecycleArr = responses[0].lifecycles ;
 				workingArr = [...workingArr, ...responses[0].apis];
+		
 				martApps=responses[2].applications;
 				responses[2]=[]; 
 				workingArr.forEach((d)=>{ 
-					if(d.containedApp){
-						d.valueClass="Application_Provider";
-					}
+					d['select']=d.id;
+					let actorsNRoles=[];
+					d.valueClass=d.className;
+					d.sA2R?.forEach((f)=>{ 
+						let thisA2r = orgsRolesList.find((r)=>{
+							return r.id==f;
+						})
+						 
+						if(thisA2r){
+							actorsNRoles.push(thisA2r)
+							} 
+					})
+
+					d['stakeholders']=actorsNRoles 
+				
 					let martMatch=martApps.find((e)=>{
 						return d.id==e.id;
 					})
 
 					d['family']=martMatch.family;
 					d['supplier']=martMatch.supplier;
+					
+					slotNames.forEach((s)=>{
+						
+					 if(d[s.id]){
+						d[s.id]=getSlot(s.id,d[s.id])
+					 }else{
+						d[s.id]="-";
+					 }
+					})
 				})
+		 
+				colSettings.forEach((d)=>{
+					$('#headerRow').append('<th>' + d.title + '</th>');
+					$('#footerRow').append('<th>' + d.title + '</th>');
+				})
+
+				$('#dt_Capabilities tfoot th').each(function () {
+		            var title = $(this).text();
+				 
+		            $(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
+		        });
+			
+				// Initialize DataTable with dynamic columns
+				table = $("#dt_Capabilities").DataTable({
+				"paging": false,
+				"deferRender": true,
+				"scrollY": 350,
+        		"scrollX": true,
+				"scrollCollapse": true,
+				"info": true,
+				"sort": true,
+				"destroy" : true,
+				"responsive": false,
+				"stateSave": true,
+			//	"data": workingArr,
+				"columns": colSettings,
+				"dom": 'Bfrtip',
+				"buttons": [ 
+					'colvis',
+					'copyHtml5',
+					'excelHtml5',
+					'csvHtml5',
+					'pdfHtml5',
+					'print'
+				],
+				stateSaveCallback: function(settings, data) {
+					localStorage.setItem('DataTables_App_Pro' + settings.sInstance, JSON.stringify(data))
+				},
+				stateLoadCallback: function(settings) {
+					return JSON.parse(localStorage.getItem('DataTables_App_Pro' + settings.sInstance))
+				}});
+		 
+				table.columns().every(function () {
+		            var that = this;
+
+		            $('input', this.footer()).on('keyup change', function () {
+		                if (that.search() !== this.value) {
+		                    that
+		                        .search(this.value)
+		                        .draw();
+		                }
+		            });
+		        });
+
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
@@ -532,7 +680,7 @@
 					})
                 });
 				allAppArr = JSON.parse(JSON.stringify(workingArr))
-				 
+			
                 roadmapCaps = [];
                 
 				//setCatalogueTable(); 
@@ -540,92 +688,35 @@
 					return (d.valueClass == ('Composite_Application_Provider')) ||
 					d.valueClass == ('Application_Provider')
 				})
-console.log('responses[0].filters',responses[0].filters)
+
+				
+
 				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], responses[0].filters,true);
 
-		$('#appBtn').off().on('click', function(){
-			if($('#appBtn').hasClass('btnOn')){
-			 
-				$('#appBtn').removeClass('btnOn')
-			}
-			else{
-			 
-				$('#appBtn').addClass('btnOn')
-			}
-			setList()
-		});
-		$('#moduleBtn').off().on('click', function(){
-			if($('#moduleBtn').hasClass('btnOn')){
-				 
-				$('#moduleBtn').removeClass('btnOn')
-			}
-			else{
-			 
-				$('#moduleBtn').addClass('btnOn')
-			}
-			setList()
-		})	
-		$('#apiBtn').off().on('click', function(){
-			if($('#apiBtn').hasClass('btnOn')){
-				 
-				$('#apiBtn').removeClass('btnOn')
-			}
-			else{
-			 
-				$('#apiBtn').addClass('btnOn')
-			}
-			setList()
-		})	
+				function toggleButtonClickHandler() {
+					$(this).toggleClass('btnOn');
+					setList();  // Assuming you want to call setList() for each button click
+				}
+
+				$('#appBtn').off('click').on('click', toggleButtonClickHandler);
+				$('#moduleBtn').off('click').on('click', toggleButtonClickHandler);
+				$('#apiBtn').off('click').on('click', toggleButtonClickHandler);
 		
 	function setList(){
 		let wa=[];
 		workingArr=allAppArr
-		if($('#appBtn').hasClass('btnOn')){
-			 
-			workingArr=allAppArr.filter((d)=>{
-				return (d.valueClass == ('Composite_Application_Provider')) ||
-				d.valueClass == ('Application_Provider') ||
-				d.valueClass == ('Application_Provider_Interface')
-			})
-		}
-		else{ 
-			workingArr=allAppArr.filter((d)=>{
-				return !(d.valueClass ==('Composite_Application_Provider'))||
-				d.valueClass == ('Application_Provider') ||
-				d.valueClass == ('Application_Provider_Interface');
-			})
-		} 
-		
-		if($('#moduleBtn').hasClass('btnOn')){
-			workingArr=workingArr.filter((d)=>{
-				return (d.valueClass == ('Application_Provider'))||
-				d.valueClass == ('Composite_Application_Provider') ||
-				d.valueClass == ('Application_Provider_Interface');
-			})
-		}
-		else{ 
-			workingArr=workingArr.filter((d)=>{
-				return !(d.valueClass == ('Application_Provider'))||
-				d.valueClass == ('Composite_Application_Provider') ||
-				d.valueClass == ('Application_Provider_Interface');
-			});
-		}
-		
-		if($('#apiBtn').hasClass('btnOn')){  
-			workingArr=workingArr.filter((d)=>{
-				return (d.valueClass == ('Application_Provider_Interface'))||
-				d.valueClass == ('Composite_Application_Provider') ||
-				d.valueClass == ('Application_Provider')
-			})
-		}
-		else{ 
-			workingArr=workingArr.filter((d)=>{
-				return !(d.valueClass==('Application_Provider_Interface'))||
-				d.valueClass == ('Composite_Application_Provider') ||
-				d.valueClass == ('Application_Provider');
-			});
-		}
-		 
+
+		var appBtnChecked = $('#appBtn').prop('checked');
+		var modBtnChecked = $('#moduleBtn').prop('checked');
+		var apiBtnChecked = $('#apiBtn').prop('checked');
+	
+		 workingArr = allAppArr.filter(function(item) {
+			if (appBtnChecked &amp;&amp; item.valueClass === 'Composite_Application_Provider') return true;
+			if (modBtnChecked &amp;&amp; item.valueClass === 'Application_Provider') return true;
+			if (apiBtnChecked &amp;&amp; item.valueClass === 'Application_Provider_Interface') return true;
+			return false;  // If none of the conditions met, filter out the item
+		});
+
 		redrawView();
 
 	}		 
@@ -636,7 +727,7 @@ console.log('responses[0].filters',responses[0].filters)
 var tblData;
 
             function renderCatalogueTableData(scopedData) {
-			 
+		
 		        var serviceFragment = $("#service-name").html();
 				var serviceTemplate = Handlebars.compile(serviceFragment);
 
@@ -645,12 +736,19 @@ var tblData;
 				  
 				var selectFragment = $("#select-template").html();
 				var selectTemplate = Handlebars.compile(selectFragment);
-		
+
+				var supplierFragment = $("#supplier-template").html();
+				var supplierTemplate = Handlebars.compile(supplierFragment);
+			 
+				var stakeholderFragment = $("#stakeholder-template").html();
+				var stakeholderTemplate = Handlebars.compile(stakeholderFragment);
+
 		        let inscopeApps = [];
                 inscopeApps['apps'] = scopedData.apps
-                 
+	
 		        //Note: The list of applications is based on the "inScopeApplications" variable which ony contains apps visible within the current roadmap time frame
-		        for (var i = 0; inscopeApps.apps.length > i; i += 1) {
+
+				for (var i = 0; inscopeApps.apps.length > i; i += 1) {
 			
                 let appInf = svcArr.applications_to_services.find((d)=>{
                     return inscopeApps.apps[i].id == d.id
@@ -662,22 +760,35 @@ var tblData;
                     return d.id == app.lifecycle;
                 });
                 
-if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText":"#000000"}}
-		          
+				if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText":"#000000"}}
+
 		            //get the current App
                     appNameHTML = nameTemplate(inscopeApps.apps[i]); 
-				 
+
+					//get slot data
+					let additionalData = {};
+			 //console.log('sn',slotNames)
+					slotNames.forEach(key => { 
+						 
+						additionalData[key.id] = enumTemplate(inscopeApps.apps[i][key.id]) || "";
+
+	
+					});
+		  
 		            //Apply handlebars template
                     let appSvcHTML = serviceTemplate(appInf);
 					let appLifeHTML = lifeTemplate(appLife); 
 					let appFamilyHTML= familyTemplate(app);
-					selectHTML=selectTemplate(inscopeApps.apps[i]);  
+					selectHTML=selectTemplate(inscopeApps.apps[i]);
+					supplierHTML=supplierTemplate(inscopeApps.apps[i].supplier)   
 					
-					tblData.push({"select":selectHTML,"name":appNameHTML,"desc":app.description, "services": appSvcHTML ,"status":appLifeHTML,"family":appFamilyHTML,"supplier":app.supplier})
+					stakeholderHTML=stakeholderTemplate(inscopeApps.apps[i].stakeholders)
+				
+					tblData.push({"select":selectHTML,"name":appNameHTML,"desc":app.description, "services": appSvcHTML ,"status":appLifeHTML,"family":appFamilyHTML,"supplier":supplierHTML, "stakeholders":stakeholderHTML, ...additionalData})
                       
 		        }
 
-		        return tblData;
+				table.clear().rows.add(tblData).draw();
 		    }
 
             function setCatalogueTable(scopedData) {
@@ -691,9 +802,9 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 				workingArr.forEach((d) => {
 					scopedAppList.push(d)
 				});
- 
+			
 				let toShow = []; 
-				  
+			 
                 let workingAppsList = []; 
                 let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
@@ -707,95 +818,14 @@ if(appLife){}else{appLife={"shortname":"Not Set","color":"#d3d3d3", "colourText"
 					"icon": 'fa-desktop'
 				}
 				let scopedApps = essScopeResources(scopedAppList, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
-
+		
 				let showApps = scopedApps.resources; 
 				let viewArray = {}; 
 				viewArray['type'] = "<xsl:value-of select="$repYN"/>";
 				viewArray['apps'] = showApps;
 				$('#list').html(listTemplate(viewArray));
 				setCatalogueTable(viewArray) 
-			 
-                $('#dt_Capabilities tfoot th').each(function () {
-		            var title = $(this).text();
-		            $(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
-		        });
 
-		        catalogueTable = $('#dt_Capabilities').DataTable({
-		            paging: false,
-		            deferRender: true,
-		            scrollY: 350,
-		            scrollCollapse: true,
-		            info: true,
-					sort: true,
-					destroy : true,
-		            responsive: false,
-					"data":tblData,
-					"stateSave": true,
-                    "columns":[
-						{
-                            "data" : "select",
-                            "width": "2%" 
-						},
-		                {
-                            "data" :  "name",
-                            "width": "15%"
-		                },
-		                {
-							"data" : "desc",
-							"width": "25%" 
-						},
-						{	"data":"services",
-							"width": "20%",
-							"visible": false
-						},
-						{	"data":"status",
-							"width": "20%", 
-							"visible": false					
-						},
-						{	"data":"family",
-							"width": "15%" 					
-						},
-						{	"data":"supplier",
-							"width": "10%", 
-							"visible": false					
-						}
-						],
-                        "columnDefs": [ {
-							"targets": 0,
-							"orderable": false
-							} ],
-						order: [[ 1, 'asc' ]],		
-		            dom: 'Bfrtip',
-					buttons: [ 
-						'colvis',
-		                'copyHtml5',
-		                'excelHtml5',
-		                'csvHtml5',
-		                'pdfHtml5',
-		                'print'
-		            ]
-		        });
-
-
-		        // Apply the search
-		        catalogueTable.columns().every(function () {
-		            var that = this;
-
-		            $('input', this.footer()).on('keyup change', function () {
-		                if (that.search() !== this.value) {
-		                    that
-		                        .search(this.value)
-		                        .draw();
-		                }
-		            });
-		        });
-
-		        catalogueTable.columns.adjust();
-
-		        $(window).resize(function () {
-		            catalogueTable.columns.adjust();
-		        });
-            
 			}
 		});
 

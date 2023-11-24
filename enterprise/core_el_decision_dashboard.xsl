@@ -66,7 +66,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Decision Dashboard</title>
+				<title><xsl:value-of select="eas:i18n('Decision Dashboard')"/></title>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -89,16 +89,16 @@
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"></i>
 							</div>
-							<h2 class="text-primary">Decisions</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Decisions')"/></h2>
 							<div class="clearfix top-15"></div>
 							<table class="table table-striped decisionTable" id="decisionTable">
 								<thead>
 									<tr>
-										<th>ID</th>
-										<th>Name</th>
-										<th>Description</th>
-										<th>Date</th>
-										<th>Status</th>
+										<th><xsl:value-of select="eas:i18n('ID')"/></th>
+										<th><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th><xsl:value-of select="eas:i18n('Description')"/></th>
+										<th><xsl:value-of select="eas:i18n('Date')"/></th>
+										<th><xsl:value-of select="eas:i18n('Status')"/></th>
 										<th>&#160;</th>
 									</tr>
 								</thead>
@@ -107,11 +107,11 @@
 								</tbody>
 								<tfoot>
 									<tr>
-										<th>ID</th>
-										<th>Name</th>
-										<th>Description</th>
-										<th>Date</th>
-										<th>Status</th>
+										<th><xsl:value-of select="eas:i18n('ID')"/></th>
+										<th><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th><xsl:value-of select="eas:i18n('Description')"/></th>
+										<th><xsl:value-of select="eas:i18n('Date')"/></th>
+										<th><xsl:value-of select="eas:i18n('Status')"/></th>
 										<th>&#160;</th>
 									</tr>
 								</tfoot>
@@ -216,7 +216,7 @@
 			<td>
 				<button class="btn btn-sm btn-default" data-toggle="modal">
 					<xsl:attribute name="data-target" select="concat('#modal-',current()/name)"></xsl:attribute>
-					<i class="fa fa-info-circle right-5"></i>Additional Info</button>
+					<i class="fa fa-info-circle right-5"></i><xsl:value-of select="eas:i18n('Additional Info')"/></button>
 					<div class="modal fade" tabindex="-1" role="dialog">
 						<xsl:attribute name="id" select="concat('modal-',current()/name)"></xsl:attribute>
 						<div class="modal-dialog" role="document">
@@ -225,24 +225,24 @@
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 										<span aria-hidden="true"><i class="fa fa-times"/></span>
 									</button>
-									<h4 class="modal-title"><strong class="right-5">Decision:</strong><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"></xsl:value-of></h4>
+									<h4 class="modal-title"><strong class="right-5"><xsl:value-of select="eas:i18n('Decision')"/></strong><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"></xsl:value-of></h4>
 								</div>
 								<div class="modal-body">
-									<label>Description</label>
+									<label><xsl:value-of select="eas:i18n('Description')"/></label>
 									<p>
 										<xsl:if test="string-length(current()/own_slot_value[slot_reference = 'description']/value) = 0">-</xsl:if>
 										<xsl:value-of select="current()/own_slot_value[slot_reference = 'description']/value"></xsl:value-of>
 									</p>
-									<label>Decision Date</label>
+									<label><xsl:value-of select="eas:i18n('Decision Date')"/></label>
 									<p>
 										<xsl:if test="string-length(current()/own_slot_value[slot_reference = 'decision_date_iso_8601']/value) = 0">-</xsl:if>
 										<xsl:value-of select="current()/own_slot_value[slot_reference = 'decision_date_iso_8601']/value"></xsl:value-of></p>
-									<label>Reference</label>
+									<label><xsl:value-of select="eas:i18n('Reference')"/></label>
 									<p>
 										<xsl:if test="string-length(current()/own_slot_value[slot_reference = 'governance_reference']/value) = 0">-</xsl:if>
 										<xsl:value-of select="current()/own_slot_value[slot_reference = 'governance_reference']/value"></xsl:value-of>
 									</p>
-									<label>Decision Made By</label>
+									<label><xsl:value-of select="eas:i18n('Decision Made By')"/></label>
 									<p>
 										<xsl:variable name="decisionActor" select="$allActors[name = current()/own_slot_value[slot_reference='decision_made_by_actor']/value]"/>
 										<xsl:variable name="decisionActorEmail" select="$decisionActor/own_slot_value[slot_reference='email']/value"/>
@@ -255,7 +255,7 @@
 											</a>)
 										</xsl:if>
 									</p>
-									<label>Elements in Scope</label>
+									<label><xsl:value-of select="eas:i18n('Elements in Scope')"/></label>
 									<xsl:if test="count(current()/own_slot_value[slot_reference = 'decision_elements']/value) = 0"><p>-</p></xsl:if>
 									<ul>
 										<xsl:variable name="decisionElements" select="current()/own_slot_value[slot_reference='decision_elements']/value"/>
@@ -270,7 +270,7 @@
 											</li>
 										</xsl:for-each>
 									</ul>
-									<label>Comments</label>
+									<label><xsl:value-of select="eas:i18n('Comments')"/></label>
 									<xsl:if test="count(current()/own_slot_value[slot_reference = 'decision_comments']/value) = 0"><p>-</p></xsl:if>
 									<ul class="fa-ul">
 									<xsl:for-each select="current()/own_slot_value[slot_reference='decision_comments']/value">
@@ -281,7 +281,7 @@
 									</ul>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal"><xsl:value-of select="eas:i18n('Close')"/></button>
 								</div>
 							</div>
 							<!-- /.modal-content -->

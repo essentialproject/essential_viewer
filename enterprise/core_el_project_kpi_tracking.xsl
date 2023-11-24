@@ -73,15 +73,15 @@
             <xsl:call-template name="RenderModalReportContent">
                 <xsl:with-param name="essModalClassNames" select="$linkClasses" />
             </xsl:call-template>
-            <link href="js/select2/css/select2.min.css" rel="stylesheet" />
-            <script src="js/select2/js/select2.min.js" />
+            <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet" />
+            <script src="js/select2/js/select2.min.js?release=6.19" />
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Project KPI Tracker</title>
+				<title><xsl:value-of select="eas:i18n('Project KPI Tracker')"/></title>
 				<style>
 					.projpanel{
 						border: 1pt solid #ccc;
@@ -103,13 +103,13 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Project KPI Tracking</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Project KPI Tracking')"/></span>
 								</h1>
 							</div>
 							<div>
 								<span class="right-10 strong">Key:</span>
-								<i class="fa fa-bullseye right-5"/><span class="right-10">Original Target</span>
-								<i class="fa fa-circle-o right-5"/><span>Actual</span>
+								<i class="fa fa-bullseye right-5"/><span class="right-10"><xsl:value-of select="eas:i18n('Original Target')"/></span>
+								<i class="fa fa-circle-o right-5"/><span><xsl:value-of select="eas:i18n('Actual')"/></span>
 							</div>
 						</div>
 

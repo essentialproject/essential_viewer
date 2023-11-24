@@ -64,8 +64,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Instance Overview</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				<script>
 					$(document).ready(function(){
 						$('select').select2({theme: "bootstrap"});
@@ -83,7 +83,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Class Browser</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Class Browser')"/></span>
 								</h1>
 							</div>
 						</div>
@@ -91,9 +91,9 @@
 						<div class="col-xs-12">
 							<form>
 								<div class="form-group">
-									<label class="control-label">Class Browser</label>
+									<label class="control-label"><xsl:value-of select="eas:i18n('Class Browser')"/></label>
 									<select class="form-control select2" onchange="window.location.href='report?XML=reportXML.xml&amp;XSL=integration/class_overview.xsl&amp;PMA='+this.value">
-										<option>Choose Class</option>
+										<option><xsl:value-of select="eas:i18n('Choose Class')"/></option>
 										<xsl:apply-templates select="$allClasses" mode="allClasses">
 											<xsl:sort select="name" order="ascending"/>
 										</xsl:apply-templates>
@@ -108,14 +108,14 @@
 							<div class="sectionIcon">
 								<i class="fa fa-list-ul icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Class Information</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Class Information')"/></h2>
 							<div class="content-section">
-								<h3><strong>Selected Class</strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisClass/name"/></h3>
+								<h3><strong><xsl:value-of select="eas:i18n('Selected Class')"/></strong>:<xsl:text> </xsl:text><xsl:value-of select="$thisClass/name"/></h3>
 								<table class="table table-bordered table-striped" id="classTab">
 									<thead>
-										<th onclick="sortTable(0)">Slot Name</th>
-										<th onclick="sortTable(1)">Target Class</th>
-										<th onclick="sortTable(2)">Inverse Slot Name</th>
+										<th onclick="sortTable(0)"><xsl:value-of select="eas:i18n('Slot Name')"/></th>
+										<th onclick="sortTable(1)"><xsl:value-of select="eas:i18n('Target Class')"/></th>
+										<th onclick="sortTable(2)"><xsl:value-of select="eas:i18n('Inverse Slot Name')"/></th>
 									</thead>
 									<tbody>
 										<xsl:apply-templates select="$thisClass/template_slot" mode="slots">

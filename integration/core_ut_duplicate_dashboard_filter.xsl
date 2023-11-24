@@ -74,7 +74,7 @@
 				</xsl:for-each>
 				<title>Data Duplication Dashboard</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<script src="js/fuse.min.js"/>
+				<script src="js/fuse.min.js?release=6.19"/>
 				<style>
 					.score{
 						width: 70px;
@@ -136,63 +136,63 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Duplicate Dashboard - Key Classes</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Duplicate Dashboard - Key Classes')"/></span>
 								</h1>
 							</div>
 						</div>
 						<div class="col-xs-10">
-							<label name="Sensitivity">Sensitivity</label>
+							<label name="Sensitivity"><xsl:value-of select="eas:i18n('Sensitivity')"/></label>
 							<select id="filterRange" class="selectBox" onchange="window.location='report?XML=reportXML.xml&amp;XSL=integration/core_ut_duplicate_dashboard_filter.xsl&amp;PMA=&amp;PMA2='+filterRange.value;">
-								<option value="0.00001" name="Essential=essential" selected="selected">100%</option>
-								<option value="0.1" name="Essential=essential1">90%</option>
-								<option value="0.2" name="Essential=essential 1">80%</option>
-								<option value="0.3" name="Essential=essential one">70%</option>
+								<option value="0.00001" name="Essential=essential" selected="selected"><xsl:value-of select="eas:i18n('100%')"/></option>
+								<option value="0.1" name="Essential=essential1"><xsl:value-of select="eas:i18n('90%')"/></option>
+								<option value="0.2" name="Essential=essential 1"><xsl:value-of select="eas:i18n('80%')"/></option>
+								<option value="0.3" name="Essential=essential one"><xsl:value-of select="eas:i18n('70%')"/></option>
 							</select>
 						</div>
 						<div class="col-xs-2">
-							<button type="button" class="btn btn-default btn-sm pull-right" id="toggleFilter">Toggle Filters</button>
+							<button type="button" class="btn btn-default btn-sm pull-right" id="toggleFilter"><xsl:value-of select="eas:i18n('Toggle Filters')"/></button>
 						</div>
 						<div class="col-xs-12">
 							<div id="filterPanel" style="display:none;margin-bottom: 15px;">
 								<div class="row">
 									<div class="col-xs-2">
-										<input type="checkbox" name="buscaps" id="buscapselect"> Business Capabilities</input>
+										<input type="checkbox" name="buscaps" id="buscapselect"><xsl:value-of select="eas:i18n(' Business Capabilities')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="busprocs" id="busprocselect" checked="true"> Business Processes</input>
+										<input type="checkbox" name="busprocs" id="busprocselect" checked="true"><xsl:value-of select="eas:i18n(' Business Processes')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="appcaps" id="appcapselect" checked="true"> Application Capabilities</input>
+										<input type="checkbox" name="appcaps" id="appcapselect" checked="true"><xsl:value-of select="eas:i18n(' Application Capabilities')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="apps" id="appsselect" checked="true"> Applications</input>
+										<input type="checkbox" name="apps" id="appsselect" checked="true"><xsl:value-of select="eas:i18n(' Applications')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="techprods" id="techprodselect" checked="true"> Technology Products</input>
+										<input type="checkbox" name="techprods" id="techprodselect" checked="true"><xsl:value-of select="eas:i18n(' Technology Products')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="technodes" id="technodeselect" checked="true"> Technology Nodes</input>
+										<input type="checkbox" name="technodes" id="technodeselect" checked="true"><xsl:value-of select="eas:i18n(' Technology Nodes')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="BusRoles" id="busroleselect" checked="true"> Business Roles</input>
+										<input type="checkbox" name="BusRoles" id="busroleselect" checked="true"><xsl:value-of select="eas:i18n(' Business Roles')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="product" id="productselect" checked="true"> Products</input>
+										<input type="checkbox" name="product" id="productselect" checked="true"><xsl:value-of select="eas:i18n(' Products')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="actor" id="actorselect" checked="true"> Actor</input>
+										<input type="checkbox" name="actor" id="actorselect" checked="true"><xsl:value-of select="eas:i18n(' Actor')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="appService" id="appServiceselect" checked="true"> Application Service </input>
+										<input type="checkbox" name="appService" id="appServiceselect" checked="true"><xsl:value-of select="eas:i18n(' Application Service')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="swComponent" id="swComponentselect" checked="true"> Software Component</input>
+										<input type="checkbox" name="swComponent" id="swComponentselect" checked="true"><xsl:value-of select="eas:i18n(' Software Component')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="project" id="projectselect" checked="true"> Project</input>
+										<input type="checkbox" name="project" id="projectselect" checked="true"><xsl:value-of select="eas:i18n(' Project')"/></input>
 									</div>
 									<div class="col-xs-2">
-										<input type="checkbox" name="programme" id="programmeselect" checked="true"> Programme</input>
+										<input type="checkbox" name="programme" id="programmeselect" checked="true"><xsl:value-of select="eas:i18n(' Programme')"/></input>
 									</div>
 									<div class="col-xs-12 top-10">
 										<button type="button" class="btn btn-primary btn-sm" onclick="setSelects();window.location='report?XML=reportXML.xml&amp;XSL=integration/core_ut_duplicate_dashboard_filter.xsl&amp;PMA=&amp;PMA2='+filterRange.value;">Store Settings</button>

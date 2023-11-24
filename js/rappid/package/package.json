@@ -1,0 +1,24 @@
+{
+  "name": "rappid",
+  "version": "3.7.2",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {},
+  "author": "clientio",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "dependencies": {
+    "backbone": "~1.4.1",
+    "canvg-rappid": "~1.0.3",
+    "dagre": "~0.8.5",
+    "graphlib": "~2.1.8",
+    "jointjs": "~3.7.5",
+    "jquery": "~3.6.4",
+    "lodash": "~4.17.21",
+    "@types/backbone": "~1.4.13",
+    "@types/dagre": "~0.7.44",
+    "@types/graphlib": "~2.1.8",
+    "@types/jquery": "~3.5.5",
+    "@types/lodash": "~4.14.170"
+  },
+  "devDependencies": {}
+}

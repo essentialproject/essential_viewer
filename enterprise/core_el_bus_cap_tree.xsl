@@ -96,7 +96,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3_4-11/d3.min.js"/>
+				<script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<title>Business Capability Model</title>
 				<style>					
 					.sidenav{

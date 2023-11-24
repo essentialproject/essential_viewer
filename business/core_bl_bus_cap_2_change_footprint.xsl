@@ -78,10 +78,10 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Business Capability Model</title>
-				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css?release=6.19"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
-	 		<script src="js/jquery.tools.min.js" type="text/javascript"/>  
+	 		<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>  
 				<script type="text/javascript">
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width
@@ -588,7 +588,7 @@
 							<div class="col-xs-12">
 								<h1 id="viewName">
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Projects to Business Objective Mapping</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Projects to Business Objective Mapping')"/></span>
 								</h1>
 								<xsl:value-of select="$DEBUG"/>
 							</div>
@@ -601,16 +601,16 @@
 									<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
 								</div>
 								<div>
-                                    The following diagram describes the objectives against the conceptual business capabilities, mapped to the project effort being applied to those capabilities.<p/>
+                                    <xsl:value-of select="eas:i18n('The following diagram describes the objectives against the conceptual business capabilities, mapped to the project effort being applied to those capabilities.')"/><p/>
 								</div>
 								<div class="content-section">
-                                    <b>Level of Project Activity: </b><xsl:text> </xsl:text><img src="images/cornerTriangleGrey.png"/><xsl:text> </xsl:text> No Projects <xsl:text> </xsl:text>	<img src="images/cornerTriangleLightGreen.png"/><xsl:text> </xsl:text> Low <xsl:text> </xsl:text><img src="images/cornerTriangleBlue.png"/> High <xsl:text> </xsl:text> <xsl:text> </xsl:text>
+                                    <b><xsl:value-of select="eas:i18n('Level of Project Activity:')"/> </b><xsl:text> </xsl:text><img src="images/cornerTriangleGrey.png"/><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('No Projects')"/> <xsl:text> </xsl:text>	<img src="images/cornerTriangleLightGreen.png"/><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('Low')"/> <xsl:text> </xsl:text><img src="images/cornerTriangleBlue.png"/> <xsl:value-of select="eas:i18n('High')"/> <xsl:text> </xsl:text> <xsl:text> </xsl:text>
                                     <br/>
-                                    <b>Objective Mapping:</b><xsl:text> </xsl:text><span style="background-color:rgb(226, 155, 208)">Impacts</span>
+                                    <b><xsl:value-of select="eas:i18n('Objective Mapping:')"/></b><xsl:text> </xsl:text><span style="background-color:rgb(226, 155, 208)"><xsl:value-of select="eas:i18n('Impacts')"/></span>
 								</div>
 								<div class="verticalSpacer_5px"/>
 								<div class="content-section">
-                                    Choose Objective: <select class="chooseObj">
+                                    <xsl:value-of select="eas:i18n('Choose Objective:')"/> <select class="chooseObj">
                                         <xsl:apply-templates select="$busObjectives" mode="options"></xsl:apply-templates>                                    
                                     </select>
 									<xsl:call-template name="triangleLegend"/>

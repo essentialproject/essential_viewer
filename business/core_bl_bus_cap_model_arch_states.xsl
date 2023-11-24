@@ -65,12 +65,12 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Business Capability Model</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link type="text/css" rel="stylesheet" href="ext/apml/custom.css?release=6.19"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
-	 			<script src="js/jquery.tools.min.js" type="text/javascript"/>
+	 			<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
 				<script type="text/javascript">
 					$('document').ready(function(){
 					var greatestWidth = 0;   // Stores the greatest width

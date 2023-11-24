@@ -90,7 +90,7 @@
 					<xsl:value-of select="eas:i18n('Application Provider Summary')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<!--script to turn the app providers list into columns-->
 				<script>
 						$(function(){

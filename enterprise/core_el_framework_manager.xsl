@@ -121,7 +121,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Summary')"/></title>
-				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
 
 				<style type="text/css">
 				.counts{

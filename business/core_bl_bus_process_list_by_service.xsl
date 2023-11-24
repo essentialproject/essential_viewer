@@ -84,7 +84,7 @@
 				<title>
 					<xsl:value-of select="eas:i18n('Business Process Catalogue')"/>
 				</title>
-				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
+				<script src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
  
 

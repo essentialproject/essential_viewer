@@ -34,6 +34,8 @@
 <xsl:variable name="relevantApps" select="$allAppProviders[name = $directProcessToAppRel/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"></xsl:variable>
 <xsl:variable name="relevantAppsviaAPR" select="$allAppProviders[name = $relevantAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"></xsl:variable>
 <xsl:variable name="appsWithCaps" select="$relevantApps union $relevantAppsviaAPR"/>
+<xsl:variable name="compositeServices" select="/node()/simple_instance[type='Composite_Application_Service']"/>
+
 <xsl:variable name="services" select="/node()/simple_instance[type='Application_Service'][name=$relevantAppProRoles/own_slot_value[slot_reference='implementing_application_service']/value]"/>
 <xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"></xsl:variable>
 <xsl:variable name="requirementStatus" select="/node()/simple_instance[type = 'Requirement_Status']"></xsl:variable>
@@ -136,6 +138,7 @@
 	"meta":[<xsl:apply-templates select="$reportMenu" mode="classMetaData"></xsl:apply-templates>],
 	"reports":[{"name":"appRat", "link":"<xsl:value-of select="$reportPath/own_slot_value[slot_reference='report_xsl_filename']/value"/>"},{"name":"appInterface", "link":"<xsl:value-of select="$reportPathInterface/own_slot_value[slot_reference='report_xsl_filename']/value"/>"}],
 	"applications":[<xsl:apply-templates select="$allAppProviders" mode="applications"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+	"compositeServices":[<xsl:apply-templates select="$compositeServices" mode="compositeServices"></xsl:apply-templates>],
 	"apis":[<xsl:apply-templates select="$allAPIs" mode="applications"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 	"lifecycles":[<xsl:apply-templates select="$allLifecycleStatus" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>],
 	"codebase":[<xsl:apply-templates select="$codebase" mode="lifes"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"></xsl:sort></xsl:apply-templates>],
@@ -214,10 +217,10 @@
 <xsl:variable name="allOrgUsers" select="$eaScopedOrgUserIds union $thisOrgUserIds union $allPhysicalProcessActors"/>  
 <xsl:variable name="OrgUsers2Sites" select="$allSites[name = $allOrgUsers/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
 <xsl:variable name="thisSites" select="$thisSitesUsed union $OrgUsers2Sites union $processSites"/>	
-<xsl:variable name="eaScopedGeoIds" select="$allGeo[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]/name"/> 
+<xsl:variable name="eaScopedGeoIds" select="$allGeo[name=current()/own_slot_value[slot_reference = 'ea_scope']/value]"/> 
 <xsl:variable name="siteGeos" select="$allGeo[name=$thisSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 <xsl:variable name="siteGeosviaLoc" select="$allGeo[own_slot_value[slot_reference = 'gr_locations']/value=$siteGeos/name]"/>
-<xsl:variable name="siteCountries" select="$siteGeos[type='Geographic_Region'] union $siteGeosviaLoc"/>
+<xsl:variable name="siteCountries" select="$siteGeos[type='Geographic_Region'] union $siteGeosviaLoc union $eaScopedGeoIds"/>
 <xsl:variable name="appFamilies" select="key('family_key', current()/name)"/>
 
 <!-- 
@@ -449,5 +452,14 @@
 				"color":"#93592f",
 				"values": [{"id":"none", "name":"Not Set"},{"id":"true", "name":"True"},{"id":"false", "name":"False"} ]}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:template>			
-
+<xsl:template match="node()" mode="compositeServices">
+	{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+	"name": "<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
+		<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
+	</xsl:call-template>",
+	"containedService":[<xsl:for-each select="current()/own_slot_value[slot_reference='composed_of_application_services']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
 </xsl:stylesheet>

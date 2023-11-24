@@ -91,7 +91,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<!--script to turn the instance list into columns-->
 				<script>				
 					$(function(){					

@@ -85,7 +85,7 @@
 			</div>
 		</script>
 		
-		<script src="js/d3/d3.v5.7.0.min.js"/>
+		<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
 		
 		<script>
 			var data = {

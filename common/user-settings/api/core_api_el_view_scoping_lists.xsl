@@ -4,10 +4,10 @@
 	<xsl:output method="text" encoding="UTF-8"/>
 	
 	<xsl:variable name="geoTypeTaxonomy" select="/node()/simple_instance[(type = 'Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Region Type')]"/>
-	<xsl:variable name="regionType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Region')]"/>
-	<xsl:variable name="countryType" select="/node()/simple_instance[(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Country')]"/>
-	<xsl:variable name="allCountries" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $countryType/name)]"/>
-	<xsl:variable name="allRegions" select="/node()/simple_instance[(type='Country') or (own_slot_value[slot_reference = 'element_classified_by']/value = $regionType/name)]"/>
+	<xsl:variable name="regionType" select="/node()/simple_instance[type='Taxonomy_Term'][(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = ('Region','Geopolitical Region'))]"/>
+	<xsl:variable name="countryType" select="/node()/simple_instance[type='Taxonomy_Term'][(own_slot_value[slot_reference = 'term_in_taxonomy']/value = $geoTypeTaxonomy/name) and (own_slot_value[slot_reference = 'name']/value = 'Country')]"/>
+	<xsl:variable name="allCountries" select="/node()/simple_instance[type='Geographic_Region']"/>
+	<xsl:variable name="allRegions" select="/node()/simple_instance[type='Geographic_Region'][own_slot_value[slot_reference = 'element_classified_by']/value = $regionType/name]"/>
 
  	<xsl:variable name="allOrgs" select="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference = 'external_to_enterprise']/value !='true']"/>
  
@@ -63,7 +63,7 @@
 				},
 				{
 					"id": "<xsl:value-of select="$regionType/name"/>",
-					"name": "<xsl:value-of select="$regionType/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/>",
+					"name": "<xsl:for-each select="$regionType"><xsl:choose><xsl:when test="string-length(current()/own_slot_value[slot_reference = 'taxonomy_term_label']/value) = 0"><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="current()/own_slot_value[slot_reference = 'taxonomy_term_label']/value"/></xsl:otherwise></xsl:choose><xsl:if test="position() != last()">&#160;/&#160;</xsl:if></xsl:for-each>",
 					"valueClass": "Geographic_Region",
 					"description": "The list of Regions for the enterprise",
 					"isGroup": true,

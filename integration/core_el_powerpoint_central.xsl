@@ -113,8 +113,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                     border-top:1pt solid #d3d3d3;
                 }
                 </style>
-                <script src="js/pptxgenjs/dist/pptxgen.bundle.js"></script>
-                <script src="js/d3/d3.v5.9.7.min.js"/>
+                <script src="js/pptxgenjs/dist/pptxgen.bundle.js?release=6.19"></script>
+                <script src="js/d3/d3.v5.9.7.min.js?release=6.19"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

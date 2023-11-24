@@ -189,7 +189,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -198,13 +198,13 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<!--Dependencies for JointJS UML Diagram-->
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/svg-pan-zoom/svg-pan-zoom.min.js?release=6.19"/>
 				<!--Dependencies for JointJS UML Diagram Ends-->
 				<style>
 					#paper{
@@ -314,48 +314,48 @@
 														</select>
 													</div>-->
 												<div class="width200px pull-left right-30">
-													<label for="rankdir">Model Direction:</label>
+													<label for="rankdir"><xsl:value-of select="eas:i18n('Model Direction')"/></label>
 													<select id="rankdir" class="form-control">
 														<!--<option value="BT">Bottom To Top</option>-->
 														<!--<option value="RL">Right to Left</option>-->
-														<option value="LR" selected="selected">Top to Bottom</option>
-														<option value="TB">Left to Righ</option>
+														<option value="LR" selected="selected"><xsl:value-of select="eas:i18n('Top to Bottom')"/></option>
+														<option value="TB"><xsl:value-of select="eas:i18n('Left to Right')"/></option>
 													</select>
 												</div>
 												<div class="width200px pull-left right-30">
-													<label for="align">Model Alignment:</label>
+													<label for="align"><xsl:value-of select="eas:i18n('Model Alignment')"/></label>
 													<select id="align" class="form-control">
-														<option value="UL" selected="selected">Left</option>
-														<option value="UR">Right</option>
+														<option value="UL" selected="selected"><xsl:value-of select="eas:i18n('Left')"/></option>
+														<option value="UR"><xsl:value-of select="eas:i18n('Right')"/></option>
 														<!--<option value="DL">Down and Left</option>
 															<option value="DR">Down and Right</option>-->
 													</select>
 												</div>
 												<div class="width200px pull-left right-30">
-													<label for="ranksep">Application Spacing</label>
+													<label for="ranksep"><xsl:value-of select="eas:i18n('Application Spacing')"/></label>
 													<input id="ranksep" type="range" min="1" max="100" value="50" class="form-control"/>
 												</div>
 												<div class="width200px pull-left right-30">
-													<label for="edgesep">Dependency Spacing:</label>
+													<label for="edgesep"><xsl:value-of select="eas:i18n('Dependency Spacing')"/></label>
 													<input id="edgesep" type="range" min="1" max="100" value="50" class="form-control"/>
 												</div>
 												<div class="width200px pull-left right-30">
-													<label for="nodesep">Row/Column Spacing:</label>
+													<label for="nodesep"><xsl:value-of select="eas:i18n('Row/Column Spacing')"/></label>
 													<input id="nodesep" type="range" min="1" max="100" value="50" class="form-control"/>
 												</div>
 												<div class="verticalSpacer_20px"/>
-												<div class="width120px pull-left"><strong>Select Overlay:</strong></div>
+												<div class="width120px pull-left"><strong><xsl:value-of select="eas:i18n('Select Overlay')"/></strong></div>
 												<div class="width100px pull-left">
 													<input id="noOverlay" type="radio" name="overlay" value="" checked="checked"/>
-													<label for="noOverlay">None</label>
+													<label for="noOverlay"><xsl:value-of select="eas:i18n('None')"/></label>
 												</div>
 												<div class="width100px pull-left">
 													<input id="cbOverlay" type="radio" name="overlay" value="codebase"/>
-													<label for="cbOverlay">Codebase</label>
+													<label for="cbOverlay"><xsl:value-of select="eas:i18n('Codebase')"/></label>
 												</div>
 												<div class="width150px pull-left">
 													<input id="dmOverlay" type="radio" name="overlay" value="deliveryModel"/>
-													<label for="dmOverlay">Delivery Model</label>
+													<label for="dmOverlay"><xsl:value-of select="eas:i18n('Delivery Model')"/></label>
 												</div>
 											</div>
 											<div class="clearfix"></div>

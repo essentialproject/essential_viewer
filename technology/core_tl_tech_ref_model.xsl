@@ -102,9 +102,9 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Technology Reference Model</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>				
+				<title><xsl:value-of select="eas:i18n('Technology Reference Model')"/></title>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>				
 
 				<xsl:call-template name="refModelLegendInclude"/>
 				
@@ -1091,9 +1091,9 @@
 					</div>
 					<div class="col-xs-6">
 						<div class="pull-right">
-							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setOverlay()"/>Footprint</label>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setOverlay()"/>Duplication</label>
+							<div class="keyTitle"><xsl:value-of select="eas:i18n('Overlay')"/></div>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setOverlay()"/><xsl:value-of select="eas:i18n('Footprint')"/></label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setOverlay()"/><xsl:value-of select="eas:i18n('Duplication')"/></label>
 						</div>
 					</div>
 					<!-- REFERENCE MODEL CONTAINER -->

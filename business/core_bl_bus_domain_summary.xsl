@@ -17,7 +17,10 @@
 	 
 	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="mappedCapabilities" select="$allBusinessCaps[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomainInst/name]"/>
-	<xsl:variable name="allMappedCapabilities" select="eas:get_object_descendants($mappedCapabilities, $allBusinessCaps, 0, 5, 'supports_business_capabilities')"/>
+	<xsl:variable name="allMappedCapabilitiesPre" select="eas:get_object_descendants($mappedCapabilities, $allBusinessCaps, 0, 5, 'supports_business_capabilities')"/>
+
+	<xsl:variable name="allMappedCapabilitiesUnique" select="distinct-values($allMappedCapabilitiesPre/name)"/>
+	<xsl:variable name="allMappedCapabilities" select="$allBusinessCaps[name=$allMappedCapabilitiesUnique]"/>
 	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allMappedCapabilities/name]"/>
 
 	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process'][name=$inScopeBusProcs/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
@@ -88,7 +91,7 @@
 				<body>
 					<!-- ADD THE PAGE HEADING -->
 					<xsl:call-template name="Heading"/>
-	
+
 					<!--ADD THE CONTENT-->
 					<div class="container-fluid">
 						<div class="row">
@@ -229,6 +232,7 @@
 		<xsl:template match="node()" mode="mappedCaps">
 				<tr>
 						<td class="cellWidth-30pc"> 
+							
 								<xsl:call-template name="RenderInstanceLink">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>
 										<xsl:with-param name="theXML" select="$reposXML"/>

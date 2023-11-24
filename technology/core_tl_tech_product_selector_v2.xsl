@@ -122,8 +122,8 @@
 				</xsl:call-template>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
-				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css?release=6.19"/>
+				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -134,8 +134,8 @@
 				
 				<!--<xsl:call-template name="RenderGDPRDashboardJSLibraries"/>-->
 				
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
 					    event.preventDefault();
@@ -144,30 +144,30 @@
 				</script>
 				
 				<!-- Start JointJS Diagramming Libraries and Styles-->
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>	
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>	
 
 				<!-- Start Slider libraries and styles -->
-				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js"></script>
-				<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css"/>
+				<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js?release=6.19"></script>
+				<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css?release=6.19"/>
 				
 				<!-- Start Service Quality Gauge library -->
-				<script type="text/javascript" src="js/gauge.min.js"></script>
+				<script type="text/javascript" src="js/gauge.min.js?release=6.19"></script>
 				
 				<!-- Start Drag and Drop Libraries and Styles -->
-				<script type="text/javascript" src="js/dragula/dragula.min.js"></script>
-				<link rel="stylesheet" href="js/dragula/dragula.min.css"/>
+				<script type="text/javascript" src="js/dragula/dragula.min.js?release=6.19"></script>
+				<link rel="stylesheet" href="js/dragula/dragula.min.css?release=6.19"/>
 				
 				<!-- Start Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				
 				<style type="text/css">
 					.Rect{

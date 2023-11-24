@@ -140,8 +140,8 @@
 				</xsl:for-each>
 				<title>Business Model Overview</title>
 				<xsl:call-template name="styles"/>
-				<script src="js/frappe-gantt/frappe-gantt.min.js"/>
-				<link rel="stylesheet" href="js/frappe-gantt/frappe-gantt.css"/>
+				<script src="js/frappe-gantt/frappe-gantt.min.js?release=6.19"/>
+				<link rel="stylesheet" href="js/frappe-gantt/frappe-gantt.css?release=6.19"/>
 				<script>
 					//var roadmapBlobTemplate;
 					var roadmaps = [

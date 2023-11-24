@@ -99,12 +99,12 @@
 
 				<!--	scripts for the timeline -->
 				<script>
-				Timeline_ajax_url="js/timeline_ajax/simile-ajax-api.js";
+				Timeline_ajax_url="js/timeline_ajax/simile-ajax-api.js?release=6.19";
 				Timeline_urlPrefix='js/timeline_js/';       
 				Timeline_parameters='bundle=true';
 				</script>
 
-				<script src="js/timeline_js/timeline-api.js" type="text/javascript"/>
+				<script src="js/timeline_js/timeline-api.js?release=6.19" type="text/javascript"/>
 
 				<script>        
 			        var tl;

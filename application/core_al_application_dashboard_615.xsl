@@ -100,10 +100,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-                <script src="js/d3/d3.min.js"></script>
-                <script src="js/chartjs/Chart.min.js"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
-				<script src="js/pptxgenjs/dist/pptxgen.bundle.js"></script>
+                <script src="js/d3/d3.min.js?release=6.19"></script>
+                <script src="js/chartjs/Chart.min.js?release=6.19"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
+				<script src="js/pptxgenjs/dist/pptxgen.bundle.js?release=6.19"></script>
 				<title>Application Dashboard</title>
 				<style>
 					html {

@@ -398,7 +398,7 @@ function addScopingEventListeners() {
         essSetScopeButtonStatuses();
     });
     
-    $('#ess-add-scoping-value-btn').on('click', function(event) {
+    $('#ess-add-scoping-value-btn').off().on('click', function(event) {
         
         let selectedValId = $('#ess-scoping-value-list').val();
         if(essCurrentScopingCat != null) {
@@ -412,7 +412,7 @@ function addScopingEventListeners() {
         }
     });
 
-    $('#ess-add-exl-scoping-value-btn').on('click', function(event) {
+    $('#ess-add-exl-scoping-value-btn').off().on('click', function(event) {
         
         let selectedValId = $('#ess-scoping-value-list').val();
         if(essCurrentScopingCat != null) {
@@ -1410,15 +1410,20 @@ function renderRoadmapPanel(){
     
 }
 
+function stringifyTopLevels(obj, depth = 2) {
+    let currentDepth = 0;
+
+    function replacer(key, value) {
+        if (currentDepth > depth) return undefined;
+        if (typeof value === 'object' && value !== null) currentDepth++;
+        return value;
+    }
+
+    return JSON.stringify(obj, replacer);
+}
 
 function rmRefreshInScopeChanges() {
-    if(essRMInScopeChanges){
-        let uniqueArray = Object.values(essRMInScopeChanges.reduce((acc, cur) => {
-            acc[JSON.stringify(cur)] = cur;
-            return acc;
-        }, {}));
-        essRMInScopeChanges = uniqueArray;
-    }
+    
     if(!essRMInScopeChangesTable) {
         rmCreateInScopeChangesTable();
     } else {

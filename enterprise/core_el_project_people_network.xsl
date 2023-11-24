@@ -72,9 +72,9 @@
 				<title>
 					<xsl:value-of select="eas:i18n('Project Network')"/>
 				</title>
-				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
-				<script language="javascript" type="text/javascript" src="js/jit-yc.js"/>
-				<!--<link type="text/css" href="css/essential_infovis_rgraph.css" rel="stylesheet"/>-->
+				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
+				<script language="javascript" type="text/javascript" src="js/jit-yc.js?release=6.19"/>
+				<!--<link type="text/css" href="css/essential_infovis_rgraph.css?release=6.19" rel="stylesheet"/>-->
 				<style>
 					#left-container{
 						height: 590px;

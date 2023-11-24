@@ -111,8 +111,8 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/jquery.columnizer.js"/>
+				<script src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 
 				<!--script to support smooth scroll back to top of page-->

@@ -83,12 +83,12 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Summary')"/></title>
-				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"></link>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"></script>
-				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"></script>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"></link>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"></script>
+				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"></script>
 
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
 
 				<style type="text/css">
 				.thead input {
@@ -315,6 +315,10 @@
 					}
 					.roleBlob{
 						background-color: rgb(68, 182, 179)
+					}
+					.radioLabel {
+						display: inline-block;
+						margin-left: 10px; 
 					}
 				</style>
 				<script>
@@ -1545,6 +1549,11 @@
 									Key: <label class="label label-info ess-mini-badge">Via Process</label><xsl:text> </xsl:text><label class="label label-warning ess-mini-badge">Via App Org User</label><label class="label ess-mini-badge" style="background-color: #b07fdd;">Via Child Org</label>
 									<label class="label ess-mini-badge" style="background-color: #646068;">Via Parent</label>
 									<div class="clearfix top-15"/>
+									
+									<div style="position:absolute;right:20px;z-index:100">
+										<b><xsl:value-of select="eas:i18n('Include Parent')"/></b>: Hide: <input type="radio" name="parentFilter" value="withoutParent" checked="true" />
+										Show: <input type="radio" name="parentFilter" value="withParent" /> 
+									</div>
 									<table class="table table-striped table-bordered" id="dt_apptable">
 											<thead>
 												<tr>
@@ -1837,7 +1846,7 @@
 				   appData=responses[1];
 				   physProc=responses[2];  
 				  let orgProductTypes=[];
-				 console.log('apis')
+			
 				   products.forEach((prod)=>{
 				 
 					   prod.processes.forEach((e)=>{
@@ -1861,10 +1870,10 @@
 					   })
 					   
 				   })
-  	 console.log('orgData')
+  
 				   modelData=[]
 				   orgData.forEach((d)=>{
-  console.log('d',d)
+  
 					 if(orgRoles.length&gt;0){
 						let thisRoles=orgRoles.find((or)=>{
 							return or.id==d.id;
@@ -1894,7 +1903,7 @@
 						})
 					}
 					d['childrenOrgs']=childrenOrgs;
-console.log('childrenOrgs')
+
 					   let allAppsUsed=[];
 					   let allBusProcs=[];
 					   let allSubOrgs=[];
@@ -1903,7 +1912,7 @@ console.log('childrenOrgs')
 					   let allBusProcsParent=[];
 					   let allParentOrgs=[];
 					   let allSitesParent=[];
-console.log('aou')		
+		
 					   d.applicationsUsedbyOrgUser.forEach((e)=>{
 						 allAppsUsed.push(e)
 					   })
@@ -1915,23 +1924,22 @@ console.log('aou')
 						  e['className']='Business_Process';
 						allBusProcs.push(e)
 					  }); 
-		console.log('site')			 	
+			 	
 					  if(d.site){
 						d.site.forEach((e)=>{
 							allSites.push(e)
 						});
 						}
-		console.log('parentOrgs', d.parentOrgs)						
+						
 					 if(d.parentOrgs?.length&gt;0){
-						d.parentOrgs?.forEach((e)=>{
-						 	console.log('e', e)			
+						d.parentOrgs?.forEach((e)=>{	
 							let thisOrg=orgData.find((f)=>{
 								return f.id == e
 							});
 						 if(thisOrg){
 							allParentOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
 							  }
-							  console.log('getParents')
+							
 							getParents(thisOrg, allAppsUsedParent, allBusProcsParent, allParentOrgs, allSitesParent)
 						
 						   });
@@ -1947,16 +1955,16 @@ console.log('aou')
 						});
 					 
 						allSubOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-				 console.log('getChildren')	
+				
 						getChildren(thisOrg, allAppsUsed, allBusProcs, allSubOrgs, allSites)
 						  
 					   })
 					   
 					}
 					
-console.log('filter')		
 					   allAppsUsed=allAppsUsed.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allAppsUsedParent=allAppsUsedParent.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
+
 					   allBusProcs=allBusProcs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allSubOrgs=allSubOrgs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allSites=allSites.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
@@ -1986,19 +1994,15 @@ console.log('filter')
 					
 					});
 					
-			  	 console.log('select')
-				//	$('.selectOrgBox').val(focusID);  
-				//	$('.selectOrgBox').trigger('change');
-					
 					let toShow = orgData.find((e)=>{
 					return e.id == focusID;
 					})
 				 	
- 
 	 	 			getThisHierarchy(toShow, null, modelData )
 					  
 					  let appProcMap=[];
 					  orgProductTypes=[]; 
+					 
 					  toShow.allBusProcs.forEach((e)=>{ 
 						let thisProcess=physProc.process_to_apps.filter((f)=>{
 							return e.id == f.processid;
@@ -2015,60 +2019,45 @@ console.log('filter')
 							})
 						}
  
-	appProcMap = appProcMap.filter((ap)=>{
-		return toShow.id == ap.orgid;
-	});
+						appProcMap = appProcMap.filter((ap)=>{
+							return toShow.id == ap.orgid;
+						});
  
-	
 						orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
 					 
 						toShow['orgProductTypes']=orgProductTypes
 					  }); 
-					//  console.log('toShow',toShow) 
+					
 					let parentProcs = appProcMap.filter((e)=>{
 						  return e.orgid ==  toShow.id;
 					  });
 				 
-					  let childProcs=[];
-					  toShow.allChildren.forEach((e)=>{
-						let thisProcs  = appProcMap.filter((f)=>{
-							return f.orgid ==  e.id;
-						})
-						if(thisProcs){
-							thisProcs.forEach((p)=>{
-								thisProcs['criticality']=e.criticality;
-							})
-					 
-						childProcs=[...childProcs, ...thisProcs]
-						}
-					})
-	    
-						
+					  let childProcs = toShow.allChildren.flatMap(e => {
+						let thisProcs = appProcMap.filter(f => f.orgid == e.id).map(p => ({
+							...p,
+							criticality: e.criticality
+						}));
+						return thisProcs;
+					});
+					
 					toShow['physicalProcesses']=[...parentProcs, ...childProcs, ...appProcMap]
 					toShow.physicalProcesses=toShow.physicalProcesses.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-	 
 					
 					toShow.physicalProcesses.sort((a,b) => (a.processName > b.processName) ? 1 : ((b.processName > a.processName) ? -1 : 0))
-					toShow.physicalProcesses.forEach((pp)=>{
-						pp.appsdirect.forEach((app)=>{ 
-							app['appName']=app.name; 
-						});
-						pp.appsviaservice.forEach((app)=>{ 
-							let thisApp=appData.applications.find((fa)=>{
-								return fa.id ==app.appid;
-							});
-							if(thisApp){
-								app['appName']=thisApp.name;
-							}
+					toShow.physicalProcesses.forEach(pp => {
+						pp.appsdirect = pp.appsdirect.map(app => ({ ...app, appName: app.name }));
+					
+						pp.appsviaservice = pp.appsviaservice.map(app => {
+							let thisApp = appData.applications.find(fa => fa.id == app.appid);
+							return thisApp ? { ...app, appName: thisApp.name } : app;
 						});
 					});
+					
 			 var docSort = d3.nest()
 			 	.key(function(d) { return d.index; })
 			 	.entries(toShow.documents);
 			  toShow.documents=docSort;
 
-
-			 console.log('to',toShow)
 			 drawView(toShow, modelData);
   
 				})
@@ -2373,40 +2362,77 @@ function initTable(dt){
 	d['appHTML']=appHTML;
 
 }); 
-dt.allAppsUsedParent.forEach((d)=>{
-	apps.push({"id":d.id,"name":d.name,"description":d.description,"org":"Parent","proc":"", "parent":"Parent"})
-	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":"Parent","proc":"", "parent":"Parent","className":"Application_Provider"})
-	d['appHTML']=appHTML;
-})
- 
- dt.allAppsUsedParent.forEach((e)=>{
-	dt.allAppsUsed.push(e)
- });
- 
+// Map through allAppsUsedParent and add properties
+dt.allAppsUsedParent = dt.allAppsUsedParent.map(d => {
+    apps.push({
+        "id": d.id,
+        "name": d.name,
+        "description": d.description,
+        "org": "Parent",
+        "proc": "",
+        "parent": "Parent"
+    });
+    
+    return {
+        ...d,
+        appHTML: appTemplate({
+            "id": d.id,
+            "name": d.name,
+            "description": d.description,
+            "org": "Parent",
+            "proc": "",
+            "parent": "Parent",
+            "className": "Application_Provider"
+        })
+    };
+});
+
+// Filter out apps that already exist in allAppsUsed
+dt.allAppsUsedParent = dt.allAppsUsedParent.filter(parentApp => 
+    !dt.allAppsUsed.some(app => app.id === parentApp.id)
+);
+
+// Merge allAppsUsed with allAppsUsedParent
+dt.allAppsUsed = dt.allAppsUsed.concat(dt.allAppsUsedParent);
+
+
 	$('#dt_apptable tfoot th').each( function () {
 		var techtitle = $(this).text();
 		$(this).html( '&lt;input type="text" placeholder="Search '+techtitle+'" /&gt;' );
 	});
-	var apptable = $('#dt_apptable').DataTable({
-		scrollY: "350px",
-		scrollCollapse: true,
-		paging: false,
-		info: false,
-		sort: true, 
-		data: dt.allAppsUsed,
-		responsive: true,
-		columns: [
-			{ data: "appHTML", width: "250px" },
-			{ data: "description", width: "800px" }
-		  ],
-		dom: 'Bfrtip',
-		buttons: [
-			'copyHtml5', 
-			'excelHtml5',
-			'csvHtml5',
-			'pdfHtml5',
-			'print'
-		]
+ 
+		var apptable = $('#dt_apptable').DataTable({
+			scrollY: "350px",
+			scrollCollapse: true,
+			paging: false,
+			info: false,
+			sort: true,
+			data: dt.allAppsUsed,
+			responsive: true,
+			columns: [
+				{ data: "appHTML", width: "250px" },
+				{ data: "description", width: "800px" }
+			],
+			dom: 'Bfrtip',
+			buttons: [
+				'copyHtml5', 
+				'excelHtml5',
+				'csvHtml5',
+				'pdfHtml5',
+				'print'
+			],
+			// Initial filter to hide rows with "parent" in the "appHTML" column
+			initComplete: function() {
+				this.api().column(0).search('^((?!parent).)*$', true, false).draw();
+			}
+		});
+
+		$("input[name='parentFilter']").change(function() {
+			if ($(this).val() == "withoutParent") {
+				apptable.column(0).search('^((?!parent).)*$', true, false).draw();
+			} else {
+				apptable.column(0).search('').draw();
+			}
 		});
  
 		// Apply the search

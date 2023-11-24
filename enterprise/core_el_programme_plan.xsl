@@ -71,8 +71,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Roadmap Timeline</title>
-				<script src="js/vis/vis.js"/>
-				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"/>
+				<script src="js/vis/vis.js?release=6.19"/>
+				<link href="js/vis/vis.css?release=6.19" rel="stylesheet" type="text/css"/>
 				<script>
 					$(document).ready(function(){
 						$('#lifecycleLegend').show();
@@ -114,7 +114,7 @@
 								<div class="sectionIcon">
 									<i class="fa fa-calendar icon-section icon-color"/>
 								</div>
-								<h2>Plan</h2>
+								<h2><xsl:value-of select="eas:i18n('Plan')"/></h2>
 								<div class="content-section">
 									<p><xsl:value-of select="eas:i18n('This view illustrates the timeline for the projects that form the programme')"/><xsl:text> </xsl:text><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentProgramme"/></xsl:call-template>.</p>
 								</div>
@@ -524,11 +524,11 @@ var today = new Date();
 	<xsl:template name="dateFilterSection">
 		<div class="pull-left">
 			<div class="pull-left text-primary">
-				<strong>Filter Projects by Dates:</strong>
+				<strong><xsl:value-of select="eas:i18n('Filter Projects by Dates')"/></strong>
 			</div>
 			<div class="verticalSpacer_5px"/>
 			<div class="pull-left">
-				<strong>Start Date:</strong>
+				<strong><xsl:value-of select="eas:i18n('Start Date')"/></strong>
 			</div>
 			<div class="horizSpacer_10px pull-left"/>
 			<form class="pull-left">
@@ -546,7 +546,7 @@ var today = new Date();
 			</form>
 			<div class="horizSpacer_20px pull-left"/>
 			<div class="pull-left">
-				<strong>End Date:</strong>
+				<strong><xsl:value-of select="eas:i18n('End Date')"/></strong>
 			</div>
 			<div class="horizSpacer_10px pull-left"/>
 			<form class="pull-left">

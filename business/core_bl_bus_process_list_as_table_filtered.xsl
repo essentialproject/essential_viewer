@@ -164,7 +164,7 @@
 							<h2 class="text-primary">
 								<xsl:value-of select="eas:i18n('Catalogue')"/>
 							</h2>
-							<div class="pull-right"><i class="fa fa-random"></i> - Has associated Business Process Flow</div> 
+							<div class="pull-right"><i class="fa fa-random"></i> - <xsl:value-of select="eas:i18n('Has associated Business Process Flow')"/></div> 
 
 
 							<p><xsl:value-of select="eas:i18n('This table lists all the Business Processes in use and allows search as well as copy to spreadsheet')"/>.</p>

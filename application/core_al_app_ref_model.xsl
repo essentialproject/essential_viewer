@@ -81,9 +81,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Application Current State Model</title>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
-				<script src="js/jquery.tools.min.js" type="text/javascript"/>
-				<link href="ext/shared/custom.css" type="text/css" rel="stylesheet" />
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
+				<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
+				<link href="ext/shared/custom.css?release=6.19" type="text/css" rel="stylesheet" />
 				<!--<script>
 					function setEqualHeight1(columns)  
 					{  

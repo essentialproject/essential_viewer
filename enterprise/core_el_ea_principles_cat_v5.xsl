@@ -89,7 +89,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script src="js/showhidediv.js" type="text/javascript"/>
+				<script src="js/showhidediv.js?release=6.19" type="text/javascript"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

@@ -68,7 +68,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Instance Relations Tree</title>
-				<script src="js/d3/d3.min.js"/>
+				<script src="js/d3/d3.min.js?release=6.19"/>
 				<style>
 					.node{
 						cursor: pointer;
@@ -101,7 +101,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Instance Tree</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Instance Tree')"/></span>
 								</h1>
 							</div>
 						</div>
@@ -119,10 +119,10 @@
 								<div class="row">
 									<div class="col-xs-4">
 										<p>
-											<strong>Select a Class</strong>
+											<strong><xsl:value-of select="eas:i18n('Select a Class')"/></strong>
 										</p>
 										<select id="cat" onchange="location=this.value">
-											<option>Class</option>
+											<option><xsl:value-of select="eas:i18n('Class')"/></option>
 											<xsl:apply-templates select="$classNodes" mode="options">
 												<xsl:sort select="name" order="ascending"/>
 											</xsl:apply-templates>
@@ -130,10 +130,10 @@
 									</div>
 									<div class="col-xs-4">
 										<p>
-											<strong>Select an Instance</strong>
+											<strong><xsl:value-of select="eas:i18n('Select an Instance')"/></strong>
 										</p>
 										<select id="obj" onchange="location=this.value">
-											<option>Instance</option>
+											<option><xsl:value-of select="eas:i18n('Instance')"/></option>
 											<xsl:apply-templates select="$classNodesbyName" mode="optionsObjects">
 												<xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"/>
 											</xsl:apply-templates>

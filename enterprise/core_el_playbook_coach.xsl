@@ -277,9 +277,9 @@
             </xsl:for-each>
             <title>Playbook Coach</title>
             <!--	<script type="text/javascript"
-                 src="js/json-rules-engine/dist/json-rules-engine.js">  
+                 src="js/json-rules-engine/dist/json-rules-engine.js?release=6.19">  
                  </script>	 -->
-            <script src="js/FileSaver.min.js"/>
+            <script src="js/FileSaver.min.js?release=6.19"/>
             <style>
                .minText{
                font-size: 0.8em;

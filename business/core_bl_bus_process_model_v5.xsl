@@ -134,8 +134,8 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/jquery.zoomable.js"/>
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
+				<script type="text/javascript" src="js/jquery.zoomable.js?release=6.19"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

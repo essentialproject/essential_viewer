@@ -29,7 +29,7 @@
 
 			   
 			function essGetMenuNamebyClass(instance) { 
-
+ 
 				let menuName = null;
 				if(instance.meta?.anchorClass) {
 		
@@ -172,5 +172,13 @@
 				<xsl:variable name="thisClasses" select="current()/own_slot_value[slot_reference='report_menu_class']/value"/>
 				{"classes":[<xsl:for-each select="$thisClasses">"<xsl:value-of select="current()"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>], "menuId":"<xsl:value-of select="current()/own_slot_value[slot_reference='report_menu_short_name']/value"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 	</xsl:template>
-
+	<xsl:template name="GetViewerAPIPathTemplate">
+        <xsl:param name="apiReport"/>
+        <xsl:variable name="dataSetPath">
+            <xsl:call-template name="RenderLinkText">
+                <xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:value-of select="$dataSetPath"/>
+    </xsl:template>
 </xsl:stylesheet>

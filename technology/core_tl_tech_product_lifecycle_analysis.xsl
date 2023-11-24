@@ -75,7 +75,7 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
+                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -118,7 +118,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-	                                <span class="text-darkgrey">Technology Product Lifecycles -</span><xsl:text> </xsl:text> <span id="lifeText"></span>          
+	                                <span class="text-darkgrey"><xsl:value-of select="eas:i18n('Technology Product Lifecycles -')"/></span><xsl:text> </xsl:text> <span id="lifeText"></span>          
 								</h1>
 							</div>
 						</div>
@@ -126,7 +126,7 @@
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="sel1">Filter By Vendor</label>
+										<label for="sel1"><xsl:value-of select="eas:i18n('Filter By Vendor')"/></label>
 										<!-- <select class="form-control" id="vendorSel"  onchange=" $('#appSel').val(0);  ;filterDate(this.value)">-->
 										<select class="form-control" id="vendorSel" >
 											<option value='all'>All</option>
@@ -138,7 +138,7 @@
 								</div>
 								<div class="col-md-4">
 									<span>
-		                                <label for="sel1">Filter By Year</label>
+		                                <label for="sel1"><xsl:value-of select="eas:i18n('Filter By Year')"/></label>
 		                                <table>
 		                                	<tbody>
 		                                		<tr>
@@ -154,15 +154,15 @@
 				                                </tr>
 		                                	</tbody>
 		                                </table>
-		                                <div class="top-10">Products supported in <strong><span id="currentYr"/></strong></div>
+		                                <div class="top-10"><xsl:value-of select="eas:i18n('Products supported in ')"/> <strong><span id="currentYr"/></strong></div>
 		                            </span>
 								</div>
 								<div class="col-md-4">
 									<div class="form-group">
-										<label for="sel1">Filter By Lifecycle</label>
+										<label for="sel1"><xsl:value-of select="eas:i18n('Filter By Lifecycle')"/></label>
 										<select class="form-control" id="lifeSel"  onchange="$('.loader').show()">
-											<option value='Vendor_Lifecycle_Status'>Vendor</option>
-											<option value='Lifecycle_Status'>Internal</option>  
+											<option value='Vendor_Lifecycle_Status'><xsl:value-of select="eas:i18n('Vendor')"/></option>
+											<option value='Lifecycle_Status'><xsl:value-of select="eas:i18n('Internal')"/></option>  
 										</select>
 									</div> 
 								</div>
@@ -181,10 +181,10 @@
                                  Applications Impacting</div>
                              <div style="display:inline-block;"><span style="font-size: 7pt">(click for detail)</span></div>-->
 
-                            <div class="impact bottom-10">Lifecycles</div>
+                            <div class="impact bottom-10"><xsl:value-of select="eas:i18n('Lifecycles')"/></div>
                             <div id="buttons" />
                             <div><span class="xsmall text-danger">* Unsupported </span></div>
-                            <div class="impact top-15 bottom-10">Standards</div>
+                            <div class="impact top-15 bottom-10"><xsl:value-of select="eas:i18n('Standards')"/></div>
                             <div id="buttonsStd" />
                             <!-- <div style="float:left;padding-left:20px;font-size:9pt">Unclassified(Off Strategy) <input type='checkbox' id='' onclick='applyFilter(this.checked,this.id)' checked="true"></input></div>--><br/>
 						</div>

@@ -75,10 +75,10 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Roadmap Timeline</title>
-				<script src="js/vis/vis.js"/>
-				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"/>
-				<link rel="stylesheet" href="js/jquery.qtip.min.css"/>
-				<script src="js/jquery.qtip.min.js"/>
+				<script src="js/vis/vis.js?release=6.19"/>
+				<link href="js/vis/vis.css?release=6.19" rel="stylesheet" type="text/css"/>
+				<link rel="stylesheet" href="js/jquery.qtip.min.css?release=6.19"/>
+				<script src="js/jquery.qtip.min.js?release=6.19"/>
 				<script>
 					$(document).ready(function(){
 						$('#lifecycleLegend').hide();
@@ -104,7 +104,7 @@
 						<div class="col-xs-12">
 							<h1 id="viewName">
 								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-								<span class="text-darkgrey">Roadmap Timeline for </span>
+								<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Roadmap Timeline for ')"/> </span>
 								<xsl:call-template name="RenderInstanceLink">
 									<xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/>
 									<xsl:with-param name="isRenderAsJSString" select="true()"/>
@@ -120,7 +120,7 @@
 								<div class="sectionIcon">
 									<i class="fa fa-calendar icon-section icon-color"/>
 								</div>
-								<h2>Roadmap</h2>
+								<h2><xsl:value-of select="eas:i18n('Roadmap')"/></h2>
 								<div class="content-section">
 									<p><xsl:value-of select="eas:i18n('This view illustrates the timeline for the strategic plans/projects  of the roadmap')"/><xsl:text> </xsl:text><xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$currentRoadmap"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>.</p>
 									<!--<button id="filterToggle" class="pull-right" style="width: 130px;"><span>Show</span> Filters</button>-->
@@ -597,17 +597,17 @@
 
 	<xsl:template name="roadmapLayerFilter">
 		<div class="pull-left">
-			<strong>Show as:</strong>
+			<strong><xsl:value-of select="eas:i18n('Show as')"/></strong>
 		</div>
 		<div class="horizSpacer_10px pull-left"/>
 		<form class="pull-left" id="planProjectForm">
 			<div class="pull-left">
 				<input type="radio" name="displayType" id="filterStratPlans" value="stratPlans" checked="checked"/>
-				<label for="stratPlans">Architecture Roadmap (Strategic Plans)</label>
+				<label for="stratPlans"><xsl:value-of select="eas:i18n('Architecture Roadmap (Strategic Plans)')"/></label>
 			</div>
 			<div class="pull-left">
 				<input type="radio" name="displayType" id="filterProjects" value="projects"/>
-				<label for="projects">Implementation Plan (Projects)</label>
+				<label for="projects"><xsl:value-of select="eas:i18n('Implementation Plan (Projects)')"/></label>
 			</div>
 		</form>
 	</xsl:template>
@@ -615,12 +615,12 @@
 	<xsl:template name="roadmapFilterSection">
 		<div class="pull-right">
 			<div class="pull-left">
-				<strong>Start Date:</strong>
+				<strong><xsl:value-of select="eas:i18n('Start Date')"/></strong>
 			</div>
 			<div class="horizSpacer_10px pull-left"/>
 			<form class="pull-left">
 				<select id="startDateFilter" style="width: 80px;">
-					<option selected="selected" value="ALL">All</option>
+					<option selected="selected" value="ALL"><xsl:value-of select="eas:i18n('All')"/></option>
 					<xsl:for-each select="$allQuarters">
 						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 						<xsl:variable name="dateName" select="own_slot_value[slot_reference = 'name']/value"/>
@@ -633,12 +633,12 @@
 			</form>
 			<div class="horizSpacer_20px pull-left"/>
 			<div class="pull-left">
-				<strong>End Date:</strong>
+				<strong><xsl:value-of select="eas:i18n('End Date')"/></strong>
 			</div>
 			<div class="horizSpacer_10px pull-left"/>
 			<form class="pull-left">
 				<select id="endDateFilter" style="width: 80px;">
-					<option selected="selected" value="ALL">All</option>
+					<option selected="selected" value="ALL"><xsl:value-of select="eas:i18n('All')"/></option>
 					<xsl:for-each select="$allQuarters">
 						<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 						<xsl:variable name="dateName" select="own_slot_value[slot_reference = 'name']/value"/>

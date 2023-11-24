@@ -208,10 +208,10 @@
 						font-family: Helvetica, Arial, sans-serif;
 						padding: 7px;
 					}</style>
-				<script language="javascript" type="text/javascript" src="js/jit-yc.js"/>
-				<script language="javascript" type="text/javascript" src="js/org_tree.js"/>
-				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js" />-->
-				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
+				<script language="javascript" type="text/javascript" src="js/jit-yc.js?release=6.19"/>
+				<script language="javascript" type="text/javascript" src="js/org_tree.js?release=6.19"/>
+				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19" />-->
+				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<script type="text/javascript">
 					<xsl:text>function tree(){
 						//initialise the data
@@ -523,6 +523,24 @@
 			    $(window).resize( function () {
 			        table.columns.adjust();
 			    });
+
+				let seen = {};
+				let tbl = document.getElementById('dt_orgs');
+				let rows = tbl.getElementsByTagName('tr');
+
+				for (let i = rows.length - 1; i > 0; i--) {
+					console.log()
+					let cell = rows[i].getElementsByTagName('td')[0];
+				 
+					if (cell) {
+						let content = cell.textContent || cell.innerText;
+						if (seen[content]) {
+							tbl.deleteRow(i);
+						} else {
+							seen[content] = true;
+						}
+					}
+				}
 			});
 		</script>
 

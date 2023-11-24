@@ -84,6 +84,41 @@
 <xsl:template name="excelHandlebarsJS">
 		var excelFragment = $('#excel-template').html();
 		excelTemplate = Handlebars.compile(excelFragment);
+
+		function createOdsConcatenateFormula(inputString) {
+			// Match the inside of the CONCATENATE function (ignoring the actual CONCATENATE word and parentheses)
+			let insideMatch = inputString.match(/CONCATENATE\((.*)\)/);
+		  
+			if (!insideMatch) {
+			  console.error('Input string does not match the expected format');
+			  return '';
+			}
+		  
+			// Split the inside of the CONCATENATE function by commas
+			let parts = insideMatch[1].split(/,\s*/);
+		  
+			// Process each part, identifying cell references and other strings
+			let odsParts = parts.map(part => {
+			  // Match cell references like A1, B2, etc.
+			  let cellReferenceMatch = part.match(/(\w+)(\d+)/);
+			  if (cellReferenceMatch) {
+				// If it's a cell reference, format it for ODS
+				return `[.${cellReferenceMatch[1]}${cellReferenceMatch[2]}]`;
+			  } else {
+				// If it's not a cell reference, return the string as is (assumed to be a literal string)
+				return `"${part}"`;
+			  }
+			});
+		  
+			// Rebuild the CONCATENATE string using the ODS format
+			let odsFormula = `=CONCATENATE(${odsParts.join(';')})`;
+		  
+			// Escape the double quotes for XML attribute
+			let formulaEscaped = odsFormula.replace(/"/g, '&quot;');
+		  
+			// Create the XML string for the cell with the dynamic formula
+			return `&lt;table:table-cell office:value-type="string" table:style-name="ce1" table:formula='of:${formulaEscaped}'>&lt;text:p>&lt;/text:p>&lt;/table:table-cell>`;
+		  }
 		
 		Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
@@ -120,7 +155,15 @@
 										row=row+'&lt;table:table-cell office:value-type="string" table:content-validation-name="'+validation+'" table:style-name="ce1">&lt;text:p>'+d[k]+'&lt;/text:p>&lt;/table:table-cell>';
 									}
 									else{
-										row=row+'&lt;table:table-cell office:value-type="string" table:style-name="ce1">&lt;text:p>'+d[k]+'&lt;/text:p>&lt;/table:table-cell>';
+										// add check for function
+										if(d[k].includes('CONCATENATE')){
+											let result=createOdsConcatenateFormula(d[k]);
+											row=row+result.replace(/""/g, '"');
+
+											
+										}else{
+											row=row+'&lt;table:table-cell office:value-type="string" table:style-name="ce1">&lt;text:p>'+d[k]+'&lt;/text:p>&lt;/table:table-cell>';
+										}
 									} 
 								} 
 							validation='';

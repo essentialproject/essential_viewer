@@ -234,34 +234,34 @@
 					</div>
 					<div class="row">
 						<div class="col-xs-8">
-							<span class="strong right-5">Vendor:</span>
+							<span class="strong right-5"><xsl:value-of select="eas:i18n('Vendor')"/></span>
 							<select id="productsSelect" onchange="getSupplier(this.value)" style="width: 300px;">
-								<option value="all" selected="selected">All</option>
+								<option value="all" selected="selected"><xsl:value-of select="eas:i18n('All')"/></option>
 							</select>
-							<span class="strong right-5 left-15">Severity:</span>
+							<span class="strong right-5 left-15"><xsl:value-of select="eas:i18n('Severity')"/></span>
 							<select id="HMLSelect" style="width: 300px;">
-								<option value="all" selected="True">All</option>
-								<option value="CRITICAL">Critical</option>
-								<option value="HIGH">High</option>
-								<option value="MEDIUM">Medium</option>
-								<option value="LOW">Low</option>
-								<option value="NONE">None</option>
+								<option value="all" selected="True"><xsl:value-of select="eas:i18n('All')"/></option>
+								<option value="CRITICAL"><xsl:value-of select="eas:i18n('Critical')"/></option>
+								<option value="HIGH"><xsl:value-of select="eas:i18n('High')"/></option>
+								<option value="MEDIUM"><xsl:value-of select="eas:i18n('Medium')"/></option>
+								<option value="LOW"><xsl:value-of select="eas:i18n('Low')"/></option>
+								<option value="NONE"><xsl:value-of select="eas:i18n('None')"/></option>
 							</select>
 						</div>
 						<div class="nothing2see col-xs-4" id="nothingToSee"/>
 						<div style="float:right;padding-right:15px">
-							<button class="btn btn-sm btn-default" id="showCVE"><span>Show</span> NVD Products</button>
+							<button class="btn btn-sm btn-default" id="showCVE"><span><xsl:value-of select="eas:i18n('Show')"/></span> <xsl:value-of select="eas:i18n(' NVD Products')"/></button>
 						</div>
 						<br/>
 						<div class="clearfix"/>
 						<div class="col-xs-12 top-10">
-							<p>The <button class="btn btn-sm btn-default">Vulnerabilities</button> tab shows those products where an exact match is found. The <button class="btn btn-sm btn-default">All</button> tab highlights products with vulnerabilities for vendors in the repository.</p>
+							<p><xsl:value-of select="eas:i18n('The ')"/><button class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Vulnerabilities')"/></button><xsl:value-of select="eas:i18n(' tab shows those products where an exact match is found. The ')"/><button class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('All')"/></button><xsl:value-of select="eas:i18n(' tab highlights products with vulnerabilities for vendors in the repository.')"/></p>
 							<ul class="nav nav-tabs">
 								<li class="active">
-									<a data-toggle="tab" href="#Vulnerabilities">Vulnerabilities</a>
+									<a data-toggle="tab" href="#Vulnerabilities"><xsl:value-of select="eas:i18n('Vulnerabilities')"/></a>
 								</li>
 								<li>
-									<a data-toggle="tab" href="#AllVulnerabilities">All</a>
+									<a data-toggle="tab" href="#AllVulnerabilities"><xsl:value-of select="eas:i18n('All')"/></a>
 								</li>
 								<li>
 									<a data-toggle="tab" href="#CVEProducts" id="cvetab" style="display:none">NVD Products</a>

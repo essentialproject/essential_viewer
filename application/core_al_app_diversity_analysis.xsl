@@ -117,7 +117,7 @@
 								<xsl:choose>
 									<xsl:when test="count($impl_appsvc_list) = 0">
 										<p>
-											<em>No Application Services defined for this Capability</em>
+											<em><xsl:value-of select="eas:i18n('No Application Services defined for this Capability')"/></em>
 										</p>
 									</xsl:when>
 									<xsl:otherwise>

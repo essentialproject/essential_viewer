@@ -314,7 +314,7 @@
 						 $('.hideOnLoad').hide();
 					});
 				</script>
-				<script src="js/showhidediv.js" type="text/javascript"/>
+				<script src="js/showhidediv.js?release=6.19" type="text/javascript"/>
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 			</body>

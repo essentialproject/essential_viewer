@@ -27,7 +27,9 @@
 	<xsl:variable name="stratGoalTaxTerm" select="/node()/simple_instance[(type = 'Taxonomy_Term') and (own_slot_value[slot_reference = 'name']/value = 'Strategic Goal')]"/>
 	<xsl:variable name="objectiveTaxTerm" select="/node()/simple_instance[(type = 'Taxonomy_Term') and (own_slot_value[slot_reference = 'name']/value = 'SMART Objective')]"/>
 	<xsl:variable name="allObjectives" select="/node()/simple_instance[type = 'Business_Objective']"/>
-	<xsl:variable name="allBusinessGoals" select="$allObjectives[own_slot_value[slot_reference = 'element_classified_by']/value = $stratGoalTaxTerm/name]"/>
+	<xsl:variable name="allBusinessGoalsOld" select="$allObjectives[own_slot_value[slot_reference = 'element_classified_by']/value = $stratGoalTaxTerm/name]"/>
+	<xsl:variable name="allBusinessGoalsNew" select="/node()/simple_instance[type = 'Business_Goal']"/>
+	<xsl:variable name="allBusinessGoals" select="$allBusinessGoalsNew union $allBusinessGoalsOld"/>
 	<xsl:variable name="allBusinessObjectives" select="$allObjectives[own_slot_value[slot_reference = 'element_classified_by']/value = $objectiveTaxTerm/name]"/>
 	
 	<!-- Business Capabilities, Processes and Organisations -->

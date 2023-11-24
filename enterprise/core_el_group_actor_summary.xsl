@@ -175,10 +175,10 @@
 						font-family: Helvetica, Arial, sans-serif;
 						padding: 7px;
 					}</style>
-				<script language="javascript" type="text/javascript" src="js/jit-yc.js"/>
-				<script language="javascript" type="text/javascript" src="js/org_tree.js"/>
-				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js" />-->
-				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
+				<script language="javascript" type="text/javascript" src="js/jit-yc.js?release=6.19"/>
+				<script language="javascript" type="text/javascript" src="js/org_tree.js?release=6.19"/>
+				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19" />-->
+				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<script type="text/javascript">
 					<xsl:text>function tree(){
 						//initialise the data

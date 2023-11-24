@@ -32,14 +32,14 @@
 	<!-- START VIEW SPECIFIC VARIABLES -->
 
 	<xsl:variable name="currentValueStream" select="/node()/simple_instance[name = $param1]"/>
-	<xsl:variable name="vsProductTypes" select="/node()/simple_instance[type='Product_Type'][name = $currentValueStream/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
+	<xsl:variable name="vsProductTypes" select="/node()/simple_instance[type=('Product_Type','Composite_Product_Type')][name = $currentValueStream/own_slot_value[slot_reference = 'vs_product_types']/value]"/>
 	<!--<xsl:variable name="vsValueStages" select="/node()/simple_instance[name = $currentValueStream/own_slot_value[slot_reference = 'vs_value_stages']/value]"/>-->
 	<xsl:key name="vsValueStagesKey" match="/node()/simple_instance[type='Value_Stage']" use="own_slot_value[slot_reference = 'vsg_value_stream']/value"/>
 	<xsl:variable name="vsValueStages" select="key('vsValueStagesKey',$currentValueStream/name)"/>
 
 	<xsl:key name="allValueStage2EmotionRelsKey" match="/node()/simple_instance[type='VALUE_STAGE_TO_EMOTION_RELATION']" use="own_slot_value[slot_reference = 'value_stage_to_emotion_from_value_stage']/value"/> 
 	<xsl:variable name="allValueStageLabels" select="/node()/simple_instance[type='Label'][name = $vsValueStages/own_slot_value[slot_reference = 'vsg_label']/value]"/>
-	<xsl:variable name="allStakeholderRoles" select="/node()/simple_instance[type=('Business_Role_Type','Business_Role')][name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_business_roles', 'vsg_participants')]/value]"/>
+	<xsl:variable name="allStakeholderRoles" select="/node()/simple_instance[type=('Business_Role_Type','Business_Role', 'Individual_Business_Role', 'Group_Business_Role')][name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_business_roles', 'vsg_participants')]/value]"/>
 	<xsl:variable name="allBusinessEvents" select="/node()/simple_instance[name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_events', 'vs_outcome_events', 'vsg_entrance_events', 'vsg_exit_events')]/value]"/>
 	<xsl:variable name="allBusinessConditions" select="/node()/simple_instance[name = ($currentValueStream, $vsValueStages)/own_slot_value[slot_reference = ('vs_trigger_conditions', 'vs_outcome_conditions', 'vsg_entrance_conditions', 'vsg_exit_conditions')]/value]"/>
 	<xsl:variable name="allValueStage2EmotionRels" select="key('allValueStage2EmotionRelsKey',$vsValueStages/name)"/>
@@ -56,8 +56,9 @@
 	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[type='Service_Quality_Value'][name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
 	<xsl:variable name="allValueStageBusCaps" select="/node()/simple_instance[type=('Business_Capability')][name = $vsValueStages/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
 	<xsl:key name="allBusProcessKey" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'realises_business_capability']/value"/>
-	<xsl:variable name="DEBUG" select="''"/>
-
+	<xsl:key name="allBusProcessNameKey" match="/node()/simple_instance[type=('Business_Process')]" use="name"/>
+		<xsl:variable name="DEBUG" select="''"/>
+		
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<html>
@@ -71,10 +72,10 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Value Stream Summary for <xsl:value-of select="$currentValueStream/own_slot_value[slot_reference='name']/value"/></title>
-				<!--<link type="text/css" rel="stylesheet" href="ext/apml/custom.css"/>-->
-				<script src="js/jquery-migrate-1.4.1.min.js" type="text/javascript"/>
+				<!--<link type="text/css" rel="stylesheet" href="ext/apml/custom.css?release=6.19"/>-->
+				<script src="js/jquery-migrate-1.4.1.min.js?release=6.19" type="text/javascript"/>
 				<!--JQuery plugin to support tooltips-->
-				<script src="js/jquery.tools.min.js" type="text/javascript"/>
+				<script src="js/jquery.tools.min.js?release=6.19" type="text/javascript"/>
 
 				<!-- Start Templating Libraries -->
 
@@ -229,7 +230,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-2 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-flag"/>Initiators</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-flag"/><xsl:value-of select="eas:i18n('Initiators')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if triggerRoles.length}}
@@ -239,7 +240,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No initiators defined
+										<xsl:value-of select="eas:i18n('No initiators defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -247,7 +248,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-2 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-paper-plane"/>Initiation Events</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-paper-plane"/><xsl:value-of select="eas:i18n('Initiation Events')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if triggerEvents.length}}
@@ -257,7 +258,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No initiation events defined
+										<xsl:value-of select="eas:i18n('No initiation events defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -265,7 +266,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-2 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-question-circle"/>Initiation Conditions</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-question-circle"/><xsl:value-of select="eas:i18n('Initiation Conditions')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if triggerConditions.length}}
@@ -275,7 +276,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No initiation conditions defined
+										<xsl:value-of select="eas:i18n('No initiation conditions defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -283,7 +284,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-2 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-check"/>Outcome Conditions</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-check"/><xsl:value-of select="eas:i18n('Outcome Conditions')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if outcomeConditions.length}}
@@ -293,7 +294,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No outcome conditions defined
+										<xsl:value-of select="eas:i18n('No outcome conditions defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -301,7 +302,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-2 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-road"/>Outcomes</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-road"/><xsl:value-of select="eas:i18n('Outcomes')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if outcomeEvents.length}}
@@ -311,7 +312,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No outcomes defined
+										<xsl:value-of select="eas:i18n('No outcomes defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -319,7 +320,7 @@
 						<div class="col-xs-12 col-sm-6 col-md-10 top-15">
 							<div class="vs-header-section">
 								<div class="vs-header-section-top bg-darkblue-120">
-									<ul class="fa-ul"><li><i class="fa fa-li fa-cubes"/>Impacted Business Services</li></ul>
+									<ul class="fa-ul"><li><i class="fa fa-li fa-cubes"/><xsl:value-of select="eas:i18n('Impacted Business Services')"/></li></ul>
 								</div>
 								<div class="vs-header-section-bottom">
 									{{#if productTypes.length}}
@@ -329,7 +330,7 @@
 											{{/each}}
 										</ul>
 									{{else}}
-										No products defined
+										<xsl:value-of select="eas:i18n('No products defined')"/>
 									{{/if}}
 								</div>
 							</div>
@@ -341,16 +342,16 @@
 				<!-- handlebars template to render the Value Stages and their details for the Value Stream -->
 				<script id="vs-template" type="text/x-handlebars-template">
 					<div class="vs-header-column pull-left">
-						<div class="vs-arrow-header small">Value Stages</div>
-						<div class="vs-participants vs-detail-header small bg-lightblue-100">Participants</div>
-						<div class="vs-buscaps vs-detail-header small bg-lightblue-100">Supporting Business Capabilities</div>
-						<div class="vs-buscaps vs-detail-header small bg-lightblue-100">Supporting Business Processes</div>
-						<div class="vs-emotions vs-detail-header small bg-lightblue-100">Target Emotions</div>
-						<div class="vs-entrance-events vs-detail-header small bg-lightgreen-100">Entrance Events</div>
-						<div class="vs-entrance-conditions vs-detail-header small bg-lightgreen-100">Entrance Conditions</div>
-						<div class="vs-exit-events vs-detail-header small bg-brightred-100">Exit Events</div>
-						<div class="vs-exit-conditions vs-detail-header small bg-brightred-100">Exit Conditions</div>
-						<div class="vs-kpis vs-detail-header small bg-orange-100">KPIs</div>
+						<div class="vs-arrow-header small"><xsl:value-of select="eas:i18n('Value Stages')"/></div>
+						<div class="vs-participants vs-detail-header small bg-lightblue-100"><xsl:value-of select="eas:i18n('Participants')"/></div>
+						<div class="vs-buscaps vs-detail-header small bg-lightblue-100"><xsl:value-of select="eas:i18n('Supporting Business Capabilities')"/></div>
+						<div class="vs-buscaps vs-detail-header small bg-lightblue-100"><xsl:value-of select="eas:i18n('Supporting Business Processes')"/></div>
+						<div class="vs-emotions vs-detail-header small bg-lightblue-100"><xsl:value-of select="eas:i18n('Target Emotions')"/></div>
+						<div class="vs-entrance-events vs-detail-header small bg-lightgreen-100"><xsl:value-of select="eas:i18n('Entrance Events')"/></div>
+						<div class="vs-entrance-conditions vs-detail-header small bg-lightgreen-100"><xsl:value-of select="eas:i18n('Entrance Conditions')"/></div>
+						<div class="vs-exit-events vs-detail-header small bg-brightred-100"><xsl:value-of select="eas:i18n('Exit Events')"/></div>
+						<div class="vs-exit-conditions vs-detail-header small bg-brightred-100"><xsl:value-of select="eas:i18n('Exit Conditions')"/></div>
+						<div class="vs-kpis vs-detail-header small bg-orange-100"><xsl:value-of select="eas:i18n('KPIs')"/></div>
 					</div>
 					<div class="vs-scroller">
 						<div class="vs-scroller-inner">
@@ -485,7 +486,7 @@
 					var valueStreamHeaderTemplate, valueStageTemplate;
 					
 					var valueStream = <xsl:call-template name="RenderValueStreamJSON"/>;
-				 
+				 console.log('valueStream',valueStream)
 					var valueStageDetailsClasses = ['vs-participants', 'vs-buscaps', 'vs-emotions', 'vs-entrance-events', 'vs-entrance-conditions', 'vs-exit-events', 'vs-exit-conditions', 'vs-kpis', 'vs-busprocs'];
 					
 					function setValueStageDetailsHeights() {
@@ -534,7 +535,7 @@
 							<div class="page-header">
 								<h1 id="viewName">
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Value Stream Summary for </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Value Stream Summary for ')"/></span>
 									<span class="text-primary">
 										<xsl:call-template name="RenderInstanceLink">
 											<xsl:with-param name="theSubjectInstance" select="$currentValueStream"/>
@@ -607,8 +608,9 @@
 		<xsl:variable name="vsgValueStagePerfMeasures" select="key('allValueStagePerfMeasuresKey', $this/name)"/>
 		<xsl:variable name="vsgBusCaps" select="$allValueStageBusCaps[name = $this/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
 		<xsl:variable name="vsgBusProcs" select="key('allBusProcessKey',$vsgBusCaps/name)"/>
-		
-		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> { "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "busCaps": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusCaps"/> ], "busProcs":[ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusProcs"/>], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
+		<xsl:variable name="vsgBusProcsDirect" select="key('allBusProcessNameKey',current()/own_slot_value[slot_reference='vs_supporting_bus_processes']/value)"/>
+			
+		<xsl:variable name="vsgValueStageKPIValues" select="$allValueStageKPIValues[name = $vsgValueStagePerfMeasures/own_slot_value[slot_reference = 'pm_performance_value']/value]"/> {"debug":"<xsl:value-of select="$vsgBusProcsDirect/name"/>",  "id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>", "name": "<xsl:value-of select="$thisName"/>", "description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>", "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$thisName"/><xsl:with-param name="anchorClass">text-black</xsl:with-param></xsl:call-template>", "participants": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgParticipants"/> ], "busCaps": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusCaps"/> ], "busProcs":[ <xsl:choose><xsl:when test="$vsgBusProcsDirect"><xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusProcsDirect"/></xsl:when><xsl:otherwise><xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgBusProcs"/></xsl:otherwise></xsl:choose>], "entranceEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgEntranceEvents"/> ], "entranceConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgEntranceConditions"/> ], "exitEvents": [ <xsl:apply-templates mode="getSimpleJSONListWithLink" select="$vsgExitEvents"/> ], "exitConditions": [ <xsl:apply-templates mode="getSimpleJSONList" select="$vsgExitConditions"/> ], "emotions": [ <xsl:apply-templates mode="RenderEmotionJSON" select="$vsgValueStage2EmotionRels"><xsl:with-param name="theEmotions" select="$vsgEmotions"/></xsl:apply-templates> ], "kpiValues": [ <xsl:apply-templates mode="RenderKPIValueJSON" select="$vsgValueStageKPIValues"/> ] }<xsl:if test="not(position() = last())">, </xsl:if>
 	</xsl:template>
 
 

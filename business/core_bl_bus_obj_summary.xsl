@@ -211,7 +211,7 @@
 					<div class="sectionIcon">
 						<i class="fa fa-star icon-section icon-color"/>
 					</div>
-					<h2 class="text-primary">Strategic Goal</h2>
+					<h2 class="text-primary"><xsl:value-of select="eas:i18n('Strategic Goal')"/></h2>
 					<div>
 					<br/>
 						<xsl:choose>

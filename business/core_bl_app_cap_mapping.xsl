@@ -93,14 +93,14 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Business Capability - Application Fit</title>
+				<title><xsl:value-of select="eas:i18n('Business Capability - Application Fit')"/></title>
                 <xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
 				</xsl:call-template>
@@ -181,22 +181,22 @@
 						<div class="col-xs-12">
 							<div class="row">
                                 <div class="col-xs-8">
-                                	<span class="impact right-30">Filter:</span>
-	                            	<label>Type:</label>
+                                	<span class="impact right-30"><xsl:value-of select="eas:i18n('Filter')"/></span>
+	                            	<label><xsl:value-of select="eas:i18n('Type')"/></label>
 	                                <select id="view" class="right-30">
 	                                    <xsl:if test="count($ApplicationFit)+count($BusinessFit)=0"><option id="#">Not Set</option></xsl:if>
 	                                    <xsl:if test="$BusinessFit">
-	                                    <option id="business">Business Fit</option></xsl:if>
-	                                    <xsl:if test="$ApplicationFit"><option id="technical">Technical Fit</option></xsl:if>
+	                                    <option id="business"><xsl:value-of select="eas:i18n('Business Fit')"/></option></xsl:if>
+	                                    <xsl:if test="$ApplicationFit"><option id="technical"><xsl:value-of select="eas:i18n('Technical Fit')"/></option></xsl:if>
                                 	</select>                                  
-									<label>Capability:</label>
+									<label><xsl:value-of select="eas:i18n('Capability')"/></label>
 									<select id="capFilter"  class="right-30">
-										<option id="all">All</option>
+										<option id="all"><xsl:value-of select="eas:i18n('All')"/></option>
 										<xsl:apply-templates select="$L0BusCaps" mode="appOptions"><xsl:sort order="ascending" select="upper-case(own_slot_value[slot_reference='name']/value)"></xsl:sort></xsl:apply-templates>
 									</select>
-									<label>Application:</label>
+									<label><xsl:value-of select="eas:i18n('Application')"/></label>
 									<select id="appFilter"  class="right-30">
-										<option id="all">All</option>
+										<option id="all"><xsl:value-of select="eas:i18n('All')"/></option>
 										<xsl:apply-templates select="$appsWithCaps" mode="appOptions"><xsl:sort order="ascending" select="upper-case(own_slot_value[slot_reference='name']/value)"></xsl:sort></xsl:apply-templates>
 									</select>
                                 </div>

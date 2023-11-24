@@ -179,15 +179,15 @@
 					<xsl:value-of select="eas:i18n('Application Summary')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/lodash/index.js"/>
-				<script src="js/backbone/backbone.js"/>
-				<script src="js/graphlib/graphlib.core.js"/>
-				<script src="js/dagre/dagre.core.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -375,7 +375,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-code icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Codebase</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Codebase')"/></h2>
 							<xsl:variable name="codebase" select="/node()/simple_instance[name = $currentApp/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
 							<div class="content-section">
 								<p>

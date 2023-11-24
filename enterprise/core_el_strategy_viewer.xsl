@@ -129,7 +129,7 @@
 					<xsl:value-of select="$pageLabel"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link type="text/css" href="css/animate.min.css" rel="stylesheet"></link>
+				<link type="text/css" href="css/animate.min.css?release=6.19" rel="stylesheet"></link>
 				<style>
 					:root {
 						--light-blue: #EBF5FA;

@@ -190,15 +190,15 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>IT Asset Dashboard</title>
-				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
+				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>
-				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<script src="js/chartjs/Chart.min.js"/>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js"/> 
+				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js?release=6.19"/>
+				<script src="js/chartjs/Chart.min.js?release=6.19"/>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"/> 
 				<xsl:call-template name="dataTablesLibrary"/>
 				<!--<xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>

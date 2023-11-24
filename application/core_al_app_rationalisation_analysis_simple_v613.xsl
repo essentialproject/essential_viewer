@@ -57,7 +57,7 @@
         </xsl:variable>
 		<html>
 			<head>
-              <script src="js/d3/d3_4-11/d3.min.js"/>
+              <script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
@@ -210,8 +210,8 @@
                         }
                     .removeApp{color:red}     
                 </style>
-                <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+                <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
                 <script>
                         var appCardTemplate;
 						var sourceReport='<xsl:value-of select="$param1"/>';

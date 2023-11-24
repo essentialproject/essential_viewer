@@ -77,7 +77,7 @@
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
-                <script src="js/d3/d3_4-11/d3.min.js"/>
+                <script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
 				<xsl:call-template name="commonHeadContent"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -85,8 +85,8 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Design Authority</title>
-					<script src="js/FileSaver.min.js"/>
+				<title><xsl:value-of select="eas:i18n('Design Authority')"/></title>
+				<script src="js/FileSaver.min.js?release=6.19"/>
                 <style>
                 	 .fade-in {
                             opacity: 1;
@@ -190,10 +190,10 @@
 						<!--Setup Description Section-->
 	                    <div class="col-xs-12">
 							<ul class="nav nav-tabs">
-							  	<li class="active"><a data-toggle="tab" href="#strategy">Strategy</a></li>
-								<li><a data-toggle="tab" href="#principles">Principles</a></li>
-							  	<li><a data-toggle="tab" href="#change">Changes</a></li>
-								<li><a data-toggle="tab" href="#summary" class="summary">Summary</a></li>
+							  	<li class="active"><a data-toggle="tab" href="#strategy"><xsl:value-of select="eas:i18n('Strategy')"/></a></li>
+								<li><a data-toggle="tab" href="#principles"><xsl:value-of select="eas:i18n('Principles')"/></a></li>
+							  	<li><a data-toggle="tab" href="#change"><xsl:value-of select="eas:i18n('Change')"/></a></li>
+								<li><a data-toggle="tab" href="#summary" class="summary"><xsl:value-of select="eas:i18n('Summary')"/></a></li>
 							</ul>
 							<div class="tab-content">
 								<div id="strategy" class="tab-pane fade in active">
@@ -201,16 +201,16 @@
 										<div class="col-md-6">
 											<div class="panel panel-default">
 												<div class="panel-heading">
-													<h3 class="panel-title">Details</h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Details')"/></h3>
 												</div>
 												<div class="panel-body">
-													<label>Title</label>
+													<label><xsl:value-of select="eas:i18n('Title')"/></label>
 													<input type="text" id="title" class="form-control bottom-15"/>
-													<label>Owner</label>
+													<label><xsl:value-of select="eas:i18n('Owner')"/></label>
 													<input type="text" id="owner" class="form-control bottom-15"></input>
-													<label>Narrative</label>
+													<label><xsl:value-of select="eas:i18n('Narrative')"/></label>
 													<textarea id="narrative" name="narrative" rows="4" cols="75" class="form-control bottom-15"/>
-													<label>Estimated Cost</label>
+													<label><xsl:value-of select="eas:i18n('Estimated Cost')"/></label>
 													<input type="text" id="cost" class="form-control"/>
 												</div>
 											</div>
@@ -218,7 +218,7 @@
 										<div class="col-md-6">
 											<div class="panel panel-default">
 												<div class="panel-heading">
-													<h3 class="panel-title">Goals</h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Goals')"/></h3>
 												</div>
 												<div class="panel-body">
 													<div id="gls" class="top-10"/>
@@ -232,14 +232,14 @@
 										<div class="col-xs-12" id="sortable">
 										 	<div class="panel panel-default">
 												<div class="panel-heading">
-													<h3 class="panel-title">Principles Adhering To</h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Principles Adhering To')"/></h3>
 												</div>
 												<div class="panel-body">
 													<table class="table principleTable">
 														<thead>
 															<tr>
-																<th>Principle</th>
-																<th>Adherence</th>
+																<th><xsl:value-of select="eas:i18n('Principle')"/></th>
+																<th><xsl:value-of select="eas:i18n('Adherence')"/></th>
 															</tr>
 														</thead>
 														<tbody>
@@ -260,12 +260,12 @@
 					                    <div class="col-md-6" >
 					                        <div class="panel panel-default">
 					                        	<div class="panel-heading">
-													<h3 class="panel-title">Impacted Elements</h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Impacted Elements')"/></h3>
 												</div>
 												<div class="panel-body">
 													<div class="row">
 														<div class="col-xs-6">
-								                            <label>Application</label>
+								                            <label><xsl:value-of select="eas:i18n('Application')"/></label>
 								                            <div class="form-group" >
 								                                <div>
 									                            	<select id="application" onchange="document.getElementById('serv').style.display='block';" class="form-control" style="width:100%">
@@ -281,10 +281,10 @@
 								                                	</div>
 								                                </div>    
 								                            </div>    
-						                            		<button type="button" onclick="addApp();getScore();initPopovers();" class="btn btn-info">Add Application</button>
+						                            		<button type="button" onclick="addApp();getScore();initPopovers();" class="btn btn-info"><xsl:value-of select="eas:i18n('Add Application')"/></button>
 						                       			</div>    
 							                        	<div class="col-xs-6">   
-							                           		<label>Technology Component</label>
+							                           		<label><xsl:value-of select="eas:i18n('Technology Component')"/></label>
 							                            	<div class="form-group">
 							                            		<div>
 									                             	<select id="technologyComponents" onchange="setProducts(this.value,this.value);document.getElementById('prod').style.display='block';" class="form-control" style="width:100%">
@@ -300,7 +300,7 @@
 								                            		</div>
 									                            </div>
 							                            	</div>    
-							                            	<button type="button" onclick="addTech();getScore()" class="btn btn-info">Add Product</button>
+							                            	<button type="button" onclick="addTech();getScore()" class="btn btn-info"><xsl:value-of select="eas:i18n('Add Product')"/></button>
 														</div>								                       
 						                      		</div>
 												</div>
@@ -317,16 +317,16 @@
 					                    <div class="col-xs-6" id="adherence_summary">
 					                        <div class="panel panel-default">
 					                        	<div class="panel-heading">
-													<h3 class="panel-title">Adherence Summary<button type="button" id="clear" class="btn btn-xs btn-info pull-right">Clear All</button></h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Adherence Summary')"/><button type="button" id="clear" class="btn btn-xs btn-info pull-right"><xsl:value-of select="eas:i18n('Clear All')"/></button></h3>
 												</div>
 					                        	<div class="panel-body">                       
 						                            <table class="table">
 						                                <thead>
 						                                	<tr>
 						                                		<th>&#160;</th>
-						                                		<th  style="width:30%">Application</th>
-						                                		<th  style="width:45%">Service</th>
-						                                		<th class="statushead fade-in" style="color:#d3d3d3;text-align: center;width:20%">Standard</th>
+						                                		<th  style="width:30%"><xsl:value-of select="eas:i18n('Application')"/></th>
+						                                		<th  style="width:45%"><xsl:value-of select="eas:i18n('Service')"/></th>
+						                                		<th class="statushead fade-in" style="color:#d3d3d3;text-align: center;width:20%"><xsl:value-of select="eas:i18n('Standard')"/></th>
 						                                		<th></th>
 						                                	</tr>
 						                                </thead>
@@ -338,9 +338,9 @@
 						                                <thead>
 						                                	<tr>
 						                                		<th>&#160;</th>
-						                                		<th style="width:30%">Technology</th>
-						                                		<th style="width:45%">Product</th>
-						                                		<th class="statushead fade-in" style="color:#d3d3d3;text-align: center;width:20%">Status</th>
+						                                		<th style="width:30%"><xsl:value-of select="eas:i18n('Technology')"/></th>
+						                                		<th style="width:45%"><xsl:value-of select="eas:i18n('Product')"/></th>
+						                                		<th class="statushead fade-in" style="color:#d3d3d3;text-align: center;width:20%"><xsl:value-of select="eas:i18n('Status')"/></th>
 						                                		<th></th>
 						                                	</tr>
 						                                </thead>
@@ -348,7 +348,7 @@
 						                            </table>
 					                           		<hr/>
 					                 				<!--<div id="answerscore" style="font-size;19pt;border-radius: 20px;text-align:center;padding:3px;display: inline-block"></div> -->
-													<span id="answer" class="label large uppercase">Waiver Required</span>
+													<span id="answer" class="label large uppercase"><xsl:value-of select="eas:i18n('Waiver Required')"/></span>
 					                        	</div>
 					                     	</div>
 					                    </div>
@@ -359,7 +359,7 @@
 										<div class="col-xs-12">
 											<div class="panel panel-default">
 												<div class="panel-heading">
-													<h3 class="panel-title">Design Authority Summary</h3>
+													<h3 class="panel-title"><xsl:value-of select="eas:i18n('Design Authority Summary')"/></h3>
 												</div>
 												<div class="panel-body">
 													<div id="summPage" class="top-10"/>
@@ -385,8 +385,8 @@
 		<thead>
 			<tr>
 				<th>&#160;</th>
-				<th>Goal</th>
-				<th>Objectives</th>
+				<th><xsl:value-of select="eas:i18n('Goal')"/></th>
+				<th><xsl:value-of select="eas:i18n('Objectives')"/></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -417,7 +417,7 @@
    <Column ss:AutoFitWidth="0" ss:Width="120"/>
    <Column ss:AutoFitWidth="0" ss:Width="144"/>
    <Row ss:Height="24">
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Design Authority Summary</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String"><xsl:value-of select="eas:i18n('Design Authority Summary')"/></Data></Cell>
    </Row>
    <Row ss:Height="21">
     <Cell ss:StyleID="s86"><Data ss:Type="String">Title</Data></Cell>
@@ -505,7 +505,7 @@
 	<div id="summary-layout">
 		<div class="row bottom-30">
 			<div class="col-md-4">
-				<label>Title</label>
+				<label><xsl:value-of select="eas:i18n('Title')"/></label>
 				<div>
 					<input readonly="readonly" type="text" class="form-control" placeholder="None Defined" >
 						<xsl:attribute name="value">{{this.title}}</xsl:attribute>
@@ -513,7 +513,7 @@
 				</div>
 			</div>
 			<div class="col-md-4">
-				<label>Owner</label>
+				<label><xsl:value-of select="eas:i18n('Owner')"/></label>
 				<div>
 					<input readonly="readonly" type="text" class="form-control" placeholder="None Defined" >
 						<xsl:attribute name="value">{{this.owner}}</xsl:attribute>
@@ -521,13 +521,13 @@
 				</div>
 			</div>
 			<div class="col-md-4">
-				<label>Date</label>
+				<label><xsl:value-of select="eas:i18n('Date')"/></label>
 				<div id="printDate"></div>
 			</div>
 		</div>
 		<div class="row bottom-30">
 			<div class="col-md-8">
-				<label>Overview</label>
+				<label><xsl:value-of select="eas:i18n('Overview')"/></label>
 				<div>
 					<input readonly="readonly" type="text" class="form-control" placeholder="None Defined" >
 						<xsl:attribute name="value">{{this.narrative}}</xsl:attribute>
@@ -535,7 +535,7 @@
 				</div>
 			</div>
 			<div class="col-md-4">
-				<label>Cost</label>
+				<label><xsl:value-of select="eas:i18n('Cost')"/></label>
 				<div>
 					<input readonly="readonly" type="text" class="form-control" placeholder="None Defined" >
 						<xsl:attribute name="value">{{this.cost}}</xsl:attribute>
@@ -548,12 +548,12 @@
 				<hr/>
 			</div>
 			<div class="col-xs-12">
-				<label>Goals and Principles</label>
+				<label><xsl:value-of select="eas:i18n('Goals and Principles')"/></label>
 				<table class="table table-condensed top-10">
 					<thead>
 						<tr>
-							<th>Goals</th>
-							<th>Principles</th>
+							<th><xsl:value-of select="eas:i18n('Goals')"/></th>
+							<th><xsl:value-of select="eas:i18n('Principles')"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -595,7 +595,7 @@
 				<hr/>
 			</div>
 			<div class="col-md-6">
-				<label>Applications</label>
+				<label><xsl:value-of select="eas:i18n('Applications')"/></label>
 				<div>
 					{{#if this.applications}}
 						<ul class="fa-ul">
@@ -615,7 +615,7 @@
 				</div>
 			</div>
 			<div class="col-md-6">
-				<label>Technology</label>
+				<label><xsl:value-of select="eas:i18n('Technology')"/></label>
 				<div>
 					{{#if this.technology}}
 						<ul class="fa-ul">
@@ -640,17 +640,17 @@
 				<hr/>
 			</div>
 			<div class="col-xs-12 bottom-15">
-				<label>Overall Status</label>
+				<label><xsl:value-of select="eas:i18n('Overall Status')"/></label>
 				<div class="label large uppercase">
 					<xsl:attribute name="style">background-color: {{this.colour}}</xsl:attribute>
 					{{this.overall}}
 				</div>
 			<!--	<xsl:if test="$isEIPMode = 'true'"> -->
 					<xsl:text> </xsl:text>
-					<button class="btn btn-sm btn-success pull-right left-20" id="setDecision">Submit Decision
+					<button class="btn btn-sm btn-success pull-right left-20" id="setDecision"><xsl:value-of select="eas:i18n('Submit Decision')"/>
 					</button> <xsl:text> </xsl:text>
 			<!--	</xsl:if> -->
-				<button class="btn btn-sm btn-info pull-right" id="genExcel"><i class="fa fa-file-excel-o right-5"/>Download Excel Summary</button>
+				<button class="btn btn-sm btn-info pull-right" id="genExcel"><i class="fa fa-file-excel-o right-5"/><xsl:value-of select="eas:i18n('Download Excel Summary')"/></button>
 			</div>
 		</div>
 	</div>

@@ -76,7 +76,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>NIST Compliance</title>
-				<script src="js/d3/d3.min.js"/>
+				<script src="js/d3/d3.min.js?release=6.19"/>
                 <style>
 
                 </style> 
@@ -107,7 +107,7 @@
 						<div class="col-xs-12">
 							<div class="page-header"><h1>
 								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-								<span class="text-darkgrey">NIST Cyber Controls Mapping</span>
+								<span class="text-darkgrey"><xsl:value-of select="eas:i18n('NIST Cyber Controls Mapping')"/></span>
 							</h1></div>
                   
 						</div>
@@ -120,15 +120,15 @@
                               <div class="content-section">
                                                             
                                 <div class="col-xs-12">
-                                    <b>References Key:</b> <span style="background-color: rgba(0, 66, 247, 0.05)">Process <xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(0, 66, 247, 0.85);"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
-                                    <span style="background-color: rgba(252, 0, 213, 0.05)">Applications<xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(252, 0, 213, 0.85)"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
-                                        <span style="background-color: rgba(255, 157, 0, 0.1)">Technology<xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(255, 157, 0, 0.85)"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
-                                        <span style="background-color: rgba(128, 255, 0, 0.2)">Information<xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(128, 255, 0, 0.85)"/></span><xsl:text> </xsl:text> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
-                                        <span style="background-color: rgba(0, 0, 0, 0.05)">Other Documentation<xsl:text> </xsl:text><i class="fa fa-link"/></span><br/>
-                                    <b>Assessment Key:</b><xsl:text> </xsl:text>Up to Date <i class="fa fa-check-circle" style="color: green"></i>  
-                                        <xsl:text> </xsl:text>Due <i class="fa fa-exclamation-triangle" style="color: #ffba00"></i>
-                                    <xsl:text> </xsl:text>Overdue <i class="fa fa-exclamation-triangle" style="color: red"></i>
-                                    <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>Comments <i class="fa fa-info-circle text-black"/>
+                                    <b><xsl:value-of select="eas:i18n('References Key')"/>:</b> <span style="background-color: rgba(0, 66, 247, 0.05)"><xsl:value-of select="eas:i18n('Process')"/> <xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(0, 66, 247, 0.85);"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
+                                    <span style="background-color: rgba(252, 0, 213, 0.05)"><xsl:value-of select="eas:i18n('Applications')"/><xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(252, 0, 213, 0.85)"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
+                                        <span style="background-color: rgba(255, 157, 0, 0.1)"><xsl:value-of select="eas:i18n('Technology')"/><xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(255, 157, 0, 0.85)"/><xsl:text> </xsl:text></span> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
+                                        <span style="background-color: rgba(128, 255, 0, 0.2)"><xsl:value-of select="eas:i18n('Information')"/><xsl:text> </xsl:text><i class="fa fa-square" style="color: rgba(128, 255, 0, 0.85)"/></span><xsl:text> </xsl:text> <xsl:text> </xsl:text>¦<xsl:text> </xsl:text>
+                                        <span style="background-color: rgba(0, 0, 0, 0.05)"><xsl:value-of select="eas:i18n('Other Documentation')"/><xsl:text> </xsl:text><i class="fa fa-link"/></span><br/>
+                                    <b><xsl:value-of select="eas:i18n('Assessment Key:')"/></b><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Up to Date')"/> <i class="fa fa-check-circle" style="color: green"></i>  
+                                        <xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Due')"/> <i class="fa fa-exclamation-triangle" style="color: #ffba00"></i>
+                                    <xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Overdue')"/> <i class="fa fa-exclamation-triangle" style="color: red"></i>
+                                    <xsl:text> </xsl:text>¦<xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Comments')"/> <i class="fa fa-info-circle text-black"/>
                                     <script>
 								$(document).ready(function(){
 									// Setup - add a text input to each footer cell
@@ -183,14 +183,14 @@
 								});
 							</script>
                                     <table id="dt_apps" class="table table-striped table-condensed"> 
-                                        <thead>  <th width="5%">ID</th> <th width="30%">Control</th><th>Informative References</th><th width="30%">Assessment</th>
+                                        <thead>  <th width="5%"><xsl:value-of select="eas:i18n('ID')"/></th> <th width="30%"><xsl:value-of select="eas:i18n('Control')"/></th><th><xsl:value-of select="eas:i18n('Informative References')"/></th><th width="30%"><xsl:value-of select="eas:i18n('Assessment')"/></th>
                                         </thead>
                                         <tbody>   
                                         <xsl:apply-templates select="$controls" mode="controlsList">
                                             <xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>    
                                         </xsl:apply-templates>
                                         </tbody>
-                                        <tfoot>  <th width="5%">ID</th> <th width="30%">Control</th><th>Informative References</th><th width="30%">Assessment</th>
+                                        <tfoot>  <th width="5%"><xsl:value-of select="eas:i18n('ID')"/></th> <th width="30%"><xsl:value-of select="eas:i18n('Control')"/></th><th><xsl:value-of select="eas:i18n('Informative References')"/></th><th width="30%"><xsl:value-of select="eas:i18n('Assessment')"/></th>
                                         </tfoot>
                                     </table>
                                         

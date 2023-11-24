@@ -64,9 +64,9 @@
 				</xsl:for-each>
 				<title>Data Duplication Finder</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<script src="js/fuse.min.js"/>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
+				<script src="js/fuse.min.js?release=6.19"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
 				<script>
 					$(document).ready(function(){
 						$('select').select2({theme: "bootstrap"});

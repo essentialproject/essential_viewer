@@ -7,6 +7,7 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
+	<xsl:include href="../common/core_handlebars_functions.xsl"></xsl:include>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
 	<xsl:param name="param1"/>
@@ -18,7 +19,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Composite_Application_Provider', 'Technology_Product', 'Technology_Provider')"/>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider', 'Technology_Product', 'Technology_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<xsl:variable name="busCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="rootBusCaps" select="/node()/simple_instance[type = 'Report_Constant'][own_slot_value[slot_reference = 'name']/value = 'Root Business Capability']"/>
@@ -105,7 +106,7 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<script type="text/javascript" src="js/d3/d3.v2.min.js"/>
+				<script type="text/javascript" src="js/d3/d3.v2.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -113,9 +114,9 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Supplier Map</title>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
-				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
+				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"/>
 
 				<style>
 					.tile-stats{
@@ -554,10 +555,10 @@
 		<script id="supplier-template" type="text/x-handlebars-template">
          
             {{#each apps}}
-                <div><xsl:attribute name="class">appList elementName</xsl:attribute><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-desktop"/>  <span style="font-size:1.1em ">{{{this.name}}}</span>
+                <div><xsl:attribute name="class">appList elementName</xsl:attribute><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-desktop"/>  <span style="font-size:1.1em ">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
                     
                 {{#each capabilitiesImpacted}}
-                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{{this.name}}} 
+                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
                         <i class="fa fa-info-circle impAppsTrigger" data-toggle="popover" data-placement="bottom"/>
                         <div class="hidden popupTitle">
                           <span class="fontBlack uppercase">
@@ -566,7 +567,7 @@
                         </div>
                         <div class="hidden popupContent">
                             {{#each processes}}
-                                <i class="fa fa-circle-o"/> {{{this.name}}}<br/>
+                                <i class="fa fa-circle-o"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>
                             {{/each}}
                         </div>
                     
@@ -576,11 +577,11 @@
             
           
             {{#each technologies}}
-            <div class="appList elementName"><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-server"/> <span style="font-size:1.1em"> {{{this.name}}}</span>
+            <div class="appList elementName"><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-server"/> <span style="font-size:1.1em">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
             {{#each impacted}}
                 
                  {{#each caps}}
-                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{{this.name}}}
+                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
                         <i class="fa fa-info-circle impAppsTrigger" data-toggle="popover" data-placement="bottom"/>
                         <div class="hidden popupTitle">
                           <span class="fontBlack uppercase">
@@ -589,7 +590,7 @@
                         </div>
                         <div class="hidden popupContent">
                             {{#each processes}}
-                                <i class="fa fa-circle-o"/> {{{this.name}}}<br/>
+                                <i class="fa fa-circle-o"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>
                             {{/each}}
                         </div>
                     
@@ -598,7 +599,7 @@
                 {{/each}}
              {{#each impacted}}    
                 {{#each apps}}
-                <div><xsl:attribute name="class">appListtech</xsl:attribute><i class="fa fa-desktop"/> {{{this.name}}}</div> 
+                <div><xsl:attribute name="class">appListtech</xsl:attribute><i class="fa fa-desktop"/>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div> 
                 {{/each}}    
                 
             {{/each}}    
@@ -779,7 +780,7 @@
     <xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPath"/>
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
-
+		<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
         var promise_loadViewerAPIData = function(apiDataSetURL) {
             return new Promise(function (resolve, reject) {
                 if (apiDataSetURL != null) {
@@ -847,8 +848,7 @@
         $('.elementName').on('mouseover',function(){
             let focus=$(this).data('easid');
 
-
-            console.log($(this).data('easid'));
+ 
         })
         focusSupplier=thisSupplier[0];
             thisSupplier[0].apps.forEach(function(d){
@@ -894,17 +894,13 @@
                     var focusCap = $(this).data('easid');
                     var thisApp=thisSupplier[0].apps.filter(function(d){
                             return d.id===focusCap
-                        })
-	console.log('thisApp')
-    console.log(thisApp)
+                        });
 
 let tech=$(this).data('easid')
         if(!(thisApp[0])){
                        let pickedTech=thisSupplier[0].technologies.filter(function(d){
                            return d.id==tech;
-                       })      
-                       console.log(thisSupplier[0])     
-                       console.log(pickedTech[0].impacted)
+                       })      ;
                        pickedTech[0].impacted.forEach(function(i){
                         if(i.capAscendents){
                             let thisO=Object.keys(i);
@@ -918,8 +914,11 @@ let tech=$(this).data('easid')
 
 
       if( thisApp[0]){
-                    thisApp[0].capAscendents.forEach(function(e){ 
-                        $("."+e).css({'border-bottom':'3pt solid green','box-shadow': '5px 5px 5px #ccc'})
+		 
+                    thisApp[0].capAscendents?.forEach(function(e){ 
+						if(e!=''){
+                     	   $("."+e).css({'border-bottom':'3pt solid green','box-shadow': '5px 5px 5px #ccc'})
+						}
                     })
                         }
                     })
@@ -945,12 +944,19 @@ let tech=$(this).data('easid')
                                 return $(this).next().next('.popupContent').html();
                             }
                         });
+					
+						$(document).on('click', function(e) {
+							// Check if the click is outside the popover
+							if (!$(e.target).closest('.popover').length &amp;&amp; !$(e.target).is('[data-toggle="popover"]')) {
+								$('[data-toggle="popover"]').popover('hide');
+							}
+						});	
       
                     sortSupplierPlans(thisSupplier);
       
                      })
      let selected="<xsl:value-of select="$param1"/>";
-		console.log('selected',selected)
+		 
 		if(selected!=''){
 			$('#pickSuppliers').val(selected).trigger('change');
 

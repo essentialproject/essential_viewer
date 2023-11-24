@@ -177,8 +177,8 @@
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css"/>
-				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/DataTables/checkboxes/dataTables.checkboxes.css?release=6.19"/>
+				<script src="js/DataTables/checkboxes/dataTables.checkboxes.min.js?release=6.19"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>
@@ -189,25 +189,25 @@
 				<title><xsl:value-of select="eas:i18n('Business Model Strategy Planner')"/></title>
 
 				<!-- modal javascript library -->
-				<script src="js/lightbox-master/ekko-lightbox.min.js"/>
-				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
+				<script src="js/lightbox-master/ekko-lightbox.min.js?release=6.19"/>
+				<link href="js/lightbox-master/ekko-lightbox.min.css?release=6.19" rel="stylesheet" type="text/css"/>
 				
 				<!-- Start Service Quality Gauge library -->
-				<script type="text/javascript" src="js/gauge.min.js"></script>
+				<script type="text/javascript" src="js/gauge.min.js?release=6.19"></script>
 				
 				<!-- Start JointJS Diagramming Libraries and Styles-->
-				<!--<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
-				<script src="js/jointjs/lodash.min.js"/>
-				<script src="js/jointjs/backbone-min.js"/>
-				<script src="js/jointjs/joint.min.js"/>
-				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"/>	-->
+				<!--<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/jointjs/lodash.min.js?release=6.19"/>
+				<script src="js/jointjs/backbone-min.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.min.js?release=6.19"/>	-->
 				
 				<!-- gannt chart library -->
-				<script src="js/dhtmlxgantt/dhtmlxgantt.js"></script>
-				<link href="js/dhtmlxgantt/dhtmlxgantt.css" rel="stylesheet"/>
-				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>
+				<script src="js/dhtmlxgantt/dhtmlxgantt.js?release=6.19"></script>
+				<link href="js/dhtmlxgantt/dhtmlxgantt.css?release=6.19" rel="stylesheet"/>
+				<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css?release=6.19"/>
 					
 				<script type="text/javascript">
 					$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {

@@ -121,7 +121,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-desktop icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Provided By Application</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Provided By Application')"/></h2>
 							<div class="content-section">
 								<p>
 									<xsl:variable name="afiAppProvider" select="$allAppProviders[name = $currentAFI/own_slot_value[slot_reference = 'application_function_implementation_provided_by']/value]"/>
@@ -149,7 +149,7 @@
 							<div class="sectionIcon">
 								<i class="fa essicon-radialdots icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Implementation of Application Function</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Implementation of Application Function')"/></h2>
 							<div class="content-section">
 								<xsl:variable name="afiAppFunction" select="$allAppFunctions[name = $currentAFI/own_slot_value[slot_reference = 'implements_application_function']/value]"/>
 								<p>
@@ -177,7 +177,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-wrench icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Delivered by Software Component</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Delivered by Software Component')"/></h2>
 							<div class="content-section">
 								<xsl:variable name="afiSoftwareComp" select="$allSoftwareComponents[name = $currentAFI/own_slot_value[slot_reference = 'inverse_of_delivers_app_func_impl']/value]"/>
 								<p>
@@ -205,7 +205,7 @@
 							<div class="sectionIcon">
 								<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Supports Business Processes</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Supports Business Processes')"/></h2>
 							<div class="content-section">
 								<xsl:call-template name="supportedProcesess"/>
 							</div>
@@ -220,7 +220,7 @@
 							<div class="sectionIcon">
 								<i class="fa essicon-blocks icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Automates Business Processes</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Automates Business Processes')"/></h2>
 							<div class="content-section">
 								<xsl:call-template name="automatedProcesess"/>
 							</div>
@@ -235,7 +235,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-files-o icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Information Used</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Information Used')"/></h2>
 							<div class="content-section">
 								<xsl:variable name="afiInformation" select="$allAppProToInfoReps[name = $currentAFI/own_slot_value[slot_reference = 'uses_information_representation']/value]"/>
 								<xsl:choose>
@@ -323,7 +323,7 @@
 							<div class="sectionIcon">
 								<i class="fa fa-exchange icon-section icon-color"/>
 							</div>
-							<h2 class="text-primary">Data Mappings</h2>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Data Mappings')"/></h2>
 							<div class="content-section">
 								<xsl:variable name="afiDataMapping" select="$allAFIDataMappingRelation[name = $currentAFI/own_slot_value[slot_reference = 'afi_maps_info_data']/value]"/>
 								<xsl:choose>

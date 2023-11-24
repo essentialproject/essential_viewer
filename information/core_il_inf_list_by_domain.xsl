@@ -73,8 +73,8 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script src="js/showhidediv.js" type="text/javascript"/>
-				<script type="text/javascript" src="js/sitemapstyler.js"/>
+				<script src="js/showhidediv.js?release=6.19" type="text/javascript"/>
+				<script type="text/javascript" src="js/sitemapstyler.js?release=6.19"/>
 				<!--script to support smooth scroll back to top of page-->
 				<script type="text/javascript">
 					$(document).ready(function() {

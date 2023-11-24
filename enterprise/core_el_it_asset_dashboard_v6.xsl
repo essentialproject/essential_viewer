@@ -113,18 +113,18 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>IT Asset Dashboard</title>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
-				<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
-				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
+				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"/>
+				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?release=6.19"/>
 				
 				<xsl:call-template name="RenderInitDataScopeMap"/>
 				<xsl:call-template name="refModelLegendInclude"/>

@@ -69,7 +69,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Idea Dashboard</title>
-				<link rel="stylesheet" href="js/star-rating/star-rating.min.css"/>
+				<link rel="stylesheet" href="js/star-rating/star-rating.min.css?release=6.19"/>
 			</head>
 			<body>
 				
@@ -371,10 +371,10 @@
 
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
-				<script src="js/star-rating/star-rating.min.js"/>
+				<script src="js/star-rating/star-rating.min.js?release=6.19"/>
 				
 				<!-- Chart library -->
-				<script src="js/chartjs/Chart.min.js"/>
+				<script src="js/chartjs/Chart.min.js?release=6.19"/>
 					
 				<!-- Handlebars template for strings -->
 				<script id="need-goal-bullet-template" type="text/x-handlebars-template">
@@ -589,8 +589,8 @@
 				</div>
 				
 				<!-- Add bootstrap datepicker libraries -->
-				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css?release=6.19"/>
 				<!-- Div for the Create Plan/Project modal -->
 				<div class="modal fade" id="create-plan-project-modal" tabindex="-1" role="dialog" aria-labelledby="plan-project-modal-label" data-backdrop="static" data-keyboard="true">
 					<div class="modal-dialog">

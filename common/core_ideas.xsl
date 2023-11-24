@@ -55,7 +55,7 @@
 		
 		
 		
-		<!--<script type="text/javscript" src="js/lodash.js"/>-->
+		<!--<script type="text/javscript" src="js/lodash.js?release=6.19"/>-->
 		
 		<script>
 			var essIdeas = {

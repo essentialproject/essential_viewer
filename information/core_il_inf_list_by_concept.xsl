@@ -68,7 +68,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-				<script src="js/showhidediv.js" type="text/javascript"/>
+				<script src="js/showhidediv.js?release=6.19" type="text/javascript"/>
 			</head>
 			<body>
 				<!-- ADD JAVASCRIPT FOR CONTEXT POP-UP MENUS, WHERE REQUIRED -->

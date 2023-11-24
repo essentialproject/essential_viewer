@@ -83,6 +83,7 @@
 				</xsl:for-each>
 				<title>All Instances by Class</title>
 				<script>
+					
 		            $(document).ready(function(){
 		            // bind change event to select
 		            $('#classList').bind('change', function () {
@@ -92,6 +93,7 @@
 		            }
 		            return false;
 		            });
+					$('#classList').select2();
 		            });
 		        </script>
 				<script>
@@ -172,15 +174,13 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">All Instances by Class</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('All Instances by Class')"/></span>
 								</h1>
 							</div>
 						</div>
 						<!--Setup Description Section-->
 						<div class="col-xs-12">
-							<h2 class="text-primary">Select a Class</h2>
-							<button class="btn btn-primary pull-right" id="simpleMode">Simple Mode</button>
-							<button class="btn btn-primary pull-right" id="advancedMode">Advanced Mode</button>
+							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Select a Class')"/></h2>
 							<form>
 								<select id="classList">
 									<xsl:for-each select="$allClasses">
@@ -199,16 +199,16 @@
 							<table class="table table-bordered table-striped" id="dt_instances">
 								<thead>
 									<tr>
-										<th>ID</th>
-										<th>Name</th>
-										<th>Description</th>
+										<th><xsl:value-of select="eas:i18n('ID')"/></th>
+										<th><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th><xsl:value-of select="eas:i18n('Description')"/></th>
 									</tr>
 								</thead>
 								<tfoot>
 									<tr>
-										<th>ID</th>
-										<th>Name</th>
-										<th>Description</th>
+										<th><xsl:value-of select="eas:i18n('ID')"/></th>
+										<th><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th><xsl:value-of select="eas:i18n('Description')"/></th>
 									</tr>
 								</tfoot>
 								<tbody>
@@ -237,12 +237,33 @@
 		<xsl:variable name="currentInstance" select="current()"/>
 		<tr>
 			<td>
-				<xsl:value-of select="$currentInstance/name"/>
+				<a>
+					<xsl:attribute name="href">
+						<xsl:text>report?XML=reportXML.xml&amp;XSL=integration/instance_overview.xsl&amp;PMA=</xsl:text>
+						<xsl:value-of select="$currentInstance/name"/>
+					</xsl:attribute>
+					<xsl:value-of select="$currentInstance/name"/>
+				</a>
+				
 			</td>
 			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
+				<xsl:choose>
+					<xsl:when test="current()/own_slot_value[slot_reference='name']/value">
+						<xsl:call-template name="RenderInstanceLink">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="RenderMultiLangInstanceSlot">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+						<xsl:with-param name="displaySlot" select="'relation_name'"/>
+						</xsl:call-template>
+						<xsl:call-template name="RenderMultiLangInstanceSlot">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+							<xsl:with-param name="displaySlot" select="':relation_name'"/>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
 			</td>
 			<td>
 				<xsl:call-template name="RenderMultiLangInstanceDescription">

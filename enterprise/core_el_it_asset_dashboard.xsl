@@ -204,19 +204,19 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>IT Asset Dashboard</title>
-				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js" type="text/javascript"/>
-				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
+				<script async="true" src="js/es6-shim/0.9.2/es6-shim.js?release=6.19" type="text/javascript"/>
+				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
 				<script src="{$geoMapPath}" type="text/javascript"/>
-				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"/>
-				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js"/>
-				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"/>
+				<script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.css?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pieRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.pointLabels.min.js?release=6.19"/>
+				<script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?release=6.19"/>
 				<xsl:call-template name="dataTablesLibrary"/>
 				<xsl:call-template name="RenderRoadmapJSLibraries">
 					<xsl:with-param name="roadmapEnabled" select="$isRoadmapEnabled"/>
@@ -1075,7 +1075,7 @@
 	<xsl:template name="busSection">
 		<div class="col-xs-12">
 			<div class="dashboardPanel bg-offwhite">
-				<h2 class="text-secondary">Business Perspective</h2>
+				<h2 class="text-secondary"><xsl:value-of select="eas:i18n('Business Perspective')"/></h2>
 				<div class="row">
 					<div class="col-xs-6 bottom-15" id="bcmLegend">
 						<div class="keyTitle">Legend:</div>
@@ -1090,9 +1090,9 @@
 					</div>
 					<div class="col-xs-6">
 						<div class="pull-right">
-							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayNone" value="none" checked="checked" onchange="setBusCapabilityOverlay()"/>Application Support</label>
-							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayDup" value="duplication" onchange="setBusCapabilityOverlay()"/>Duplication</label>
+							<div class="keyTitle"><xsl:value-of select="eas:i18n('Overlay')"/>:</div>
+							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayNone" value="none" checked="checked" onchange="setBusCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Application Support')"/></label>
+							<label class="radio-inline"><input type="radio" name="busOverlay" id="busOverlayDup" value="duplication" onchange="setBusCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Duplication')"/></label>
 						
 						</div>
 					</div>
@@ -1108,7 +1108,7 @@
 		<xsl:call-template name="appRefModelInclude"/>
 		<div class="col-xs-12">
 			<div class="dashboardPanel bg-offwhite">
-				<h2 class="text-secondary">Application Perspective</h2>
+				<h2 class="text-secondary"><xsl:value-of select="eas:i18n('Application Perspective')"/></h2>
 				<div class="row">
 					<script>
 						$(document).ready(function() {
@@ -1116,13 +1116,13 @@
 						});
 					</script>
 					<div class="col-xs-6 col-lg-6">
-						<h3 class="text-primary">Code Base</h3>
+						<h3 class="text-primary"><xsl:value-of select="eas:i18n('Code Base')"/></h3>
 						<div class="pieChartContainer">
 							<div class="pieChart" id="appCodebasePieChart"/>
 						</div>
 					</div>
 					<div class="col-xs-6 col-lg-6">
-						<h3 class="text-primary">Delivery Model</h3>
+						<h3 class="text-primary"><xsl:value-of select="eas:i18n('Delivery Model')"/></h3>
 						<div class="pieChartContainer">
 							<div class="pieChart" id="appDeliveryModelPieChart"/>
 						</div>
@@ -1143,9 +1143,9 @@
 					</div>
 					<div class="col-xs-6">
 						<div class="pull-right">
-							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayNone" value="none" checked="checked" onchange="setAppCapabilityOverlay()"/>Footprint</label>
-							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayDup" value="duplication" onchange="setAppCapabilityOverlay()"/>Duplication</label>
+							<div class="keyTitle"><xsl:value-of select="eas:i18n('Overlay')"/>:</div>
+							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayNone" value="none" checked="checked" onchange="setAppCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Footprint')"/></label>
+							<label class="radio-inline"><input type="radio" name="appOverlay" id="appOverlayDup" value="duplication" onchange="setAppCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Duplication')"/></label>
 							<!--<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>-->
 						</div>
 					</div>
@@ -1165,16 +1165,16 @@
 		</script>
 		<div class="col-xs-12">
 			<div class="dashboardPanel bg-offwhite">
-				<h2 class="text-secondary">Technology Perspective</h2>
+				<h2 class="text-secondary"><xsl:value-of select="eas:i18n('Technology Perspective')"/></h2>
 				<div class="row">
 					<div class="col-xs-6 col-lg-6">
-						<h3 class="text-primary">Product Release Status</h3>
+						<h3 class="text-primary"><xsl:value-of select="eas:i18n('Product Release Status')"/></h3>
 						<div class="pieChartContainer">
 							<div class="pieChart" id="techProdStatusPieChart"/>
 						</div>
 					</div>
 					<div class="col-xs-6 col-lg-6">
-						<h3 class="text-primary">Delivery Model</h3>
+						<h3 class="text-primary"><xsl:value-of select="eas:i18n('Delivery Model')"/></h3>
 						<div class="pieChartContainer">
 							<div class="pieChart" id="techProdDeliveryPieChart"/>
 						</div>
@@ -1196,9 +1196,9 @@
 					<div class="col-xs-6">
 						<div class="pull-right">
 							<div class="keyTitle">Overlay:</div>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setTechCapabilityOverlay()"/>Footprint</label>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setTechCapabilityOverlay()"/>Duplication</label>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/>Legacy Risk</label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setTechCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Footprint')"/></label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setTechCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Duplication')"/></label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayStatus" value="status" onchange="setTechCapabilityOverlay()"/><xsl:value-of select="eas:i18n('Legacy Risk')"/></label>
 						</div>
 					</div>
 					<div class="simple-scroller" id="techRefModelContainer">

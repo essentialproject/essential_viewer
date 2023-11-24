@@ -133,7 +133,7 @@
 				</xsl:for-each>
 			</head>
 			<body>
-				<script src="js/wz_tooltip_custom1.js" type="text/javascript"/>
+				<script src="js/wz_tooltip_custom1.js?release=6.19" type="text/javascript"/>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
 
