@@ -1820,7 +1820,11 @@ function initPopoverTrigger()
 									<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
 									<xsl:with-param name="isRenderAsJSString" select="true()"/>
 								</xsl:call-template>",
-								"url":"<xsl:value-of select="$externalRef/own_slot_value[slot_reference='external_reference_url']/value"/>"		
+								"url":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+									<xsl:with-param name="theSubjectInstance" select="current()"/>
+									<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
+									<xsl:with-param name="isForJSONAPI" select="false()"/>
+								</xsl:call-template>"		
 										}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>],
@@ -1911,7 +1915,11 @@ function initPopoverTrigger()
 			<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
 			<xsl:with-param name="isRenderAsJSString" select="true()"/>
 		</xsl:call-template>",
-		"url":"<xsl:value-of select="$externalRef/own_slot_value[slot_reference='external_reference_url']/value"/>", 
+		"url":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
+			<xsl:with-param name="isForJSONAPI" select="false()"/>
+		</xsl:call-template>", 
 		"plans":[<xsl:for-each select="$thisplans">{"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>

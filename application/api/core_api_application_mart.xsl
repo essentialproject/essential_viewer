@@ -327,7 +327,11 @@
 				</xsl:call-template>",
 				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 				 </xsl:call-template>",
-				"documentLink":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>",
+				"documentLink":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
+					<xsl:with-param name="isForJSONAPI" select="true()"/>
+				</xsl:call-template>",
 				"date":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'erl_date_iso_8601']/value"/>",
 				"type":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'name']/value"/>",
 				"index":"<xsl:value-of select="$thisTaxonomyTerms/own_slot_value[slot_reference = 'taxonomy_term_index']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>

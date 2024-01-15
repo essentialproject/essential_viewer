@@ -128,7 +128,7 @@
 					
 					//define the details for the current user
 					var essUserDets = {
-					'id': '<xsl:value-of select="$userData//user:email"/>',
+					'id': '<xsl:value-of select="lower-case($userData//user:email)"/>',
 					'firstName': '<xsl:value-of select="$userData//user:firstname"/>',
 					'lastName': '<xsl:value-of select="$userData//user:lastname"/>'
 					};

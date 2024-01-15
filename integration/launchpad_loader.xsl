@@ -81,7 +81,7 @@
 				            </div>
 						</div>
 						<div class="col-xs-12">
-								<h3><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Launchpad Pre-Complete')"/></h3>
+								<h3><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n(' Launchpad Pre-Complete')"/></h3>
 								<p style="font-size:12pt"><xsl:value-of select="eas:i18n('A pre-completed spreadsheet based on data in a populated repository')"/></p>
 								<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/l4_launchpad_export.xsl&amp;CT=application/ms-excel&amp;FILE=l4_launchpad_export.xml&amp;cl=en-gb">
 	
@@ -103,7 +103,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Strategic Plans')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Strategic Plans')"/></td>
 						<td><xsl:value-of select="eas:i18n('Importing/Exporting of strategic plans, you can also use this import just programmes and/or projects if you wish')"/></td>
 						<td>
 							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_strategic_plans_creation.xsl">
@@ -112,7 +112,7 @@
 						</td>
 					</tr>
 					<tr>
-					<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Application Dependency')"/></td>
+					<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Application Dependency')"/></td>
 					<td><xsl:value-of select="eas:i18n('Importing/Exporting of bulk application dependencies')"/></td>
 					<td>	
 						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_app_dependencies.xsl">
@@ -121,7 +121,7 @@
 					</td>
 					</tr>
 					<tr>
-					<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Control Frameworks')"/></td>
+					<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Control Frameworks')"/></td>
 					<td><xsl:value-of select="eas:i18n('Bulk importing/exporting of frameworks such as NIST, ISO27001 and related assessments')"/></td>
 					<td>									
 						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_framework_manager.xsl">	
@@ -130,7 +130,7 @@
 					</td>
 					</tr>
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Strategy Planner')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n(' Strategy Planner')"/></td>
 						<td><xsl:value-of select="eas:i18n('Importing/Exporting of customer journeys for use with the strategy planner')"/></td>
 						<td>
 						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_strategy_planner.xsl">
@@ -139,7 +139,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Technology Reference')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Technology Reference')"/></td>
 						<td><xsl:value-of select="eas:i18n('Data to support the Strategic Technology Product Selector and technology reference models')"/></td>
 						<td>
 						<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_technology_reference.xsl">
@@ -148,7 +148,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Technology Lifecycles')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Technology Lifecycles')"/></td>
 						<td><xsl:value-of select="eas:i18n('Data to support Technology Product lifecycles, both internal and external')"/></td>
 						<td>
 							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_tech_lifecycles.xsl">
@@ -158,7 +158,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Supplier Contract Management')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Supplier Contract Management')"/></td>
 						<td><xsl:value-of select="eas:i18n('This supports the import of supplier contracts for processes, applications and/or technology')"/></td>
 						<td>
 							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_suppliers.xsl">
@@ -169,7 +169,7 @@
 					</tr>
 					 
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Application KPIs')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Application KPIs')"/></td>
 						<td><xsl:value-of select="eas:i18n('This supports the import of KPis for applications using performance measures')"/></td>
 						<td>
 							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_perf_measures.xsl">
@@ -180,12 +180,32 @@
 					</tr>
 				 
 					<tr>
-						<td><i class="fa fa-file"></i><xsl:value-of select="eas:i18n(' Value Streams')"/></td>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Value Streams')"/></td>
 						<td><xsl:value-of select="eas:i18n('This supports the import of value streams')"/></td>
 						<td>
 							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_value_streams.xsl">
 
 						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10"><xsl:value-of select="eas:i18n('Go to Value Stream Export/Import')"/></div>
+						</a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Value Streams')"/></td>
+						<td><xsl:value-of select="eas:i18n('This supports the import of value streams')"/></td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_launchpadplus_value_streams.xsl">
+
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10"><xsl:value-of select="eas:i18n('Go to Value Stream Export/Import')"/></div>
+						</a>
+						</td>
+					</tr>
+					<tr>
+						<td><i class="fa fa-file"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Business Models')"/></td>
+						<td><xsl:value-of select="eas:i18n('This supports the import of business models')"/><br/><xsl:value-of select="eas:i18n('Note: there are currently no Open Source views using these classes')"/></td>
+						<td>
+							<a class="noUL" href="report?XML=reportXML.xml&amp;XSL=integration/core_el_solution_builder.xsl">
+
+						<div class="downloadBtn btn btn-default bg-primary text-white small bottom-10"><xsl:value-of select="eas:i18n('Go to Business Model Export/Import')"/></div>
 						</a>
 						</td>
 					</tr>

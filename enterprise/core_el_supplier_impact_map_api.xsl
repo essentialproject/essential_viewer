@@ -19,7 +19,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Business_Process', 'Application_Provider', 'Composite_Application_Provider', 'Technology_Product', 'Technology_Provider')"/>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Composite_Application_Provider', 'Technology_Product', 'Technology_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<xsl:variable name="busCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
 	<xsl:variable name="rootBusCaps" select="/node()/simple_instance[type = 'Report_Constant'][own_slot_value[slot_reference = 'name']/value = 'Root Business Capability']"/>
@@ -27,34 +27,7 @@
 
 	<xsl:variable name="rootLevelBusCaps" select="$busCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	<xsl:variable name="supplier" select="/node()/simple_instance[type = 'Supplier']"/>
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product'][own_slot_value[slot_reference = 'supplier_technology_product']/value = $supplier/name]"/>
-	<xsl:variable name="allTPRs" select="/node()/simple_instance[type = 'Technology_Product_Role'][name = $allTechProds/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
-	<xsl:variable name="allTPU" select="/node()/simple_instance[type = 'Technology_Provider_Usage'][own_slot_value[slot_reference = 'provider_as_role']/value = $allTPRs/name]"/>
-	<xsl:variable name="allTBA" select="/node()/simple_instance[type = 'Technology_Build_Architecture'][own_slot_value[slot_reference = 'contained_architecture_components']/value = $allTPU/name]"/>
-
-	<xsl:variable name="allTPB" select="/node()/simple_instance[type = 'Technology_Product_Build'][own_slot_value[slot_reference = 'technology_provider_architecture']/value = $allTBA/name]"/>
-
-	<xsl:variable name="allAppDeps" select="/node()/simple_instance[type = ('Application_Deployment')][own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $allTPB/name]"/>
-	<xsl:variable name="allTechApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'deployments_of_application_provider']/value = $allAppDeps/name]"/>
-    <xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_supplier']/value = $supplier/name] union $allTechApps"/>
- 
-	<xsl:variable name="allAPRs" select="/node()/simple_instance[type = 'Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $allApps/name]"/>
-	<xsl:variable name="allApptoProcsDirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $allApps/name]"/>
-	<xsl:variable name="allAPRstoProcsIndirect" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $allAPRs/name]"/>
-	<xsl:variable name="allAPRstoProcs" select="$allAPRstoProcsIndirect union $allApptoProcsDirect"/>
-	
-	<xsl:variable name="allPhysProcsBase" select="/node()/simple_instance[type = 'Physical_Process']"/>
-	<xsl:variable name="allPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $allAPRstoProcs/name]"/>
-	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process'][own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $allPhysProcs/name]"/>
-	<xsl:variable name="allOrg" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name = $allPhysProcsBase/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-	<xsl:variable name="directOrg" select="/node()/simple_instance[type = 'Group_Actor'][name = $allPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-	<xsl:variable name="allviaActors" select="/node()/simple_instance[type = 'Group_Actor'][own_slot_value[slot_reference = 'actor_plays_role']/value = $allOrg/name]"/>
-
-	<xsl:variable name="allObjectives" select="/node()/simple_instance[type = 'Business_Objective']"/>
-	<xsl:variable name="allStratPlans" select="/node()/simple_instance[type = 'Enterprise_Strategic_Plan'][own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value = $allObjectives/name]"/>
-	<xsl:variable name="allPlannedElements" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION'][name = $allStratPlans/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]"/>
-	<xsl:variable name="allPlannedActions" select="/node()/simple_instance[type = 'Planning_Action'][name = $allPlannedElements/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>
-
+<!--
 	<xsl:variable name="supplierContracts" select="/node()/simple_instance[type = 'OBLIGATION_COMPONENT_RELATION'][own_slot_value[slot_reference = 'obligation_component_to_element']/value = $allTechProds/name or own_slot_value[slot_reference = 'obligation_component_to_element']/value = $allApps/name]"/>
 	<xsl:variable name="alllicenses" select="/node()/simple_instance[type = 'License']"/>
 	<xsl:variable name="contracts" select="/node()/simple_instance[type = 'Compliance_Obligation'][name = $supplierContracts/own_slot_value[slot_reference = 'obligation_component_from_obligation']/value][own_slot_value[slot_reference = 'compliance_obligation_licenses']/value = $alllicenses/name]"/>
@@ -62,14 +35,18 @@
 	<xsl:variable name="actualContracts" select="/node()/simple_instance[type = 'Contract'][own_slot_value[slot_reference = 'contract_uses_license']/value = $licenses/name]"/>
 	<xsl:variable name="licenseType" select="/node()/simple_instance[type = 'License_Type']"/>
 
-
+-->
 	<xsl:variable name="allSites" select="/node()/simple_instance[type = 'Site']"/>
 	<xsl:variable name="geoLocation" select="/node()/simple_instance[type = 'Geographic_Location'][name = $allSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
 	<xsl:variable name="geoCode" select="/node()/simple_instance[type = 'GeoCode'][name = $geoLocation/own_slot_value[slot_reference = 'gl_geocode']/value]"/>
+  
     <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Supplier Impact']"/>
-
-    
-    <!--
+    <xsl:variable name="supplierData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Suppliers']"></xsl:variable>
+    <xsl:variable name="supplierKPI" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Support KPIs']"></xsl:variable>
+	<xsl:variable name="capsAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
+    <xsl:variable name="techProdSuppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
+     <!--<xsl:variable name="techProdSuppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Products and Suppliers']"></xsl:variable>
+   
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
@@ -102,6 +79,27 @@
                 <xsl:with-param name="apiReport" select="$anAPIReport"/>
             </xsl:call-template>
         </xsl:variable>
+        <xsl:variable name="apiPathSupplier">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$supplierData"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathSupplierKPI">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$supplierKPI"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathCaps">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$capsAppsData"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="apiPathTechProds">
+            <xsl:call-template name="GetViewerAPIPath">
+                <xsl:with-param name="apiReport" select="$techProdSuppData"/>
+            </xsl:call-template>
+        </xsl:variable>
+     
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
@@ -117,8 +115,47 @@
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
 				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"/>
+				<script src="js/chartjs/Chart.min.js?release=6.19"></script>
 
 				<style>
+                    .l0-cap{
+						border: 1pt solid #ccc;
+						border-left: 3px solid hsla(200, 80%, 50%, 1);
+						border-bottom: 1px solid #fff;
+						border-radius:5px;
+						box-shadow:1px 1px 3px #e3e3e3;
+						padding: 10px;
+						margin-bottom: 15px;
+						font-weight: 700;
+						position: relative;
+						min-height:70px;
+					}
+					.l1-caps-wrapper{
+						display: flex;
+						flex-wrap: wrap;
+						margin-top: 10px;
+					}
+
+                    .l1-cap,.l2-cap,.l3-cap,.l4-cap{
+						border-bottom: 1px solid #fff;
+						border-radius:5px;
+						box-shadow:1px 1px 3px #e3e3e3;
+						padding: 5px 25px 5px 5px;
+						margin: 0 10px 10px 0;
+						font-weight: 400;
+						position: relative;
+						min-height: 70px;
+						line-height: 1.1em;
+                        font-size:0.9em;
+                        color:#000000 !important;
+                        width:13%;
+                        display:inline-block;
+                        vertical-align:top;
+					}
+                    .sub-cap-label > a{
+                        color:#000000 !important;
+                    }
+
 					.tile-stats{
 						transition: all 300ms ease-in-out;
 						border-radius: 10px 10px 10px 10px;
@@ -365,6 +402,15 @@
                         padding-left: 5px;
                         padding-top: 2px;
                         border-bottom: 1pt solid #d3d3d3;}
+                    
+                    .mini-details {
+                            display: none;
+                            position: relative;
+                            float: left;
+                            width: 100%;
+                            padding: 5px 5px 0 5px;
+                            background-color: #454545;
+                        }
 					
 					.suppName{
 						padding: 5px 10px;
@@ -376,7 +422,7 @@
 					}
 					
 					.planHead{
-						width: 75%;
+						width: 100%;
 						font-size: 12pt;
 						font-weight: bold
 					}
@@ -395,38 +441,266 @@
 					
 					.planDate{
 						float: right;
-						background-color: #f0f0f0;
-						border: 1pt solid #d3d3d3;
-						padding: 3px
+						//background-color: #f0f0f0;
+						//border: 0pt solid #d3d3d3;
+						padding: 3px;
+						position:relative;
+						top:-35px;
+						right:20px
 					}
 					#supplierDiv,#supplierDiv2{
 						overflow-y:scroll;
 						max-height:calc(100vh - 250px);
 						font-size: 90%;
 					}
+                    .supplier-circle{
+                        min-width: 10px;
+						padding: 2px 5px;
+						font-size: 10px;
+						font-weight: 700;
+						line-height: 1;
+                        border: 1pt solid #000000;
+                        background-color:white;
+						text-align: center;
+                        position:absolute;
+                        right:3px;
+                        top:4px;
+						white-space: nowrap;
+						vertical-align: middle;
+						width: 22px;
+						border-radius: 10px;
+						height: 16px;
+                    }
+
+                    .sidenav{
+						height: calc(100vh - 78px);
+						width: 500px;
+						position: fixed;
+						z-index: 1;
+						top: 78px;
+						right: 0;
+						background-color: #f6f6f6;
+						overflow-x: hidden;
+						transition: margin-right 0.5s;
+						padding: 10px 10px 10px 10px;
+						box-shadow: rgba(0, 0, 0, 0.5) -1px 2px 4px 0px;
+						margin-right: -752px;
+					}
+					
+					.sidenav .closebtn{
+						position: absolute;
+						top: 5px;
+						right: 10px;
+						font-size: 14px;
+						margin-left: 50px;
+					}
+					
+					@media screen and (max-height : 450px){
+						.sidenav{
+							padding-top: 53px;
+						}
+					
+						.sidenav a{
+							font-size: 14px;
+						}
+					}
+                    .supplierBox{
+						border-radius: 4px;
+						margin-bottom: 10px;
+						float: left;
+						width: 100%;
+						border: 1px solid #333;
+					}
+					
+					.supplierBox a {
+						color: #fff!important;
+					}
+					
+					.supplierBox a:hover {
+						color: #ddd!important;
+					}
+					
+					.supplierBoxSummary {
+						background-color: #333;
+						padding: 5px;
+						float: left;
+						width: 100%;
+					}
+					
+					.supplierBoxTitle {
+						width: 200px;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+                    #supplierPanel {
+						background-color: rgba(0,0,0,0.85);
+						padding: 10px;
+						border-top: 1px solid #ccc;
+						position: fixed;
+						bottom: 0;
+						left: 0;
+						z-index: 100;
+						width: 100%;
+						height: 350px;
+						color: #fff;
+					}
+                    .closePanelButton{
+                        position:absolute;
+                        right:10px;
+                    }
+                    .esgScoreHolderBox{
+                        position: absolute;
+                        bottom:3px;
+                    }
+                    .esgScoreHolder{
+                        width:25px;
+                        display:inline-block;
+                        position: relative;
+                        bottom:3px;
+                        
+                    }
+                    .topEsg{
+                        width:23px;
+                        background-color: #554d88;
+                        color:white;
+                        border-radius: 4px 4px 0px 0px;
+                        text-align: center;
+                    }
+                    .btmEsg{
+                        width:23px;
+                        background-color: #f0f0f0;
+                        color:#000000;
+                        border-radius: 0px 0px 4px 4px;
+                        text-align: center;
+                    }
+                    .lozenge{
+						position: relative;
+						/* height: 20px; */
+						border-radius: 8px;
+						min-width: 60px;
+						font-size: 11px;
+						line-height: 11px;
+						padding: 2px 4px;
+						border: 2px solid #fff;
+						text-align: center;
+						background-color: grey;
+						color: #fff;
+					}
+                    .esgTitle{
+                        border-radius: 2px;
+                        border-radius: 5px 0px 0px 5px;
+                        margin: 2px;
+                        text-align: center;
+                        background-color: #ffffff;
+                        color: #535353;
+                        font-size: 0.8em;
+                        padding-right: 8px;
+                        padding-left: 2px;
+                        margin-right: -6px;
+                    }
+                    .monopoly-card {
+                        
+                        width: 119px;
+                        border: 2px solid black;
+                        border-radius: 10px;
+                        background-color: #f3f3f3;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        font-family: 'Arial', sans-serif;
+                        margin: 6px;
+                        padding: 3px;
+                        display:inline-block;
+                        height:70px;
+                       
+                        vertical-align: top;
+                    }
+
+                    .card-title {
+                        background-color: #338d16;
+                        color: white;
+                        text-align: center;
+                        padding: -2px;
+                        border-radius: 8px 8px 0 0;
+                        font-weight: bold;
+                        font-size: 0.8em;
+                    }
+
+                    .card-content {
+                        padding: 6px;
+                        text-align: center;
+                        font-size: 0.8em;
+                        height: 43px;
+                        overflow-y: auto;
+                    }
+                   #suppcanvas {
+                        background-color: white;
+                    }
+                    .highlightClass{
+                        background-color: #44a3fb;
+                    }
+                    .keyDiv{
+                        font-size:0.9em;
+                        border-radius:6px;
+                        display:inline-block;
+                        margin:2px;
+                        padding:3px;
+                        padding-left:5px;
+                        padding-right:5px;
+                    }
+                    .contractBox{
+                        border:1pt solid #ffffff;
+                        border-radius:5px;
+                        max-height:160px;
+                        overflow-y: auto;
+                        display: inline-block;
+                        padding:2px;
+                        width:210px;
+                        margin:2px;
+                        background-color:#e3e3e3;
+                        color:#000;
+                    }
+                    
 				</style>
 				<script>
+
                         var suppTemplate;
-                        var capTemplate;
+                        var capTemplate,capHeader;
                         $(document).ready(function() {
                             var suppFragment = $("#supplier-template").html();
                             suppTemplate = Handlebars.compile(suppFragment);
                     
                             var capFragment = $("#capability-template").html();
                             capTemplate = Handlebars.compile(capFragment);
+
+                            var headerFragment = $("#caphead-template").html();
+                            capHeader = Handlebars.compile(headerFragment);
+                            
+
+                            var esgFragment = $("#esg-template").html();
+                            esgScoreTemplate = Handlebars.compile(esgFragment);
+                            
+
+                            var summaryFragment = $("#suppSummaryTemplate").html();
+                            summaryTemplate = Handlebars.compile(summaryFragment);
+                            
+                            var keyFragment = $("#key-template").html();
+                            keyTemplate = Handlebars.compile(keyFragment);
                       
                             var timeFragment = $("#time-template").html();
                             timeTemplate = Handlebars.compile(timeFragment);
+
+                            supplierListFragment = $("#supplierList-template").html();
+			                supplierListTemplate = Handlebars.compile(supplierListFragment);
                             
-                            $('#pickSuppliers').select2({theme: "bootstrap"});
+                            $('#pickSuppliers').select2({width:'250px', theme: "bootstrap"});
                         });
                 </script>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
-				<!--ADD THE CONTENT-->
+                <xsl:call-template name="ViewUserScopingUI"></xsl:call-template> 
+				<!-- ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xs-12">
@@ -440,31 +714,18 @@
 							</div>
 						</div>
 						<xsl:call-template name="RenderDataSetAPIWarning"/>
-					
 						<div class="col-xs-9">
 							<div class="pull-left">
 								<span class="right-10"><strong>Supplier Filter</strong>:</span>
 								<select id="pickSuppliers" class="select2">
 									<option name="All">Choose</option>
-									<xsl:apply-templates select="$supplier" mode="supplierOptions">
-										<xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"/>
-									</xsl:apply-templates>
+									 
 								</select>
 							</div>
 						</div>
 						
 										
-						<div class="col-xs-3">
-							<div class="pull-right">
-								<div id="supplierName" class="suppName bg-darkgrey text-white alignCentre"/>
-								<div class="key small" style="display:none">
-									<span class="right-10 strong">Key:</span>
-									<i class="fa fa-sitemap right-5"/><span class="right-10">Capability</span>
-									<i class="fa fa-desktop right-5"/><span class="right-10">Application</span>
-									<i class="fa fa-server right-5"/><span class="right-10">Technology</span>
-								</div>
-							</div>
-						</div>
+						<div class="key pull-right" id="sqvKey">Key:</div>
 						<div class="col-xs-12 top-15">
 							<div class="clearfix"/>
 							<ul class="nav nav-tabs">
@@ -472,18 +733,17 @@
 									<a data-toggle="tab" href="#cap">Capability Overview</a>
 								</li>
 								<li>
-									<a data-toggle="tab" href="#plans">Planning Overview</a>
+									<a data-toggle="tab" href="#plans">Other Overview</a>
 								</li>
 							</ul>
 
 							<div class="tab-content">
 								<div id="cap" class="tab-pane fade in active">
 									<div class="row">
-										<div class="col-xs-9">
+										<div class="col-xs-12">
+                                            <div class="top-15" id="capabilitiesDivHeader"/>
+                                            
 											<div class="top-15" id="capabilitiesDiv"/>
-										</div>
-										<div class="col-xs-3">
-											<div id="supplierDiv"/>
 										</div>
 									</div>
 								</div>
@@ -502,31 +762,158 @@
 
 							</div>
 						</div>
-						<!-- Modal -->
-						<div class="modal fade" id="modalN" tabindex="-1" role="dialog" aria-labelledby="modalN" aria-hidden="true">
-							<div class="modal-dialog" role="document">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h3>Deployed to this Node</h3>
-									</div>
-									<div class="modal-body">
-										<svg id="svgs" width="100%" height="300"/>
-									</div>
-									<div class="modal-footer">
-										<b>
-											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-										</b>
-									</div>
-								</div>
-							</div>
-                        </div>
+                        
+                        <script id="suppSummaryTemplate" type="text/x-handlebars-template">
+                            <h2>{{this.name}}</h2>
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#mainTab">Summary</a></li>
+                                <li><a data-toggle="tab" href="#processTab">Processes {{#if this.processInfo.0.processes}} {{this.processInfo.0.processes.length}}{{else}}0{{/if}}</a></li>
+                                <li><a data-toggle="tab" href="#appsTab">Applications {{this.apps.length}}</a></li> 
+                                <li><a data-toggle="tab" href="#techTab">Technology {{this.technologies.length}}</a></li> 
+                                <li><a data-toggle="tab" href="#contractsTab">Contracts {{this.contracts.length}}</a></li> 
+                            </ul>
+                        
+                            <div class="tab-content">
+                                <div id="mainTab" class="tab-pane fade in active">
+                                    {{this.name}}
+                                    <br/>
+                                    {{#if this.esgScore}}
+                                    <div class="esgTitle"><xsl:attribute name="style">width:100px;display:inline-block</xsl:attribute> ESG Status </div>
+                                   <div class="lozenge">
+                                    <xsl:attribute name="style">{{#getStyle this.esgScore}}{{/getStyle}};width:150px;display:inline-block</xsl:attribute>
+                                        {{#if this.esgValue}}
+                                        {{this.esgValue}}
+                                        {{else}}
+                                        Not rated
+                                        {{/if}}
+                                    </div>
+                                    <br/>
+                                    <canvas id="suppcanvas"/>
+                                    {{/if}}
+                                </div>
+                                <div id="processTab" class="tab-pane fade in" style="overflow-y:auto">
+                                    {{#if this.processInfo.0.processes}}
+                                    {{#each this.processInfo.0.processes}}
+                                    <div class="monopoly-card">
+                                        <div class="card-title"><xsl:attribute name="style">background-color:#ebca38; color:#000000</xsl:attribute>Process</div>
+                                        <div class="card-content"> {{#essRenderInstanceMenuLink this.busProc}}{{/essRenderInstanceMenuLink}}</div>
+                                    </div>
+                                    {{/each}}
+                                    {{else}}
+                                        No processes impacted
+                                    {{/if}}
+                                </div>
+                                <div id="appsTab" class="tab-pane fade in" style="overflow-y:auto"> 
+                                    {{#each this.apps}}
+                                        <div class="monopoly-card">
+                                            <div class="card-title"><xsl:attribute name="style">background-color:#42ecf5; color:#000000</xsl:attribute>Application</div>
+                                            <div class="card-content"> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+                                        </div>
+                                    {{/each}} 
+                                    {{#if this.appsImpacted}}
+                                    These applications are impacted by the technologies from this supplier<br/>
+                                        {{#each this.appsImpacted}}
+                                            <div class="monopoly-card">
+                                                <div class="card-title"><xsl:attribute name="style">background-color:#42ecf5; color:#000000</xsl:attribute>Application</div>
+                                                <div class="card-content"> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+                                            </div>
+                                        {{/each}} 
+                                    {{/if}}
+                                </div>
+                                <div id="techTab" class="tab-pane fade in" style="overflow-y:auto">
+                                    {{#if this.technologies}}
+                                    {{#each this.technologies}}  
+                                        <div class="monopoly-card">
+                                        <div class="card-title"><xsl:attribute name="style">background-color:#4287f5</xsl:attribute>Technology</div>
+                                        <div class="card-content"> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+                                    </div>
+                                    {{/each}}
+                                    {{else}}
+                                    No technologies in scope 
+                                    {{/if}}
+                                </div>
+                                
+                                <div id="contractsTab" class="tab-pane fade in" style="overflow-y:auto">
+                                    {{#if this.contracts}}
+                                    {{#each this.contracts}} 
+                                    <div class="contractBox">
+                                        Name: {{this.description}}<br/>
+                                        Description: {{this.description}}<br/>
+                                        Start:     {{this.startDate}}<br/>
+                                        Renewal:     {{this.renewalDate}}<br/>
+                                        Model: {{this.renewalModel}}<br/>
+                                        Notice:     {{this.renewalNoticeDays}}<br/>
+                                        Review Days: {{this.renewalReviewDays}}<br/>
+                                    </div>    
+                                    {{/each}}
+                                    {{else}}
+                                        No contract information captured 
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </script>
+                        <script id="supplierList-template" type="text/x-handlebars-template">
+                            <h3>Supplier Information</h3>
+                            {{#each this}}
+                               <div class="supplierBox">
+                                   <xsl:attribute name="easid">{{id}}</xsl:attribute>
+                                   <div class="supplierBoxSummary">
+                                       <div class="supplierBoxTitle pull-left strong" data-toggle="tooltip">
+                                           <xsl:attribute name="title">{{this.name}}</xsl:attribute>
+                                           <i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+                                       </div>
+                                       {{#ifEquals ../this.esgOn true}}
+                                       <div class="lozenge pull-right">
+                                            <xsl:attribute name="style">{{#getStyle this.esgScore}}{{/getStyle}}</xsl:attribute>
+                                                {{#if this.esgValue}}
+                                                {{this.esgValue}}
+                                                {{else}}
+                                                Not rated
+                                                {{/if}}
+                                            </div>
+                                        <div class="esgTitle pull-right">ESG</div>
+                                        {{else}}
+                                        {{/ifEquals}}
+                                   </div>
+                                   <div class="clearfix"/>
+                                   <div class="mini-details">
+                                       <div class="small pull-left text-white">
+                                           <div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{licences.length}} Licenses</div>
+                                           <div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{#if processInfo.0.processes}}{{processInfo.0.processes.length}}{{else}}0{{/if}}  Processes Supported </div>
+                                           <div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{#if appInfo.apps}}{{appInfo.apps.length}}{{else}}0{{/if}} Applications</div>
+                                           <div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{technologies.length}} Technologies</div>
+                                       </div>
+   
+                                           <button class="btn btn-default btn-xs showSupplier pull-right"><xsl:attribute name="easid">{{id}}</xsl:attribute>Show Details</button>
+                                       
+                                   </div>
+                                   <div class="clearfix"/>
+                               </div>
+                           {{/each}}
+                        
+                   </script> 
+						
                         <script>
                         <xsl:call-template name="RenderViewerAPIJSFunction">
                             <xsl:with-param name="viewerAPIPath" select="$apiPath"/>
+                            <xsl:with-param name="viewerAPIPathSupp" select="$apiPathSupplier"/>
+                            <xsl:with-param name="viewerAPIPathSuppKpi" select="$apiPathSupplierKPI"/>
+                            <xsl:with-param name="viewerAPIPathCaps" select="$apiPathCaps"/>
+                            <xsl:with-param name="viewerAPIPathTechProds" select="$apiPathTechProds"/>
                         </xsl:call-template>
                 </script>
 					</div>
 				</div>
+                <div id="appSidenav" class="sidenav">
+                    <a href="javascript:void(0)" class="closebtn text-default" onclick="closeNav()">
+                        <i class="fa fa-times"></i>
+                    </a>
+                    <div id="supplierList"/>
+                </div>
+                <div class="supplierPanel" id="supplierPanel">
+                    <i class="fa fa-times closePanelButton left-30"></i>
+                    <div id="summaryDetails"/>
+                </div>
 				<!-- modal -->
 				<xsl:call-template name="supHandlebarsTemplate"/>
 				<xsl:call-template name="capHandlebarsTemplate"/>
@@ -536,15 +923,15 @@
 			</body>
 		</html>
 	</xsl:template>
+  
 	<xsl:template name="timeHandlebarsTemplate">
 		<script id="time-template" type="text/x-handlebars-template">
     {{#each this}}
-      
         <div class="planHead" style="margin:5px;padding:3px;border-left:3px solid #cc1919;border-radius:3px;min-height:70px;box-shadow:5px 5px 5px #d3d3d3;padding-bottom:15px:"><span style="color:gray">Plan: </span>{{this.name}}<br/>
+			<small> From: {{this.fromDate}} to {{this.endDate}} </small><br/>
             <div class="planName planBody"> {{this.impactType}} {{{this.impactName}}} <i> uses </i>   <b>{{{this.app}}}</b></div>
-            
             <div class="planDate planBody">
-            {{#if actionRqdA}}<button class="btn btn-success">{{this.actionRqdA}}</button> <button class="btn btn-danger">{{this.actionRqdC}}</button>{{/if}} <xsl:text> </xsl:text><button class="btn btn-info">{{this.impactAction}}</button></div>
+            {{#if actionRqdA}}<button class="btn btn-success btn-xs">{{this.actionRqdA}}</button> <button class="btn btn-danger btn-xs">{{this.actionRqdC}}</button>{{/if}} <xsl:text> </xsl:text><button class="btn btn-info btn-xs">{{this.impactAction}}</button></div>
             </div>
         <div class="clearfix"/>
 {{/each}}
@@ -555,10 +942,10 @@
 		<script id="supplier-template" type="text/x-handlebars-template">
          
             {{#each apps}}
-                <div><xsl:attribute name="class">appList elementName</xsl:attribute><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-desktop"/>  <span style="font-size:1.1em ">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+                <div><xsl:attribute name="class">appList elementName</xsl:attribute><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-desktop"/>  <span style="font-size:1.1em ">{{{this.name}}}</span>
                     
                 {{#each capabilitiesImpacted}}
-                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{{this.name}}} 
                         <i class="fa fa-info-circle impAppsTrigger" data-toggle="popover" data-placement="bottom"/>
                         <div class="hidden popupTitle">
                           <span class="fontBlack uppercase">
@@ -567,7 +954,7 @@
                         </div>
                         <div class="hidden popupContent">
                             {{#each processes}}
-                                <i class="fa fa-circle-o"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>
+                                <i class="fa fa-circle-o"/> {{{this.name}}}<br/>
                             {{/each}}
                         </div>
                     
@@ -577,11 +964,11 @@
             
           
             {{#each technologies}}
-            <div class="appList elementName"><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-server"/> <span style="font-size:1.1em">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+            <div class="appList elementName"><xsl:attribute name="data-easid">{{this.id}}</xsl:attribute> <i class="fa fa-server"/> <span style="font-size:1.1em"> {{{this.name}}}</span>
             {{#each impacted}}
                 
                  {{#each caps}}
-                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+                    <div><xsl:attribute name="class">appCapList cap{{this.id}}</xsl:attribute><i class="fa fa-sitemap"/> {{{this.name}}}
                         <i class="fa fa-info-circle impAppsTrigger" data-toggle="popover" data-placement="bottom"/>
                         <div class="hidden popupTitle">
                           <span class="fontBlack uppercase">
@@ -590,7 +977,7 @@
                         </div>
                         <div class="hidden popupContent">
                             {{#each processes}}
-                                <i class="fa fa-circle-o"/> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>
+                                <i class="fa fa-circle-o"/> {{{this.name}}}<br/>
                             {{/each}}
                         </div>
                     
@@ -599,7 +986,7 @@
                 {{/each}}
              {{#each impacted}}    
                 {{#each apps}}
-                <div><xsl:attribute name="class">appListtech</xsl:attribute><i class="fa fa-desktop"/>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div> 
+                <div><xsl:attribute name="class">appListtech</xsl:attribute><i class="fa fa-desktop"/> {{{this.name}}}</div> 
                 {{/each}}    
                 
             {{/each}}    
@@ -611,7 +998,11 @@
 
 
 	<xsl:template name="capHandlebarsTemplate">
-		<script id="capability-template" type="text/x-handlebars-template">
+        <script id="caphead-template" type="text/x-handlebars-template">
+           <a class="scrollDiv"><xsl:attribute name="href">#{{this.id}}</xsl:attribute><xsl:attribute name="easHtmId">{{this.id}}</xsl:attribute><label class="label label-primary capLabels"><xsl:attribute name="easHeadId">{{this.id}}</xsl:attribute>{{this.name}}</label></a> 
+        </script>
+        
+		<script id="capability-template-old" type="text/x-handlebars-template">
             <div><xsl:attribute name="class">col-xs-12 capBox</xsl:attribute><div class="refModel-l0-title fontBlack large">{{name}}</div>
                     <div class="clearfix"/>
                      {{#each this.subCaps}}
@@ -623,6 +1014,52 @@
                 </div>
              <div class="clearfix"/>
         </script>
+        <script id="key-template" type="text/x-handlebars-template">
+            <b>ESG Key</b>:<xsl:text> </xsl:text>
+            {{#each this}}
+                <div class="keyDiv"><xsl:attribute name="style">background-color:{{this.elementBackgroundColour}};color:{{this.elementColour}}</xsl:attribute> {{this.value}}</div>
+            {{/each}}
+        </script>
+        
+        <script id="esg-template" type="text/x-handlebars-template">
+            <div class="esgScoreHolderBox">
+                {{#if this.esgScoreCounts}}
+                    {{#each this.esgScoreCounts}} 
+                        <div class="esgScoreHolder">
+                            <div class="topEsg"><xsl:attribute name="style">{{#getStyle this.score}}{{/getStyle}}</xsl:attribute>
+                                {{this.score}}
+                            </div>
+                            <div class="btmEsg">
+                                {{this.count}}
+                            </div>
+                        </div> 
+                    {{/each}}
+                {{/if}}
+            </div>
+        </script>
+        <script id="capability-template" type="text/x-handlebars-template">
+            <div class="l0-cap"><xsl:attribute name="id">{{id}}</xsl:attribute> 
+                <span class="cap-label">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+                <span class="supplier-circle" data-toggle="tooltip">
+                    <xsl:attribute name="supplierId">{{id}}</xsl:attribute>
+                    {{#getSupplierInfo this}}{{/getSupplierInfo}} 
+                </span>   
+                <br/>
+                {{#each this.subCaps}}     
+                    <div class="l1-cap bg-darkblue-40 buscap"><xsl:attribute name="eascapid">{{id}}</xsl:attribute><xsl:attribute name="id">{{id}}</xsl:attribute>
+                    <div class="sub-cap-label">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+                     
+                    <span class="supplier-circle" data-toggle="tooltip">
+                        <xsl:attribute name="supplierId">{{id}}</xsl:attribute>
+                    </span>  
+                    <span class="esg-rating" data-toggle="tooltip">
+                        <xsl:attribute name="esgId">{{id}}</xsl:attribute>
+                    </span>   
+                        </div>	
+                    {{/each}}        
+            </div>
+        </script>
+    
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getMarkers">
@@ -633,54 +1070,7 @@
 		<xsl:variable name="long" select="$thisgeoCode/own_slot_value[slot_reference = 'geocode_longitude']/value"/>
 		<xsl:if test="$lat"> {latLng: [<xsl:value-of select="$lat"/>,<xsl:value-of select="$long"/>], name: '<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisgeoLocation"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>', style: {fill: '#faa053'}, id:'<xsl:value-of select="$thisgeoLocation/own_slot_value[slot_reference = 'gl_identifier']/value"/>'},</xsl:if>
 	</xsl:template>
-	<xsl:template match="node()" mode="getApps">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisApps" select="$allApps"/>
-		<xsl:apply-templates select="$thisApps" mode="appList"/>
-	</xsl:template>
-	<xsl:template match="node()" mode="getNodes">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'deployments_of_application_provider']/value = current()/name]"/>
-		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = $thisApps/name]"/>
-		
-		<xsl:variable name="thisApptoProcsDirect" select="$allApptoProcsDirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = $thisApps/name]"/>
- 
-	 
-		<xsl:variable name="thisAPRstoProcsIndirect" select="$allAPRstoProcsIndirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
-		<xsl:variable name="thisAPRstoProcs" select="$thisAPRstoProcsIndirect union $thisApptoProcsDirect"/>
-		
-		<xsl:variable name="thisPhysProcs" select="$allPhysProcs[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
-		<xsl:apply-templates select="$thisBusProcs" mode="getProcesses"/>
-	</xsl:template>
-	<xsl:template match="node()" mode="getProcesses">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[name = $this/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
-		<xsl:variable name="thisOrgs" select="$allOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-		<xsl:variable name="thisdirectOrg" select="$directOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-		<xsl:variable name="thisviaActors" select="$allviaActors[own_slot_value[slot_reference = 'actor_plays_role']/value = $thisOrgs/name]"/>
-		<xsl:variable name="thisIsActors" select="$thisviaActors | $thisdirectOrg"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "teams":[ <xsl:apply-templates select="$thisIsActors" mode="Teams"/>]}, </xsl:template>
-	<xsl:template match="node()" mode="appList"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>"}, </xsl:template>
-	<xsl:template match="node()" mode="Teams"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "teams":[]}, </xsl:template>
-	<xsl:template match="node()" mode="options">
-		<xsl:variable name="this" select="current()"/>
-		<option value="{$this/name}">
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</option>
-	</xsl:template>
-	<xsl:template match="node()" mode="supplierOptions">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisid" select="eas:getSafeJSString(current()/name)"/>
-		<option id="{$thisid}"><xsl:attribute name="value"><xsl:value-of select="current()/name"/></xsl:attribute>
-			<xsl:attribute name="data-easid">
-				<xsl:value-of select="eas:getSafeJSString(current()/name)"/>
-			</xsl:attribute>
-			<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>
-		</option>a
-	</xsl:template>
+
 	<xsl:template match="node()" mode="busCaps">
 		<xsl:variable name="this" select="current()"/>
 		<xsl:variable name="subCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","subCaps":[ <xsl:apply-templates select="$subCaps" mode="subCaps"/>]}, </xsl:template>
@@ -693,102 +1083,32 @@
 		<xsl:variable name="relatedCaps" select="$busCaps[name = current()/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","num":<xsl:value-of select="$num"/>}, <xsl:if test="$num &lt; 10"><xsl:apply-templates select="$relatedCaps" mode="relatedCaps"><xsl:with-param name="num" select="$num + 1"/></xsl:apply-templates></xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="supplier">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisTechProds" select="$allTechProds[own_slot_value[slot_reference = 'supplier_technology_product']/value = $this/name]"/>
-		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'ap_supplier']/value = $this/name]"/> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "technologies":[<xsl:apply-templates select="$thisTechProds" mode="supplierTech"/>], "apps":[<xsl:apply-templates select="$thisApps" mode="supplierApp"/>],"licences":[<xsl:if test="$thisApps"><xsl:apply-templates select="$thisApps" mode="productList"/></xsl:if><xsl:if test="$thisTechProds"><xsl:apply-templates select="$thisTechProds" mode="productList"/></xsl:if>]}, </xsl:template>
-
-
-	<xsl:template match="node()" mode="supplierTech"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>","impacted":[<xsl:apply-templates select="$this" mode="TechCaps"/>]},</xsl:template>
-
-	<xsl:template match="node()" mode="TechCaps"><xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisTPRs" select="$allTPRs[name = $this/own_slot_value[slot_reference = 'implements_technology_components']/value]"/>
-		<xsl:variable name="thisTPU" select="$allTPU[own_slot_value[slot_reference = 'provider_as_role']/value = $thisTPRs/name]"/>
-		<xsl:variable name="thisTBA" select="$allTBA[own_slot_value[slot_reference = 'contained_architecture_components']/value = $thisTPU/name]"/>
-		<xsl:variable name="thisTPB" select="$allTPB[own_slot_value[slot_reference = 'technology_provider_architecture']/value = $thisTBA/name]"/>
-		<xsl:variable name="thisAppDeps" select="$allAppDeps[own_slot_value[slot_reference = 'application_deployment_technical_arch']/value = $thisTPB/name]"/>
-		<xsl:variable name="thisTechApps" select="$allTechApps[own_slot_value[slot_reference = 'deployments_of_application_provider']/value = $thisAppDeps/name]"/>
-		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = $thisTechApps/name]"/>
-		<xsl:variable name="thisAPRstoProcs" select="$allAPRstoProcs[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
-		<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
-		<xsl:variable name="thisBusCaps" select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]"/> {"apps":[<xsl:apply-templates select="$thisTechApps" mode="stdImpact"/>]}, {"processes":[<xsl:apply-templates select="$thisBusProcs" mode="stdImpact"/>]}, {"caps":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>]}, </xsl:template>
-
-
-	<xsl:template match="node()" mode="supplierApp"><xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisAPRs" select="$allAPRs[own_slot_value[slot_reference = 'role_for_application_provider']/value = current()/name]"/>
-		<xsl:variable name="thisApptoProcsDirect" select="$allApptoProcsDirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value = current()/name]"/>
- 
-	 
-		<xsl:variable name="thisAPRstoProcsIndirect" select="$allAPRstoProcsIndirect[own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value = $thisAPRs/name]"/>
-		<xsl:variable name="thisAPRstoProcs" select="$thisAPRstoProcsIndirect union $thisApptoProcsDirect"/>
-		
-		 
-		<xsl:variable name="thisPhysProcs" select="$allPhysProcsBase[own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value = $thisAPRstoProcs/name]"/>
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value = $thisPhysProcs/name]"/>
-		<xsl:variable name="thisBusCaps" select="$busCaps[name = $thisBusProcs/own_slot_value[slot_reference = 'realises_business_capability']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>","license":"tbc","capabilitiesImpacted":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact"><xsl:with-param name="thisBusProcs" select="$thisBusProcs"/></xsl:apply-templates>],
-		"debugD":"<xsl:value-of select="$thisApptoProcsDirect/own_slot_value[slot_reference = 'relation_name']/value"/>",
-		"debugI":"<xsl:value-of select="$thisAPRstoProcsIndirect/own_slot_value[slot_reference = 'relation_name']/value"/>" },</xsl:template>
-
-	<xsl:template match="node()" mode="stratPlans"><xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisStratPlans" select="$allObjectives[name = $this/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value]"/>
-		<xsl:variable name="thisPlannedElements" select="$allPlannedElements[name = $this/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>", "fromDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", "endDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>", "impacts":[<xsl:apply-templates select="$thisPlannedElements" mode="planImpact"/>], "objectives":[<xsl:apply-templates select="$thisStratPlans" mode="stdImpact"/>] }, </xsl:template>
-
-	<xsl:template match="node()" mode="planImpact"><xsl:variable name="this" select="current()"/><xsl:variable name="thisPlannedActions" select="$allPlannedActions[name = $this/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","impacted_element":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"/>","planned_action":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisPlannedActions"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>"},</xsl:template>
-
-	<xsl:template match="node()" mode="stdImpact"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","simplename":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>"},</xsl:template>
-
-	<xsl:template match="node()" mode="capImpact"><xsl:param name="thisBusProcs"/><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","name":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-		</xsl:call-template>","processes":[<xsl:apply-templates select="$thisBusProcs" mode="stdImpact"/>]},</xsl:template>
-
-	<xsl:template match="node()" mode="productList">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisSupplierContracts" select="$supplierContracts[own_slot_value[slot_reference = 'obligation_component_to_element']/value = $this/name]"/>
-		<xsl:variable name="thisContracts" select="$contracts[name = $thisSupplierContracts/own_slot_value[slot_reference = 'obligation_component_from_obligation']/value]"/>
-		<xsl:choose>
-			<xsl:when test="$thisContracts">
-				<xsl:variable name="thisLicenses" select="$licenses[name = $thisContracts/own_slot_value[slot_reference = 'compliance_obligation_licenses']/value]"/>
-				<xsl:variable name="thisActualContract" select="$actualContracts[own_slot_value[slot_reference = 'contract_uses_license']/value = $thisLicenses/name]"/>
-				<xsl:variable name="period" select="$thisLicenses/own_slot_value[slot_reference = 'license_months_to_renewal']/value"/>
-				<xsl:variable name="endYear" select="functx:add-months(xs:date(substring($thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value, 1, 10)), $period)"/>
-				<!--<xsl:variable name="remaining" select="days-from-duration(xs:duration($endYear - current-date()))"/>
-    <xsl:variable name="Year" select="year-from-date(xs:date($endYear))"/> 
-    <xsl:variable name="Month" select="month-from-date(xs:date($endYear))"/> 
-    <xsl:variable name="Day" select="day-from-date(xs:date($endYear))"/> -->
-				<xsl:if test="$thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value"> {"id":"<xsl:value-of select="translate($this/name, '.', '')"/>","productSimple":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","product": "<xsl:call-template name="RenderInstanceLinkForJS">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="anchorClass">text-black</xsl:with-param>
-					</xsl:call-template>","oid":"<xsl:value-of select="$this/name"/>","debug":"<xsl:value-of select="$this/name"/>", "Contract":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisContracts"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","Licence":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisLicenses"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>","LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>","licenseOnContract":"<xsl:value-of select="$thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value"/>",<!--"YearsOnContract":"<xsl:value-of select="($thisLicenses/own_slot_value[slot_reference='license_months_to_renewal']/value)div 12"/>","licenseCostContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_deal_cost']/value, '##,###,###')"/>","licenseUnitPriceContract":"<xsl:value-of select="format-number($thisActualContract/own_slot_value[slot_reference='contract_unit_cost']/value, '##,###,###')"/>","month":"<xsl:value-of select="$Month"/>","year":"<xsl:value-of select="$Year"/>","EndDate":"<xsl:value-of select="$Day"/>/<xsl:value-of select="$Month"/>/<xsl:value-of select="$Year"/>","remaining":<xsl:value-of select="$remaining"/>,"rembgColor":
-    "<xsl:choose><xsl:when test="$remaining &lt; 0">red</xsl:when>
-    <xsl:when test="$remaining > 0 and $remaining &lt; 180">#f4c96a</xsl:when>
-    <xsl:otherwise>#98d193</xsl:otherwise></xsl:choose>"-->"debug2":"", "dateISO":"<xsl:value-of select="$endYear"/>"}, </xsl:if>
-			</xsl:when>
-		</xsl:choose>
-    </xsl:template>
     
     <xsl:template name="RenderViewerAPIJSFunction">
         <xsl:param name="viewerAPIPath"/>
+        <xsl:param name="viewerAPIPathSupp"/>
+        <xsl:param name="viewerAPIPathSuppKpi"/>
+        <xsl:param name="viewerAPIPathCaps"/>
+        <xsl:param name="viewerAPIPathTechProds"/>
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
-		<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
+        var viewAPIDataSupp = '<xsl:value-of select="$viewerAPIPathSupp"/>';
+        var viewAPIDataSuppKPI = '<xsl:value-of select="$viewerAPIPathSuppKpi"/>';
+        var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>';
+        var viewAPIDataTechProd = '<xsl:value-of select="$viewerAPIPathTechProds"/>';
+
+        var capabilityInfoArray; 
+        var supplierJSON;
+        var esgOn=false;
+		var plansJSON;
+        
         var promise_loadViewerAPIData = function(apiDataSetURL) {
             return new Promise(function (resolve, reject) {
                 if (apiDataSetURL != null) {
                     var xmlhttp = new XMLHttpRequest();
-//console.log(apiDataSetURL);    
+                //console.log(apiDataSetURL);    
                     xmlhttp.onreadystatechange = function () {
                         if (this.readyState == 4 &amp;&amp; this.status == 200) {
-//console.log(this.responseText);  
+            //console.log(this.responseText);  
                             var viewerData = JSON.parse(this.responseText);
                             resolve(viewerData);
                         }
@@ -803,267 +1123,733 @@
                 }
             });
         };
-
+        <xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
+        var style, supplierPms, sqvs;
         $(document).ready(function() {
-        promise_loadViewerAPIData(viewAPIData)
-            .then(function(response) {		
-                let data = response;
+            $('#supplierPanel').hide();
+
+            Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+			}); 
+
+            Handlebars.registerHelper('getSupplierInfo', function(instance) {
+                
+            })
+            Handlebars.registerHelper('getStyle', function(instance) {
+                
+                 if(instance){}else{
+                    instance=0
+                }
+                    let thisStyle= style?.sqvs?.find((s)=>{
+                        return s.score==instance;
+                    }) 
+                    if(thisStyle){
+                        return 'background-color:'+ thisStyle.elementBackgroundColour +';color:'+thisStyle.elementColour;
+                    }
+                    else{
+                        return 'background-color:#ffffff;color:#000';
+                    }
+                
+            })
+
+           
+        Promise.all([ 
+				promise_loadViewerAPIData(viewAPIData), 
+                promise_loadViewerAPIData(viewAPIDataSupp), 
+                promise_loadViewerAPIData(viewAPIDataSuppKPI), 
+                promise_loadViewerAPIData(viewAPIDataCaps), 
+                promise_loadViewerAPIData(viewAPIDataTechProd)
+                ]).then(function(response) {		
+                let data = response[0];
+			  
 				$('#ess-data-gen-alert').hide();
                 var focusSupplier=[];
-    supplierJSON=data.suppliers;
-    capabilityJSON=data.capabilities;
-    plansJSON=data.plans;       
-	
+        let apptech=response[4].application_technology;
+
+
+        supplierJSON=data.suppliers.sort((a, b) => {
+            if (a.name &lt; b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });;
+
+      // Create a map for quick lookup of suppliers by technology ID
+        const supplierMap = new Map();
+        supplierJSON.forEach(s => {
+            s.technologies.forEach(t => {
+                supplierMap.set(t.id, { id: s.id, name: s.name });
+            });
+        });
+
+        // Optimized mapping
+        const appToTechnology = apptech.map(item => {
+            // Directly constructing the products array with supplier info
+            const products = item.environments.flatMap(env =>
+                env.products.map(prod => {
+                    const supplier = supplierMap.get(prod.prod) || {};
+                    return {
+                        ...prod,
+                        supplierId: supplier.id,
+                        supplierName: supplier.name
+                    };
+                })
+            );
+
+            return { id: item.id, name: item.name, products };
+        });
+
+ 
+
+        const suppliersGrouped = [];
+
+        appToTechnology.forEach(app => {
+            app.products.forEach(product => {
+                if (product.supplierId) {
+                    // Find or create the supplier entry
+                    let supplierEntry = suppliersGrouped.find(s => s.id === product.supplierId);
+                    if (!supplierEntry) {
+                        supplierEntry = {
+                            id: product.supplierId,
+                            name: product.supplierName,
+                            apps: [],
+                            products: []
+                        };
+                        suppliersGrouped.push(supplierEntry);
+                    }
+
+                    // Add the app to the supplier, if not already included
+                    if (!supplierEntry.apps.some(a => a.id === app.id)) {
+                        supplierEntry.apps.push({ id: app.id, name: app.name });
+                    }
+
+                    // Add the product to the supplier, if not already included
+                    if (!supplierEntry.products.some(p => p.id === product.id)) {
+                        supplierEntry.products.push({ id: product.id, name: product.name });
+                    }
+                }
+            });
+        });
+
+        supplierJSON.forEach((e)=>{
+            $('#pickSuppliers').append('&lt;option value="'+e.id+'">'+e.name+'&lt;/option>');    
+        })
+        capabilityJSON=data.capabilities;
+        plansJSON=data.plans;      
+        esgStyle=response[2].serviceQualities 
+        supplierPms=response[2];
+        let name = "ESG Rating"; // Ensure this is set correctly
+        if(esgStyle[0]){
+          style = esgStyle.find(s => s.name === name);
+          sqvs = esgStyle[0].sqvs;
+          esgOn=true;
+        }else{
+            style ={};
+            sqvs=[];
+        }
+        if(sqvs){ 
+            sqvs = sqvs.sort((a, b) => parseInt(a.score) - parseInt(b.score));
+         $('#sqvKey').html(keyTemplate(sqvs))
+        }
       capabilityJSON.forEach(function(d){
         d['boxHeight']=((Math.floor(d.subCaps.length / 7)+1) * 55)+20;
       })
-      
-	//console.log(capabilityJSON);
+
+      //find apps for suppliers
+
+      function addBusinessCapabilityIdsToSuppliers(supplierApps, supplierProcesses, businessCapabilities, technologyMap) {
+         
+        // Iterate through each supplier
+        supplierApps.forEach(supplier => {
+            // Initialize an array to store matched business capability IDs
+            supplier.matchedBusinessCapabilities = [];
+    
+            // Check each app of the supplier
+            supplier.apps.forEach(supplierApp => {
+                // Compare with each business capability
+                businessCapabilities.forEach(businessCapability => {
+                    // Check if the business capability contains the app ID
+                    const hasApp = businessCapability.apps.some(businessAppId => businessAppId === supplierApp.id);
+    
+                    // If the app is found, add the business capability ID to the supplier
+                    if (hasApp) {
+                        supplier.matchedBusinessCapabilities.push(businessCapability.id);
+                    }
+                });
+            });
+        });
+
+        technologyMap.forEach(supplier => {
+            // Initialize an array to store matched business capability IDs
+            supplier.matchedBusinesstechCapabilities = [];
+    
+            // Check each app of the supplier
+            supplier.apps.forEach(supplierApp => {
+                // Compare with each business capability
+                businessCapabilities.forEach(businessCapability => {
+                    // Check if the business capability contains the app ID
+                    const hasApp = businessCapability.apps.some(businessAppId => businessAppId === supplierApp.id);
+    
+                    // If the app is found, add the business capability ID to the supplier
+                    if (hasApp) {
+                        supplier.matchedBusinesstechCapabilities.push(businessCapability.id);
+                    }
+                });
+            });
+       
+        })
+
+        
+
+        supplierProcesses.forEach(supplier => {
+            // Initialize an array to store matched business capability IDs
+            supplier.matchedBusinessCapabilitiesProcess = [];
+
+            // Check each app of the supplier
+            supplier.processes?.forEach(supplierProcess => {
+
+                // Compare with each business capability
+                businessCapabilities.forEach(businessCapability => { 
+                    // Check if the business capability contains the app ID
+                    const hasProcess = businessCapability.allProcesses
+                    .some((businessProcessId) => {
+
+                    if( businessProcessId.id === supplierProcess.busProc.id){
+                        supplier.matchedBusinessCapabilitiesProcess.push(businessCapability.id);
+                    }
+                        return businessProcessId.id === supplierProcess.busProc.id});
+                    
+                    // If the app is found, add the business capability ID to the supplier
+                    if (hasProcess) {
+                
+                        supplier.matchedBusinessCapabilitiesProcess.push(businessCapability.id);
+                    }
+                });
+            });
+
+            ;
+        });
+    
+     }
+
+    // ADD TECHNOLOGY
+    addBusinessCapabilityIdsToSuppliers(response[1].suppliersApps, response[1].suppliersProcess, response[3].busCaptoAppDetails, suppliersGrouped);
+    
+    // TO DO group apps for caps and children caps
+
+
+    supplierJSON.forEach(supplier => {
+
+        // Find apps for the current supplier by ID
+        let apps = response[1].suppliersApps.filter(app => app.id.replace(/\./g, "_") === supplier.id.replace(/\./g, "_"));
+        if(apps){apps=apps[0]}
+        // Find processes for the current supplier by ID
+        let processes = response[1].suppliersProcess.filter((process) => {
+
+            let sa=process.supplierActor.replace(/\./g, "_")
+           return sa === supplier.id})
+        
+
+        if(processes){processes=processes}
+        let tech = suppliersGrouped.filter(tech => tech.id.replace(/\./g, "_") === supplier.id.replace(/\./g, "_"));
+        let tech0
+        if(tech){
+            tech0=tech[0]
+            let techApps = tech0?.apps.map(item => {
+                    return { ...item, className: "Composite_Application_Provider" };
+                    });
+            supplier['appsImpacted']=techApps;
+            
+        }
+
+        // Add apps and processes to the supplier
+
+        let mergedArray = [
+        ...(apps?.matchedBusinessCapabilities || []),
+        ...(processes?.matchedBusinessCapabilitiesProcess || []),
+        ...(tech0?.matchedBusinesstechCapabilities || [])
+    
+        ];
+
+        supplier.appInfo = apps;
+        supplier.processInfo = processes;
+        supplier.techInfo = tech;
+        supplier['allCaps']=mergedArray;
+    });
+   
+    // Now response[0].suppliers contains the merged data
+ 
+    function getMostRecentESGRatings(suppliers) {
+        return suppliers.map(supplier => {
+
+            supplier.perfMeasures.forEach(measure => {
+                if (!measure.categoryid &amp;&amp; measure.serviceQuals.length > 0) {
+                    measure.categoryid = measure.serviceQuals[0].categoryId[0] || '';
+                }
+            });
+            // Filter performance measures to include only those with 'ESG Ratings'
+ 
+            let esgMeasures = supplier.perfMeasures
+            .filter(measure => 
+                measure.serviceQuals.some(qual => 
+                    Array.isArray(qual.categoryName) ?
+                        qual.categoryName.includes('ESG Ratings') || qual.categoryName.includes('App Fit') :
+                        qual.categoryName === 'ESG Ratings' || qual.categoryName === 'App Fit'
+                )
+            );
+        
+    
+            // Check if esgMeasures is empty
+            if (esgMeasures.length === 0) {
+                // If empty, you can choose to skip this supplier or return a default value
+                return null; // or provide a default object structure
+            }
+    
+            // Find the most recent measure
+            let mostRecentMeasure = esgMeasures.reduce((latest, current) => 
+                new Date(latest.date) > new Date(current.date) ? latest : current);
+    
+            // Extract the relevant data from the most recent measure
+            let mostRecentQual = mostRecentMeasure.serviceQuals
+            .find(qual => 
+                Array.isArray(qual.categoryName) ?
+                    qual.categoryName.includes('ESG Ratings') :
+                    qual.categoryName === 'ESG Ratings'
+            );
+        
+    
+            return {
+                supplierId: supplier.id,
+                score: mostRecentQual ? mostRecentQual.score : 'No score',
+                value: mostRecentQual ? mostRecentQual.value : 'No value',
+                esgid:mostRecentQual ? mostRecentQual.id : 'none',
+            };
+        }).filter(result => result !== null); // Filter out null values if you chose to return null for empty esgMeasures
+    }
+
+    function updateSuppliersWithESGRatings(supplierJSON, result) {
+        result.forEach(res => {
+            let matchingSupplier = supplierJSON.find(supplier => supplier.id === res.supplierId);
+            if (matchingSupplier) {
+                // Assuming you want to add score and value at the supplier level
+                matchingSupplier.esgScore = res.score;
+                matchingSupplier.esgValue = res.value;
+            }
+        });
+        return supplierJSON;
+    }
+    
+    
+    let result = getMostRecentESGRatings(response[2].suppliers);
+
+    let updatedSuppliers = updateSuppliersWithESGRatings(supplierJSON, result);
+  //  console.log('updatedSuppliers',updatedSuppliers)
+    let capabilitySuppliers = {};
+    supplierJSON.forEach(supplier => {
+    
+        supplier.allCaps.forEach(capId => {
+            if (!capabilitySuppliers[capId]) {
+                capabilitySuppliers[capId] = new Set();
+            }
+            // Convert esgScore to a number, default to 0 if NaN
+            const esgScore = Number(supplier.esgScore);
+            capabilitySuppliers[capId].add({
+                "id": supplier.id,
+                "name": supplier.name,
+                "className": "Supplier",
+                "esgScore": isNaN(esgScore) ? 0 : esgScore
+            });
+           
+        });
+    });
+    
+
+    capabilityInfoArray = Object.keys(capabilitySuppliers).map(key => {
+        const suppliers = Array.from(capabilitySuppliers[key]);
+   
+        let result = setSuppliers(suppliers)
+    
+        return {
+            capId: key,
+            count: result.filteredSuppliers.length,
+            supplierNames: result.filteredSuppliers,
+            esgScoreCounts:result.esgScoreCounts // New format for ESG score counts
+        };
+    });
  
       capabilityJSON.forEach(function(d){
-      
+        $("#capabilitiesDivHeader").append(capHeader(d))
         $("#capabilitiesDiv").append(capTemplate(d));
-        })
-      
-      $('#pickSuppliers').change(function(){
-       $("#supplierDiv").empty();$("#supplierName").empty();
-       $("#supplierDiv2").empty();$("#supplierName").empty();
-      $('.key').show();
-        clearHighlight();
-        $('.busRefModel-blob').css('background-color','#f8f8f8')
-        let supid=$('#pickSuppliers').find(':selected').data('easid');
-        var thisSupplier=supplierJSON.filter(function(d){
-    
-                return d.id==supid;
-            })
-          //  console.log(supid)
-          //  console.log(supplierJSON)
-           // console.log(thisSupplier)
-//console.log(thisSupplier);	
-        $("#supplierName").append(thisSupplier[0].name)
-        $("#supplierDiv").append(suppTemplate(thisSupplier[0]));
-        $("#supplierDiv2").append(suppTemplate(thisSupplier[0]));
-
-
-        $('.elementName').on('mouseover',function(){
-            let focus=$(this).data('easid');
-
- 
-        })
-        focusSupplier=thisSupplier[0];
-            thisSupplier[0].apps.forEach(function(d){
-                 d.capabilitiesImpacted.forEach(function(e){  
-                        capabilityJSON.forEach(function(c1){
-                                 c1.subCaps.forEach(function(c2){
-                                    if(c2.id===e.id){$('.'+c2.id).css('background-color','#00c4ff');
-                                        }
-                                     c2.relatedCaps.forEach(function(c3){
-                                        if(c3.id===e.id){$('.'+c2.id).css('background-color','#00c4ff');
-                                                    }
-                                                })
-                                            })
-                                        })
-                                    })
-                            })
-
-                thisSupplier[0].technologies.forEach(function(d){
-        
-                 d.impacted.forEach(function(im){  
-     
- 
-      if(im.caps){   im.caps.forEach(function(e,i){ 
-                        capabilityJSON.forEach(function(c1){
-                                 c1.subCaps.forEach(function(c2){
-                                    if(c2.id===e.id){$('.'+c2.id).css('background-color','#00c4ff');
-                                        }
-                                     c2.relatedCaps.forEach(function(c3){
-                                        if(c3.id===e.id){$('.'+c2.id).css('background-color','#00c4ff');
-                                                    }
-                                                })
-                                            })
-                                        })
-                                    })    
-                                  }
-                                })
-                            })
-      <!-- ADDS INDICATOR TO LEFT THAT THE CAPABILITY IS IMPACTED BY AN APP  -->
-      $('.appList').mouseout(function(){
-        $('.busRefModel-blob').css({'border-bottom':'1pt solid #aaa','box-shadow': 'none'}).fadeTo(1000, 1);
       })
-                    $('.appList').mouseover(function(){
-                    var focusCap = $(this).data('easid');
-                    var thisApp=thisSupplier[0].apps.filter(function(d){
-                            return d.id===focusCap
-                        });
 
-let tech=$(this).data('easid')
-        if(!(thisApp[0])){
-                       let pickedTech=thisSupplier[0].technologies.filter(function(d){
-                           return d.id==tech;
-                       })      ;
-                       pickedTech[0].impacted.forEach(function(i){
-                        if(i.capAscendents){
-                            let thisO=Object.keys(i);
-                            i[thisO].forEach((e)=>{;
-                                $("."+e).css({'border-bottom':'3pt solid green','box-shadow': '5px 5px 5px #ccc'})
-                            })
-                        }
-                    })
-                }
-        
+      $('.scrollDiv').on('click', function(event) {
+                let ele=$(this).attr('easHtmId')
+          
+                event.preventDefault(); // Prevent the default anchor behavior
+                const targetDiv = document.getElementById(ele);
+                if (targetDiv) { 
+                    window.scrollTo(0, targetDiv.offsetTop  ); // Scrolls to 40px above the div
+                }  
+            });
 
-
-      if( thisApp[0]){
-		 
-                    thisApp[0].capAscendents?.forEach(function(e){ 
-						if(e!=''){
-                     	   $("."+e).css({'border-bottom':'3pt solid green','box-shadow': '5px 5px 5px #ccc'})
-						}
-                    })
-                        }
-                    })
-                    
-     <!-- CLEARS INDICATOR  --> 
-      
-      
-                    $('.appCapList').mouseover(function(){ 
-                        clearHighlight();  
-                    });
-      
-                    $('[data-toggle="popover"]').popover(
-                        {
-                            container: 'body',
-                            html: true,
-                            trigger: 'click',
-                            title: function ()
-                            {
-                                return $(this).next('.popupTitle').html();
-                            },
-                            content: function ()
-                            {
-                                return $(this).next().next('.popupContent').html();
-                            }
-                        });
-					
-						$(document).on('click', function(e) {
-							// Check if the click is outside the popover
-							if (!$(e.target).closest('.popover').length &amp;&amp; !$(e.target).is('[data-toggle="popover"]')) {
-								$('[data-toggle="popover"]').popover('hide');
-							}
-						});	
-      
-                    sortSupplierPlans(thisSupplier);
-      
-                     })
-     let selected="<xsl:value-of select="$param1"/>";
-		 
-		if(selected!=''){
-			$('#pickSuppliers').val(selected).trigger('change');
-
-		}
-      
-      function clearHighlight(){
-                        $('.busRefModel-blob').css({'border-bottom':'1pt solid #aaa','box-shadow': '0px 0px 0px #000000','perspective': '0px'});    
-      } 
-      
-     function sortSupplierPlans(supplierInfo){
-       $("#supplierTime").empty();
-        var plans=[];
-        supplierInfo[0].apps.forEach(function(d){
-           
-        plansJSON.forEach(function(e){
-                e.impacts.forEach(function(ef){
-      
-                if(ef.impacted_element===d.id){e['impactName']=d.name;e['impactId']=d.id;e['impactType']='';e['impactAction']=ef.planned_action;plans.push(e)}
-
-            d.capabilitiesImpacted.forEach(function(c){
-                if(c.id===ef.impacted_element){e['impactName']=c.name;e['impactId']=c.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The capability'; plans.push(e)}
+        essInitViewScoping(redrawView,['SYS_CONTENT_APPROVAL_STATUS'],"", true);
             
-            c.processes.forEach(function(p){
-                if(p.id===ef.impacted_element){e['impactName']=p.name;e['impactId']=p.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The process';plans.push(e)}
-                        });
-                    });
-                });
-           });  
-        });
-      
-
-        supplierInfo[0].technologies.forEach(function(d){
-            plansJSON.forEach(function(e){
-                e.impacts.forEach(function(ef){
-      
-                if(ef.impacted_element===d.id){e['impactName']='The organisation ';e['app']=d.name;e['impactId']=d.id;e['impactType']='';e['impactAction']=ef.planned_action;plans.push(e)}
-                d.impacted.forEach(function(i){
-                    if(i.apps){
-                          i.apps.forEach(function(a1){
-                          if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The application';plans.push(e)}  
-                          })  
-                        }
-                    if(i.processes){
-                          i.processes.forEach(function(a1){
-                          if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The process';plans.push(e)}  
-                          })  
-                        }
-                    if(i.caps){
-                          i.caps.forEach(function(a1){
-                          if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The capability';plans.push(e)}  
-                          })  
-                        } 
-      
-                      })
-                
-            });
-           });
-
-            });
-     
-       supplierInfo[0].licences.forEach(function(d){
-        var supLicencePlans=[]; 
-          supLicencePlans['name']='Licence Renewal of '+d.productSimple +' due '+ d.dateISO;
-          supLicencePlans['impactName']='The organisation ';
-          supLicencePlans['impactId']=d.id;
-          supLicencePlans['impactAction']='Renewal';
-          supLicencePlans['app']=d.product;
-          supLicencePlans['impactType']='';
-          supLicencePlans['endDate']=d.dateISO
-          supLicencePlans['actionRqdA']='Renew';
-          supLicencePlans['actionRqdC']='Cancel';
-            plans.push(supLicencePlans) 
-      })
-      supplierInfo[0].techlicences.forEach(function(d){
-        var supLicencePlans=[]; 
-          supLicencePlans['name']='Licence Renewal of '+d.productSimple +' due '+ d.dateISO;
-          supLicencePlans['impactName']='The organisation ';
-          supLicencePlans['impactId']=d.id;
-          supLicencePlans['impactAction']='Renewal';
-          supLicencePlans['app']=d.product;
-          supLicencePlans['impactType']='';
-          supLicencePlans['endDate']=d.dateISO
-          supLicencePlans['actionRqdA']='Renew';
-          supLicencePlans['actionRqdC']='Cancel';
-            plans.push(supLicencePlans) 
-      })
-        
-        //console.log(plans)
-        let plans_array_tech = plans.filter(function(elem, index, self) {
-                return index == self.indexOf(elem);
-            });
-        plans_array_tech.sort(SortByDate);
-        $("#supplierTime").append(timeTemplate(plans_array_tech))
-        };
-      
         });
 
 		
          })
-           
+         
+         var supplierInfo = {
+            "className": "supplier",
+            "label": 'Supplier',
+            "icon": 'fa-truck'
+        }
+ 
+         var redrawView=function(){
+            essResetRMChanges(); 
+    
+           let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+         
+           let scopedSuppliers= essScopeResources(supplierJSON, [visibilityDef], supplierInfo);
+      
+        
+            let workingCapInfoArray=[];
+            capabilityInfoArray.forEach((c)=>{
+                let filteredSup = c.supplierNames.filter(supp1 => 
+                scopedSuppliers.resourceIds.some(supp2 => supp2 === supp1.id));
+ 
+                let res=setSuppliers(filteredSup)
+        
+                workingCapInfoArray.push({
+                    "capId":c.capId,
+                    "count":res.filteredSuppliers.length,
+                    "esgScoreCounts": res.esgScoreCounts,
+                    "supplierNames":res.filteredSuppliers,
+                    })
+                     
+            });
 
+            workingCapInfoArray.forEach((c)=>{ 
+                $('[supplierId='+ c.capId +']').text(c.count);
+                if(esgOn==true){
+                $('[esgId='+ c.capId +']').html(esgScoreTemplate(c))
+                }
+            })
+            
+            $('.supplier-circle').on('click',function(){
+                let capId = $(this).attr('supplierId'); // Assuming jQuery is used
+                let selected = workingCapInfoArray.find(c => c.capId === capId);
+                 
+                if (selected) {
+                    let suppliers = selected.supplierNames.map(s => {
+                        return scopedSuppliers.resources.find(sd => s.id === sd.id) || {}; // Fallback to an empty object if not found
+                    }).filter(supplierDetails => Object.keys(supplierDetails).length > 0); // Filter out any empty objects                
+                    if(esgOn==true){
+                        suppliers['esgOn']=true;
+                       }
+
+                    $('#supplierList').html(supplierListTemplate(suppliers))
+                    openNav(); 
+
+                    $('.showSupplier').on('click',function(){
+                        let selectedSupplier=$(this).attr('easid');
+
+                        let match=supplierPms.suppliers.find((e)=>{
+                            return e.id == selectedSupplier;
+                        })
+                         
+                        const pmGroups = match.perfMeasures.reduce((groups, measure) => {
+						const category = supplierPms.perfCategory.find((c) => c.id === measure.categoryid);
+						const groupName = category ? category.name : 'Unknown';
+						const group = groups.find((g) => g.key === measure.categoryid);
+						
+						if (group) {
+						  group.values.push(measure);
+						} else {
+						  groups.push({ key: measure.categoryid, name: groupName, values: [measure] });
+						}
+						
+						return groups;
+					  }, []);
+					  
+					   
+					  let pmAv=[];
+					  pmGroups.forEach((p)=>{
+					  let averages = p.values.map(value => {
+						// Get the sum of the scores for each date.
+						let sum = value.serviceQuals.reduce((total, qual) => {
+							return total + Number(qual.score);
+						}, 0);
+					
+						// Calculate the average by dividing the sum by the number of scores.
+						let average = sum / value.serviceQuals.length;
+					
+						// Return the date and the average score for that date.
+						return {
+							date: value.date,
+							averageScore: average
+						};
+					});
+					pmAv.push({"id":p.key,"name":p.name,"av":averages, "svs":p.values})
+						  
+				})
+	
+				 
+                let supplierToShow={"id":match.id,"name":match.instance, "pms":pmAv}
+                let chartColours =["#003f5c", "#58508d", "#bc5090","#ff6361","#ffa600", "#00876c", "#46966f", "#6ca675", "#8fb47d", "#afc389", "#cfd198", "#eee0ab", "#eac98e", "#e7b175", "#e49762", "#e17c56", "#dc5f50","#d43d51"]
+								 
+                let chartLabels=[];
+                let maxValforScale=3;
+                let labels =[]
+                let chartData=[];
+
+                    supplierToShow.pms.forEach((p)=>{
+                    
+                        if(p.av){
+                            p.av.forEach((sv)=>{
+                                labels.push(sv.date)
+                                chartData.push(sv.averageScore)
+                            })
+                        }
+                    })
+             
+                    let chosenSupplier=suppliers.find((s)=>{
+                        return s.id == selectedSupplier
+                    })
+                
+                        $('#summaryDetails').html(summaryTemplate(chosenSupplier))
+                        $('.supplierPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
+ 
+                        $('.closePanelButton').on('click',function(){ 
+                            $('.supplierPanel').hide();
+                        });
+ 
+                         
+                    if (esgOn == true) { 
+
+                        function initializeChart() {
+                           
+                            var canvas = document.getElementById('suppcanvas');
+                            if (canvas &amp;&amp; canvas.getContext) {
+                                var ctx = canvas.getContext('2d');
+                                var chartId = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: "ESG Score By Date",
+                                            data: chartData,
+                                            backgroundColor: "#ffffff",
+                                            borderColor: 'black',
+                                            borderWidth: 2,
+                                            pointRadius: 5,
+                                            fill: false,
+                                        }],
+                                    },
+                                    options: {
+                                        responsive: false, // Set true if you want the chart to be responsive
+                                        scales: {
+                                            yAxes: [{
+                                                ticks: {
+                                                    beginAtZero: true,
+                                                    min: 0,
+                                                    font: {
+                                                        size: 8
+                                                    },
+                                                    callback: function (value) {
+                                                        if (Number.isInteger(value)) {
+                                                            return value;
+                                                        }
+                                                    },
+                                                }
+                                            }],
+                                            xAxes: [{
+                                                ticks: {
+                                                    font: {
+                                                        size: 8
+                                                    },
+                                                },
+                                            }],
+                                        },
+                                        legend: {
+                                            labels: {
+                                                font: {
+                                                    size: 10
+                                                }
+                                            }
+                                        }
+                                    },
+                                });
+                            }
+                        } 
+
+                        function waitForCanvas() {
+                            var canvas = document.getElementById('suppcanvas');
+                    
+                            if (!canvas) {
+                                // Canvas not available yet, wait for a bit and then try again
+                          
+                                setTimeout(waitForCanvas, 500); // Adjust the timeout as needed
+                            } else {
+                                initializeChart();
+                            }
+                        }
+               
+                        waitForCanvas();
+                    }
+
+
+
+                    })
+                } 
+            })
+
+
+            $('#pickSuppliers').on('change', function(){
+                let selected = $(this).val();
+
+                let supp=supplierJSON.find((c)=>{
+                    return c.id==selected
+                })
+ 
+               
+                $('.l1-cap').removeClass('highlightClass')
+                $('.capLabels').removeClass('label-primary').addClass('label-default')
+                supp.allCaps.forEach((e)=>{
+                   
+                    $('.l1-cap[eascapid="'+e+'"]').addClass('highlightClass')
+                
+                    let parent=$('#'+e +' .l1-cap').parent('div').attr('id');
+                    if(parent){
+                        //easHeadId
+                        $('.capLabels[easHeadId="'+parent+'"]').addClass('label-primary')
+                    }
+
+                })
+			
+			let plans=[];	
+
+			supp.apps.forEach(function(d){
+				plansJSON.forEach(function(e){
+					e.impacts.forEach(function(ef){
+		  
+					if(ef.impacted_element===d.id){e['impactName']=d.name;e['impactId']=d.id;e['impactType']='';e['impactAction']=ef.planned_action;plans.push(e)}
+	
+				d.capabilitiesImpacted.forEach(function(c){
+					if(c.id===ef.impacted_element){e['impactName']=c.name;e['impactId']=c.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The capability'; plans.push(e)}
+				
+				c.processes.forEach(function(p){
+					if(p.id===ef.impacted_element){e['impactName']=p.name;e['impactId']=p.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The process';plans.push(e)}
+							});
+						});
+					});
+			   });  
+
+               
+			});
+			supp.technologies.forEach(function(d){
+				plansJSON.forEach(function(e){
+					e.impacts.forEach(function(ef){
+		  
+					if(ef.impacted_element===d.id){e['impactName']='The organisation ';e['app']=d.name;e['impactId']=d.id;e['impactType']='';e['impactAction']=ef.planned_action;plans.push(e)}
+					d.impacted.forEach(function(i){
+						if(i.apps){
+							  i.apps.forEach(function(a1){
+							  if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The application';plans.push(e)}  
+							  })  
+							}
+						if(i.processes){
+							  i.processes.forEach(function(a1){
+							  if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The process';plans.push(e)}  
+							  })  
+							}
+						if(i.caps){
+							  i.caps.forEach(function(a1){
+							  if(a1.id===ef.impacted_element){e['impactName']=a1.name;e['impactId']=a1.id;e['impactAction']=ef.planned_action;e['app']=d.name;e['impactType']='The capability';plans.push(e)}  
+							  })  
+							} 
+		  
+						  })
+					
+				});
+			   });
+	
+			});
+
+			let plans_array_tech = plans.filter(function(elem, index, self) {
+                return index == self.indexOf(elem);
+            });
+			plans_array_tech.sort(SortByDate);
+	 
+            console.log('plans_array_tech',plans_array_tech)
+			$("#supplierTime").empty();
+			$("#supplierTime").append(timeTemplate(plans_array_tech))
+
+
+
+            })
+         }
+
+    
        function SortByDate(x,y) {
           return ((x.endDate == y.endDate) ? 0 : ((x.endDate > y.endDate) ? 1 : -1 ));
         }
 
+        function openNav()
+		{	
+             
+			document.getElementById("appSidenav").style.marginRight = "0px";
+		}
+		
+		function closeNav()
+		{
+			workingCapId=0;
+			document.getElementById("appSidenav").style.marginRight = "-752px";
+		}
+	
+		/*Auto resize panel during scroll*/
+		$('window').scroll(function() {
+			if ($(this).scrollTop() &gt; 40) {
+				$('#appSidenav').css('position','fixed');
+				$('#appSidenav').css('height','calc(100%)');
+				$('#appSidenav').css('top','0');
+			}
+			if ($(this).scrollTop() &lt; 40) {
+				$('#appSidenav').css('position','fixed');
+				$('#appSidenav').css('height','calc(100% - 40px)');
+				$('#appSidenav').css('top','78px');
+			}
+		});
+
+        function toggleMiniPanel(element){
+			$(element).parent().parent().nextAll('.mini-details').slideToggle();
+			$(element).toggleClass('fa-caret-right');
+			$(element).toggleClass('fa-caret-down');
+		};
+
+        function setSuppliers(sup){
+            let filteredSuppliers=sup.filter((obj, index, self) => {
+                return self.findIndex(t => t.id === obj.id) === index;
+                });
 
 
+            const esgScoreCountsTemp = filteredSuppliers.reduce((acc, supplier) => {
+                const score = supplier.esgScore;
+                acc[score] = (acc[score] || 0) + 1;
+                return acc;
+            }, {});
+        
+            // Convert to the desired format
+            const esgScoreCounts = Object.keys(esgScoreCountsTemp).map(score => ({
+                score: parseInt(score),
+                count: esgScoreCountsTemp[score]
+            }));
+
+            return {
+                    filteredSuppliers:filteredSuppliers, 
+                    esgScoreCounts: esgScoreCounts
+                }
+        }
+       
     </xsl:template>
     <xsl:template name="GetViewerAPIPath">
         <xsl:param name="apiReport"/>

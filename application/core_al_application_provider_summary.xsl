@@ -647,7 +647,7 @@
 					    display: flex;
 					    justify-content: center;
 					}
-					​​​​​​​​​​​ #editor-spinner{
+					#editor-spinner{
 					    height: 100vh;
 					    width: 100vw;
 					    position: fixed;
@@ -657,12 +657,12 @@
 					    background-color: hsla(255, 100%, 100%, 0.75);
 					    text-align: center;
 					}
-					​​​​​​​​​​​ #editor-spinner-text{
+					#editor-spinner-text{
 					    width: 100vw;
 					    z-index: 999999;
 					    text-align: center;
 					}
-					​​​​​​​​​​​ .spin-text{
+				.spin-text{
 					    font-weight: 700;
 					    animation-duration: 1.5s;
 					    animation-iteration-count: infinite;
@@ -670,7 +670,7 @@
 					    color: #aaa;
 					    float: left;
 					}
-					​​​​​​​​​​​ .spin-text2{
+					.spin-text2{
 					    font-weight: 700;
 					    animation-duration: 1.5s;
 					    animation-iteration-count: infinite;
@@ -958,6 +958,10 @@
 					  .whiteLabel a{
 						color: #ffffff !important;
 					  }
+					  .lbl-lrg{
+						font-size:1.1em;
+						background-color:#424242;
+					  }
 				</style>
 				 
 			</head>
@@ -999,7 +1003,7 @@
 						<div class="modal-dialog modal-xl">
 							<div class="modal-content">
 								<div class="modal-header"> 
-									<h4 class="modal-title">Application Analysis</h4>
+									<h4 class="modal-title">eas:i18n('Application Analysi')"/></h4>
 								</div>
 								<div class="modal-body">
 									<div class="col-xs-3">
@@ -1014,7 +1018,7 @@
 								</div>
 								<div class="clearfix"/>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal">eas:i18n('Close')"/></button>
 								</div>
 							</div>
 						</div>
@@ -1126,79 +1130,79 @@
 					<!-- Nav tabs -->
 					<ul class="nav nav-tabs tabs-left">
 						<li class="active">
-							<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Details</a>
+							<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Details')"/></a>
 						</li> 
 						{{#if this.allServices.0.serviceName}}	
 						<li>
-							<a href="#appservices" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Services</a>
+							<a href="#appservices" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Services')"/></a>
 						</li> 
 						{{/if}}
 						
 						{{#if this.processInfo}}	
 						<li>
-							<a href="#appProcesses" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Business Processes</a>
+							<a href="#appProcesses" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Business Processes')"/></a>
 						</li> 
 						{{/if}}
 						{{#if this.inIList}}
 						<li>
-								<a href="#appIntegration" data-toggle="tab" id="appIntTab"><i class="fa fa-fw fa-tag right-10"></i>Integrations</a>
+								<a href="#appIntegration" data-toggle="tab" id="appIntTab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></a>
 							</li> 
 						{{else}}
 						{{#if this.outIList}}
 						<li>
-							<a href="#appIntegration" data-toggle="tab" id="appIntTab"><i class="fa fa-fw fa-tag right-10"></i>Integrations</a>
+							<a href="#appIntegration" data-toggle="tab" id="appIntTab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></a>
 						</li> 
 						{{/if}}
 						{{/if}}
 						{{#if this.applicationTechnology.db}}	
 						<li>
-							<a href="#appTech" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Technology</a>
+							<a href="#appTech" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Technology')"/></a>
 						</li> 
 						{{else}}
 						{{#if this.applicationTechnology.environments}}
 							<li>
-								<a href="#appTech" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Technology</a>
+								<a href="#appTech" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Technology')"/></a>
 							</li> 
 						{{/if}}
 						{{/if}}
 						{{#if this.costs}}	
 						<li>
-							<a href="#appcosts" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Cost</a>
+							<a href="#appcosts" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Cost')"/></a>
 						</li> 
 						{{/if}}
 						{{#if this.dataObj}}	
 						<li>
-							<a href="#appdata" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Data</a>
+							<a href="#appdata" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Data')"/></a>
 						</li> 
 						{{/if}}
 						{{#if this.lifecycles}}	
 						<li>
-							<a href="#appLifecycle" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Lifecycle</a>
+							<a href="#appLifecycle" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Lifecycle')"/></a>
 						</li> 
 						{{/if}}
 						{{#if this.pm}}	
 						<li>
-							<a href="#appKpis" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application KPIs</a>
+							<a href="#appKpis" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application KPIs')"/></a>
 						</li> 
 						{{/if}}
 						{{#if this.issues}}
 						<li>
-							<a href="#issues" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Issues</a>
+							<a href="#issues" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Issues')"/></a>
 						</li>
 						{{/if}}
 						{{#if this.plans}}
 						<li>
-							<a href="#appPlans" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Plans &amp; Projects</a>
+							<a href="#appPlans" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></a>
 						</li>
 						{{/if}}
 						{{#if this.otherEnums}}
 						<li>
-							<a href="#otherEnums" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Other</a>
+							<a href="#otherEnums" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Other')"/></a>
 						</li>
 						{{/if}}
 						{{#if this.documents}}
 						<li>
-							<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Documents</a>
+							<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Documents')"/></a>
 						</li>
 						{{/if}}
 					</ul>
@@ -1208,27 +1212,27 @@
 					<!-- Tab panes -->
 					<div class="tab-content">
 						<div class="tab-pane active" id="details">
-							<h2 class="print-only"><i class="fa fa-fw fa-desktop right-10"></i>Application Details</h2>
+							<h2 class="print-only"><i class="fa fa-fw fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Details')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Application</h3>
-									<label>Name</label>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application')"/></h3>
+									<label><xsl:value-of select="eas:i18n('Name')"/></label>
 									<div class="ess-string">{{this.name}}</div>
 									<div class="clearfix bottom-10"></div>
-									<label>Description</label>
-									<div class="ess-string">{{this.description}}</div>
+									<label><xsl:value-of select="eas:i18n('Description')"/></label>
+									<div class="ess-string">{{{breaklines this.description}}}</div>
 									<div class="clearfix bottom-10"></div>
 									{{#if this.ap_business_criticality}}
-									<label>Business Criticality</label>
+									<label><xsl:value-of select="eas:i18n('Business Criticality')"/></label>
 									<div class="ess-string">{{#getInfo this.ap_business_criticality 'Business_Criticality'}}{{/getInfo}}</div>
 									<div class="clearfix bottom-10"></div>
 									{{/if}}
 									{{#if this.supplier}}
-									<label>Application Supplier</label>
+									<label><xsl:value-of select="eas:i18n('Application Supplier')"/></label>
 									<div class="ess-string">{{#essRenderInstanceMenuLink this.supplier}}{{/essRenderInstanceMenuLink}}</div>
 									{{/if}}
 									{{#if this.family}}
-									<label>Application Family</label>
+									<label><xsl:value-of select="eas:i18n('Application Family')"/></label>
 									<ul class="ess-list-tags">
 										{{#each this.family}}
 										<li class="family-tag" style="background-color: rgb(68, 182, 179)">{{this.name}}</li>
@@ -1239,17 +1243,17 @@
 									 
 								</div>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-users right-10"></i>Key Information</h3>
+									<h3 class="text-primary"><i class="fa fa-users right-10"></i><xsl:value-of select="eas:i18n('Key Information')"/></h3>
 							 
-									<label>Lifecycle Status</label>
+									<label><xsl:value-of select="eas:i18n('Lifecycle Status')"/></label>
 									<div class="bottom-10">
 											{{#if this.lifecycle_status_application_provider}}
 											 {{#getInfo this.lifecycle_status_application_provider 'Lifecycle_Status'}}{{/getInfo}} 
 											{{else}}
-											<span class="label label-warning">Not Set</span>
+											<span class="label label-warning"><xsl:value-of select="eas:i18n('Not Set')"/></span>
 											{{/if}}
 									</div>
-									<label>Codebase</label>
+									<label><xsl:value-of select="eas:i18n('Codebase')"/></label>
 									<div class="bottom-10">
 											{{#if this.ap_codebase_status}}
 											 {{#getInfo this.ap_codebase_status 'Codebase_Status'}}{{/getInfo}} 
@@ -1257,7 +1261,7 @@
 											<span class="label label-warning">Not Set</span>
 											{{/if}}
 									</div>
-									<label>Delivery Model</label>
+									<label><xsl:value-of select="eas:i18n('Delivery Model')"/></label>
 									<div class="bottom-10">
 											{{#if this.ap_delivery_model}} 
 											{{#getInfo this.ap_delivery_model 'Application_Delivery_Model'}}{{/getInfo}}  
@@ -1265,7 +1269,7 @@
 											<span class="label label-warning">Not Set</span>
 											{{/if}}
 									</div>
-									<label>Disposition</label>
+									<label><xsl:value-of select="eas:i18n('Disposition')"/></label>
 									<div class="bottom-10">
 											{{#if this.ap_disposition_lifecycle_status}} 
 											{{#getInfo this.ap_disposition_lifecycle_status 'Disposition_Lifecycle_Status'}}{{/getInfo}}  
@@ -1274,7 +1278,7 @@
 											<span class="label label-warning">Not Set</span>
 											{{/if}}
 									</div>
-									<label>Purpose</label>
+									<label><xsl:value-of select="eas:i18n('Purpose')"/></label>
 									<div class="bottom-10">
 											{{#if this.application_provider_purpose}}  
 											{{#each this.application_provider_purpose}}
@@ -1289,7 +1293,7 @@
 								</div>
 								{{#if this.stakeholders}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-building right-10"></i>Ownership</h3>
+									<h3 class="text-primary"><i class="fa fa-building right-10"></i><xsl:value-of select="eas:i18n('Ownership')"/></h3>
 									 
 										{{#each this.stakeholders}}
 											{{#ifContains this 'Owner'}}{{/ifContains}}
@@ -1300,7 +1304,7 @@
 								{{#if this.children}}
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-sites right-10"></i>Contained Applications</h3>
+									<h3 class="text-primary"><i class="fa fa-sites right-10"></i><xsl:value-of select="eas:i18n('Contained Applications')"/></h3>
 									{{#each this.children}}
 									<span class="label label-eas" style="border-bottom:2pt solid #0078ff59">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
 									{{/each}}
@@ -1310,14 +1314,14 @@
 								<div class="col-xs-12"/>
 								{{#if this.classifications}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>Relevant Regulations</h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 									<div>
-										<b>Mapped via Data Objects:</b>
+										<b><xsl:value-of select="eas:i18n('Mapped via Data Objects')"/>:</b>
 										{{#each this.classifications}}<span class="label label-info   right-10" style="background-color: #476ecc">{{this.name}}</span>{{/each}}
 									</div>
 									{{#if this.regulations}}
 									<div>
-										<b>Mapped directly to application: </b>
+										<b><xsl:value-of select="eas:i18n('Mapped directly to application')"/>: </b>
 										{{#each this.regulations}}<span class="label label-info right-5" style="background-color: #476ecc">{{this.name}}</span>{{/each}}
 									</div>
 									{{/if}}
@@ -1325,7 +1329,7 @@
 								{{else}}
 									{{#if this.regulations}}
 									<div class="superflex">
-										<h3 class="text-primary"><i class="fa fa-list-alt right-10" style="background-color: #476ecc"></i>Relevant Regulations</h3>
+										<h3 class="text-primary"><i class="fa fa-list-alt right-10" style="background-color: #476ecc"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 										{{#each this.regulations}}
 											<span class="label label-info right-5">{{this.name}}</span>
 										{{/each}}
@@ -1336,7 +1340,7 @@
 								<div class="col-xs-12"/>
 								{{#if this.stakeholdersList}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>People &amp; Roles</h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('People &amp; Roles')"/></h3>
 									
 									<table class="table table-striped table-bordered" id="dt_stakeholders">
 											<thead>
@@ -1390,7 +1394,7 @@
 								{{/if}}
 								{{#if this.orgStakeholdersList}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>Organisations &amp; Roles</h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Organisations &amp; Roles')"/></h3>
 									
 									<table class="table table-striped table-bordered" id="dt_stakeholders2">
 											<thead>
@@ -1449,9 +1453,9 @@
 							<div class="parent-superflex">
 								<div class="superflex">
 									<div>
-										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Integrations</h3>
-										<p>High-level integration view of <u>application-level</u> integrations.  See detailed view for a higher level of granularity, including APIs and data flow information.</p>
-										<div class="pull-right"><button class="btn btn-success interfaceButton"><xsl:attribute name="easid">{{this.id}}</xsl:attribute>View Integration Detail</button></div>
+										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></h3>
+										<p><xsl:value-of select="eas:i18n('High-level integration view of')"/> <u><xsl:value-of select="eas:i18n('application-level')"/></u> <xsl:value-of select="eas:i18n('integrations.  See detailed view for a higher level of granularity, including APIs and data flow information.')"/></p>
+										<div class="pull-right"><button class="btn btn-success interfaceButton"><xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:value-of select="eas:i18n('View Integration Detail')"/></button></div>
 									</div>						 
 									<div id="svgBox">
 										<svg width="800px" height="600px"/>
@@ -1463,17 +1467,17 @@
 						
 						{{#if this.dataObj}}	
 						<div class="tab-pane" id="appdata2">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Data Attributes</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Data Attributes')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Data Attributes</h3>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Data Attributes')"/></h3>
 									<p>Attributes for this data object</p>
 									<table id="dt_dobjecttable" class="table table-striped table-bordered" >
 									<thead>
 										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Type</th>
+											<th><xsl:value-of select="eas:i18n('Name')"/></th>
+											<th><xsl:value-of select="eas:i18n('Description')"/></th>
+											<th><xsl:value-of select="eas:i18n('Type')"/></th>
 										</tr>
 										 
 									</thead>
@@ -1488,9 +1492,9 @@
 									</tbody>
 									<tfoot>
 										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Type</th>
+											<th><xsl:value-of select="eas:i18n('Name')"/></th>
+											<th><xsl:value-of select="eas:i18n('Description')"/></th>
+											<th><xsl:value-of select="eas:i18n('Type')"/></th>
 										</tr>
 									</tfoot>
 									</table>
@@ -1502,18 +1506,18 @@
 						
 						{{#if this.processInfo}}	
 						<div class="tab-pane" id="appProcesses">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Business Process Supported</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Business Process Supported')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Business Process Supported</h3>
-									<p>The application supports these business processes</p>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Business Process Supported')"/></h3>
+									<p><xsl:value-of select="eas:i18n('The application supports these business processes')"/></p>
 									<table id="dt_processtable" class="table table-striped table-bordered table-compact" >
 									<thead>
 										<tr>
-											<th>Process</th>
-											<th>Organisation</th>
-											<th>Service</th>
-											<th>Route</th>
+											<th><xsl:value-of select="eas:i18n('Process')"/></th>
+											<th><xsl:value-of select="eas:i18n('Organisation')"/></th>
+											<th><xsl:value-of select="eas:i18n('Service')"/></th>
+											<th><xsl:value-of select="eas:i18n('Route')"/></th>
 										</tr>
 										 
 									</thead>
@@ -1534,10 +1538,10 @@
 									</tbody>
 									<tfoot>
 										<tr>
-											<th>Process</th>
-											<th>Organisation</th>
-											<th>Service</th>
-											<th>Route</th>
+											<th><xsl:value-of select="eas:i18n('Process')"/></th>
+											<th><xsl:value-of select="eas:i18n('Organisation')"/></th>
+											<th><xsl:value-of select="eas:i18n('Service')"/></th>
+											<th><xsl:value-of select="eas:i18n('Route')"/></th>
 										</tr>
 									</tfoot>
 									</table>
@@ -1548,12 +1552,12 @@
 						{{/if}}
 						{{#if this.applicationTechnology}}	
 						<div class="tab-pane" id="appTech">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Application Technology</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Technology')"/></h2>
 							<div class="parent-superflex">
 								{{#if this.db}}
 								<div class="superflex">
-										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Databases</h3>
-										<p>The databases this application is using</p>
+										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Databases')"/></h3>
+										<p><xsl:value-of select="eas:i18n('The databases this application is using')"/></p>
 										
 									{{#each this.db}}
 										<i class="fa fa-database"></i>
@@ -1564,10 +1568,10 @@
 								{{/if}}
 								{{#if this.applicationTechnology.environments}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Application Technology</h3>
-									<div class="pull-left">The technology supporting this application, by environment</div>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Technology')"/></h3>
+									<div class="pull-left"><xsl:value-of select="eas:i18n('The technology supporting this application, by environment')"/></div>
 									<div class="pull-right">
-										<strong>Standards Key:</strong>
+										<strong><xsl:value-of select="eas:i18n('Standards Key')"/>:</strong>
 										{{#if this.stdkey}}
 											{{#each this.stdkey}}
 												<div class="keyStandard pull-right"><xsl:attribute name="style">background-color:{{this.colour}};color:{{this.colourText}}</xsl:attribute>{{this.name}}</div>
@@ -1592,15 +1596,15 @@
 														{{#each this.standards}}
 														<i class="fa fa-circle fa-fw"><xsl:attribute name="style">color:{{this.statusBgColour}}</xsl:attribute></i>
 														{{/each}} 
-														<div class="pull-right left-5">Standards 
+														<div class="pull-right left-5"><xsl:value-of select="eas:i18n('Standards')"/> 
 															<a tabindex="-1" class="popover-trigger" data-toggle="popover" style="color:#333;">
 																<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
 																<i class="fa fa-info-circle"></i>
 															</a>
 															<div class="popover">
-																<h5 class="strong">Standards</h5>
+																<h5 class="strong"><xsl:value-of select="eas:i18n('Standards')"/></h5>
 																<table class="table table-striped standardsTable">
-																	<tr><th width="200px">Status</th><th width="300px">Organisation</th><th width="300px">Geography</th></tr>
+																	<tr><th width="200px"><xsl:value-of select="eas:i18n('Status')"/></th><th width="300px"><xsl:value-of select="eas:i18n('Organisation')"/></th><th width="300px"><xsl:value-of select="eas:i18n('Geography')"/></th></tr>
 																{{#each this.standards}}
 																<tr>
 																	<td><button type="button" class="btn btn-xs"><xsl:attribute name="style">background-color:{{this.statusBgColour}} !important;color:{{this.statusColour}}</xsl:attribute>{{this.status}}</button></td>
@@ -1634,7 +1638,7 @@
 						{{/if}}
 						{{#if this.costs}}
 						<div class="tab-pane" id="appcosts">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Costs</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
 									<div class="costTotal-container">
@@ -1666,10 +1670,10 @@
 								</div>
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Costs</h3>
-									<p>Costs related to this application</p>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Costs related to this application')"/></p>
 									<table class="table table-striped table-bordered display compact" id="dt_costs">
-										<thead><tr><th>Cost</th><th>Type</th><th>Value</th><th>From Date</th><th>To Date</th></tr></thead>
+										<thead><tr><th><xsl:value-of select="eas:i18n('Cost')"/></th><th><xsl:value-of select="eas:i18n('Type')"/></th><th><xsl:value-of select="eas:i18n('Value')"/></th><th><xsl:value-of select="eas:i18n('From Date')"/></th><th><xsl:value-of select="eas:i18n('To Date')"/></th></tr></thead>
 										{{#each this.costs}}
 										<tr>
 											<td><span class="label label-primary">{{this.name}}</span></td>
@@ -1679,7 +1683,7 @@
 											<td>{{this.toDate}}</td>
 										</tr>
 										{{/each}}
-										<tfoot><tr><th>Cost</th><th>Type</th><th>Value</th><th>From Date</th><th>To Date</th></tr></tfoot>
+										<tfoot><tr><th><xsl:value-of select="eas:i18n('Cost')"/></th><th><xsl:value-of select="eas:i18n('Type')"/></th><th><xsl:value-of select="eas:i18n('Value')"/></th><th><xsl:value-of select="eas:i18n('From Date')"/></th><th><xsl:value-of select="eas:i18n('To Date')"/></th></tr></tfoot>
 									</table>
 								</div>
 							</div>	
@@ -1692,14 +1696,14 @@
 								<div class="service-container service-box">
 								  <div class="header">
 									<i class="fa fa-desktop" style="padding-right: 0.5rem"></i>
-									<p class="app-header"><xsl:text> </xsl:text> Application Services</p>
+									<p class="app-header"><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('Application Services')"/></p>
 								  </div>
 								  <div class="sub-text">
-									Application Services for this application with lifecycle status and
-									function supported
+									<xsl:value-of select="eas:i18n('Application Services for this application with lifecycle status and
+									function supported')"/>
 								  </div>
 								  <div class="pill-badge-container">
-									<p class="key">Key:</p>
+									<p class="key"><xsl:value-of select="eas:i18n('Key:')"/></p>
 									<div class="pill-badges">
 										{{#each this.lifecyclesKey}}
 												<span
@@ -1724,9 +1728,9 @@
 												<small>
 												{{this.functions.length}}
 												{{#ifEquals this.functions.length 1}}
-													Function
+												<xsl:value-of select="eas:i18n('Function')"/>
 													{{else}}
-													Functions
+													<xsl:value-of select="eas:i18n('Functions')"/>
 												{{/ifEquals}} 
 												</small>
 												<a tabindex="-1" class="popover-trigger" data-toggle="popover">
@@ -1734,7 +1738,7 @@
 													<i class="fa fa-info-circle fa-xs"></i>
 												</a>
 												<div class="popover">
-													Functions
+													<xsl:value-of select="eas:i18n('Functions')"/>
 													<p class="small text-muted">{{#each this.functions}}<i class="fa fa-angle-right"></i> {{this.name}}<br/>{{/each}}</p>
 												</div> 
 											</div> 
@@ -1744,9 +1748,9 @@
 												<small>
 												{{this.processes.length}} 
 												{{#ifEquals this.processes.length 1}}
-												Process
+												<xsl:value-of select="eas:i18n('Process')"/>
 												{{else}}
-												Processes
+												<xsl:value-of select="eas:i18n('Processes')"/>
 												{{/ifEquals}}
 												</small>
 												<a tabindex="-1" class="popover-trigger" data-toggle="popover">
@@ -1754,7 +1758,7 @@
 													<i class="fa fa-info-circle fa-xs"></i>
 												</a>
 												<div class="popover">
-													<h5 class="strong">Processes</h5>
+													<h5 class="strong"><xsl:value-of select="eas:i18n('Processes')"/></h5>
 													<p class="small text-muted">{{#each this.processes}}<i class="fa fa-angle-right"></i> {{#essRenderInstanceLinkOnly this 'Business_Process'}}{{/essRenderInstanceLinkOnly}}<br/>{{/each}}</p>
 												</div>
 											</div> 
@@ -1771,10 +1775,10 @@
 								<div class="alternate-service-container service-box">
 								  <div class="header">
 									<i class="fa-solid fa-display" style="padding-right: 0.5rem"></i>
-									<p class="app-header">Alternative Application Services</p>
+									<p class="app-header"><xsl:value-of select="eas:i18n('Alternative Application Services')"/></p>
 								  </div>
 								  <div class="sub-text">
-									Application Services this application has which are also provided by other applications
+									<xsl:value-of select="eas:i18n('Application Services this application has which are also provided by other applications')"/>
 								  </div>
 						  
 								  <div class="service-card-container alternate">
@@ -1803,18 +1807,18 @@
 						{{/if}}
 						{{#if this.lifecycles}}	
 						<div class="tab-pane" id="appLifecycle">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-road right-10"></i>Application Lifecycles</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-road right-10"></i><xsl:value-of select="eas:i18n('Application Lifecycles')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-road right-10"></i>Application Lifecycles</h3>
-									<p>Lifecycles for the application</p>
+									<h3 class="text-primary"><i class="fa fa-road right-10"></i><xsl:value-of select="eas:i18n('Application Lifecycles')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Lifecycles for the application')"/></p>
 
-									<i class="fa fa-chevron-circle-left right-5" id="lifecycleDown"></i><small>Move Start Date</small>
+									<i class="fa fa-chevron-circle-left right-5" id="lifecycleDown"></i><small><xsl:value-of select="eas:i18n('Move Start Date')"/></small>
 									
 									<i class="fa fa-chevron-circle-right right-5" id="lifecycleUp"></i> 
 									<div class="pull-right">
 										<i class="fa fa-chevron-circle-left right-5" id="lifecycleEndDown"></i>
-											<small>Move End Date</small>
+											<small><xsl:value-of select="eas:i18n('Move End Date')"/></small>
 										<i class="fa fa-chevron-circle-right right-5" id="lifecycleEndUp"></i> 
 									</div>
 								 <div id="lifecyclePanel"></div>
@@ -1824,10 +1828,10 @@
 						{{/if}}
 						{{#if this.pm}}	
 						<div class="tab-pane" id="appKpis">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-area-chart right-10"></i>Application KPIs</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-area-chart right-10"></i><xsl:value-of select="eas:i18n('Application KPIs')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-area-chart right-10"></i>Application KPIs</h3>
+									<h3 class="text-primary"><i class="fa fa-area-chart right-10"></i><xsl:value-of select="eas:i18n('Application KPIs')"/></h3>
 								 
 									{{#each this.perfsGrp}}
 										<div class="perfBox">
@@ -1853,15 +1857,15 @@
 						{{/if}}
 						{{#if this.issues}}
 						<div class="tab-pane" id="issues">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-warning right-10"></i> Issues</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-warning right-10"></i> <xsl:value-of select="eas:i18n('Issues')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-fw fa-warning right-10"></i> Issues</h3>
+									<h3 class="text-primary"><i class="fa fa-fw fa-warning right-10"></i> <xsl:value-of select="eas:i18n('Issues')"/></h3>
 									<div class="issuebox-wrapper">
 									{{#each this.issues}}
 										<div class="issueBox bg-offwhite">
-					  						<b>Issue:</b><xsl:text> </xsl:text> {{this.name}} <br/>
-											<b>Description:</b><xsl:text> </xsl:text> {{this.description}}<br/>
+					  						<b><xsl:value-of select="eas:i18n('Issue')"/>:</b><xsl:text> </xsl:text> {{this.name}} <br/>
+											<b><xsl:value-of select="eas:i18n('Description')"/>:</b><xsl:text> </xsl:text> {{this.description}}<br/>
 											<div class="issueStatus"><span class="label label-info" style="background-color: #476ecc">{{this.status}}</span></div>
 										</div>
 									{{/each}}
@@ -1872,43 +1876,43 @@
 						{{/if}}
 						{{#if this.plans}}	
 						<div class="tab-pane" id="appPlans">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-check-circle-o right-10"></i> Plans &amp; Projects</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-check-circle-o right-10"></i> <xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-check-circle-o right-10"></i>Plans &amp; Projects</h3>
-									<p>Plans and projects that impact this application</p>
-									<h4>Plans</h4>
+									<h3 class="text-primary"><i class="fa fa-check-circle-o right-10"></i><xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Plans and projects that impact this application')"/></p>
+									<h4><xsl:value-of select="eas:i18n('Plans')"/></h4>
 									{{#each this.plans}}
-										<span class="label label-success">Plan</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>&#160;
-										<span class="label label-default">From</span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}Not Set	{{/if}}
-										<span class="label label-default">To</span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}Not Set  	{{/if}}
+										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>&#160;
+										<span class="label label-default"><xsl:value-of select="eas:i18n('From')"/></span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}<xsl:value-of select="eas:i18n('Not Set')"/>	{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('To')"/></span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}<xsl:value-of select="eas:i18n('Not Set')"/>  	{{/if}}
 										<br/>
 									{{/each}}
 									{{#each this.aprplans}} 
-										<span class="label label-success">Plan</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong> &#160;
-										<span class="label label-default">From</span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}Not Set	{{/if}}
-										<span class="label label-default">To</span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}Not Set  	{{/if}}
+										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong> &#160;
+										<span class="label label-default"><xsl:value-of select="eas:i18n('From')"/></span>&#160;	{{#if this.validStartDate}} {{this.validStartDate}} {{else}}<xsl:value-of select="eas:i18n('Not Set')"/>	{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('To')"/></span>&#160;{{#if this.validEndDate}}{{this.validEndDate}}{{else}}<xsl:value-of select="eas:i18n('Not Set')"/>  	{{/if}}
 										<br/>
 									{{/each}}
 									{{#if this.projects}}
 									<h4>Projects</h4>
 									{{#each this.projects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
 										<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Forecast End</span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}}  {{else}} Not Set{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
 										<br/>
 									
 									{{/each}}
 									{{#each this.aprprojects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
 										<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Forecast End</span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}}  {{else}} Not Set{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
 										<br/>
 									
 									{{/each}}
@@ -1916,12 +1920,12 @@
 									{{#if this.aprprojects}} 
 									<h4>Projects</h4>
 									{{#each this.aprprojects}}
-										<span class="label label-primary">Project</span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}} </strong>
 										<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} Not Set{{/if}}
-										<span class="label label-default">Forecast End</span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} Not Set{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}}{{this.proposedStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
 										<br/> 
 									
 									{{/each}}
@@ -1932,52 +1936,51 @@
 							
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-cogs right-10"></i>Impacts</h3>
-									<p>Projects impacting this application and actions they are taking on this application </p>
+									<h3 class="text-primary"><i class="fa fa-cogs right-10"></i><xsl:value-of select="eas:i18n('Impacts')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Projects impacting this application and actions they are taking on this application')"/> </p>
 									{{#if this.projectElements}}
 									{{#each this.projectElements}}
 										<span class="label label-success">Plan</span>&#160;{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
 										<br/>
-										<span class="label label-primary">Project</span>&#160;{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.projForeStart}}{{this.projForeStart}} {{else}} Not Set{{/if}} 
-											<span class="label label-default">Actual Start</span> &#160;{{#if this.projActStart}}{{this.projActStart}} {{else}} Not Set{{/if}} 
-											<span class="label label-default">Target End</span>&#160;{{#if this.projTargEnd}}{{this.projTargEnd}} {{else}} Not Set{{/if}} 
-											<span class="label label-default">Forecast End</span> &#160;{{#if this.projForeEnd}}{{this.projForeEnd}} {{else}} Not Set{{/if}}  
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.projForeStart}}{{this.projForeStart}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.projActStart}}{{this.projActStart}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.projTargEnd}}{{this.projTargEnd}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.projForeEnd}}{{this.projForeEnd}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
 											<br/>
-											<span class="label label-info">Action</span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.action}}</span>
+											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.action}}</span>
 										
 										<hr/>
 									{{/each}}
 									{{#each this.aprprojectElements}}
-										<span class="label label-success">Plan</span>&#160;{{this.plan}}&#160;
+										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;{{this.plan}}&#160;
 										<br/>
-										<span class="label label-primary">Project</span>&#160;{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}&#160;<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} Not Set{{/if}}
-											<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}} 
-											<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}}  {{else}} Not Set{{/if}}
-											<span class="label label-default">Forecast End</span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} Not Set{{/if}}  
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}&#160;<br/>
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
 											<br/>
-											<span class="label label-info">Action</span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
+											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
 										
 										<hr/>
 									{{/each}}
 									{{else}}
 									{{#if this.aprprojectElements}}
 									{{#each this.aprprojectElements}}
-										<span class="label label-success">Plan</span>{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
+										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
 										<br/>
-										<span class="label label-primary">Project</span>{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
-										<span class="label label-default">Proposed Start</span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} Not Set{{/if}}
-											<span class="label label-default">Actual Start</span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} Not Set{{/if}} 
-											<span class="label label-default">Target End</span>&#160;{{#if this.targetEndDate}} {{this.targetEndDate}}  {{else}} Not Set{{/if}}
-											<span class="label label-default">Forecast End</span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} Not Set{{/if}}  
+										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
+										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}} {{this.proposedStartDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{this.actualStartDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
+											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/>')"/></span> &#160;{{#if this.forecastEndDate}}{{this.forecastEndDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
 											<br/>
-											<span class="label label-info">Action</span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
+											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
 											
 										<hr/>
 									{{/each}}
 									{{else}}
-									<strong>No impacts recorded</strong>
+									<strong><xsl:value-of select="eas:i18n('No impacts recorded')"/></strong>
 									{{/if}}
 									{{/if}}
 								</div>
@@ -1986,16 +1989,16 @@
 						{{/if}}
 						{{#if this.otherEnums}}
 						<div class="tab-pane" id="otherEnums">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-comment right-10"></i> Other</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-comment right-10"></i> <xsl:value-of select="eas:i18n('Other')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-comment right-10"></i>Other</h3>
-									<p>Other values against this application</p>
+									<h3 class="text-primary"><i class="fa fa-comment right-10"></i><xsl:value-of select="eas:i18n('Other')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Other values against this application')"/></p>
 									{{#each this.otherEnums}}
 									{{#ifEquals this.classNm 'distribute costs'}}
 									
 										{{#ifEquals ../this.otherEnums.length 1}}
-											<b>No additional enumerations set</b>
+											<b><xsl:value-of select="eas:i18n('No additional enumerations set')"/></b>
 										{{/ifEquals}}
 									{{else}}
 									<div class="bottom-10">
@@ -2078,94 +2081,76 @@
 						 
 						</div>
 					-->	
-						<div class="tab-pane" id="appdata">
-				<!--			<div class="parent-superflex">
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Applications</h3>
-									{{#each thisAppArray}}
-									{{#each this.values}}
-									<div class="appCard">  
-										{{../this.dataObject}}<br/>
-												<span class="appHeader"><strong>Appears In:</strong> {{this.nameirep}}</span><br/>
-												{{#if this.datarepsimplemented}}
-												<span class="dbicon">{{this.category}}</span>
-												<span class="appTableHeader"><strong>Where:</strong></span><br/>
-												
-												{{#each this.datarepsimplemented}}
-													<span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span><br/>
-													<div class="ess-crud">C: {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-													<div class="ess-crud">R: {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-													<div class="ess-crud">U: {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-													<div class="ess-crud">D: {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-													<br/>
-												{{/each}}
-												{{else}}
-												 
-													<div class="ess-crud">C: {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-													<div class="ess-crud">R: {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-													<div class="ess-crud">U: {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-													<div class="ess-crud">D: {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-												
-												{{/if}}
-												<br/> 
-									</div>
-									{{/each}}
-									{{/each}}
-								</div>
-							</div>
-						-->				
+						<div class="tab-pane" id="appdata">			
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Applications</h3>
-									<div class="bottom-15">
-										<label>Data Object:</label><select class="filters" id="doFilter"><option name="all" value="all">All</option></select>
-										<!--					 
-										<label class="left-30">Info Representation:</label><select class="filters" id="irFilter"><option name="all" value="all">All</option></select> 
-										-->
-										<span class="classificationFilter left-30">
-											<label>Classification:</label><select class="filters classificationFilter" id="classificationFilter"><option name="all" value="all">All</option></select>
-										</span>
-									</div>
-									<div class="clearfix"/>
-									<div class="dataCardWrapper">
-										{{#each thisAppArray}}
-										<div class="dataCard bg-offwhite">
-												<xsl:attribute name="doid">{{this.dataObjectId}}</xsl:attribute>
-												<xsl:attribute name="classifid">{{#each this.classifications}}{{this.id}}{{/each}}</xsl:attribute> 
-												<!--<span class="leadText">Data Object</span>:<strong>{{this.dataObject}}</strong>-->
-												<div class="large impact bottom-5">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
-												{{#each this.values}}
-												<div class="appCard2">
-													<xsl:attribute name="irid">{{this.idirep}}</xsl:attribute>
-													<div class="bottom-5"><strong>Appears in: </strong><span class="label label-link bg-darkgrey">{{#essRenderInstanceMenuLink this.irInfo}}{{/essRenderInstanceMenuLink}}</span></div>
-													{{#if this.datarepsimplemented}}
-													<span class="dbicon">{{this.category}}</span>
-													<span class="classiflist">{{#each ../this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}</span>
-													<span class="appTableHeader"><strong>Where:</strong></span><br/>
-													
-													{{#each this.datarepsimplemented}}
-													<div class="datatype"><span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span> </div>
-													<div class="datacrud">
-														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-													</div>
-													<div class="clearfix"/>
-													{{/each}}
-													{{else}}
-													<div class="datacrud">
-														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-													</div>
-													{{/if}}		
-												</div>
-											{{/each}}
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Data')"/></h3>
+									<ul class="nav nav-tabs">
+										<li class="active"><a data-toggle="tab" href="#appdatausage"><xsl:value-of select="eas:i18n('Data Usage')"/></a></li>
+									{{#if this.requiredData}}	<li><a data-toggle="tab" href="#appdatarequired"><xsl:value-of select="eas:i18n('Data Required')"/></a></li> {{/if}}
+									  </ul>
+									  
+									  <div class="tab-content">
+										<div id="appdatausage" class="tab-pane fade in active">
+											<h4><xsl:value-of select="eas:i18n('Data Usage')"/></h4>
+
+											<div class="bottom-15">
+												<label><xsl:value-of select="eas:i18n('Data Object')"/>:</label><select class="filters" id="doFilter"><option name="all" value="all"><xsl:value-of select="eas:i18n('All')"/></option></select>
+			
+												<span class="classificationFilter left-30">
+													<label><xsl:value-of select="eas:i18n('Classification')"/>:</label><select class="filters classificationFilter" id="classificationFilter"><option name="all" value="all"><xsl:value-of select="eas:i18n('All')"/></option></select>
+												</span>
 											</div>
-										{{/each}}
-									</div>
+											<div class="clearfix"/>
+											<div class="dataCardWrapper">
+												{{#each thisAppArray}}
+												<div class="dataCard bg-offwhite">
+														<xsl:attribute name="doid">{{this.dataObjectId}}</xsl:attribute>
+														<xsl:attribute name="classifid">{{#each this.classifications}}{{this.id}}{{/each}}</xsl:attribute> 
+														<!--<span class="leadText">Data Object</span>:<strong>{{this.dataObject}}</strong>-->
+														<div class="large impact bottom-5">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+														{{#each this.values}}
+														<div class="appCard2">
+															<xsl:attribute name="irid">{{this.idirep}}</xsl:attribute>
+															<div class="bottom-5"><strong><xsl:value-of select="eas:i18n('Appears in')"/>: </strong><span class="label label-link bg-darkgrey">{{#essRenderInstanceMenuLink this.irInfo}}{{/essRenderInstanceMenuLink}}</span></div>
+															{{#if this.datarepsimplemented}}
+															<span class="dbicon">{{this.category}}</span>
+															<span class="classiflist">{{#each ../this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}</span>
+															<span class="appTableHeader"><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></span><br/>
+															
+															{{#each this.datarepsimplemented}}
+															<div class="datatype"><span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span> </div>
+															<div class="datacrud">
+																<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+																<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+																<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+																<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+															</div>
+															<div class="clearfix"/>
+															{{/each}}
+															{{else}}
+															<div class="datacrud">
+																<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+																<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+																<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+																<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+															</div>
+															{{/if}}		
+														</div>
+													{{/each}}
+													</div>
+												{{/each}}
+											</div>
+										</div>
+										<div id="appdatarequired" class="tab-pane fade">
+										<h4><xsl:value-of select="eas:i18n('Data Required')"/></h4>
+										<p><xsl:value-of select="eas:i18n('Data the application requires')"/></p>
+											
+											{{#each requiredData}}
+												<span class="label label-info lbl-lrg">{{this.name}}</span>
+											{{/each}}
+										</div>
+									  </div>
 								</div>
 							</div>
 						</div>
@@ -2173,7 +2158,7 @@
 						<div class="tab-pane" id="documents">
 						<div class="parent-superflex">
 							<div class="superflex">
-								<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Documentation</h3>
+								<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Documentation')"/></h3>
 								<div class="clearfix"/>
 								
 								{{#each this.documents}}
@@ -2209,10 +2194,10 @@
 
 	</script>	
 	<script id="costTotal-template" type="text/x-handlebars-template">
-		<h3 class="text-primary"><i class="fa fa-money right-10"></i><b>Costs</b></h3>
+		<h3 class="text-primary"><i class="fa fa-money right-10"></i><b><xsl:value-of select="eas:i18n('Costs')"/></b></h3>
 		
-		<h3><b>Annual Cost</b>: {{this.annualCost}}</h3>
-		<h3><b>Monthly Cost</b>: {{this.monthlyCost}}</h3>
+		<h3><b><xsl:value-of select="eas:i18n('Annual Cost')"/></b>: {{this.annualCost}}</h3>
+		<h3><b><xsl:value-of select="eas:i18n('Monthly Cost')"/></b>: {{this.monthlyCost}}</h3>
 	</script>
 	<script id="kpiWord-template" type="text/x-handlebars-template">
 	[{{#each this.perfsGrp}} 
@@ -2503,7 +2488,7 @@
 						};
 					});
 
-
+					let requiredByAppsArray=[];
 					allDO.data_objects.forEach((e)=>{
 					 
 							let theDrs=[]
@@ -2532,12 +2517,35 @@
 								ap['className']='Data_Representation';
 								appDataMap.push({"id":ap.appid, "dataObjects":e})
 							})
+							requiredByAppsArray.push({"id":e.id, "name":e.name, "apps":e.requiredByApps});
+							
 						});
+
+function collateByApp(data) {
+    const appDict = {};
+
+    data.forEach(dataObject => {
+        dataObject.apps.forEach(app => {
+            if (!appDict[app.id]) {
+                appDict[app.id] = { id: app.id, data_objects: [] };
+            }
+            appDict[app.id].data_objects.push({ id: dataObject.id, name: dataObject.name });
+        });
+    });
+
+    return Object.values(appDict);
+}
+
+
+// Collating the data objects by app
+const collatedApps = collateByApp(requiredByAppsArray);
+ 
+const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 
 						var appDataSet = d3.nest()
 						.key(function(f) { return f.id; })
 						.entries(appDataMap);
-				  
+
 					 appDataSet.forEach((e)=>{
 						 let thisDo=[];
 						 e.values.forEach((f)=>{
@@ -2552,6 +2560,10 @@
 					 appAnalytics=[];
 					 appList.applications.forEach((ap)=>{
 
+						const match = collatedAppsMap.get(ap.id);
+						if (match) {
+							ap['requiredData'] = match.data_objects;
+						}
 						ap.allServices.forEach((d)=>{
 							d['linkDetails']={"id":d.serviceId, "name":d.serviceName};
 							appServicePairs.push({"name":ap.name, "appid":ap.id,"aprId":d.id, "svcId":d.serviceId})
@@ -2736,6 +2748,12 @@
 						}
 					});
 					
+					Handlebars.registerHelper('breaklines', function(html) {
+						html = html.replace(/(\r&lt;li&gt;)/gm, '&lt;li&gt;');
+					    html = html.replace(/(\r)/gm, '<br/>');
+					    return new Handlebars.SafeString(html);
+					});
+										
 			
 					redrawPage(thefocusApp)
 	});
@@ -3262,6 +3280,7 @@ focusApp['perfsGrp']=byPerfName
 }
 focusApp['lifecyclesKey']=appList.lifecycles
  
+						console.log('focusApp',focusApp);	
 $('#mainPanel').html(panelTemplate(focusApp))
 
 
@@ -4187,6 +4206,8 @@ let selected=$(this).val();
 let focusApp=appList.applications.find((f)=>{
 	return f.id==selected;
 });
+
+console.log('focusApp',focusApp)
  
 redrawPage(focusApp);
 });

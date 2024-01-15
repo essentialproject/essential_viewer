@@ -644,7 +644,7 @@
 							<div id="blobLevel" ></div>
 							<div class="clearfix"/>
 							<div class="pull-right" style="width:350px">
-									<xsl:value-of select="eas:i18n('Platform')"/><sup><i class="fa fa-info-circle platformInfo"></i><xsl:text> </xsl:text>
+									<xsl:value-of select="eas:i18n('Building Block')"/><sup><i class="fa fa-info-circle platformInfo"></i><xsl:text> </xsl:text>
 										<div class="text-default small hiddenDiv">
 											<xsl:value-of select="eas:i18n('e.g. An HR System - Modelled as Composite Application Service, i.e. a collection of services')"/>
 										</div></sup>
@@ -811,10 +811,9 @@
 								<xsl:value-of select="eas:i18n('The')"/>&#160;<b><xsl:value-of select="eas:i18n('Application Lifecycle')"/></b>&#160;<xsl:value-of select="eas:i18n('is the lifecycle status of the application')"/><br/>
 								<b><xsl:value-of select="eas:i18n('Application Service Lifecycle')"/></b>&#160;<xsl:value-of select="eas:i18n('is the lifecycle of the application use of this service (Application Provider Role)')"/><br/>
 								<xsl:value-of select="eas:i18n('This will only appear if you have the data captured')"/><br/>
-								
 								<p>
-								<xsl:value-of select="eas:i18n('Once an application is expanded (click the arrow by the application name) you can see some basic information and also where <br/>
-									any organisation standards exist for this application/service mapping.')"/>
+								<xsl:value-of select="eas:i18n('Once an application is expanded - click the arrow by the application name - you can see some basic information and also where')"/> <br/>
+								<xsl:value-of select="eas:i18n('any organisation standards exist for this application/service mapping.')"/> 
 								</p>
 								<p class="small"><xsl:value-of select="eas:i18n('Note: Click this pop-up to close it')"/></p>
 								</div>
@@ -841,10 +840,10 @@
 								<div class="clearfix"/>
 								<div class="mini-details">
 									<div class="small pull-left text-white">
-										<div class="left-5 bottom-5"><i class="fa fa-th right-5"></i>{{this.app.allServices.length}} Supported Services</div>
-										<div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{this.app.services.length}} Services Used</div>
-										<div class="left-5 bottom-5"><i class="fa fa-sign-in right-5"></i>{{this.app.inIList.length}} Applications In</div>
-										<div class="left-5 bottom-5"><i class="fa fa-sign-out right-5"></i>{{this.app.outIList.length}} Applications Out</div>
+										<div class="left-5 bottom-5"><i class="fa fa-th right-5"></i>{{this.app.allServices.length}} <xsl:value-of select="eas:i18n('Supported Services')"/> </div>
+										<div class="left-5 bottom-5"><i class="fa fa-th-large right-5"></i>{{this.app.services.length}} <xsl:value-of select="eas:i18n('Services Used')"/> </div>
+										<div class="left-5 bottom-5"><i class="fa fa-sign-in right-5"></i>{{this.app.inIList.length}} <xsl:value-of select="eas:i18n('Applications In')"/> </div>
+										<div class="left-5 bottom-5"><i class="fa fa-sign-out right-5"></i>{{this.app.outIList.length}} <xsl:value-of select="eas:i18n('Applications Out')"/> </div>
 								 
 										{{#if this.stds}}
 										<table width="100%">
@@ -858,7 +857,7 @@
 										{{/if}}
 									</div>
 
-									<button class="btn btn-default btn-xs appInfoButton pull-right"><xsl:attribute name="easid">{{this.app.id}}</xsl:attribute>Show Details</button>
+									<button class="btn btn-default btn-xs appInfoButton pull-right"><xsl:attribute name="easid">{{this.app.id}}</xsl:attribute><xsl:value-of select="eas:i18n('Show Details')"/></button>
 									
 								</div>
 								<div class="clearfix"/>
@@ -893,12 +892,12 @@
 					<div class="row">
 	                	<div class="col-sm-12">
 							<ul class="nav nav-tabs ess-small-tabs">
-								<li class="active"><a data-toggle="tab" href="#summary">Summary</a></li>
-								<li><a data-toggle="tab" href="#capabilities">Application Capabilities<span class="badge dark">{{capsImpacting.length}}</span></a></li>
-								<li><a data-toggle="tab" href="#buscapabilities">Business Capabilities<span class="badge dark">{{busCapsImpacting.length}}</span></a></li>
-								<li><a data-toggle="tab" href="#processes">Processes<span class="badge dark">{{processList.length}}</span></a></li>
-								<li><a data-toggle="tab" href="#integrations">Integrations<span class="badge dark">{{totalIntegrations}}</span></a></li>
-			                 	<li><a data-toggle="tab" href="#services">Services <span class="badge dark">{{allServices.length}}</span></a></li>
+								<li class="active"><a data-toggle="tab" href="#summary"><xsl:value-of select="eas:i18n('Summary')"/></a></li>
+								<li><a data-toggle="tab" href="#capabilities"><xsl:value-of select="eas:i18n('Application Capabilities')"/> <span class="badge dark">{{capsImpacting.length}}</span></a></li>
+								<li><a data-toggle="tab" href="#buscapabilities"><xsl:value-of select="eas:i18n('Business Capabilities')"/> <span class="badge dark">{{busCapsImpacting.length}}</span></a></li>
+								<li><a data-toggle="tab" href="#processes"><xsl:value-of select="eas:i18n('Processes')"/> <span class="badge dark">{{processList.length}}</span></a></li>
+								<li><a data-toggle="tab" href="#integrations"><xsl:value-of select="eas:i18n('Integrations')"/> <span class="badge dark">{{totalIntegrations}}</span></a></li>
+			                 	<li><a data-toggle="tab" href="#services"><xsl:value-of select="eas:i18n('Services')"/>  <span class="badge dark">{{allServices.length}}</span></a></li>
 								<li></li>
 							</ul>
 
@@ -906,7 +905,7 @@
 							<div class="tab-content">
 								<div id="summary" class="tab-pane fade in active">
 									<div>
-				                    	<strong>Description</strong>
+				                    	<strong><xsl:value-of select="eas:i18n('Description')"/> </strong>
 				                    	<br/>
 				                        {{description}}    
 				                    </div>
@@ -918,72 +917,72 @@
 											<i class="fa fa-desktop right-5"/>{{delivery}}</div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#A884E9;color:#ffffff</xsl:attribute>
-												<i class="fa fa-users right-5"/>{{processes.length}} Processes Supported</div>
+												<i class="fa fa-users right-5"/>{{processes.length}} <xsl:value-of select="eas:i18n('Processes Supported')"/></div>
 		                				<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:#6849D0;color:#ffffff</xsl:attribute>
-												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inI}} in / {{outI}} out)</div>
+												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} <xsl:value-of select="eas:i18n('Integrations')"/> ({{inI}} <xsl:value-of select="eas:i18n('in')"/> / {{outI}} <xsl:value-of select="eas:i18n('out')"/>)</div>
 		                			</div>
 								</div>
 								<div id="capabilities" class="tab-pane fade">
-									<p class="strong">This application supports the following Application Capabilities:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Application Capabilities:')"/> </p>
 									<div>
 									{{#if capsImpacting}}
 									{{#each capsImpacting}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Application_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/> </p>
 									{{/if}}
 									</div>
 								</div>
 								<div id="buscapabilities" class="tab-pane fade">
-									<p class="strong">This application supports the following Business Capabilities:</p>
-									<div class='pull-right'><i class="fa fa-random"></i> Mapped via Process</div>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Business Capabilities')"/> :</p>
+									<div class='pull-right'><i class="fa fa-random"></i> <xsl:value-of select="eas:i18n('Mapped via Process')"/> </div>
 									<div>
 									{{#if busCapsImpacting}}
 									{{#each busCapsImpacting}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}} {{#ifEquals this.source 'Process'}}<i class="fa fa-random"></i>{{/ifEquals}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/> </p>
 									{{/if}}
 									</div>
 								</div>	
 								<div id="processes" class="tab-pane fade">
-									<p class="strong">This application supports the following Business Processes, supporting {{processes.length}} physical processes:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Business Processes, supporting')"/>  {{processes.length}} <xsl:value-of select="eas:i18n('physical processes')"/> :</p>
 									<div>
 									{{#if processList}}
 									{{#each processList}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Process'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/> </p>
 									{{/if}}
 									</div>
 								</div>
 								<div id="services" class="tab-pane fade">
-									<p class="strong">This application supports the following Services:</p>
+									<p class="strong"><xsl:value-of select="eas:i18n('This application supports the following Services')"/> :</p>
 									<div>
 									{{#if servList}}
 									{{#each servList}}
 										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#73B9EE;color:#ffffff</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Application_Service'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
-										<p class="text-muted">None Mapped</p>
+										<p class="text-muted"><xsl:value-of select="eas:i18n('None Mapped')"/> </p>
 									{{/if}}
 									</div>
 								</div>
 								<div id="integrations" class="tab-pane fade">
-			                    <p class="strong">This application has the following integrations:</p>
+			                    <p class="strong"><xsl:value-of select="eas:i18n('This application has the following integrations')"/> :</p>
 			                	<div class="row">
 			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Inbound</div>
+			                			<div class="impact bottom-10"><xsl:value-of select="eas:i18n('Inbound')"/> </div>
 			                				{{#each inIList}}
 			                                <div class="ess-tag bg-lightblue-100">{{name}}</div>
 			                            	{{/each}}
 			                		</div>
 			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Outbound</div>
+			                			<div class="impact bottom-10"><xsl:value-of select="eas:i18n('Outbound')"/> </div>
 			                				{{#each outIList}}
 			                                <div class="ess-tag bg-pink-100">{{name}}</div>
 			                            	{{/each}}
@@ -1788,13 +1787,13 @@ function getApps(svcid) {
 			return app.id == d.appId;
 		});
 
-if(d.lifecycle){
-		appIn['tosvcLifecycle'] = d.lifecycle;
-}
-if(appIn){
-		d['app'] = appIn;
-		thisAppsList.push(appIn)
-}
+		if(appIn){
+			if(d.lifecycle){
+					appIn['tosvcLifecycle'] = d.lifecycle;
+			}
+				d['app'] = appIn;
+				thisAppsList.push(appIn)
+			}
 	});
 
 

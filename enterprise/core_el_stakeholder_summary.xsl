@@ -254,7 +254,7 @@
 			</thead>
 			<tbody>
 				<xsl:apply-templates mode="Actor2RoleRow" select="$relevantActor2Roles">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+					<xsl:sort select="own_slot_value[slot_reference = 'relation_name']/value"/>
 				</xsl:apply-templates>
 			</tbody>
 		</table>

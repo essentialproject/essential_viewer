@@ -825,9 +825,9 @@ font-size:0.7em;
 									            
 											<div id="servSearch" class="top-15 hiddenDiv"> 
 											    <h3  class="text-primary" style="display:inline-block"><xsl:value-of select="eas:i18n('Select Services')"/></h3>
-												<br/>By Platform<sup><i class="fa fa-info-circle platformInfo"></i>
+												<br/><xsl:value-of select="eas:i18n('By Building Block')"/><sup><i class="fa fa-info-circle platformInfo"></i>
                                                     <div class="text-default small hiddenDiv">
-                                                        e.g. An HR System - Modelled as Composite Application Service, i.e. a collection of services
+                                                        <xsl:value-of select="eas:i18n('e.g. An HR System - Modelled as Composite Application Service, i.e. a collection of services')"/>
                                                     </div></sup>
                                               
                                                 <select class="servicesCompNew select2" name="servicesCompositOnlt" multiple="multiple" style="width:100%;" id="selCompBox">

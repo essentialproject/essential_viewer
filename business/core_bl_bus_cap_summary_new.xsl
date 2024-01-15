@@ -1029,7 +1029,7 @@
                                                     <div class="ess-string">{{this.name}}</div>
                                                     <div class="clearfix bottom-10"></div>
                                                     <label><xsl:value-of select="eas:i18n('Description')"/></label>
-                                                    <div class="ess-string">{{this.description}}</div>
+                                                    <div class="ess-string">{{{breaklines this.description}}}</div>
                                                     <div class="clearfix bottom-10"></div>
                                                     {{#if this.ap_business_criticality}}
                                                     <label><xsl:value-of select="eas:i18n('Business Criticality')"/></label>
@@ -2022,6 +2022,12 @@ $('document').ready(function () {
 		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
         });
+        
+        Handlebars.registerHelper('breaklines', function(html) {
+			html = html.replace(/(\r&lt;li&gt;)/gm, '&lt;li&gt;');
+		    html = html.replace(/(\r)/gm, '<br/>');
+		    return new Handlebars.SafeString(html);
+		});
 
         const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
         function essGetMenuName(instance) {

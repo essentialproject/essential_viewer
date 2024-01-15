@@ -739,6 +739,7 @@
 				 	<span class="number-box bg-red left-15 right-5">
 						{{#getRPORTOColours this}}{{/getRPORTOColours}}
 					</span> 
+					<span style="font-size:0pt">{{#each this.applications}}{{this.name}}{{/each}}</span>
 			 		<div class="pull-right right-20">
 						<span class="action-btn" data-toggle="collapse" href="#InnerDataId1" aria-expanded="false" aria-controls="InnerDataId1"><xsl:attribute name="easidparent">{{this.id}}</xsl:attribute>
 							<i class="fa fa-caret-down"></i>
@@ -753,6 +754,7 @@
 				<td class="" colspan="" width="100px">
 				</td>
 				<td class="" colspan="" width="100px">
+					
 				</td>
 				<td class="">
 				
@@ -855,7 +857,7 @@
 	 	showEditorSpinner('Fetching Data...');
 		$('document').ready(function ()
 		{
-			console.log('in')
+		 
 			<!-- $('#rpTable tfoot th').each( function () {
 				var srchtitle = $(this).text();
 				$(this).html( '&lt;input type="text" placeholder="Search '+srchtitle+'" /&gt;' );
@@ -898,14 +900,7 @@
 			Handlebars.registerHelper('setRPO', function (arg1, arg2, options) {
 				let processScore=parseInt(arg2.rpoNum);
 				let thisScore=100
- 
-				console.log('thisScore', thisScore)
-				console.log('processScore', processScore)
-				console.log('RPO thisScore=arg1.rpo.enumNum, processScore= arg2.rpoNum')
-				console.log('arg1', arg1)
-				console.log('arg2', arg2)
-				console.log('thisScore&lt;=processScore - showgreen')
-				console.log('thisScore&gt;processScore - showgred') 
+  
 				if(arg1.rpo){
 					thisScore=parseInt(arg1.rpo.enumNum);
 				}
@@ -931,13 +926,7 @@
 				if(arg1.rto){
 					thisScore=parseInt(arg1.rto.enumNum);
 				}
-	 			console.log('RTO thisScore=arg1.rto.enumNum, processScore= arg2.rtoNum')
-				console.log('arg1', arg1)
-				console.log('arg2', arg2)
-				console.log('thisScore', thisScore)
-				console.log('processScore', processScore)
-				console.log('thisScore&lt;=processScore - showgreen')
-				console.log('thisScore&gt;processScore - showgred')
+	 	 
 	 
 				if(thisScore&lt;=processScore){
 					return '<div class="rpoblob" style="background-color:green;color:#fff;border:2pt solid #fff">'+arg1.rto.enum+'</div>';

@@ -189,7 +189,11 @@
 	"externalDocs":[<xsl:for-each select="$docs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	"link":"<xsl:value-of select="current()/own_slot_value[slot_reference='external_reference_url']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	"link":"<xsl:call-template name="RenderMultiLangInstanceSlot">
+		<xsl:with-param name="theSubjectInstance" select="current()"/>
+		<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
+		<xsl:with-param name="isForJSONAPI" select="true()"/>
+	</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	 "parents":[<xsl:for-each select="$parents">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
       
   </xsl:template>

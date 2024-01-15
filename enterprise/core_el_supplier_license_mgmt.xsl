@@ -2457,7 +2457,11 @@
 				<xsl:variable name="thisUrl" select="$thisLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 				{
 				"label": "<xsl:value-of select="$thisLinkName"/>",
-				"url": "<xsl:value-of select="$thisUrl"/>"
+				"url": "<xsl:call-template name="RenderMultiLangInstanceSlot">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
+					<xsl:with-param name="isForJSONAPI" select="false()"/>
+				</xsl:call-template>"
 				}<xsl:if test="not(position() = last())">,
 				</xsl:if>
 			</xsl:for-each>

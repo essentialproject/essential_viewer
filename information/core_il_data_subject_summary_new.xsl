@@ -419,7 +419,7 @@
 									<div class="ess-string">{{this.name}}</div>
 									<div class="clearfix bottom-10"></div>
 									<label>Description</label>
-									<div class="ess-string">{{this.description}}</div>
+									<div class="ess-string">{{{breaklines this.description}}}</div>
 									<div class="clearfix bottom-10"></div>
 									 
 								</div>
@@ -778,7 +778,13 @@
 				$('#editor-spinner').addClass('hidden');
 				$('#editor-spinner-text').text('');
 			};
-	
+			
+			Handlebars.registerHelper('breaklines', function(html) {
+				html = html.replace(/(\r&lt;li&gt;)/gm, '&lt;li&gt;');
+			    html = html.replace(/(\r)/gm, '<br/>');
+			    return new Handlebars.SafeString(html);
+			});
+
 			showEditorSpinner('Fetching Data...'); 
 			<xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
 				<xsl:with-param name="linkClasses" select="$linkClasses"/>

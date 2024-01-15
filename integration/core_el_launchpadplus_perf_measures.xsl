@@ -311,11 +311,14 @@
                     responses[0].applications.forEach((d)=>{
                         d.perfMeasures.forEach((e)=>{
                             e.serviceQuals?.forEach((f)=>{
-                                allMeasures.push({"id":d.id, "name":d.app, "category": f.categoryName , "service":f.serviceName, "quality": f.value, "date": e.date, "type": f.type})
-                            })
+								console.log(f.categoryName)
+								f.categoryName?.forEach((n)=>{
+                                allMeasures.push({"id":d.id, "name":d.app, "category": n , "service":f.serviceName, "quality": f.value, "date": e.date, "type": f.type})
+								})
+							})
                         })
                     })
-              
+              console.log('allMeasures',allMeasures)
                     var byType = d3.nest()
                     .key(function(d) { return d.type; })
                     .entries(allMeasures);

@@ -26,6 +26,8 @@
 	<xsl:variable name="deprecatedViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Deprecated Views']"/>
 	<xsl:variable name="portalViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Portal Views']"/>
 	<xsl:variable name="dashboardViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Dashboard Views']"/>
+	
+	<xsl:variable name="deprecatedViews" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]"/>
 
 	<!-- Set the view filter taxonomies -->
 	<xsl:variable name="viewFilterConstant" select="/node()/simple_instance[(type = 'Report_Constant') and (own_slot_value[slot_reference = 'name']/value = 'View Filter Taxonomies')]"/>
@@ -143,11 +145,13 @@
 											<xsl:value-of select="eas:i18n('Support')"/>
 										</a>
 									</li>
-									<li role="presentation">
-										<a href="#deprecated" aria-controls="deprecated" role="tab" data-toggle="tab">
-											<xsl:value-of select="eas:i18n('Deprecated')"/>
-										</a>
-									</li>
+									<xsl:if test="count($deprecatedViews) &gt; 0">
+										<li role="presentation">
+											<a href="#deprecated" aria-controls="deprecated" role="tab" data-toggle="tab">
+												<xsl:value-of select="eas:i18n('Deprecated')"/>
+											</a>
+										</li>
+									</xsl:if>
 									<!--<li role="presentation">
 										<a href="#unclassified" aria-controls="unclassified" role="tab" data-toggle="tab">
 											<xsl:value-of select="eas:i18n('Unclassified')"/>
@@ -212,14 +216,16 @@
 											</xsl:apply-templates>
 										</div>
 										<div class="clear"/>
-										<h1 class="hubElementColor7">
-											<xsl:value-of select="eas:i18n('Deprecated')"/>
-										</h1>
-										<div class="row">
-											<xsl:apply-templates mode="Deprecated" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
-												<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-											</xsl:apply-templates>
-										</div>
+										<xsl:if test="count($deprecatedViews) &gt; 0">
+											<h1 class="hubElementColor7">
+												<xsl:value-of select="eas:i18n('Deprecated')"/>
+											</h1>
+											<div class="row">
+												<xsl:apply-templates mode="Deprecated" select="$anyViews[(own_slot_value[slot_reference = 'element_classified_by']/value = $deprecatedViewsTaxonomyTerm/name) and not(own_slot_value[slot_reference = 'element_classified_by']/value = $catalogueViewsTaxonomyTerm/name)]">
+													<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+												</xsl:apply-templates>
+											</div>
+										</xsl:if>
 										<!--<div class="clear"/>
 										<h1 class="hubElementColor7">
 											<xsl:value-of select="eas:i18n('Unclassified')"/>

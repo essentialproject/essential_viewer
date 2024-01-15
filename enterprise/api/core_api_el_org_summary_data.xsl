@@ -159,9 +159,9 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
-		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+		<!--"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
+				</xsl:call-template>",-->
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
@@ -173,9 +173,9 @@
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
-		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+		<!--"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
-			</xsl:call-template>",
+			</xsl:call-template>",-->
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="$thisBusProc"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
@@ -190,9 +190,9 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
 			</xsl:call-template>",
-		"link":"<xsl:call-template name="RenderInstanceLinkForJS">
+		<!--"link":"<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
+			</xsl:call-template>",-->
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isForJSONAPI" select="true()"/>
