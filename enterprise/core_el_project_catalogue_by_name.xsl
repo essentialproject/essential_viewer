@@ -55,7 +55,7 @@
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 	<xsl:variable name="targetMenu" select="eas:get_menu_by_shortname($targetMenuShortName)"/>
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Project', 'ACTOR_TO_ROLE_RELATION', 'Individual_Actor')"/>
+	<xsl:variable name="linkClasses" select="('Project', 'ACTOR_TO_ROLE_RELATION', 'Individual_Actor', 'Group_Actor')"/>
 	<!-- END GENERIC CATALOGUE SETUP VARIABES -->
 
 	<xsl:variable name="projects" select="/node()/simple_instance[type = 'Project']"/>
