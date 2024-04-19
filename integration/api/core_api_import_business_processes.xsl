@@ -62,9 +62,12 @@
 	<xsl:variable name="thisproductType" select="$productType[name=$thisProducts/own_slot_value[slot_reference='instance_of_product_type']/value]"/>
 	<xsl:variable name="thisProductConcepts" select="$thisproductType/own_slot_value[slot_reference='product_type_realises_concept']/value"/>
    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-			 </xsl:call-template>",
+   <xsl:variable name="nametemp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+   <xsl:variable name="nameresult" select="serialize($nametemp, map{'method':'json', 'indent':true()})"/>  
+   <xsl:value-of select="substring-before(substring-after($nameresult,'{'),'}')"></xsl:value-of>,
+   <xsl:variable name="temp" as="map(*)" select="map{'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))}"></xsl:variable>
+   <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+   <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
 		"flow":"<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='defining_business_process_flow']/value">Y</xsl:when><xsl:otherwise>N</xsl:otherwise></xsl:choose>",	    
 		"actors":[<xsl:for-each select="$allActors">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"parentCaps":[<xsl:for-each select="$parentCaps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],

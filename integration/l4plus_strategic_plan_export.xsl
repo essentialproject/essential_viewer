@@ -253,7 +253,7 @@
     <Cell ss:Index="2" ss:StyleID="s60"><Data ss:Type="String">ID</Data></Cell>
     <Cell ss:StyleID="s60"><Data ss:Type="String">Name</Data></Cell>
    </Row>
-    <xsl:apply-templates select="$org" mode="catalogue">
+    <xsl:apply-templates select="$org[type = ('Group_Actor')]" mode="catalogue">
       <xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
     </xsl:apply-templates>
      

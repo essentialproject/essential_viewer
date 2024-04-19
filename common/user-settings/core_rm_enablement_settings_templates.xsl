@@ -15,12 +15,9 @@
 			<xsl:with-param name="theXSL" select="$roadmapPlansProjectsAPI/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 		</xsl:call-template>
     </xsl:variable>
-	<!--
+	
 	<xsl:template name="RoadmapEnablementJSUI">
-		<style>
-			
-		</style>
-
+		<!--
 		<script>
 			<xsl:choose>
 				<xsl:when test="count($roadmapPlansAPI) > 0 and count($roadmapPlansProjectsAPI) > 0">
@@ -32,12 +29,12 @@
 					const essRoadmapsPlansProjectsAPIURL = '';
 				</xsl:otherwise>
 			</xsl:choose>
-		</script>
+		</script> -->
 		
 		<!-- handlebars template for the Roadmap Enablement UI -->
 		<script id="ess-rm-enablement-template" type="text/x-handlebars-template">
 			<option/>{{#each this}}<option><xsl:attribute name="value">{{id}}</xsl:attribute>{{name}}</option>{{/each}}
 		</script>
 	</xsl:template>
--->
+
 </xsl:stylesheet>

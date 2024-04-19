@@ -277,14 +277,14 @@
 		<xsl:variable name="busObj2GroupActorRels" select="$allObj2GroupActorRels[own_slot_value[slot_reference = 'act_to_obj_objective']/value = current()/name]"/>
 		<xsl:variable name="busObjGroupActors" select="$allGroupActors[name = $busObj2GroupActorRels/own_slot_value[slot_reference = 'act_to_obj_actor']/value]"/>
 		<xsl:variable name="busObjIndivActors" select="$allIndividualActors[name = $busObj2GroupActorRels/own_slot_value[slot_reference = 'act_to_obj_actor']/value]"/>
-		<xsl:variable name="busObjGroupActorMeasures" select="$allBusinessServiceQualityValues[name = $busObj2GroupActorRels/own_slot_value[slot_reference = 'act_to_obj_target_value']/value]"/>
+		<xsl:variable name="busObjGroupActorMeasures" select="$allBusinessServiceQualityValues[name = $busObj2GroupActorRels/own_slot_value[slot_reference = ('act_to_obj_target_value', 'act_to_obj_target_values')]/value]"/>
 		<xsl:variable name="busObjDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
         <xsl:variable name="busObjMeasures" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"></xsl:variable>
 		<xsl:variable name="busObjOrgOwners" select="$allGroupActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjIndividualOwners" select="$allIndividualActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
 		<xsl:variable name="busObjTargetDate" select="$allTargetDates[name = current()/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
         <xsl:variable name="busObjTargetDateISO" select="current()/own_slot_value[slot_reference = 'bo_target_date_iso_8601']/value"/>
-		<xsl:variable name="aTaxonomy" select="own_slot_value[slot_reference = 'element_classified_by']/value"/>  <tr>
+		<xsl:variable name="aTaxonomy" select="own_slot_value[slot_reference = 'element_classified_by']/value"/> <tr>
 			<!-- Print out the name of the Business Objective -->
 			<td>
 				<strong>

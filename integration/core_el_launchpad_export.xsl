@@ -467,7 +467,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 1</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Anchor on Applications, Bring in Business Elements</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_1.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-1/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play11"/>Step 1</li>
@@ -482,7 +482,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 2</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Anchor on applications, link to technology, bring in business elements</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_2.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-2/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play21"/>Step 1</li>
@@ -498,7 +498,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 3</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Build simple governance, anchored around applications then technology</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_3.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-3/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play31"/>Step 1</li>
@@ -513,7 +513,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 4</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Anchor on technology and build the architecture out from there</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_4.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-4/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play41"/>Step 1</li>
@@ -528,7 +528,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 5</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Get Data In Shape</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_5.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-5/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play51"/>Step 1</li>
@@ -540,7 +540,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 6</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Bring in standards for technology, anchored around applications</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_6.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-6/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play61"/>Step 1</li>
@@ -554,7 +554,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 7</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Map applications to projects for impact analysis</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_7.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-7/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play71"/>Step 1</li>
@@ -566,7 +566,7 @@
 							<div class="playBlob">
 								<div class="playTitle">Play 8</div>
 								<div class="playDescription"><i class="fa fa-caret-right edit right-5"/>Create your roadmaps</div>
-								<div class="playDocs"><a href="https://enterprise-architecture.org/ea_play_8.php" target="_blank"><i class="fa fa-book"/></a></div>
+								<div class="playDocs"><a href="https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-8/" target="_blank"><i class="fa fa-book"/></a></div>
 								<div class="playSteps">
 									<ul class="list-unstyled">
 										<li><input type="checkbox" id="play81"/>Step 1</li>
@@ -2842,7 +2842,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
                   {{else}}
          <Row ss:Height="17">
 			 <Cell ss:Index="2" ss:StyleID="s1090"><Data ss:Type="String">{{../this.application}}</Data></Cell>
-			 <Cell ss:StyleID="s1091"><Data ss:Type="String">{{this.environment}}</Data></Cell>
+			 <Cell ss:StyleID="s1091"><Data ss:Type="String">{{this.environmentName}}</Data></Cell>
 			 <Cell ss:StyleID="s1063"><Data ss:Type="String">{{this.fromTechProduct}}</Data></Cell>
 			 <Cell ss:StyleID="s1063"><Data ss:Type="String">{{this.fromTechComponent}}</Data></Cell>
 			 <Cell ss:StyleID="s1063"><Data ss:Type="String">{{this.toTechProduct}}</Data></Cell>

@@ -3,6 +3,7 @@
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"/>
 	<xsl:import href="../common/core_el_ref_model_include.xsl"/>
+	<xsl:include href="../common/core_handlebars_functions.xsl"/>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -19,7 +20,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Capability', 'Application_Service', 'Application_Provider', 'Technology_Capability', 'Technology_Component', 'Technology_Product')"/>
+	<xsl:variable name="linkClasses" select="('Technology_Capability', 'Technology_Component', 'Technology_Product', 'Technology_Domain')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 
@@ -100,7 +101,7 @@
 				<title>Technology Reference Model</title>
 				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
 				<script src="js/select2/js/select2.min.js?release=6.19"/>
-				<script type="text/javascript" src="js/handlebars-v4.1.2.js?release=6.19"/>
+				<script type="text/javascript" src="js/handlebars/handlebars.min.js?release=6.19"/>
 				<style>
 					.dashboardPanel{
 						padding: 10px;
@@ -172,6 +173,7 @@
 				
 				<script type="text/javascript">
 					
+					<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
 					var trmTemplate, techDetailTemplate, techDomainTemplate, ragOverlayLegend, noOverlayTRMLegend;
 					var currentTechDomain;
 					
@@ -183,7 +185,7 @@
 					var scaleOptions = {};
 
 					var stdStrength=[<xsl:apply-templates select="$stdStrength" mode="stdStrength"/>];
-					console.log('stdStrength',stdStrength)
+		 
 				 
 					function generateCSS(arr) {
 						let cssString = `.status-container {
@@ -211,8 +213,7 @@
 						document.head.appendChild(styleEl);
 					}
 
-					const cssStyles = generateCSS(stdStrength);
-					console.log(cssStyles);
+					const cssStyles = generateCSS(stdStrength); 
 					
 					// Add the generated CSS to the DOM
 					addCSSStylesToDOM(cssStyles);
@@ -496,11 +497,12 @@
 							if(thisTechProdCount > 0) {
 								aTechCompDetail = {};
 								aTechCompDetail["link"] = aTechComp.link;
+								aTechCompDetail["className"] = "Technology_Component";
 								aTechCompDetail["description"] = aTechComp.description;
 								aTechCompDetail["count"] = thisTechProdCount;
 								techProdCount = techProdCount + thisTechProdCount;
 								techProdList = techProdList.concat(relevantTechProds);
-								
+							 
 								techCompDetailList.techCapProds.push(aTechCompDetail);
 							} 
 						}
@@ -544,8 +546,7 @@
 					
 					//function to refresh the Tech Domain model overlay
 					function refreshTechDomainOverlay() {
-						var techOverlay = $('input:radio[name=techOverlay]:checked').val();
-						console.log('Current Tech Domain overlay: ' + techOverlay);
+						var techOverlay = $('input:radio[name=techOverlay]:checked').val(); 
 						if(techOverlay =='duplication') {
 							//show duplication overlay
 							$('.tech-comp').each(function() {
@@ -624,8 +625,7 @@
 					
 					//function to draw the Technology Domain drill down view
 					function drawTechDomainModel() {
-						if(currentTechDomain != null) {
-							console.log('currentTechDomain', currentTechDomain)
+						if(currentTechDomain != null) { 
 							setTechDomainProducts(currentTechDomain);
 
 							$("#techRefModelContainer").html(techDomainTemplate(currentTechDomain)).promise().done(function(){
@@ -707,11 +707,16 @@
 			            businessUnits = responses[0];                  
 					
 					techProducts = responses[1];  		 
+				
+					 techProducts.techProducts.forEach((d)=>{
+						d['className']='Technology_Product';
+					 })
 					 
-					techProdRoles = responses[2];  
-					
-					var tpr = techProdRoles.techProdRoles; 
+					techProdRoles = responses[2];   
+
+				 	var tpr = techProdRoles.techProdRoles; 
                     for(var i=0; i &lt; techComponents.techComponents.length;i++) {
+						techComponents.techComponents[i]['className']="Technology_Component";
                     var techprodslist=[];
                        for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
                          
@@ -879,7 +884,7 @@
 				</script>
 				
 				<script id="tech-domain-header-template" type="text/x-handlebars-template">
-					{{{link}}}<i class="tech-domain-up fa fa-arrow-circle-up left-5"/>
+					{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-up fa fa-arrow-circle-up left-5"/>
 				</script>
 				
 				<script id="tech-domain-template" type="text/x-handlebars-template">
@@ -890,7 +895,7 @@
 										<div class="col-xs-12 bottom-15">
 											<div class="refModel-l0-outer" style="">
 												<div class="refModel-l0-title large strong">
-													{{{link}}}
+													{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 												</div>
 												<div class="row">
 													{{#techComponents}}
@@ -899,15 +904,14 @@
 																<div class="refModel-l1-outer">
 																	<div class="tech-comp refModel-l1-title bg-darkblue-80">
 																		<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
-																		{{{link}}}
+																		{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 																	</div>
 																	<div class="refModel-l1-inner">
 																		<!--Tech Product-->
 																		{{#inScopeTechProds}}
 																			<div class="tech-prod techRefModel-blob bg-lightblue-80">
 																				<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
-																				<div class="refModel-blob-title">
-																					{{{link}}}
+																				<div class="refModel-blob-title">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 																				</div>
 																				{{#if description.length}}
 																					<div class="refModel-blob-info">
@@ -986,14 +990,14 @@
 						<div class="col-xs-12">
 							<div class="refModel-l0-outer matchHeight2">
 								<div class="refModel-l0-title fontBlack large">
-									{{{link}}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
+									{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
 										<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
-											{{{link}}}
+											{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 										</div>
 										<div class="refModel-blob-info">
 											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
@@ -1032,14 +1036,14 @@
 						<div class="col-xs-12">
 							<div class="refModel-l0-outer matchHeightTRM">
 								<div class="refModel-l0-title fontBlack large">
-									{{{link}}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
+									{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
 										<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
-											{{{link}}}
+											{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 										</div>
 										<div class="refModel-blob-info">
 											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
@@ -1077,14 +1081,14 @@
 						<div class="col-xs-12">
 							<div class="refModel-l0-outer">
 								<div class="refModel-l0-title fontBlack large">
-									{{{link}}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
+									{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
 										<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
-											{{{link}}}
+											{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 										</div>
 										<div class="refModel-blob-info">
 											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
@@ -1125,14 +1129,14 @@
 						<div class="col-xs-12">
 							<div class="refModel-l0-outer matchHeightTRM">
 								<div class="refModel-l0-title fontBlack large">
-									{{{link}}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
+									{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
 										<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
-											{{{link}}}
+											{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 										</div>
 										<div class="refModel-blob-info">
 											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
@@ -1171,14 +1175,14 @@
 						<div class="col-xs-12">
 							<div class="refModel-l0-outer matchHeight2">
 								<div class="refModel-l0-title fontBlack large">
-									{{{link}}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
+									{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<i class="tech-domain-drill left-5 fa fa-arrow-circle-down"><xsl:attribute name="eas-id">{{id}}</xsl:attribute></i>
 								</div>
 								{{#childTechCaps}}
 									<div class="techRefModel-blob">
 										<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
 										<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_blob</xsl:text></xsl:attribute>
 										<div class="refModel-blob-title">
-											{{{link}}}
+											{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 										</div>
 										<div class="refModel-blob-info">
 											<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_info</xsl:text></xsl:attribute>
@@ -1278,6 +1282,7 @@
             </xsl:call-template>",
 		description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		refLayer: "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
 		childTechCapIds: [
 		<!--<xsl:apply-templates select="$childTechCaps" mode="RenderChildTechCaps"/>-->
@@ -1333,6 +1338,7 @@
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
+			"className":"<xsl:value-of select="current()/type"/>",
 			link: "<xsl:value-of select="$techCapLink"/>",
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 
@@ -1366,6 +1372,7 @@
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
                 <xsl:with-param name="isRenderAsJSString" select="true()"/>
             </xsl:call-template>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
 	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
@@ -1394,6 +1401,7 @@
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
                 <xsl:with-param name="isRenderAsJSString" select="true()"/>
             </xsl:call-template>",
+		"className":"<xsl:value-of select="current()/type"/>",
 		link: "<xsl:value-of select="$techCompLink"/>",
 		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
         techProdRole: [<xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]

@@ -7,6 +7,7 @@
 	<xsl:include href="../common/core_header.xsl"></xsl:include>
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
 	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
+	<xsl:include href="../common/core_handlebars_functions.xsl"/>
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"></xsl:output>
 
@@ -591,7 +592,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 
 							let linkId = instance.id + 'Link';
 						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
-							instanceLink = '<button eas-id="store_70_Class20133" class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+							instanceLink = '<button eas-id="store_70_Class20133" class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
 
 							
 

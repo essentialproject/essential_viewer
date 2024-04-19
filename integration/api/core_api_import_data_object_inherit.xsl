@@ -34,7 +34,7 @@
 
 	 
   <xsl:template match="node()" mode="dataObjectInherit">
-	 <xsl:variable name="children" select="$dataObjects[name=current()/own_slot_value[slot_reference='data_object_generalisations']/value]"/> 
+	 <xsl:variable name="children" select="$dataObjects[name=current()/own_slot_value[slot_reference='data_object_specialisations']/value]"/> 
     <!-- last two need to be org roles as the slots have been deprecated -->
     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",

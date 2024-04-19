@@ -566,6 +566,16 @@
 				"width": "200px", 
 				"visible": false,
 				"title": "Stakeholders"					
+			},
+			{	"data":"ea_reference",
+				"width": "50px", 
+				"visible": false,
+				"title": "EA Ref"					
+			},
+			{	"data":"short_name",
+				"width": "200px", 
+				"visible": false,
+				"title": "Short Name"					
 			}
 			
 			];
@@ -605,7 +615,9 @@
 
 					d['family']=martMatch.family;
 					d['supplier']=martMatch.supplier;
-					
+					d['ea_reference']=martMatch.ea_reference;
+					d['short_name']=martMatch.short_name;
+
 					slotNames.forEach((s)=>{
 						
 					 if(d[s.id]){
@@ -623,8 +635,9 @@
 
 				$('#dt_Capabilities tfoot th').each(function () {
 		            var title = $(this).text();
+					var titleid=title.replace(/ /g, "_");
 				 
-		            $(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
+		            $(this).html('&lt;input type="text" class="dynamic-filter" id="'+titleid+'" placeholder="Search ' + title + '" /&gt;');
 		        });
 			
 				// Initialize DataTable with dynamic columns
@@ -651,11 +664,38 @@
 					'print'
 				],
 				stateSaveCallback: function(settings, data) {
+					data.dynamicSearch = {};
+					 
+					if ($('.dynamic-filter').length > 0) {
+						console.log('exists')
+						
+						$('.dynamic-filter').each(function() {
+						 
+							var inputId = $(this)[0].id; // Ensure all elements have an ID
+							 
+							if (inputId) { // Check if ID is not undefined
+								data.dynamicSearch[inputId] = $(this)[0].value;
+							}
+						});
+						console.log('dynamicSearch', data.dynamicSearch);
+					}
+						// Save the state object to local storage
+						console.log('dta', data);
 					localStorage.setItem('DataTables_App_Pro' + settings.sInstance, JSON.stringify(data))
 				},
 				stateLoadCallback: function(settings) {
-					return JSON.parse(localStorage.getItem('DataTables_App_Pro' + settings.sInstance))
-				}});
+
+					var data = JSON.parse(localStorage.getItem('DataTables_App_Pro' + settings.sInstance));
+
+					if (data) {
+						// Restore the state of each dynamic search input
+						$.each(data.dynamicSearch, function(inputId, value) {
+							$('#' + inputId).val(value);
+						});
+					}
+				
+					return data; 
+				},});
 		 
 				table.columns().every(function () {
 		            var that = this;
@@ -784,7 +824,7 @@ var tblData;
 					
 					stakeholderHTML=stakeholderTemplate(inscopeApps.apps[i].stakeholders)
 				
-					tblData.push({"select":selectHTML,"name":appNameHTML,"desc":app.description, "services": appSvcHTML ,"status":appLifeHTML,"family":appFamilyHTML,"supplier":supplierHTML, "stakeholders":stakeholderHTML, ...additionalData})
+					tblData.push({"select":selectHTML,"name":appNameHTML,"desc":app.description, "services": appSvcHTML ,"status":appLifeHTML,"family":appFamilyHTML,"supplier":supplierHTML, "stakeholders":stakeholderHTML, "ea_reference":app.ea_reference, "short_name":app.short_name, ...additionalData})
                       
 		        }
 

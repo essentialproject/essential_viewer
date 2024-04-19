@@ -688,7 +688,9 @@
 		let thisVsOrgs=[];
  
 		let vsBusCaps = [];
-		
+		d.vsps=d.vsps.sort((a,b)=>{
+			return a.index - b.index;
+		})
 		d.vsps.forEach(e => {
 		  const mappedApps = new Map();
 		
@@ -960,12 +962,21 @@
 	<xsl:variable name="thisRoles" select="$roles[name=current()/own_slot_value[slot_reference='vsg_participants']/value]"/>-->
 	<xsl:variable name="lbl" select="key('labelsKey',current()/own_slot_value[slot_reference='vsg_label']/value)"/>
 	<xsl:variable name="thisRoles" select="key('rolesKey', current()/own_slot_value[slot_reference='vsg_participants']/value)"/>
+	<xsl:variable name="indexValue" select="current()/own_slot_value[slot_reference='vsg_index']/value"/>
 	{
 		"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 		</xsl:call-template>",
+		"index":<xsl:choose>
+				<!-- Check if the indexValue variable has a value -->
+				<xsl:when test="$indexValue">
+					<xsl:value-of select="$indexValue"/>
+				</xsl:when>
+				<!-- If not, set default value to 1 -->
+				<xsl:otherwise>1</xsl:otherwise>
+			</xsl:choose>,
 		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>

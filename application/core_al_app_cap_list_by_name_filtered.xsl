@@ -8,22 +8,17 @@
 	<xsl:include href="../common/core_footer.xsl"></xsl:include>
 	<xsl:include href="../common/core_external_doc_ref.xsl"></xsl:include>
 
+	<xsl:include href="../common/core_handlebars_functions.xsl"/>
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"></xsl:output>
 
 	<xsl:param name="param1"></xsl:param>
 
 	<!-- START GENERIC PARAMETERS --> 
 
-    <xsl:param name="viewScopeTermIds"/>
-    <xsl:param name="targetReportId"/>
-	<xsl:param name="targetMenuShortName"/> 
+    <xsl:param name="viewScopeTermIds"/> 
 
 	<!-- END GENERIC CATALOGUE PARAMETERS -->
-    <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
-
-	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
-	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
-
+ 
 	<!-- END GENERIC PARAMETERS -->
 
 	<!-- START GENERIC LINK VARIABLES -->
@@ -264,7 +259,7 @@
 		var characterToShow = 'A';		 
 <!-- end fix for roadmaps -->  
 var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
-
+<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
 		$('document').ready(function () {
 		    let catalogueTable; 
 			listFragment = $("#list-template").html();
@@ -290,7 +285,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 		        }
 		        return menuName;
 			}
-			
+			<!--
 			Handlebars.registerHelper('essRenderInstanceLinkSelect', function (instance,type) {
 
 				let targetReport = "<xsl:value-of select="$repYN"/>";
@@ -315,7 +310,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 
 							let linkId = instance.id + 'Link';
 						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
 			
 							
 		
@@ -345,6 +340,7 @@ var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference
 		            }
 				}
             });
+		-->
 		    Handlebars.registerHelper('essRenderInstanceLink', function (instance, type) {
 
 		        let targetReport = "<xsl:value-of select="$repYN"/>";

@@ -1420,7 +1420,7 @@ $('#hideCaps').on('click',function(){
 		workingArray.capability_hierarchy.forEach((f) => {
 			workingArrayCaps.push(f.id)
 		});
-
+//console.log('workingArray',workingArray)
 		workingCaps = responses[0];
 		workingSvcs = responses[0].application_services;
 
@@ -1472,7 +1472,7 @@ $('#hideCaps').on('click',function(){
 				resolve($('#capModelHolder').html(l0CapTemplate(workingArray.capability_hierarchy)));
 				reject();
 			})
-
+//console.log('appfilters',appfilters)
 
 			capMod.then((d) => {
 				workingArray = [];
@@ -1550,7 +1550,7 @@ var scopedService;
 
 			let apps = appArray.applications;
 
-			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef], appTypeInfo);
+			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef].concat(dynamicAppFilterDefs), appTypeInfo);
 			scopedCaps = essScopeResources(workingArrayAppsCaps, [visibilityDef], busCapTypeInfo);
 
 			workingsvcArray.forEach(obj => {
@@ -1928,6 +1928,12 @@ $('.app-circle').each(function () {
 });
 
 function getArrayDepth(arr) {
+
+	arr.sort((a, b) => {
+		const numA = a.sequence_number === "" ? Infinity : parseInt(a.sequence_number, 10);
+		const numB = b.sequence_number === "" ? Infinity : parseInt(b.sequence_number, 10);
+		return numA - numB;
+	});
 
 	arr.forEach((d) => {
 		levelArr.push(parseInt(d.level))

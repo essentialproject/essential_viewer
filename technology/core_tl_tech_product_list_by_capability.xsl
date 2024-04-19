@@ -443,7 +443,13 @@
 
 		<div class="LRC_Header">
 			<h3 class="text-white">
-				<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
+				<xsl:call-template name="RenderInstanceLink">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+					<xsl:with-param name="theXML" select="$reposXML"/>
+					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+					<xsl:with-param name="divClass">text-white strong</xsl:with-param>
+				</xsl:call-template>
+				<!--<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>-->
 			</h3>
 		</div>
 		<div class="largeRoundedContainer">

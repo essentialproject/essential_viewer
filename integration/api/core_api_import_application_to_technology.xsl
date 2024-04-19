@@ -72,16 +72,29 @@
 			<xsl:variable name="thisTechProdsTarget" select="key('techprod_key',$targettechProductRole/name)"/>  
 			<xsl:variable name="thisTechCompsSource" select="key('techcomp_key',$sourcetechProductRole/name)"/>  
 			<xsl:variable name="thisTechCompsTarget" select="key('techcomp_key',$targettechProductRole/name)"/>  
+			<xsl:variable name="thisDeployment" select="$deploymentRole[name=$deploymentType]"/>  
 			{ 
-			"fromTechProduct":"<xsl:value-of select="$thisTechProdsSource/own_slot_value[slot_reference='name']/value"/>",
-			"fromTechComponent":"<xsl:value-of select="$thisTechCompsSource/own_slot_value[slot_reference='name']/value"/>",
-			"toTechProduct":"<xsl:value-of select="$thisTechProdsTarget/own_slot_value[slot_reference='name']/value"/>",
-			"toTechComponent":"<xsl:value-of select="$thisTechCompsTarget/own_slot_value[slot_reference='name']/value"/>",
+				<xsl:variable name="tempProd" as="map(*)" select="map{'fromTechProduct': string(translate(translate($thisTechProdsSource/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+				<xsl:variable name="result" select="serialize($tempProd, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+				<xsl:variable name="tempTechCompsSource" as="map(*)" select="map{'fromTechComponent': string(translate(translate($thisTechCompsSource/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+				<xsl:variable name="result1" select="serialize($tempTechCompsSource, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($result1,'{'),'}')"></xsl:value-of>,
+				<xsl:variable name="temptoTechProduct" as="map(*)" select="map{'toTechProduct': string(translate(translate($thisTechProdsTarget/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+				<xsl:variable name="resulttoTechProduct" select="serialize($temptoTechProduct, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($resulttoTechProduct,'{'),'}')"></xsl:value-of>,
+				<xsl:variable name="temptoTechComponent" as="map(*)" select="map{'toTechComponent': string(translate(translate($thisTechCompsTarget/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+				<xsl:variable name="resulttemptoTechComponent" select="serialize($temptoTechComponent, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($resulttemptoTechComponent,'{'),'}')"></xsl:value-of>,
+				<xsl:variable name="tempEnv" as="map(*)" select="map{'environmentName': string(translate(translate($thisDeployment/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+				<xsl:variable name="resultEnv" select="serialize($tempEnv, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($resultEnv,'{'),'}')"></xsl:value-of>,
 			"fromTechProductId":"<xsl:value-of select="$thisTechProdsSource/name"/>",
 			"fromTechComponentId":"<xsl:value-of select="$thisTechCompsSource/name"/>",
 			"toTechProductId":"<xsl:value-of select="$thisTechProdsTarget/name"/>",
 			"toTechComponentId":"<xsl:value-of select="$thisTechCompsTarget/name"/>",
-			"environment":"<xsl:value-of select="$deploymentRole[name=$deploymentType]/name"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+			"environment":"<xsl:value-of select="$thisDeployment/name"/>",
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 			}, 
 		</xsl:for-each>
 		 

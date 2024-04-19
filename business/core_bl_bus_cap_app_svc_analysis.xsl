@@ -25,7 +25,7 @@
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
-	<xsl:variable name="inScopeBusCaps" select="$allBusinessCaps[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomain/name]"/>
+	<xsl:variable name="inScopeBusCaps" select="$allBusinessCaps[own_slot_value[slot_reference = ('belongs_to_business_domain','belongs_to_business_domains')]/value = $currentDomain/name]"/>
 	<xsl:variable name="allInScopeBusCaps" select="eas:get_object_descendants($inScopeBusCaps, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
 	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allInScopeBusCaps/name]"/>
 	<xsl:variable name="inScopeBusProcs2AppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value = $inScopeBusProcs/name]"/>

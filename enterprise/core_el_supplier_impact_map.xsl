@@ -725,7 +725,7 @@
 						</div>
 						
 										
-						<div class="key pull-right" id="sqvKey">Key:</div>
+						<div class="key pull-right" id="sqvKey"></div>
 						<div class="col-xs-12 top-15">
 							<div class="clearfix"/>
 							<ul class="nav nav-tabs">
@@ -858,9 +858,9 @@
                                <div class="supplierBox">
                                    <xsl:attribute name="easid">{{id}}</xsl:attribute>
                                    <div class="supplierBoxSummary">
-                                       <div class="supplierBoxTitle pull-left strong" data-toggle="tooltip">
+                                       <div class="supplierBoxTitle pull-left strong text-white" data-toggle="tooltip">
                                            <xsl:attribute name="title">{{this.name}}</xsl:attribute>
-                                           <i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+                                           <i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceMenuLinkLight this}}{{/essRenderInstanceMenuLinkLight}}
                                        </div>
                                        {{#ifEquals ../this.esgOn true}}
                                        <div class="lozenge pull-right">
@@ -1015,10 +1015,12 @@
              <div class="clearfix"/>
         </script>
         <script id="key-template" type="text/x-handlebars-template">
-            <b>ESG Key</b>:<xsl:text> </xsl:text>
-            {{#each this}}
-                <div class="keyDiv"><xsl:attribute name="style">background-color:{{this.elementBackgroundColour}};color:{{this.elementColour}}</xsl:attribute> {{this.value}}</div>
-            {{/each}}
+            {{#if this}}
+                <b>ESG Key</b>:<xsl:text> </xsl:text>
+                {{#each this}}
+                    <div class="keyDiv"><xsl:attribute name="style">background-color:{{this.elementBackgroundColour}};color:{{this.elementColour}}</xsl:attribute> {{this.value}}</div>
+                {{/each}}
+            {{/if}}
         </script>
         
         <script id="esg-template" type="text/x-handlebars-template">

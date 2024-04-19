@@ -548,8 +548,14 @@ function essFilterResources(scopedResources, scopeForProperty, scopingProperty) 
     return scopedResources.filter(function(aRes) {
         let isIncludeInScope = true;
 */
-        let resScope = new Set(aRes[scopingProperty]);
-        
+let resScope
+
+if(!Array.isArray(aRes[scopingProperty])){
+    resScope= new Set([aRes[scopingProperty].id]);
+}else{
+    resScope= new Set(aRes[scopingProperty]);
+}  
+
         if(scopeForProperty.includes) {
      
             //let intersection = new Set([...scopeForProperty.includes].filter(scopeValue => resScope.has(scopeValue)));

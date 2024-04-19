@@ -55,6 +55,8 @@
 	<xsl:variable name="processUsages" select="$allProcessUsages[(type = 'Business_Activity_Usage') or (type = 'Business_Process_Usage')]"/>
 	<xsl:variable name="decisionUsages" select="$allProcessUsages[(type = 'Business_Process_Flow_Decision')]"/>
 	<xsl:variable name="processAndDecsionUsages" select="$processUsages union $decisionUsages"/>
+	<xsl:variable name="processPerfRoleUsages" select="$allProcessUsages[type = 'Business_Role_Usage_In_Process']"/>
+	
 
 	<xsl:variable name="startUsage" select="$allProcessUsages[(type = 'Start_Process_Flow')]"/>
 	<xsl:variable name="startRelations" select="$processFlowRelations[own_slot_value[slot_reference = ':FROM']/value = $startUsage/name]"/>
@@ -63,7 +65,11 @@
 	<xsl:variable name="business_processes" select="/node()/simple_instance[(name = $processUsages/own_slot_value[slot_reference = 'business_process_used']/value) or (name = $processUsages/own_slot_value[slot_reference = 'business_activity_used']/value)]"/>
 
 	<!-- get the list of Business Roles in scope -->
-	<xsl:variable name="defined_business_roles" select="/node()/simple_instance[name = $business_processes/own_slot_value[slot_reference = 'business_process_owned_by_business_role']/value]"/>
+	<xsl:variable name="allRoles" select="/node()/simple_instance[type = ('Group_Business_Role', 'Individual_Business_Role')]"/>
+	<xsl:variable name="direct_business_roles" select="$allRoles[name = $business_processes/own_slot_value[slot_reference = 'business_process_owned_by_business_role']/value]"/>
+	<xsl:variable name="processPerfRoles" select="$allRoles[name = $processPerfRoleUsages/own_slot_value[slot_reference = 'business_role_used']/value]"/>
+	<xsl:variable name="perfRoleRelations" select="$processFlowRelations[own_slot_value[slot_reference = ':TO']/value = $processPerfRoleUsages/name]"/>
+	<xsl:variable name="defined_business_roles" select="$direct_business_roles union $processPerfRoles"/>
 	<xsl:variable name="decisionMakers" select="/node()/simple_instance[name = $decisionUsages/own_slot_value[slot_reference = 'bpfd_decision_makers']/value]"/>
 
 	<xsl:variable name="allProcess2InfoRels" select="/node()/simple_instance[name = $modelSubject/own_slot_value[slot_reference = 'busproctype_uses_infoviews']/value]"/>
@@ -199,7 +205,7 @@
 								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 								<span class="text-darkgrey">
 									<xsl:value-of select="$pageTitle"/>
-									<!--<xsl:value-of select="$DEBUG"/>-->
+									<!-- <xsl:value-of select="$DEBUG"/> -->
 								</span>
 							</h1>
 						</div>
@@ -358,10 +364,24 @@
 
 	<xsl:template mode="RenderBusProc" match="node()">
 		<xsl:variable name="busProcId" select="concat('busProc', position())"/>
+		<xsl:variable name="busProcUsage" select="$processUsages[own_slot_value[slot_reference = ('business_process_used', 'business_activity_used')]/value = current()/name]"/>
+		<xsl:variable name="perfRoleRelation" select="$perfRoleRelations[own_slot_value[slot_reference = ':FROM']/value = $busProcUsage/name]"/>
+		<xsl:variable name="perfRoleUsage" select="$processPerfRoleUsages[name = $perfRoleRelation/own_slot_value[slot_reference = ':TO']/value]"/>
+		<xsl:variable name="perfRole" select="$processPerfRoles[name = $perfRoleUsage/own_slot_value[slot_reference = 'business_role_used']/value]"/>
+
 		<xsl:variable name="busRoleIconPath">
-			<xsl:call-template name="RenderIconPath">
-				<xsl:with-param name="businessRole" select="$defined_business_roles[name = current()/own_slot_value[slot_reference = 'business_process_owned_by_business_role']/value]"/>
-			</xsl:call-template>
+			<xsl:choose>
+				<xsl:when test="count($perfRole) > 0">
+					<xsl:call-template name="RenderIconPath">
+						<xsl:with-param name="businessRole" select="$perfRole[1]"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderIconPath">
+						<xsl:with-param name="businessRole" select="$defined_business_roles[name = current()/own_slot_value[slot_reference = 'business_process_owned_by_business_role']/value]"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="busProcName">
 			<xsl:call-template name="RenderMultiLangInstanceName">

@@ -1003,7 +1003,7 @@
 						<div class="modal-dialog modal-xl">
 							<div class="modal-content">
 								<div class="modal-header"> 
-									<h4 class="modal-title">eas:i18n('Application Analysi')"/></h4>
+									<h4 class="modal-title"><xsl:value-of select="eas:i18n('Application Analysis')"/></h4>
 								</div>
 								<div class="modal-body">
 									<div class="col-xs-3">
@@ -2001,6 +2001,7 @@
 											<b><xsl:value-of select="eas:i18n('No additional enumerations set')"/></b>
 										{{/ifEquals}}
 									{{else}}
+									 
 									<div class="bottom-10">
 										<label>{{this.classNm}}</label>
 										{{#ifEquals this.name 'True'}}
@@ -2398,7 +2399,8 @@
 				promise_loadViewerAPIData(viewAPIDataTech)
 				]).then(function (responses){  
 					allDO=responses[0];
-					let focusDO=allDO.data_objects[0];
+					let focusDO = allDO &amp;&amp; allDO.data_objects &amp;&amp; allDO.data_objects.length > 0 ? allDO.data_objects[0] : {};
+ 
 					DOList=responses[0] ; 
 					DRList=responses[0].data_representation ; 
 					appList=responses[1]; 
@@ -2414,7 +2416,9 @@
 					appMart.capability_hieararchy=[]; 
 					interfaceReport=appList.reports.filter((d)=>{return d.name=='appInterface'});
 					let thefocusApp=appList.applications.find((e)=>{return e.id==focusAppId});
- 
+					console.log('appList',appList)
+ console.log('thefocusApp',thefocusApp)
+ console.log('focusAppId',focusAppId)
 					let appDataMap=[];
 			//console.log('appMart',appMart)
 			defaultCurrency = appMart.ccy.find(currency => currency.default === "true");
@@ -2489,7 +2493,7 @@
 					});
 
 					let requiredByAppsArray=[];
-					allDO.data_objects.forEach((e)=>{
+					allDO.data_objects?.forEach((e)=>{
 					 
 							let theDrs=[]
 							e.dataReps.forEach((f)=>{
@@ -2754,13 +2758,14 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 					    return new Handlebars.SafeString(html);
 					});
 										
-			
+		 
 					redrawPage(thefocusApp)
+			 
 	});
 
-function redrawPage(focusApp){ 
-	
-	if (focusApp.children) {
+function redrawPage(focusApp){  
+ console.log('focusApp',focusApp)
+	if (focusApp &amp;&amp; focusApp.children) {
 		focusApp.children = focusApp.children.map(d => appList.applications.find(f => d === f.id)).filter(Boolean);
 	}
  
@@ -2768,7 +2773,7 @@ function redrawPage(focusApp){
 let panelSet = new Promise(function(myResolve, myReject) {
  
 let filterenumerationValues=[];
-let focusKeys=Object.keys(focusApp)
+let focusKeys = focusApp ? Object.keys(focusApp) : [];
  
 let appEnums=[]
 appList.filters.forEach((d)=>{
@@ -2792,12 +2797,12 @@ appList.filters.forEach((d)=>{
 		}
 	}
 })
-let itemsToRemove=[{'class': 'Lifecycle_Status'},{'class': 'Disposition_Lifecycle_Status'},{'class': 'Codebase_Status'},{'class': 'Application_Purpose'},{'class': 'Application_Delivery_Model'}];
+let itemsToRemove=[{'class': 'Lifecycle_Status'},{'class': 'Disposition_Lifecycle_Status'},{'class': 'Codebase_Status'},{'class': 'Application_Purpose'},{'class': 'Application_Delivery_Model'},{'class': 'SYS_CONTENT_VISIBILITY'},{'class': 'SYS_CONTENT_QUALITY_STATUS'},{'class': 'SYS_CONTENT_APPROVAL_STATUS'},{'class':'system_is_published'}];
  
 const clsToRemove = itemsToRemove.map(item => item.class);
 const filteredArray = appEnums.filter(item => !clsToRemove.includes(item.class))
   
-if(filteredArray){
+if(filteredArray &amp;&amp; focusApp){
 	focusApp['otherEnums']=filteredArray
 }
 let allProcsforApps=[];
@@ -2839,13 +2844,13 @@ if(focusApp){
 	focusApp['stdkey']=key;
 	focusApp['applicationTechnology']=thisTech;
 
-	allDO.app_infoRep_Pairs = allDO.app_infoRep_Pairs.map(item => ({
+	allDO.app_infoRep_Pairs = allDO.app_infoRep_Pairs?.map(item => ({
 		...item,
 		className: 'Information_Representation'
 	}));
 
 	
-	let thisDB=allDO.app_infoRep_Pairs.filter((ap)=>{
+	let thisDB=allDO.app_infoRep_Pairs?.filter((ap)=>{
 		return ap.appId==focusApp.id &amp;&amp; ap.persisted=='true';
 	})
  
@@ -2926,8 +2931,9 @@ if(focusApp){
 		thisProjDetail['plan']=d.plan;
 		thisProjDetail['planId']=d.planid;
 		thisProjDetail['apraction']=d.action;
-	 
-		thisaprProj.push(thisProjDetail);
+		if(thisProjDetail){
+			thisaprProj.push(thisProjDetail);
+		}
 		if(thisProjDetail.proposedStartDate){
 			d['projForeStart']=thisProjDetail.proposedStartDate;
 			d['projActStart']=thisProjDetail.actualStartDate;
@@ -2937,12 +2943,17 @@ if(focusApp){
 		let thisaprPlans=plans.allPlans.find((p)=>{
 			return d.planid==p.id
 		})
-		thisaprPlan.push(thisaprPlans)
+		if(thisaprPlans){
+			 
+			thisaprPlan.push(thisaprPlans)
+		}
 	})
 }) 
 
 let resApr = {};
-thisaprPlan.forEach(a => resApr[a.id] = {...resApr[a.id], ...a});
+ 
+
+thisaprPlan?.forEach(a => resApr[a.id] = {...resApr[a.id], ...a});
 thisaprPlan = Object.values(resApr);
  
 focusApp['aprplans']=thisaprPlan;
@@ -2995,7 +3006,7 @@ if(focusApp.physP){
 focusApp['processInfo']=allProcsforApps;
 } 
 let stakeholdersList=[]; 
-if(focusApp.stakeholders){
+if(focusApp &amp;&amp; focusApp.stakeholders){
 stakeholdersList = d3.nest()
   .key(function(d) { return d.actor; })
   .entries(focusApp.stakeholders);
@@ -3009,6 +3020,7 @@ stakeholdersList = d3.nest()
 })
 }
 
+if(focusApp){
   focusApp['stakeholdersList']=stakeholdersList;
 
   focusApp.lifecycles?.forEach((e,i)=>{
@@ -3050,13 +3062,15 @@ let appDetail=appMart.applications.find((d)=>{
 	return d.id==focusApp.id
 });
  
-if(appDetail.documents){
-	let docsCategory = d3.nest()
-	.key(function(d) { return d.type; })
-	.entries(appDetail.documents);
-	
-	focusApp['documents']=docsCategory;
-}
+	if(appDetail.documents){
+		let docsCategory = d3.nest()
+		.key(function(d) { return d.type; })
+		.entries(appDetail.documents);
+		
+		focusApp['documents']=docsCategory;
+	}
+
+
 let costByCategory=[];
 let costByType=[];
 let costByFreq =[];
@@ -3485,7 +3499,7 @@ new Chart(document.getElementById("costByMonth-chart"), {
 		  }
 	  }
 });
-
+}
 }
 
 
@@ -3507,7 +3521,7 @@ $('.popover-trigger').popover({
 let classSelectData=[];
 let doSelectData=[];
 let irSelectData=[];
-if(focusApp.thisAppArray){
+if(focusApp &amp;&amp; focusApp.thisAppArray){
 	focusApp.thisAppArray.forEach((d)=>{
 		d.classifications.forEach((c)=>{
 			classSelectData.push(c)
@@ -3544,7 +3558,7 @@ irSelectData.forEach((c)=>{
 $('#classificationFilter').select2({width:"200px"});
 $('#doFilter').select2({width:"200px"}); 
 $('#irFilter').select2({width:"200px"}); 
-if(focusApp.thisAppArray){
+if(focusApp &amp;&amp; focusApp.thisAppArray){
 	$('.classificationFilter').hide();
  
 	let showCheck=0;

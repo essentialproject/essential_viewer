@@ -68,7 +68,7 @@
                 	text-align: center;
                 	width: 100%;
                 }
-                
+            <!-- original style    
 				.node rect {
 				  stroke: #333;
 				  fill: #fff;
@@ -79,6 +79,36 @@
 				  fill: #333;
 				  stroke-width: 1.5px;
 				}            
+			-->
+			/* Style for nodes */
+			.node rect {
+			  fill: #ffffff;
+			  stroke: #000000;
+			  stroke-width: 1px;
+			}
+			
+			/* Style for node labels */
+			.node text {
+			  font-size: 10px;
+			  font-family: 'Arial';
+			  fill: #000000;
+			}
+			
+			/* Style for edges */
+			.edgePath path {
+			  stroke: #000000;
+			  stroke-width: 1px;
+			  fill: none;
+			}
+			
+			/* Style for edge labels */
+			.edgeLabel text {
+			  font-size: 8px;
+			  font-family: 'Arial';
+			  fill: #000000;
+			}
+			
+
                 </style>
             	
             	<script>
@@ -193,21 +223,17 @@
 			{{#each instance}} 
 						{{#ifEquals this.slotType "simple_instance"}}	
 					{{#unless enum}}
-				<i class="fa fa-caret-right"></i><xsl:text> </xsl:text> <b>{{this.name_values.0.type}}</b> 
+				<i class="fa fa-caret-right"></i><xsl:text> </xsl:text> <b>{{this.name}}</b>
 						<ul class="fa-ul">
-									{{#each name_values}}
+									{{#each this.value}}
 							
 										<li>
 											<xsl:attribute name="id">p{{this.id}}</xsl:attribute>
 											<xsl:attribute name="class">p{{this.id}}</xsl:attribute>
-										<!--	{{#if this.slotType}}
-											
-														<span>{{this.name}}</span>
-											
-											{{/if}}
-										-->
+										
 											<span>{{this.name}} <i class="fa fa-eye">
 														<xsl:attribute name="id">{{this.id}}</xsl:attribute>
+														<xsl:attribute name="slotid">{{../this.name}}</xsl:attribute>
 														</i></span>
 										</li>
 								
@@ -326,22 +352,10 @@ function getData(dta){
                 thisviewAPIData = response1;
                //DO HTML stuff
          thisviewAPIData=response1; 
+
+		 console.log('thisviewAPIData',thisviewAPIData)
     $('#spinner').hide();
-		if(thisviewAPIData['name']){	
-			var focusNode= thisviewAPIData['name'][0];}
-		else if(thisviewAPIData['relation_name']){
-		var focusNode= thisviewAPIData['relation_name'][0];
-		}
-		else{
-		
-		var focusNode= thisviewAPIData.instance.filter(function(d){
- 
-			
-			return d.name=='name' || d.name=='relation_name';
-			});
-	
-		focusNode=thisNode[0].values[0];
-		}
+		return thisviewAPIData
 		
  	
             }).catch (function (error) {
@@ -349,117 +363,67 @@ function getData(dta){
             });
         }        
    
-async function getNode(parentNode,idToCall,pos){
+async function getNode(parentNode,idToCall,pos, slot){
  
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath2"/>&amp;PMA='+idToCall;
               
         const result = await getData(viewAPIData);
- 
-        var getName =thisviewAPIData.instance.find(function(d){
-            return d.name==='name'
-        });
-        var getRelName =thisviewAPIData.instance.find(function(d){
-            return d.name==='relation_name'
-        });
-        var getType =thisviewAPIData.instance.forEach(function(d){
-        
-                d.name_values.forEach(function(e){
-           
-            if(e.superclass){
-                    e.superclass.find(function(f){
-                    if(f==='Enumeration'){
-                        d['enum']='True';
-                            }
-                    });
-                    }
-                });
-            });
 
-		
-        
-        if(pos===1){
-            if(getName){
-            thisviewAPIData['name']=getName.values;
-            }else
-            {
-            thisviewAPIData['name']=getRelName.values;
-            }
-        } 
-	if(thisviewAPIData['name']){	
-	var thisNode= thisviewAPIData['name'][0];}
-		else if(thisviewAPIData['relation_name']){
-		var thisNode= thisviewAPIData['relation_name'][0];
-		}
-		else{
-		
-		var thisNodeSelected= thisviewAPIData.instance.filter(function(d){
-	 
-			return d.name=='name' || d.name=='relation_name';;
-			});
- 
-		thisNode =thisNodeSelected[0].values[0];
-		}
-		focusId=idToCall; 
-	if(parentNode==idToCall){
-		var focusNode={"id":idToCall,"name":thisNode};
-		}
-		else
-		{
-		var focusNode={"id":idToCall,"name":parentNode};
-		}
-	 
+ 	 <!--
+		result.instance.forEach((d)=>{
+			 
+			if (Array.isArray(d.value)) {
+				d.value.forEach((e)=>{
 
-	states.push({"name":thisNode,"id":idToCall});
-
-var temp=[];
-var uniqueArray=[];		
-		var uniqueStates=states.filter((x, i)=> {
-		  if (temp.indexOf(x.id) &lt; 0) {
-			temp.push(x.id);
-			uniqueArray.push({"id":x.id,"name":x.name})
-			return true;
-		  }
-		  return false;
+					states.push({"name":d.name,"id":e});
+					nodeSet.push({"id":result.id,"parent":result.id,"child":e})
+				})
+			}else{
+				states.push({"name":d.name,"id":d.value});
+				nodeSet.push({"id":result.id,"parent":result.id,"child":d.value})
+			}
 		})
-states=uniqueArray;
+	-->
+	
+	states.push({"name":result.name,"id":result.id });
+	if(result.id!=parentNode){
+	nodeSet.push({"id":result.id,"parent":parentNode,"child":result.id, "label":slot||""})
+	}
  
-if(focusNode.name!==thisNode){
- 
- 
-
-let thisNodeID = states.filter((e)=>{
-	return e.name == thisNode
-}) 
-let focusNodeID = states.filter((e)=>{
-	return e.name == focusNode.name
-}) 
- 
-		nodeSet.push({"id":focusNode.id,"parent":focusNodeID[0].id,"child":thisNodeID[0].id})
-		}
- 	
+	var temp=[];
+	var uniqueArray=[];		
+			var uniqueStates=states.filter((x, i)=> {
+			if (temp.indexOf(x.id) &lt; 0) {
+				temp.push(x.id);
+				uniqueArray.push({"id":x.id,"name":x.name})
+				return true;
+			}
+			return false;
+			})
+			
+	states=uniqueArray;
+  
    data={nodes:nodeSet}	;
+   focusNode=result.id
  
- 
-		focusNode=thisNode;
-		
-		
-     createGraph(focusNode);   
-		
- 
+    createGraph(focusNode);   
+	
 	$('#slots').empty();	
 		
-	var slots2show=	thisviewAPIData.instance.filter(function(d){
+	var slots2show=	result.instance.filter(function(d){
 		return d.name!='external_repository_instance_reference';
 		})
 	slots2show={"instance":slots2show}	 
+
   	$('#slots').append(slotCardTemplate(slots2show));
        
          
 		$('.fa-eye').click(function(d){
 		
 			var idToCall2=$(this).attr('id');
+			var slotid=$(this).attr('slotid');
 	  
-			getNode(focusNode,idToCall2,2);
+			getNode(focusNode,idToCall2,2, slotid);
         })
           
         };        
@@ -522,13 +486,7 @@ let focusNodeID = states.filter((e)=>{
 			});
         
         });
-		
-		
-		
-
 	
-
-
 });	
  function createGraph(fcsNode){	
 // Create a new directed graph
@@ -540,12 +498,13 @@ var g=g1.setGraph({});
 
 states.forEach(function(state) { g.setNode(state.id, { label: state.name, easid:state.id }); });
 
-data.nodes.forEach(function(d) { g.setEdge(d.parent, d.child,{ label: "",curve: d3.curveBasis}); });	
- 
+data.nodes.forEach(function(d) { g.setEdge(d.parent, d.child,{ label: d.label,curve: d3.curveBasis}); });	
+console.log('data',data)
  console.log('states',states)
 var res=dagreD3.graphlib.json.write(g1);
  		
 g.nodes().forEach(function(v) {
+	console.log('v',v)
   var node = g.node(v);
   node.rx = node.ry = 5;	
 	 
@@ -564,8 +523,9 @@ var screenHeight = $(window).height();
 var svgWidth = screenWidth*0.73;
 // Height of page minus the header and footer, etc
 var svgHeight = screenHeight-30;
-
-g.graph().rankDir = 'LR';
+ 
+g.graph().rankDir = 'LR'; // Left-to-right layout
+g.graph().ranksep = 100;
 var svg = d3.select("svg");
 svg.append("g").style("width", svgWidth).style("height", svgHeight);
 

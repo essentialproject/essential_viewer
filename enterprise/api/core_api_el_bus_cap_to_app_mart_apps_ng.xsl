@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-<xsl:include href="../../common/core_utilities.xsl"/>
-<xsl:include href="../../common/core_js_functions.xsl"/>
+<xsl:include href="../../common/core_utilities_NG.xsl"/>
+<xsl:include href="../../common/core_js_functions_NG.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
+	
+	
 <xsl:param name="param1"/> 
+	
 <xsl:param name="allAppProvidersApi"/> 
 <xsl:param name="relevantBusProcsApi"/> 
 <xsl:param name="relevantPhysProcsApi"/> 
@@ -28,103 +31,104 @@
 <xsl:param name="APUtoAPUApi"/>    
 <xsl:param name="reportApi"/> 
 <xsl:param name="reportMenuApi"/>   
+	
 <eas:apiRequests>
         {"apiRequestSet": [
             {
                 "variable": "allAppProvidersApi",
-                "query": "/instances/Composite_Application_Provider"
+                "query": "/instances/type/Composite_Application_Provider"
 			},
 			{
                 "variable": "relevantBusProcsApi",
-                "query": "/instances/Business_Process"
+                "query": "/instances/type/Business_Process"
 			},
 			{
                 "variable": "relevantPhysProcsApi",
-                "query": "/instances/Physical_Process"
+                "query": "/instances/type/Physical_Process"
 			},
 			{
                 "variable": "relevantAppProRolesApi",
-                "query": "/instances/Application_Provider_Role"
+                "query": "/instances/type/Application_Provider_Role"
 			},
 			{
                 "variable": "relevantAppProPhysBusApi",
-                "query": "/instances/APP_PRO_TO_PHYS_BUS_RELATION"
+                "query": "/instances/type/APP_PRO_TO_PHYS_BUS_RELATION"
 			},
 			{
                 "variable": "appSvcApi",
-                "query": "/instances/Application_Service"
+                "query": "/instances/type/Application_Service"
 			},
 			{
                 "variable": "groupActorApi",
-                "query": "/instances/Group_Actor"
+                "query": "/instances/type/Group_Actor"
 			},
 			{
                 "variable": "individualActorApi",
-                "query": "/instances/Individual_Actor"
+                "query": "/instances/type/Individual_Actor"
 			},
 			{
                 "variable": "groupBusinessRoleApi",
-                "query": "/instances/Group_Business_Role"
+                "query": "/instances/type/Group_Business_Role"
 			},
 			{
                 "variable": "a2rApi",
-                "query": "/instances/ACTOR_TO_ROLE_RELATION"
+                "query": "/instances/type/ACTOR_TO_ROLE_RELATION"
 			},
 			{
                 "variable": "lifecycleApi",
-                "query": "/instances/Lifecycle_Status"
+                "query": "/instances/type/Lifecycle_Status"
 			},
 			{
                 "variable": "stylesApi",
-                "query": "/instances/Element_Style"
+                "query": "/instances/type/Element_Style"
 			},
 			{
                 "variable": "deliveryApi",
-                "query": "/instances/Application_Delivery_Model "
+                "query": "/instances/type/Application_Delivery_Model "
 			},
 			{
                 "variable": "codebaseApi",
-                "query": "/instances/Codebase_Status"
+                "query": "/instances/type/Codebase_Status"
 			},
 			{
                 "variable": "siteApi",
-                "query": "/instances/Site"
+                "query": "/instances/type/Site"
 			},
 			{
                 "variable": "geoRegionApi",
-                "query": "/instances/Geographic_Region"
+                "query": "/instances/type/Geographic_Region"
 			},
 			{
                 "variable": "geoLocationApi",
-                "query": "/instances/Geographic_Location"
+                "query": "/instances/type/Geographic_Location"
 			},
 			{
                 "variable": "criticalityApi",
-                "query": "/instances/Business_Criticality"
+                "query": "/instances/type/Business_Criticality"
 			},
 			{
                 "variable": "dataAcquisitionApi",
-                "query": "/instances/Data_Acquisition_Method"
+                "query": "/instances/type/Data_Acquisition_Method"
 			},
 			{
                 "variable": "StaticApplicationProviderUsageApi",
-                "query": "/instances/Static_Application_Provider_Usage"
+                "query": "/instances/type/Static_Application_Provider_Usage"
 			},
 			{
                 "variable": "APUtoAPUApi",
-                "query": "/instances/:APU-TO-APU-STATIC-RELATION"
+                "query": "/instances/type/:APU-TO-APU-STATIC-RELATION"
 			},
 			{
                 "variable": "reportApi",
-                "query": "/instances/Report"
+                "query": "/instances/type/Report"
 			},
 			{
                 "variable": "reportMenuApi",
-                "query": "/instances/Report_Menu"
+                "query": "/instances/type/Report_Menu"
 			},
 			{
                 "variable": "appPurposeApi",
-                "query": "/instances/Application_Purpose"
+                "query": "/instances/type/Application_Purpose"
 			}
 			]       
 		}

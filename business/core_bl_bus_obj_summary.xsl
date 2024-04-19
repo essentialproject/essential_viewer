@@ -41,7 +41,7 @@
 	 
 	<xsl:variable name="busObjDrivers" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
 
-	<xsl:variable name="busObjMeasureValuesA2O" select="/node()/simple_instance[name = $actor2Objective/own_slot_value[slot_reference = 'act_to_obj_target_value']/value]"/>
+	<xsl:variable name="busObjMeasureValuesA2O" select="/node()/simple_instance[name = $actor2Objective/own_slot_value[slot_reference = ('act_to_obj_target_value', 'act_to_obj_target_values')]/value]"/>
 	
 	<xsl:variable name="busObjMeasureValuesOld" select="/node()/simple_instance[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
 

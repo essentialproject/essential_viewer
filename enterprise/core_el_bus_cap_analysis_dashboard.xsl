@@ -213,16 +213,17 @@
 					}
 
 					.off-cap{
-						border: 1pt solid #ccc;
-						border-left: 3px solid rgb(125, 174, 198);					
-						background-color: rgb(237, 237, 237);
-						color:#d3d3d3;  
+						border: 1pt solid #fff;
+						//border-left: 3px solid rgb(125, 174, 198);					
+						background-color: #c8c2e8;
+						color:#c8c2e8;  
 
 					}
 					
 					.cap-label,.sub-cap-label{
 						margin-right: 20px;
 						margin-bottom: 10px;
+					
 					}
 					
 					.sidenav{
@@ -481,7 +482,7 @@
 						background-color: #f6f6f6;
 						border: 1pt solid #ccc;
 						border-bottom: 1px solid #aaa;
-						color: #aaa;
+						color: #000000;;
 					} 
 
 					.caps {
@@ -677,7 +678,7 @@
 						text-align: center;
 						}
 						.goalCard2{
-							height:90px;
+							height:120px;
 							display: inline-block;
 							border-radius: 4px;
 							font-size:0.8em;
@@ -709,6 +710,8 @@
 						 padding-right:3px;
 						 border-radius: 4px;
 						 width:100px;
+						 max-height:88px;
+						 overflow-y: auto; 
 						}
 					.leftAppColourBlob{
 						background-color: #24A5F4;

@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+<xsl:stylesheet version="3.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview" 
+xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+exclude-result-prefixes="#all">
     <xsl:include href="../../common/core_utilities.xsl"/>
 	<xsl:include href="../../common/core_js_functions.xsl"/>
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/> 
-	<xsl:variable name="allSupplier" select="/node()/simple_instance[type = 'Supplier']"/>     
+	<xsl:key name="allSupplierKey" match="/node()/simple_instance[type = 'Supplier']" use="type"/>    
+	<xsl:variable name="allSupplier" select="key('allSupplierKey','Supplier')"/>     
     <xsl:variable name="apps"  select="/node()/simple_instance[type='Composite_Application_Provider']"></xsl:variable>
 	<xsl:key name="supplier" match="/node()/simple_instance[type='Supplier']" use="name"/> 
+	<xsl:key name="site" match="/node()/simple_instance[type='Site']" use="name"/> 
 	<xsl:variable name="supps" select="key('supplier', $apps/own_slot_value[slot_reference='ap_supplier']/value)"/>
     <xsl:key name="appsKey" match="$apps" use="own_slot_value[slot_reference='ap_supplier']/value"/> 
     <xsl:variable name="processes"  select="/node()/simple_instance[type='Physical_Process']"></xsl:variable>
-    <xsl:variable name="actorSuppliers"  select="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference='external_to_enterprise']/value='true']"></xsl:variable>
+    <xsl:key name="allactorSuppliers"  match="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference='external_to_enterprise']/value='true']" use="type"></xsl:key>
+    <xsl:key name="allactorSuppliersName"  match="/node()/simple_instance[type='Group_Actor'][own_slot_value[slot_reference='external_to_enterprise']/value='true']" use="name"></xsl:key>
+	<xsl:variable name="actorSuppliers"  select="key('allactorSuppliers','Group_Actor')"></xsl:variable>
     <xsl:key name="actortoRole" match="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference='act_to_role_from_actor']/value"/> 
     <xsl:key name="actorProcesses" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference='process_performed_by_actor_role']/value"/> 
     <xsl:key name="processes" match="/node()/simple_instance[type='Business_Process']" use="own_slot_value[slot_reference='implemented_by_physical_business_processes']/value"/> 
@@ -45,7 +51,7 @@
 	 
 	<xsl:template match="knowledge_base">
 		{"suppliers":[<xsl:apply-templates select="$allSupplier" mode="getSupplier"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
-		"suppliersProcess":[<xsl:apply-templates select="$actorSuppliers" mode="actorSuppliers"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+		"suppliersProcess":[<xsl:apply-templates select="key('allactorSuppliers','Group_Actor')" mode="actorSuppliers"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 		"suppliersApps":[<xsl:apply-templates select="$supps" mode="supps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 		"filters":[<xsl:apply-templates select="$allEnumClass" mode="createFilterJSON"></xsl:apply-templates>],
 		"version":"618"}
@@ -53,11 +59,31 @@
 
 	<xsl:template match="node()" mode="getSupplier">
 			<xsl:variable name="this" select="current()"/>
-		   {"id":"<xsl:value-of select="$this/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="$this"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
+			<xsl:variable name="thisActor" select="key('allactorSuppliersName', own_slot_value[slot_reference='supplier_actor']/value)"/>
+			<xsl:variable name="thisActorSite" select="key('site', $thisActor/own_slot_value[slot_reference='actor_based_at_site']/value)"/>
+		   {"id":"<xsl:value-of select="$this/name"/>",
+		   <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($this/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+		   <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+		   <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="$this"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>",
 			"className":"<xsl:value-of select="current()/type"/>",	
+		<!-- ARRAY of instances $thisActorSite, creates a map of objects with name and id -->
+			<xsl:variable name="maps" as="item()*">
+				<xsl:for-each select="$thisActorSite">
+					<xsl:sequence select="map{
+						'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name', 'relation_name')]/value, '}', ')'), '{', ')')),
+						'id': string(translate(translate(current()/name, '}', ')'), '{', ')'))
+					}"/>
+				</xsl:for-each>
+			</xsl:variable>
+			<xsl:variable name="jsonArray" as="array(*)">
+				<xsl:sequence select="array{$maps}"/>
+			</xsl:variable>
+			<xsl:variable name="jsonResult" select="serialize($jsonArray, map{'method':'json', 'indent':true()})"/>
+			"sites":<xsl:sequence select="$jsonResult"/>,
+	 
 			"supplierActor":"<xsl:value-of select="$this/own_slot_value[slot_reference='supplier_actor']/value"/>",	
 			"esg_rating":"<xsl:value-of select="$this/own_slot_value[slot_reference='esg_rating']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>

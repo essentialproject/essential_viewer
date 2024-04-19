@@ -8,6 +8,8 @@
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
+
+	<xsl:include href="../common/core_handlebars_functions.xsl"/>
     
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
 
@@ -20,35 +22,25 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider','Information_Representation','Composite_Application_Provider')"/>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider','Composite_Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	
-    <xsl:variable name="allApplications" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider','Application_Provider_Interface')]"/>
+    <xsl:variable name="allInfoReps" select="/node()/simple_instance[type=('Information_Representation')]"/>
 
 	<xsl:variable name="allArchUsages" select="/node()/simple_instance[type='Static_Application_Provider_Usage']"/>
     <xsl:variable name="allAPUs" select="/node()/simple_instance[type=':APU-TO-APU-STATIC-RELATION']"/>
+	<xsl:key name="allArchUsagesKey" match="/node()/simple_instance[type='Static_Application_Provider_Usage']" use="name"/>
+	<xsl:key name="allSAKey" match="/node()/simple_instance[supertype='Application_Provider']" use="own_slot_value[slot_reference='ap_static_architecture']/value"/>
+	<xsl:key name="allAppsforSAKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider','Application_Provider_Interface')]" use="name"/>
+	<xsl:key name="allAppProtoInfoKey" match="/node()/simple_instance[type=('APP_PRO_TO_INFOREP_RELATION','APP_PRO_TO_INFOREP_EXCHANGE_RELATION')]" use="name"/>
+	<xsl:key name="allInfoRepKey" match="/node()/simple_instance[type=('Information_Representation')]" use="name"/>
+	
     <xsl:variable name="allAppProtoInfo" select="/node()/simple_instance[type='APP_PRO_TO_INFOREP_RELATION'][name=$allAPUs/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value]"/>
     <xsl:variable name="allInfo" select="/node()/simple_instance[type='Information_Representation'][name=$allAppProtoInfo/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value]"/>
-<!-- application capabilities -->
-	<xsl:variable name="taxonomy" select="/node()/simple_instance[type='Taxonomy'][own_slot_value[slot_reference='name']/value=('Reference Model Layout')]"/> 
-	<xsl:variable name="taxonomyCat" select="/node()/simple_instance[type='Taxonomy'][own_slot_value[slot_reference='name']/value=('Application Capability Category')]"/> 
-	<xsl:variable name="taxonomyTerm" select="/node()/simple_instance[type='Taxonomy_Term'][name=$taxonomy/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
-	<xsl:variable name="taxonomyTermCat" select="/node()/simple_instance[type='Taxonomy_Term'][name=$taxonomyCat/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
-	<xsl:variable name="appCaps" select="/node()/simple_instance[type='Application_Capability']"/> 
- 	<xsl:variable name="busCaps" select="/node()/simple_instance[type='Business_Capability']"/> 
-	<xsl:variable name="busDomains" select="/node()/simple_instance[type='Business_Domain']"/> 
-	<xsl:variable name="appServices" select="/node()/simple_instance[type='Application_Service']"/> 
-	<xsl:variable name="aprRoles" select="/node()/simple_instance[type='Application_Provider_Role']"/> 
-	<xsl:variable name="purpose" select="/node()/simple_instance[type='Application_Purpose']"/>  
-	<xsl:variable name="a2r" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>
-	<xsl:variable name="actors" select="/node()/simple_instance[type='Group_Actor']"/>
-	<xsl:variable name="codebases" select="/node()/simple_instance[type='Codebase_Status']"/>
-	<xsl:variable name="deliveryTypes" select="/node()/simple_instance[type='Application_Delivery_Model']"/>
-	<xsl:variable name="purposeTypes" select="/node()/simple_instance[type='Application_Purpose']"/>
-	<xsl:variable name="family" select="/node()/simple_instance[type='Application_Family']"/>
-	<xsl:variable name="elementStyle" select="/node()/simple_instance[type='Element_Style']"/>
 
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
+	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"></xsl:variable>
+	<xsl:variable name="appMartData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
 
 <!--	* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -67,6 +59,26 @@
 		* You should have received a copy of the GNU General Public License
 		* along with Essential Architecture Manager.  If not, see <http://www.gnu.org/licenses/>.
 		* 
+
+	
+
+		D3 License
+		Copyright 2010-2023 Mike Bostock
+
+		Permission to use, copy, modify, and/or distribute this software for any purpose
+		with or without fee is hereby granted, provided that the above copyright notice
+		and this permission notice appear in all copies.
+
+		THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+		REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+		FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+		INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+		OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+		TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+		THIS SOFTWARE.
+
+		JS Tree License 
+		Copyright (c) 2020 Ivan Bozhanov (http://vakata.com)
 
 		Dagre D3 license
 		Copyright (c) 2013 Chris Pettitt
@@ -98,15 +110,28 @@
 
 	<xsl:template match="knowledge_base">
 			<xsl:variable name="apiApps">
-					<xsl:call-template name="GetViewerAPIPath">
-						<xsl:with-param name="apiReport" select="$appsData"></xsl:with-param>
-					</xsl:call-template>
-				</xsl:variable>
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$appsData"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:variable name="apiInfo">
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$infoData"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:variable name="apiappMart">
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$appMartData"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+			
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
+				<link rel="stylesheet" href="js/jstree/themes/default/style.min.css" />
+				<script src="js/jstree/jstree.min.js?release=6.19"/>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"/>
                 <script src="js/dagre/dagre.min.js?release=6.19"></script>
 				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script> 
  
@@ -118,7 +143,10 @@
 				</xsl:for-each>
 				<title>Data Dependencies</title>
                   <style>
-                .clusters rect {
+					#tooltip {
+						z-index: 1000;
+					}
+                	.clusters rect {
                           fill: #00ffd0;
                           stroke: #999;
                           stroke-width: 1.5px;
@@ -197,33 +225,199 @@
 						top: -30px;
 						position: relative;
 					}
-                </style>
-     
-                 <script>
-                        var nodeTemplate;
-                       
-                        $(document).ready(function() {
-                            var nodeFragment = $("#node-template").html();
-                            nodeTemplate = Handlebars.compile(nodeFragment);
-                            
-					 		var ifaceListFragment = $("#iface-list-template").html();
-							ifaceListTemplate = Handlebars.compile(ifaceListFragment);
-							
-					 		Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
-							return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
-						});
-                        });
+					.infoBox{
+						height:0px;
+						display:none;
+						opacity:0;
+					}
+					.selectBox{
+						display:inline-block;
+					}
+					.apptype{
+						display: flex;            /* Enables flexbox */
+    					justify-content: center;  /* Centers content horizontally */
+    					align-items: center;  
+						border-radius:36px;
+						border:2pt solid #d3d3d3;
+						width:20px;
+						height:20px;
+						position:relative; 
+						display:inline-block;
 
-                </script>
-				 
-			</head>
+					}
+					.enumLozenge{
+						border-radius: 6px;
+						margin:2px;
+						padding:2px;
+					}
+
+					#slideupPanel {
+						background-color: rgba(0,0,0,0.85);
+						padding: 10px;
+						border-top: 1px solid #ccc;
+						position: fixed;
+						bottom: 0;
+						left: 0;
+						z-index: 100;
+						width: 100%;
+						height: 350px;
+						color: #fff;
+					}
+
+					#zoomWarning {
+						position: absolute; /* Use absolute positioning */
+						top: 10%; /* Position the top edge of the div in the center of the screen */
+						left: 50%; /* Position the left edge of the div in the center of the screen */
+						transform: translate(-50%, -50%); /* Adjust the div's position to be truly centered */
+						
+						/* Optional styles for your div */
+						padding: 20px;
+						background-color: red; /* Just for visibility */
+						border-radius: 5px;
+						box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+						text-align: center; /* Centers the text inside the div */
+						color:white;
+						z-index:1000;
+					  }
+			 
+					  /* The sidepanel (hidden by default) */
+					  .sidepanel {
+						  height: 100%;
+						  width: 0;
+						  position: fixed;
+						  z-index: 1002; /* Ensure it's above other content */
+						  top: 0;
+						  right: 0;
+						  background-color: #111;
+						  overflow-x: hidden;
+						  transition: 0.5s;
+						  padding-top: 60px;
+					  }
+					  
+					  /* Handle to open the sidepanel */
+					  .handle {
+						  position: fixed; /* changed to fixed */
+						  right: 30px; /* position on the right edge */
+						  top: 30%; /* vertically centered */
+						  z-index: 3; /* higher z-index to be on top */
+						  background-color: #333;
+						  color: white;
+						  padding: 5px 10px;
+						  cursor: pointer;
+						  text-align: center;
+						  border-radius: 5px 0 0 5px; /* rounded corners on the left */
+						  transform: translateX(100%); /* move it right so it's visible */
+						  transition: 0.5s;
+					  }
+					  
+					  /* Close button */
+					  .closebtn {
+						  position: absolute;
+						  top: 0;
+						  right: 25px;
+						  font-size: 36px;
+						  cursor: pointer;
+					  }
+					  .appData{
+						color:white;
+						font-size:0.9em;
+						padding:3px;
+						border:1pt solid #d3d3d3;
+						margin:2px;
+					  }
+.stakeholdersbox{
+
+	position: relative;
+	display: inline-block;
+    width: 24%;
+	border:1pt solid #d3d3d3;
+	border-radius: 6px;
+	margin:2px;
+	padding:3px;
+	vertical-align:top;
+}
+.summarybox{
+	position: relative;
+	display: inline-block;
+    width: 24%;
+	border:1pt solid #d3d3d3;
+	background-color:#ffffff;
+	color:#000;
+	border-radius: 6px;
+	margin:2px;
+	padding:3px;
+	vertical-align:top;
+} 
+.boxBadge{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 1pt solid #ffffff;
+    background-color: #d01e1e;
+    border-radius: 36px;
+    right: 3px;
+    top: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#scrollToTop {
+  display: flex; /* Use Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  position: fixed; /* Fixed position */
+  bottom: 20px; /* 20px from the bottom */
+  left: 30px; /* 30px from the left */
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: rgb(28, 28, 28);
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px; /* Adjust as per your icon size */
+  width: 28px; /* Width of the div */
+  height: 28px; /* Height of the div */
+}
+
+
+#scrollToTop:hover {
+  background-color: #cf3c3c;
+}
+
+.keyBox{
+	border:1pt solid #ffffff;
+	border-radius:5px;
+	padding:3px;
+	margin: 2px;
+	position: relative;
+}
+
+.keyBox .keyTitle {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    white-space: nowrap;
+}
+.keyBox i {
+	padding-left: 25px;
+    text-align: center;
+    display: inline-block;
+}
+
+                </style>
+ 			 </head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/> 
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
 			 
 				<!--ADD THE CONTENT-->
-				<div class="container-fluid">
+				<div class="container-fluid" id="container">
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="page-header">
@@ -231,689 +425,353 @@
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Connections')"/></span>
 								</h1>
-								<div class="key pull-right">
-								<strong class="right-5">Key:</strong>	
-									<span class="appbadge right-10" style="padding:5px;opacity:1;">Application in Scope</span>
-									<span class="appbadge right-10" style="padding:5px;opacity:0.5;">Dependency</span>
-									<i class="fa fa-info-circle" id="infoModal"></i>
-								</div>
 							</div>
-							<div class="row">
-								<div class="col-md-2">
-									<label> Application Capabilities</label>
-									<div><select class="form-control" id="caps" style="width:100%"><option value="all">Select</option><option value="all">All</option></select></div>
-								</div>
-								<div class="col-md-2">
-									<label> Application Services</label>
-									<div><select class="form-control" id="services" style="width:100%"><option value="all">All</option></select></div>
-								</div>
-								<div class="col-md-2">
-									<div><button class="btn btn-default btn-sm right-15 top-15"  style="margin-top:25px" id="refresh"><i class="fa fa-refresh right-5"></i>Reset Image</button></div>
-								</div>
-							</div>
-							 
-							<hr/>
-	
 						
 						</div>
-						<!--Setup Description Section-->
-						<div class="col-xs-12">                
-								<div class="simple-scroller">
-									<svg width="100" height="100" id="depGraph"><g/></svg>
-								</div>
-								<div id="explainModal" class="modal fade" role="dialog">
-									<div class="modal-dialog"> 
-										<div class="modal-content">
-										<div class="modal-body">
-											<h3 class="strong">Explainer</h3>
-											<div class="appbadge" style="padding:5px;background-color:#333;display:inline-block">Application in Scope</div>
-											<p>The applications in scope are those applications directly impacted by the selected filters.</p>
-											<div class="appbadge" style="padding:5px;background-color:#cccccc;display:inline-block">Dependency</div>
-											<p>The dependency applications are those that have a dependency <b>to</b> or <b>from</b> the applications in scope</p>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-										</div>
-										</div>
 
-									</div>
-									</div>
-							
-							<hr/>
+						<xsl:text> </xsl:text>						
+						<input class="show_all"  style="margin-left:20px" type="radio" id="show_all" name="view_mode" value="show_all" checked="true"/>
+    					<label class="show_all" for="show_all"><xsl:value-of select="eas:i18n('Show All')"/></label>
+					    <input class="show_all" type="radio" id="by_application" name="view_mode" value="by_application"/>
+    					<label class="show_all" for="by_application"><xsl:value-of select="eas:i18n('Filtered')"/></label>
+						<xsl:text> </xsl:text>
+
+						<div class="selectBox appBox">
+						<small><xsl:value-of select="eas:i18n('Choose by Application')"/></small><br/>
+						<select id="appList"><option value="All"><xsl:value-of select="eas:i18n('All')"/></option></select>
 						</div>
- 
-						<!--Setup Closing Tags-->
+						<div class="selectBox appBox">
+						<small><xsl:value-of select="eas:i18n('Depth')"/></small><br/>
+							<select id="depthSelector">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option> 
+							</select>
+						</div>
+						<div class="selectBox appBox">
+							<small><xsl:value-of select="eas:i18n('Choose by Application Capability')"/></small><br/>
+							<select id="appCapList"><option value="All"><xsl:value-of select="eas:i18n('Choose')"/></option></select>
+						</div>
+						<div class="pull-right right-20">
+							<b>ZOOM:</b><xsl:text> </xsl:text>
+							<button id="zoom_in"><i class="fa fa-plus-square"></i></button>
+							<button id="zoom_out"><i class="fa fa-minus-square"></i></button>
+						</div>
+					<!--	
+						<div class="selectBox">
+							<small>Choose by Information</small><br/>
+							<select id="infoRepList"><option value="All">All</option></select>
+						</div>
+
+					-->
+						<div class="selectBox">
+							<small><xsl:value-of select="eas:i18n('Choose by Data Object')"/></small><br/>
+							<select id="dataObjList"><option value="Choose"><xsl:value-of select="eas:i18n('Choose')"/></option></select>
+						</div>
+						<xsl:text> </xsl:text>
+						<!--
+						<label for="connectedApps"><xsl:value-of select="eas:i18n('Show Unconnected Apps')"/></label>
+						<input type="checkbox" id="connectedApps" />
+						-->
+						<div id="warning" style="color:red"><b><xsl:value-of select="eas:i18n('There are too many nodes to show the whole network, select filter when data ready')"/></b></div>
+						<!--
+						<div class="pull-right"><button class="btn btn-warning btn-xs" id="saveButton"><i class="fa fa-floppy-o fa-xs"></i> Save</button><button class="btn btn-warning btn-xs" id="printButton"><i class="fa fa-floppy-o fa-xs"></i> PDF</button></div>
+						-->
+						<div id="zoomWarning"><xsl:value-of select="eas:i18n('You may need to zoom out and drag to see the full image')"/></div>
+									<div id="diagram"></div>
 					</div>
 				</div>
+			<div class="slideupPanel" id="slideupPanel" style="overflow-y: auto;">
+				<div class="pull-right"><i class="fa fa-times closePanelButton"></i></div>
+				<div class="col-xs-3">
+					<div class="keyBox">
+						<div class="keyTitle"><xsl:value-of select="eas:i18n('Key')"/></div>
+						<i class="fa fa-book"></i> <xsl:value-of select="eas:i18n('Information Representation')"/><br/>
+						<i class="fa fa-file-text-o"></i> <xsl:value-of select="eas:i18n('Information View')"/><br/>
+						<i class="fa fa-bars"></i> <xsl:value-of select="eas:i18n('Data Object')"/>
+					</div>
+						<div id="jstree_div"/>
+					<!--	<div id="infoData"></div>
+					-->
+				</div>
+				<div class="col-xs-9" id="summaryBox" style="border:1px solid #ffffff; border-radius:6px;">
 				
-<div id="relations" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
+					<div id="dataSummary"/>
+				</div>
+				
+			</div>
+			<div id="infoSidepanel" class="sidepanel">
+				<div id="dataList"/>
+				<span class="handle"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+			</div>
+			<div id="scrollToTop"><i class="fa fa-arrow-up"></i></div>
+<script id="data-summary-template" type="text/x-handlebars-template">
+	<h4>	<div class="boxBadge" style="left:3px"><i class="fa fa-info"></i></div><div style="display:inline-block; margin-left:20px">{{this.name}}</div></h4>
+	
+	<div class="summarybox">
+		<b><xsl:value-of select="eas:i18n('Description')"/></b>: {{this.description}}<br/>		
+		<b><xsl:value-of select="eas:i18n('Category')"/></b>: {{this.category}}<br/>						
+		<b><xsl:value-of select="eas:i18n('Parent(s)')"/></b>:{{#each this.parents}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}<br/>
+	</div>
+	{{#if this.dataAttributes}}
+	<div class="stakeholdersbox">
+		<div class="boxBadge">
+		<i class="fa fa-tags"></i>
+		</div> <b><xsl:value-of select="eas:i18n('Attribute(s)')"/></b><br/>
+			{{#each this.dataAttributes}}
+			<xsl:text> </xsl:text> 
+			<i class="fa fa-caret-right"></i>
+			<xsl:text> </xsl:text> {{this.name}}<br/>
+			{{/each}}
+	</div>
+	{{/if}}
+	{{#if this.systemOfRecord}}
+	<div class="stakeholdersbox">
+		<div class="boxBadge">
+		<i class="fa fa-id-card-o"></i>
+		</div> <b><xsl:value-of select="eas:i18n('System of Record(s)')"/></b><br/>
+			{{#each this.systemOfRecord}}
+			<xsl:text> </xsl:text> 
+			<i class="fa fa-caret-right"></i>
+			<xsl:text> </xsl:text> {{this.name}}<br/>
+			{{/each}}
+	</div>
+	{{/if}}
+	{{#if this.stakeholders}}
+	<div class="stakeholdersbox">
+		<div class="boxBadge">
+		<i class="fa fa-user-circle"></i>
+		</div> <b><xsl:value-of select="eas:i18n('Stakeholder(s)')"/></b><br/>
+			{{#each this.stakeholders}}
+			<xsl:text> </xsl:text> 
+			<i class="fa fa-caret-right"></i>
+			<xsl:text> </xsl:text> {{this.actorName}} : {{this.roleName}}<br/>
+			{{/each}}
+	</div>
+	{{/if}}
+</script>
+<script id="data-template" type="text/x-handlebars-template">
+	{{#each this}}
+	<div class="appData"><xsl:attribute name="style">{{#ifEquals this.inDiagram 'yes'}}background-color:#a8325e;color:white{{/ifEquals}}</xsl:attribute>{{this.source.name}} <i class="fa fa-arrow-right" aria-hidden="true"></i> {{this.target.name}}</div>		
+	{{/each}}
+</script>
+<script id="node-template" type="text/x-handlebars-template">
+	<!--
+	<div class="apptype">
+		{{#ifEquals this.className 'Application_Provider_Interface'}}
+		<i class="fa fa-plug" style="color:#c176df"/>
+		{{else}}
+		<i class="fa fa-desktop" style="color:green"/>
+		{{/ifEquals}}
+	</div>
+--> 
+		{{#ifEquals this.className 'Application_Provider_Interface'}}
+		<i class="fa fa-exchange" style="color:#c176df;"/>
+		{{else}}
+		<i class="fa fa-desktop" style="color:#c176df"/>
+		{{/ifEquals}}
+		<xsl:text> </xsl:text>
+		<span style="color:black">{{{wrapName this.name}}}
+	<!-- {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}-->
+		</span><xsl:text> </xsl:text>
+		<i class="fa fa-search focusApp" style="color:blue"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i><br/>
+	 	{{#if this.ap_codebase_status.[0]}}
+		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_codebase_status.[0].backgroundColor}};color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute>
+			<i class="fa fa-code"><xsl:attribute name="style">color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
+			{{this.ap_codebase_status.[0].enum_name}}</div>
+		{{/if}}
+		{{#if this.ap_delivery_model.[0]}}	
+		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_delivery_model.[0].backgroundColor}};color:{{this.ap_delivery_model.[0].colour}}</xsl:attribute>
+			<i class="fa fa-truck"><xsl:attribute name="style">color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
+			{{this.ap_delivery_model.[0].enum_name}}</div>
+		{{/if}}
+	  
+	
+</script>	
+<script id="edge-template" type="text/x-handlebars-template"> 
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Interfaces</h4>
-      </div>
-      <div class="modal-body">
-		 <div id="iface"></div>
-      
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+	{{#each this.label}}
+	<span style="color:green"><xsl:attribute name="data-id">{{this.id}}</xsl:attribute><xsl:attribute name="easid">{{../this.source}}-{{../this.target}}</xsl:attribute>{{this.name}}</span>{{#unless @last}},{{/unless}}<br/>
+	{{/each}}
+</script>	
+<style>
+	.info-container {
+		font-family: Arial, sans-serif;
+		margin: 10px;
+		color:black;
+	}
+	
+	.info-container h3 {
+		color: #333;
+		margin-bottom: 10px;
+	}
+	
+	.info-table, .inner-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	
+	.info-table td, .inner-table td {
+		border-bottom: 1px solid #ddd;
+		padding: 8px;
+		background-color: #f2f2f2;
+	}
+	
+	.info-name, .view-name {
+		font-weight: bold;
+		background-color: #f2f2f2;
+		vertical-align:top;
+	}
+	
+	.data-object-list {
+		list-style-type: none;
+		padding-left: 0;
+		margin: 0;
+		vertical-align:top;
+		background-color: #f2f2f2;
+	}
+	.info-name-head{
+		background-color:#d3d3d3;
+		color:black;
+	}
+
+</style>	
+<script id="info-template" type="text/x-handlebars-template">
+    <div class="info-container">
+        <h3 style="color:white">{{toApp}} to {{fromApp}}</h3>
+        <table class="info-table">
+			<tr><th class="info-name-head"> <xsl:value-of select="eas:i18n('Information Representation')"/></th><th class="info-name-head"></th></tr>
+            {{#each infoView}}
+                <tr>
+                    <td class="info-name">{{name}}</td>
+                    <td>
+                        <table class="inner-table">
+							<tr><th class="view-name"> <xsl:value-of select="eas:i18n('Information Views')"/></th><th><xsl:value-of select="eas:i18n('Data Objects')"/></th></tr>
+                            {{#each this.views}}
+                                <tr>
+                                    <td class="view-name">{{name}}</td>
+                                    <td>
+                                        <ul class="data-object-list">
+                                            {{#each this.dataObjects}}
+                                                <li>{{this.name}}</li>
+                                            {{/each}}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </table>
+                    </td>
+                </tr>
+            {{/each}}
+        </table>
     </div>
-
-  </div>
-</div>	
-<script id="iface-list-template" type="text/x-handlebars-template">
- {{#each this}}
- <div style="display:inline-block; width:240px;border:1pt solid #d3d3d3;min-height:150px;border-radius:3px; margin:2px;vertical-align:top">
-	<b>Source:</b> {{this.from}}<br/>
-	<b>Target:</b> {{this.to}}<br/>
-	 <table id="interfaces">
-		<thead><tr><th width="100%">Interface</th></tr></thead>
-		 <tbody>
-		 {{#each this.links}}	 
-			<tr><td>{{{this.link}}}</td></tr>
-		 {{/each}}
-		 </tbody>
-		  </table>	
-</div>	 
- 	{{/each}}
-</script>				
-	<script> 
-
-	let	inScopeApps=[];
-	let appCapList=[];
-	let appList=[];
-	let depList=[];
-	let scopedAppsList=[];
-	let thisstyles, thisPurpose, thisFamily;
-  
-	$(document).ready(function(){
-		$('#infoModal').on('click', function(){
-			$('#explainModal').modal('show');
-		})
-})
+</script>
 
 
-
-function setCaps(cap){
+<script>
  
-	let focusCap=appCapList.find((e)=>{
-			return e.id==cap;
-		});
-		$('#services').empty();
-		$('#services').append('<option value="all">All</option>');
-		let thisCapSvcs=[];
-		
-		if(focusCap){
-		if(focusCap.relatedServices){
-		focusCap.relatedServices.forEach((d)=>{
-				let thisSvc = svcList.find((e)=>{
-					return e.id ==d
-				});
-				$('#services').append('<option value="'+thisSvc.id+'">'+thisSvc.name+'</option>');
-				thisCapSvcs.push(thisSvc)
-			});
-		}
-		else{
-			focusCap['relatedServices']=[];
-		}
-		focusCap['scopedService']=focusCap.relatedServices;
-	}
-
-		$('#services').on('change',function(){
-			let selectedSvc = $(this).find('option').filter(':selected').val()
-			let svcObj=thisCapSvcs.find((cs)=>{
-				return cs.id==selectedSvc;
-			});
+var apus = [<xsl:apply-templates select="$allAPUs" mode="allAPUs"/>];
+var appList, appListMap, appListMapScoped;
+var infoList <!--[<xsl:apply-templates select="$allInfoReps" mode="allApps">
+	<xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
+</xsl:apply-templates>]; -->
  
-			if(svcObj){
-	 		let svcApps = [];
-			svcObj.relatedApps.forEach((d)=>{
-				let inScopeSvc = scopedAppsList.find((e)=>{
-					return e.appId==d;
-				})
-				if(inScopeSvc){
-					svcApps.push(inScopeSvc)
-				}
-			})
-
-		 		getDependencies(focusCap,svcList, svcApps)
-			}
-			else
-			{
-			 if(selectedSvc=='all'){
-				
-				$('#refresh').trigger("click")
-
-			 	};
-			};
-		})
- 
-		getDependencies(focusCap,svcList, scopedAppsList)
-}
-function getDependencies(focusCap,svcList, apps){
- 
-	inScopeApps=[] 
-	let newAppList=[];
-	let coreAppList=[];
 
  
-	if(focusCap){
-		if(focusCap=='all'){	
-			apps.forEach((a)=>{
-					newAppList.push(a)
-					coreAppList.push(a)
-			});
-		}
-		else{
-		
-			getAppsArray(focusCap,svcList); 
-			focusCap.childrenCaps.forEach((c)=>{
-				let thisCap=appCapList.find((e)=>{
-					return e.id==c;
-				});
-				getAppsArray(thisCap,svcList);
-			});	 
-	
-			
-			inScopeApps.forEach((a)=>{
-				let getApp=apps.find((t)=>{
-					return t.appId== a;
-				});
-				if(getApp){
-					newAppList.push(getApp)
-					coreAppList.push(getApp)
-				}
-			});
-		}	
+var inner, svg;
+var nodes=[];
+var edges=[];
 
-	  
-		newDepList=[]; 
-		newAppList.forEach((e)=>{ 
-			 
-			if(e){
-
-
-			let thisNode = depList.find((f)=>{
-				return f.ApplicationID==e.appId;
-			});
-			newDepList.push(thisNode); 
-	 
-			thisNode.From.forEach((f)=>{
-		 
-				let here=apps.find((ap)=>{
-					return ap.appId==f.appid;
-				})
-				if(here){
-					newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
-				}  
-			});
-			thisNode.To.forEach((f)=>{
-				let here=apps.find((ap)=>{
-					return ap.appId==f.appid;
-				})
-				if(here){
-					newAppList.push({"appId": f.appid, "appName": f.appName, "codebase": f.codebase, "codebaseName": f.codebaseName, "delivery":f.delivery, "type":f.type, "col":"#cccccc"});
-				} 
-				
-			})
-		}
-		});
+$(window).scroll(function() {
+    if ($(this).scrollTop() > 200) {
+      $('#scrollToTop').fadeIn(200);
+    } else {
+      $('#scrollToTop').fadeOut(200);
+    }
+  });
  
-		newAppList=newAppList.filter((elem, index, self) => self.findIndex( (t) => {return (t.appId === elem.appId)}) === index)
- 
-		newAppList.forEach((e)=>{
-			letIn = coreAppList.find((g)=>{
-				return g.appId ==e.appId;
-			}) 
-			if(typeof letIn=='undefined'){ 
-				e.col="#999"
-			}else{ 
-				e.col="#000"
-			}
- 
-		}) 
-		newDepList=newDepList.filter((elem, index, self) => self.findIndex( (t) => {return (t.ApplicationID === elem.ApplicationID)}) === index)
-	 
-		createChart(newDepList, newAppList)
-		
-	}
-	else
-	{
- 
-		newDepList=[];
-		newAppList=[];
-		createChart(newDepList, newAppList)
-	}
-	
-}
-
-function getAppsArray(cap,svcList){
-	if(cap){
-		if(cap.relatedServices){
-		cap.relatedServices.forEach((e)=>{
-				let thisSvc = svcList.find((f)=>{ 
-					return f.id == e
-				});
-
-				if(thisSvc.relatedApps){
-					thisSvc.relatedApps.forEach((app)=>{
-						inScopeApps.push(app)
-					})
-				}
-			});
-		}
-	}
-}
-
-var redrawView = function () { 
-	
-				let scopedRMApps = [];
-				appList.forEach((d) => {
-					scopedRMApps.push(d)
-				});
-				let toShow =   appList;  
-				console.log('drawing',toShow)
-				let appOrgScopingDef = new ScopingProperty('stakeholdersA2R', 'ACTOR_TO_ROLE_RELATION');
-				let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
-				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
-				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-
-				essResetRMChanges();
-				let typeInfo = {
-					"className": "Application_Provider",
-					"label": 'Application',
-					"icon": 'fa-desktop'
-				}
-                let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
- 
-				scopedAppsList = scopedApps.resources;  
- 
-				let thisId=$('#caps').val()
-				console.log('thisId',thisId)
-				if(thisId == 'all'){
-					setCaps(thisId)
-						getDependencies(thisId,svcList, scopedAppsList)
-						
-					}
-					else{
-						setCaps(thisId)
-					}
-
-				
-			}
-	  
-		function redrawView() {
-			essRefreshScopingValues()
-		}
-
-
-
-<!-- create graph -->
-function createChart(depList, appList){
-	 
-	var g;
-	g = new dagreD3.graphlib.Graph().setGraph({ rankdir: "LR"});
-let attachedApps=[];
- 
-depList.forEach((d)=>{   
-	if(d.From.length&gt;0){
-		d.From.forEach((fr)=>{ 
-			let here=scopedAppsList.find((ap)=>{
-					return ap.appId==fr.appid;
-				})
-				if(here){  
-					attachedApps.push({"id":fr.appid,"name":fr.appName})
-					attachedApps.push({"id":d.ApplicationID,"name":d.ApplicationName})
-			g.setEdge(fr.appName,  d.ApplicationName,     { label: "",curve: d3.curveBundle.beta(0.5)  });
-				}
-		});
-	}
-	if(d.To.length&gt;0){
-		d.To.forEach((to)=>{
-			if(to){ 
-				let here=scopedAppsList.find((ap)=>{
-					return ap.appId==to.appid;
-				})
-				if(here){  
-					attachedApps.push({"id":to.appid,"name":to.appName})
-					attachedApps.push({"id":d.ApplicationID,"name":d.ApplicationName})
-			g.setEdge(d.ApplicationName,  to.appName,     { label: "",curve:d3.curveBundle.beta(0.5)  });
-				}
-			}
-		})
-	}
-	})
-	attachedApps = [...new Set(attachedApps)];
-	attachedApps= attachedApps.filter((value, index, self) =>
-  index === self.findIndex((t) => (
-    t.id === value.id  
-  ))
-)
- 
- 
- 
-// Automatically label each of the nodes
-var nodes = []; 
- 
-scopedAppsList.forEach((d)=>{
-
-	let includeApp=attachedApps.find((a)=>{
-		return a.id==d.appId
-	})  
-	if(includeApp){
-	if(typeof includeApp.id !='undefined'){ 
-	var niceLabel;
-	let thisCodeColour ={};
-	let thisDeliveryColour={}
-	thisCodeColour=thisstyles.codebase.find((e)=>{
-		return e.id == d.codebase;
-	}); 
-
-	if(thisCodeColour){
-		if(thisCodeColour.colour){}else{thisCodeColour['colour']='#000000';}
-		if(thisCodeColour.bgcolour){}else{thisCodeColour['bgcolour']='#ffffff';}
-	}
-	else{ 
-		thisCodeColour ={};
-		thisCodeColour['colour']='#000000';
-		thisCodeColour['bgcolour']='#ffffff';
-		if(d.codebaseName){
-		thisCodeColour['name']=d.codebaseName;
-		}else{
-			thisCodeColour['name']='Codebase not set'
-		}
-	}
-
-	thisDeliveryColour = thisstyles.delivery.find((e)=>{
-		return e.id == d.delivery;
-	}); 
-
-	if(thisDeliveryColour){
-		if(thisDeliveryColour.colour){}else{thisDeliveryColour['colour']='#000000';}
-		if(thisDeliveryColour.bgcolour){}else{thisDeliveryColour['bgcolour']='#ffffff';}
-	}
-	else{ 
-		thisDeliveryColour ={};
-		thisDeliveryColour['colour']='#000000';
-		thisDeliveryColour['bgcolour']='#ffffff';
-		if(d.codebaseName){
-		thisDeliveryColour['name']=d.delivery;
-		}else{
-			thisDeliveryColour['name']='Delivery model not set'
-		}
-	}
-
-	let appColour=appList.find((a)=>{
-		return a.appId==d.appId
-	})
- 
-	if(typeof appColour=='undefined'){
-		 
-		let appColour={}
-		appColour['col']='red' ;
-	}else{
-	 
-	}
-	
-	 
- if(d.type !=='Application_Provider_Interface'){
- 
-	if(typeof appColour=='undefined'){
-		niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:#999</xsl:attribute>Application</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.bgcolour+';color:'+thisCodeColour.colour+'</xsl:attribute>'+thisCodeColour.name +'</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'; 
-		niceLabel +='</div>';
-		 
-	 }else{
- niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="appbadge"><xsl:attribute name="style">background-color:'+appColour.col+'</xsl:attribute>Application</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.bgcolour+';color:'+thisCodeColour.colour+'</xsl:attribute>'+thisCodeColour.name +'</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'; 
-		niceLabel +='</div>';
-	 }
-	}
-	else{ 
-	niceLabel='<div eascodebase="'+d.codebase+'" easdelivery="'+d.delivery+'"><div class="ds">'+d.appName+'</div><div class="apibadge"><xsl:attribute name="style">background-color:'+appColour.col+'</xsl:attribute>API</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisCodeColour.name +';color:'+thisCodeColour.colour+'</xsl:attribute>'+d.codebaseName +'</div>';
-		niceLabel +='<div class="dw"><xsl:attribute name="style">background-color:'+thisDeliveryColour.bgcolour+';color:'+thisDeliveryColour.colour+'</xsl:attribute>'+thisDeliveryColour.name +'</div>'
-		niceLabel +='</div>';
-	}
-
-	nodes.push(g.setNode(d.appName, { labelType:"html", label: niceLabel }) );
- 
-	}	
-}
-});
-  
-// Set some general styles
-g.nodes().forEach(function(v) {
-		 
-  var node = g.node(v); 
-  node.rx = node.ry = 5;
-});
-
-// Add some custom colors based on state
-
-
-var svg = d3.select("svg"),
-    inner = svg.select("g");
-
-// Set up zoom support
-if(nodes.length &gt; 0){
-var zoom = d3.zoom().on("zoom", function() {
-      inner.attr("transform", d3.event.transform);
-    });
-svg.call(zoom);
-}
-// Create the renderer
-var render = new dagreD3.render();
-
-// Run the renderer. This is what draws the final graph.
-render(inner, g);
-
-// Center the graph
-var initialScale = 1;
-if(nodes.length &gt; 0){
- 	svg.call(zoom.transform, d3.zoomIdentity.translate((svg.attr("width") - g.graph().width * initialScale) / 2, 20).scale(initialScale));
-}
- 
-if(g.graph().height == -Infinity){
- 
-	g.graph().height = 600;
-}
-else
-{
-if(g.graph().height == 600){
-	$('#refresh').trigger("click")
-}
-}
- 
-var windowHeight = $(window).height();
-var windowWidth = $(window).width();
- 
-//svg.attr('height', g.graph().height * initialScale + 40);
-svg.attr('width', windowWidth-30);
-svg.attr('height', windowHeight-300);
-
-}
-</script>            
-            <xsl:call-template name="nodeHandlebarsTemplate"/>
-				<!-- ADD THE PAGE FOOTER -->
-				<xsl:call-template name="Footer"/>
-				<script>			
-					<xsl:call-template name="RenderViewerAPIJSFunction"> 
-						<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param>   
-					</xsl:call-template>  
-				</script>
-	</body>
-</html>
-	</xsl:template>
+  // Animate the scroll to top
+  $('#scrollToTop').click(function(event) {
+    event.preventDefault();
     
-<xsl:template name="nodeHandlebarsTemplate">
-		<script id="node-template" type="text/x-handlebars-template">
-              <div class="card" style='float:left'>
-                  <div class="card-header">{{this.node}}</div>
-                            <div class="card-main">
-                                <div class="main-description"><xsl:attribute name="onclick">getChart('{{this.node}}',{{this.containedInstance}});</xsl:attribute><span class="badge badge-info" style="background-color:#7b8dc9">{{this.containedInstance}}</span></div>
-                            </div>
-                            <div class="card-tech">
-                                <div class="tech-description">{{this.node_technology}}</div>
-                            </div>
-                        </div>
+    $('html, body').animate({scrollTop: 0}, 300);
+  })
 
-        </script>
-	</xsl:template>    
- 
-	<xsl:template match="node()" mode="getApps">
-		<xsl:variable name="usages"	select="$allArchUsages[own_slot_value[slot_reference='static_usage_of_app_provider']/value=current()/name]" />
-		<xsl:variable name="subApps" select="$allApplications[name=current()/own_slot_value[slot_reference='contained_application_providers']/value]" />
-		<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=current()/name]" />	
-		{"ApplicationName": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"type":"<xsl:value-of select="current()/type"/>",
-		"ApplicationID": "<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
-		"link": "<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()" />
-		</xsl:call-template>",
-		"From":[<xsl:apply-templates select="$usages" mode="getFromUsages" />],
-		"To":[<xsl:apply-templates select="$usages" mode="getToUsages" />], 
-		"codebase":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
-		"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"delivery":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)" />"}<xsl:if test="position()!=last()">,</xsl:if>
-	</xsl:template>
-		<xsl:template match="node()" mode="getToUsages">
-			<xsl:variable name="TOs" select="$allAPUs[own_slot_value[slot_reference=':TO']/value=current()/name]"/>    
-
-			<xsl:apply-templates select="$TOs" mode="gettoAPU"></xsl:apply-templates><xsl:if test="not(position()=last())">,</xsl:if>
-	</xsl:template> 
-	<xsl:template match="node()" mode="getFromUsages">
-			<xsl:variable name="FROMs" select="$allAPUs[own_slot_value[slot_reference=':FROM']/value=current()/name]"/>    
-		<xsl:apply-templates select="$FROMs" mode="getfromAPU"></xsl:apply-templates>
-	</xsl:template> 
-	
-	<xsl:template match="node()" mode="gettoAPU">
-		<xsl:variable name="ArchUsages" select="$allArchUsages[name=current()/own_slot_value[slot_reference=':FROM']/value]"/>
-		<xsl:variable name="thisApplication" select="$allApplications[name=$ArchUsages/own_slot_value[slot_reference='static_usage_of_app_provider']/value]"/>
-		<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=$thisApplication/name]"/>
-		<xsl:variable name="thisAppProtoInfo" select="$allAppProtoInfo[name=current()/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value]"/>
-		<xsl:if test="$thisApplication/name">
-		{"appid":"<xsl:value-of select="eas:getSafeJSString($thisApplication/name)"/>",
-		"appName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"codebase":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
-		"type":"<xsl:value-of select="$thisApplication/type"/>",
-		"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"delivery":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>", 
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
-		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"<!--, "data":[<xsl:apply-templates select="$thisAppProtoInfo" mode="dataPassing"/>]-->},</xsl:if>
-	</xsl:template> 
-		<xsl:template match="node()" mode="getfromAPU">
-			<xsl:variable name="ArchUsages" select="$allArchUsages[name=current()/own_slot_value[slot_reference=':TO']/value]"/>
-			<xsl:variable name="thisApplication" select="$allApplications[name=$ArchUsages/own_slot_value[slot_reference='static_usage_of_app_provider']/value]"/>
-			<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=$thisApplication/name]"/>
-			<xsl:variable name="thisAppProtoInfo" select="$allAppProtoInfo[name=current()/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value]"/>
-			<xsl:if test="$thisApplication/name">
-				{"appid":"<xsl:value-of select="eas:getSafeJSString($thisApplication/name)"/>",
-				"appName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"type":"<xsl:value-of select="$thisApplication/type"/>",
-				"codebase":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
-				"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
-				"delivery":"<xsl:value-of select="eas:getSafeJSString($thisApplication/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-				"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisApplication"/></xsl:call-template>", "parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",  "parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"<!--,
-				"data":[<xsl:apply-templates select="$thisAppProtoInfo" mode="dataPassing"/>]-->},</xsl:if>
-	</xsl:template> 
-	<xsl:template match="node()" mode="dataPassing">
-		<xsl:variable name="thisInfo" select="$allInfo[name=current()/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value]"/>
-		{"name": "<xsl:value-of select="$thisInfo/own_slot_value[slot_reference='name']/value"/>",
-		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"link":"<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$thisInfo"/></xsl:call-template>"}, 
-	</xsl:template>
-	<xsl:template match="node()" mode="getContainedApps">
-		<xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=current()/name]"/>
-		{"subId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"subName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
-		"parent":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$parent"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", 
-		"parentID":"<xsl:value-of select="eas:getSafeJSString($parent/name)"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
-	</xsl:template> 
-
-
-	<xsl:template match="node()" mode="appList">
-	<xsl:variable name="thisPurposes" select="$purpose[name=current()/own_slot_value[slot_reference='application_provider_purpose']/value]"/>
-	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference='stakeholders']/value]" />
-	<xsl:variable name="thisFamily" select="$family[name=current()/own_slot_value[slot_reference='type_of_application']/value]"/>
-		{"appName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"type":"<xsl:value-of select="current()/type"/>",
-		"appId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"codebase":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>",
-		"codebaseName":"<xsl:value-of select="$codebases[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"delivery":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>",
-		"stakeholdersA2R":[<xsl:for-each select="$thisa2r">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
-		"orgUserIds": [],
-		"geoIds": [],
-		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
-		"purpose":[<xsl:for-each select="$thisPurposes">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
-		"family":[<xsl:for-each select="$thisFamily">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position()=last())">,</xsl:if>
-	</xsl:template> 
-		<xsl:template match="node()" mode="appOptions">
-			<xsl:variable name="ID" select="eas:getSafeJSString(current()/name)"/>
-			<xsl:variable name="Name" select="current()/own_slot_value[slot_reference='name']/value"/>            
-		<option name="{$Name}" value="{$ID}"><xsl:value-of select="$Name"/></option>
-	</xsl:template> 
-	<xsl:template match="node()" mode="appCapList">	 
-		<xsl:variable name="thisChildCaps" select="eas:get_cap_descendants(current(), $appCaps, 0)"/>
-		<xsl:variable name="supportedServices" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>
-		<xsl:variable name="supportedServiceswithKids" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=$thisChildCaps/name]"/>
-	
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"relatedServicesThis":[<xsl:for-each select="$supportedServices">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
-		"relatedServices":[<xsl:for-each select="$supportedServiceswithKids">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
-		"childrenCaps":[<xsl:for-each select="$thisChildCaps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position()=last())">,</xsl:if>
-	</xsl:template> 
-
-	<xsl:template match="node()" mode="svcList">
-		<xsl:variable name="aprs" select="$aprRoles[name=current()/own_slot_value[slot_reference='provided_by_application_provider_roles']/value]"/>
-		<xsl:variable name="apps" select="$aprs/own_slot_value[slot_reference='role_for_application_provider']/value"/>
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"relatedApps":[<xsl:for-each select="$apps">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]}<xsl:if test="not(position()=last())">,</xsl:if>
-	
-	</xsl:template>
-
-
-<xsl:function name="eas:get_cap_descendants" as="node()*">
-<xsl:param name="parentNode"/> 
-<xsl:param name="inScopeCaps"/>
-<xsl:param name="level"/>
-
-<xsl:copy-of select="$parentNode"/>
-<xsl:if test="$level &lt; 5">
-	<xsl:variable name="childCaps" select="$appCaps[name = $parentNode/own_slot_value[slot_reference = 'contained_app_capabilities']/value]" as="node()*"/>
-		<xsl:for-each select="$childCaps">
-		<xsl:copy-of select="eas:get_cap_descendants(current(), $appCaps, $level + 1)"/> 
-	</xsl:for-each>
-</xsl:if>
-
-</xsl:function>
- 
-<xsl:template match="node()" mode="elements">
-<xsl:variable name="thiselementStyle" select="$elementStyle[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
-{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="false()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-"colour":"<xsl:value-of select="$thiselementStyle[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>",
-'bgcolour':"<xsl:value-of select="$thiselementStyle[1]/own_slot_value[slot_reference='element_style_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
-		
-
+</script>
+	</body>
+	<script>			
+		<xsl:call-template name="RenderViewerAPIJSFunction"> 
+			<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
+			<xsl:with-param name="viewerAPIPathInfo" select="$apiInfo"></xsl:with-param>   
+			<xsl:with-param name="viewerAPIPathAppMart" select="$apiappMart"></xsl:with-param>
+		</xsl:call-template>  
+	</script>
+</html>
 </xsl:template>
-<xsl:template name="RenderViewerAPIJSFunction"> 
+<xsl:template match="node()" mode="allApps">
+	{
+		"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:value-of select="current()/own_slot_value[slot_reference=('name', 'relation_name', ':relation_name')]/value"/>"
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="allAPUs">
+	<xsl:variable name="thisFrom" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+	<xsl:variable name="thisTo" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':TO']/value)"/>
+	<xsl:variable name="fromApp" select="key('allAppsforSAKey', $thisFrom/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+	<xsl:variable name="toApp" select="key('allAppsforSAKey', $thisTo/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+	<xsl:variable name="edgeInfo" select="key('allAppProtoInfoKey', current()/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value)"/>
+	<xsl:variable name="edgeInfoIndirect" select="key('allAppProtoInfoKey', $edgeInfo/own_slot_value[slot_reference='atire_app_pro_to_inforep']/value)"/>
+	<xsl:variable name="allInfoEdges" select="$edgeInfo union $edgeInfoIndirect"/>
+	<xsl:variable name="thisInfoReps" select="key('allInfoRepKey', $allInfoEdges/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value)"/>
+	
+
+{
+"id":"<xsl:value-of select="current()/name"/>",
+<xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = (':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+"edgeName":"<xsl:value-of select="$fromApp/name"/> to <xsl:value-of select="$toApp/name"/>",
+"fromAppId":"<xsl:value-of select="$fromApp/name"/>",
+"toAppId":"<xsl:value-of select="$toApp/name"/>",
+<xsl:variable name="ftemp" as="map(*)" select="map{'fromApp': string(translate(translate($fromApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+<xsl:variable name="fresult" select="serialize($ftemp, map{'method':'json', 'indent':true()})"/>  
+<xsl:value-of select="substring-before(substring-after($fresult,'{'),'}')"></xsl:value-of>,
+<xsl:variable name="ttemp" as="map(*)" select="map{'toApp': string(translate(translate($toApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+<xsl:variable name="tresult" select="serialize($ttemp, map{'method':'json', 'indent':true()})"/>  
+<xsl:value-of select="substring-before(substring-after($tresult,'{'),'}')"></xsl:value-of>,
+"info":[<xsl:for-each select="$thisInfoReps">
+	{
+		"id":"<xsl:value-of select="current()/name"/>",
+		<xsl:variable name="infoTemp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+		<xsl:variable name="infoResult" select="serialize($infoTemp, map{'method':'json', 'indent':true()})"/>  
+		<xsl:value-of select="substring-before(substring-after($infoResult,'{'),'}')"></xsl:value-of>,
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:for-each>]
+}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+
+	<xsl:template name="GetViewerAPIPath">
+		<xsl:param name="apiReport"></xsl:param>
+
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderAPILinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+	</xsl:template>
+	<xsl:template name="RenderViewerAPIJSFunction"> 
 		<xsl:param name="viewerAPIPathApps"></xsl:param>
+		<xsl:param name="viewerAPIPathInfo"></xsl:param>
+		<xsl:param name="viewerAPIPathAppMart"></xsl:param>
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>'; 
+		var viewAPIDataInfo = '<xsl:value-of select="$viewerAPIPathInfo"/>'; 
+		var viewAPIDataAppMart = '<xsl:value-of select="$viewerAPIPathAppMart"/>'; 
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
+		<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
 		var promise_loadViewerAPIData = function (apiDataSetURL)
 		{
 			return new Promise(function (resolve, reject)
@@ -944,168 +802,1104 @@ svg.attr('height', windowHeight-300);
 			});
 		}; 
 
-	 	function showEditorSpinner(message) {
-			$('#editor-spinner-text').text(message);                            
-			$('#editor-spinner').removeClass('hidden');                         
-		};
+	function updateObjectsWithFilters(objects, filter) {
+		// Iterate through each object
+		objects.forEach(obj => {
+			// Check if the slotName exists and is an array
+			if (obj.slotName &amp;&amp; Array.isArray(obj[obj.slotName])) {
+				// Update each id in the array
+				obj[obj.slotName] = obj[obj.slotName].map(id => {
+					// Find the matching value in the filter
+					const matchingFilterValue = filter.values.find(value => value.id === id);
+	
+					// Return the original id or the updated value
+					return matchingFilterValue || id;
+				});
+			}
+		});
+	
+		return objects;
+	}	
 
-		function removeEditorSpinner() {
-			$('#editor-spinner').addClass('hidden');
-			$('#editor-spinner-text').text('');
-		};
+	var depthType, scopedNodes, scopedEdges;
+		
+	$('document').ready(function (){
+		$('#appList, #infoRepList, #dataObjList, #appCapList').select2({width: '250px'})
+		$('#depthSelector').select2({width: '30px'})
+		$('.slideupPanel').hide();
+		$('.appBox').hide();
+		$('#warning').hide();
+		$('#summaryBox').hide()
+		$('.handle').hide().animate({right: '0'}, 'medium');;
  
-		showEditorSpinner('Fetching Data...');
-		var dynamicAppFilterDefs=[];
-		$('document').ready(function (){
+		setTimeout(function() {
+			$('#zoomWarning').hide();  // This will hide the element after 10 seconds
+		}, 4000);
+
+		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+		});
+
+		Handlebars.registerHelper('wrapName', function(name) {
+			if (name.length &lt;= 30) {
+				return name;
+			} else {
+				let wrappedName = '';
+				let words = name.split(' ');
+				let currentLine = '';
+		
+				words.forEach(function(word) {
+					if ((currentLine + word).length &lt;= 30) {
+						currentLine += word + ' ';
+					} else {
+						wrappedName += currentLine + '<br/>';
+						currentLine = word + ' ';
+					}
+				});
+		
+				return wrappedName + currentLine; // Add the last line
+			}
+		});
+		
+		$('.handle').click(function(){
+			var panelWidth = $('#infoSidepanel').width();
+			if (panelWidth > 0) {
+				// If the panel is open (width > 0), close it
+				$('#infoSidepanel').css('width', '0');
+				$('.handle').css('top', '30%');
+			} else {
+				// If the panel is closed (width = 0), open it
+				$('#infoSidepanel').css('width', '250px');
+				$('.handle').css('top', '10px');
+			}
+		});
+	
+
 			Promise.all([ 
-			promise_loadViewerAPIData(viewAPIDataApps)
+			promise_loadViewerAPIData(viewAPIDataApps),
+			promise_loadViewerAPIData(viewAPIDataInfo),
+			promise_loadViewerAPIData(viewAPIDataAppMart) 
 			]).then(function (responses)
 			{
-			let apiApps = responses[0].applications;
+			appList = responses[0].applications.concat(responses[0].apis);
+			
+			appListMap  = new Map(appList.map(app => [app.id, app]));
+			
+			appList=appList.sort((a, b) => {
+				const nameA = a.name.toLowerCase(); // Converting to lowercase for a case-insensitive comparison
+				const nameB = b.name.toLowerCase();
+				return nameA &lt; nameB ? -1 : nameA > nameB ? 1 : 0;
+			  });
 			filters=responses[0].filters;
 			responses[0].filters.sort((a, b) => (a.id > b.id) ? 1 : -1)
-				  
-			dynamicAppFilterDefs=filters?.map(function(filterdef){
-				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+	 
+
+			let appCaps=responses[2].application_capabilities;
+			let appSvcs=responses[2].application_services;
+
+			const servicesWithAppIds = appSvcs.map(service => ({
+				id: service.id,
+				apps: service.APRs.map(apr => apr.appId)
+			}));
+			
+			appCaps.forEach(cap => {
+				cap['thisApps']=[];
+				  cap.supportingServices.map(supportingServiceId => {
+					const matchingService = servicesWithAppIds.find(service => service.id === supportingServiceId);
+					
+					if (matchingService.apps) { 
+						cap.thisApps= [...new Set([...cap.thisApps, ...matchingService.apps])];
+					} else {
+				
+					}
+				});
+
+			function getAllKidAppCaps(appCaps, thisappcapId) {
+				return appCaps.filter(appCap => 
+					appCap.ParentAppCapability.some(cap => 
+						cap.id === thisappcapId
+					)
+				);
+			}
+			
+				let getKidAppCaps= getAllKidAppCaps(appCaps,cap.id)
+			
+				getKidAppCaps.forEach((a)=>{
+					if(a.thisApps){
+						cap.thisApps= [...new Set([...cap.thisApps, ...a.thisApps])];
+					}
+				})
+
 			});
 
-		$('#caps').select2();
-		$('#services').select2();
-		$('#codebase').select2();
-		$('#delivery').select2();
-		$('#purpose').select2();
-		$('#family').select2();
-		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+			let infoReps=responses[1].information_representation;
+			let infoViews=responses[1].information_views;
+			let dataObjects=responses[1].data_objects;
 
-	appCapList=[<xsl:apply-templates select="$appCaps" mode="appCapList"></xsl:apply-templates>]
-	svcList=[<xsl:apply-templates select="$appServices" mode="svcList"/>];  
-	appList=[<xsl:apply-templates select="$allApplications" mode="appList"/>];  
-	depList=[<xsl:apply-templates select="$allApplications" mode="getApps"/> ];    
-		
-//console.log('appCapList',appCapList)
-let tempApp=[];
-	appList.forEach((d)=>{
-	 
-		let thisIDs= apiApps.find((e)=>{
-			return e.id==d.appId
-		}); 
-		if(thisIDs){ 
-		if(thisIDs.orgUserIds.length&gt;0){
-			thisIDs.orgUserIds =  thisIDs.orgUserIds.filter((elem, index, self) => self.findIndex( (t) => {return(t === elem)}) === index)
-		d['orgUserIds']=thisIDs.orgUserIds 		
-		}
-		if(thisIDs.geoIds.length&gt;0){
-			d['geoIds']=thisIDs.geoIds
-		}
-		var obj = Object.assign({}, d, thisIDs); 
-        tempApp.push(obj);
-		
-	}else{
-		tempApp.push(d)
-	}
-		  
-	});
-	 
-	appList=tempApp;		
-	thisstyles ={"codebase":[<xsl:apply-templates select="$codebases" mode="elements"/>],
-				 "delivery":[<xsl:apply-templates select="$deliveryTypes" mode="elements"/>]
-				}
+			dataObjects=dataObjects.sort((a, b) => {
+				const nameA = a.name.toLowerCase(); // Converting to lowercase for a case-insensitive comparison
+				const nameB = b.name.toLowerCase();
+				return nameA &lt; nameB ? -1 : nameA > nameB ? 1 : 0;
+			  });
+			// Create a map for direct access by 'id' from 'infoViews'
+			const infoViewsMap = new Map(infoViews.map(e => [e.id, e]));
 
-	thisPurpose = [<xsl:apply-templates select="$purposeTypes" mode="elements"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>]
-	thisFamily = [<xsl:apply-templates select="$family" mode="elements"><xsl:sort select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>]
-	thisstyles.codebase.forEach((d)=>{			
-		$('#codebase').append('<option value="'+d.id+'">'+d.name+'</option>');
-	});
-	thisstyles.delivery.forEach((d)=>{	
-		$('#delivery').append('<option value="'+d.id+'">'+d.name+'</option>');
-	});
-	thisPurpose.forEach((d)=>{	
-		$('#purpose').append('<option value="'+d.id+'">'+d.name+'</option>');
-	});	
-	thisFamily.forEach((d)=>{	
-		$('#family').append('<option value="'+d.id+'">'+d.name+'</option>');
-	});		
- 
- 	
-	appCapList=appCapList.sort((a, b) => (a.name > b.name) ? 1 : -1);
-	appList=appList.sort((a, b) => (a.appName > b.appName) ? 1 : -1);
-	svcList=svcList.sort((a, b) => (a.name > b.name) ? 1 : -1)
-	appCapList.forEach((d)=>{
-		$('#caps').append('<option value="'+d.id+'">'+d.name+'</option>');
-	})
-	
-	scopedAppsList=appList;
-	<!-- on caps filter select the focus cap and select the relevant Cap -->
-	$('#caps').on('change',function(){
-		 
-		let thisId=$(this).val();
-		if(thisId == 'all'){
-			//console.log('all',thisId)
-			redrawView()
-		//	getDependencies(thisId,svcList, appList)
-			
-		}
-		else{
-			setCaps(thisId)
-		}
-	});
-
-	$('#refresh').on('click', function(){
-		let thisId=$('#caps').val();
-
-		if(thisId == 'all'){
-			//console.log('allrefresh')
-			redrawView();
-			
-		}
-		else{
-  //console.log('svcrefresh')
-			let getSvc=$('#services').find('option').filter(':selected').val()
-			setCaps($('#caps').val())
-			if(getSvc=='all'){
-
-			}
-			else
-			{
-				$('#services').val(getSvc).trigger("change")
-			}
-		}
-	});
+			infoReps.forEach(i => {
+				i.infoViews.forEach(d => {
+					let match = infoViewsMap.get(d.id);
+					
+					if (match) {
+						if (!match.infoReps) {
+							match.infoReps = [];
+						}
+						match.infoReps.push(i.id);
 				
+					}
+				});
+			});
 
-	//createChart(depList, appList)
+			const infoRepsMap = new Map();
 
-	essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters, true);
+			// Populate the map for mapping views
+			infoViews.forEach(item => {
+				item.infoReps?.forEach(infoRepId => {
+					if (!infoRepsMap.has(infoRepId)) {
+						infoRepsMap.set(infoRepId, { id: infoRepId, views: [] });
+					}
+					const view = {
+						id: item.id,
+						name: item.name,
+						dataObjects: item.dataObjects
+					};
+					infoRepsMap.get(infoRepId).views.push(view);
+				});
+			});
 
-	$('#codebase').on('change',function(){ 
-		redrawView();
-	});
+			// Convert the map back into an array
+			const newInfoRepsArray = Array.from(infoRepsMap.values());
+ 
 
-	$('#delivery').on('change',function(){ 
-		redrawView();
-	});
+// Iterate over the 'apus' array
+apus.forEach(apu => { 
+	if(apu.fromApp == '' || apu.toApp ==''){
+		delete(apu)
+	}else{
+    apu.info.forEach(infoId => { 
+        let match = newInfoRepsArray.find((s)=> {return s.id == infoId.id});
+		 
+        if (match) {
+            // Check if 'infoView' property exists, if not initialize it
+            if (!apu.infoView) {
+                apu.infoView = [];
+            }
+			match['name']=infoId.name
+            // Append the matched 'infoView' and its 'dataObjects' to 'infoRep'
+            apu.infoView.push(match);
+        }
+    });
 
-	$('#purpose').on('change',function(){ 
-		redrawView();
-	});
-	$('#family').on('change',function(){ 
-		redrawView();
-	});
-	//redrawView();
-			})
+ 
+	apu.dataObjects = [];
+
+	// Iterate through each 'infoView' and accumulate 'dataObjects'
+			apu.infoView?.forEach(infoViewItem => {
+			infoViewItem.views?.forEach(view => {
+				view.dataObjects.forEach(dataObject => {
+					// Prevent duplicate entries
+				apu.dataObjects.push(dataObject);
+			
+				});
+			});
+		});
+		apu.dataObjects= Array.from(new Map(apu.dataObjects.map(item => [item.id, item])).values());
+		 
+		apu.dataObjects.forEach((o)=>{
+	 
+			matchDO=dataObjects.find((d)=>{
+				return d.id ==o.id
+			});
+			o['name']=matchDO.name;
 		})
-	</xsl:template>
-	<xsl:template name="GetViewerAPIPath">
-		<xsl:param name="apiReport"></xsl:param>
+	}
+});
+ 
+			dynamicAppFilterDefs=filters?.map(function(filterdef){
+				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 
-		<xsl:variable name="dataSetPath">
-			<xsl:call-template name="RenderAPILinkText">
-				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
+			});
+			
+			// Pre-compute a lookup table for each filter's values
+			const valueLookups = filters.reduce((acc, filter) => {
+				acc[filter.slotName] = filter.values.reduce((valAcc, value) => {
+					valAcc[value.id] = value;
+					return valAcc;
+				}, {});
+				return acc;
+			}, {});
 
-		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+		 
+			let optionsHtmlData = dataObjects.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
+			let optionsInfoHtml = '<option value="All">All</option>'
+			let optionsInfoChooseHtml = '<option value="choose">Choose</option>'
+			let optionsHtmlInfo = infoReps.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
+			$('#infoRepList').html(optionsInfoHtml + optionsHtmlInfo);
+			$('#dataObjList').html(optionsInfoChooseHtml + optionsHtmlData);
+			let appMax=1000;
+			appList.forEach((e,i) => {
+				
+				// Iterate over each slotName in valueLookups
+				Object.keys(valueLookups).forEach(slotName => {
+					// Check if the current object has the property matching the slotName
+					if (e.hasOwnProperty(slotName) &amp;&amp; Array.isArray(e[slotName])) {
+						// Update each ID in the array with the corresponding value from the lookup table
+						e[slotName] = e[slotName].map(id => valueLookups[slotName][id] || id);
+					}
+				});
 
-	</xsl:template>
+				let appContent={
+					"id": e.id,
+					"name": e.name, 
+					"ap_codebase_status":e.ap_codebase_status,
+					"ap_delivery_model":e.ap_delivery_model,
+					"className": e.className				
+				}
+				 
+				// Update nodes and DOM elements
+					nodes.push({ id: e.id, label: e.name, content: appContent });
+				
+			});
+			
+			// Build and append HTML for options
+			let optionsHtml = '<option value="All">All</option>'
+			let optionsChooseHtml = '<option value="All">Choose</option>'
+			let optionsHtmlApps = appList.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
+			if(nodes.length&lt;3000){
+				$('#appList').html(optionsHtml + optionsHtmlApps);
+			}else{
+				$('#appList').html(optionsHtmlApps);
+			}
+			const opt=optionsHtmlApps
+ 
+			let optionsHtmlAppCaps = appCaps.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
+			$('#appCapList').html(optionsChooseHtml + optionsHtmlAppCaps);
+			
+	 
+	
+	apus.forEach((e)=>{ 
+		if(e.toAppId &amp;&amp; e.fromAppId){
+			edges.push( {source: e.toAppId, target: e.fromAppId, label:e.info })
+		}
+	})
+
+
+	const allNodes=nodes;
+	const allEdges=edges;
+	
+	
+//$('#infoBox').hide();
+
+var dataFragment = $("#data-template").html();	
+	dataTemplate = Handlebars.compile(dataFragment);
+
+	var dataSumFragment = $("#data-summary-template").html();	
+	datasummaryTemplate = Handlebars.compile(dataSumFragment);
+	
+
+	var nodeFragment = $("#node-template").html();
+	nodeTemplate = Handlebars.compile(nodeFragment);
+	
+	var edgeFragment = $("#edge-template").html();
+	edgeTemplate = Handlebars.compile(edgeFragment);
+
+	var infoFragment = $("#info-template").html();
+	infoTemplate = Handlebars.compile(infoFragment);
+
+
+
+function centerGraph() {
+
+	<!--
+	// Step 1: Get SVG dimensions
+    const svgWidth = svg.node().getBoundingClientRect().width;
+    const svgHeight = svg.node().getBoundingClientRect().height;
+
+    // Step 2: Get content (graph) dimensions
+    const graphWidth = g.graph().width;
+    const graphHeight = g.graph().height;
+
+    // Step 3: Calculate center position
+    const xOffset = (svgWidth - graphWidth) / 2;
+    const yOffset = (svgHeight - graphHeight) / 2;
+
+    // Step 4: Apply translation
+    inner.attr("transform", "translate(" + xOffset + "," + yOffset + ")");
+
+
+	var svg = d3.select("svg"), // Select the SVG element
+		inner = svg.select("g"), // Select the group that holds the graph
+		zoom = d3.zoom().on("zoom", function() { 
+			inner.attr("transform", d3.event.transform); 
+		});
+	-->
+
+}
+
+// Call this function after rendering the graph
+
+// Function to add unique identifiers to edge data
+
+// depth 
+
+function findRelatedApps(id, depth, currentDepth = 1, visited = new Set()) {
+ 
+	if (currentDepth > depth) return [];
+ 
+	let relatedApps = apus.filter(app => 
+		(app.fromAppId === id || app.toAppId === id) &amp;&amp; !visited.has(app.id)
+	);
+	 
+
+	visited.add(id);
+	relatedApps.forEach(app => {
+		const nextId = app.fromAppId === id ? app.toAppId : app.fromAppId;
+		if (!visited.has(nextId)) {
+			relatedApps = relatedApps.concat(findRelatedApps(nextId, depth, currentDepth + 1, visited));
+		}
+	});
+
+	return relatedApps;
+}
+$('#connectedApps').on('change', function(){
+	$('#diagram').empty();
+	redrawView();
+})
+
+	
+	var redrawView = function () { 
+		$('#diagram').empty();
+		let scopedRMApps = [];
+		appList.forEach((d) => {
+			scopedRMApps.push(d)
+		});
+		let toShow =   appList;  
+	
+		let appOrgScopingDef = new ScopingProperty('stakeholdersA2R', 'ACTOR_TO_ROLE_RELATION');
+		let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+		let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
+		let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+
+		essResetRMChanges();
+		let typeInfo = {
+			"className": "Application_Provider",
+			"label": 'Application',
+			"icon": 'fa-desktop'
+		}
+		let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
+ 
+		scopedAppsList = scopedApps.resourceIds;  
+	
+		let optionsHtml = '<option value="All">All</option>'
+		let optionsHtmlApps = scopedApps.resources.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
+		if(allNodes.length&lt;3000){
+			$('#appList').html(optionsHtml + optionsHtmlApps);
+		}else{
+			$('#appList').html(optionsHtmlApps);
+		}
+	
+ 
+		appListMapScoped = new Map();
+
+		appListMap.forEach((value, key) => {
+			if (scopedAppsList.includes(key)) {
+				appListMapScoped.set(key, value);
+			}
+		});
+
+	
+		let matchedResources = allNodes.filter(resource => scopedAppsList.includes(resource.id));
+
+		let matchedEdgeResources = allEdges.filter(resource => 
+			scopedAppsList.includes(resource.source) || scopedAppsList.includes(resource.target)
+		);
+		nodes=matchedResources;
+		edges=matchedEdgeResources;
+ 
+		let connected = $('#connectedApps').prop('checked')
+		if(connected==true){
+		
+			scopedNodes=matchedResources;
+			scopedEdges=matchedEdgeResources;
+		
+			if($('#appCapList').val()!=='All'){
+				let thisappcapId=$('#appCapList').val();
+				thisCap=appCaps.find((e)=>{return e.id==thisappcapId})
+ 
+				const depth = parseInt(document.getElementById("depthSelector").value);
+				appsToShow=[];
+				thisCap.thisApps.forEach((a)=>{
+				
+					let relatedApps = findRelatedApps(a, depth);
+					appsToShow= [...new Set([...appsToShow, ...relatedApps])];
+				})
+				//get childrenCaps data
+				
+		
+			}
+
+		}else{
+			let idSet = new Set();
+
+			edges.forEach(edge => {
+				// Add source and target IDs
+				idSet.add(edge.source);
+				idSet.add(edge.target);
+
+			})
+
+
+			let filteredResources = matchedResources.filter(resource => idSet.has(resource.id));
+ 
+			scopedNodes=filteredResources;
+		scopedEdges=matchedEdgeResources; 
+		}
+		
+var svg = d3.select("#diagram").append("svg"),
+inner = svg.append("g");
+
+
+var zoom = d3.zoom().on("zoom", function() {
+	inner.attr("transform", d3.event.transform);
+  });
+
+// Apply the zoom behavior to the SVG canvas
+svg.call(zoom);
+
+
+
+var render = new dagreD3.render();
+
+var g = new dagreD3.graphlib.Graph().setGraph({
+rankdir: "LR",
+nodesep: 10,
+ranksep: 40,
+acyclicer:"greedy",
+ranker:"longest-path",
+labeloffset: 10,
+labelpos: "c"
+});
+
+scopedNodes.forEach(function(node) { 
+
+g.setNode(node.id, {labelType: "html", label: nodeTemplate(node.content)});
+});
+
+
+// Set some general styles
+g.nodes().forEach(function(v) {
+	 
+var node = g.node(v); 
+node.rx = node.ry = 5;
+});
+
+scopedEdges.forEach(function(edge) {
+
+if (!g.hasNode(edge.source) || !g.hasNode(edge.target)) {
+	//console.error("Edge refers to undefined node:", edge);
+} else {
+
+	g.setEdge(edge.source, edge.target,  {labelType: "html", label: edgeTemplate(edge), curve: d3.curveBundle.beta(0.5), id:edge.source+'-'+edge.target});
+
+}
+
+});
+
+if(nodes.length&lt;3000){
+
+render(inner, g);
+centerGraph()
+}else{
+$('#warning').show();
+setTimeout(function() {
+	$('#warning').hide();  // This will hide the element after 10 seconds
+}, 10000);
+$('.show_all').hide();
+$('.appBox').show();
+}
+
+		function setUpSVG(){
+
+			inner.selectAll(".edgePath path")
+			.style("cursor", "pointer")
+			.on("mouseover", handleMouseover)
+			.on("mouseout", handleMouseout)
+			.on("click", handleClick);
+		
+			// Apply interactivity to edge labels
+			inner.selectAll(".edgeLabel")
+			.style("cursor", "pointer")
+			.on("mouseover", handleMouseover)
+			.on("mouseout", handleMouseout)
+			.on("click", handleClick);
+		
+			// Adjust SVG size to fit the graph
+			//svg.attr("width", g.graph().width + 40);
+		
+			adjustSvgWidth() 
+			var desiredHeight = g.graph().height + 40;
+
+			// Ensure the SVG height is at least 300 pixels
+			var finalHeight = Math.max(desiredHeight, 300);
+			
+			// Set the height of the SVG
+			svg.attr("height", finalHeight);
+			svg.call(zoom.transform, d3.zoomIdentity);
+
+			if($('#show_all').prop('checked')==true){
+
+			let graphBounds = inner.node().getBBox();
+			let graphWidth = graphBounds.width;
+			let graphHeight = graphBounds.height;
+
+			// Calculate the translation required to move the graph's center to the top left
+			let translateX = -graphWidth / 2;
+			let translateY = -graphHeight / 2;
+
+			// Apply the new transform
+			svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY));
+		
+			}
+function zoomIn() {
+    zoom.scaleBy(svg.transition().duration(500), 1.3);
+}
+
+// Function to zoom out
+function zoomOut() {
+    zoom.scaleBy(svg.transition().duration(500), 0.7);
+}
+
+// Attach event listeners to buttons
+d3.select('#zoom_in').on('click', zoomIn);
+d3.select('#zoom_out').on('click', zoomOut);
+centerGraph();
+			setDODrop()
+		}			
+//redraw svg function
+
+function adjustSvgWidth() {
+ 
+    var containerWidth = $('#container').width(); // Or use 'window.innerWidth' for full window width
+    $('#diagram svg').attr('width', containerWidth);
+}
+
+
+function redrawSVG(){
+	const selectedApp=$('#appList').val();
+	inner.selectAll("*").remove();	
+	inner.attr("transform", "translate(0,0) scale(1)");
+	svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(0, 0));
+
+	// Recreate the graph layout
+	g = new dagreD3.graphlib.Graph().setGraph({rankdir: "LR",
+	nodesep: 10,
+	ranksep: 20,
+	acyclicer:"greedy",
+	ranker:"longest-path",
+	labeloffset: 10,
+	labelpos: "c"
+});
+
+ 
+	// Add nodes and edges as before
+	nodes.forEach(function(node) {
+	
+		if(node.id==selectedApp &amp;&amp; depthType!=='capOn'){
+			g.setNode(node.id, { labelType: "html", label: nodeTemplate(node.content), style: "fill: #a5eddc" });
+		}else{
+	
+			g.setNode(node.id, { labelType: "html", label: nodeTemplate(node.content) });
+		}
+	
+	});
+	edges.forEach(function(edge) {
+		if (g.hasNode(edge.source) &amp;&amp; g.hasNode(edge.target)) {
+		
+			g.setEdge(edge.source, edge.target, { labelType: "html", label: edgeTemplate(edge), curve: d3.curveBundle.beta(0.5), id:edge.source+'-'+edge.target });
+		}
+	});
+	
+	// Call any additional functions like addEdgeIdentifiers(), applyInteractivity(), etc.
+
+	// Set some general styles
+	g.nodes().forEach(function(v) {
+			
+	var node = g.node(v); 
+	node.rx = node.ry = 5;
+	});
+
+	render(inner, g);
+	centerGraph();
+	addEdgeIdentifiers();
+
+	
+	setUpSVG()
+
+}
+// Call this function after rendering the graph
+addEdgeIdentifiers();
+setUpSVG()
+
+
+ 
+// Function to handle mouseover event
+function handleMouseover(event, d) {
+	let edgematch=($(this)[0].__data__)
+	var edgeId = edgematch.v+'-'+edgematch.w;
+
+ 	inner.select("#" + edgeId).select("path")
+	 	.style("stroke-width", "2px")
+     	.style("stroke", "red"); // Highlight the edge
+
+}
+
+// Function to handle mouseout event
+function handleMouseout(d) {
+	let edgematch=($(this)[0].__data__)
+	var edgeId = edgematch.v+'-'+edgematch.w;
+	 
+ 	inner.select("#" + edgeId).select("path")
+	 	.style("stroke-width", "1px")
+     	.style("stroke", "black");;
+    // Hide hover pop-up or tooltip
+}
+
+function findMatchingApusElement(source, target, apusArray) {
+    return apusArray.find(apusItem => apusItem.fromAppId === target  &amp;&amp; apusItem.toAppId === source);
+}
+
+// Function to handle click event
+function handleClick(d) {
+  
+	const matchingApusElement = findMatchingApusElement(d.v, d.w, apus);
+ 
+	//console.log('matchingApusElement',matchingApusElement)
+
+	function transformToJsTreeData(data) {
+	 
+		return data.map(item => {
+			let node = {
+				text: item.name,
+				id: item.id,
+				children: item.views.map(view => {
+					return {
+						text: view.name,
+						id: view.id,
+						children: view.dataObjects.map(obj => {
+							return { text: obj.name, id: obj.id };
+						})
+					};
+				})
+			};
+			return node;
+		});
+	}
+	
+	// Transform the data
+	var jsTreeData=[];
+
+ 	if (matchingApusElement.infoView) {
+    // If the property exists, transform the data to jsTree format
+  	  jsTreeData = transformToJsTreeData(matchingApusElement.infoView);
+	} 	else{
+
+
+	}
+  
+	// Assign types to nodes in jsTreeData based on their level or other criteria
+	 
+	assignTypesToNodes(jsTreeData, 1);
+	
+	// Then, initialize jsTree
+	$('#jstree_div').jstree({ 
+		'core': {
+			'data': jsTreeData,
+			'check_callback': true
+		},
+		'types': {
+			'default': {
+				'icon': 'fa fa-book'
+			},
+			'type1': {
+				'icon': 'fa fa-book'  
+			},
+			'type2': {
+				'icon': 'fa fa-file-text-o'  
+			},
+			'type3': {
+				'icon': 'fa fa-bars'
+			}
+		},
+		'plugins': ['types']
+	}).on("select_node.jstree", function(e, data) {
+		if(data.node.children.length === 0) {
+        // This is a leaf node, handle the click
+
+		$('#summaryBox').show().animate({opacity: 1}, 'slow');
+		let match=dataObjects.find((e)=>{
+			return e.id == data.node.id
+		})
+ 
+		if(match){
+		$('#dataSummary').html(datasummaryTemplate(match))
+		} else{
+			$('#dataSummary').empty();
+		}
+    } else {
+        // This node has children, so ignore the click
+ 
+		$('#dataSummary').empty();
+        $('#jstree_div').jstree(true).deselect_node(data.node);
+    }
+
+    });;
+
+	// Function to assign types to nodes
+	function assignTypesToNodes(nodes, level) {
+		nodes.forEach(function(node) {
+			if (level === 1) {
+				node.type = 'type1';
+			} else if (level === 2) {
+				node.type = 'type2';
+			} else {
+				node.type = 'default';
+			}
+		
+			if (node.children &amp;&amp; node.children.length > 0) {
+				assignTypesToNodes(node.children, level + 1);
+			}
+		});
+	}
+
+
+$('#infoData').html(infoTemplate(matchingApusElement))
+//$('#infoBox').css("display", "block").animate({height: '200px',  opacity: 1}, 1000)
+ 
+$('.slideupPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
+	
+
+$(document).on('click','.closePanelButton', function(){ 
+	$('#jstree_div').jstree("destroy");
+	$('.slideupPanel').hide();
+})
+
+}
+
+$('.closeInfo').on('click', function(){
+//$('#infoBox').animate({height: '0px',  opacity: 0}, 1000)
+	 
+})
+// Apply interactivity to edge apiPathSites
+function addEdgeIdentifiers() {
+	 
+ 
+$('input[type="radio"][name="view_mode"]').off().on('change', function() {
+	$('#infoSidepanel').css('width', '0');;
+	$('.handle').hide().animate({right: '0'}, 'medium').css('top', '30%');;;
+		event.stopPropagation()
+	 
+		$('#dataObjList').val('choose').trigger('change.select2');
+		if (this.value === 'show_all') {
+			nodes=scopedNodes;
+			edges=scopedEdges;
+			<!--
+			$('#zoomWarning').show();
+
+			setTimeout(function() {
+				$('#zoomWarning').hide();  // This will hide the element after 10 seconds
+			}, 3000);
+		-->
+			$('.appBox').hide();
+			redrawSVG();
+		} else if (this.value === 'by_application') {
+		 
+			$('#zoomWarning').hide(); 
+			$('.appBox').show();
+		}
+	});
+
+		
+	function getAppCapData(thisappcapId){
+		thisCap=appCaps.find((e)=>{return e.id==thisappcapId})
+ 
+		const depth = parseInt(document.getElementById("depthSelector").value);
+		appsToShow=[];
+		thisCap.thisApps?.forEach((a)=>{
+	
+			let relatedApps = findRelatedApps(a, depth);
+	 
+			appsToShow= [...new Set([...appsToShow, ...relatedApps])];
 			 
+		})
+		nodes=[];
+		edges=[];
+
+		getAppsToShow(appsToShow);
+		redrawSVG();
+		
+	}
+
+	$('#depthSelector').off('change.depthSelectorChange').on('change.depthSelectorChange', function(event) {
+		$('.handle').hide().animate({right: '0'}, 'medium').css('top', '30%');;
+
+		let thisval=$(this).val();
+ 
+		const thisappId = $('#appList').val();
+		const thisappcapId = $('#appCapList').val();
+		if(depthType!=='capOn'){
+			getAppOnlyData(thisappId)
+	 
+		}
+		else{
+			getAppCapData(thisappcapId)
+			 
+			
+		}
+		 
+	})
+
+	
+$('#appList').one('change.appListChange', function(){
+	event.stopPropagation()
+
+	$('#infoSidepanel').css('width', '0');
+	$('.handle').hide().animate({right: '0'}, 'medium').css('top', '30%');;
+	depthType = 'appOn';
+	const thisappId = $('#appList').val();
+	getAppOnlyData(thisappId)
+	$('#appList').val(thisappId).trigger('change.select2');
+	$('#appCapList').val('All').trigger('change.select2');
+	$('#dataObjList').val('choose').trigger('change.select2');
+})
+
+$('#appCapList').off('change.appCapListChange').on('change.appCapListChange', function(){
+	$('#infoSidepanel').css('width', '0');
+	$('.handle').hide().animate({right: '0'}, 'medium').css('top', '30%');;
+
+	depthType = 'capOn';
+	const thisappcapId = $(this).val();
+	getAppCapData(thisappcapId)
+    $('#appCapList').val(thisappcapId).trigger('change.select2');
+	$('#dataObjList').val('choose').trigger('change.select2');
+	$('#appList').val('All').trigger('change.select2');
+	$('#dataObjList').val('choose').trigger('change.select2');
+ 
+})
+
+	function getAppsToShow(appsForGraph, selectedapp){
+		nodes=[];
+		edges=[];
+ 
+	
+		const allIds = appsForGraph.map(item => [item.fromAppId, item.toAppId]).flat();
+		if(selectedapp){
+			allIds.push(selectedapp)
+
+		}
+ 
+			// Create a Set from the concatenated array to get unique values, and then convert it back to an array
+			let focusAppList = Array.from(new Set(allIds));
+			focusAppList = focusAppList.filter(item => item !== undefined &amp;&amp; item !== null &amp;&amp; item !== '');
+
+			focusAppList.forEach((a)=>{
+		
+		 
+				let e=appList.find((s)=>{
+					return s.id== a
+				})
+
+ 
+				let appContent={
+					"id": e.id,
+					"name": e.name, 
+					"ap_codebase_status":e.ap_codebase_status,
+					"ap_delivery_model":e.ap_delivery_model,
+					"className": e.className					
+				}
+				
+					nodes.push( { id: e.id, label: e.name, content: appContent})
+				
+			})
+
+			appsForGraph.forEach((e)=>{ 
+				edges.push( {source: e.toAppId, target: e.fromAppId, label:e.info })
+			})
+
+	}
+
+	function getAppOnlyData(appId){
+	
+		const depth = parseInt(document.getElementById("depthSelector").value);
+		const relatedApps = findRelatedApps(appId, depth);
+
+		const relatedAppsFilteredFrom = relatedApps.filter(object => scopedApps.resourceIds.includes(object.fromAppId));
+		const relatedAppsFilteredTo = relatedAppsFilteredFrom.filter(object => scopedApps.resourceIds.includes(object.toAppId));
+
+		if(appId =='All'){
+			nodes=scopedNodes;
+			edges=scopedEdges;
+		}else{
+			
+			getAppsToShow(relatedAppsFilteredTo, appId)
+		} 
+		redrawSVG();
+	}
+
+		$(document).off().one('click', '.focusApp', function(){
+	 
+			const thisappId = $(this).attr('easid');
+			$('input[type="radio"][name="view_mode"][value="by_application"]').prop('checked', true).trigger('change');
+			$('#appList').val(thisappId).trigger('change.select2');
+			getAppOnlyData(thisappId)
+		})
+
+
+	adjustSvgWidth();
+    $(window).resize(adjustSvgWidth); 
+
+}
+<!--
+$('#infoRepList').off().one('change', function(){
+	inner.selectAll("path").style("stroke-width", "1px")
+	.style("stroke", "#d3d3d3");
+	id= $(this).val();
+	console.log('id', id)
+	var easids = [];
+	let pairs=[];
+	let infoRepArray=[];
+
+    // Use jQuery to find elements with the specified data-id and loop through them
+    $('[data-id="' + id + '"]').each(function() {
+		console.log('edge match')
+        // Get the data-easid attribute of each element and add it to the array
+		let thisId= $(this).attr('easid');
+        easids.push(thisId);
+ 
+		let parts = thisId.split('-');
+
+		let beforeDash = parts[0];
+		let afterDash = parts[1];
+		pairs.push({"source":parts[0], "target": parts[1]})
+
+
+    });
+	console.log("pairs",pairs)
+
+		easids.forEach((e)=>{
+			inner.select("#" + e).select("path")
+			.style("stroke-width", "4px")
+			.style("stroke", "red");
+
+		})
+		console.log('easids', easids)
+
+	});
+-->
+	function filterByDataObjectId(array, id) {
+		return array.filter(item => item.dataObjects?.some(dataObject => dataObject.id === id));
+	}
+
+function setDODrop(){	
+	$('#dataObjList').off('change.dataSelectorChange').on('change.dataSelectorChange', function(){
+
+		
+		inner.selectAll("path").style("stroke-width", "1px")
+		.style("stroke", "#d3d3d3");
+ 
+		var easids = [];
+
+		const idToSearch = $(this).val()
+
+		const filteredArray = filterByDataObjectId(apus, idToSearch);
+		let appsToShow=[];
+		filteredArray.forEach((c)=>{
+				let newId=c.toAppId+'-'+c.fromAppId;
+		
+					inner.select("#" + newId).select("path")
+					.style("stroke-width", "4px")
+					.style("stroke", "red");
+
+					let a = appListMapScoped.get(c.toAppId);
+					let b = appListMapScoped.get(c.fromAppId);
+					if(a &amp;&amp; b){
+						if (inner.select("#" + newId).select("path").node()) {
+							appsToShow.push({"source":a,"target":b, "inDiagram":"yes"})
+						}else{
+							appsToShow.push({"source":a,"target":b})
+						}
+					}
+			})
+			 
+			appsToShow=appsToShow.sort((a, b) => a.source.name.localeCompare(b.source.name));
+			if(appsToShow.length &gt;0){
+				$('.handle').show().animate({right: '30'}, 'medium');
+			}
+		 $('#dataList').html(dataTemplate(appsToShow));
+		})
+	}
+	setDODrop()
+	}
+
+
+essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters, true);
+
+		
+	//end of promise			
+		})
+/*
+		function saveSVG(svgElement, filename) {
+			var serializer = new XMLSerializer();
+			var svgString = serializer.serializeToString(svgElement);
+			var blob = new Blob([svgString], {type: "image/svg+xml"});
+		
+			var link = document.createElement('a');
+			link.href = URL.createObjectURL(blob);
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+		
+	
+
+		$('#saveButton').one('click', function() {
+			// Usage example
+			var svgElement = document.querySelector('svg');	 
+	
+			saveSVG(svgElement, 'dependency.svg');
+		});
+		
+		
+		function printSVG(svgElement) {
+			// Serialize the SVG element to a string
+			var serializer = new XMLSerializer();
+			var svgString = serializer.serializeToString(svgElement);
+		
+			// Open a new window and write the SVG string to it
+			var printWindow = window.open('', '_blank');
+			printWindow.document.open();
+			printWindow.document.write('<html><body onload="window.print();">');
+			printWindow.document.write(svgString);
+			printWindow.document.write('</body></html>');
+			printWindow.document.close();
+		}
+		
+		// Usage example
+
+		$('#printButton').one('click', function() {
+			var svgElement = document.querySelector('svg'); // Select your SVG element
+			printSVG(svgElement);
+		});
+		*/
+	//end of doc ready	
+})
+	</xsl:template>		
 </xsl:stylesheet>

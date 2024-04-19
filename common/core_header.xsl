@@ -613,7 +613,7 @@
 						<span><xsl:value-of select="eas:i18n('Home')"/></span>
 					</a>
 					<span>&#160;&#160;&#160;|&#160;&#160;&#160;</span>
-					<xsl:for-each select="$allEnabledPortals">
+					<xsl:for-each select="$allEnabledPortals[eas:isUserAuthZ(.)]">
 						<xsl:sort select="own_slot_value[slot_reference = 'portal_sequence']/value"/>
 						<xsl:variable name="portalXSL" select="own_slot_value[slot_reference = 'portal_xsl_filename']/value"/>
 						<xsl:variable name="portalHistoryLabel" select="own_slot_value[slot_reference = 'report_history_label']/value"/>
@@ -630,7 +630,7 @@
 						</a>
 						<span>&#160;&#160;&#160;|&#160;&#160;&#160;</span>
 					</xsl:for-each>
-					<xsl:if test="$viewLibraryReport/own_slot_value[slot_reference = 'report_is_enabled']/value = 'true'">
+					<xsl:if test="(eas:isUserAuthZ($viewLibraryReport)) and ($viewLibraryReport/own_slot_value[slot_reference = 'report_is_enabled']/value = 'true')">
 						<a>
 							<xsl:call-template name="CommonRenderLinkHref">
 								<xsl:with-param name="theXML" select="$reposXML"/>

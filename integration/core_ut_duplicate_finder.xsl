@@ -199,16 +199,20 @@
 
 								<script>
 									console.log(<xsl:value-of select="$param2"/>)
-									val ='<xsl:choose><xsl:when test="count($param2)&gt;0"><xsl:value-of select="$param2"/></xsl:when><xsl:otherwise>0.1</xsl:otherwise></xsl:choose>';
+									val =<xsl:choose><xsl:when test="count($param2)&gt;0"><xsl:value-of select="$param2"/></xsl:when><xsl:otherwise>0.1</xsl:otherwise></xsl:choose>;
+									console.log('v', parseFloat(val))
 									if(val=''){val='0.1'}
 									console.log('val',val)
-									$('#filterRange').val(parseInt(val)); 
+									$('#filterRange').val(<xsl:value-of select="$param2"/>); 
+								 
+									$('#filterRange').select2({width: '150px'});
 									console.log('filtr')
 									var test;
-                                    var applicationsJSON = [<xsl:apply-templates select="$class" mode="getJSON"/>];
+                                    var classJSON = [<xsl:apply-templates select="$class" mode="getJSON"/>];
+									console.log('classJSON',classJSON)
                                 <!-- remove characters that make it fail -->
                                     
-                                    x =JSON.stringify(applicationsJSON);
+                                    x =JSON.stringify(classJSON);
                                     filter1 = x.replace("(","");
                                     filter2= filter1.replace(")","");
                                     filter3= filter2.replace("&#47;","");
@@ -219,9 +223,11 @@
                                       keys: ['name'],
                                       id: 'name',
                                       includeScore: true,
-                                      threshold: parseInt(val),
+                                      threshold: parseFloat(<xsl:value-of select="$param2"/>),
                                         minMatchCharLength: 5
                                     }
+
+									console.log('optos', options)
                                 <!-- create fuzzy logic -->    
                                     var fuse = new Fuse(applications, options);
                                     var myresults;
@@ -282,8 +288,14 @@
 		</html>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getJSON">
+	<xsl:template match="node()" mode="getJSON2">
 		<xsl:variable name="this"><xsl:value-of select="translate(normalize-space(current()/own_slot_value[slot_reference = 'name']/value),'/&quot;','`')"/><xsl:value-of select="own_slot_value[slot_reference = 'relation_name']/value"/></xsl:variable> {"name":"<xsl:choose><xsl:when test="contains($this, '++')"><xsl:value-of select="substring-before($this, ' ')"/></xsl:when><xsl:otherwise><xsl:value-of select="replace($this, '&#47;', ' ')"/></xsl:otherwise></xsl:choose>","id":"<xsl:value-of select="name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+	</xsl:template>
+
+	<xsl:template match="node()" mode="getJSON">
+		{<xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+		<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+		<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,"id":"<xsl:value-of select="name"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getOptions">

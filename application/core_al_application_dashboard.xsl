@@ -1246,21 +1246,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 					redrawView();
 			 })
 			 
-			 fetch('user/appDashboard.json')  .then(response => {
-				if (response.ok) {
-				  return response.json();
-				} else {
-				 console.log('No settings File');
-				 essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters);
-				}
-			  })
-			  .then(data => {
-				 
-				settings=data;
-				essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region',  'SYS_CONTENT_APPROVAL_STATUS'], filters);
-			  })
-			  .catch(error => console.error(error));
-			
+			 fetch('user/appDashboard.json')
+			 .then(response => {
+			   if (response.ok) {
+				 return response.json();
+			   } else {
+				 console.log('No settings file');
+				 essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters, true);
+				 return null; // Return null to indicate no further processing should happen
+			   }
+			 })
+			 .then(data => {
+			   if (data) { // Proceed only if data is not null
+				 settings = data;
+				 essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], filters, true);
+			   }
+			 })
+			 .catch(error => console.error(error));
+		   
 	
 			  
 			}). catch (function (error)
@@ -1271,7 +1274,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  
 
 function redraw(apps){
-	console.log('reda')
+ 
 //do apps stuff
  
 $('#appBox').html(appBoxTemplate(apps))
@@ -1288,7 +1291,6 @@ function drawChart(canvasId, type, labels, inputData, title, colours, detailedDa
 	//console.log('canvasId',canvasId)
 	//console.log('canvasId',type)
 	//console.log('canvasId',labels)
-	console.log('canvasId',inputData)
  
 	if(charts[canvasId]){charts[canvasId].destroy()};			
  	charts[canvasId] = new Chart(document.getElementById(canvasId), { type: ctype,
@@ -1329,12 +1331,12 @@ function drawChart(canvasId, type, labels, inputData, title, colours, detailedDa
 							// Get the label and value of the segment
 							var segmentLabel = charts[canvasId].data.labels[segmentIndex];
 							var segmentValue = charts[canvasId].data.datasets[0].data[segmentIndex];
-							console.log('Clicked segment:', segmentLabel, segmentValue);
+							
 						
 							let thisSelection=detailedData.filter((e)=>{
 								return e.id==segmentLabel;
 							})
-							console.log('thisSelection',thisSelection)
+						
 							$('#appListModalTitle').html(segmentLabel)
 $('#appListModal').html(appListModalTemplate(thisSelection[0].values));
 $('#appModal').modal('show')
@@ -1397,7 +1399,7 @@ $(document).on('click', '.appInfoButton',function ()
     });
 
 var redrawView=function(){
- console.log('settings', settings)
+
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
@@ -1434,7 +1436,7 @@ var redrawView=function(){
 		
 				$('#appVal').text(scopedApps.resources.length)
 				if(settings){
-					console.log('settings1',settings)
+				
 					filters.forEach((d)=>{
 						
 							let checkType=settings?.app_dashboard?.find((e)=>{
@@ -1445,10 +1447,10 @@ var redrawView=function(){
 							}
 						})
 						filters=filters.sort((a, b) => a.order - b.order);
-					console.log('filters1',filters)
+				
 				}
 				
-console.log('filters',filters)
+
 filters=filters.sort((a, b) => a.order - b.order);
 $('#chartsArea').html(chartTemplate(filters));
 				filters.forEach((d)=>{
@@ -1470,7 +1472,7 @@ $('#chartsArea').html(chartTemplate(filters));
 					let hoverData=[];
 					
 					let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
-                   console.log('filterCount',filterCount)
+                 
 					filterCount.forEach((e,i)=>{  
 					 
 							let thisFilter=d.values.find((f)=>{return f.id==e.key})
@@ -1494,7 +1496,7 @@ $('#chartsArea').html(chartTemplate(filters));
 							$('div[name="'+checkType.id+'"]').hide()
 							$('a[easlinkid="'+checkType.id+'"]').hide()
 						}
-			 console.log('d..',d)
+		
 							drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
 						 
 					//console.log('chartData',  chartData);

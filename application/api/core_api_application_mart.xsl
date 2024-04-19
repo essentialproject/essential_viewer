@@ -148,6 +148,7 @@
 			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 				 </xsl:call-template>",
 			"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
+			"sequence_number":"<xsl:value-of select="current()/own_slot_value[slot_reference='sequence_number']/value"/>",
 			"domainIds":[<xsl:for-each select="$businessDomains"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
 			"appCapCategory":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$categoryLayer[1]"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 			"businessDomain":[<xsl:for-each select="$businessDomains">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -197,6 +198,7 @@
 					   "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 					   "visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 					   "domainIds":[<xsl:for-each select="$businessDomainsIds"> {"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+					   "sequence_number":"<xsl:value-of select="current()/own_slot_value[slot_reference='sequence_number']/value"/>",
 					   "appCapCategory":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$categoryLayer[1]"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 					   "businessDomain":[<xsl:for-each select="$businessDomainsIds">{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 					   "childrenCaps": [<xsl:if test="$depth &lt; 5"><xsl:apply-templates select="$childAppCaps" mode="appCapsHierachy"><xsl:with-param name="depth" select="$depth +1"/></xsl:apply-templates></xsl:if>],
@@ -301,7 +303,9 @@
 						{
 						"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 						"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-						"site":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisSite"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+						"site":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisSite"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+						"siteId":"<xsl:value-of select="eas:getSafeJSString($thisSite/name)"/>",
+						"siteGeoId":"<xsl:value-of select="eas:getSafeJSString($thisSite/own_slot_value[slot_reference='site_geographic_location']/value)"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>	}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 						<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>		
 				}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>]
@@ -318,6 +322,8 @@
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"type":"<xsl:value-of select="current()/type"/>",
+				"short_name":"<xsl:call-template name="RenderMultiLangInstanceSlot"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="displaySlot" select="'short_name'"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"ea_reference":"<xsl:call-template name="RenderMultiLangInstanceSlot"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="displaySlot" select="'ea_reference'"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 				"documents":[<xsl:for-each select="$thisDocs">
 				<xsl:variable name="thisTaxonomyTerms" select="key('allTaxTerms_key',current()/name)"/>
 				{"id":"<xsl:value-of select="current()/name"/>",

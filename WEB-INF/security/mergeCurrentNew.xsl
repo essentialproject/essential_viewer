@@ -52,6 +52,7 @@
             <xsl:copy-of select="class"></xsl:copy-of>
             <xsl:copy-of select="slot"></xsl:copy-of>
             <xsl:copy-of select="facet"></xsl:copy-of>
+            <xsl:copy-of select="class_slot"></xsl:copy-of>
             
             <xsl:choose>
                 <!-- Only do the merge, if the is_published slot is there -->

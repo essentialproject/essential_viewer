@@ -377,9 +377,10 @@
                                     $("#toggleFilter").click(function(){
                                         $("#filterPanel").toggle();
                                     }); 
-                                    val =<xsl:value-of select="$param2"/>;
+                                    val =<xsl:value-of select="$param2"/> || 0.00001;
+									console.log('val',val)
                                     $('#filterRange').val(val); 
-                                    
+									$('#filterRange').select2({width: '150px'});
                                     
                                     var busCapJSON = [<xsl:apply-templates select="$busCaps" mode="getJSON"/>];
                                     var busProcessJSON = [<xsl:apply-templates select="$busProcess" mode="getJSON"/>];
@@ -620,10 +621,9 @@
 		</html>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
-            </xsl:call-template>","id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
+	<xsl:template match="node()" mode="getJSON"> {<xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+	<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+	<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="node()" mode="getOptions">

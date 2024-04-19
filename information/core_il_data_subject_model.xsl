@@ -189,6 +189,40 @@
 			    height: windowHeight * 3,
 			    model: graph
 			});
+
+			paper.on('blank:mousewheel', function(event, x, y, delta) {
+				// Calculate the new scale
+				var currentScale = paper.scale().sx;
+				var newScale = currentScale + delta / 50;
+			
+				// Limit the scale to a reasonable range
+				newScale = Math.max(0.2, Math.min(2, newScale));
+			
+				// Apply the new scale
+				paper.scale(newScale, newScale);
+			});
+
+
+			// Variables to track dragging
+			var dragStartPosition;
+			paper.on('blank:pointerdown', function(event, x, y) {
+				dragStartPosition = { x: x, y: y };
+			});
+
+			// Mouse move handler
+			$('#modelContainer').mousemove(function(event) {
+				if (dragStartPosition) {
+					paper.translate(
+						event.offsetX - dragStartPosition.x,
+						event.offsetY - dragStartPosition.y
+					);
+				}
+			});
+
+			// Mouse up handler
+			$('#modelContainer').mouseup(function(event) {
+				dragStartPosition = null;
+			});
 	
 			var uml = joint.shapes.uml;
 			
@@ -240,7 +274,8 @@
 				<xsl:with-param name="theXSL" select="$dataObjectModelReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:value-of select="translate(translate(translate(translate(translate($jsDataObjectName, '-', ''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, position: { x: 0, y: 0 }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
+	
+		<xsl:value-of select="translate(translate(translate(translate(translate(translate($jsDataObjectName, '-', ''),'/',''), ' ', ''), ',', ''), ':', '_'),'&amp;','and')"/>: new uml.<xsl:value-of select="$umlClassType"/>({ size: { width: 240, height: <xsl:value-of select="$classBoxHeight"/> }, position: { x: 0, y: 0 }, attrs: { a: { 'xlink:href': '<xsl:value-of select="$dataObjectLinkHref"/>', cursor: 'pointer' } } , name: '<xsl:value-of select="$dataObjectName"/>'<xsl:if test="(count($primitiveAttributes) > 0) and not($umlClassType = 'OtherDataObject')">, attributes: [<xsl:apply-templates mode="RenderPrimitiveDataAttributeUML" select="$primitiveAttributes"><xsl:sort select="own_slot_value[slot_reference = 'name']/value"/></xsl:apply-templates>]</xsl:if> })<xsl:if test="not(position() = last())">,</xsl:if><xsl:text>
 			
 			
 		</xsl:text>

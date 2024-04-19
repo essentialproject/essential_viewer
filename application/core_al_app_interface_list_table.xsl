@@ -80,7 +80,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>
-					<xsl:value-of select="eas:i18n('Application Catalogue')"/>
+					<xsl:value-of select="eas:i18n('Application Interface Catalogue')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
 				
@@ -114,7 +114,7 @@
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
 									<span class="text-darkgrey">
-										<xsl:value-of select="eas:i18n('Application Catalogue as Table')"/>
+										<xsl:value-of select="eas:i18n('Application Interface Catalogue as Table')"/>
 									</span>
 								</h1>
 								<div class="altViewName">
@@ -157,7 +157,7 @@
 							</h2>
 
 
-							<p><xsl:value-of select="eas:i18n('This table lists all the Applications in use and allows search as well as copy to spreadsheet')"/>.</p>
+							<p><xsl:value-of select="eas:i18n('This table lists all the Application Interfaces in use and allows search as well as copy to spreadsheet')"/>.</p>
 							<script type="text/javascript">
 	
 								<!-- START VIEW SPECIFIC JAVASCRIPT VARIABLES -->
@@ -343,7 +343,7 @@
 								<thead>
 									<tr>
 										<th>
-											<xsl:value-of select="eas:i18n('Application')"/>
+											<xsl:value-of select="eas:i18n('Application Interface')"/>
 										</th>
 										<th>
 											<xsl:value-of select="eas:i18n('Description')"/>
@@ -359,7 +359,7 @@
 								<tfoot>
 									<tr>
 										<th>
-											<xsl:value-of select="eas:i18n('Application')"/>
+											<xsl:value-of select="eas:i18n('Application Interface')"/>
 										</th>
 										<th>
 											<xsl:value-of select="eas:i18n('Description')"/>

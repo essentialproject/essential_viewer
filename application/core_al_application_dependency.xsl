@@ -686,9 +686,9 @@
 						</div>
 						<div class="col-xs-12">
 								<select id="appNameSelect">
-										<option name="selectOne"><xsl:value-of select="eas:i18n('Choose an Application')"/></option>
+										<option name="selectOne">Choose an Application</option>
 								</select> <xsl:text> </xsl:text>
-							<button id="switch" easid="switch" class="setMe"><xsl:value-of select="eas:i18n('Direction ')"/><span id="switchText"><xsl:value-of select="eas:i18n('Vertical')"/></span></button>
+							<button id="switch" easid="switch" class="setMe">Direction <span id="switchText">Vertical</span></button>
 					 		
 						
 						 <!--	<button class="btn btn-default btn-sm left-15" id="refresh"><i class="fa fa-refresh right-5"></i>Reset Image</button>-->
@@ -969,7 +969,7 @@ if(thefocusApp.id!=''){
  let getKids=containingApps.find((f)=>{
 	return f.id==thefocusApp.id;
 });
-console.log('gk',getKids)
+ 
 if(getKids){
 	if(getKids.children.length&gt;0){
 		nodeArray.push({"id":'Grp'+thefocusApp.id, "name":thefocusApp.name,  "class":thefocusApp.className, "composite":true})
@@ -989,43 +989,29 @@ let viewAPISubData=viewPath+c;
 			{	 
 			let numArray=[];
 			let thisApp=responses[0]
-			  thisApp['module']='true'; 
-			  console.log('thisApp',thisApp)
+			  thisApp['module']='true';  
 			 getInfoforApp(thisApp, thisApp)
 				setUpData(thisApp, totot, tot)  
 			})
 })  
 }
 depData.forEach((p)=>{ 
-	console.log('p',p)
 	p.receivesFrom?.forEach((f)=>{
-		console.log('receivesFrom',f)
 		pairedArray.push({"direction":"rFrom", "targetAppId": p.appid,"targetAppName":p.appname, "sourceAppId": f.id ,"sourceAppName": f.name, "infoReps":f.infoReps})
-		console.log('pairedArray',pairedArray)
 	})
-
 	p.sendsTo?.forEach((f)=>{
-		console.log('receivesFrom',f)
 		pairedArray.push({"direction":"sTo", "sourceAppId": p.appid,"sourceAppName":p.appname, "targetAppId": f.id ,"targetAppName": f.name, "infoReps":f.infoReps})
-		console.log('pairedArray',pairedArray)
 	})
 	p.fromInterfaces?.forEach((f)=>{
-		console.log('fromInterfaces',f)
 		pairedArray.push({"direction":"rFromI", "targetAppId": p.appid,"targetAppName":p.appname, "sourceAppId": f.id ,"sourceAppName": f.name, "infoReps":f.infoReps})
-		console.log('pairedArray',pairedArray)
 		f.receivesFrom?.forEach((g)=>{
-			console.log('IfacereceivesFrom',g)
-			pairedArray.push({"direction":"rFromI2", "targetAppId": f.id,"targetAppName":f.name, "sourceAppId": g.id ,"sourceAppName": g.name, "infoReps":g.infoReps})
-			console.log('pairedArray',pairedArray)
+			pairedArray.push({"direction":"rFromI", "targetAppId": f.id,"targetAppName":f.name, "sourceAppId": g.id ,"sourceAppName": g.name, "infoReps":f.infoReps})
 		})
 	})
 	p.toInterfaces?.forEach((f)=>{
-		console.log('toInterfaces',f)
 		pairedArray.push({"direction":"sToI", "sourceAppId": p.appid,"sourceAppName":p.appname, "targetAppId": f.id ,"targetAppName": f.name, "infoReps":f.infoReps})
 		f.sendsTo?.forEach((g)=>{
-			console.log('IfacesendsTo',g)
-			pairedArray.push({"direction":"sToI", "targetAppId": f.id,"targetAppName":f.name, "sourceAppId": g.id ,"sourceAppName": g.name, "infoReps":g.infoReps})
-			console.log('pairedArray',pairedArray)
+			pairedArray.push({"direction":"sToI", "targetAppId": f.id,"targetAppName":f.name, "sourceAppId": g.id ,"sourceAppName": g.name, "infoReps":f.infoReps})
 		})
 	})
 }) 
@@ -1063,21 +1049,25 @@ dataFromAPI.dependencies.fromInterfaces.forEach((e)=>{
 			return e.id == ap;
 		})
 	
-		if(inscope){ 
+		if(inscope){
+			 
 			if(e.receivesFrom.length==0){
 				e.receivesFrom.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
 			}
+			 
 			tfaDependencies.push(e)}
+			
 	})
 	theApp.dependencies['fromInterfaces']=tfaDependencies
 	dataFromAPI.dependencies.toInterfaces.forEach((e)=>{
 		let inscope=scopedApps.resourceIds.find((ap)=>{
 			return e.id == ap;
 		})
+		 
 		if(e.sendsTo.length==0){
 			e.sendsTo.push({'className':'Composite_Application_Provider', 'id':'fake1', 'name':'Fake1'})
 		}
-
+	 
 		if(inscope){ttaDependencies.push(e)}
 	})
 	theApp.dependencies['toInterfaces']=ttaDependencies
@@ -1136,7 +1126,7 @@ function setUpData(data, totot, tot){
 	data.dependencies["appid"]=	data.id;
 	data.dependencies["appname"]= data.name;
 	depData.push(data.dependencies);
-	console.log('depData',depData)
+	
 // get direct apps
 var appCount = d3.nest()
   .key(function(d) {  return d.id})
@@ -1538,7 +1528,7 @@ $(document).ready(function() {
 				}) 
 				currentAppInfoExchange.push({"sourceAppName":currentSource.name, "targetAppName": currentTarget.name});
 			}
-	console.log('currentAppInfoExchange',currentAppInfoExchange)
+
  			$('#modal-exchanged-info-container').html(modalpanelTemplate(currentAppInfoExchange[0]));
 			$('.popover-trigger').popover({
 							container: 'body',
@@ -1626,36 +1616,27 @@ function setNodes(appToDo){
  			
 
 function redraw(dataForMap){  
-	console.log('redraw dataformap')
+	 
 	var svg;
 
+
 	setNodes(dataForMap)
+ 
 	var parentArray=[];
 	var g;
 
 	nodeArray=nodeArray.sort((a, b) => a.name.localeCompare(b.name))
 	<!-- fix to handle any orphan instances -->
-	nodeArray=nodeArray.filter((e)=>{
-		return e.id!=='';
-	})
-	edgeArray=edgeArray.filter((e)=>{
-		return e.to!=='';
-	})
-	edgeArray=edgeArray.filter((e)=>{
-		return e.from!=='';
-	})
+	nodeArray = nodeArray.filter(e => e.id !== '' &amp;&amp; e.id !== 'fake1');
+
+	edgeArray = edgeArray.filter(e => e.to !== '' &amp;&amp; e.from !== '' &amp;&amp; e.to !== 'fake1' &amp;&amp; e.from !== 'fake1');
+	
 	  
 	nodeArray=nodeArray.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
-
-	console.log('---------------------')
-	console.log('focusApp', focusApp )
-console.log('nodeArray', nodeArray, )
-console.log('edgeArray', edgeArray)
-console.log(' CompositeArray', compositeArray)
-  
+ 
 	let appArr1=nodeArray.filter((a)=>{return a.id !== mainAppId});
 	let appArr=appArr1.filter((a)=>{return a.id !== 'Grp'+mainAppId});
- 	console.log('appArr',appArr)
+ 	 
  	appArr=appArr.filter((elem, index, self) => self.findIndex( (t) =>{return (t.name === elem.name)}) === index)
 	$('#appsList').html(appListTemplate(appArr));
 	renderImage(nodeArray, edgeArray, compositeArray, direction)
@@ -1820,20 +1801,13 @@ console.log(' CompositeArray', compositeArray)
 					let fromId = $(this).parent().attr('fromid');
 					let toId = $(this).parent().attr('toid');
 					let exchangeType = $(this).parent().attr('eas-type'); ;
-   console.log('fromId',fromId)
-   console.log('toId',toId)
+   
 					let thisTargetFilter=pairedArray.filter((d)=>{
 							return d.targetAppId==toId;
 					})
 					let thisSourceFilter=thisTargetFilter.filter((d)=>{
 							return d.sourceAppId==fromId;
 					}) 
-
-
-					console.log('thisTargetFilter',thisTargetFilter)
-					console.log('thisSourceFilter',thisSourceFilter)
-
-
 					currentAppInfoExchange=thisSourceFilter;
 					currentSource=fromId;
 					currentTarget=toId;
@@ -1894,7 +1868,7 @@ $('document').ready(function () {
 				let filters=responses[1].filters;
 				let capfilters=responses[1].filters;
 				fullAppList=responses[1].applications.concat(responses[1].apis) 
-			console.log('fullAppList',fullAppList)
+		 
 				fullAppList.forEach((d)=>{
 				 
 					$('#appNameSelect').append($('&lt;option>', { 

@@ -30,7 +30,8 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"sites":[<xsl:apply-templates select="$sites" mode="sites"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
+		{"sites":[<xsl:apply-templates select="$sites" mode="sites"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+		"countries":[<xsl:apply-templates select="$countries" mode="countries"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"614"}
 	</xsl:template>
 
 	
@@ -43,4 +44,9 @@
 	<xsl:if test="$thiscountries">,
 		"countries":[<xsl:for-each select="$thiscountries">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]</xsl:if>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>	
+	<xsl:template match="node()" mode="countries">
+		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"
+		}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>	
 </xsl:stylesheet>

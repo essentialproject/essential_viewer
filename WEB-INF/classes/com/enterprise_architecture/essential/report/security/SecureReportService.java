@@ -676,11 +676,7 @@ public class SecureReportService extends EasReportService
 		try
 		{
 			File aCacheDirectory = new File(aRealPathToCache);
-<<<<<<< HEAD
-			FileUtils.deleteDirectory(aCacheDirectory);
-=======
 			FileUtils.cleanDirectory(aCacheDirectory);
->>>>>>> master
 		}
 		catch(Exception anEx)
 		{

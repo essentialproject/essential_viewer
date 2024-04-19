@@ -366,6 +366,17 @@ if(appAPUList.length&gt;0){
         
      
         })
+
+        let uniqueRows = [];
+        let seen = new Set();
+
+        rowList.forEach(obj => {
+        let key = JSON.stringify(obj);
+        if (!seen.has(key)) {
+            seen.add(key);
+            uniqueRows.push(obj);
+        }
+        });
         d['allAPIData']=rowList;
     }
     }); 

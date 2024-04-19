@@ -342,8 +342,19 @@
                                 })
                                 icArray.push(match);
                             })
+                           
+                            icArray.sort((a, b) => {
+                                const numA = a.sequence_number === "" ? Infinity : parseInt(a.sequence_number, 10);
+                                const numB = b.sequence_number === "" ? Infinity : parseInt(b.sequence_number, 10);
+                                return numA - numB;
+                            });
                             d['info_concepts']=icArray;
                         })
+                        infoDoms.sort((a, b) => {
+                            const numA = a.sequence_number === "" ? Infinity : parseInt(a.sequence_number, 10);
+                            const numB = b.sequence_number === "" ? Infinity : parseInt(b.sequence_number, 10);
+                            return numA - numB;
+                        });
                        // responses[0]=[]; 
 
                         $('#modelHolder').html(panelTemplate(infoDoms))

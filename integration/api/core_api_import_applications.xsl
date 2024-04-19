@@ -40,9 +40,12 @@
 		<xsl:variable name="thisdelivery" select="$delivery[name=current()/own_slot_value[slot_reference='ap_delivery_model']/value]"/>
 		<xsl:variable name="thislifecycle" select="$lifecycle[name=current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value]"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-			 </xsl:call-template>",
+		<xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+		<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+		<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+		<xsl:variable name="tempDescription" as="map(*)" select="map{'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))}"></xsl:variable>
+		<xsl:variable name="resultDesc" select="serialize($tempDescription, map{'method':'json', 'indent':true()})"/>  
+		<xsl:value-of select="substring-before(substring-after($resultDesc,'{'),'}')"></xsl:value-of>,
 		"class":"<xsl:value-of select="current()/type"/>",	 
 		"codebase_name":"<xsl:value-of select="$thiscodebase/own_slot_value[slot_reference='name']/value"/>",
 		"dispositionId":"<xsl:value-of select="own_slot_value[slot_reference='ap_disposition_lifecycle_status']/value"/>",

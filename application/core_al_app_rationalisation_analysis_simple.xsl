@@ -1925,14 +1925,16 @@ font-size:0.7em;
 
                 }) 
               for (const a of appJSON2) {
-                let processes=[]
-       
+                let processes=[] 
                 a.physP.forEach((p)=>{
                     let match=responses[2].process_to_apps.find((e)=>{
-                        return p=e.id; 
+                        return p==e.id; 
                     })
+                  
                     processes.push({"id":match.processid, "name":match.processName, "className":"Business_Process"})
                 })
+                console.log('a',a)
+                console.log('processes',processes)
                 a['processesList']=processes;
                 a['totalIntegrations']=parseInt(a.inI)+parseInt(a.outI);
                 a['scenarioCostNum']=((a.totalIntegrations*4)+(a.physP.length*2))*600;

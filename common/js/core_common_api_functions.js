@@ -573,3 +573,53 @@ function essPromise_createAdviceFromRules(ruleSetName, facts) {
 		}
 	);
 };
+
+/******************************************
+ *  CHAT GPT FUNCTIONS
+ ******************************************/
+const defaultChatModel = 'gpt-3.5-turbo';
+const defaultChatRole = 'user';
+ 
+function essPromise_askChatQuestion( question, chatModel, chatRole) {
+	return new Promise(
+		function (resolve, reject) {
+
+			let model = defaultChatModel;
+			if(chatModel) {
+			  model = chatModel;
+			}
+			let role = defaultChatRole;
+			if(chatRole) {
+			  role = chatRole;
+			}
+			let chatMessages = [
+				{
+					"role": role,
+					"content": question
+				}
+			];
+
+			let chatData = {
+				"model": model,
+				"messages": chatMessages
+			}
+			let resourceJSONString = JSON.stringify(chatData); 
+			let apiUri = '/essential-system/v1';
+			let resourcePath = 'advisor/questions/ask';
+			let url = essBuildSystemApiPath(apiUri) + resourcePath;
+   
+            //CODE BELOW SHOULD REALLY BE USING UPDATED FETCH JS APPROACH
+			let xhr = essCreateCORSRequest('POST', url);
+			if (!xhr) {
+				corsError = new Error('CORS not supported by browser. Unable to create the advice using the ruleset:' + ruleSetName);
+				reject(corsError);
+			} else {
+				// Response handlers.
+				let errorMessageVerb = 'creating';
+				xhr.onload = essOnXhrLoad(xhr, resolve, reject, 'Advice', errorMessageVerb);
+				xhr.onerror = essOnXhrError(reject, 'Advice', errorMessageVerb);
+				xhr.send(resourceJSONString);
+			}
+		}
+	);
+};

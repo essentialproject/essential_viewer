@@ -2450,13 +2450,14 @@ thisPlan.forEach((p) => {
 					let thisApp=appArray.applications.find((a)=>{
 						return a.id ==s.appid
 					})
-					 
-					s['appName']=thisApp.name;
-					let svmtch=aprs.find((e)=>{
-						return e.id==s.id
-					})
-					s['svcid']=svmtch.svcid;
-					capAppMap.push(s)
+					 if(thisApp){
+						s['appName']=thisApp.name;
+						let svmtch=aprs.find((e)=>{
+							return e.id==s.id
+						})
+						s['svcid']=svmtch.svcid;
+						capAppMap.push(s)
+					}
 				})
 			})
 		  

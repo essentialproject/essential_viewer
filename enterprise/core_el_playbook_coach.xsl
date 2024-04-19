@@ -726,7 +726,6 @@
                                  <li><input type="checkbox" id="acsi"/>Application Capability Summary </li>
                                  <li><input type="checkbox" id="asumi"/>Application Summary </li>
                                  <li><input type="checkbox" id="afoot"/>Application Footprint Comparison </li>
-                                 <li><input type="checkbox" id="adci"/>Application Deployment Summary</li> 
                                  <li><input type="checkbox" id="adai"/>Application Diversity Analysis </li>
                                  <li><input type="checkbox" id="ari"/>Application Radar</li>
                                  <li><input type="checkbox" id="adepsi"/>Application Dependency</li>
@@ -739,6 +738,8 @@
                                  <li><input type="checkbox" id="bditi"/>Business Domain IT Analysis </li>
                                  <li><input type="checkbox" id="bdpai"/>Business Domain Process Analysis</li>
                                  <li><input type="checkbox" id="busProcSumm"/>Business Process Summary</li>
+
+                                 <li><input type="checkbox" id="adci"/>Application Deployment Summary</li> 
                                  <li><input type="checkbox" id="bpfsi"/>Business Process Family Summary</li> 
                                  <li><input type="checkbox" id="appStratTech"/>Application Technology Strategy Alignment</li>
                                  <li><input type="checkbox" id="tcsi"/>Technology Component Summary </li>

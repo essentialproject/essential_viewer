@@ -27,7 +27,7 @@
 	
 	<xsl:variable name="currentDomainInst" select="$param1"/>
 	<xsl:variable name="allBusinessCaps" select="/node()/simple_instance[type = 'Business_Capability']"/>
-	<xsl:variable name="mappedCapabilities" select="$allBusinessCaps[own_slot_value[slot_reference = 'belongs_to_business_domain']/value = $currentDomainInst]"/>
+	<xsl:variable name="mappedCapabilities" select="$allBusinessCaps[own_slot_value[slot_reference = ('belongs_to_business_domain','belongs_to_business_domains')]/value = $currentDomainInst]"/>
 	<xsl:variable name="allMappedCapabilities" select="eas:get_object_descendants($mappedCapabilities, $allBusinessCaps, 0, 6, 'supports_business_capabilities')"/>
 	<xsl:variable name="inScopeBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allMappedCapabilities/name]"/>
 

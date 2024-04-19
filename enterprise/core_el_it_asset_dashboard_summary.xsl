@@ -1019,9 +1019,9 @@ $(document).ready(function() {
 					allCountriesForMap = Array.from(new Set(allCountriesForMap));
 					allInscopeCountries = Array.from(new Set(allInscopeCountries));
 				})
-		
+
 				let workingcap=busCaps.busCaptoAppDetails.filter((d)=>{
-					return d.isRoot!="";
+					return d.isRoot=="true";
 				})
 
 				$('#busCapList').select2({
@@ -1029,6 +1029,7 @@ $(document).ready(function() {
 			        allowClear: true
 			    });
 				$('#busCapList').append("&lt;option value='All'>All&lt;/option>");
+				
 				workingcap.forEach((d)=>{
 					$('#busCapList').append("&lt;option value='"+d.id+"'>"+d.name+"&lt;/option>");
 				})
@@ -1328,11 +1329,23 @@ for (const k of trmKeys) {
 					if (!mergedData[item.id]) {
 						mergedData[item.id] = { ...item };
 					} else {
-						
-					if(mergedData[item.id].appDetails){
-						mergedData[item.id].appDetails = [...mergedData[item.id].appDetails, ...item.appDetails]
 
-						mergedData[item.id].appDetails=mergeApps(mergedData[item.id].appDetails)
+						if (mergedData[item.id]) {
+							if (!Array.isArray(mergedData[item.id].appDetails)) {
+								// Initialize appDetails as an empty array if it's not an array
+								mergedData[item.id].appDetails = [];
+							}
+						
+							if (Array.isArray(item.appDetails)) {
+								// Only proceed if item.appDetails is an array
+								mergedData[item.id].appDetails = [
+									...mergedData[item.id].appDetails, 
+									...item.appDetails
+								];
+								mergedData[item.id].appDetails = mergeApps(mergedData[item.id].appDetails);
+							} else {
+								// item.appDetails is not an array so null, ignore
+							}
 						}
 					}
 					
@@ -1886,7 +1899,7 @@ workingMatch.techComponents.forEach((e)=>{
 					})
 
 					if(techProdRole){
-						techProdRole.name_values.forEach((tp)=>{
+						techProdRole.value.forEach((tp)=>{
 
 							let inScope=scopedTPRs.resourceIds.find((e)=>{
 								return e==tp.id
@@ -1910,7 +1923,7 @@ workingMatch.techComponents.forEach((e)=>{
 								
 									let match=e.techProducts.find((f)=>{
 										if(techProd){
-										return techProd.name_values[0].id==f
+										return techProd.value.id==f
 										}
 									})
 									 
@@ -1919,8 +1932,8 @@ workingMatch.techComponents.forEach((e)=>{
 									}
 								})
 
-
-								techProdtoShow.push({"compId":t.id,"compName":t.name, "name":techProd.name_values[0].name, "id":techProd.name_values[0].id, "lifecycle":thisLife})
+								console.log('tp', techProd)
+								techProdtoShow.push({"compId":t.id,"compName":t.name, "name":techProd.value[0].name, "id":techProd.value[0].id, "lifecycle":thisLife})
 							 	$('[easid="' + t.id + '"]').children('.fa-info-circle').css('color','#d3d3d3');
 
 							}).then(()=>{ 
@@ -1933,7 +1946,7 @@ workingMatch.techComponents.forEach((e)=>{
 
 											let toShow = techProdtoShow.filter((e)=>{
 												return e.compId==theId;
-											}) 
+											}) ;
 									
 											$('#itaData').html(techTemplate(toShow))
 											$('.itaPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );

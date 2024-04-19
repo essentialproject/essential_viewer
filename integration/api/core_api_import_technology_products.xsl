@@ -57,10 +57,21 @@
    <!-- <xsl:variable name="thisusages2" select="$tprs[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>-->
     <xsl:variable name="thisusages" select="key('tprsKey',current()/name)"/>
     
-		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		{
+      <!--"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
         </xsl:call-template>",
+      -->
+      <xsl:variable name="combinedMap" as="map(*)" select="map{
+				'id': string(translate(translate(current()/name, '}', ')'), '{', ')')),
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+        'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))
+			}"></xsl:variable>
+			
+			<xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			<!-- Extract and Output the Values -->
+			<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
         "family":[<xsl:for-each select="$thisfamily">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	   "supplier":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thissupplier"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
@@ -72,8 +83,6 @@
          "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$componentsUsed"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
          <xsl:variable name="complianceStd" select="key('techStandardsKey',current()/name)"/>
 <xsl:variable name="thisenumsStandards" select="key('techProductStandardsKey', $complianceStd/name)"/>
-"compliance22":"<xsl:value-of select="$thisenumsStandards/own_slot_value[slot_reference='name']/value"/>",
-"compliance22a":"<xsl:value-of select="$complianceStd/name"/>",
         "compliance":"<xsl:value-of select="$enumsStandards[name=$techStandards[own_slot_value[slot_reference='tps_standard_tech_provider_role']/value=current()/name]/own_slot_value[slot_reference='sm_standard_strength']/value]/own_slot_value[slot_reference='name']/value"/>",
         "adoption":"<xsl:value-of select="$lifecycle[name=$thisusages[1]/own_slot_value[slot_reference='strategic_lifecycle_status']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
         }<xsl:if test="position()!=last()">,</xsl:if>

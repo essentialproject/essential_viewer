@@ -153,35 +153,38 @@
 		</html>
 	</xsl:template>
 
-	<xsl:template mode="portalSections" match="node()"> 
-		<xsl:variable name="allR2PSRForSection" select="key('allReportToPortalSectionRelation_key',current()/name)"/>
-	<!--	<xsl:variable name="allReportToPortalSectionRelation" select="/node()/simple_instance[type = 'REPORT_TO_PORTAL_SECTION_RELATION']"/>
-		<xsl:variable name="allR2PSRForSection" select="$allReportToPortalSectionRelation[own_slot_value[slot_reference = 'r2psr_portal_section']/value = current()/name]"/> -->
-		<xsl:variable name="reportsForSection" select="$allReports[name = $allR2PSRForSection/own_slot_value[slot_reference = 'r2psr_report']/value]"/>
-		<xsl:if test="count($reportsForSection) > 0">
-			<h1 class="text-primary">
-				<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-			</h1>
-			<xsl:if test="string-length(current()/own_slot_value[slot_reference = 'description']/value) &gt; 0">
-				<p class="large text-secondary">
-					<strong>
-						<xsl:call-template name="RenderMultiLangInstanceDescription">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-						</xsl:call-template>
-					</strong>
-				</p>
-			</xsl:if>
-			<div class="row">
-				<xsl:apply-templates select="$allR2PSRForSection" mode="sectionReports">
-					<xsl:sort select="number(current()/own_slot_value[slot_reference = 'report_to_portal_section_index']/value)"/>
-				</xsl:apply-templates>				
-				<!--All R2PSRForSection: <xsl:value-of select="$allR2PSRForSection/own_slot_value[slot_reference='relation_name']/value"></xsl:value-of>-->
-				<div class="col-xs-12 ">
-					<hr/>
+	<xsl:template mode="portalSections" match="node()">
+		<xsl:variable name="thisSection" select="current()"/>
+		<xsl:if test="eas:isUserAuthZ($thisSection)">
+			<xsl:variable name="allR2PSRForSection" select="key('allReportToPortalSectionRelation_key',current()/name)"/>
+		<!--	<xsl:variable name="allReportToPortalSectionRelation" select="/node()/simple_instance[type = 'REPORT_TO_PORTAL_SECTION_RELATION']"/>
+			<xsl:variable name="allR2PSRForSection" select="$allReportToPortalSectionRelation[own_slot_value[slot_reference = 'r2psr_portal_section']/value = current()/name]"/> -->
+			<xsl:variable name="reportsForSection" select="$allReports[name = $allR2PSRForSection/own_slot_value[slot_reference = 'r2psr_report']/value]"/>
+			<xsl:if test="count($reportsForSection) > 0">
+				<h1 class="text-primary">
+					<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+					</xsl:call-template>
+				</h1>
+				<xsl:if test="string-length(current()/own_slot_value[slot_reference = 'description']/value) &gt; 0">
+					<p class="large text-secondary">
+						<strong>
+							<xsl:call-template name="RenderMultiLangInstanceDescription">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+							</xsl:call-template>
+						</strong>
+					</p>
+				</xsl:if>
+				<div class="row">
+					<xsl:apply-templates select="$allR2PSRForSection" mode="sectionReports">
+						<xsl:sort select="number(current()/own_slot_value[slot_reference = 'report_to_portal_section_index']/value)"/>
+					</xsl:apply-templates>				
+					<!--All R2PSRForSection: <xsl:value-of select="$allR2PSRForSection/own_slot_value[slot_reference='relation_name']/value"></xsl:value-of>-->
+					<div class="col-xs-12 ">
+						<hr/>
+					</div>
 				</div>
-			</div>
+			</xsl:if>
 		</xsl:if>
 	</xsl:template>
 
@@ -197,183 +200,220 @@
 	</xsl:template>
 
 	<xsl:template mode="portalPanels" match="node()">
-		<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',current()/name)"/>
-		<!--	
-		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>-->
-		<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
-		<div class="col-xs-12 col-sm-3">
-			<div class="bg-offwhite portalPanel">
-				<h1 class="text-primary">
-					<xsl:call-template name="RenderMultiLangInstanceName">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-					</xsl:call-template>
-				</h1>
-				<p>
-					<xsl:call-template name="RenderMultiLangInstanceDescription">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-					</xsl:call-template>
-				</p>
-				<div class="verticalSpacer_5px"/>
-				<ul>
-					<xsl:for-each select="$panelReports">					
-						<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-						<!-- Only render if user is authorised -->
-						<xsl:if test="eas:isUserAuthZ(current())">
-							<xsl:choose>
-								<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
-									<xsl:variable name="theEditorId" select="current()/name"/>
-									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
-									<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
-									<xsl:variable name="theEditorParamString">
-										<xsl:apply-templates mode="RenderMenuItemParameters" select="$theEditorParameterInsts"/>
-									</xsl:variable>
-									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:value-of select="$theEditorParamString"/></xsl:variable>
-									<li class="fontSemi large">
-										<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
-											<xsl:value-of select="$theEditorLabel"/>
-										</a>
-									</li>
-								</xsl:when>
-								<xsl:when test="($eipMode) and (current()/type = 'Configured_Editor')">
-									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
-									<li class="fontSemi large">
-										<a class="text-darkgrey" target="_blank">
-											<xsl:attribute name="href">
-												<xsl:call-template name="RenderEditorLinkHref">
-													<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
-												</xsl:call-template>
-											</xsl:attribute>
-											<xsl:value-of select="$theEditorLabel"/>
-										</a>
-									</li>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/> 
-									<xsl:variable name="qualifyingReport" select="$qualifyingReports[name = $qualifyingReportId]"/>
-									<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-									<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-									<xsl:variable name="targetReportIdQueryString">
-										<xsl:text>&amp;targetReportId=</xsl:text>
-										<xsl:value-of select="current()/name"/>
-									</xsl:variable>
-									<li class="fontSemi large">
-										<xsl:choose>
-											<xsl:when test="string-length($qualifyingReportId) > 0">
-												<a class="text-darkgrey">
-													<xsl:call-template name="RenderLinkHref">
-														<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
-														<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
-														<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+		<xsl:variable name="thisPanel" select="current()"/>
+		<xsl:if test="eas:isUserAuthZ($thisPanel)">
+			<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',current()/name)"/>
+			<!--	
+			<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>-->
+			<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
+			<div class="col-xs-12 col-sm-3">
+				<div class="bg-offwhite portalPanel">
+					<h1 class="text-primary">
+						<xsl:call-template name="RenderMultiLangInstanceName">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+						</xsl:call-template>
+					</h1>
+					<p>
+						<xsl:call-template name="RenderMultiLangInstanceDescription">
+							<xsl:with-param name="theSubjectInstance" select="current()"/>
+						</xsl:call-template>
+					</p>
+					<div class="verticalSpacer_5px"/>
+					<ul>
+						<xsl:for-each select="$panelReports">					
+							<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
+							<!-- Only render if user is authorised -->
+							<xsl:if test="eas:isUserAuthZ(current())">
+								<xsl:choose>
+									<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+										<xsl:variable name="theEditorId" select="current()/name"/>
+										<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+										<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
+										<xsl:variable name="theEditorParamString">
+											<xsl:apply-templates mode="RenderMenuItemParameters" select="$theEditorParameterInsts"/>
+										</xsl:variable>
+										<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:value-of select="$theEditorParamString"/></xsl:variable>
+										<li class="fontSemi large">
+											<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
+												<xsl:value-of select="$theEditorLabel"/>
+											</a>
+										</li>
+									</xsl:when>
+									<xsl:when test="($eipMode) and (current()/type = 'Configured_Editor')">
+										<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+										<li class="fontSemi large">
+											<a class="text-darkgrey" target="_blank">
+												<xsl:attribute name="href">
+													<xsl:call-template name="RenderEditorLinkHref">
+														<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
 													</xsl:call-template>
-													<xsl:call-template name="RenderMultiLangInstanceName">
-														<xsl:with-param name="theSubjectInstance" select="current()"/>
+												</xsl:attribute>
+												<xsl:value-of select="$theEditorLabel"/>
+											</a>
+										</li>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/> 
+										<xsl:variable name="qualifyingReport" select="$qualifyingReports[name = $qualifyingReportId]"/>
+										<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
+										<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+										<xsl:variable name="targetReportIdQueryString">
+											<xsl:text>&amp;targetReportId=</xsl:text>
+											<xsl:value-of select="current()/name"/>
+										</xsl:variable>
+										<li class="fontSemi large">
+											<xsl:choose>
+												<xsl:when test="string-length($qualifyingReportId) > 0">
+													<a class="text-darkgrey">
+														<xsl:call-template name="RenderLinkHref">
+															<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
+															<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
+															<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+														</xsl:call-template>
+														<xsl:call-template name="RenderMultiLangInstanceName">
+															<xsl:with-param name="theSubjectInstance" select="current()"/>
+														</xsl:call-template>
+													</a>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:call-template name="RenderCatalogueLink">
+														<xsl:with-param name="theCatalogue" select="current()"/>
+														<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+														<xsl:with-param name="targetReport" select="()"/>
+														<xsl:with-param name="targetMenu" select="()"/>
+														<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
 													</xsl:call-template>
-												</a>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:call-template name="RenderCatalogueLink">
-													<xsl:with-param name="theCatalogue" select="current()"/>
-													<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-													<xsl:with-param name="targetReport" select="()"/>
-													<xsl:with-param name="targetMenu" select="()"/>
-													<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
-												</xsl:call-template>
-											</xsl:otherwise>
-										</xsl:choose>
-									</li>
-								</xsl:otherwise>
-							</xsl:choose>
-							
-						</xsl:if>
-					</xsl:for-each>
-				</ul>
-				<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections">
-					<xsl:sort select="number(current()/own_slot_value[slot_reference = 'portal_panel_section_sequence']/value)"/>
-				</xsl:apply-templates>
-				<br/>
+												</xsl:otherwise>
+											</xsl:choose>
+										</li>
+									</xsl:otherwise>
+								</xsl:choose>
+								
+							</xsl:if>
+						</xsl:for-each>
+					</ul>
+					<xsl:apply-templates mode="portalPanelSections" select="$portalPanelSections">
+						<xsl:sort select="number(current()/own_slot_value[slot_reference = 'portal_panel_section_sequence']/value)"/>
+					</xsl:apply-templates>
+					<br/>
+				</div>
 			</div>
-		</div>
-		<div class="col-xs-12 col-sm-3"> &#160; </div>
+			<div class="col-xs-12 col-sm-3"> &#160; </div>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template mode="portalPanelSections" match="node()">
-		<xsl:variable name="sectionReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'portal_panel_section_reports']/value]"/>
-	<!--	<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/> -->
-		<xsl:variable name="sectionExtRefs" select="key('allExtRefs_key',current()/name)"/>
-		<xsl:variable name="sectionActors" select="$allPortalPanelsActors[name = current()/own_slot_value[slot_reference = 'portal_panel_actors']/value]"/>
-		<h2>
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>
-		</h2>
-		<ul>
-			<xsl:for-each select="$sectionReports">
-				<xsl:sort select="/own_slot_value[slot_reference = 'report_label']/value"/>
-				<xsl:if test="eas:isUserAuthZ(current())">
-					<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
-					<xsl:variable name="qualifyingReport" select="$qualifyingReports[name = $qualifyingReportId]"/>
-					<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
-					<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
-					<xsl:variable name="targetReportIdQueryString">
-						<xsl:text>&amp;targetReportId=</xsl:text>
-						<xsl:value-of select="current()/name"/>
-					</xsl:variable>
+		<xsl:variable name="thisSection" select="current()"/>
+		<xsl:if test="eas:isUserAuthZ($thisSection)">
+			<xsl:variable name="sectionReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'portal_panel_section_reports']/value]"/>
+		<!--	<xsl:variable name="sectionExtRefs" select="$allExtRefs[name = current()/own_slot_value[slot_reference = 'external_reference_links']/value]"/> -->
+			<xsl:variable name="sectionExtRefs" select="key('allExtRefs_key',current()/name)"/>
+			<xsl:variable name="sectionActors" select="$allPortalPanelsActors[name = current()/own_slot_value[slot_reference = 'portal_panel_actors']/value]"/>
+			<h2>
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="current()"/>
+				</xsl:call-template>
+			</h2>
+			<ul>
+				<xsl:for-each select="$sectionReports">
+					<xsl:sort select="/own_slot_value[slot_reference = 'report_label']/value"/>
+					<xsl:if test="eas:isUserAuthZ(current())">
+						<xsl:choose>
+							<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+								<xsl:variable name="theEditorId" select="current()/name"/>
+								<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+								<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
+								<xsl:variable name="theEditorParamString">
+									<xsl:apply-templates mode="RenderMenuItemParameters" select="$theEditorParameterInsts"/>
+								</xsl:variable>
+								<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/><xsl:value-of select="$theEditorParamString"/></xsl:variable>
+								<li class="fontSemi large">
+									<a class="text-darkgrey" href="{$theEditorLinkHref}" target="_blank">
+										<xsl:value-of select="$theEditorLabel"/>
+									</a>
+								</li>
+							</xsl:when>
+							<xsl:when test="($eipMode) and (current()/type = 'Configured_Editor')">
+								<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+								<li class="fontSemi large">
+									<a class="text-darkgrey" target="_blank">
+										<xsl:attribute name="href">
+											<xsl:call-template name="RenderEditorLinkHref">
+												<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+											</xsl:call-template>
+										</xsl:attribute>
+										<xsl:value-of select="$theEditorLabel"/>
+									</a>
+								</li>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:variable name="qualifyingReportId" select="current()/own_slot_value[slot_reference = 'report_qualifying_report']/value"/>
+								<xsl:variable name="qualifyingReport" select="$qualifyingReports[name = $qualifyingReportId]"/>
+								<xsl:variable name="qualifyingReportHistoryLabelName" select="$qualifyingReport/own_slot_value[slot_reference = 'report_history_label']/value"/>
+								<xsl:variable name="qualifyingReportFilename" select="$qualifyingReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+								<xsl:variable name="targetReportIdQueryString">
+									<xsl:text>&amp;targetReportId=</xsl:text>
+									<xsl:value-of select="current()/name"/>
+								</xsl:variable>
+								<li class="fontSemi large">
+									<xsl:choose>
+										<xsl:when test="string-length($qualifyingReportId) > 0">
+											<a class="text-darkgrey">
+												<xsl:call-template name="RenderLinkHref">
+													<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
+													<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
+													<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
+												</xsl:call-template>
+												<xsl:value-of select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+											</a>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="RenderCatalogueLink">
+												<xsl:with-param name="theCatalogue" select="current()"/>
+												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+												<xsl:with-param name="targetReport" select="()"/>
+												<xsl:with-param name="targetMenu" select="()"/>
+												<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
+								</li>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:if>
+				</xsl:for-each>
+			</ul>
+			<ul>
+				<xsl:for-each select="$sectionActors[eas:isUserAuthZ(.)]">
+					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
 					<li class="fontSemi large">
 						<xsl:choose>
-							<xsl:when test="string-length($qualifyingReportId) > 0">
-								<a class="text-darkgrey">
-									<xsl:call-template name="RenderLinkHref">
-										<xsl:with-param name="theXSL" select="$qualifyingReportFilename"/>
-										<xsl:with-param name="theHistoryLabel" select="$qualifyingReportHistoryLabelName"/>
-										<xsl:with-param name="theUserParams" select="$targetReportIdQueryString"/>
-									</xsl:call-template>
-									<xsl:value-of select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
+							<xsl:when test="string-length(current()/own_slot_value[slot_reference = 'email']/value) > 0">
+								<a target="_blank" class="text-darkgrey">
+									<xsl:attribute name="href" select="concat('mailto:', current()/own_slot_value[slot_reference = 'email']/value)"/>
+									<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
 								</a>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:call-template name="RenderCatalogueLink">
-									<xsl:with-param name="theCatalogue" select="current()"/>
-									<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-									<xsl:with-param name="targetReport" select="()"/>
-									<xsl:with-param name="targetMenu" select="()"/>
-									<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
-								</xsl:call-template>
+								<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</li>
-				</xsl:if>
-			</xsl:for-each>
-		</ul>
-		<ul>
-			<xsl:for-each select="$sectionActors">
-				<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-				<li class="fontSemi large">
-					<xsl:choose>
-						<xsl:when test="string-length(current()/own_slot_value[slot_reference = 'email']/value) > 0">
-							<a target="_blank" class="text-darkgrey">
-								<xsl:attribute name="href" select="concat('mailto:', current()/own_slot_value[slot_reference = 'email']/value)"/>
-								<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-							</a>
-						</xsl:when>
-						<xsl:otherwise>
+				</xsl:for-each>
+			</ul>
+			<ul>
+				<xsl:for-each select="$sectionExtRefs[eas:isUserAuthZ(.)]">
+					<xsl:sort select="/own_slot_value[slot_reference = 'name']/value"/>
+					<li class="fontSemi large">
+						<a target="_blank" class="text-darkgrey">
+							<xsl:attribute name="href" select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 							<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</li>
-			</xsl:for-each>
-		</ul>
-		<ul>
-			<xsl:for-each select="$sectionExtRefs">
-				<xsl:sort select="/own_slot_value[slot_reference = 'name']/value"/>
-				<li class="fontSemi large">
-					<a target="_blank" class="text-darkgrey">
-						<xsl:attribute name="href" select="current()/own_slot_value[slot_reference = 'external_reference_url']/value"/>
-						<xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
-					</a>
-				</li>
-			</xsl:for-each>
-		</ul>
-		<br/>
+						</a>
+					</li>
+				</xsl:for-each>
+			</ul>
+			<br/>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template name="PrintReportBox">

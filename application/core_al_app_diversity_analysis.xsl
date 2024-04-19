@@ -1,9 +1,12 @@
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_doctype.xsl"/>
-	<xsl:include href="../common/core_common_head_content.xsl"/>
-	<xsl:include href="../common/core_header.xsl"/>
-	<xsl:include href="../common/core_footer.xsl"/>
-
+<xsl:import href="../common/core_js_functions.xsl"/>
+<xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
+<xsl:include href="../common/core_doctype.xsl"/>
+<xsl:include href="../common/core_common_head_content.xsl"/>
+<xsl:include href="../common/core_header.xsl"/>
+<xsl:include href="../common/core_footer.xsl"/>
+<xsl:include href="../common/core_external_doc_ref.xsl"/>
+<xsl:include href="../common/core_handlebars_functions.xsl"/>
 
 	<xsl:output method="html"/>
 
@@ -23,31 +26,16 @@
 	<xsl:variable name="currentCapability" select="/node()/simple_instance[name = $param1]"/>
 	<xsl:variable name="capabilityName" select="$currentCapability/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="inScopeAppSvcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_application_capabilities']/value = $currentCapability/name]"/>
+	<xsl:key name="inScopeAppSvcsKey" match="/node()/simple_instance[type='Application_Service']" use="own_slot_value[slot_reference = 'realises_application_capabilities']/value"/>
+	<xsl:key name="inScopeAppProRolesKey" match="/node()/simple_instance[type='Application_Provider_Role']" use="own_slot_value[slot_reference = 'implementing_application_service']/value"/>
+	<xsl:key name="inScopeAppsKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="own_slot_value[slot_reference = 'provides_application_services']/value"/>
+	<xsl:key name="inScopeSupplierKey" match="/node()/simple_instance[type=('Supplier')]" use="name"/>
 	<xsl:variable name="inScopeAppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_application_service']/value = $inScopeAppSvcs/name]"/>
 	<xsl:variable name="inScopeApps" select="/node()/simple_instance[name = $inScopeAppProRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="inScopeSuppliers" select="/node()/simple_instance[name = $inScopeApps/own_slot_value[slot_reference = 'ap_supplier']/value]"/>
 
-	<xsl:variable name="inScopeAppDeployments" select="/node()/simple_instance[name = $inScopeApps/own_slot_value[slot_reference = 'deployments_of_application_provider']/value]"/>
-	<xsl:variable name="inScopeTechBuilds" select="/node()/simple_instance[name = $inScopeAppDeployments/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
-	<xsl:variable name="inScopeTechArchs" select="/node()/simple_instance[name = $inScopeTechBuilds/own_slot_value[slot_reference = 'technology_provider_architecture']/value]"/>
-	<xsl:variable name="inScopeTechProdRoleUsages" select="/node()/simple_instance[(type = 'Technology_Provider_Usage') and (name = $inScopeTechArchs/own_slot_value[slot_reference = 'contained_architecture_components']/value)]"/>
-	<xsl:variable name="platformTechProdRoles" select="/node()/simple_instance[name = $inScopeTechProdRoleUsages/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
-	<xsl:variable name="platformTechProds" select="/node()/simple_instance[name = $platformTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-	<xsl:variable name="platformTechProdSuppliers" select="/node()/simple_instance[name = $platformTechProds/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-	<xsl:variable name="platformTechComponents" select="/node()/simple_instance[name = $platformTechProdRoles/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-
-	<xsl:variable name="InScopeSWArchs" select="/node()/simple_instance[name = $inScopeApps/own_slot_value[slot_reference = 'has_software_architecture']/value]"/>
-	<xsl:variable name="InScopeSWArchElements" select="/node()/simple_instance[(type = 'Software_Component_Usage') and (name = $InScopeSWArchs/own_slot_value[slot_reference = 'logical_software_arch_elements']/value)]"/>
-	<xsl:variable name="InScopeSWComps" select="/node()/simple_instance[name = $InScopeSWArchElements/own_slot_value[slot_reference = 'usage_of_software_component']/value]"/>
-	<xsl:variable name="swTechProdRoles" select="/node()/simple_instance[name = $InScopeSWComps/own_slot_value[slot_reference = ('software_from_tech_prod_role', 'software_runtime_technology')]/value]"/>
-	<xsl:variable name="swTechProds" select="/node()/simple_instance[name = $swTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-	<xsl:variable name="swTechProdSuppliers" select="/node()/simple_instance[name = $swTechProds/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-	<xsl:variable name="swTechComponents" select="/node()/simple_instance[name = $swTechProdRoles/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-
-	<xsl:variable name="inScopeTechProdRoles" select="($platformTechProdRoles union $swTechProdRoles)"/>
-	<xsl:variable name="inScopeTechProds" select="($platformTechProds union $swTechProds)"/>
-	<xsl:variable name="inScopeTechProdSuppliers" select="($platformTechProdSuppliers union $swTechProdSuppliers)"/>
-	<xsl:variable name="inScopeTechComponents" select="($platformTechComponents union $swTechComponents)"/>
+	
+	<xsl:variable name="appMartData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -73,6 +61,12 @@
 	<!-- 06.11.2008	JWC Repaired location of the Page History box -->
 
 	<xsl:template match="knowledge_base">
+		<xsl:variable name="apiappMart">
+				<xsl:call-template name="GetViewerAPIPath">
+					<xsl:with-param name="apiReport" select="$appMartData"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+			
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
@@ -92,7 +86,8 @@
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"/>
-
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+			 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -112,19 +107,9 @@
 								<xsl:value-of select="eas:i18n('Application Diversity and Duplication Analysis')"/>
 							</h2>
 							<div class="content-section">
-								<xsl:variable name="impl_appsvc_list" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_application_capabilities']/value = $currentCapability/name]"/>
-
-								<xsl:choose>
-									<xsl:when test="count($impl_appsvc_list) = 0">
-										<p>
-											<em><xsl:value-of select="eas:i18n('No Application Services defined for this Capability')"/></em>
-										</p>
-									</xsl:when>
-									<xsl:otherwise>
-										<p><xsl:value-of select="eas:i18n('The following table describes the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application')"/>. </p>
-										<xsl:apply-templates select="$currentCapability" mode="Page_Body"/>
-									</xsl:otherwise>
-								</xsl:choose>
+								<p><xsl:value-of select="eas:i18n('The following table describes the Application Services that are defined for this Capability and the applications that are being used to implement the each service along with the technology products that are used to deliver the application')"/>. </p>
+								<!--new -->
+									<div id="newtable"></div>
 							</div>
 						</div>
 					</div>
@@ -132,408 +117,374 @@
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 			</body>
+			<script>			
+				<xsl:call-template name="RenderViewerAPIJSFunction"> 
+					<xsl:with-param name="viewerAPIPathAppMart" select="$apiappMart"></xsl:with-param>
+				</xsl:call-template>  
+			</script>
+			<script id="table-template" type="text/x-handlebars-template">
 
+				 
+							<table  class="table table-bordered table-striped appcaptable">
+								<thead>
+									<tr>
+										<th><xsl:value-of select="eas:i18n('APPLICATION CAPABILITY')"/></th>
+										<th><xsl:value-of select="eas:i18n('APPLICATION SERVICES')"/></th>
+										<th><xsl:value-of select="eas:i18n('APPLICATIONS')"/></th>
+										<th><xsl:value-of select="eas:i18n('SUPPLIER')"/></th>
+										<th><xsl:value-of select="eas:i18n('ENVIRONMENT &amp; PRODUCTS USED')"/></th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each this}}
+									<tr>
+										<td>{{#essRenderInstanceMenuLink this.applicationCapability}}{{/essRenderInstanceMenuLink}}
+													<br/>
+													{{this.applicationCapability.description}}
+
+										</td>
+										<td>{{#essRenderInstanceMenuLink this.applicationServices}}{{/essRenderInstanceMenuLink}}</td>											
+										<td>{{#essRenderInstanceMenuLink this.applications}}{{/essRenderInstanceMenuLink}}</td>
+										<td>{{this.supplier}}</td>
+										<td>{{this.environment}}<br/>
+											{{#each this.environmentProducts}}
+												{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+												{{#if this.compname}}
+													({{this.compname}})
+												{{/if}}
+												<br/>
+
+											{{/each}}
+
+										</td>
+									</tr>
+
+									{{/each}}
+								</tbody>
+							</table>
+			</script>
 		</html>
 	</xsl:template>
 
-	<!-- TEMPLATE TO CREATE THE PAGE BODY -->
-	<xsl:template match="node()" mode="Page_Body">
-		<!-- Get the name of the application capability -->
-		<xsl:variable name="capabilityName">
-			<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
+
+<xsl:template match="node()" mode="appCapJSON">
+	<xsl:variable name="thisSvs" select="key('inScopeAppSvcsKey', current()/name)"/>
+{
+	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	<xsl:variable name="temp" as="map(*)" select="map{
+		'name': string(current()/own_slot_value[slot_reference = 'name']/value),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', '('))
+	}">
+	</xsl:variable>
+	<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+	<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"/>,
+	"services":[<xsl:for-each select="$thisSvs">
+		<xsl:variable name="thisAPR" select="key('inScopeAppProRolesKey', current()/name)"/>
+		<xsl:variable name="thisApps" select="key('inScopeAppsKey', $thisAPR/name)"/>
+	
+		{
+		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		<xsl:variable name="temp" as="map(*)" select="map{
+		'name': string(current()/own_slot_value[slot_reference = 'name']/value),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', '('))
+		}">
 		</xsl:variable>
-
-		<table class="table table-bordered table-striped">
-			<xsl:apply-templates mode="appDiversity_Page_Body" select="$currentCapability">
-				<xsl:with-param name="showEmpty" select="$param2"/>
-				<xsl:with-param name="calledParam" select="$param1"/>
-			</xsl:apply-templates>
-		</table>
-
-	</xsl:template>
-
-	<xsl:template match="node()" mode="appDiversity_Page_Body">
-		<!-- Parameter to control whether empty capabilities are displayed -->
-		<xsl:param name="showEmpty"/>
-		<xsl:param name="calledParam"/>
-		<!-- Get the name of the application capability -->
-		<xsl:variable name="capabilityName">
-			<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
-		</xsl:variable>
-		<xsl:variable name="capability" select="name"/>
-		<xsl:variable name="capCount" select="position()"/>
-		<xsl:if test="position() = 1">
-			<thead>
-				<tr>
-					<th class="cellWidth-25pc">
-						<xsl:value-of select="eas:i18n('Application Capability')"/>
-					</th>
-					<th class="cellWidth-20pc">
-						<xsl:value-of select="eas:i18n('Application Services')"/>
-					</th>
-					<th class="cellWidth-20pc">
-						<xsl:value-of select="eas:i18n('Implementing Applications')"/>
-					</th>
-					<th class="cellWidth-15pc">
-						<xsl:value-of select="eas:i18n('Supplier')"/>
-					</th>
-					<th class="cellWidth-20pc"><xsl:value-of select="eas:i18n('Product Name')"/> (<xsl:value-of select="eas:i18n('Technology')"/>)</th>
-				</tr>
-			</thead>
-		</xsl:if>
-		<xsl:variable name="impl_appsvc_list" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_application_capabilities']/value = $capability]"/>
-		<xsl:if test="count($impl_appsvc_list) > 0">
-			<tbody>
-				<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-				<!-- Capability heading -->
-				<!-- Find number of rows to span -->
-				<!-- 26.08.2011 JWC Updated to support Application Provider Roles -->
-				<!-- Original code
-					<xsl:variable name="app_Provs" select="$impl_appsvc_list/own_slot_value[slot_reference='provided_by_application_provider']/value"></xsl:variable>
-				-->
-				<xsl:variable name="appProvRoles" select="/node()/simple_instance[name = $impl_appsvc_list/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]"/>
-				<!-- From this list, find all the Application Providers -->
-				<xsl:variable name="app_Provs" select="/node()/simple_instance[name = $appProvRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-				<xsl:variable name="prov_list_size" select="count($app_Provs)"/>
-				<td>
-					<xsl:if test="$prov_list_size > 0">
-						<xsl:attribute name="rowspan">
-							<xsl:value-of select="count($appProvRoles)"/>
-						</xsl:attribute>
-					</xsl:if>
-					<strong>
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-						</xsl:call-template>
-					</strong>
-					<br/>
-					<xsl:call-template name="RenderMultiLangInstanceDescription">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-					</xsl:call-template>
-				</td>
-				<xsl:apply-templates select="$impl_appsvc_list" mode="Implementing_Application_Service"> </xsl:apply-templates>
-				<xsl:if test="position() &lt; last()">
-					<xsl:text disable-output-escaping="yes">&lt;/tr&gt;</xsl:text>
-				</xsl:if>
-			</tbody>
-
-		</xsl:if>
-		<xsl:if test="($showEmpty = 'true') and (not(count($impl_appsvc_list) > 0))">
-			<xsl:if test="position() > 1">
-				<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-			</xsl:if>
-			<!-- Capability heading -->
-			<!-- Find number of rows to span -->
-			<xsl:variable name="appProvRoles" select="/node()/simple_instance[name = $impl_appsvc_list/own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value]"/>
-			<!-- From this list, find all the Application Providers -->
-			<xsl:variable name="app_Provs" select="/node()/simple_instance[name = $appProvRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-			<xsl:variable name="prov_list_size" select="count($app_Provs)"/>
-			<td>
-				<xsl:if test="$prov_list_size > 0">
-					<xsl:attribute name="rowspan">
-						<xsl:value-of select="$prov_list_size"/>
-					</xsl:attribute>
-				</xsl:if>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-				<br/>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
-				<xsl:if test="not(count($impl_appsvc_list) > 0)">
-					<td>
-						<xsl:value-of select="eas:i18n('No Application Services defined for this Capability')"/>
-					</td>
-				</xsl:if>
-			</td>
-			<xsl:apply-templates select="$impl_appsvc_list" mode="Implementing_Application_Service"> </xsl:apply-templates>
-		</xsl:if>
-	</xsl:template>
-
-
-	<!-- TEMPLATE TO CREATE THE  DETAILS OF AN IMPLEMENTING APPLICATION -->
-	<xsl:template match="node()" mode="Implementing_Application_Service">
-
-		<!-- Calculate rowspan from number of Application Providers -->
-
-		<!-- Get the set of Application Providers -->
-		<!-- 08.03.2013 JWC - Use Application Provider Roles -->
-		<xsl:variable name="appProvRoleIDs" select="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/>
-		<xsl:variable name="appProvRoles" select="$inScopeAppProRoles[name = $appProvRoleIDs]"/>
-		<xsl:variable name="app_ProvIDs" select="$appProvRoles/own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
-		<xsl:variable name="app_Provs" select="$inScopeApps[name = $app_ProvIDs]"/>
-		<!-- 08.03.2013 JWC end -->
-		<xsl:variable name="prov_list_size" select="count($app_Provs)"/>
-		<xsl:if test="position() &gt; 1">
-			<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-		</xsl:if>
-		<!-- Application Service-->
-		<xsl:choose>
-			<xsl:when test="$prov_list_size = 0">
-				<td>-</td>
-				<td>-</td>
-				<td>-</td>
-				<xsl:text disable-output-escaping="yes">&#60;&#47;tr&#62;</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<td>
-					<xsl:if test="$prov_list_size > 0">
-						<xsl:attribute name="rowspan">
-							<xsl:value-of select="$prov_list_size"/>
-						</xsl:attribute>
-					</xsl:if>
-					<xsl:if test="not(string(own_slot_value[slot_reference = 'name']/value))">-</xsl:if>
-					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="theXML" select="$reposXML"/>
-						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-					</xsl:call-template>
-				</td>
-				<xsl:for-each select="$app_Provs">
-					<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-					<xsl:variable name="appProvInst" select="."/>
-					<xsl:if test="not(position() = 1)">
-						<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-					</xsl:if>
-					<td>
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-						</xsl:call-template>
-					</td>
-
-					<!-- Vendor -->
-					<xsl:variable name="supplier" select="$inScopeSuppliers[name = current()/own_slot_value[slot_reference = 'ap_supplier']/value]"/>
-					<td>
-						<xsl:if test="not(string($supplier))">
-							<em>No information</em>
-						</xsl:if>
-
-						<xsl:call-template name="RenderInstanceLink">
-							<xsl:with-param name="theSubjectInstance" select="$supplier"/>
-							<xsl:with-param name="theXML" select="$reposXML"/>
-							<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-						</xsl:call-template>
-					</td>
-
-					<xsl:variable name="appDeployments" select="$inScopeAppDeployments[name = $appProvInst/own_slot_value[slot_reference = 'deployments_of_application_provider']/value]"/>
-					<xsl:variable name="techBuilds" select="$inScopeTechBuilds[name = $appDeployments/own_slot_value[slot_reference = 'application_deployment_technical_arch']/value]"/>
-					<xsl:variable name="techArchs" select="$inScopeTechArchs[name = $techBuilds/own_slot_value[slot_reference = 'technology_provider_architecture']/value]"/>
-					<xsl:variable name="techProdRoleUsages" select="$inScopeTechProdRoleUsages[(type = 'Technology_Provider_Usage') and (name = $techArchs/own_slot_value[slot_reference = 'contained_architecture_components']/value)]"/>
-					<xsl:variable name="techProdRoles" select="$inScopeTechProdRoles[name = $techProdRoleUsages/own_slot_value[slot_reference = 'provider_as_role']/value]"/>
-					<xsl:variable name="techProds" select="$inScopeTechProds[name = $techProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-
-					<xsl:variable name="swArch" select="$InScopeSWArchs[name = $appProvInst/own_slot_value[slot_reference = 'has_software_architecture']/value]"/>
-					<xsl:variable name="swArchElements" select="$InScopeSWArchElements[name = $swArch/own_slot_value[slot_reference = 'logical_software_arch_elements']/value]"/>
-					<xsl:variable name="swComps" select="$InScopeSWComps[name = $swArchElements/own_slot_value[slot_reference = 'usage_of_software_component']/value]"/>
-					<xsl:variable name="thisSWTechProdRoles" select="$swTechProdRoles[name = $swComps/own_slot_value[slot_reference = ('software_from_tech_prod_role', 'software_runtime_technology')]/value]"/>
-					<xsl:variable name="thisSWTechProds" select="$swTechProds[name = $thisSWTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-					<xsl:variable name="allThisTechProds" select="$techProds union $thisSWTechProds"/>
-					<xsl:variable name="allThisTechProdRoles" select="$techProdRoles union $thisSWTechProdRoles"/>
-
-					<td>
-						<xsl:if test="count($allThisTechProds) = 0">
-							<em>No information</em>
-						</xsl:if>
-						<ul>
-							<xsl:apply-templates mode="RenderAppTechProducts" select="$allThisTechProds">
-								<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:with-param name="techProdRoles" select="($allThisTechProdRoles)"/>
-							</xsl:apply-templates>
-						</ul>
-					</td>
-
-					<xsl:if test="not(position() = last())">
-						<xsl:text disable-output-escaping="yes">&lt;/tr&gt;</xsl:text>
-					</xsl:if>
-				</xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-
-	</xsl:template>
-
-
-	<!-- Template to list the Technology Products that support an application provider -->
-	<xsl:template match="node()" mode="RenderAppTechProducts">
-		<xsl:param name="techProdRoles"/>
-
-		<xsl:variable name="thisTechProdRoles" select="$techProdRoles[own_slot_value[slot_reference = 'role_for_technology_provider']/value = current()/name]"/>
-		<xsl:variable name="techComponents" select="$inScopeTechComponents[(name = $thisTechProdRoles/own_slot_value[slot_reference = 'implementing_technology_component']/value)]"/>
-		<xsl:variable name="techProdSupplier" select="$inScopeTechProdSuppliers[name = current()/own_slot_value[slot_reference = 'supplier_technology_product']/value]"/>
-		<li>
-			<xsl:if test="count($techProdSupplier) > 0">
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$techProdSupplier"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>&#160;</xsl:if>
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-			</xsl:call-template>
-			<xsl:text> (</xsl:text>
-			<xsl:for-each select="$techComponents">
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-				<xsl:if test="not(position() = last())">, </xsl:if>
-			</xsl:for-each>
-			<xsl:text>)</xsl:text>
-		</li>
-	</xsl:template>
-
-
-
-	<!-- TEMPLATE TO CREATE THE  DETAILS OF AN IMPLEMENTING APPLICATION -->
-	<!--<xsl:template match="node()" mode="Implementing_Application_Service">
-		<!-\- 26.08.2011 JWC Updated to support Application Provider Roles -\->
-		<!-\- Original code
-			<xsl:variable name="app_Provs" select="own_slot_value[slot_reference='provided_by_application_provider']/value"></xsl:variable>            
-		-\->
-		<!-\- Find all the Application Provider Roles for the Services -\->
-		<xsl:variable name="appProvRoles" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference='provided_by_application_provider_roles']/value]"/>
-		<!-\- From this list, find all the Application Providers -\->
-		<xsl:variable name="app_Provs" select="/node()/simple_instance[name = $appProvRoles/own_slot_value[slot_reference='role_for_application_provider']/value]"/>
-		<xsl:variable name="prov_list_size" select="count($app_Provs)"/>
-		<xsl:if test="position() > 1">
-			<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-		</xsl:if>
-		<!-\- Application Service -\->
-		<td>
-			<xsl:if test="$prov_list_size > 0">
-				<xsl:attribute name="rowspan">
-					<xsl:value-of select="$prov_list_size"/>
-				</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="not(string(own_slot_value[slot_reference='name']/value))">-</xsl:if>
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-			</xsl:call-template>
-		</td>
-		<!-\-Application Providers -\->
-		<xsl:if test="not(count($app_Provs) > 0)">
-			<td>-</td>
-			<td>-</td>
-			<td>-</td>
-			<xsl:text disable-output-escaping="yes">&#60;&#47;tr&#62;</xsl:text>
-		</xsl:if>
-		<xsl:for-each select="$app_Provs">
-			<xsl:variable name="appProvInst" select="."/>
-			<xsl:variable name="ap_name" select="/node()/simple_instance[name=$appProvInst]/own_slot_value[slot_reference='name']/value"/>
-			<xsl:if test="position() > 1">
-				<xsl:text disable-output-escaping="yes">&lt;tr&gt;</xsl:text>
-			</xsl:if>
-			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<!-\- Vendor -\->
-			<xsl:variable name="supplier" select="/node()/simple_instance[name=$appProvInst/own_slot_value[slot_reference='ap_supplier']/value]"/>
-			<td>
-				<xsl:if test="not(string($supplier))">
-					<span>-</span>
-				</xsl:if>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$supplier"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<!-\- Product supporting this = software architecture -\->
-			<xsl:variable name="swArch" select="/node()/simple_instance[name=$appProvInst/own_slot_value[slot_reference='has_software_architecture']/value]"/>
-			<td>
-				<xsl:if test="count($swArch) = 0">
-					<span>-</span>
-				</xsl:if>
-				<xsl:apply-templates mode="softwareArchitecture" select="$swArch"/>
-			</td>
-			<xsl:text disable-output-escaping="yes">&lt;/tr&gt;</xsl:text>
+		<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+		<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"/>,
+		"applications":[<xsl:for-each select="$thisApps">
+			<xsl:variable name="thisSupplier" select="key('inScopeSupplierKey',current()/own_slot_value[slot_reference = 'ap_supplier']/value)"/>
+			{
+				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				<xsl:variable name="temp" as="map(*)" select="map{
+				'name': string(current()/own_slot_value[slot_reference = 'name']/value),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', '('))
+				}">
+				</xsl:variable>
+				<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>
+				<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"/>,
+				"supplier":{"id":"<xsl:value-of select="eas:getSafeJSString($thisSupplier/name)"/>",
+				<xsl:variable name="suptemp" as="map(*)" select="map{
+				'name': string($thisSupplier/own_slot_value[slot_reference = 'name']/value),
+				'description': string(translate(translate($thisSupplier/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', '('))
+				}">
+				</xsl:variable>
+				<xsl:variable name="supresult" select="serialize($suptemp, map{'method':'json', 'indent':true()})"/>  
+				<xsl:value-of select="substring-before(substring-after($supresult,'{'),'}')"/>}
+			}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>
+		]
+	}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:for-each>],
+	"debug":"<xsl:value-of select="$thisSvs/name"/>"
+
+}
+</xsl:template>
+<xsl:template name="RenderViewerAPIJSFunction">  
+		<xsl:param name="viewerAPIPathAppMart"></xsl:param> 
+		var viewAPIDataAppMart = '<xsl:value-of select="$viewerAPIPathAppMart"/>'; 
+		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+			
+let jsonData= <xsl:apply-templates select="$currentCapability" mode="appCapJSON"/>
+
+		<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>
+		var promise_loadViewerAPIData = function (apiDataSetURL)
+		{
+			return new Promise(function (resolve, reject)
+			{
+				if (apiDataSetURL != null)
+				{
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function ()
+					{
+						if (this.readyState == 4 &amp;&amp; this.status == 200){
+							var viewerData = JSON.parse(this.responseText);
+							resolve(viewerData);
+							$('#ess-data-gen-alert').hide();
+						}
+						
+					};
+					xmlhttp.onerror = function ()
+					{
+						reject(false);
+					};
+					
+					xmlhttp.open("GET", apiDataSetURL, true);
+					xmlhttp.send();
+				} else
+				{
+					reject(false);
+				}
+			});
+		}; 
+var occurrenceCounts
+	 
+$('document').ready(function (){
+
+		var tableFragment = $("#table-template").html();	
+		tableTemplate = Handlebars.compile(tableFragment);
+		
+		
+		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+		});
+
+		Handlebars.registerHelper('getCount', function (arg1, arg2) {
+			let tot= occurrenceCounts[arg1][arg1]
+			return tot
+		});
+
+
+		Promise.all([  
+		promise_loadViewerAPIData(viewAPIDataAppMart) 
+		]).then(function (responses)
+		{
+			console.log('mart', responses[0])
+		appMartdata = responses[0].application_technology;
+		appMart = new Map();
+		appMartdata.forEach(app => appMart.set(app.id, app));
+		console.log('appMartdata',appMartdata)
+		allApplications=responses[0].applications
+		filters=responses[0].filters || [];
+		console.log('filters', filters)
+		dynamicAppFilterDefs=filters?.map(function(filterdef){
+			return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
+
+		});
+
+		
+
+essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters, true);
+
+	})
+
+	var redrawView = function () { 
+	
+ 
+		let appOrgScopingDef = new ScopingProperty('stakeholdersA2R', 'ACTOR_TO_ROLE_RELATION');
+		let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+		let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
+		let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+
+		essResetRMChanges();
+		let typeInfo = {
+			"className": "Application_Provider",
+			"label": 'Application',
+			"icon": 'fa-desktop'
+		}
+
+		let scopedApps = essScopeResources(
+    allApplications, 
+    [
+        capOrgScopingDef, 
+        appOrgScopingDef, 
+        visibilityDef, 
+        geoScopingDef,
+        ...(dynamicAppFilterDefs ? dynamicAppFilterDefs : [])
+    ], 
+    typeInfo
+);
+
+ 
+		scopedAppsList = scopedApps.resourceIds;  
+		console.log('jsonData', jsonData)
+		jsonData.services.forEach(service => {
+			service.toShowApplications = service.applications.filter(application => 
+				scopedAppsList.includes(application.id)
+			);
+
+			service.toShowApplications.forEach(toShowApp => {
+				let foundApp = appMart.get(toShowApp.id);
+				if (foundApp) {
+				
+					if(foundApp.environments){
+						foundApp.environments.forEach((e)=>{
+								e.products.forEach((p)=>{
+									p['className']='Technology_Product'
+									p['id']=p.prod;
+									p['name']=p.prodname;
+							})
+						})
+					}
+					toShowApp.environments = foundApp.environments;
+				}
+			});
+		
+		});
+		console.log('jsonData2', jsonData)
+		function generateCombinationsMarkFirst(data) {
+			let combinations = [];
+			let firstOccurrenceTracker = {
+				applicationCapability: {},
+				applicationServices: {},
+				applications: {},
+				supplier: {},
+				environment: {}
+			};
+		
+			data.services.forEach(service => {
+				service.toShowApplications.forEach(application => {
+					let supplierName = application.supplier ? application.supplier.name : '';
+		
+					if (application.environments &amp;&amp; application.environments.length > 0) {
+						application.environments.forEach(environment => {
+							environment.nodes.forEach(node => {
+								let combination = {
+									applicationCapability: {"id":data.id,"name": data.name, "className":"Application_Capability", "description":data.description},
+									applicationServices: {"id":service.id,"name": service.name, "className":"Application_Service"},
+									applications: {"id":application.id,"name": application.name, "className":"Application_Provider"},
+									supplier: supplierName,
+									environment: `${environment.name} - ${node.name}`,
+									environmentProducts: environment.products,
+									isFirstOccurrence: {}
+								};
+		
+								// Mark the first occurrence of each property value
+								['applicationCapability', 'applicationServices', 'applications', 'supplier', 'environment'].forEach(key => {
+									if (!firstOccurrenceTracker[key][combination[key]]) {
+										firstOccurrenceTracker[key][combination[key]] = true;
+										combination.isFirstOccurrence[key] = true; // Mark as first occurrence
+									} else {
+										combination.isFirstOccurrence[key] = false;
+									}
+								});
+		
+								combinations.push(combination);
+							});
+						});
+					} else {
+						// For applications without environments
+						let combination = {
+							applicationCapability: {"id": data.id, "name": data.name, "className": "Application_Capability", "description": data.description},
+							applicationServices: {"id": service.id, "name": service.name, "className": "Application_Service"},
+							applications: {"id": application.id, "name": application.name, "className": "Application_Provider"},
+							supplier: supplierName,
+							environment: 'N/A',
+							isFirstOccurrence: {
+								applicationCapability: !firstOccurrenceTracker.applicationCapability[data.name],
+								applicationServices: !firstOccurrenceTracker.applicationServices[service.name],
+								applications: !firstOccurrenceTracker.applications[application.name],
+								supplier: !firstOccurrenceTracker.supplier[supplierName],
+								environment: true // 'N/A' environment is always unique
+							}
+						};
+			
+						// Marking first occurrences
+						['applicationCapability', 'applicationServices', 'applications', 'supplier'].forEach(key => {
+							if (!firstOccurrenceTracker[key][combination[key]]) {
+								firstOccurrenceTracker[key][combination[key]] = true;
+								combination.isFirstOccurrence[key] = true; // Mark as first occurrence
+							} else {
+								combination.isFirstOccurrence[key] = false;
+							}
+						});
+			
+						combinations.push(combination);
+					}
+				});
+			});
+			
+			return combinations;
+		}
+		
+		// Sample data
+	 
+		
+		// Generate combinations and mark first occurrences
+		let combinationsWithFirstMarked = generateCombinationsMarkFirst(jsonData);
+		console.log('combinationsWithFirstMarked', combinationsWithFirstMarked)
+
+		function mergeDuplicateRows() { 
+				var table = document.querySelector('.appcaptable');
+				var rows = table.rows;
+				var i, j, currentCell, nextCell, rowspan;
+		 
+				// Iterate through each cell except for the first row (headers)
+				for (i = 0; i &lt; rows.length - 1; i++) {
+					for (j = 0; j &lt; rows[i].cells.length; j++) {
+						rowspan = 1;
+						currentCell = rows[i].cells[j];
+						
+						// Iterate downwards from the current cell
+						for (var k = i + 1; k &lt; rows.length; k++) {
+							nextCell = rows[k].cells[j];
+			
+							// Check if the cell below has the same content
+							if (currentCell.innerHTML === nextCell.innerHTML) {
+								rowspan++;
+								nextCell.style.display = 'none'; // Hide the current cell
+							} else {
+								break; // Stop if the next cell is different
+							}
+						}
+			
+						// Set the rowspan for the current cell
+						if (rowspan > 1) {
+							currentCell.rowSpan = rowspan;
+						}
+					}
+				}
+			}
+			
+			console.log('combinationsWithFirstMarked2', combinationsWithFirstMarked)
+		$('#newtable').html(tableTemplate(combinationsWithFirstMarked)).promise().done(function() {
+			mergeDuplicateRows();
+		});
+
+		
+}
+
+})
 	</xsl:template>
+	<xsl:template name="GetViewerAPIPath">
+		<xsl:param name="apiReport"></xsl:param>
 
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderAPILinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 
-	<!-\- Template to find all the software components used in a Provider's software architecture
-		and print out the Technology Product used for each component-\->
-	<xsl:template match="node()" mode="softwareArchitecture">
-		<!-\- Find all the component usages in the architecture -\->
-		<xsl:variable name="swArchElements" select="/node()/simple_instance[name=current()/own_slot_value[slot_reference='logical_software_arch_elements']/value]"/>
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
-		<xsl:if test="count($swArchElements) = 0">
-			<em>-</em>
-		</xsl:if>
-
-		<!-\- Explore each element in the s/w architecture -\->
-		<!-\- Get all the Software Components that are used and group them LOOK AT THIS.... -\->
-		<xsl:variable name="softCompInst" select="/node()/simple_instance[name=$swArchElements/own_slot_value[slot_reference='usage_of_software_component']/value]"/>
-		<!-\-<xsl:variable name="softCompInst" select="/node()/simple_instance[name=$softComps]" />-\->
-
-		<!-\- Create a group and select unique values -\->
-		<!-\- Pass these to the Tech Product Role template -\->
-		<!-\- 13.11.2008    JWC Added handling of new slot in Software Component -\->
-		<!-\- Look for software_from_tech_prod_role instances first -\->
-		<ul>
-			<xsl:for-each-group select="$softCompInst" group-by="own_slot_value[slot_reference='software_from_tech_prod_role']/value">
-				<xsl:variable name="fromTechProd" select="current-group()[1]/own_slot_value[slot_reference='software_from_tech_prod_role']/value"/>
-				<!-\-<img src="images/green.png" width="5" height="5"/>&#160; <xsl:apply-templates mode="technologyProduct" select="/node()/simple_instance[name=$fromTechProd]"/>
-			<br/>-\->
-				<li>
-					<xsl:apply-templates mode="technologyProduct" select="/node()/simple_instance[name=$fromTechProd]"/>
-				</li>
-			</xsl:for-each-group>
-			<xsl:for-each-group select="$softCompInst" group-by="own_slot_value[slot_reference='software_runtime_technology' or slot_reference='software_from_tech_prod_role']/value">
-				<xsl:variable name="techProdRole" select="current-group()[1]/own_slot_value[slot_reference='software_runtime_technology']/value"/>
-				<!-\-<img src="images/green.png" width="5" height="5"/>&#160; <xsl:apply-templates mode="technologyProduct" select="/node()/simple_instance[name=$techProdRole]"/>
-			<br/>-\->
-				<li>
-					<xsl:apply-templates mode="technologyProduct" select="/node()/simple_instance[name=$techProdRole]"/>
-				</li>
-			</xsl:for-each-group>
-		</ul>
 	</xsl:template>
-
-	<!-\- Template to render the Technology Product that is the runtime technology for the specified
-		Software Component-\->
-	<xsl:template match="node()" mode="technologyProductRole">
-		<!-\- Find the runtime technology -\->
-		<xsl:variable name="techProdRole" select="/node()/simple_instance[name=current()]/own_slot_value[slot_reference='software_runtime_technology']/value"/>
-
-		<!-\- Find that TechProdRole -\->
-		<xsl:apply-templates mode="technologyProduct" select="/node()/simple_instance[name=$techProdRole]"/>
-	</xsl:template>
-
-	<!-\- Render the Technology Product name -\->
-	<xsl:template match="node()" mode="technologyProduct">
-		<!-\- Find the technology product -\->
-		<xsl:variable name="techProdInst" select="own_slot_value[slot_reference='role_for_technology_provider']/value"/>
-		<xsl:variable name="techProd" select="/node()/simple_instance[name=$techProdInst]"/>
-		<xsl:apply-templates select="$techProd" mode="RenderDepTechProduct"/>
-	</xsl:template>
-
-	<!-\- 19.11.2008 JWC Render a Technology Product with a link. Takes a Technology Product node -\->
-	<xsl:template match="node()" mode="RenderDepTechProduct">
-		<!-\- Add hyperlink to product report -\->
-		<!-\- 19.11.2008 JWC Add link to definition -\->
-		<xsl:variable name="techProdName" select="translate(own_slot_value[slot_reference='product_label']/value, '::', '  ')"/>
-		<xsl:call-template name="RenderInstanceLink">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="theXML" select="$reposXML"/>
-			<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-			<xsl:with-param name="displayString" select="$techProdName"/>
-		</xsl:call-template>
-	</xsl:template>-->
-
 </xsl:stylesheet>

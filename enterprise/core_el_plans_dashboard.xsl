@@ -1499,10 +1499,14 @@ lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 	  let currentYear='01-01-'+ new Date().getFullYear();
 	  let chartStartDate = '01-01-'+ (new Date().getFullYear()-1);
 	  let chartEndDate='01-01-'+ (new Date().getFullYear()+4)
+	  // change dat format needed for safari browsers
+	  currentYear=currentYear.replace(/-/g, '/');
+	  chartStartDate=chartStartDate.replace(/-/g, '/');
+	  chartEndDate=chartEndDate.replace(/-/g, '/');
 	  let thisYr= new Date().getFullYear()-1
 	  let getYears=[];
 		for(i=0; i&lt; 5;i++){ 
-			getYears.push({"year":'01-01-'+thisYr});
+			getYears.push({"year":'01/01/'+thisYr});
 			thisYr=thisYr+1
 		};	
 let currentYearYYYY = new Date().getFullYear();
@@ -1601,7 +1605,7 @@ programmes.forEach((e)=>{
 				   appTechData=responses[1]; 
 				   processData=responses[2]; 
 				   plans=responses[3];
-		console.log('plans',plans)
+ 
 if(roadmaps.length&gt;0){
 	roadmaps.forEach((rd)=>{
 		let rdPlans=[];
@@ -1642,7 +1646,6 @@ if(roadmaps.length&gt;0){
 		}
 		});
 
-		console.log('rms',roadmaps)
 };
  
 		projectToShow=[]
@@ -1802,6 +1805,8 @@ function setNewYears(){
 	let ed=$('#endYear').val()
 	chartStartDate = '01-01-'+ sd;
 	chartEndDate='01-01-'+ ed;
+	chartStartDate=chartStartDate.replace(/-/g, '/');
+	chartEndDate=chartEndDate.replace(/-/g, '/');
 	getYears=[];
 	thisYr=parseInt(sd);
 	
@@ -1909,7 +1914,7 @@ function roadInfo(rdId){
 	var plcount=0;
     
 	thisPlans['years']=getYears;
-
+ 
     thisPlans.forEach((pl)=>{
 		pl["todayPos"]= getPosition(chartStartPoint, popchartWidth, chartStartDate, chartEndDate, new Date());
 		
@@ -1964,6 +1969,7 @@ $('#roadmapsSvg').attr('height', (roadmapLength + 1) * 48);
 
 // where timeline begins
 var chartWidth = svgWidth - (chartStartPoint + 50);
+
 getYears.forEach((y) => {
 	y['pos'] = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, y.year)
 });
@@ -1983,10 +1989,10 @@ if (lastYear) {
 
 	getYears.push({
 		"year": finalYear,
-		"pos": getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, finalYear)
+		"pos": getPosition(chartStartPoint, chartWidth, chartStartDate.replace(/-/g, '/'), chartEndDate.replace(/-/g, '/'), finalYear.replace(/-/g, '/'))
 	})
 }
-
+console.log('gy2',getYears)
 var plcount = 0;
 thisPlans['years'] = getYears;
 thisPlans.forEach((pl) => {
@@ -2016,9 +2022,10 @@ thisPlans.forEach((pl) => {
 	pl['posCount'] = plcount;
 	pl['pos'] = plcount;
 	plcount = plcount + 1;
+	
 })
 thisPlans['posCount'] = plcount + 2;
-console.log('thisPlans', thisPlans)
+
 $('#plansSvg').html(planssvgTemplate(thisPlans))
 
 
@@ -2125,7 +2132,7 @@ thisPlans.forEach((d) => {
 	$('[svgid="svg-' + d.id + '"]').css('height', plength + 'px');
 	$('[svgid="svg-' + d.id + '"]').html(projectsvgTemplate(d));
 
-console.log('tgrm', thisRoadmaps)
+
 	thisRoadmaps.forEach((rm) => {
 		rm["todayPos"] = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, new Date());
 		rm["validStartDatePos"] = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, rm.startYY)
@@ -2149,10 +2156,9 @@ console.log('tgrm', thisRoadmaps)
 		focusRM['selected']='Yes';
 		let plansToUse=focusRM.plans;
 
-	console.log(index)
 	cleanRoadmap.splice(index+1, 0, ...plansToUse);
 	cleanRoadmap['years']=thisRoadmaps.years
-	console.log('cleanRoadma1',cleanRoadmap)
+
 	$('#roadmapsSvg').attr('height', (cleanRoadmap.length + 1) * 48);
 	$('#roadmapsSvg').html(roadmapsvgwithPlansTemplate(cleanRoadmap)) 
 	focusRM['selected']='';
@@ -2164,11 +2170,11 @@ console.log('tgrm', thisRoadmaps)
 
 	$(document).off('click', '.plancircle').on('click','.plancircle', function(){
 		let thisId=$(this).attr('easplanid');
-		console.log('thisId',thisId)
+		
 		let planMatch=plans.allPlans.find((d)=>{
 			return d.id==thisId
 		});
-		console.log('planMatch',planMatch)
+		
 		planMatch.projects.forEach((d)=>{
 			d.p2e = d.p2e.reduce((acc, current) => {
 				const x = acc.find(item => item.impactedElement === current.impactedElement);
@@ -2187,7 +2193,6 @@ console.log('tgrm', thisRoadmaps)
 			let thisId=$(this).attr('impactid')
 			let focusPlan=planMatch.projects.find((e)=>{return e.id==thisId});
 		
-console.log('focusPlan',focusPlan)
 			$('#slideUpData').html(impactsTemplate(focusPlan));
 			$('#appPanel').show( "blind",  { direction: 'down', mode: 'show' },200 );
 			
@@ -2207,14 +2212,20 @@ console.log('focusPlan',focusPlan)
 })
 
 $('#plansProjSvg').html(projectPlanssvgTemplate(allPlanProjArray))
-console.log('lll',lifes)
+
 $('.lifekey').html(lifesTemplate(lifes))
 }
 
 function getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, thisDatetoShow){
-    startDate=new Date(chartStartDate);       
-    endDate= new Date(chartEndDate);
-    thisDate= new Date(thisDatetoShow);
+ 
+	if(thisDatetoShow){
+		thisDatetoShow=	moment(thisDatetoShow).format('YYYY-MM-DD');  
+	thisDatetoShow=thisDatetoShow.replace(/-/g, '/')
+	} 
+	startDate = new Date(chartStartDate.replace(/-/g, '/'));
+	endDate = new Date(chartEndDate.replace(/-/g, '/'));
+ 
+    thisDate= new Date(thisDatetoShow); 
     pixels= chartWidth/(endDate-startDate);
 	let thisDateforChart=((thisDate-startDate)*pixels)+chartStartPoint;
 	if(isNaN(thisDateforChart)){thisDateforChart=-100}
