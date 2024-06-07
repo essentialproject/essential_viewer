@@ -62,6 +62,8 @@
 	<xsl:key name="p2e_key" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference = 'plan_to_element_change_activity']/value"/>
 	<xsl:key name="p2efromPlan_key" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference = 'plan_to_element_plan']/value"/>
 	<xsl:key name="projectsfromPlan_key" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference = 'ca_planned_changes']/value"/>
+	<xsl:key name="projectsDirectfromPlan_key" match="/node()/simple_instance[type='Project']" use="name"/>
+	
 	
 	<xsl:key name="plans_key" match="/node()/simple_instance[supertype='Strategic_Plan']" use="own_slot_value[slot_reference = 'strategic_plan_for_elements']/value"/>
 	<xsl:key name="plans4Programme_key" match="/node()/simple_instance[supertype='Strategic_Plan']" use="own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value"/>
@@ -153,7 +155,7 @@
 
                 <style type="text/css">
           
-				.thead input {
+					.thead input {
 					width: 100%;
 					}
 					.ess-blob{
@@ -1262,7 +1264,7 @@ lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 	let allProject=[<xsl:apply-templates select="$fullprojectsList" mode="projects"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
 	let currency = "<xsl:value-of select="$defaultCurrencySymbol"/>";
 	let activeTab
-
+console.log('allp', allPlans)
 	var tab = $('.tab-content > .active').get(0);  
 	
 	$(document).ready(function ()
@@ -1469,7 +1471,7 @@ lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 			let liveProjects;
 			$('#appPanel').hide();
 		   var programmes=[<xsl:apply-templates select="$programmes" mode="programme"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
-	
+	console.log('programmes',programmes)
 		   var promise_loadViewerAPIData = function(apiDataSetURL) {
 				return new Promise(function (resolve, reject) {
 					if (apiDataSetURL != null) {
@@ -2174,7 +2176,26 @@ thisPlans.forEach((d) => {
 		let planMatch=plans.allPlans.find((d)=>{
 			return d.id==thisId
 		});
-		
+
+		let planMatch2=allPlans.find((d)=>{
+			return d.id==thisId
+		});
+		// merge projects visa P2E and directly mapped to plan
+		function mergePlans(planMatch, planMatch2) {
+			planMatch2.forEach(plan2 => {
+			 
+				const exists = planMatch.some(plan => plan.id === plan2.id);
+			 
+				if (!exists) {
+					planMatch.push(plan2);
+				}
+			});
+			return planMatch;
+		}
+		 
+	  mergePlans(planMatch.projects, planMatch2.projects);
+
+
 		planMatch.projects.forEach((d)=>{
 			d.p2e = d.p2e.reduce((acc, current) => {
 				const x = acc.find(item => item.impactedElement === current.impactedElement);
@@ -2280,14 +2301,18 @@ function closeNav()
 <xsl:template match="node()" mode="plan">
 		<xsl:variable name="thisPlanStatus" select="$planningStatus[name=current()/own_slot_value[slot_reference = 'strategic_plan_status']/value]"/> 
 		<xsl:variable name="p2eforplan" select="key('p2efromPlan_key', current()/name)"/>
-		<xsl:variable name="projectsforplan" select="key('projectsfromPlan_key', $p2eforplan/name)"/>  
+		<xsl:variable name="projectsforplan" select="key('projectsfromPlan_key', $p2eforplan/name)"/> 
+
+		<xsl:variable name="projectsdirectforplan" select="key('projectsDirectfromPlan_key', current()/own_slot_value[slot_reference='strategic_plan_supported_by_projects']/value)"/> 
+ 
 		<xsl:variable name="objectivesforplan" select="key('objectives_key', current()/name)"/>  
 		<xsl:variable name="driversforplan" select="$drivers[name=current()/own_slot_value[slot_reference = 'strategic_plan_drivers']/value]"/>  
 		<xsl:variable name="thisStakeholders" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
 		<xsl:variable name="thisActors" select="key('orgs_key',$thisStakeholders/name)"/> 
 		<xsl:variable name="thisStakeholdersOrgs" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value][own_slot_value[slot_reference='act_to_role_from_actor']/value=$thisActors/name]"/>
 		 
-		{ "debug":"<xsl:value-of select="$thisStakeholdersOrgs/name"/>",
+		{ "debug":"<xsl:value-of select="$projectsdirectforplan/name"/>",
+		"debug2":"<xsl:value-of select="current()/name"/>",
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
@@ -2321,7 +2346,7 @@ function closeNav()
 				</xsl:call-template>",	
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],	
 		"planStatus":"<xsl:choose><xsl:when test="$thisPlanStatus"><xsl:value-of select="$thisPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/></xsl:when><xsl:otherwise>Not Set</xsl:otherwise></xsl:choose>",
-		"projects":[<xsl:apply-templates select="$projectsforplan" mode="projects"></xsl:apply-templates>],
+		"projects":[<xsl:apply-templates select="$projectsforplan union $projectsdirectforplan" mode="projects"></xsl:apply-templates>],
 		"orgUserIds":[<xsl:for-each select="$thisStakeholdersOrgs">
 				<xsl:variable name="thisActors" select="key('orgs_key',current()/name)"/> 
 				"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>"<xsl:if test="position()!=last()">,</xsl:if>

@@ -94,9 +94,16 @@
 		<xsl:variable name="childTechCaps" select="$allTechCaps[name = current()/own_slot_value[slot_reference = 'contains_technology_capabilities']/value]"/>
 		
 		{
-		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name": "<xsl:value-of select="$techDomainName"/>",
-		"description": "<xsl:value-of select="$techDomainDescription"/>",
+		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
+		<xsl:variable name="tempCombined" as="map(*)">
+			<xsl:map>
+				<xsl:map-entry key="'name'" select="string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))" />
+				<xsl:map-entry key="'description'" select="string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))" />
+			</xsl:map>
+		</xsl:variable>
+		<xsl:variable name="resultCombined" select="serialize($tempCombined, map{'method':'json', 'indent':true()})"/>
+		<xsl:value-of select="substring-before(substring-after($resultCombined, '{'), '}')" />,
+		
 		"link": "<xsl:value-of select="$techDomainLink"/>",
 		"childTechCaps": [
 		<xsl:apply-templates select="$childTechCaps" mode="RenderChildTechCaps"/>		

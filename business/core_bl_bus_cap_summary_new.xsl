@@ -60,7 +60,8 @@
 	<xsl:variable name="proc2ServiceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes to App Services']"></xsl:variable>
 	<xsl:variable name="physproc2AppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"></xsl:variable>
 	<xsl:variable name="allPlansData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Planning Data']"></xsl:variable>
-
+	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Bus KPIs']"></xsl:variable>
+	
 	<xsl:template match="knowledge_base">
         <xsl:variable name="apiBCM">
             <xsl:call-template name="GetViewerAPIPath">
@@ -107,7 +108,11 @@
 				<xsl:with-param name="apiReport" select="$allPlansData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
-        
+        <xsl:variable name="apikpi">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$kpiListData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
@@ -952,6 +957,7 @@
                             <xsl:with-param name="viewerAPIPathProc2Serv" select="$apiProc2Service"></xsl:with-param>
                             <xsl:with-param name="viewerAPIPathPhysProc2App" select="$apiPhysProc2App"></xsl:with-param>
                             <xsl:with-param name="viewerAPIPathPlans" select="$apiPlans"></xsl:with-param>
+							<xsl:with-param name="viewerAPIPathkpi" select="$apikpi"></xsl:with-param>
                         </xsl:call-template>  
                     </script>                
                     <script id="panel-template" type="text/x-handlebars-template">
@@ -1189,7 +1195,7 @@
                                             <div class="parent-superflex">
                                                 <div class="superflex">
 												<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Supporting Application Services')"/></h3>
-                                                    <p><xsl:value-of select="eas:i18n('The following Application Services are required to support the  Materials Management  Business Capability.  The processes requiring them are shown')"/></p>
+                                                    <p><xsl:value-of select="eas:i18n('The following Application Services are required to support the')"/> {{this.name}} <xsl:value-of select="eas:i18n('Business Capability.  The processes requiring them are shown')"/></p>
                                                 	<div class="ess-bcs-appservice-wrapper">
 														{{#each this.servicesSupporting}}
 															<div class="serviceBox bg-offwhite">
@@ -1517,6 +1523,29 @@ $(document).ready(function() {
 	Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 		return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 	});
+
+	Handlebars.registerHelper('getSQVBox', function (arg1, options) {
+		let col;
+		if(arg1&lt;2.1){col='perfScoreBoxRed'} 
+		else if(arg1&gt;3.9){col='perfScoreBoxGreen'} 
+		else{col='perfScoreBoxAmber'}
+
+
+		return col;
+	});
+
+	Handlebars.registerHelper('getCat', function (arg1, options) {
+				 
+		let thisPM= pmc.find((p)=>{
+			return p.id == arg1
+		})
+		if(thisPM){
+			return thisPM.name
+		}else{
+			return '';
+		}
+	});
+
  
 	$('#processTable').append(procTemplateFront(subProcesses));
 	
@@ -1958,6 +1987,7 @@ $(document).ready(function() {
 		<xsl:param name="viewerAPIPathProc2Serv"></xsl:param>
 		<xsl:param name="viewerAPIPathPhysProc2App"></xsl:param>
 		<xsl:param name="viewerAPIPathPlans"></xsl:param>
+		<xsl:param name="viewerAPIPathkpi"></xsl:param>
 		//a global variable that holds the data returned by an Viewer API Report
 		var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>'; 
@@ -1968,7 +1998,7 @@ $(document).ready(function() {
 		var viewAPIDataProc2Service = '<xsl:value-of select="$viewerAPIPathProc2Serv"/>';
 		var viewAPIDataPhysProc2App = '<xsl:value-of select="$viewerAPIPathPhysProc2App"/>';
 		var viewAPIDataPlans = '<xsl:value-of select="$viewerAPIPathPlans"/>';
-		
+		var viewAPIDataKpi = '<xsl:value-of select="$viewerAPIPathkpi"/>'; 
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL)
@@ -2076,7 +2106,8 @@ $('document').ready(function () {
         promise_loadViewerAPIData(viewAPIDataStratData),
 		promise_loadViewerAPIData(viewAPIDataProc2Service),
 		promise_loadViewerAPIData(viewAPIDataPhysProc2App),
-		promise_loadViewerAPIData(viewAPIDataPlans)
+		promise_loadViewerAPIData(viewAPIDataPlans),
+		promise_loadViewerAPIData(viewAPIDataKpi)
 	]).then(function (responses) {
 		
         workingArray = responses[0]; 
@@ -2088,13 +2119,37 @@ $('document').ready(function () {
          physProcs=responses[7];
   
 		plans=responses[8];  
+		pmc=responses[9].perfCategory; 
+		let pms=responses[9].businessCapabilities;
+	 
+		
+		pms?.forEach((d)=>{ 
+			if(d.perfMeasures.length&gt;0){
+				d.perfMeasures.forEach((e)=>{
+					if(e.categoryid==''){ 
+						if(e.serviceQuals[0]){
+							e.categoryid=e.serviceQuals[0].categoryId;
+						}
+					}
+				});
+			};
+		});
  
 $('#subjectSelection').select2()
 workingArray.busCaptoAppDetails=workingArray.busCaptoAppDetails.sort((a, b) => a.name.localeCompare(b.name));
 workingArray.busCaptoAppDetails.forEach((e)=>{ 
 	$('#subjectSelection').append('&lt;option value="'+e.id+'">'+e.name+'&lt;/option>')
-})
 
+	e['pmScore']=0;
+	let thisPerfMeasures=pms?.find((f)=>{
+		return f.id==e.id;
+	});
+ 
+	if(thisPerfMeasures){
+		e['pm']=thisPerfMeasures.perfMeasures; 
+	}
+})
+ 
 $("#subjectSelection option[value='"+thisCapId+"']").attr("selected", "selected");
  
 
@@ -2208,9 +2263,8 @@ redrawView()
 		//	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
  
 			let caps = workingArray.busCaptoAppDetails;
-		 
-			//scopedCaps = essScopeResources(caps, [appOrgScopingDef, geoScopingDef, visibilityDef]);
-			//console.log('scopedCaps')
+	 
+ 
 <!-- get plan/project items associated with the Cap -->
 let focusCap = capsArray.businessCapabilities.find((d)=>{
 	return d.id==thisCapId
@@ -2219,13 +2273,26 @@ let focusCap = capsArray.businessCapabilities.find((d)=>{
 let capDetail = workingArray.busCaptoAppDetails.find((f)=>{
 	return f.id == thisCapId
 });
+focusCap['pm']=capDetail.pm;
 
 let capElements=[];  
 let processElements=[];
 let appElements=[];
-
-console.log('focusCap',focusCap)
-//console.log('capDetail',capDetail)
+ 
+if(focusCap.pm){
+	byPerfName = d3.nest()
+		.key(function(d) { return d.categoryid })
+		.entries(focusCap.pm) 
+	  
+		byPerfName.forEach((v)=>{
+			v.values.sort((a, b) => b.date.localeCompare(a.order))
+		})
+	 
+	byPerfName=byPerfName.filter((d)=>{
+		return d.key!="";
+	});
+	focusCap['perfsGrp']=byPerfName
+	}
 
 projectElementMap.forEach((element) => {
 	if (element.impactedElement === thisCapId) {
@@ -2426,8 +2493,7 @@ thisPlan.forEach((p) => {
 		}	
  
 		focusCap['childrenCaps']=result?.childrenCaps;
-	
-        meta = workingArray.meta; 
+ 
 		let capAppServices=[];
 		let capAppMap=[]; 
         focusCap.processes?.forEach((e)=>{
@@ -2565,13 +2631,12 @@ thisPlan.forEach((p) => {
         })
 
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){$($.fn.dataTable.tables(true)).DataTable() .columns.adjust();});
- 	console.log('focusCap.childrenA',focusCap.childrenCaps)
-	console.log('focusCap.childrenB',focusCap.children)
+
 	if(focusCap.childrenCaps){
 		if(focusCap.childrenCaps?.length==0){
-			console.log('nocaps')
+	
 			if(focusCap.children?.length&gt;0){
-				console.log('focusCap.children',focusCap.children)
+		
 				$('#busCapModel').html(l0CapTemplate(focusCap.children));
 				}
 				else{

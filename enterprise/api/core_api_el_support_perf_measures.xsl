@@ -3,8 +3,8 @@
 <xsl:include href="../../common/core_utilities.xsl"/>
 <xsl:include href="../../common/core_js_functions.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
-<xsl:variable name="allSuppliers" select="/node()/simple_instance[type = ('Supplier')]"/>
-<xsl:variable name="allProjects" select="/node()/simple_instance[type = ('Projects')]"/>
+<xsl:variable name="allSuppliers" select="/node()/simple_instance[type = ('Supplier')][own_slot_value[slot_reference='performance_measures']/value]"/>
+<xsl:variable name="allProjects" select="/node()/simple_instance[type = ('Projects')][own_slot_value[slot_reference='performance_measures']/value]"/>
 <xsl:variable name="allTypes" select="$allProjects union $allSuppliers"/>
 <xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=$allTypes/type]"/> 
 <xsl:variable name="perfMeasuresSupplier" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allSuppliers/own_slot_value[slot_reference='performance_measures']/value]"/> 
@@ -51,7 +51,9 @@
     <xsl:variable name="thisServQualityValues" select="$serviceQualityValues[name=$thisperfMeasures/own_slot_value[slot_reference='pm_performance_value']/value]"/> 
     <xsl:variable name="thisperfCategory" select="$perfCategory[own_slot_value[slot_reference='pmc_measures_ea_classes']/value=current()/type]"/> 
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 		"instance": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
@@ -99,6 +101,7 @@
 			{"categoryid": "<xsl:value-of select="$thisperfCategory/name"/>", 
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", 
 			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
+			"createdDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='system_creation_datetime_iso8601']/value"/>",
 			"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
 				<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 				<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>

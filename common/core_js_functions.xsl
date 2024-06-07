@@ -904,6 +904,133 @@
 		}
 		<!-- END GEOGRAPHIC MAP FUNCTIONS -->
 	</xsl:template>
+
+	<xsl:template name="RenderKPIMartFunctions">
+		<!-- FUNCTIONS TO GET DATA FROM KPI MARTS -->
+
+		<!-- send the KPI array  e.g. data.applications, data.processes, etc 
+		const categories = []; or a list of perf category Ids
+		e.g   const result = getScoresByCategory(data.applications, categories); 
+
+		this returns styles for the SQVs
+		e.g. const sqvMap = createSqvMap(data);
+
+		-->
+		const getScoresByCategory = (data, categories) => {
+			return data.map(item => {
+				const categoryScores = {}; 
+				item.perfMeasures.forEach(measure => { 
+					measure.serviceQuals.forEach(qual => {
+				
+						qual.categoryName.forEach((category, index) => { 
+							const categoryId = qual.categoryId[index];
+							if (categories.length === 0 || categories.includes(categoryId)) {
+								const scoreEntry = {
+									category: category,
+									categoryId: categoryId,
+									score: parseInt(qual.score),
+									name: qual.value,
+									service: qual.serviceName,
+									date: measure.date,
+									createdData: measure.createdDate,
+									isLatest: false
+								};
+		
+								if (!categoryScores[categoryId]) {
+									categoryScores[categoryId] = [];
+								}
+								categoryScores[categoryId].push(scoreEntry);
+							}
+						});
+					});
+				});
+				//console.log('out item')
+				// Mark the latest score in each category
+				Object.keys(categoryScores).forEach(categoryId => {
+					const scores = categoryScores[categoryId];
+			 
+					
+					// Find the latest date or createdData for each service
+					const latestEntries = {};
+				
+					scores.forEach((s, index) => {
+						const service = s.service;
+						const date = s.date ? new Date(s.date).getTime() : 0;
+						const createdData = s.createdData ? new Date(s.createdData).getTime() : 0;
+				
+						if (!latestEntries[service]) {
+							latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+						} else {
+							if (date > latestEntries[service].latestDate) {
+								latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+							} else if (date === latestEntries[service].latestDate) {
+								if (createdData > latestEntries[service].latestCreatedData) {
+									latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+								} else if (createdData === latestEntries[service].latestCreatedData &amp;&amp; index > latestEntries[service].index) {
+									latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+								}
+							} else if (createdData > latestEntries[service].latestCreatedData) {
+								latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+							} else if (createdData === latestEntries[service].latestCreatedData &amp;&amp; index > latestEntries[service].index) {
+								latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+							} else if (index > latestEntries[service].index) {
+								latestEntries[service] = { latestDate: date, latestCreatedData: createdData, latestEntry: s, index: index };
+							}
+						}
+					});
+				
+					// Mark all entries as not latest
+					scores.forEach(s => {
+						s.isLatest = false;
+					});
+				
+					// Mark the latest entry for each service as latest
+					Object.values(latestEntries).forEach(entry => {
+						entry.latestEntry.isLatest = true;
+					});
+				});
+				
+				
+			//	console.log('scored')
+				// Calculate the average score for each category based on the latest scores
+				const categoryAverages = Object.entries(categoryScores).map(([categoryId, scores]) => {
+				//	console.log('scores',scores)
+					const latestScores = scores.filter(s => s.isLatest);
+				//	console.log('latestScores',latestScores)
+					const averageScore = latestScores.reduce((sum, s) => sum + s.score, 0) / latestScores.length;
+				//	console.log('averageScore',averageScore)
+					const category = latestScores[0].category;  // Use the category name from the first latest score entry
+				//	console.log('category',category)
+					return { categoryId, category, averageScore, scores };
+				});
+			//	console.log('categoryAverages')
+				return {
+					id: item.id,
+					name: item.name,
+					categoryScores: categoryAverages
+				};
+			});
+		};
+
+		const createSqvMap = (data) => {
+			const sqvMap = {};
+
+			data.serviceQualities.forEach(quality => {
+				quality.sqvs.forEach(sqv => {
+					sqvMap[sqv.id] = {
+						sqvId: sqv.id,
+						sqvName: sqv.name,
+						elementBackgroundColour: sqv.elementBackgroundColour,
+						elementColour: sqv.elementColour,
+						description: sqv.description
+					};
+				});
+			});
+
+			return sqvMap;
+		};
+<!-- END PM MARTs FUNCTIONS-->
+	</xsl:template>
 	
 	
 	<xsl:template mode="RenderElementIDListForJs" match="node()">

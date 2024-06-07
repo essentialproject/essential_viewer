@@ -163,7 +163,9 @@
 										<p>-</p>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="$currentTechCompDescription"/>
+										<xsl:call-template name="RenderMultiLangInstanceDescription">
+											<xsl:with-param name="theSubjectInstance" select="$currentTechComp"/>
+										</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>

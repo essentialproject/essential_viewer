@@ -366,7 +366,11 @@
 			<xsl:variable name="menuItemFunctionName" select="concat($menuItemShortName, $essModalFunctionSuffix)"/>
 			<xsl:variable name="menuItemCategory" select="$allMenuItemCategories[name = $thisModal/own_slot_value[slot_reference = 'modal_report_menu_item_category']/value]"/>
 			<xsl:variable name="menuItemIconName" select="$menuItemCategory/own_slot_value[slot_reference = 'enumeration_icon']/value"/>
-			,<xsl:value-of select="$menuItemShortName"/>: {disabled: function(){ return !(essIdeas.ready) }, name: "<xsl:value-of select="$menuItemLabel"/>", icon: "<xsl:value-of select="$menuItemIconName"/>", callback: <xsl:value-of select="$menuItemFunctionName"/>}<xsl:if test="not(position() = last())">,</xsl:if>
+			,<xsl:value-of select="$menuItemShortName"/>
+: {disabled: function(){return (typeof essIdeas === 'undefined' || essIdeas === null || !essIdeas.ready);}, name: "<xsl:value-of select="$menuItemLabel"/>
+", icon: "<xsl:value-of select="$menuItemIconName"/>
+", callback: <xsl:value-of select="$menuItemFunctionName"/>
+}<xsl:if test="not(position() = last())">,</xsl:if>
 		</xsl:if>
 		<!-- If not cleared, render nothing -->
 	</xsl:template>

@@ -15,15 +15,8 @@
 
 	<!-- START GENERIC PARAMETERS --> 
 
-    <xsl:param name="viewScopeTermIds"/>
-    <xsl:param name="targetReportId"/>
-	<xsl:param name="targetMenuShortName"/> 
+    <xsl:param name="viewScopeTermIds"/>  
 
-	<!-- END GENERIC CATALOGUE PARAMETERS -->
-    <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
-
-	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
-	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
 
 	<!-- END GENERIC PARAMETERS -->
 

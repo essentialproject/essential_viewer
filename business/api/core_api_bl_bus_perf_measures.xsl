@@ -5,12 +5,15 @@
 <xsl:output method="text" encoding="UTF-8"/>
 <xsl:variable name="allLifecycleStatus" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
 <xsl:variable name="allLifecycleStatustoShow" select="$allLifecycleStatus[(own_slot_value[slot_reference='enumeration_sequence_number']/value &lt; 0)]"/>
-<xsl:variable name="allBusProcess" select="/node()/simple_instance[type = ('Business_Process')][not(own_slot_value[slot_reference='lifecycle_status_business']/value=$allLifecycleStatustoShow/name)]"/>
-<xsl:variable name="allPhysProcess" select="/node()/simple_instance[type = ('Physical_Process')]"/>
+<xsl:variable name="allBusCaps" select="/node()/simple_instance[type = ('Business_Capability')][own_slot_value[slot_reference='performance_measures']/value]"/>
+
+<xsl:variable name="allBusProcess" select="/node()/simple_instance[type = ('Business_Process')][not(own_slot_value[slot_reference='lifecycle_status_business']/value=$allLifecycleStatustoShow/name)][own_slot_value[slot_reference='performance_measures']/value]"/>
+<xsl:variable name="allPhysProcess" select="/node()/simple_instance[type = ('Physical_Process')][own_slot_value[slot_reference='performance_measures']/value]"/>
 <xsl:variable name="allProcess" select="$allPhysProcess union $allBusProcess"/>
- 
-<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=$allProcess/type]"/> 
-<xsl:variable name="perfMeasures" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allProcess/own_slot_value[slot_reference='performance_measures']/value]"/> 
+<!-- add new classes here -->
+<xsl:variable name="allData" select="$allPhysProcess union $allBusProcess union $allBusCaps"/>
+<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=$allData/type]"/> 
+<xsl:variable name="perfMeasures" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allData/own_slot_value[slot_reference='performance_measures']/value]"/> 
   
 <xsl:key name="perfMeasureskey" match="/node()/simple_instance[supertype='Performance_Measure']" use="own_slot_value[slot_reference='pm_measured_element']/value"/> 
 
@@ -50,6 +53,8 @@
 <!-- All logical and physical processes on one level -->
  
 <xsl:template match="knowledge_base">{"processes":[<xsl:apply-templates select="$allProcess" mode="processes">
+		<xsl:sort select="own_slot_name[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
+	"businessCapabilities":[<xsl:apply-templates select="$allBusCaps" mode="processes">
 		<xsl:sort select="own_slot_name[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
 	"perfCategory":[<xsl:apply-templates select="$perfCategory" mode="perf"><xsl:sort select="own_slot_name[slot_reference='name']/value" order="ascending"/> </xsl:apply-templates>],
 	"serviceQualities":[<xsl:apply-templates select="$serviceQualities" mode="sqs"><xsl:sort select="own_slot_name[slot_reference='name']/value" order="ascending"/> </xsl:apply-templates>]}
@@ -125,6 +130,7 @@
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
+			"createdDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='system_creation_datetime_iso8601']/value"/>",
 			"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
 				<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 				<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>

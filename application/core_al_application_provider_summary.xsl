@@ -294,7 +294,6 @@
 					    padding: 10px;
 					    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 					    flex-grow: 1;
-					    flex-basis: 1;
 					}
 					
 					.ess-list-tags{
@@ -439,10 +438,14 @@
 					    font-size: 0.7em;
 					    text-transform: uppercase;
 					}
-					.classiflist{
+					.classiflistBox{
 					    position: absolute;
 					    bottom: 5px;
-					    left: 5px;
+						overflow-y: auto;
+						height:21px; 
+					}
+					.classiflist{
+						display:inline-block;
 					}
 					.datatype{
 					    display: inline-block;
@@ -591,10 +594,7 @@
 					.fa-info-circle{
 					    cursor: pointer;
 					}
-					.chart-container{
-					    width: 500px;
-					    height: 300px;
-					}
+				 
 					.full-width-chart-container{
 					    width: 100%;
 					    height: 200px;
@@ -742,7 +742,8 @@
 						float: left;
 						}
 					}
-					
+				 
+					 
 					@media print{
 						#summary-content .tab-content > .tab-pane{
 						display: block !important;
@@ -962,6 +963,18 @@
 						font-size:1.1em;
 						background-color:#424242;
 					  }
+				
+					.chart-container {
+						display: flex; 
+					}
+					
+					.chart-container canvas {
+						width: 50%;
+						height: auto; /* Ensure canvas maintains aspect ratio */
+					}
+					.full-width-chart-container {
+						flex: 1; /* Allow the chart container to grow to fill the available space */
+					}
 				</style>
 				 
 			</head>
@@ -1314,10 +1327,16 @@
 								<div class="col-xs-12"/>
 								{{#if this.classifications}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
+									<h3 class="text-primary"><i class="fa fa-list right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 									<div>
 										<b><xsl:value-of select="eas:i18n('Mapped via Data Objects')"/>:</b>
-										{{#each this.classifications}}<span class="label label-info   right-10" style="background-color: #476ecc">{{this.name}}</span>{{/each}}
+										{{#each this.classifications}} 
+										{{#each this.regulation}} 
+											{{#if this.name}}
+											<span class="label label-info   right-10" style="background-color: #476ecc">{{this.name}}</span>
+											{{/if}}
+										{{/each}}
+										{{/each}}
 									</div>
 									{{#if this.regulations}}
 									<div>
@@ -1326,10 +1345,19 @@
 									</div>
 									{{/if}}
 								</div>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-shield right-10"></i><xsl:value-of select="eas:i18n('Classifications')"/></h3>
+									<div>
+		
+										{{#each this.classifications}}
+											<span class="label label-info   right-10" style="background-color: #476ecc">{{this.name}}</span>
+										{{/each}}
+									</div>
+								</div>
 								{{else}}
 									{{#if this.regulations}}
 									<div class="superflex">
-										<h3 class="text-primary"><i class="fa fa-list-alt right-10" style="background-color: #476ecc"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
+										<h3 class="text-primary"><i class="fa fa-list right-10" style="background-color: #476ecc"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 										{{#each this.regulations}}
 											<span class="label label-info right-5">{{this.name}}</span>
 										{{/each}}
@@ -1645,30 +1673,35 @@
 										 
 									</div>
 								</div>
+								<div class="col-xs-12"/>
+								<div class="superflex">
+								 
+									<div class="chart-container" >
+										<canvas id="costByType-chart"  ></canvas>
+									</div>
+							 
+							</div>
+
 								<div class="superflex">
 									<div class="chart-container">
 										<canvas id="costByCategory-chart" ></canvas>
 									</div>
 								</div>
+								
+								<div class="col-xs-12"/>
 								<div class="superflex">
-									<div class="col-xs-6">
-										<div class="chart-container">
-											<canvas id="costByType-chart" ></canvas>
-										</div>
-									</div>
-									<div class="col-xs-5">
-										<div class="chart-container">
-											<canvas id="costByFrequency-chart" ></canvas>
-										</div>
+									<div class="chart-container" style="margin-bottom: 70px;">
+										<canvas id="costByMonth-chart"></canvas>
 									</div> 
 								</div>
-								<div class="col-xs-12"/>
 								<div class="superflex">
-									<div class="full-width-chart-container" style="margin-bottom: 70px;">
-										<canvas id="costByMonth-chart" height="70px"></canvas>
-									</div>
+								  
+										<div class="chart-container">
+											<canvas id="costByFrequency-chart" ></canvas>
+										</div> 
 								</div>
-								<div class="col-xs-12"/>
+								
+								<div class="col-xs-12"/> 
 								<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h3>
 									<p><xsl:value-of select="eas:i18n('Costs related to this application')"/></p>
@@ -2116,7 +2149,7 @@
 															<div class="bottom-5"><strong><xsl:value-of select="eas:i18n('Appears in')"/>: </strong><span class="label label-link bg-darkgrey">{{#essRenderInstanceMenuLink this.irInfo}}{{/essRenderInstanceMenuLink}}</span></div>
 															{{#if this.datarepsimplemented}}
 															<span class="dbicon">{{this.category}}</span>
-															<span class="classiflist">{{#each ../this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}</span>
+														
 															<span class="appTableHeader"><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></span><br/>
 															
 															{{#each this.datarepsimplemented}}
@@ -2130,6 +2163,7 @@
 															<div class="clearfix"/>
 															{{/each}}
 															{{else}}
+															 
 															<div class="datacrud">
 																<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
 																<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
@@ -2139,6 +2173,9 @@
 															{{/if}}		
 														</div>
 													{{/each}}
+													<div class="classiflistBox">
+														{{#each this.classifications}}<div class="classiflist"><span class="label label-info">{{this.name}}</span></div>{{/each}}
+														</div>
 													</div>
 												{{/each}}
 											</div>
@@ -2404,6 +2441,7 @@
 					DOList=responses[0] ; 
 					DRList=responses[0].data_representation ; 
 					appList=responses[1]; 
+					console.log('appList mart', appList)
 					orgsRolesList=responses[2].a2rs
 					appMart=responses[3];
 					allPerfMeasures=responses[5]
@@ -2562,8 +2600,9 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 					 })
 					 let appServicePairs=[];
 					 appAnalytics=[];
+					
 					 appList.applications.forEach((ap)=>{
-
+						let thisAppClass=[];
 						const match = collatedAppsMap.get(ap.id);
 						if (match) {
 							ap['requiredData'] = match.data_objects;
@@ -2588,13 +2627,16 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 							return p.key==ap.id
 						});
 						let appClassifications=[];
+					
 						if(appMap){ 
 							let thisAppArray=[];
+							
 							appMap.dataObj.forEach((am)=>{ 
 							
 								let filtered=am.appsArray.filter((d)=>{ 
 									return d.key == ap.name;
 								})	 
+						
 								if(filtered){ 
 									filtered[0]['dataObject']=am.name;
 									filtered[0]['dataObjectId']=am.id;
@@ -2602,6 +2644,7 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 									filtered[0]['name']=am.name;
 									filtered[0]['id']=am.id;
 									filtered[0]['classifications']=am.classifications;
+									thisAppClass = [...thisAppClass, ...am.classifications];
 									thisAppArray.push(filtered[0]);
 									if(am.classifications[0]){
 										appClassifications.push(am.classifications[0])
@@ -2611,9 +2654,11 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 							ap['thisAppArray']=thisAppArray
 							ap['dataObj']=appMap.dataObj;
 						}
-						
-						appClassifications=appClassifications.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+					
+						appClassifications=thisAppClass.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+					
 						ap['classifications']=appClassifications;
+					
 						let actorsNRoles=[];
 						ap.sA2R.forEach((f)=>{ 
 							let thisA2r = orgsRolesList.find((r)=>{
@@ -2977,7 +3022,7 @@ if(focusApp.physP){
 		let thisProcess=physProc.process_to_apps.find((e)=>{
 			return e.id==d;
 		})
-	 
+		console.log('thisProcess',thisProcess)
 		let mappedSvc= thisProcess.appsviaservice.filter((s)=>{
 			return s.appid == focusApp.id
 		})
@@ -2988,7 +3033,7 @@ if(focusApp.physP){
 				return e.id==sv.id;
 			})
 	 	
-			allProcsforApps.push({"id":thisProcess.id,"name":thisProcess.processName, "className": "Business_Process", "orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
+			allProcsforApps.push({"id":thisProcess.processid,"name":thisProcess.processName, "className": "Business_Process", "orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
 		})
 
 		}else{
@@ -3004,6 +3049,7 @@ if(focusApp.physP){
  
 
 focusApp['processInfo']=allProcsforApps;
+
 } 
 let stakeholdersList=[]; 
 if(focusApp &amp;&amp; focusApp.stakeholders){
@@ -3410,7 +3456,7 @@ new Chart(document.getElementById("costByFrequency-chart"), {
         text: 'Cost By Frequency'
 	  },
 	  legend: {
-		position: "right",
+		position: "bottom",
 		align: "middle"
 	}
     }
@@ -3436,7 +3482,7 @@ new Chart(document.getElementById("costByCategory-chart"), {
         text: 'Cost By Category'
 	  },
 	  legend: {
-		position: "right",
+		position: "bottom",
 		align: "middle"
 	}
     }

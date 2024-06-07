@@ -9,8 +9,10 @@
 <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
 
 	<xsl:template name="RenderHandlebarsUtilityFunctions">
+	 
 			var reportURL='<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
 			var meta=[<xsl:apply-templates select="$reportMenu" mode="classMetaData"></xsl:apply-templates>];
+			const meta2=meta;
 		 //console.log('meta', meta)
 		 //console.log('15')
 			const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
@@ -32,20 +34,24 @@
 
 			   
 			function essGetMenuNamebyClass(instance) { 
- //console.log('32')
+ 
 				let menuName = null;
 				if(instance.meta?.anchorClass) {
 					
-					const objectWithMenu = meta.find(obj => obj.classes.includes(instance.meta.anchorClass));
+					const objectWithMenu = meta2.find(obj => obj.classes.includes(instance.meta.anchorClass));
 				 
 					if(objectWithMenu.enabled =='true'){
 						menuName = objectWithMenu.menuId;	
 					}	
 				} else if(instance.className) {
 	
-					const objectWithMenu = meta.find(obj => obj.classes.includes(instance.className));
-		
-					if(objectWithMenu.enabled =='true'){
+					const objectWithMenu = meta2.find(obj => obj.classes.includes(instance.className));
+				//	console.log('objectWithMenu',objectWithMenu)
+					if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='true'){
+						menuName = objectWithMenu.menuId;
+					}else if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='false'){
+						// do nothing
+					}else{
 						menuName = objectWithMenu.menuId;
 					}
 				}
@@ -128,11 +134,11 @@
 		    });
 
 		Handlebars.registerHelper('essRenderInstanceMenuLink', function (instance) {
-			//console.log('129')
+			// console.log('129', instance)
 		       if(instance != null) {
                 let linkMenuName = essGetMenuNamebyClass(instance); 
 				let instanceLink = instance.name;   
-		 
+			//	console.log('linkMenuName',linkMenuName)
 				if(linkMenuName) {
 				 
 					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
@@ -147,7 +153,7 @@
 				return '';
 			}
 		    });
-	
+<!--
 		Handlebars.registerHelper('essRenderInstanceMenuLinkReport', function (instance) {
 
 				if(instance != null) {
@@ -161,14 +167,13 @@
 					 let linkId = instance.id + 'Link';
 					 instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
 					 console.log('linkHref',linkHref)
-					 <!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
-				 } 
+							 } 
 				 return instanceLink;
 			 } else {
 				 return '';
 			 }
 			 });		
-
+	-->
 			Handlebars.registerHelper('essRenderInstanceMenuLinkLight', function (instance) {
 				//console.log('150')
 				if(instance != null) {
@@ -192,18 +197,18 @@
 			 });		
 	
 		Handlebars.registerHelper('essRenderInstanceMenuLinkReport', function (instance) {
-			//console.log('172')
+			//console.log('172', instance)
 				if(instance != null) {
 				 let linkMenuName = essGetMenuNamebyClass(instance); 
 				 let instanceLink = instance.name;   
-		  
+			
 				 if(linkMenuName) {
 				  
 					 let linkHref = 'report?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
 					 let linkClass = 'context-menu-' + linkMenuName;
 					 let linkId = instance.id + 'Link';
 					 instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
-				 
+			
 					 <!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
 				 } 
 				 return instanceLink;

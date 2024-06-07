@@ -614,9 +614,9 @@
 					})
 
 					d['family']=martMatch.family;
-					d['supplier']=martMatch.supplier;
-					d['ea_reference']=martMatch.ea_reference;
-					d['short_name']=martMatch.short_name;
+					d['supplier']=martMatch.supplier || '';
+					d['ea_reference']=martMatch.ea_reference || '';
+					d['short_name']=martMatch.short_name || '';
 
 					slotNames.forEach((s)=>{
 						

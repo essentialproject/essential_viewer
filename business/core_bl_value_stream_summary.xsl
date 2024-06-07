@@ -53,7 +53,8 @@
 	<xsl:key name="allValueStageKPIsKey" match="/node()/simple_instance[supertype=('Service_Quality')]" use="own_slot_value[slot_reference = 'sq_values']/value"/>
 	<xsl:variable name="allValueStageKPIs" select="key('allValueStageKPIsKey', $allValueStageKPIValues/name)"/>
 	
-	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[type='Service_Quality_Value'][name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
+	<xsl:variable name="allValueStageKPIUoMs" select="/node()/simple_instance[supertype='Service_Quality_Value'][name = $allValueStageKPIValues/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
+	<xsl:variable name="allUoMs" select="/node()/simple_instance[type='Unit_Of_Measure']"/>
 	<xsl:variable name="allValueStageBusCaps" select="/node()/simple_instance[type=('Business_Capability')][name = $vsValueStages/own_slot_value[slot_reference = 'vsg_required_business_capabilities']/value]"/>
 	<xsl:key name="allBusProcessKey" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'realises_business_capability']/value"/>
 	<xsl:key name="allBusProcessNameKey" match="/node()/simple_instance[type=('Business_Process')]" use="name"/>
@@ -635,7 +636,8 @@
 	<!--	<xsl:variable name="thisKPI" select="$allValueStageKPIs[name = $thisKPIVal/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>-->
 		<xsl:variable name="thisKPI" select="key('allValueStageKPIsKey', $thisKPIVal/name)"/>
 		
-		<xsl:variable name="thisKPIUoM" select="$allValueStageKPIUoMs[name = $thisKPIVal/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
+		<xsl:variable name="thisKPIUoM" select="$allUoMs[name = $thisKPIVal/own_slot_value[slot_reference = 'service_quality_value_uom']/value]"/>
+		
 		<xsl:variable name="thisKPIName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$thisKPI"/>

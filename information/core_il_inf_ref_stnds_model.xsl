@@ -15,10 +15,20 @@
 
 	<!-- END GENERIC PARAMETERS -->
     <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"/>
+    <xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Information Reference Model']"></xsl:variable>
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Information_Concept', 'Information_View','Information_Domain','Data_Object')"/>
+    <xsl:variable name="infoDomains" select="/node()/simple_instance[type='Information_Domain']"/>
+    <xsl:key name="infoDomainsTaxTerms" match="/node()/simple_instance[type='Taxonomy_Term']" use="own_slot_value[slot_reference='classifies_elements']/value"/>
+    <xsl:key name="infoDomainsTaxonomy" match="/node()/simple_instance[type='Taxonomy']" use="own_slot_value[slot_reference='taxonomy_terms']/value"/>
+
+    <xsl:variable name="taxTerms" select="key('infoDomainsTaxTerms',$infoDomains/name)"/>
+    <xsl:variable name="taxonomiesNames" select="key('infoDomainsTaxonomy',$taxTerms/name)"/>
+    <xsl:variable name="taxonomies" select="$taxonomiesNames[own_slot_value[slot_reference='name']/value!='Reference Model Layout']"/>
+    <xsl:key name="infoDomainsTaxTermsInverse" match="$taxTerms" use="own_slot_value[slot_reference='term_in_taxonomy']/value"/>
+    <xsl:key name="infoDomainsTaxkey" match="$infoDomains" use="own_slot_value[slot_reference='element_classified_by']/value"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!--
@@ -73,7 +83,35 @@
                         flex-direction: column; 
                     }
                     #modelHolder a {color: #24806f;}
+                  
+                    .taxonomy{
+                        position: relative;
+                        background-color: #ffffff;
+                        padding:2px;
+                        border:1px solid #d3d3d3;
+                        border-radius:6px;
+                        text-align: left; 
+                        border-left:5px solid #2a573e;
+                    }
+                    .taxonomy::before {
+                        content: ''; /* Adds a pseudo-element inside the .taxonomy element */
+                        position: absolute;
+                        top: 50%; /* Center vertically */
+                        left: 50%; /* Center horizontally */
+                        transform: translate(-50%, -50%) rotate(-90deg); /* Positions and rotates the text */
+                        transform-origin: center; /* Ensures rotation happens from the center */
+                        white-space: nowrap; /* Prevents text wrapping */
+                    }
                     
+                    /* Example usage for text inside the element */
+                    .taxonomy h3 {
+                        position: absolute;
+                        top: 50%; /* Center vertically in the middle of the container */
+                        left: 20px; /* Center horizontally in the middle of the container */
+                        transform: translate(-50%, -50%) rotate(-90deg); /* Rotate around its center */
+                        transform-origin: center; /* Ensures rotation happens around the center */
+                        white-space: nowrap; /
+                    }
                     .domain {
                         padding: 10px;
                         border: 1px solid #ccc;
@@ -83,12 +121,35 @@
                         border-left: 3px solid #207465;
                         position: relative;
                         background-color: hsla(130, 50%, 99%, 1);
+                        margin:2px;
+                        margin-left:40px;
+                    }
+                    .domainColumn {
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative;
+                        min-height:80px;
+                        width:19%;
+                        border-left: 3px solid #207465;
+                        position: relative;
+                        background-color: hsla(130, 50%, 99%, 1);
+                        margin:2px;
+                        margin-left:2px;
+                    }
+                    .domain-container {
+                        display: flex;             /* Makes the container a flex container */
+                        flex-wrap: wrap;           /* Allows the items to wrap to the next line if needed */
+                        justify-content: flex-start; /* Aligns items to the start of the container */
+                        margin-left: 40px;        /* Counteracts the left margin of the first item */
                     }
                     .concept-wrapper,.infoview-wrapper {
                         display: flex;
                         flex-direction: row;
                         flex-wrap: wrap;
                         gap: 15px;
+
+                        justify-content: flex-start;
                     }
                     .concept i {
                         color: #24806f;
@@ -112,12 +173,33 @@
                         background-color: hsla(130, 50%, 90%, 1);
                         position: relative;
                     }
+                    .conceptColumn {
+                        padding: 5px 5px 5px 5px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative; 
+                        min-width: 200px;
+                        max-width: 400px;
+                        background-color: hsla(130, 50%, 90%, 1);
+                        position: relative;
+                    }
                     .infoview{
                         padding: 5px 5px 30px 5px;
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         position:relative;
                         min-height:80px;
+                        background-color: #fff;
+                        min-width: 160px;
+                        max-width: 160px;
+                        position: relative;
+                    }
+                    .infoviewColumn{
+                        padding: 5px 5px 5px 5px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        position:relative;
+                        min-height:20px;
                         background-color: #fff;
                         min-width: 160px;
                         max-width: 160px;
@@ -137,7 +219,14 @@
                         left: 5px;
                         color:#aaa;
                     }
-    
+                    .conceptheadNameCol, .viewheadNameCol, .dataObjBoxHeaderCol{
+                        
+                        font-size: 10px;    
+                        position: absolute;
+                        top: 20px;
+                        left: 5px;
+                        color:#aaa;
+                    }
                     #infoPanel {
                         background-color: rgba(0,0,0,0.85);
                         padding: 10px;
@@ -165,13 +254,52 @@
                         vertical-align:top;
                         border:1px solid #ccc;
                         word-break: break-all;
-                    }                
+                    }      
+                    .domain, .domainColumn, .conceptColumn, .infoviewColumn, .concept, .infoview, conceptheadNameCol, .viewheadNameCol, .dataObjBoxHeaderCol,conceptheadName, .viewheadName, .dataObjBoxHeader {
+                        transition: all 1s ease; /* Adjust time and easing function as needed */
+                      }      
+                      .domainDictionary{
+                        
+                      }
+                      .conceptDictionary{
+                        padding-left:20px;
+                        
+                      }
+                      .infoviewDictionary{
+
+                        padding-left:40px;
+
+                      }
+                      //to override font-awesome
+                      .italic-text {
+                        font-style: italic;
+                        }
+                    .domainText{
+                        font-size:1.2em;
+                    }
+                    .conceptText{
+                        font-size:1.1em;
+                    }
+                    .infoviewText{
+                        font-size:1em;
+                    }
+                    .taxonomyBox{
+                        padding-left:20px;
+                    }
+
+                    .taxonomyBox, .domainDictionary, .conceptDictionary {
+                        margin-left: 20px;
+                        background: white;
+                        padding: 10px;
+                        border-left: 1px solid #d3d3d3;
+                        margin-bottom: 5px;
+                    }
                 </style>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"/>
-
+				<xsl:call-template name="Heading"/> 
+ 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -179,12 +307,23 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Information Reference Model</span>
+									<span class="text-darkgrey"><xsl:value-of select="$theReport/own_slot_value[slot_reference='report_label']/value"/></span>
 								</h1>
 							</div>
+                            <div class="pull-right"><xsl:value-of select="eas:i18n('Style')"/>:<xsl:text> </xsl:text>
+                                <i class="fa fa-columns boxStyle" id="col"></i>
+                                <xsl:text> </xsl:text>
+                                <i class="fa fa-align-justify boxStyle" id="row"></i>
+                                <xsl:text> </xsl:text>
+                                <i class="fa fa-book" id="dictionary"></i>
+                            </div>
 						</div>
+                        <div class="col-xs-12" id="taxonomySelectBox">
+                           <b><xsl:value-of select="eas:i18n('Taxonomy')"/>:</b><xsl:text> </xsl:text> <select id="taxonomySelect"/>
+                        </div>
                         <div class="col-xs-12">
                             <div id="modelHolder"/>
+                            <div id="dictionaryHolder"/>
                         </div>
 						<!--Setup Closing Tags-->
 					</div>
@@ -215,7 +354,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             {{#if this.description}}
-                                <p><strong>Description: </strong>{{this.description}}</p>
+                                <p><strong><xsl:value-of select="eas:i18n('Description')"/>: </strong>{{this.description}}</p>
                                 <br/>
                             {{/if}}
                             {{#each this.dataObjects}}
@@ -239,6 +378,116 @@
                         </div>
                     </div>
                 </script>
+                <script id="dictionary-template" type="text/x-handlebars-template">
+                    {{#if this.taxonomies}}
+                    {{#each this.taxonomies}}
+                       <h3>  <i class="fa fa-chevron-right toggle taxonomyToggle"></i><xsl:text> </xsl:text>{{this.name}}</h3> 
+                        <div class="taxonomyBox">
+                        {{#each this.domains}} 
+                        <div class="domainDictionary">
+                            <i class="fa fa-chevron-right toggle"></i><xsl:text> </xsl:text> <span class="impact large right-5 domainText">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Domain)</i> <br/>
+                            {{#if this.description}}
+                            <b>Description:</b>: <xsl:text> </xsl:text> {{this.description}}
+                            {{/if}}
+                              
+                            {{#each this.info_concepts}}
+                            <div class="conceptDictionary">
+                             <i class="fa fa-chevron-right toggle"></i><xsl:text> </xsl:text>   
+                             <span class="strong right-5 conceptText">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Information Concept)</i> <br/>
+                             {{#if this.description}}
+                              <b>Description:</b>: <xsl:text> </xsl:text>{{this.description}}
+                            {{/if}}
+                                {{#each this.infoViews}}
+                                    <div class="infoviewDictionary">
+                                        <i class="fa fa-caret-right infoviewText"></i><xsl:text> </xsl:text>   
+                                        <span class="right-5 small">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Information View)</i> <br/>
+                                        {{#if this.description}}
+                                        <b>Description:</b>: <xsl:text> </xsl:text> {{this.description}}
+                                        {{/if}}
+                                    </div>
+                                {{/each}}
+                                </div> 
+                            {{/each}}
+                            </div>
+                        {{/each}}
+                    </div>
+                {{/each}}
+                {{else}}  
+                {{#each this}} 
+                <div class="domainDictionary">
+                    <i class="fa fa-chevron-right toggle"></i><xsl:text> </xsl:text> <span class="impact large right-5 domainText">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Domain)</i> <br/>
+                    {{#if this.description}}
+                    <b>Description:</b>: <xsl:text> </xsl:text> {{this.description}}
+                    {{/if}}
+                    {{#each this.info_concepts}}
+                    <div class="conceptDictionary">
+                        <i class="fa fa-chevron-right toggle"></i><xsl:text> </xsl:text>   
+                        <span class="strong right-5 conceptText">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Information Concept)</i><br/>
+                        {{#if this.description}}
+                        <b>Description:</b>: <xsl:text> </xsl:text> {{this.description}}
+                        {{/if}}
+                        {{#each this.infoViews}}
+                            <div class="infoviewDictionary">
+                                <i class="fa fa-caret-right"></i><xsl:text> </xsl:text>   
+                                <span class="right-5 small infoviewText">{{{essRenderInstanceMenuLinkLight this}}}</span><i class="italic-text">(Information View)</i><br/>
+                                {{#if this.description}}
+                                <b>Description:</b>: <xsl:text> </xsl:text> {{this.description}}
+                                {{/if}}
+                            </div>
+                        {{/each}}
+                        </div> 
+                    {{/each}}
+                    </div>
+                {{/each}}
+     
+                {{/if}}
+
+                </script>
+                <script id="taxonomy-template" type="text/x-handlebars-template">
+                    {{#each this.taxonomies}} 
+                        <div class="taxonomy">
+                            <h3>{{this.name}}</h3>
+                            <div class="domain-container">
+                            {{#each this.domains}} 
+                            <div class="domain">
+                                <div class="headName">Domain</div> 
+                                <div class="bottom-10">
+                                    <span class="impact large right-5">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                    <i class="fa fa-info-circle">
+                                        <xsl:attribute name="id">{{this.id}}</xsl:attribute><xsl:attribute name="easType">domain</xsl:attribute>
+                                    </i>
+                                </div>
+                                <div class="concept-wrapper">
+                                {{#each this.info_concepts}}
+                                <div class="concept">
+                                    <div class="conceptheadName">Information Concept</div>
+                                    <div class="bottom-10">
+                                        <span class="strong right-5">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                        <i class="fa fa-info-circle"><xsl:attribute name="id">{{this.id}}</xsl:attribute><xsl:attribute name="easType">concept</xsl:attribute></i>
+                                    </div>                
+                                    <div class="infoview-wrapper">
+                                    {{#each this.infoViews}}
+                                        <div class="infoview">
+                                            <div class="viewheadName">Information View</div>
+                                            <div class="bottom-10">
+                                                <span class="right-5 small">{{{essRenderInstanceMenuLinkLight this}}}</span>
+                                                <i class="fa fa-info-circle">
+                                                    <xsl:attribute name="id">{{this.id}}</xsl:attribute>
+                                                    <xsl:attribute name="easType">view</xsl:attribute>
+                                                </i>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                    </div>
+                                </div>
+                                {{/each}}
+                                </div>
+                            </div>
+                        {{/each}}
+                        </div>
+                     </div>
+                    {{/each}}
+                </script>    
                 <script id="panel-template" type="text/x-handlebars-template">
                     {{#each this}} 
                         <div class="domain">
@@ -312,13 +561,27 @@
         <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
                 <xsl:with-param name="linkClasses" select="$linkClasses"/>
         </xsl:call-template>
+
+
+    let taxonomies=[<xsl:apply-templates select="$taxonomies" mode="taxonomies"/>];
+    console.log('taf',taxonomies)
     $('document').ready(function () {
+
+        $('#taxonomySelect').select2({width:'250px'});
+        $('#taxonomySelectBox').hide();
         $('.infoPanel').hide();
         var panelFragment = $("#panel-template").html();
         panelTemplate = Handlebars.compile(panelFragment); 
 
+        var taxonomyFragment = $("#taxonomy-template").html();
+        taxonomyTemplate = Handlebars.compile(taxonomyFragment); 
+
         var infoFragment = $("#info-template").html();
         infoTemplate = Handlebars.compile(infoFragment); 
+
+
+        var dictionaryFragment = $("#dictionary-template").html();
+        dictionaryTemplate = Handlebars.compile(dictionaryFragment); 
         
 
         Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
@@ -334,6 +597,8 @@
                         let infoConcepts= responses[0].information_concepts;
                         let informationViews=responses[0].information_views;
                         let dataObjects=responses[0].data_objects;
+                        $('#dictionaryHolder').hide();
+
                         infoDoms.forEach((d)=>{
                             let icArray=[];
                             d.infoConcepts.forEach((e)=>{
@@ -342,23 +607,79 @@
                                 })
                                 icArray.push(match);
                             })
-                           
-                            icArray.sort((a, b) => {
-                                const numA = a.sequence_number === "" ? Infinity : parseInt(a.sequence_number, 10);
-                                const numB = b.sequence_number === "" ? Infinity : parseInt(b.sequence_number, 10);
-                                return numA - numB;
-                            });
                             d['info_concepts']=icArray;
+                        }) 
+
+                        if(taxonomies.length&gt;0){
+                            if(taxonomies.length&gt;1){    
+                                $('#taxonomySelectBox').show();
+                                
+                                taxonomies.forEach((ta)=>{
+                                    $('#taxonomySelect').append('<option value="' + ta.id + '">' + ta.name + '</option>');
+
+                                })
+                            }
+
+                            console.log(taxonomies)
+                            taxonomies.forEach((tx)=>{
+                            tx.taxonomies.forEach((t) => {
+                                t.domains.forEach((dom) => { 
+                                    let match = infoDoms.find((infodom) => dom.id == infodom.id);
+                                    if (match) {
+                                        Object.keys(match).forEach(key => {
+                                            dom[key] = match[key];
+                                        });
+                                        dom.order = dom.order; // Preserve the original order if necessary
+                                    }
+                                });
+                                console.log('t', t);
+                                t.domains.sort((a, b) => {
+                                    // Check if 'order' is blank, undefined, or null
+                                    let isABlank = a.order === '' || a.order === undefined || a.order === null;
+                                    let isBBlank = b.order === '' || b.order === undefined || b.order === null;
+                            
+                                    if (isABlank &amp;&amp; isBBlank) return 0; // Both are blank, keep original order
+                                    if (isABlank) return 1; // a is blank, so it should come last
+                                    if (isBBlank) return -1; // b is blank, so it should come last
+                            
+                                    // Otherwise, sort by 'order' normally
+                                    return a.order - b.order;
+                                });
+                            });
+                                tx.taxonomies.sort((a, b) => {
+                                    // Check if 'order' is blank, undefined, or null
+                                    let isABlank = a.order === '' || a.order === undefined || a.order === null;
+                                    let isBBlank = b.order === '' || b.order === undefined || b.order === null;
+                            
+                                    if (isABlank &amp;&amp; isBBlank) return 0; // Both are blank, keep original order
+                                    if (isABlank) return 1; // a is blank, so it should come last
+                                    if (isBBlank) return -1; // b is blank, so it should come last
+                            
+                                    // Otherwise, sort by 'order' normally
+                                    return a.order - b.order;
+                                });
+                            })
+                            
+                            console.log('...tax', taxonomies)
+                            $('#modelHolder').html(taxonomyTemplate(taxonomies[0]))
+                        }else{
+
+                            $('#modelHolder').html(panelTemplate(infoDoms))
+                            $('.domain').css('margin-left','5px')
+                            
+                        }
+                       
+                        $('#taxonomySelect').on('change', function(){
+
+                            console.log('ts', $(this).val())
+                           let selected = taxonomies.find((tx)=>{
+                                return tx.id==$(this).val()
+                            })
+                            $('#dictionaryHolder').hide()
+                            $('#modelHolder').show()
+                            
+                            $('#modelHolder').html(taxonomyTemplate(selected))
                         })
-                        infoDoms.sort((a, b) => {
-                            const numA = a.sequence_number === "" ? Infinity : parseInt(a.sequence_number, 10);
-                            const numB = b.sequence_number === "" ? Infinity : parseInt(b.sequence_number, 10);
-                            return numA - numB;
-                        });
-                       // responses[0]=[]; 
-
-                        $('#modelHolder').html(panelTemplate(infoDoms))
-
                         $('.fa-info-circle').off().on('click', function(){
                             let thisId= $(this).attr('id');
                             let eastype=$(this).attr('easType');
@@ -399,9 +720,86 @@
                                 $('.infoPanel').hide();
                             })
                     })
+
+                    $('#dictionary').on('click', function(){
+
+                        let tax=$('#taxonomySelect').val();
+            
+                            console.log('ts',tax);
+                            
+                           let selected = taxonomies.find((tx)=>{
+                                return tx.id==tax
+                            })
+                            console.log('tx', taxonomies)
+                            if(selected){
+                                $('#dictionaryHolder').html(dictionaryTemplate(selected))
+                            }else  if(!selected &amp;&amp; taxonomies.length&gt;0){
+                                $('#dictionaryHolder').html(dictionaryTemplate(taxonomies[0]))
+                            }else{
+                                console.log('none',infoDoms)
+                                $('#dictionaryHolder').html(dictionaryTemplate(infoDoms))
+                            }
+                            $('#dictionaryHolder').show()
+                            $('#modelHolder').hide()
+                            $(".toggle").click(function() { 
+                                $(this).toggleClass('fa-chevron-right fa-chevron-up'); 
+                                if (!$(this).hasClass('taxonomyToggle')) {
+                                $(this).parent().children('div').slideToggle("slow");
+                                }else{
+                                    console.log('has toggle')
+                                    $(this).parent().next('div').slideToggle("slow");
+                                }
+                           
+                            });
+                    })
                     
         })
+
+        function toggleClasses(idType) {
+            const isCol = idType === 'col';
+        
+            // Define a mapping of selectors to their class changes
+            const changes = {
+                '.domain': 'domainColumn',
+                '.concept': ['conceptColumn', 'concept'],
+                '.infoview': 'infoviewColumn',
+                '.conceptheadName': 'conceptheadNameCol',
+                '.viewheadName': 'viewheadNameCol',
+                '.dataObjBoxHeader': 'dataObjBoxHeaderCol'
+            };
+        
+            // Iterate over the mapping and apply the appropriate class changes
+            Object.entries(changes).forEach(([selector, classes]) => {
+                if (Array.isArray(classes)) {
+                    // When there are multiple classes to toggle
+                    $(selector).toggleClass(classes[0], isCol)
+                               .toggleClass(classes[1], !isCol);
+                } else {
+                    // When there is a single class to toggle
+                    $(selector).toggleClass(classes, isCol);
+                }
+            });
+        }
+
+        $('.boxStyle').on('click', function(){
+            let idType= $(this).attr('id');
+            if(idType=='col'){
+              toggleClasses(idType)
+               
+            }else{
+                toggleClasses(idType)
+            }
+            $('#dictionaryHolder').hide()
+            $('#modelHolder').show()
+
+        })
+
+        
     })
+
+    function redraw(){
+        console.log('redraw')
+    }
     </xsl:template>
     <xsl:template name="GetViewerAPIPath">
         <xsl:param name="apiReport"></xsl:param>
@@ -483,4 +881,24 @@
                 </xsl:if>
             </xsl:for-each>
     </xsl:template>
+<xsl:template match="node()" mode="taxonomies">
+    <xsl:variable name="thisTaxTerms" select="key('infoDomainsTaxTermsInverse', current()/name)"/>
+    {"id":"<xsl:value-of select="current()/name"/>",
+    "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+        <xsl:with-param name="isForJSONAPI" select="false()"/>
+         <xsl:with-param name="theSubjectInstance" select="current()"/>
+    </xsl:call-template>",
+    "taxonomies":[<xsl:for-each select="$thisTaxTerms">
+    <xsl:variable name="thisDomains" select="key('infoDomainsTaxkey', current()/name)"/>
+        {
+        "id":"<xsl:value-of select="current()/name"/>",
+        "name": "<xsl:call-template name="RenderMultiLangInstanceName">
+            <xsl:with-param name="isForJSONAPI" select="false()"/>
+             <xsl:with-param name="theSubjectInstance" select="current()"/>
+        </xsl:call-template>",
+        "order":"<xsl:value-of select="current()/own_slot_value[slot_reference='taxonomy_term_index']/value"/>",
+        "domains":[<xsl:for-each select="$thisDomains">{"id":"<xsl:value-of select="current()/name"/>","order":"<xsl:value-of select="current()/own_slot_value[slot_reference='sequence_number']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+        }<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
+    }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 </xsl:stylesheet>

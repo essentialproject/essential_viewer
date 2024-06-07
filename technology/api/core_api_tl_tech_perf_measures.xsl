@@ -134,6 +134,7 @@
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 			"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
+			"createdDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='system_creation_datetime_iso8601']/value"/>",
 			"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
 				<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 				<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>

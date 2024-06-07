@@ -1732,8 +1732,8 @@ var scopedService;
 										return (t.id === elem.id)
 									}) === index)
 										
-									let acMeta=busCapImpact[0].meta;
-							 
+									let acMeta=busCapImpact[0]?.meta;
+							 console.log('busCapImpact',busCapImpact)
 									 appBusCaps.map(obj => ({ ...obj, type:'Business_Capability', source:'Process' }));	
 									let allCaps=[...appBusCaps, ...busCapImpact]
 

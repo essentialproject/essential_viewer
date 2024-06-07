@@ -731,9 +731,9 @@
 			if (capMatch &amp;&amp; capMatch.physP) {
 			  vsBusCaps.push(capMatch); 
 			  capMatch.physP.forEach(process => {
-			 
-				thisVsOrgs.push({ "id": process.orgid, "name": process.org })
-				apps.forEach(app => {
+				let capProcOrg = processToAppMap.get(process);
+				thisVsOrgs.push({ "id": capProcOrg.orgid, "name": capProcOrg.org})
+							apps.forEach(app => {
 					
 				  if (app.physP.includes(process)) {
 					
@@ -906,7 +906,8 @@
 		  transformedData.forEach((f, i) => {
 			const orgi = orgInfoMap.get(f.orgName);
 			
-			if (orgi) { // make sure orgi is defined
+			if (orgi) {  // make sure orgi is defined
+				if(orgi.name==''){orgi.name='-'}			
 			  f['name'] = orgi.name;
 			  f['className'] = 'Group_Actor';
 			  f.id = orgi.id;

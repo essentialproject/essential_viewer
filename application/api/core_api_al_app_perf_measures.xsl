@@ -3,7 +3,7 @@
 <xsl:include href="../../common/core_utilities.xsl"/>
 <xsl:include href="../../common/core_js_functions.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
-<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]"/>
+<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')][own_slot_value[slot_reference = 'performance_measures']/value]"/>
 <xsl:variable name="appAPRs" select="/node()/simple_instance[type='Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $allAppProviders/name]"/>
 <xsl:key name="appAPRskey" match="/node()/simple_instance[type='Application_Provider_Role']" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
 <xsl:variable name="physProcessesDirect" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value=$allAppProviders/name]"/>
@@ -78,8 +78,10 @@
 		<xsl:variable name="thisperfCategory" select="$perfCategory[own_slot_value[slot_reference='pmc_measures_ea_classes']/value=current()/type]"/> 
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"app": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>]	,
-		"processPerfMeasures":[<xsl:apply-templates select="$allthisPhysProcesses" mode="processPerformanceMeasures"/>]
+		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>],
+		"processPerfMeasures":[<xsl:apply-templates select="$allthisPhysProcesses" mode="processPerformanceMeasures"/>],
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		<!--
 		"scores":[<xsl:for-each select="$thisServQualityValues"><xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>","type":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value)"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
@@ -150,8 +152,7 @@
 			<xsl:choose>
 				<xsl:when test="count($thisperfCategory)&gt;1">
 					<xsl:for-each select="$thisperfCategory">
-					{"categoryid": "<xsl:value-of select="current()/name"/>",
-					"debug":"test"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+					{"categoryid": "<xsl:value-of select="current()/name"/>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 					</xsl:for-each>
 				</xsl:when>
 				<xsl:otherwise>
@@ -159,6 +160,7 @@
 					"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 					<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 					"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
+					"createdDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='system_creation_datetime_iso8601']/value"/>",
 					"serviceQuals":[<xsl:for-each select="$thisServQualityValues">
 						<xsl:variable name="thisServiceQuality" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"></xsl:variable>
 						<xsl:variable name="perfQual" select="$perfCategory[own_slot_value[slot_reference = 'pmc_service_qualities']/value=$thisServiceQuality/name]"></xsl:variable>
