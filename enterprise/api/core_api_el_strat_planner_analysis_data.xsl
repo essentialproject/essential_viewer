@@ -378,9 +378,12 @@
 		{
 		"id": "<xsl:value-of select="$this/name"/>",
 		"index": <xsl:value-of select="position() - 1"/>,
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+            'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value,'}',')'),'{',')'))
+        }" />
+        <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+          <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 		"type": {
 			"list": "busProcesses",
 			"colour": "#5cb85c",
@@ -514,8 +517,12 @@
 		</xsl:variable>
 		
 		{
-			"l0BusCapId": "<xsl:value-of select="$rootBusCap/name"/>",
-			"l0BusCapName": "<xsl:value-of select="$rootBusCapName"/>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'l0BusCapName': string(translate(translate($rootBusCap/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')) 
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
+			"l0BusCapId": "<xsl:value-of select="$rootBusCap/name"/>", 
 			"l0BusCapLink": "<xsl:value-of select="$rootBusCapLink"/>",
 			"l1BusCaps": [
 				<xsl:apply-templates select="$L0Caps" mode="l0_caps"><xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/></xsl:apply-templates>
@@ -536,7 +543,11 @@
 		
 		{
 			"busCapId": "<xsl:value-of select="current()/name"/>",
-			"busCapName": "<xsl:value-of select="$currentBusCapName"/>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'busCapName': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')) 
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 			"busCapLink": "<xsl:value-of select="$currentBusCapLink"/>",
 			"l2BusCaps": [	
 				<xsl:apply-templates select="$L1Caps" mode="l1_caps"><xsl:sort select="own_slot_value[slot_reference = 'business_capability_index']/value"/></xsl:apply-templates>
@@ -586,7 +597,11 @@
 		
 		{
 			"busCapId": "<xsl:value-of select="current()/name"/>",
-			"busCapName": "<xsl:value-of select="$currentBusCapName"/>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'busCapName': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')) 
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,  
 			"busCapLink": "<xsl:value-of select="$currentBusCapLink"/>",
 			"isDifferentiator": <xsl:value-of select="$isDifferentiator"/>,
 			"stratImpactStyle": "<xsl:value-of select="$stratImpactStyle"/>",

@@ -28,24 +28,33 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Data_Subject', 'Data_Object', 'Data_Object_Attribute', 'Group_Actor', 'Individual_Actor', 'Application_Provider', 'Group_Business_Role', 'Individual_Business_Role', 'Business_Process', 'Composite_Application_Provider', 'Data_Representation', 'Data_Representation_Attribute')"/>
 	<!-- END GENERIC LINK VARIABLES -->
+	<!-- processes-->
+	<xsl:variable name="busProcs" select="/node()/simple_instance[type='Business_Process']"/>
+	<xsl:variable name="allActors" select="/node()/simple_instance[type=('Group_Actor','Individual_Actor')]"/>
+	<xsl:variable name="allActor2RoleRelations" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/>
+	<xsl:variable name="allActorsInstances" select="$allActors union $allActor2RoleRelations"/>
+	<xsl:key name="physProcsKey" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference = 'implements_business_process']/value"/>
+	<xsl:key name="physProcsToAppKey" match="$allProctoApp" use="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value"/>
+
+	<xsl:variable name="physProcs" select="key('physProcsKey', $busProcs/name)"/>
+	   
+	<!-- data linked to processes-->
+
+	<xsl:variable name="allProctoApp" select="/node()/simple_instance[type='PHYSBUSPROC_TO_APPINFOREP_RELATION']"/>
+	<xsl:key name="physProcstoMapKey" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference = 'physbusproc_uses_appinforeps']/value"/>
+	<xsl:key name="busProcsKey" match="/node()/simple_instance[type='Business_Process']" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/>
+	
+	<xsl:key name="allActors_key" match="$allActors" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+	
 
 	<xsl:variable name="currentDataObject" select="/node()/simple_instance[name = $param1]"/>
-	<xsl:variable name="dataObjectName" select="$currentDataObject/own_slot_value[slot_reference = 'name']/value"/>
-	<xsl:variable name="dataAttributes" select="/node()/simple_instance[name = $currentDataObject/own_slot_value[slot_reference = 'contained_data_attributes']/value]"/>
-	<xsl:variable name="dataReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'implemented_data_object']/value = $currentDataObject/name]"/>
-	<xsl:variable name="allDataRepAttr" select="/node()/simple_instance[type = 'Data_Representation_Attribute']"/>
-	<xsl:variable name="app2InfoRep2DataReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_inforep_to_datarep_to_datarep']/value = $dataReps/name]"/>
-	<xsl:variable name="containingInfoViews" select="/node()/simple_instance[own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value = $currentDataObject/name]"/>
-	<xsl:variable name="implementingInfoReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_information_views']/value = $containingInfoViews/name]"/>
-	<xsl:variable name="allApps" select="/node()/simple_instance[type = 'Application_Provider' or 'Composite_Application_Provider']"/>
-	<xsl:variable name="allAppInforepRels" select="/node()/simple_instance[type = 'APP_PRO_TO_INFOREP_RELATION']"/>
-	<xsl:variable name="allPhysProc2Inforeps" select="/node()/simple_instance[type = 'Business_Process']"/>
-	<xsl:variable name="allPhysProcs" select="/node()/simple_instance[type = 'Physical_Process']"/>
-	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
-	<xsl:variable name="relevantActor2Roles" select="/node()/simple_instance[name = $currentDataObject/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-	<xsl:variable name="allActors" select="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]"/>
-	<xsl:variable name="allRoles" select="/node()/simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]"/>
-	<xsl:variable name="dataStakeholderRoleType" select="/node()/simple_instance[(type = 'Business_Role_Type') and (own_slot_value[slot_reference = 'name']/value = 'Data Stakeholder')]"/>
+	<xsl:variable name="dsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Data Subjects']"></xsl:variable>
+	<xsl:variable name="doData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"></xsl:variable>
+	
+	<xsl:key name="regRels" match="/node()/simple_instance[type='REGULATED_COMPONENT_RELATION']" use="own_slot_value[slot_reference='regulated_component_regulation']/value"/>
+	<xsl:key name="regkey" match="/node()/simple_instance[type='Regulation']" use="type"/>	
+	<xsl:key name="regname" match="/node()/simple_instance[type='Regulation']" use="name"/>			
+	<xsl:variable name="regulation" select="key('regkey', 'Regulation')"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -69,959 +78,1558 @@
 	<!-- 13.05.2011 JWC	Introduced infodataviews.css -->
 	<!--01.09.2011 NJW Updated to Support Viewer v3-->
 	<xsl:template match="knowledge_base">
-		<xsl:call-template name="docType"/>
+		<xsl:variable name="apiDataSubjects">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$dsData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="apiDataObjects">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$doData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="docType"></xsl:call-template>
 		<html>
 			<head>
-				<xsl:call-template name="commonHeadContent"/>
-                <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-				<title>
-					<xsl:value-of select="eas:i18n('Data Object Summary')"/>
-				</title>
-				<xsl:call-template name="dataTablesLibrary"/>
-				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
-				<script>
-					$(function(){
-						$('#impactedOrgs').columnize({columns: 2});		
-					});
-				</script>
+				<xsl:call-template name="commonHeadContent"></xsl:call-template>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
-						<xsl:with-param name="instanceClassName" select="current()"/>
-						<xsl:with-param name="targetMenu" select="()"/>
+						<xsl:with-param name="instanceClassName" select="current()"></xsl:with-param>
+						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
+				<title><xsl:value-of select="eas:i18n('Data Object Summary')"/></title>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
+		 
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
+				<script src="js/lodash/index.js?release=6.19"/>
+				<script src="js/backbone/backbone.js?release=6.19"/>
+				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
+				<script src="js/dagre/dagre.core.js?release=6.19"/>
+				<script src="js/jointjs/joint.min.js?release=6.19"/>
+				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js?release=6.19"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>
+				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<style type="text/css">
+					div.dataTables_wrapper {margin-top: 0;}
+					.headerName > .select2 {top: -3px; font-size: 28px;}
+					.headerName > .select2 > .selection > .select2-selection {height: 32px;}
+					.link-tools,
+					.marker-arrowheads,
+					.connection-wrap{
+						display: 'none'
+					} 
+				.thead input {
+					width: 100%;
+					}
+					.ess-blob{
+						margin: 0 15px 15px 0;
+						border: 1px solid #ccc;
+						height: 40px;
+						width: 140px;
+						border-radius: 4px;
+						display: table;
+						position: relative;
+						text-align: center;
+						float: left;
+					}
+					.ess-wide-blob{
+						margin: 0 15px 15px 0;
+						border: 1px solid #ccc;
+						min-height: 40px;
+						width: 250px;
+						border-radius: 4px;
+						display: table;
+						position: relative;
+						text-align: center;
+						float: left;
+					}
+					
+					.ess-blobLabel{ 
+						vertical-align: middle;
+						line-height: 1.1em;
+						font-size: 90%;
+					}
+					.ess-app{
+						vertical-align: middle;
+						background-color: #707297;
+						color:#fff;
+						width:80%;
+						margin-left: 10%;
+						margin-bottom:3px;
+						padding:2px;
+						border-radius:4px;
+						line-height: 1.1em;
+						font-size: 90%;
+						height:50px;
+					}
+					.ess-crud{
+						display: inline-block;
+						border: 1pt solid #d3d3d3;
+						border-radius: 4px;
+						font-size: 16px;
+						font-weight: 700;
+						background-color: #fff;
+						margin-right: 5px;
+						padding: 2px 5px;
+					}
+					.ess-circle{
+						height:15px;
+						width:15px;
+						border-radius: 15px;
+						border:0pt solid #d3d3d3;
+						display:inline-block;
+						background-color:white;
+						color:#000;
+						font-weight: bold;
+					}
+					
+					.infoButton > a{
+						position: absolute;
+						bottom: 0px;
+						right: 3px;
+						color: #aaa;
+						font-size: 90%;
+					}
+					
+					.superflex > label{
+						margin-bottom: 5px;
+						font-weight: 600;
+						display: block;
+					}
+					
+					.superflex > h3{
+						font-weight: 600;
+					}
+					
+					.ess-tag{
+						padding: 3px 12px;
+						border: 1px solid transparent;
+						border-radius: 16px;
+						margin-right: 10px;
+						margin-bottom: 5px;
+						display: inline-block;
+						font-weight: 700;
+						font-size: 90%;
+					}
+					
+					.map{
+						width: 100%;
+						height: 400px;
+						min-width: 450px;
+						min-height: 400px;
+					}
+					
+					.dashboardPanel{
+						padding: 10px 15px;
+						border: 1px solid #ddd;
+						box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+						width: 100%;
+					}
+					
+					.parent-superflex{
+						display: flex;
+						flex-wrap: wrap;
+						gap: 15px;
+					}
+					
+					.superflex{
+						border: 1px solid #ddd;
+						padding: 10px;
+						box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+						flex-grow: 1;
+						flex-basis: 1;
+					}
+					
+					.ess-list-tags{
+						padding: 0;
+					}
+					
+					.ess-string{
+						background-color: #f6f6f6;
+						padding: 5px;
+						display: inline-block;
+					}
+					
+					.ess-doc-link{
+						padding: 3px 8px;
+						border: 1px solid #6dadda;
+						border-radius: 4px;
+						margin-right: 10px;
+						margin-bottom: 10px;
+						display: inline-block;
+						font-weight: 700;
+						background-color: #fff;
+						font-size: 85%;
+					}
+					
+					.ess-doc-link:hover{
+						opacity: 0.65;
+					}
+					
+					.ess-list-tags li{
+						padding: 3px 12px;
+						border: 1px solid transparent;
+						border-radius: 16px;
+						margin-right: 10px;
+						margin-bottom: 5px;
+						display: inline-block;
+						font-weight: 700; 
+						font-size: 85%;
+					}
+					
+					@media (min-width : 1220px) and (max-width : 1720px){
+						.ess-column-split > div{
+							width: 450px;
+							float: left;
+						}
+					}
+					
+					
+					.bdr-left-blue{
+						border-left: 2pt solid #5b7dff !important;
+					}
+					
+					.bdr-left-indigo{
+						border-left: 2pt solid #6610f2 !important;
+					}
+					
+					.bdr-left-purple{
+						border-left: 2pt solid #6f42c1 !important;
+					}
+					
+					.bdr-left-pink{
+						border-left: 2pt solid #a180da !important;
+					}
+					
+					.bdr-left-red{
+						border-left: 2pt solid #f44455 !important;
+					}
+					
+					.bdr-left-orange{
+						border-left: 2pt solid #fd7e14 !important;
+					}
+					
+					.bdr-left-yellow{
+						border-left: 2pt solid #fcc100 !important;
+					}
+					
+					.bdr-left-green{
+						border-left: 2pt solid #5fc27e !important;
+					}
+					
+					.bdr-left-teal{
+						border-left: 2pt solid #20c997 !important;
+					}
+					
+					.bdr-left-cyan{
+						border-left: 2pt solid #47bac1 !important;
+					}
+					
+					@media print {
+						#summary-content .tab-content > .tab-pane {
+						    display: block !important;
+						    visibility: visible !important;
+						}
+						
+						#summary-content .no-print {
+						    display: none !important;
+						    visibility: hidden !important;
+						}
+						
+						#summary-content .tab-pane {
+							page-break-after: always;
+						}
+					}
+					
+					@media screen {						
+						#summary-content .print-only {
+						    display: none !important;
+						    visibility: hidden !important;
+						}
+					}
+					.stat{
+						border:1pt solid #d3d3d3;
+						border-radius:4px;
+						margin:5px;
+						padding:3px;
+					}
+					.doc-link-blob, .doc-link-blob-create {
+						width: 200px;
+						height: 80px;
+						line-height: 1.1em;
+						border: 1px solid #ccc;
+						border-radius: 4px;
+						position: relative;
+						float: left;
+						margin: 0 10px 10px 0;
+						padding: 10px 20px 10px 10px;
+					}
+					.bdr-left-blue {
+						border-left: 2pt solid #5b7dff!important;
+					}
+					.doc-link-icon {
+						width: 25%;
+						height: 100%;
+						float: left;
+						font-size: 24px;
+						font-size: 32px;
+						padding-top: 3px;
+					}
+					.doc-link-label {
+						width: 75%;
+						height: 10%;
+						float: left;
+						font-size: 100%;
+						display: flex;
+						align-items: center;
+					}
+					.doc-description{
+						width: 100%;
+						height: 90%; 
+						top:3px;
+						font-size: 90%;
+						align-items: center;
+					}
+					.tagActor{
+						background-color: #d9dadb; //#3c8996;
+						color:#fff;
+					}
+					.appCard{
+						vertical-align: top;
+						border-radius:4px;
+						border:1pt solid #d3d3d3;
+						display:inline-block;
+						min-height:100px;
+						width:250px;
+						padding:3px;
+						position:relative;
+					}
+					.appHeader{
+						font-size:0.9em;
+					}
+					.appTableHeader{
+						font-size:0.8em;
+					}
+					.dbicon{
+						position:absolute;
+						bottom:5px;
+						right:5px;
+						color:#d3d3d3;
+						font-size:0.7em;
+						text-transform: uppercase;
+					}
+					.appCard2{
+						vertical-align: top;
+						border-radius:4px;
+						border:1pt solid #d3d3d3; 
+					 
+						width:100%;
+						padding:3px;
+						position:relative;
+					}
+					.dataCard{
+						border-radius:4px;
+						padding:2px;
+						border:1pt solid #d3d3d3;
+					}
+					.classiflist{
+						position:absolute;
+						top:5px;
+						right:5px; 
+						font-size:1em; 
+					}
+					.datatype{
+						display: inline-block;
+						width:250px;
+					}
+					.datacrud{
+						display: inline-block
+					}
+					.leadText{
+						font-weight: bolder;
+						color:#a94040;
+					}
+					.ess-dos-processes-wrapper,.ess-dos-apps-wrapper{display: flex; gap: 15px; flex-wrap: wrap; position: relative;}
+					.ess-dos-process,.ess-dos-app{border: 1px solid #ccc; padding: 10px; width: 300px; position: relative; }
+					.label.label-link > a {color: #fff;}
+					.label.label-link:hover {opacity: 0.75;}
+				</style>
+				<script>
+	 
+					
+					$(document).ready(function(){
+						 
+					});
+				</script>
 			</head>
 			<body>
-				<!-- ADD SCRIPTS FOR CONTEXT POP-UP MENUS -->
-				<!--<xsl:call-template name="RenderDataSubjectPopUpScript" />-->
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading">
-					<xsl:with-param name="contentID" select="$param1"/>
-				</xsl:call-template>
+				<xsl:call-template name="Heading"></xsl:call-template>
 				<!--ADD THE CONTENT-->
-				<xsl:variable name="dataObjectDesc" select="$currentDataObject/own_slot_value[slot_reference = 'description']/value"/>
-				<xsl:variable name="parentSubject" select="/node()/simple_instance[name = $currentDataObject/own_slot_value[slot_reference = 'defined_by_data_subject']/value]"/>
 				<a id="top"/>
 				<div class="container-fluid">
 					<div class="row">
-						<div>
-							<div class="col-xs-12">
-								<div class="page-header">
-									<h1>
-										<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-										<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Data Object Summary for')"/>&#160; </span>
-										<span class="text-primary">
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
-												<xsl:with-param name="theSubjectInstance" select="$currentDataObject"/>
-											</xsl:call-template>
-										</span>
-									</h1>
+						<div class="col-xs-12">
+							<div class="page-header">
+								<h1>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Data Object Summary for')"/> </span><xsl:text> </xsl:text>
+									<span class="text-primary headerName"><select id="subjectSelection"></select></span>
+								</h1>
+							</div>
+						</div>
+					</div>
+					<div id="mainPanel"/>
+				</div>
+				<!-- ADD THE PAGE FOOTER -->
+				<xsl:call-template name="Footer"></xsl:call-template>
+			</body>
+			<script>			
+				<xsl:call-template name="RenderViewerAPIJSFunction"> 
+					<xsl:with-param name="viewerAPIPathDS" select="$apiDataSubjects"></xsl:with-param> 
+					<xsl:with-param name="viewerAPIPathDO" select="$apiDataObjects"></xsl:with-param> 				
+				</xsl:call-template>  
+			</script>	
+			
+	<script id="panel-template" type="text/x-handlebars-template">
+
+		<div id="summary-content">
+			
+			<!--Setup Vertical Tabs-->
+			<div class="row">
+				<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 no-print">
+					<!-- required for floating -->
+					<!-- Nav tabs -->
+					<ul class="nav nav-tabs tabs-left">
+						<li class="active">
+							<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Data Object Details</a>
+						</li> 
+						{{#if this.dataAttributes}}	
+						<li>
+							<a href="#datattributes" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Data Attributes</a>
+						</li> 
+						{{/if}}
+						<!--		
+						{{#if this.dataReps}}
+				 		<li>
+							<a href="#datarep" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Data Object Storage/Usage</a>
+						</li>
+						{{/if}}
+						-->
+						{{#if this.processes}}
+				 		<li>
+							<a href="#dataprocess" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Process Usage</a>
+						</li>
+						{{/if}}
+						{{#if this.appsArray}}
+				 		<li>
+							<a href="#dataapps" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Usage</a>
+						</li>
+						{{else}}
+							{{#if this.requiredByApps}}
+								<li>
+									<a href="#dataapps" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Usage</a>
+								</li>
+							{{/if}}
+						{{/if}}
+						
+						{{#if this.externalDocs}}
+						<li>
+							<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Documents</a>
+						</li>
+						{{/if}}
+					</ul>
+				</div>
+
+				<div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div class="tab-pane active" id="details">
+							<h2 class="print-only"><i class="fa fa-fw fa-desktop right-10"></i>Data Object Details</h2>
+							<div class="parent-superflex">
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Data Object</h3>
+									<label>Name</label>
+									<div class="ess-string">{{this.name}}</div>
+									<div class="clearfix bottom-10"></div>
+									<label>Description</label>
+									<div class="ess-string">{{{breaklines this.description}}}</div>
+									<div class="clearfix bottom-10"></div>
+									 
+								</div>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-users right-10"></i>Key Information</h3>
+									<label>Data Category</label>
+									<div class="bottom-10">
+											{{#if this.category}}
+											<span class="label label-info">{{this.category}}</span>
+											{{else}}
+											<span class="label label-warning">Not Set</span>
+											{{/if}}
+									</div>
+									<label>Parent Data Subject</label>
+									<div class="bottom-10">
+											{{#if this.parents}}
+											{{#each this.parents}}
+											<span class="label label-success">{{this.name}}</span>
+											{{/each}}
+											{{else}}
+											<span class="label label-warning">Not Set</span>
+											{{/if}}
+									</div>
+									<label>System of Record</label>
+									<div class="bottom-10">
+											{{#if this.systemOfRecord}}
+											{{#each this.systemOfRecord}}
+											<span class="label label-primary">{{this.name}}</span>
+											{{/each}}
+											{{else}}
+											<span class="label label-warning">Not Set</span>
+											{{/if}}
+									</div>
+									
+									 
+								
+								</div>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-building right-10"></i>Ownership</h3>
+									{{#if this.stakeholders}}
+										{{#each this.stakeholders}}
+											{{#ifContains this 'Owner'}}{{/ifContains}}
+										{{/each}}
+									{{/if}}
+								
+									<div class="clearfix bottom-10"></div>  
+								</div> 
+								<div class="col-xs-12"/>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>Relevant Regulations</h3>
+									{{#each this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}
+									{{#ifEquals this.classifications 0}}<span class="label label-primary">None</span>{{/ifEquals}}
+								</div>
+							 
+								<div class="col-xs-12"/>
+								{{#if this.stakeholdersList}}
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>People &amp; Roles</h3>
+									
+									<table class="table table-striped table-bordered" id="dt_stakeholders">
+											<thead>
+												<tr>
+													<th class="cellWidth-30pc">
+														<xsl:value-of select="eas:i18n('Role')"/>
+													</th>
+													<th class="cellWidth-30pc">
+														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
+													</th>
+													 
+												</tr>
+											</thead>
+											<tbody>
+											{{#each this.stakeholdersList}} 
+											<tr>
+												<td class="cellWidth-30pc">
+													{{this.key}}
+												</td>
+												<td class="cellWidth-30pc">
+											 
+													<ul class="ess-list-tags">
+													{{#each this.values}}
+														<li class="tagActor">{{{essRenderInstanceMenuLink this}}}</li>
+													{{/each}}
+													</ul>
+													 
+												</td>
+												 
+											</tr>	 
+											{{/each}}
+											</tbody>
+											<tfoot>
+												<tr>
+													<th>
+														<xsl:value-of select="eas:i18n('Role')"/>
+													</th>
+													<th>
+														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
+													</th>
+													 
+												</tr>
+											</tfoot>
+										</table>
+
+									<div class="clearfix bottom-10"></div>
+								</div>
+								{{/if}}
+								 
+							<div class="clearfix bottom-10"></div>
+							 
+					  
+						</div>
+						 
+						</div>	
+						{{#if this.dataAttributes}}	
+						<div class="tab-pane" id="datattributes">
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Data Attributes</h2>
+							<div class="parent-superflex">
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Data Attributes</h3>
+									<p>Attributes for this data object</p>
+									<table id="dt_dobjecttable" class="table table-striped table-bordered" >
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Description</th>
+											<th>Type</th>
+										</tr>
+										 
+									</thead>
+									<tbody>
+									{{#each this.dataAttributes}}
+										<tr>
+											<td>{{this.name}}</td>
+											<td>{{this.description}}</td>
+											<td>{{this.type}}</td>
+										</tr>
+									{{/each}}
+									</tbody>
+									<tfoot>
+										<tr>
+											<th>Name</th>
+											<th>Description</th>
+											<th>Type</th>
+										</tr>
+									</tfoot>
+									</table>
+								</div>
+							</div>
+
+						</div>
+						{{/if}}
+			<!--	 	<div class="tab-pane" id="datarep">
+						  <div class="parent-superflex">
+								  
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-table right-10"></i>Data Storage Usage</h3>
+									<p>How this Data Object is stored and / or used in Application systems</p>
+									<div class="ess-blobWrapper">
+									 {{#each this.dataReps}}
+										<div class="ess-wide-blob bdr-left-orange" id="someid">
+											<div class="ess-blobLabel">
+												{{this.name}}
+											</div>
+											{{#each this.apps}}
+											<div class="ess-app">
+												{{this.name}}
+												<div class="clearfix"/>
+												<div class="ess-crud">C: {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+												<div class="ess-crud">R: {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+												<div class="ess-crud">U: {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+												<div class="ess-crud">D: {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+												 
+											</div>
+											{{/each}}
+										</div>
+									{{/each}}	
+									</div>
+								</div>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-table right-10"></i>Data Usage</h3>
+									<p>How this Data Object is used in Application systems</p>
+									<div class="ess-blobWrapper">
+									 {{#each this.tables}}
+										<div class="ess-wide-blob bdr-left-orange" id="someid">
+											<div class="ess-blobLabel">
+													{{#each this.apps}}{{this.name}}{{/each}}<br/>
+													{{this.dataRep}}
+											</div>
+											
+											<div class="ess-app"> 
+												<div class="clearfix"/>
+												<div class="ess-crud">C: {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+												<div class="ess-crud">R: {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+												<div class="ess-crud">U: {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+												<div class="ess-crud">D: {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+												 
+											</div> 
+											{{#each ../this.classifications}}<span class="label label-info">{{this.shortName}}</span>{{/each}}
+										</div>
+									{{/each}}	
+									</div>
+								</div>
+							</div>
+						 
+						</div>
+					-->	
+						<div class="tab-pane" id="dataapps">
+							<div class="parent-superflex">
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Applications</h3>
+									<div class="ess-dos-apps-wrapper">
+										{{#each this.appsArray}}
+										<div class="ess-dos-app bg-offwhite">   
+											<div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
+												
+											{{#each this.values}}
+												<div class="bottom-5"><strong>Appears in: </strong><span class="label label-link bg-darkgrey">{{this.nameirep}}</span></div>
+												<div>
+												{{#if this.datarepsimplemented}}
+													<span class="dbicon">{{this.category}}</span>
+													<span class="classiflist">
+														{{#each ../this.classifications}}
+														<span class="label label-info">{{this.name}}</span>
+														{{/each}}
+													</span>
+													<div>
+														<strong>Where:</strong>
+													</div>
+													{{#each this.datarepsimplemented}}
+													<div class="datatype"><span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span> </div>
+													<div class="datacrud">
+														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+													</div>
+													<div class="clearfix"/>
+													{{/each}}
+													{{else}}
+													<div class="datacrud">
+														<div class="strong small bottom-5">Operations:</div>
+														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+													</div>
+												{{/if}}
+												</div>
+											{{/each}}			 
+										</div>
+										{{/each}}
+										{{#each this.requiredByApps}}
+										<div class="ess-dos-app bg-offwhite">   
+											<button class="btn btn-primary btn-xs">Required</button> by <div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
+										</div>
+										{{/each}}
+									</div>
 								</div>
 							</div>
 						</div>
-
-						<!--Setup Description Section-->
-
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-list-ul icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Description')"/>
-							</h2>
-
-							<div class="content-section">
-								<p>
-									<xsl:value-of select="$dataObjectDesc"/>
-								</p>
-							</div>
-							<hr/>
+						{{#if processes}}
+						<div class="tab-pane" id="dataprocess">
+							<div class="parent-superflex">
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Processes</h3>
+									<div class="ess-dos-processes-wrapper">
+										{{#each processes}}
+											
+											<div class="ess-dos-process bg-offwhite">
+												<div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
+												<div class="bottom-5"><strong>Performed by: </strong><span class="label label-link bg-darkgrey">{{{this.actor}}}</span></div>
+												<div class="bottom-5"><strong>Using: </strong><span class="label label-link bg-purple-40">{{this.nameirep}} ({{this.category}})</span></div>
+												<div class="datacrud">
+													<div class="strong small bottom-5">Operations:</div>
+													<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+													<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+													<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+													<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+												</div>
+												
+											</div>
+											
+											
+											
+										{{/each}} 
+									</div>
+								</div>
+							</div>							
 						</div>
-
-
-						<!--Setup Parent Data Subject Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-sitemap icon-section icon-color"/>
+						{{/if}}
+						{{#if this.externalDocs}}
+						<div class="tab-pane" id="documents">
+						<div class="parent-superflex">
+							<div class="superflex">
+								<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Documentation</h3>
+								{{#each this.externalDocs}}
+									<div class="doc-link-blob bdr-left-blue">
+										<div class="doc-link-icon"><i class="fa fa-file-o"></i></div>
+										<div class="doc-link-label"><a target="_blank"><xsl:attribute name="href">{{this.link}}</xsl:attribute>{{this.name}}<xsl:text> </xsl:text><i class="fa fa-external-link"></i></a></div>
+										<div class="doc-description">{{this.description}}</div>
+									</div>
+								{{/each}}
 							</div>
-							<div>
-								<h2 class="text-primary">
-									<xsl:value-of select="eas:i18n('Parent Data Subject')"/>
-								</h2>
-							</div>
-							<div class="content-section">
-								<xsl:variable name="dsName" select="$parentSubject/own_slot_value[slot_reference = 'name']/value"/>
-								<!--<a id="{$dsName}" class="context-menu-dataSubject menu-1">
-										<xsl:call-template name="RenderLinkHref">
-											<xsl:with-param name="theInstanceID" select="$parentSubject/name" />
-											<xsl:with-param name="theXML">reportXML.xml</xsl:with-param>
-											<xsl:with-param name="theParam4" select="$param4" />
-											<!-\- pass the id of the taxonomy term used for scoping as parameter 4-\->
-											<!-\- <xsl:with-param name="theUserParams">tax=Organisation&amp;syn=Fred</xsl:with-param> -\->
-										</xsl:call-template>
-										<xsl:value-of select="$dsName" />
-									</a>-->
-								<ul>
-									<xsl:for-each select="$parentSubject">
-										<li>
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="current()"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</div>
-							<hr/>
 						</div>
-
-
-						<!--Setup Data Attributes Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-table icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Data Attributes')"/>
-							</h2>
-
-							<div class="content-section">
-								<xsl:call-template name="dataAttributes"/>
-							</div>
-							<hr/>
 						</div>
-
-						<!--Setup Data Reps Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-radialdots icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Data Representations')"/>
-							</h2>
-
-							<div class="content-section">
-								<xsl:call-template name="dataReps"/>
-							</div>
-							<hr/>
-						</div>
-
-
-						<!--Setup Stakeholders Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-user icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Stakeholders')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:call-template name="stakeholders"/>
-							</div>
-							<hr/>
-						</div>
-
-
-						<!--Setup Source of the Truth Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-check icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Source of Truth')"/>
-							</h2>
-
-							<div class="content-section">
-								<p><xsl:value-of select="eas:i18n('The source of truth for')"/>&#160;<strong><xsl:value-of select="$dataObjectName"/></strong>&#160; <xsl:value-of select="eas:i18n('data is')"/>&#160; <xsl:call-template name="sourceTruth"/>
-								</p>
-							</div>
-							<hr/>
-						</div>
-
-
-						<!--Setup Organisations Impacted Section-->
-
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-users icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Organisations Impacted')"/>
-							</h2>
-
-
-							<div class="content-section">
-								<xsl:call-template name="orgImpacted"/>
-							</div>
-
-							<hr/>
-						</div>
-
-
-						<!--Setup Processes Impacted Section-->
-
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-blocks icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Business Processes Impacted')"/>
-							</h2>
-
-
-							<div class="content-section">
-								<xsl:call-template name="processesImpacted"/>
-							</div>
-
-							<hr/>
-						</div>
-
-
-
-						<!--Setup Systems Impacted Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-tablet icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Systems Impacted')"/>
-							</h2>
-
-
-							<div class="content-section">
-								<xsl:call-template name="systemsImpacted"/>
-							</div>
-
-							<hr/>
-						</div>
-
-
-						<!--Setup the Supporting Documentation section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-file-text-o icon-section icon-color"/>
-							</div>
-
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
-							</h2>
-
-
-							<div class="content-section">
-								<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
-							</div>
-
-							<hr/>
-						</div>
-
-
-
-						<!--Setup Closing Tags-->
-
+						{{/if}}
 					</div>
 				</div>
-				<!-- ADD THE PAGE FOOTER -->
-				<xsl:call-template name="Footer"/>
-			</body>
+		 
+			</div>
+
+			<!--Setup Closing Tag-->
+		</div>
+
+	</script>			
+
 		</html>
-	</xsl:template>
+	</xsl:template>  
 
-	<!--Setup the Data Attributes Template-->
-	<xsl:template name="dataAttributes">
-		<xsl:choose>
-			<xsl:when test="count($dataAttributes) > 0">
-				<script>
-					$(document).ready(function(){
-						// Setup - add a text input to each footer cell
-					    $('#dt_dataAttributes tfoot th').each( function () {
-					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
-					    } );
+	<xsl:template name="RenderViewerAPIJSFunction"> 
+			<xsl:param name="viewerAPIPathDS"></xsl:param>  
+			<xsl:param name="viewerAPIPathDO"></xsl:param>
+			//a global variable that holds the data returned by an Viewer API Report 
+			var viewAPIDataDS = '<xsl:value-of select="$viewerAPIPathDS"/>';  
+			var viewAPIDataDO = '<xsl:value-of select="$viewerAPIPathDO"/>';  
+			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+			var regulations=[<xsl:apply-templates select="$regulation" mode="regulation"/>]
+	 
+			var promise_loadViewerAPIData = function (apiDataSetURL)
+			{
+				return new Promise(function (resolve, reject)
+				{
+					if (apiDataSetURL != null)
+					{
+						var xmlhttp = new XMLHttpRequest();
+						xmlhttp.onreadystatechange = function ()
+						{
+							if (this.readyState == 4 &amp;&amp; this.status == 200)
+							{
+								
+								var viewerData = JSON.parse(this.responseText);
+								resolve(viewerData);
+							}
+						};
+						xmlhttp.onerror = function ()
+						{
+							reject(false);
+						};
 						
-						var table = $('#dt_dataAttributes').DataTable({
-						scrollY: "350px",
-						scrollCollapse: true,
-						paging: false,
-						info: false,
-						sort: true,
-						responsive: true,
-						columns: [
-						    { "width": "30%" },
-						    { "width": "40%" },
-						    { "width": "30%" }
-						  ],
-						dom: 'Bfrtip',
-					    buttons: [
-				            'copyHtml5', 
-				            'excelHtml5',
-				            'csvHtml5',
-				            'pdfHtml5',
-				            'print'
-				        ]
-						});
-						
-						
-						// Apply the search
-					    table.columns().every( function () {
-					        var that = this;
-					 
-					        $( 'input', this.footer() ).on( 'keyup change', function () {
-					            if ( that.search() !== this.value ) {
-					                that
-					                    .search( this.value )
-					                    .draw();
-					            }
-					        } );
-					    } );
-					    
-					    table.columns.adjust();
-					    
-					    $(window).resize( function () {
-					        table.columns.adjust();
-					    });
-					});
-				</script>
-				<div>
-					<table class="table table-striped table-bordered" id="dt_dataAttributes">
-						<thead>
-							<tr>
-								<th>
-									<xsl:value-of select="eas:i18n('Attribute Name')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Description')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Type')"/>
-								</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th>
-									<xsl:value-of select="eas:i18n('Attribute Name')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Description')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Type')"/>
-								</th>
-							</tr>
-						</tfoot>
-						<tbody>
-							<xsl:for-each select="$dataAttributes">
-								<xsl:variable name="thisDataAtt" select="current()"/>
-								<xsl:variable name="dataAttName" select="$thisDataAtt/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataAttDesc" select="$thisDataAtt/own_slot_value[slot_reference = 'description']/value"/>
-								<xsl:variable name="dataType" select="/node()/simple_instance[name = $thisDataAtt/own_slot_value[slot_reference = 'type_for_data_attribute']/value]"/>
-								<xsl:variable name="dataTypeName" select="$dataType/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataAttrLabel" select="$thisDataAtt/own_slot_value[slot_reference = 'data_attribute_label']/value"/>
-								<tr>
-									<td>
-										<!--<xsl:value-of select="$dataAttName" />-->
-										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="$thisDataAtt"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="displayString" select="$dataAttrLabel"/>
-										</xsl:call-template>
-									</td>
-									<td>
-										<xsl:choose>
-											<xsl:when test="string-length($dataAttDesc) = 0"> - </xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$dataAttDesc"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-									<td>
-										<xsl:choose>
-											<xsl:when test="$dataType/type = 'Data_Object'">
-												<!--<a>
-													<xsl:attribute name="href">
-														<xsl:text>report?XML=reportXML.xml&amp;XSL=information/data_object_summary.xsl&amp;PMA=</xsl:text>
-														<xsl:value-of select="$dataType/name" />
-														<xsl:text>&amp;LABEL=Data Object Summary - </xsl:text>
-														<xsl:value-of select="$dataTypeName" />
-													</xsl:attribute>
-													<xsl:value-of select="$dataTypeName" />
-												</a>-->
-												<xsl:call-template name="RenderInstanceLink">
-													<xsl:with-param name="theSubjectInstance" select="$dataType"/>
-													<xsl:with-param name="theXML" select="$reposXML"/>
-													<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-												</xsl:call-template>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$dataTypeName"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
-							</xsl:for-each>
-						</tbody>
-					</table>
-				</div>
-			</xsl:when>
-			<xsl:otherwise>
-				<div>
-					<em>
-						<xsl:value-of select="eas:i18n('No Data Attributes Defined')"/>
-					</em>
-				</div>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+						xmlhttp.open("GET", apiDataSetURL, true);
+						xmlhttp.send();
+					} else
+					{
+						reject(false);
+					}
+				});
+			}; 
+	
+			 function showEditorSpinner(message) {
+				$('#editor-spinner-text').text(message);                            
+				$('#editor-spinner').removeClass('hidden');                         
+			};
+	
+			function removeEditorSpinner() {
+				$('#editor-spinner').addClass('hidden');
+				$('#editor-spinner-text').text('');
+			};
+			
+			Handlebars.registerHelper('breaklines', function(html) {
+				html = html.replace(/(\r&lt;li&gt;)/gm, '&lt;li&gt;');
+			    html = html.replace(/(\r)/gm, '<br/>');
+			    return new Handlebars.SafeString(html);
+			});
+	
+			showEditorSpinner('Fetching Data...'); 
+			<xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
+				<xsl:with-param name="linkClasses" select="$linkClasses"/>
+			</xsl:call-template>
+			var busProcs=[<xsl:apply-templates select="$busProcs" mode="procInfo"/>];
+			var physProcs=[<xsl:apply-templates select="$physProcs" mode="physProcInfo"/>];
+			var appProToProcess=[<xsl:apply-templates select="$allProctoApp" mode="infoToProcess"/>];
+ 
+			var allDO=[];
+			var table;
+			var stakeholdertable;
+			var stakeholdertable2;
 
-	<xsl:template name="dataReps">
-		<xsl:choose>
-			<xsl:when test="count($dataReps) > 0">
-				<script>
-					$(document).ready(function(){
-						// Setup - add a text input to each footer cell
-					    $('#dt_dataReps tfoot th').each( function () {
-					        var title = $(this).text();
-					        $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
-					    } );
-						
-						var table = $('#dt_dataReps').DataTable({
-						scrollY: "350px",
-						scrollCollapse: true,
-						paging: false,
-						info: false,
-						sort: true,
-						responsive: true,
-						columns: [
-						    { "width": "30%" },
-						    { "width": "40%" },
-						    { "width": "30%" }
-						  ],
-						dom: 'Bfrtip',
-					    buttons: [
-				            'copyHtml5', 
-				            'excelHtml5',
-				            'csvHtml5',
-				            'pdfHtml5',
-				            'print'
-				        ]
-						});
-						
-						
-						// Apply the search
-					    table.columns().every( function () {
-					        var that = this;
-					 
-					        $( 'input', this.footer() ).on( 'keyup change', function () {
-					            if ( that.search() !== this.value ) {
-					                that
-					                    .search( this.value )
-					                    .draw();
-					            }
-					        } );
-					    } );
-					    
-					    table.columns.adjust();
-					    
-					    $(window).resize( function () {
-					        table.columns.adjust();
-					    });
-					});
-				</script>
-				<div>
-					<table class="table table-striped table-bordered" id="dt_dataReps">
-						<thead>
-							<tr>
-								<th>
-									<xsl:value-of select="eas:i18n('Data Representation')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Description')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Representation Attributes')"/>
-								</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th>
-									<xsl:value-of select="eas:i18n('Data Representation')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Description')"/>
-								</th>
-								<th>
-									<xsl:value-of select="eas:i18n('Representation Attritbutes')"/>
-								</th>
-							</tr>
-						</tfoot>
-						<tbody>
-							<xsl:for-each select="$dataReps">
-								<xsl:variable name="this" select="current()"/>
-								<xsl:variable name="dataRepName" select="$this/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="dataRepDesc" select="$this/own_slot_value[slot_reference = 'description']/value"/>
+			$('document').ready(function (){ 
+				Handlebars.registerHelper('getDataRep', function(arg1) {
+					let thisDr = DRList.find((dr)=>{
+						return dr.id==arg1;
+					}); 
+					return thisDr.name;
+				});
+				
+				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+				  $('[data-toggle="tooltip"]').tooltip();
+				})
+				
+				
+
+				Handlebars.registerHelper('CRUDVal', function(arg1) {
+					if(arg1=='Yes'){
+						return '<div class="ess-circle" title="Yes" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-check-circle-o" style="color:#5cb85c;font-size:12pt"></i></div>'
+					}else
+					if(arg1=='No'){
+						return '<div class="ess-circle" title="No" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-times-circle-o" style="color:#d9534f;;font-size:12pt"></i></div>'
+					}else{
+						return '<div class="ess-circle" title="Unknown" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-question-circle" style="color:#f0ad4e;font-size:12pt"></i></div>'
+					}
+				});
+
+			Promise.all([ 
+				promise_loadViewerAPIData(viewAPIDataDO) 
+				]).then(function (responses){  
+					allDO=responses[0];
+					let focusDOid='<xsl:value-of select="$param1"/>';
+					let focusDO=allDO.data_objects.find((f)=>{
+						return f.id==focusDOid
+					})
+
+
+					if(focusDO){
+						//do nothing
+					}else{
+						focusDO=allDO.data_objects[0];
+						}
+					
+					DOList=responses[0] ; 
+					DRList=responses[0].data_representation ; 
+		 
+					allDO.data_objects.forEach((e)=>{
+						var option = new Option(e.name, e.id); 
+						$('#subjectSelection').append($(option));  
+							let theDrs=[]
+							e.dataReps.forEach((f)=>{
+								let thisDr=DRList.find((dr)=>{
+									return dr.id ==f.id;
+								}); 
+								theDrs.push(thisDr)
+							});
+							e['dataReps']=theDrs
+
+							var nested_apps = d3.nest()
+								.key(function(f) { return f.id; })
+								.entries(e.infoRepsToApps); 
+
+								nested_apps.forEach((d)=>{
+									let thisApp=e.infoRepsToApps.find((f)=>{
+										return d.key == f.id;
+									})
+									d['name']=thisApp.name;
+									d['id']=thisApp.id;
+									d['className']='Application_Provider';
+								})
+
+								nested_apps=nested_apps.sort((a, b) => a.key.localeCompare(b.name))
+							e['appsArray']=nested_apps;
 							
-								<xsl:variable name="dataRepTechnical" select="./own_slot_value[slot_reference = 'dr_technical_name']/value"/>
-								
-								<xsl:variable name="dataRepLabel">
-									<xsl:choose>
-										<xsl:when test="string-length() > 0">
-											<xsl:value-of select="$dataRepTechnical"/>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:value-of select="$dataRepName"/>
-										</xsl:otherwise>
-									</xsl:choose>
-								</xsl:variable>
-								<xsl:variable name="dataRepAttr" select="$allDataRepAttr[name = $this/own_slot_value[slot_reference = 'contained_data_representation_attributes']/value]"/>
-								
-								<tr>
-									<td>
-										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="$this"/>
-											<xsl:with-param name="theXML" select="$reposXML"/>
-											<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											<xsl:with-param name="displayString" select="$dataRepLabel"/>
-										</xsl:call-template>
-									</td>
-									<td>
-										<xsl:choose>
-											<xsl:when test="string-length($dataRepDesc) = 0"> - </xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="$dataRepDesc"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-									<td>
-										<xsl:choose>
-											<xsl:when test="count($dataRepAttr) = 0">
-												<span>-</span>
-											</xsl:when>
-											<xsl:otherwise>
-												<ul>
-													<xsl:for-each select="$dataRepAttr">
-														<xsl:variable name="thisDRAtt" select="current()"/>
-														<xsl:variable name="dataRepAttrTechnical" select="$thisDRAtt/own_slot_value[slot_reference = 'dra_technical_name']/value"/>
-														<li>
-															<xsl:call-template name="RenderInstanceLink">
-																<xsl:with-param name="theSubjectInstance" select="$thisDRAtt"/>
-																<xsl:with-param name="theXML" select="$reposXML"/>
-																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-																<xsl:with-param name="displayString" select="$dataRepAttrTechnical"/>
-															</xsl:call-template>
-														</li>
-													</xsl:for-each>
-												</ul>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
-							</xsl:for-each>
-						</tbody>
-					</table>
-				</div>
-			</xsl:when>
-			<xsl:otherwise>
-				<div>
-					<em>
-						<xsl:value-of select="eas:i18n('No Data Representations Defined')"/>
-					</em>
-				</div>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+							e['processes']=[];
+							e.infoRepsToApps.forEach((doira)=>{
+								let thisProcess=appProToProcess.filter((f)=>{
+									return f.app_info_rep == doira.id
+								})
+								 
+						 if(thisProcess.length&gt;0){
+								thisProcess[0].physicalProcesses.forEach((p)=>{
+									let match=physProcs.find((m)=>{
+										return m.id==p.id
+									})
+									if(match){
+										e.processes.push({"id":thisProcess[0].processes[0].id,"infoRepid":thisProcess[0].app_info_rep,"name":thisProcess[0].processes[0].name, "actor":match.actor, "category": doira.category, "nameirep":doira.nameirep, "create":doira.create, "read":doira.read, "update":doira.update ,"delete":doira.delete, "persisted": doira.persisted, "className":'Business_Process'})
+									}
 
-	<!--Setup the Source of the Truth Section-->
-	<xsl:template name="sourceTruth">
-		<xsl:variable name="sourceOfTruthApp" select="$allApps[name = $currentDataObject/own_slot_value[slot_reference = 'data_object_system_of_record']/value]"/>
-		<xsl:variable name="sourceOfTruthAppName" select="$sourceOfTruthApp/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:choose>
-			<xsl:when test="count($sourceOfTruthApp) > 0">
-				<!--<a>
-					<xsl:attribute name="href">
-						<xsl:text>report?XML=reportXML.xml&amp;XSL=application/app_data_summary.xsl&amp;PMA=</xsl:text>
-						<xsl:value-of select="$sourceOfTruthApp/name" />
-						<xsl:text>&amp;LABEL=Application Data Summary - </xsl:text>
-						<xsl:value-of select="$sourceOfTruthAppName" />
-					</xsl:attribute>
-					<xsl:value-of select="$sourceOfTruthApp/own_slot_value[slot_reference='name']/value" />
-				</a>-->
-				<xsl:for-each select="$sourceOfTruthApp">
-					<xsl:variable name="this" select="current()"/>
-					<xsl:if test="position() > 1">
-						<xsl:text>, </xsl:text>
-					</xsl:if>
-					<xsl:call-template name="RenderInstanceLink">
-						<xsl:with-param name="theSubjectInstance" select="$this"/>
-						<xsl:with-param name="theXML" select="$reposXML"/>
-						<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-					</xsl:call-template>
-				</xsl:for-each>
+								})
+							}
 
-			</xsl:when>
-			<xsl:otherwise>
-				<strong>
-					<xsl:value-of select="eas:i18n('TO BE DEFINED')"/>
-				</strong>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+							})
+						 
+						});
 
-	<!--setup organisations impacted section-->
-	<xsl:template name="orgImpacted">
-		<!-- Get all information views that contain the current data object -->
-		<xsl:variable name="infoViews" select="/node()/simple_instance[own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value = $currentDataObject/name]"/>
-		<!-- Now intersect these Information Views with the processes that use them -->
-		<xsl:variable name="informationViewRels" select="/node()/simple_instance[own_slot_value[slot_reference = 'busproctype_to_infoview_to_infoview']/value = $infoViews/name]"/>
-		<!-- now get the business processes for the business process to information object relations -->
-		<xsl:variable name="busProcs" select="/node()/simple_instance[name = $informationViewRels/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
-		<!-- Now get the physical process that implement the business processes -->
-		<xsl:variable name="physProcs" select="/node()/simple_instance[name = $busProcs/own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value]"/>
-		<!-- Now get the actor to role relations that perform the physical business processes -->
-		<xsl:variable name="actorToRoles" select="/node()/simple_instance[name = $physProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-		<!-- Finally get the actors that are playing the roles -->
-		<xsl:variable name="actors" select="/node()/simple_instance[name = $actorToRoles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-		<xsl:choose>
-			<xsl:when test="count($actors) > 0">
-				<div id="impactedOrgs">
-					<ul>
-						<xsl:for-each select="$actors">
-							<xsl:variable name="this" select="current()"/>
-							<li>
-								<xsl:call-template name="RenderInstanceLink">
-									<xsl:with-param name="theSubjectInstance" select="$this"/>
-									<xsl:with-param name="theXML" select="$reposXML"/>
-									<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-								</xsl:call-template>
-							</li>
-						</xsl:for-each>
-					</ul>
-				</div>
-				<div class="clear"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<em>
-					<xsl:value-of select="eas:i18n('No Organisations Mapped')"/>
-				</em>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	<!--Setup impacted processes section-->
-	<xsl:template name="processesImpacted">
-		<!-- Set the required variables -->
-		<xsl:variable name="infoViewsForDataObj" select="/node()/simple_instance[own_slot_value[slot_reference = 'info_view_supporting_data_objects']/value = $param1]"/>
-		<xsl:variable name="info2BusProcRels" select="/node()/simple_instance[own_slot_value[slot_reference = 'busproctype_to_infoview_to_infoview']/value = $infoViewsForDataObj/name]"/>
-		<xsl:choose>
-			<xsl:when test="count($info2BusProcRels) > 0">
-				<table class="tableStyleCRUD table-header-background col-xs-12">
-					<tbody>
-						<tr>
-							<th>
-								<xsl:value-of select="eas:i18n('CREATE')"/>
-							</th>
-							<td class="crudSpacerCol">&#160;</td>
-							<th>
-								<xsl:value-of select="eas:i18n('READ')"/>
-							</th>
-						</tr>
-						<tr>
-							<td>
-								<xsl:variable name="info2BusProcRelsCREATE" select="$info2BusProcRels[own_slot_value[slot_reference = 'busproctype_creates_infoview']/value = 'Yes']"/>
-								<xsl:variable name="busProcsCREATE" select="$allBusProcs[name = $info2BusProcRelsCREATE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
-								<ul>
-									<xsl:for-each select="$busProcsCREATE">
-										<xsl:variable name="this" select="current()"/>
-										<li>
-											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$this"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</td>
-							<td class="crudSpacerCol">&#160;</td>
-							<td>
-								<xsl:variable name="info2BusProcRelsREAD" select="$info2BusProcRels[own_slot_value[slot_reference = 'busproctype_reads_infoview']/value = 'Yes']"/>
-								<xsl:variable name="busProcsREAD" select="$allBusProcs[name = $info2BusProcRelsREAD/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
-								<ul>
-									<xsl:for-each select="$busProcsREAD">
-										<xsl:variable name="this" select="current()"/>
-										<li>
-											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$this"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</td>
-						</tr>
-						<tr>
-							<td class="crudSpacerRow">&#160;</td>
-							<td class="crudSpacerRow">&#160;</td>
-							<td class="crudSpacerRow">&#160;</td>
-						</tr>
-						<tr>
-							<th>
-								<xsl:value-of select="eas:i18n('UPDATE')"/>
-							</th>
-							<td class="crudSpacerCol">&#160;</td>
-							<th>
-								<xsl:value-of select="eas:i18n('DELETE')"/>
-							</th>
-						</tr>
-						<tr>
-							<td>
-								<xsl:variable name="info2BusProcRelsUPDATE" select="$info2BusProcRels[own_slot_value[slot_reference = 'busproctype_updates_infoview']/value = 'Yes']"/>
-								<xsl:variable name="busProcsUPDATE" select="$allBusProcs[name = $info2BusProcRelsUPDATE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
-								<ul>
-									<xsl:for-each select="$busProcsUPDATE">
-										<xsl:variable name="this" select="current()"/>
-										<li>
-											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$this"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</td>
-							<td class="crudSpacerCol">&#160;</td>
-							<td>
-								<xsl:variable name="info2BusProcRelsDELETE" select="$info2BusProcRels[own_slot_value[slot_reference = 'busproctype_deletes_infoview']/value = 'Yes']"/>
-								<xsl:variable name="busProcsDELETE" select="$allBusProcs[name = $info2BusProcRelsDELETE/own_slot_value[slot_reference = 'busproctype_to_infoview_from_busproc']/value]"/>
-								<ul>
-									<xsl:for-each select="$busProcsDELETE">
-										<xsl:variable name="this" select="current()"/>
-										<li>
-											<!--<xsl:value-of select="own_slot_value[slot_reference='name']/value" />-->
-											<xsl:call-template name="RenderInstanceLink">
-												<xsl:with-param name="theSubjectInstance" select="$this"/>
-												<xsl:with-param name="theXML" select="$reposXML"/>
-												<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-											</xsl:call-template>
-										</li>
-									</xsl:for-each>
-								</ul>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="clear"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<em>
-					<xsl:value-of select="eas:i18n('No Business Processes Mapped')"/>
-				</em>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	<!--Setup Systems Impacted Section-->
-	<xsl:template name="systemsImpacted">
-		<!-- Set the variables needed for the system CRUD -->
-		<xsl:variable name="app2InfoRep2DataRepsCREATE" select="$app2InfoRep2DataReps[own_slot_value[slot_reference = 'app_pro_creates_data_rep']/value = 'Yes']"/>
-		<xsl:variable name="appInforepRelsCREATE" select="$allAppInforepRels[(own_slot_value[slot_reference = 'operated_data_reps']/value = $app2InfoRep2DataRepsCREATE/name)]"/>
-		<xsl:variable name="app2InfoRep2DataRepsREAD" select="$app2InfoRep2DataReps[own_slot_value[slot_reference = 'app_pro_reads_data_rep']/value = 'Yes']"/>
-		<xsl:variable name="appInforepRelsREAD" select="$allAppInforepRels[(own_slot_value[slot_reference = 'operated_data_reps']/value = $app2InfoRep2DataRepsREAD/name)]"/>
-		<xsl:variable name="app2InfoRep2DataRepsUPDATE" select="$app2InfoRep2DataReps[own_slot_value[slot_reference = 'app_pro_updates_data_rep']/value = 'Yes']"/>
-		<xsl:variable name="appInforepRelsUPDATE" select="$allAppInforepRels[(own_slot_value[slot_reference = 'operated_data_reps']/value = $app2InfoRep2DataRepsUPDATE/name)]"/>
-		<xsl:variable name="app2InfoRep2DataRepsDELETE" select="$app2InfoRep2DataReps[own_slot_value[slot_reference = 'app_pro_deletes_data_rep']/value = 'Yes']"/>
-		<xsl:variable name="appInforepRelsDELETE" select="$allAppInforepRels[(own_slot_value[slot_reference = 'operated_data_reps']/value = $app2InfoRep2DataRepsDELETE/name)]"/>
-		<xsl:choose>
-			<xsl:when test="count($app2InfoRep2DataReps) > 0">
-				<table class="tableStyleCRUD table-header-background col-xs-12">
-					<tbody>
-						<tr>
-							<th>
-								<xsl:value-of select="eas:i18n('CREATE')"/>
-							</th>
-							<td class="crudSpacerCol">&#160;</td>
-							<th>
-								<xsl:value-of select="eas:i18n('READ')"/>
-							</th>
-						</tr>
-						<tr>
-							<td>
-								<xsl:variable name="appsCREATE" select="$allApps[own_slot_value[slot_reference = 'uses_information_representation']/value = $appInforepRelsCREATE/name]"/>
-								<xsl:choose>
-									<xsl:when test="count($appsCREATE) > 0">
-										<ul>
-											<xsl:apply-templates select="$appsCREATE" mode="App_Provider_CRUD_Entry">
-												<xsl:sort order="ascending"/>
-											</xsl:apply-templates>
-										</ul>
-									</xsl:when>
-									<xsl:otherwise>&#160;</xsl:otherwise>
-								</xsl:choose>
-							</td>
-							<td class="crudSpacerCol">&#160;</td>
-							<td>
-								<xsl:variable name="appsREAD" select="$allApps[own_slot_value[slot_reference = 'uses_information_representation']/value = $appInforepRelsREAD/name]"/>
-								<xsl:choose>
-									<xsl:when test="count($appsREAD) > 0">
-										<ul>
-											<xsl:apply-templates select="$appsREAD" mode="App_Provider_CRUD_Entry">
-												<xsl:sort order="ascending"/>
-											</xsl:apply-templates>
-										</ul>
-									</xsl:when>
-									<xsl:otherwise>&#160;</xsl:otherwise>
-								</xsl:choose>
-							</td>
-						</tr>
-						<tr>
-							<td class="crudSpacerRow">&#160;</td>
-							<td class="crudSpacerRow">&#160;</td>
-							<td class="crudSpacerRow">&#160;</td>
-						</tr>
-						<tr>
-							<th>
-								<xsl:value-of select="eas:i18n('UPDATE')"/>
-							</th>
-							<td class="crudSpacerCol">&#160;</td>
-							<th>
-								<xsl:value-of select="eas:i18n('DELETE')"/>
-							</th>
-						</tr>
-						<tr>
-							<td>
-								<xsl:variable name="appsUPDATE" select="$allApps[own_slot_value[slot_reference = 'uses_information_representation']/value = $appInforepRelsUPDATE/name]"/>
-								<xsl:choose>
-									<xsl:when test="count($appsUPDATE) > 0">
-										<ul>
-											<xsl:apply-templates select="$appsUPDATE" mode="App_Provider_CRUD_Entry">
-												<xsl:sort order="ascending"/>
-											</xsl:apply-templates>
-										</ul>
-									</xsl:when>
-									<xsl:otherwise>&#160;</xsl:otherwise>
-								</xsl:choose>
-							</td>
-							<td class="crudSpacerCol">&#160;</td>
-							<td>
-								<xsl:variable name="appsDELETE" select="$allApps[own_slot_value[slot_reference = 'uses_information_representation']/value = $appInforepRelsDELETE/name]"/>
-								<xsl:choose>
-									<xsl:when test="count($appsDELETE) > 0">
-										<ul>
-											<xsl:apply-templates select="$appsDELETE" mode="App_Provider_CRUD_Entry">
-												<xsl:sort order="ascending"/>
-											</xsl:apply-templates>
-										</ul>
-									</xsl:when>
-									<xsl:otherwise>&#160;</xsl:otherwise>
-								</xsl:choose>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="clear"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<em>
-					<xsl:value-of select="eas:i18n('No Applications Mapped')"/>
-				</em>
-			</xsl:otherwise>
-		</xsl:choose>
+					$('#subjectSelection').select2(); 
+					$('#subjectSelection').val(focusDOid).change();
+
+					var panelFragment = $("#panel-template").html();
+					panelTemplate = Handlebars.compile(panelFragment);
+
+					
+					Handlebars.registerHelper('ifContains', function(arg1, arg2, options) {
+					 
+						if(arg1.roleName.includes(arg2)){
+							return '<label>'+arg1.roleName+'</label><ul class="ess-list-tags"><li class="tagActor">'+arg1.actorName+'</li></ul>'
+						}  
+					});
+
+					Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+						return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+					});
+			
+					redrawPage(focusDO)
+	});
+
+	function redrawPage(focusDO) {
+		regulations.forEach((d)=>{
+			let match=d.elements.find((e)=>{
+				return e.id==focusDO.id;
+			})
+			 
+			if(match){
+				focusDO.classifications.push({"id":match.id,"name":d.name})
+			}
+		})
+
+		focusDO.classifications  = focusDO.classifications.filter((obj, index, self) =>
+		index === self.findIndex((t) => (
+		  t.name === obj.name
+		))
+	  );
+	    let panelSet = new Promise(function (myResolve, myReject) {
+	        
+	        let stakes = d3.nest().key(function (d) {
+	            return d.roleName;
+	        }).key(function (d) {
+	            return d.actorName;
+	        }).entries(focusDO.stakeholders);
+	        
+	        
+	        focusDO[ 'stakeholdersList'] = stakes;
+	        
+	        stakes.forEach((k) => {
+	            k.values.forEach((s) => {
+	                s[ 'name'] = s.key;
+	                s[ 'id'] = s.values[0].actorId;
+	                s[ 'className'] = 'Individual_Actor';
+	            });
+	        })
+	      //  console.log('DO', focusDO)
+	        $('#mainPanel').html(panelTemplate(focusDO))
+	        myResolve();
+	        // when successful
+	        myReject();
+	        // when error
+	    });
+	    
+	    panelSet.then(function (response) {
+	        <!-- setGraph();
+	        -->
+	        
+	        if (stakeholdertable) {
+	            $('#dt_stakeholders').DataTable().destroy()
+	            
+	            stakeholdertable = null;
+	        }
+	        
+	        $('#dt_stakeholders tfoot th').each(function () {
+	            let stakeholdertitle = $(this).text();
+	            $(this).html( '&lt;input type="text" placeholder="&#xf002; '+stakeholdertitle+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
+	        });
+	        
+	        
+	        stakeholdertable = $('#dt_stakeholders').DataTable({
+	            scrollY: "350px",
+	            scrollCollapse: true,
+	            paging: false,
+	            info: false,
+	            sort: true,
+	            responsive: true,
+	            columns:[ {
+	                "width": "30%"
+	            }, {
+	                "width": "30%"
+	            }],
+	            dom: 'Bfrtip',
+	            buttons:[
+	            'copyHtml5',
+	            'excelHtml5',
+	            'csvHtml5',
+	            'pdfHtml5',
+	            'print']
+	        });
+	        
+	        // Apply the search
+	        stakeholdertable.columns().every(function () {
+	            let thatst1 = this;
+	            
+	            $('input', this.footer()).on('keyup change', function () {
+	                if (thatst1.search() !== this.value) {
+	                    thatst1.search(this.value).draw();
+	                }
+	            });
+	        });
+	        stakeholdertable.columns.adjust();
+	        
+	        if (stakeholdertable2) {
+	            stakeholdertable2.rows().invalidate().destroy();
+	        }
+	        
+	        
+	        $('#dt_stakeholders2 tfoot th').each(function () {
+	            let stakeholdertitle2 = $(this).text();
+	            $(this).html( '&lt;input type="text" placeholder="&#xf002; '+stakeholdertitle2+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
+	        });
+	        
+	        
+	        stakeholdertable2 = $('#dt_stakeholders2').DataTable({
+	            scrollY: "350px",
+	            scrollCollapse: true,
+	            paging: false,
+	            info: false,
+	            sort: true,
+	            responsive: true,
+	            columns:[ {
+	                "width": "30%"
+	            }, {
+	                "width": "30%"
+	            }],
+	            dom: 'Bfrtip',
+	            buttons:[
+	            'copyHtml5',
+	            'excelHtml5',
+	            'csvHtml5',
+	            'pdfHtml5',
+	            'print']
+	        });
+	        // Apply the search
+	        stakeholdertable2.columns().every(function () {
+	            let thatst2 = this;
+	            
+	            $('input', this.footer()).on('keyup change', function () {
+	                if (thatst2.search() !== this.value) {
+	                    thatst2.search(this.value).draw();
+	                }
+	            });
+	        });
+	        stakeholdertable2.columns.adjust();
+	        
+	        if (table) {
+	            table = null;
+	            $('#dt_dobjecttable').DataTable().destroy();
+	        }
+	        $('#dt_dobjecttable tfoot th').each(function () {
+	            let title = $(this).text();
+	            $(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
+	        });
+	        
+	        
+	        table = $('#dt_dobjecttable').DataTable({
+	            scrollY: "350px",
+	            scrollCollapse: true,
+	            paging: false,
+	            info: false,
+	            sort: true,
+	            responsive: true,
+	            columns:[ {
+	                "width": "30%"
+	            }, {
+	                "width": "50%"
+	            }, {
+	                "width": "20%"
+	            }],
+	            dom: 'Bfrtip',
+	            buttons:[
+	            'copyHtml5',
+	            'excelHtml5',
+	            'csvHtml5',
+	            'pdfHtml5',
+	            'print']
+	        });
+	        
+	        
+	        // Apply the search
+	        table.columns().every(function () {
+	            let that = this;
+	            
+	            $('input', this.footer()).on('keyup change', function () {
+	                if (that.search() !== this.value) {
+	                    that.search(this.value).draw();
+	                }
+	            });
+	        });
+	        table.columns.adjust();
+	        
+	        
+	        // $('#mainPanel').html(panelTemplate(focusDO))
+	        
+	        <!-- function for UML if needed
+	        function setGraph(classes, relations) {
+	            var graph = new joint.dia.Graph;
+	            var windowWidth = 500; //$('#modelHolder').width();
+	            var windowHeight = 500;//$('#modelHolder').height();
+	            
+	            var paper = new joint.dia.Paper({
+	                el: $('#modelContainer'),
+	                gridSize: 1,
+	                width: windowWidth,
+	                height: windowHeight,
+	                model: graph
+	            });
+	            
+	            var uml = joint.shapes.uml;
+	            
+	            var classes = {
+	                
+	                customer_address: new uml.OtherDataObject({
+	                    size: {
+	                        width: 240, height: 75
+	                    },
+	                    position: {
+	                        x: 0, y: 0
+	                    },
+	                    attrs: {
+	                        a: {
+	                            'xlink:href': 'report?XML=reportXML.xml&amp;XSL=information/core_il_data_object_model.xsl&amp;PMA=store_113_Class19&amp;cl=en-gb', cursor: 'pointer'
+	                        }
+	                    },
+	                    name: 'Customer: Address'
+	                }),
+	                
+	                
+	                customer_acontactdetails: new uml.DataObject({
+	                    size: {
+	                        width: 240, height: 108
+	                    },
+	                    position: {
+	                        x: 0, y: 0
+	                    },
+	                    attrs: {
+	                        a: {
+	                            'xlink:href': 'report?XML=reportXML.xml&amp;XSL=information/core_il_data_object_model.xsl&amp;PMA=store_113_Class21&amp;cl=en-gb', cursor: 'pointer'
+	                        }
+	                    },
+	                    name: 'Customer :&amp;Contact Details', attributes:[ 'Customer Address: String',
+	                    'Customer Name: String',
+	                    'Customer Postcode/Zipcode: String']
+	                }),
+	                
+	                
+	                geographiclocation: new uml.DataObject({
+	                    size: {
+	                        width: 240, height: 75
+	                    },
+	                    position: {
+	                        x: 0, y: 0
+	                    },
+	                    attrs: {
+	                        a: {
+	                            'xlink:href': 'report?XML=reportXML.xml&amp;XSL=information/core_il_data_object_model.xsl&amp;PMA=store_113_Class43&amp;cl=en-gb', cursor: 'pointer'
+	                        }
+	                    },
+	                    name: 'Geographic Location'
+	                })
+	            };
+	            
+	            _.each(classes, function (c) {
+	                graph.addCell(c);
+	            });
+	            
+	            var relations =[
+	            
+	            new uml.Association({
+	                source: {
+	                    id: classes.customer_acontactdetails.id
+	                },
+	                target: {
+	                    id: classes.geographiclocation.id
+	                },
+	                labels:[ {
+	                    position: -20, attrs: {
+	                        text: {
+	                            text: '1'
+	                        }
+	                    }
+	                }, {
+	                    position: .2, attrs: {
+	                        text: {
+	                            text: 'customer country'
+	                        }
+	                    }
+	                }]
+	            }), new uml.Generalization({
+	                source: {
+	                    id: classes.customer_address.id
+	                },
+	                target: {
+	                    id: classes.customer_acontactdetails.id
+	                }
+	            })];
+	            
+	            _.each(relations, function (r) {
+	                graph.addCell(r);
+	            });
+	            
+	            joint.layout.DirectedGraph.layout(graph, {
+	                setLinkVertices: false
+	            });
+	            paper.scale(1, 1);
+	            
+	            
+	            var graph = new joint.dia.Graph();
+	            
+	            var paper = new joint.dia.Paper({
+	                el: $('#modelContainer'),
+	                width: 800,
+	                height: 600,
+	                gridSize: 1,
+	                model: graph,
+	                perpendicularLinks: true,
+	                restrictTranslate: true
+	            });
+	            
+	            var member = function (x, y, rank, name, image, background, textColor) {
+	                
+	                textColor = textColor || "#000";
+	                
+	                var cell = new joint.shapes.org.Member({
+	                    position: {
+	                        x: x, y: y
+	                    },
+	                    attrs: {
+	                        '.card': {
+	                            fill: background, stroke: 'none'
+	                        },
+	                        image: {
+	                            'xlink:href': '/images/demos/orgchart/' + image, opacity: 0.7
+	                        },
+	                        '.rank': {
+	                            text: rank, fill: textColor, 'word-spacing': '-5px', 'letter-spacing': 0
+	                        },
+	                        '.name': {
+	                            text: name, fill: textColor, 'font-size': 13, 'font-family': 'Arial', 'letter-spacing': 0
+	                        }
+	                    }
+	                });
+	                graph.addCell(cell);
+	                return cell;
+	            };
+	            
+	            function link(source, target, breakpoints) {
+	                
+	                var cell = new joint.shapes.org.Arrow({
+	                    source: {
+	                        id: source.id
+	                    },
+	                    target: {
+	                        id: target.id
+	                    },
+	                    vertices: breakpoints,
+	                    attrs: {
+	                        '.connection': {
+	                            'fill': 'none',
+	                            'stroke-linejoin': 'round',
+	                            'stroke-width': '2',
+	                            'stroke': '#4b4a67'
+	                        }
+	                    }
+	                });
+	                graph.addCell(cell);
+	                return cell;
+	            }
+	            
+	            
+	            
+	            var levels =[ '#30d0c6', '#7c68fd', '#feb563']
+	            var head = member(300, 70, testJson[0].Position, testJson[0].name, testJson[0].Profile_Picture, levels[0]);
+	            var objUsers = {
+	            };
+	            var x = -200;
+	            var y = 200;
+	            $.each(testJson, function (i, item) {
+	                if (i !== 0) {
+	                    x = x + 200;
+	                    objUsers[item.name] = member(x, y, item.Position, item.name, item.Profile_Picture, levels[1]);
+	                    link(head, objUsers[item.name],[ {
+	                        x: 385, y: 180
+	                    }, {
+	                        x: x + 100, y: 180
+	                    }]);
+	                }
+	            });
+	        }
+	        -->
+	        <!-- end setGraph -->
+	    }).then(function () {
+	        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	            $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+	        });
+	    })
+	    
+	    $('#subjectSelection').one('change', function () {
+	        let selected = $(this).val();
+	        
+	        let focusDO = allDO.data_objects.find((f) => {
+	            return f.id == selected;
+	        });
+	        redrawPage(focusDO);
+	    });
+	}
+	});
 	</xsl:template>
 	
-	<xsl:template match="node()" mode="App_Provider_CRUD_Entry">
-		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="appName" select="$this/own_slot_value[slot_reference = 'name']/value"/>
-		<li>
-			<xsl:call-template name="RenderInstanceLink">
-				<xsl:with-param name="theSubjectInstance" select="$this"/>
-				<xsl:with-param name="theXML" select="$reposXML"/>
-				<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+	<xsl:template name="GetViewerAPIPath">
+		<xsl:param name="apiReport"></xsl:param>
+
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderAPILinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
 			</xsl:call-template>
-		</li>
+		</xsl:variable>
+
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+	</xsl:template>	
+<xsl:template match="node()" mode="procInfo">
+	<xsl:variable name="physProcess" select="key('physProcsKey', current()/name)"/>
+	<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		 </xsl:call-template>",
+		"physProcesses":[
+		<xsl:for-each select="$physProcess"> 
+		<xsl:variable name="thisActor" select="$allActorsInstances[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="thisActorviaA2R" select="key('allActors_key',$thisActor/name)"/>
+		<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>",
+			<xsl:choose>
+				<xsl:when test="$thisActor/type='ACTOR_TO_ROLE_RELATION'"> 
+				"actor":"<xsl:call-template name="RenderMultiLangInstanceName">
+							<xsl:with-param name="theSubjectInstance" select="$thisActorviaA2R"/>
+							<xsl:with-param name="isForJSONAPI" select="true()"/>
+						</xsl:call-template>",
+				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActorviaA2R/name)"/>",			
+				</xsl:when>
+				<xsl:otherwise> 
+				"actor":"<xsl:call-template name="RenderInstanceLinkForJS">
+							<xsl:with-param name="theSubjectInstance" select="$thisActor"/>
+							<xsl:with-param name="isForJSONAPI" select="true()"/>
+						</xsl:call-template>",
+				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>",		
+				</xsl:otherwise>
+			</xsl:choose>
+			"usages":[<xsl:for-each select="$physProcesstoApp">  
+					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+					"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>",
+					"appInfoRep":"<xsl:value-of select="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if> 
+				</xsl:for-each>]
+			}<xsl:if test="position()!=last()">,</xsl:if> 
+	</xsl:for-each>]
+	}<xsl:if test="position()!=last()">,</xsl:if> 
+</xsl:template>
+<xsl:template match="node()" mode="physProcInfo">  
+	 <xsl:variable name="thisActor" select="$allActorsInstances[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="thisActorviaA2R" select="key('allActors_key',$thisActor/name)"/>
+		<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>",
+			<xsl:choose>
+				<xsl:when test="$thisActor/type='ACTOR_TO_ROLE_RELATION'"> 
+				"actor":"<xsl:call-template name="RenderMultiLangInstanceName">
+							<xsl:with-param name="theSubjectInstance" select="$thisActorviaA2R"/>
+							<xsl:with-param name="isForJSONAPI" select="true()"/>
+						</xsl:call-template>",
+				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActorviaA2R/name)"/>"			
+				</xsl:when>
+				<xsl:otherwise> 
+				"actor":"<xsl:call-template name="RenderInstanceLinkForJS">
+							<xsl:with-param name="theSubjectInstance" select="$thisActor"/>
+							<xsl:with-param name="isForJSONAPI" select="true()"/>
+						</xsl:call-template>",
+				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>"
+				</xsl:otherwise>
+			</xsl:choose>
+			<!--"usages":[<xsl:for-each select="$physProcesstoApp">  
+					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+					"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="current()"/>
+						<xsl:with-param name="isForJSONAPI" select="true()"/>
+					</xsl:call-template>",
+					"appInfoRep":"<xsl:value-of select="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if> 
+				</xsl:for-each>]-->
+			}<xsl:if test="position()!=last()">,</xsl:if> 
+ 
+</xsl:template>
+<xsl:template match="node()" mode="infoToProcess"> 
+<xsl:variable name="physProcesstoApp" select="key('physProcstoMapKey', current()/name)"/>
+<xsl:variable name="busProcess" select="key('busProcsKey', $physProcesstoApp/name)"/>
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"app_info_rep":"<xsl:value-of select="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value"/>",
+	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isForJSONAPI" select="true()"/>
+		 </xsl:call-template>",
+	"processes":[<xsl:for-each select="$busProcess">
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+				<xsl:with-param name="isForJSONAPI" select="true()"/>
+			</xsl:call-template>"
+			}<xsl:if test="position()!=last()">,</xsl:if> 
+			</xsl:for-each>
+		],
+	"physicalProcesses":[<xsl:for-each select="current()/own_slot_value[slot_reference='physbusproc_to_appinfoview_from_physbusproc']/value">
+			{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"
+			}<xsl:if test="position()!=last()">,</xsl:if> 
+			</xsl:for-each>
+		],
+	}<xsl:if test="position()!=last()">,</xsl:if> 
+</xsl:template>
+<xsl:template name="RenderJSMenuLinkFunctionsTEMP">
+		<xsl:param name="linkClasses" select="()"/>
+		const essLinkLanguage = '<xsl:value-of select="$i18n"/>';
+		var esslinkMenuNames = {
+			<xsl:call-template name="RenderClassMenuDictTEMP">
+				<xsl:with-param name="menuClasses" select="$linkClasses"/>
+			</xsl:call-template>
+		}
+   
+		function essGetMenuName(instance) {  
+			let menuName = null;
+			if(instance.meta?.anchorClass) {
+				menuName = esslinkMenuNames[instance.meta.anchorClass];
+			} else if(instance.className) {
+				menuName = esslinkMenuNames[instance.className];
+			}
+			return menuName;
+		}
+		
+		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){ 
+			if(instance != null) {
+                let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+					
+					<!--instanceLink = '<a><xsl:attribute name="href" select="linkHref"/><xsl:attribute name="class" select="linkClass"/><xsl:attribute name="id" select="linkId"/></a>'-->
+                } 
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
+    </xsl:template>
+    <xsl:template name="RenderClassMenuDictTEMP">
+		<xsl:param name="menuClasses" select="()"/>
+		<xsl:for-each select="$menuClasses">
+			<xsl:variable name="this" select="."/>
+			<xsl:variable name="thisMenus" select="$allMenus[own_slot_value[slot_reference = 'report_menu_class']/value = $this]"/>
+			"<xsl:value-of select="$this"/>": <xsl:choose><xsl:when test="count($thisMenus) > 0">"<xsl:value-of select="$thisMenus[1]/own_slot_value[slot_reference = 'report_menu_short_name']/value"></xsl:value-of>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose><xsl:if test="not(position() = last())">,
+			</xsl:if>
+		</xsl:for-each>
+		
 	</xsl:template>
+	<xsl:template match="." mode="regulation">
+		<xsl:variable name="reg" select="key('regRels', current()/name)"/>
 
-	<xsl:template name="stakeholders">
-		<xsl:if test="count($relevantActor2Roles) = 0">
-			<p>
-				<em><xsl:value-of select="eas:i18n('No stakeholders defined for the')"/>&#160; <strong><xsl:value-of select="$dataObjectName"/></strong>&#160;<xsl:value-of select="eas:i18n('Data Object')"/></em>
-			</p>
-
-		</xsl:if>
-		<xsl:if test="count($relevantActor2Roles) > 0">
-			<div>
-				<p><xsl:value-of select="eas:i18n('Stakeholders for the ')"/>&#160;<strong><xsl:value-of select="$dataObjectName"/></strong>&#160;<xsl:value-of select="eas:i18n('Data Object')"/></p>
-				<table class="table table-bordered table-striped ">
-					<thead>
-						<tr>
-							<th class="cellWidth-30pc">
-								<xsl:value-of select="eas:i18n('Role')"/>
-							</th>
-							<th class="cellWidth-40pc">
-								<xsl:value-of select="eas:i18n('Name')"/>
-							</th>
-							<th class="cellWidth-30pc">
-								<xsl:value-of select="eas:i18n('Organisation')"/>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<xsl:apply-templates mode="infoStakeholders" select="$relevantActor2Roles">
-							<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-						</xsl:apply-templates>
-					</tbody>
-				</table>
-			</div>
-		</xsl:if>
-	</xsl:template>
-
-	<!-- Setup Info Stakeholders Content-->
-	<xsl:template match="node()" mode="infoStakeholders">
-		<xsl:variable name="actor" select="$allActors[name = current()/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-		<xsl:variable name="role" select="$allRoles[name = current()/own_slot_value[slot_reference = 'act_to_role_to_role']/value]"/>
-		<xsl:variable name="roleName" select="$role/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="actorName" select="$actor/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="parentOrg" select="$allActors[name = $actor/own_slot_value[slot_reference = 'is_member_of_actor']/value]"/>
-		<xsl:variable name="parentOrgName" select="$parentOrg/own_slot_value[slot_reference = 'name']/value"/>
-		<tr>
-			<td>
-				<!--<xsl:value-of select="$roleName" />-->
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$role"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<!--<xsl:value-of select="$actorName" />-->
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$actor"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-			<td>
-				<!--<xsl:value-of select="$parentOrgName" />-->
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$parentOrg"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
-			</td>
-		</tr>
-	</xsl:template>
-
+		{"id":"<xsl:value-of select="current()/name"/>",
+		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
+			<xsl:with-param name="theSubjectInstance" select="current()"/>
+			<xsl:with-param name="isRenderAsJSString" select="true()"/>
+		</xsl:call-template>", 
+		"elements":[<xsl:for-each select="$reg/own_slot_value[slot_reference = 'regulated_component_to_element']/value">{"id":"<xsl:value-of select="."/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:template>
 </xsl:stylesheet>

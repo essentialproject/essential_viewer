@@ -36,6 +36,11 @@
 	<xsl:param name="theURLFullPath"/>
 	<xsl:param name="reposXML">reportXML.xml</xsl:param>
 	<xsl:param name="eipMode"/>
+	<!-- theCurrentURL = full path of the current page  -->
+	<xsl:param name="theCurrentURL"/>
+	<!-- theSubjectID = the ID of the subject of the current page  -->
+	<xsl:param name="theSubjectID"/>
+	<xsl:param name="breadcrumbs"/>
 
 	<!-- Specify the selected user -->
 	<xsl:param name="userID"/>
@@ -462,11 +467,7 @@
 					<p><xsl:value-of select="eas:i18n('Below is a list of the most recent pages viewed in Essential Viewer')"/>.</p>
 					<div class="verticalSpacer_10px"/>
 					<div id="historyContent">
-						<xsl:call-template name="Page_History">
-							<xsl:with-param name="breadcrumbs">
-								<xsl:value-of select="$pageHistory"/>
-							</xsl:with-param>
-						</xsl:call-template>
+						<xsl:call-template name="Page_History"/>
 					</div>
 				</div>
 

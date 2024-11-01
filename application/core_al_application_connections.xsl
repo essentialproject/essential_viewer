@@ -39,7 +39,7 @@
     <xsl:variable name="allInfo" select="/node()/simple_instance[type='Information_Representation'][name=$allAppProtoInfo/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value]"/>
 
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
-	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"></xsl:variable>
+	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
 	<xsl:variable name="appMartData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
 
 <!--	* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -325,90 +325,103 @@
 						border:1pt solid #d3d3d3;
 						margin:2px;
 					  }
-.stakeholdersbox{
+						.stakeholdersbox{
 
-	position: relative;
-	display: inline-block;
-    width: 24%;
-	border:1pt solid #d3d3d3;
-	border-radius: 6px;
-	margin:2px;
-	padding:3px;
-	vertical-align:top;
-}
-.summarybox{
-	position: relative;
-	display: inline-block;
-    width: 24%;
-	border:1pt solid #d3d3d3;
-	background-color:#ffffff;
-	color:#000;
-	border-radius: 6px;
-	margin:2px;
-	padding:3px;
-	vertical-align:top;
-} 
-.boxBadge{
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    border: 1pt solid #ffffff;
-    background-color: #d01e1e;
-    border-radius: 36px;
-    right: 3px;
-    top: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+							position: relative;
+							display: inline-block;
+							width: 24%;
+							border:1pt solid #d3d3d3;
+							border-radius: 6px;
+							margin:2px;
+							padding:3px;
+							vertical-align:top;
+						}
+						.summarybox{
+							position: relative;
+							display: inline-block;
+							width: 24%;
+							border:1pt solid #d3d3d3;
+							background-color:#ffffff;
+							color:#000;
+							border-radius: 6px;
+							margin:2px;
+							padding:3px;
+							vertical-align:top;
+						} 
+						.boxBadge{
+							position: absolute;
+							width: 25px;
+							height: 25px;
+							border: 1pt solid #ffffff;
+							background-color: #d01e1e;
+							border-radius: 36px;
+							right: 3px;
+							top: 4px;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+						}
 
-#scrollToTop {
-  display: flex; /* Use Flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  position: fixed; /* Fixed position */
-  bottom: 20px; /* 20px from the bottom */
-  left: 30px; /* 30px from the left */
-  z-index: 99;
-  border: none;
-  outline: none;
-  background-color: rgb(28, 28, 28);
-  color: white;
-  cursor: pointer;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 16px; /* Adjust as per your icon size */
-  width: 28px; /* Width of the div */
-  height: 28px; /* Height of the div */
-}
+						#scrollToTop {
+						display: flex; /* Use Flexbox */
+						justify-content: center; /* Center horizontally */
+						align-items: center; /* Center vertically */
+						position: fixed; /* Fixed position */
+						bottom: 20px; /* 20px from the bottom */
+						left: 30px; /* 30px from the left */
+						z-index: 99;
+						border: none;
+						outline: none;
+						background-color: rgb(28, 28, 28);
+						color: white;
+						cursor: pointer;
+						padding: 15px;
+						border-radius: 10px;
+						font-size: 16px; /* Adjust as per your icon size */
+						width: 28px; /* Width of the div */
+						height: 28px; /* Height of the div */
+						}
 
 
-#scrollToTop:hover {
-  background-color: #cf3c3c;
-}
+						#scrollToTop:hover {
+						background-color: #cf3c3c;
+						}
 
-.keyBox{
-	border:1pt solid #ffffff;
-	border-radius:5px;
-	padding:3px;
-	margin: 2px;
-	position: relative;
-}
+						.keyBox{
+							border:1pt solid #ffffff;
+							border-radius:5px;
+							padding:3px;
+							margin: 2px;
+							position: relative;
+						}
 
-.keyBox .keyTitle {
-    position: absolute;
-    top: 30px;
-    left: 0;
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    white-space: nowrap;
-}
-.keyBox i {
-	padding-left: 25px;
-    text-align: center;
-    display: inline-block;
-}
-
+						.keyBox .keyTitle {
+							position: absolute;
+							top: 30px;
+							left: 0;
+							transform: rotate(-90deg);
+							transform-origin: left top;
+							white-space: nowrap;
+						}
+						.keyBox i {
+							padding-left: 25px;
+							text-align: center;
+							display: inline-block;
+						}
+						@media print {
+							body * {
+								visibility: hidden;
+							}
+							#diagram, #diagram * {
+								visibility: visible;
+							}
+							#diagram {
+								position: absolute;
+								left: 0;
+								top: 0;
+								width: 100%;
+							}
+						}
                 </style>
  			 </head>
 			<body>
@@ -474,9 +487,13 @@
 						<input type="checkbox" id="connectedApps" />
 						-->
 						<div id="warning" style="color:red"><b><xsl:value-of select="eas:i18n('There are too many nodes to show the whole network, select filter when data ready')"/></b></div>
-						<!--
-						<div class="pull-right"><button class="btn btn-warning btn-xs" id="saveButton"><i class="fa fa-floppy-o fa-xs"></i> Save</button><button class="btn btn-warning btn-xs" id="printButton"><i class="fa fa-floppy-o fa-xs"></i> PDF</button></div>
+						
+						<div class="pull-right">
+							 <!--
+							<button class="btn btn-warning btn-xs" id="saveButton"><i class="fa fa-floppy-o fa-xs"></i> Save</button>
 						-->
+						<button class="btn btn-info btn-xs right-5" id="printButton"><i class="fa fa-floppy-o fa-xs"></i> PDF</button></div>
+					 
 						<div id="zoomWarning"><xsl:value-of select="eas:i18n('You may need to zoom out and drag to see the full image')"/></div>
 									<div id="diagram"></div>
 					</div>
@@ -494,7 +511,7 @@
 					<!--	<div id="infoData"></div>
 					-->
 				</div>
-				<div class="col-xs-9" id="summaryBox" style="border:1px solid #ffffff; border-radius:6px;">
+				<div class="col-xs-9" id="summaryBox">
 				
 					<div id="dataSummary"/>
 				</div>
@@ -1326,6 +1343,76 @@ $('.show_all').hide();
 $('.appBox').show();
 }
 
+var currentZoomTransform;
+var originalWidth, originalHeight, originalViewBox;
+$('#printButton').off().on('click', function() {
+	originalWidth = svg.attr("width");
+    originalHeight = svg.attr("height");
+    originalViewBox = svg.attr("viewBox"); // May be null if not set
+
+    // Alternatively, if dimensions are set via styles
+    if (!originalWidth) {
+        originalWidth = svg.style("width");
+    }
+    if (!originalHeight) {
+        originalHeight = svg.style("height");
+    }
+	currentZoomTransform = d3.zoomTransform(svg.node());
+
+	//var svgElement = document.querySelector('svg'); // Select your SVG element
+	svg.call(zoom.transform, d3.zoomIdentity);
+
+	   // Get the graph's bounding box
+	   let graphBounds = inner.node().getBBox();
+	   let graphWidth = graphBounds.width;
+	   let graphHeight = graphBounds.height;
+   
+	   // Set the SVG's viewBox to the graph's bounding box
+	   svg.attr("viewBox", `${graphBounds.x} ${graphBounds.y} ${graphWidth} ${graphHeight}`);
+   
+	   // Set the SVG's width and height to match the desired print size (in pixels)
+	   // For A4 size paper: 210mm x 297mm at 96 DPI
+	   let dpi = 96; // Dots per inch
+	   let pageWidth = (210 / 25.4) * dpi; // A4 width in pixels
+	   let pageHeight = (297 / 25.4) * dpi; // A4 height in pixels
+   
+	   svg.attr("width", pageWidth)
+		  .attr("height", pageHeight);
+
+		  window.print();
+	   //printSVG(svgElement);
+	  
+	
+   });
+
+   window.addEventListener('afterprint', function() {
+	if (originalWidth) {
+        svg.attr("width", originalWidth);
+        svg.style("width", originalWidth);
+    } else {
+        svg.attr("width", null);
+        svg.style("width", null);
+    }
+
+    if (originalHeight) {
+        svg.attr("height", originalHeight);
+        svg.style("height", originalHeight);
+    } else {
+        svg.attr("height", null);
+        svg.style("height", null);
+    }
+
+    svg.attr("viewBox", originalViewBox);
+	
+	   // Remove any scaling applied to 'inner' during printing
+	   inner.attr("transform", null);
+   
+	   // Restore the original zoom transform
+	   svg.call(zoom.transform, currentZoomTransform);
+	// Re-apply zoom and panning if necessary
+	centerGraph();
+});
+
 		function setUpSVG(){
 
 			inner.selectAll(".edgePath path")
@@ -1479,6 +1566,7 @@ function findMatchingApusElement(source, target, apusArray) {
 // Function to handle click event
 function handleClick(d) {
   
+  $('#dataSummary').empty();
 	const matchingApusElement = findMatchingApusElement(d.v, d.w, apus);
  
 	//console.log('matchingApusElement',matchingApusElement)
@@ -1489,12 +1577,14 @@ function handleClick(d) {
 			let node = {
 				text: item.name,
 				id: item.id,
+				type:'Information_Representation', 
 				children: item.views.map(view => {
 					return {
 						text: view.name,
 						id: view.id,
+						type:'Information_View', 
 						children: view.dataObjects.map(obj => {
-							return { text: obj.name, id: obj.id };
+							return { text: obj.name, id: obj.id, type:'Data_Object' };
 						})
 					};
 				})
@@ -1514,70 +1604,53 @@ function handleClick(d) {
 
 	}
   
-	// Assign types to nodes in jsTreeData based on their level or other criteria
-	 
-	assignTypesToNodes(jsTreeData, 1);
-	
+  
 	// Then, initialize jsTree
+	if ($.jstree.reference('#jstree_div')) {
+		 
+		$('#jstree_div').jstree("destroy").empty();
+	}
+
 	$('#jstree_div').jstree({ 
 		'core': {
 			'data': jsTreeData,
 			'check_callback': true
 		},
 		'types': {
-			'default': {
+			'Information_Representation': {
 				'icon': 'fa fa-book'
 			},
-			'type1': {
-				'icon': 'fa fa-book'  
-			},
-			'type2': {
+			 
+			'Information_View': {
 				'icon': 'fa fa-file-text-o'  
 			},
-			'type3': {
+			'Data_Object': {
 				'icon': 'fa fa-bars'
 			}
 		},
 		'plugins': ['types']
 	}).on("select_node.jstree", function(e, data) {
-		if(data.node.children.length === 0) {
-        // This is a leaf node, handle the click
-
-		$('#summaryBox').show().animate({opacity: 1}, 'slow');
-		let match=dataObjects.find((e)=>{
-			return e.id == data.node.id
-		})
+       
+        if (data.node.children.length === 0) {
+            // This is a leaf node, handle the click
+            $('#summaryBox').show().animate({opacity: 1}, 'slow');
+            let match = dataObjects.find((e) => {
+                return e.id == data.node.id;
+            });
+            if (match) {
+                $('#dataSummary').html(datasummaryTemplate(match));
+            } else {
+                $('#dataSummary').empty();
+            }
+        } else {
+            // This node has children, so ignore the click
+            $('#dataSummary').empty();
+            $('#jstree_div').jstree(true).deselect_node(data.node);
+        }
+    });
  
-		if(match){
-		$('#dataSummary').html(datasummaryTemplate(match))
-		} else{
-			$('#dataSummary').empty();
-		}
-    } else {
-        // This node has children, so ignore the click
+
  
-		$('#dataSummary').empty();
-        $('#jstree_div').jstree(true).deselect_node(data.node);
-    }
-
-    });;
-
-	// Function to assign types to nodes
-	function assignTypesToNodes(nodes, level) {
-		nodes.forEach(function(node) {
-			if (level === 1) {
-				node.type = 'type1';
-			} else if (level === 2) {
-				node.type = 'type2';
-			} else {
-				node.type = 'default';
-			}
-		
-			if (node.children &amp;&amp; node.children.length > 0) {
-				assignTypesToNodes(node.children, level + 1);
-			}
-		});
-	}
 
 
 $('#infoData').html(infoTemplate(matchingApusElement))
@@ -1854,7 +1927,7 @@ essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACT
 		
 	//end of promise			
 		})
-/*
+ 
 		function saveSVG(svgElement, filename) {
 			var serializer = new XMLSerializer();
 			var svgString = serializer.serializeToString(svgElement);
@@ -1894,11 +1967,8 @@ essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACT
 		
 		// Usage example
 
-		$('#printButton').one('click', function() {
-			var svgElement = document.querySelector('svg'); // Select your SVG element
-			printSVG(svgElement);
-		});
-		*/
+		
+ 
 	//end of doc ready	
 })
 	</xsl:template>		

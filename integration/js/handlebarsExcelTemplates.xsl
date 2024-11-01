@@ -11,7 +11,7 @@
               {
                 "ID": "{{../this.id}}",
                 "Name": "{{{../this.name}}}",
-                "Description": "{{#escaper ../this.description}}{{/escaper}}",
+                "Description": "{{{../this.description}}}",
                 "parent": "{{{this.name}}}",
                 "positioninparent": "{{../this.positioninParent}}",
                 "sequencenumber": "{{../this.sequenceNumber}}",
@@ -24,7 +24,7 @@
             {
               "ID": "{{this.id}}",
               "Name": "{{{this.name}}}",
-              "Description": "{{#escaper this.description}}{{/escaper}}",
+              "Description": "{{{this.description}}}",
               "parent": "{{{this.name}}}",
               "positioninparent": "{{this.positioninParent}}",
               "sequencenumber": "{{this.sequenceNumber}}",
@@ -255,7 +255,7 @@
             {{#each this}}
             {
                 "id": "{{this.id}}",
-                "name": "{{{this.name}}}",
+                "name": "{{this.name}}",
                 "description": "{{#escaper this.description}}{{/escaper}}",
                 "codebase_name": "{{this.codebase_name}}",
                 "lifecycle_name": "{{this.lifecycle_name}}",

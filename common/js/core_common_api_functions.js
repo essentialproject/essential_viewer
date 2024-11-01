@@ -8,6 +8,16 @@ function essBuildApiPath(apiUri) {
     return essViewer.baseUrl+'/api'+apiUri+'/repositories/'+essViewer.repoId+'/';
 }
 
+
+function essBuildDefaultRefApiPath() {
+    return essViewer.baseUrl+'/api/essential-reference/v1/stores/' + essViewer.repoId +  '/collections/'+apiUri +'/' ;
+}
+
+function essBuildRepoRefQueryApiPath() {
+	console.log('REPO ID:',  essViewer);
+    return essViewer.baseUrl+'/api/essential-reference/query/v1/stores/' + essViewer.repoId + '/collections/';
+}
+
 function essBuildRefApiPath(apiUri) {
     return essViewer.baseUrl+'/api'+apiUri+'/';
 }
@@ -410,6 +420,25 @@ function essPromise_getNoSQLElements(apiURL, resourcePath, resourceTypeLabel) {
     return new Promise(
         function (resolve, reject) {
             var url = essBuildRefApiPath(apiURL) + resourcePath;
+            var xhr = essCreateCORSRequest('GET', url);
+            if (!xhr) {
+                corsError = new Error('CORS not supported by browser. Unable to retrieve ' + resourceTypeLabel + ' data');
+                reject(corsError);
+            } else {
+                // Response handlers.
+                var errorMessageVerb = 'retrieving';
+                xhr.onload = essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb);
+                xhr.onerror = essOnXhrError(reject, resourceTypeLabel, errorMessageVerb);
+                xhr.send();
+            }
+        }
+    );
+};
+
+function essPromise_getNoSQLCurrentRepoElements(resourcePath, resourceTypeLabel) {
+    return new Promise(
+        function (resolve, reject) {
+            var url = essBuildRepoRefQueryApiPath() + resourcePath;
             var xhr = essCreateCORSRequest('GET', url);
             if (!xhr) {
                 corsError = new Error('CORS not supported by browser. Unable to retrieve ' + resourceTypeLabel + ' data');

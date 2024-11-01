@@ -46,13 +46,16 @@
 				} else if(instance.className) {
 	
 					const objectWithMenu = meta2.find(obj => obj.classes.includes(instance.className));
+				 
 				//	console.log('objectWithMenu',objectWithMenu)
-					if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='true'){
-						menuName = objectWithMenu.menuId;
-					}else if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='false'){
-						// do nothing
-					}else{
-						menuName = objectWithMenu.menuId;
+					if(objectWithMenu){
+						if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='true'){
+							menuName = objectWithMenu.menuId;
+						}else if(objectWithMenu.enabled  &amp;&amp; objectWithMenu.enabled =='false'){
+							// do nothing
+						}else{
+							menuName = objectWithMenu.menuId;
+						}
 					}
 				}
 					

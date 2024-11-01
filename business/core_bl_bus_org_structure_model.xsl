@@ -214,8 +214,10 @@
 				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<script type="text/javascript">
 					<xsl:text>function tree(){
+					 
 						//initialise the data
 						var json=</xsl:text><xsl:call-template name="PrintActorTreeDataNamed"><xsl:with-param name="parentNode" select="$parentActor"/><xsl:with-param name="inScopeActors" select="$inScopeActors"/><xsl:with-param name="level" select="1"/></xsl:call-template><xsl:text>; //end data</xsl:text>
+					 
 					<xsl:text disable-output-escaping="yes">
 						//init OrgTree
 						//Create a new ST instance
@@ -324,6 +326,7 @@
 							}
 							});
 							//load json data
+							 
 							st.loadJSON(json);
 							//compute node positions and layout
 							st.compute();
@@ -421,6 +424,7 @@
 		<script>
 			$(document).ready(function(){
 				$( ".simple-scroller" ).scrollLeft( 1200 );
+				tree()
 			});
 		</script>
 		<div class="simple-scroller">
@@ -529,7 +533,7 @@
 				let rows = tbl.getElementsByTagName('tr');
 
 				for (let i = rows.length - 1; i > 0; i--) {
-					console.log()
+					 
 					let cell = rows[i].getElementsByTagName('td')[0];
 				 
 					if (cell) {

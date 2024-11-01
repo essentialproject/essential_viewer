@@ -156,13 +156,40 @@
 							</select>
 						-->
 							<div class="clearfix"></div>
-							<xsl:if test="not($lifecycleStatus)"><p><br/><xsl:value-of select="eas:i18n('
-')"/>Missing Data: Please Set Enumeration Sequence Numbers for Lifecycles')"/></p></xsl:if> 
+							<xsl:if test="not($lifecycleStatus)"><p><br/><xsl:value-of select="eas:i18n('Missing Data: Please Set Enumeration Sequence Numbers for Lifecycles')"/></p></xsl:if> 
 							<svg id="radar"></svg>
 
 							<script>
-							    var entriesForRadar=[ <xsl:apply-templates select="$allApps" mode="apps"></xsl:apply-templates>  ]
- 
+								var lifecyclesToShow=[<xsl:apply-templates select="$lifecycleStatus" mode="life">
+									<xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>
+								 </xsl:apply-templates>]
+							    var entriesForRadar=[<xsl:apply-templates select="$allApps" mode="apps"></xsl:apply-templates>  ];
+								 
+							 const seqOrderMap = lifecyclesToShow.reduce((acc, item) => {
+								acc[item.seq] = { order: item.order };
+								return acc;
+							}, {});
+
+							const highestSeqOrder = lifecyclesToShow.reduce((maxItem, item) => {
+								return item.seq > maxItem.seq ? item : maxItem;
+							}, lifecyclesToShow[0]).order;
+							
+							lifecyclesToShow.push({
+								"name": "Not Set", 
+								"seq": highestSeqOrder + 1,
+								"color": "#e3e3e3",
+								"textColour": "#ffffff"
+							})
+						 
+							 entriesForRadar.forEach((a)=>{
+								if(seqOrderMap[a.ring]){
+									a.ring=seqOrderMap[a.ring].order
+								}else{
+ 									a.ring=highestSeqOrder + 1;
+								}
+							 })
+						 
+							 
 								function callRadar(myRadar){    
 								radar_visualization({
 								  svg_id: "radar",
@@ -180,13 +207,11 @@
 								    { name: "Ignore" },
 								    { name: "Ignore" }
 								  ],
-								  rings: [
-								     <xsl:apply-templates select="$lifecycleStatus" mode="life">
-								        <xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>
-								     </xsl:apply-templates>
-								     { name: "Not Set", color: "#93c47d" }
-								
-								  ],
+								  rings: lifecyclesToShow,
+								  colors: {
+									inactive: 'gray',
+									default: 'blue'
+									},
 								  print_layout: true,
 								  // zoomed_quadrant: 0,
 								  //ENTRIES
@@ -199,7 +224,7 @@
 								    
 						/*		$('#switch').change(function(){
 								    var appState = $(this).children(":selected").attr("id");
-								       console.log(appState);
+								    
 								    if(appState !=='All'){
 								        var toShow = entriesForRadar.filter(function(d){
 								
@@ -211,7 +236,7 @@
 									}
 								
 								$('#radar').empty();
-								   console.log(toShow);
+							 
 								    callRadar(toShow);
 									})    	
 									*/
@@ -238,7 +263,7 @@
 	  { 
         quadrant: <xsl:value-of select="position() mod 4"/>,
         ring: <xsl:choose><xsl:when test="$lifeValue=''"><xsl:value-of select="count($lifecycleStatus)-1"/></xsl:when><xsl:otherwise><xsl:value-of select="$lifeValue"/></xsl:otherwise></xsl:choose>,
-        label: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
+    	label: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
         active: false,
         link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
         moved: 0
@@ -248,6 +273,8 @@
 	<xsl:template match="node()" mode="life">
 	    <xsl:variable name="style" select="$styles[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 	    <xsl:if test="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value">
-	      {name: "<xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/>", color: "<xsl:choose><xsl:when test="$style/own_slot_value[slot_reference='element_style_colour']/value"><xsl:value-of select="$style/own_slot_value[slot_reference='element_style_colour']/value"/></xsl:when><xsl:otherwise>#54efcb</xsl:otherwise></xsl:choose>", textColour:"<xsl:choose><xsl:when test="$style/own_slot_value[slot_reference='element_style_text_colour']/value"><xsl:value-of select="$style/own_slot_value[slot_reference='element_style_text_colour']/value"/></xsl:when><xsl:otherwise>#5c5c5c</xsl:otherwise></xsl:choose>" },</xsl:if>
+	      {name: "<xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value"/>", 
+		  "order":<xsl:value-of select="position()"/>,
+		  "seq":<xsl:value-of select="current()/own_slot_value[slot_reference = 'enumeration_sequence_number']/value"/>, color: "<xsl:choose><xsl:when test="$style/own_slot_value[slot_reference='element_style_colour']/value"><xsl:value-of select="$style/own_slot_value[slot_reference='element_style_colour']/value"/></xsl:when><xsl:otherwise>#54efcb</xsl:otherwise></xsl:choose>", textColour:"<xsl:choose><xsl:when test="$style/own_slot_value[slot_reference='element_style_text_colour']/value"><xsl:value-of select="$style/own_slot_value[slot_reference='element_style_text_colour']/value"/></xsl:when><xsl:otherwise>#5c5c5c</xsl:otherwise></xsl:choose>" },</xsl:if>
 	    </xsl:template>
 	</xsl:stylesheet>

@@ -60,7 +60,7 @@
 	<xsl:variable name="proc2ServiceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes to App Services']"></xsl:variable>
 	<xsl:variable name="physproc2AppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"></xsl:variable>
 	<xsl:variable name="allPlansData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Planning Data']"></xsl:variable>
-	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Bus KPIs']"></xsl:variable>
+	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Bus KPIs'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
 	
 	<xsl:template match="knowledge_base">
         <xsl:variable name="apiBCM">
@@ -959,7 +959,7 @@
                             <xsl:with-param name="viewerAPIPathPlans" select="$apiPlans"></xsl:with-param>
 							<xsl:with-param name="viewerAPIPathkpi" select="$apikpi"></xsl:with-param>
                         </xsl:call-template>  
-                    </script>                
+                    </script>          
                     <script id="panel-template" type="text/x-handlebars-template">
 
                         <div id="summary-content">
@@ -2120,8 +2120,7 @@ $('document').ready(function () {
   
 		plans=responses[8];  
 		pmc=responses[9].perfCategory; 
-		let pms=responses[9].businessCapabilities;
-	 
+		let pms=responses[9].businessCapabilities; 
 		
 		pms?.forEach((d)=>{ 
 			if(d.perfMeasures.length&gt;0){
@@ -2273,7 +2272,9 @@ let focusCap = capsArray.businessCapabilities.find((d)=>{
 let capDetail = workingArray.busCaptoAppDetails.find((f)=>{
 	return f.id == thisCapId
 });
+ 
 focusCap['pm']=capDetail.pm;
+focusCap['domainIds']=capDetail.domainIds;
 
 let capElements=[];  
 let processElements=[];
@@ -2410,15 +2411,17 @@ thisPlan.forEach((p) => {
         let physpro=[];
  
         let thisDomains=[];
-	
-		if(focusCap.domainIds=['']){focusCap.domainIds=[]}
-        focusCap.domainIds?.forEach((f)=>{ 
  
+	if(focusCap.domainIds==['']){ focusCap.domainIds=[]}
+        focusCap.domainIds?.forEach((f)=>{ 
+	 
             let doms=domsArray.find((e)=>{
                 return e.id==f
             }) 
+		 
             thisDomains.push({"id":f, "name":doms.name})
         });
+ 
         focusCap.domains = thisDomains; 
 		
 		 
@@ -2577,7 +2580,7 @@ thisPlan.forEach((p) => {
 		if(filteredArray){
 			focusCap['otherEnums']=filteredArray
 		}
-		 
+ 
         let panelSet = new Promise(function(myResolve, myReject) { $('#mainPanel').html(panelTemplate(focusCap))
             myResolve();  
             myReject();

@@ -25,26 +25,38 @@
 		* 
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
-    <xsl:variable name="apps" select="node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]"/>
-	<xsl:key name="appsNamekey" match="node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]" use="name"/>
-	<xsl:key name="appskey" match="node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]" use="own_slot_value[slot_reference='provides_application_services']/value"/>
+	<xsl:key name="appsTypekey" match="node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')]" use="type"/>
+
+    <xsl:variable name="apps" select="key('appsTypekey', ('Application_Provider', 'Composite_Application_Provider'))"/>
+	<xsl:key name="appsNamekey" match="$apps" use="name"/>
+	<xsl:key name="appskey" match="$apps" use="own_slot_value[slot_reference='provides_application_services']/value"/>
     <xsl:key name="approlesKey" match="node()/simple_instance[type = 'Application_Provider_Role']" use="own_slot_value[slot_reference = 'implementing_application_service']/value"/>
 	<xsl:key name="approlesbyappKey" match="node()/simple_instance[type = 'Application_Provider_Role']" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/> 
-	<xsl:variable name="appservices" select="node()/simple_instance[type = 'Application_Service']"/>
-	<xsl:key name="appservicesKey" match="node()/simple_instance[type = 'Application_Service']" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/> 
-    <xsl:variable name="codebaseStatus" select="node()/simple_instance[type = 'Codebase_Status'][name=$apps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
-  
-	<xsl:key name="approlesPPKey" match="node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/>
 	
-     <xsl:variable name="physProcesses" select="node()/simple_instance[type = 'Physical_Process']"/>  
+	<xsl:key name="appservicesTypeKey" match="node()/simple_instance[type = 'Application_Service']" use="type"/>
+	<xsl:variable name="appservices" select="key('appservicesTypeKey', 'Application_Service')"/>
+	<xsl:key name="appservicesKey" match="$appservices" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/> 
+    <xsl:variable name="codebaseStatus" select="node()/simple_instance[type = 'Codebase_Status'][name=$apps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
+	
+	<xsl:key name="appsproPhysBusTypeKey" match="node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']" use="type"/>
+	<xsl:variable name="appsproPhysBus" select="key('appsproPhysBusTypeKey', 'APP_PRO_TO_PHYS_BUS_RELATION')"/>
+	<xsl:key name="approlesPPKey" match="$appsproPhysBus" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/>
+	
+	<xsl:key name="physical_ProcessTypeKey" match="node()/simple_instance[type = 'Physical_Process']" use="type"/> 
+
+     <xsl:variable name="physProcesses" select="key('physical_ProcessTypeKey', 'Physical_Process')"/>  
 	 <xsl:key name="physicalProcessesToAPRKey" match="$physProcesses" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/>
  
 	 <xsl:key name="physProcessesAppKey" match="$physProcesses" use="own_slot_value[slot_reference='phys_bp_supported_by_app_pro']/value"/>
     <xsl:variable name="busProcesses" select="node()/simple_instance[type = 'Business_Process']"/>  
 	<xsl:key name="busProcessesKey" match="$busProcesses" use="own_slot_value[slot_reference='implemented_by_physical_business_processes']/value"/>
  
-	<xsl:key name="inScopeBusCapsKey" match="node()/simple_instance[type = 'Business_Capability']" use="own_slot_value[slot_reference='realised_by_business_processes']/value"/> 
-	<xsl:key name="busCapsClassKey" match="node()/simple_instance[type = 'Business_Capability']" use="own_slot_value[slot_reference='element_classified_by']/value"/>  
+	<xsl:key name="busCapTypeKey" match="node()/simple_instance[type = 'Business_Capability']" use="type"/> 
+
+	<xsl:variable name="busCaps" select="key('busCapTypeKey', 'Business_Capability')"/>  
+
+	<xsl:key name="inScopeBusCapsKey" match="$busCaps" use="own_slot_value[slot_reference='realised_by_business_processes']/value"/> 
+	<xsl:key name="busCapsClassKey" match="$busCaps" use="own_slot_value[slot_reference='element_classified_by']/value"/>  
     
 	 <xsl:key name="inScopeCostsKey" match="/node()/simple_instance[type='Cost']" use="own_slot_value[slot_reference = 'cost_for_elements']/value"/>
 	 <xsl:variable name="inScopeCosts" select="key('inScopeCostsKey',$apps/name)"/>
@@ -124,10 +136,11 @@
 "services":[<xsl:apply-templates select="$aprsforapp" mode="getAppJSONservices"/>],
 "aprs":[<xsl:for-each select="current()/own_slot_value[slot_reference = 'provides_application_services']/value">{"id":"<xsl:value-of select="."/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "overlappingApplications":[<xsl:apply-templates select="$aprsforapp" mode="getAppOverlapServices"><xsl:with-param name="focusapp" select="current()"/></xsl:apply-templates>],
-"processList":[<xsl:for-each select="$thisBusProcs">{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-	<xsl:with-param name="theSubjectInstance" select="current()"/>
-	<xsl:with-param name="isForJSONAPI" select="true()"/>
-  </xsl:call-template>", "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>], 
+"processList":[<xsl:for-each select="$thisBusProcs">{<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+}" />
+<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>], 
 "processesSupporting":"<xsl:value-of select="count($thisPhysProcesses)"/>"
   <xsl:choose><xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"></xsl:when><xsl:otherwise>,"cost":"<xsl:value-of select="$costTypeTotal"/>"</xsl:otherwise></xsl:choose>
   ,"capsCount":"<xsl:value-of select="count($thisBusCaps)-$appBusValueValue"/>",
@@ -150,10 +163,12 @@
         <xsl:variable name="thisBusProcesses" select="$busProcesses[name=$thisPhysProcesses/own_slot_value[slot_reference='implements_business_process']/value]"/>-->
 		<xsl:variable name="thisBusProcesses" select="key('busProcessesKey',$thisPhysProcesses/name)"/>
 		
- 		{"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisserv/name)"/>","service":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$thisserv"/>
-			<xsl:with-param name="isForJSONAPI" select="true()"/>
-		  </xsl:call-template>","processes":[<xsl:apply-templates select="$thisBusProcesses" mode="getAppJSONprocesses"/>]}<xsl:if test="not(position() = last())">,</xsl:if>
+ 		{"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisserv/name)"/>",
+		 <xsl:variable name="combinedMap" as="map(*)" select="map{
+            'service': string(translate(translate($thisserv/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+        }" />
+        <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+          <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "processes":[<xsl:apply-templates select="$thisBusProcesses" mode="getAppJSONprocesses"/>]}<xsl:if test="not(position() = last())">,</xsl:if>
 		 
 	</xsl:template>
 	
@@ -167,10 +182,11 @@
 	 <xsl:variable name="appsMapped" select="key('appskey',$thisaprs/name )"/> 
 		{ 
 		"id":"<xsl:value-of select="eas:getSafeJSString($thisserv/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisserv"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-			  </xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate($thisserv/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"apps":[
         <xsl:for-each select="$thisaprs/own_slot_value[slot_reference = 'role_for_application_provider']/value">{
 			"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>
@@ -188,16 +204,19 @@
 	</xsl:template>
 
     <xsl:template match="node()" mode="getAppJSONprocesses">
-		<xsl:variable name="this" select="current()"/>{"process":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isForJSONAPI" select="true()"/>
-		  </xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position() = last())">,</xsl:if>
+		<xsl:variable name="this" select="current()"/>{"process":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'service': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position() = last())">,</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getServJSON"><xsl:variable name="thisaprs" select="key('approlesKey', current()/name)"/> {"serviceId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","service":"<xsl:call-template name="RenderMultiLangInstanceName">
-  <xsl:with-param name="theSubjectInstance" select="current()"/>
-  <xsl:with-param name="isForJSONAPI" select="true()"/>
-</xsl:call-template>", "applications":[<xsl:apply-templates select="$thisaprs" mode="getServJSONapps"/>]}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:template>
+	<xsl:template match="node()" mode="getServJSON"><xsl:variable name="thisaprs" select="key('approlesKey', current()/name)"/> {"serviceId":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'service': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "applications":[<xsl:apply-templates select="$thisaprs" mode="getServJSONapps"/>]}<xsl:if test="not(position() = last())">,</xsl:if> </xsl:template>
 	
     <xsl:template match="node()" mode="getServJSONapps">
 		<xsl:variable name="this" select="eas:getSafeJSString(current()/name)"/> 
@@ -274,10 +293,11 @@
 
 	<xsl:template match="node()" mode="selectJSON">
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-				</xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template><!--,
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template><!--,
 			"enumeration":"<xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_value']/value">"-->}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>	
 </xsl:stylesheet>

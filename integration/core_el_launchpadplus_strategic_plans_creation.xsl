@@ -180,10 +180,6 @@
                             <td>Define projects delivering the plans will exist and their parent programmes</td>
                         </tr> 
                         <tr>
-                            <td>Strat Plan to Project</td>
-                            <td>Map the strategic plans to the projects that will implement them, one plan may have several projects or a project may support multiple plans</td>
-                        </tr>  
-                        <tr>
                             <td>[ELEMENT] Planning Actions</td>
                             <td>These sheets allow you to define the element, the plan, the action and the project delivering that action. When you set and action for an element as part of a plan, it is worth considering if there is a counter action, e.g. enhance X when you retire Y </td>
                         </tr>  

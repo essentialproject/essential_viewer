@@ -121,10 +121,11 @@ exclude-result-prefixes="#all">
             <xsl:with-param name="isRenderAsJSString" select="true()"/>
 </xsl:call-template>",<xsl:variable name="thisApps" select="key('appsKey', current()/name)"/>
 "apps":[<xsl:for-each select="$thisApps">{"id":"<xsl:value-of select="current()/name"/>",
-        "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
+		<xsl:variable name="nameMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"/>
+		<xsl:variable name="result" select="serialize($nameMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($result,'{'),'}')" />
+	}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template> 
 <xsl:template mode="createFilterJSON" match="node()">	

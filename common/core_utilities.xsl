@@ -80,7 +80,7 @@
 	<xsl:variable name="utilitiesAllPDFConfigs" select="/node()/simple_instance[type = 'Report_PDF_Configuration']"/>
 	
 	<!-- Collect all available editors -->
-	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor', 'Configured_Editor')]"/>
+	<xsl:variable name="utilitiesAllEditors" select="/node()/simple_instance[type = ('Editor', 'Simple_Editor', 'Configured_Editor', 'Catalogue')]"/>
 	
 	<!-- Collect all available editor sections -->
 	<xsl:variable name="utilitiesAllEditorSections" select="/node()/simple_instance[type = 'Editor_Section']"/>
@@ -2201,6 +2201,7 @@
 				<xsl:when test="$theClass = 'Secured_Action'">enumeration_value</xsl:when>
 				<xsl:when test="$theClass = 'Report'">report_label</xsl:when>
 				<xsl:when test="$theClass = 'Editor'">report_label</xsl:when>
+				<xsl:when test="$theClass = 'Catalogue'">report_label</xsl:when>
 				<xsl:when test="$theClass = 'Configured_Editor'">report_label</xsl:when>
 				<xsl:when test="$theClass = 'Simple_Editor'">report_label</xsl:when>
 				<xsl:when test="$theClass = 'Taxonomy_Term'">taxonomy_term_label</xsl:when>

@@ -1054,7 +1054,7 @@ font-size:0.7em;
 			                    </div>
                 				<div class="ess-tags-wrapper top-10">
                 					<div class="ess-tag ess-tag-default"><i class="fa fa-code right-5"/>{{codebase}}</div>
-                					<div class="ess-tag ess-tag-default"><i class="fa fa-desktop right-5"/>{{appDelivery}}</div>
+                			<!--		<div class="ess-tag ess-tag-default"><i class="fa fa-desktop right-5"/>{{appDelivery}}</div> -->
                 					<div class="ess-tag ess-tag-default"><i class="fa fa-users right-5"/>{{processesSupporting}} Processes Supported</div>
                 					<div class="ess-tag ess-tag-default"><i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inboundIntegrations}} in / {{outboundIntegrations}} out)</div>
                 					
@@ -1933,8 +1933,7 @@ font-size:0.7em;
                   
                     processes.push({"id":match.processid, "name":match.processName, "className":"Business_Process"})
                 })
-                console.log('a',a)
-                console.log('processes',processes)
+ 
                 a['processesList']=processes;
                 a['totalIntegrations']=parseInt(a.inI)+parseInt(a.outI);
                 a['scenarioCostNum']=((a.totalIntegrations*4)+(a.physP.length*2))*600;
@@ -1986,6 +1985,8 @@ font-size:0.7em;
             
               if(appJSON.length&lt;100){
                 scenarioBuilder(appJSON2)
+              }else{
+                  $('#insightTab').hide()
               }
 
               $('#rate').val(fteRate)
@@ -2250,7 +2251,7 @@ var carriedApps = JSON.parse(sessionStorage.getItem("context"));
 						return 0;
 					})
 					selectArray.unshift({val : '', text: 'choose'});
-					var sel = $('&lt;select id="carriedSelect">').appendTo('#selPlace');
+					var sel = $('&lt;select id="carriedSelect" style="width:100%">').appendTo('#selPlace');
 					$(selectArray).each(function() {
 					 sel.append($("&lt;option>").attr('value',this.val).text(this.text));
 					});

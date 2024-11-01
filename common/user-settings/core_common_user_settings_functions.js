@@ -136,21 +136,21 @@ class PlannedChange {
 
         this.id = aChange.id;
         this.icon = typeInfo?.icon;
-        this.instance = inScopeInstances.find(inst => inst.id == aChange.instId);
+        this.instance = inScopeInstances.find(inst => inst.id == aChange?.instId);
         if(!this.instance.type) {
             this.instance.type = typeInfo?.label;
         }
         this.instance.icon = typeInfo?.icon;
-        this.strategicPlan = allStratPlans.find(sp => sp.id == aChange.planId);
-        this.planningAction = allPlanningActions.find(pa => pa.id == aChange.actionId);
+        this.strategicPlan = allStratPlans.find(sp => sp.id == aChange?.planId);
+        this.planningAction = allPlanningActions.find(pa => pa.id == aChange?.actionId);
         if(this.planningAction?.changeType) {
             let changeType = this.planningAction.changeType;
             let changeInfo = CHANGE_TYPE_INFO.find(chgInfo => chgInfo.name == changeType);
             this.planningAction.icon = changeInfo?.icon;
             this.planningAction.colour = changeInfo?.colour;
         }
-        this.changeActivity = allChangeActivities.find(ca => ca.id == aChange.changeActivityId);
-        this.roadmaps = allRoadmaps.filter(rm => aChange.roadmapIds.indexOf(rm.id) >= 0);
+        this.changeActivity = allChangeActivities.find(ca => ca.id == aChange?.changeActivityId);
+        this.roadmaps = allRoadmaps.filter(rm => aChange?.roadmapIds.indexOf(rm.id) >= 0);
     }
 }
 
@@ -1322,11 +1322,11 @@ var easTimeMachine={
         let rmMonthStop = essRMEndDate;
         let inScopePlans = [];
         let filteredInstances = inScopeInstances.filter(inst => {
-            let allPlansForInst = plans.filter(plan => plan.instId == inst.id);
+            let allPlansForInst = plans?.filter(plan => plan.instId == inst.id);
 
     
             //If there are no plans for the instance, it is in scope
-            if(allPlansForInst.length == 0) {return true};
+            if(!(allPlansForInst?.length > 0)) {return true};
 
             //get all plans that are completed before the end date
             let instInScopePlans = allPlansForInst.filter(plan => plan.end <= rmMonthStop);
@@ -1582,4 +1582,15 @@ function rmCreateInScopeChangesTable() {
 
 }
 
+var currentLang=`<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>`;
+
+function formatDateforLocale(datestring, locale){
+    const date = new Date(datestring);
+    return new Intl.DateTimeFormat(locale, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).format(date);
+
+}
 

@@ -6,14 +6,18 @@
 	<xsl:param name="param1"/> 
 	<xsl:variable name="physicalProcess" select="/node()/simple_instance[type=('Physical_Process')]"/> 
 	<xsl:variable name="a2r" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')][name=$physicalProcess/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+	<xsl:key name="a2rKey" match="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]" use="name"/>
 	<xsl:variable name="orgviaa2r" select="/node()/simple_instance[type=('Group_Actor')][name=$a2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
+	<xsl:key name="orgKey" match="/node()/simple_instance[type=('Group_Actor')]" use="name"/>
 	<xsl:variable name="orgdirect" select="/node()/simple_instance[type=('Group_Actor')][name=$physicalProcess/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:variable name="orgs" select="$orgdirect union $orgviaa2r"/>
 	<xsl:variable name="businessProcess" select="/node()/simple_instance[type=('Business_Process')][name=$physicalProcess/own_slot_value[slot_reference = 'implements_business_process']/value]"/>
 	<xsl:variable name="aprpbr" select="/node()/simple_instance[type=('APP_PRO_TO_PHYS_BUS_RELATION')][name=$physicalProcess/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"/>
-	<xsl:variable name="apr" select="/node()/simple_instance[type=('Application_Provider_Role')][name=$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"/>
+	<xsl:key name="aprKey" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="name"/>
+	<xsl:variable name="apr" select="key('aprKey',$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value)"/>
 	<xsl:variable name="AppsViaService" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$apr/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
 	<xsl:variable name="AppsDirect" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$aprpbr/own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value]"/>
+	<xsl:key name="appsKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]" use="name"/>
 	<xsl:variable name="criticality" select="/node()/simple_instance[type=('Business_Criticality')]"/>
 
 	<xsl:key name="busProcess_key" match="/node()/simple_instance[type=('Business_Process')]" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/>
@@ -57,15 +61,12 @@
 	<xsl:variable name="thisaprpbr" select="key('appbr_key',current()/name)"/>
 	<xsl:variable name="thisapr" select="key('apr_key',$thisaprpbr/name)"/>
 	<xsl:variable name="thisAppsDirect" select="key('app_key',$thisaprpbr/name)"/>	
-	
-	<xsl:variable name="thisAppsViaService" select="$AppsViaService[name=$thisapr/own_slot_value[slot_reference = 'role_for_application_provider']/value]"/>
-
-		
-	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
-	<xsl:variable name="thisorgviaa2r" select="$orgviaa2r[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-	<xsl:variable name="thisorgdirect" select="$orgdirect[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+	<xsl:variable name="thisAppsViaService" select="key('appsKey', $thisapr/own_slot_value[slot_reference = 'role_for_application_provider']/value)"/>
+	<xsl:variable name="thisa2r" select="key('a2rKey', current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)"/>
+	<xsl:variable name="thisorgviaa2r" select="key('orgKey', $thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value)"/>
+	<xsl:variable name="thisorgdirect" select="key('orgKey',current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)"/>
 	<xsl:variable name="thisorgs" select="$thisorgdirect union $thisorgviaa2r"/>	
-	<xsl:variable name="thisCriticality" select="$criticality[name=current()/own_slot_value[slot_reference = 'bpt_business_criticality']/value]"/>
+	<xsl:variable name="thisCriticality" select="$criticality[name=$thisbpr/own_slot_value[slot_reference = 'bpt_business_criticality']/value]"/>
 	{  
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"processName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbpr"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",

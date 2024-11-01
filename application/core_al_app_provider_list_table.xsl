@@ -667,7 +667,7 @@
 					data.dynamicSearch = {};
 					 
 					if ($('.dynamic-filter').length > 0) {
-						console.log('exists')
+						 
 						
 						$('.dynamic-filter').each(function() {
 						 
@@ -677,10 +677,10 @@
 								data.dynamicSearch[inputId] = $(this)[0].value;
 							}
 						});
-						console.log('dynamicSearch', data.dynamicSearch);
+					 
 					}
 						// Save the state object to local storage
-						console.log('dta', data);
+						 
 					localStorage.setItem('DataTables_App_Pro' + settings.sInstance, JSON.stringify(data))
 				},
 				stateLoadCallback: function(settings) {

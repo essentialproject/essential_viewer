@@ -1,0 +1,486 @@
+.tooltip {
+    position: absolute;
+    pointer-events: none;
+}
+
+.thead input {
+    width: 100%;
+}
+.ess-blob {
+    margin: 0 15px 15px 0;
+    border: 1px solid #ccc;
+    height: 40px;
+    width: 140px;
+    border-radius: 4px;
+    display: table;
+    position: relative;
+    text-align: center;
+    float: left;
+}
+
+.orgName {
+    font-size: 2.4em;
+    padding-top: 30px;
+    text-align: center;
+}
+
+.ess-blobLabel {
+    display: table-cell;
+    vertical-align: middle;
+    line-height: 1.1em;
+    font-size: 90%;
+}
+
+.infoButton > a {
+    position: absolute;
+    bottom: 0px;
+    right: 3px;
+    color: #aaa;
+    font-size: 90%;
+}
+
+.dataTables_filter label {
+    display: inline-block !important;
+}
+
+#summary-content label {
+    margin-bottom: 5px;
+    font-weight: 600;
+    display: block;
+}
+
+#summary-content h3 {
+    font-weight: 600;
+}
+
+.ess-tag {
+    padding: 3px 12px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    display: inline-block;
+    font-weight: 700;
+    font-size: 90%;
+}
+
+.map {
+    width: 100%;
+    height: 400px;
+    min-width: 450px;
+    min-height: 400px;
+}
+
+.dashboardPanel {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.parent-superflex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.superflex {
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    flex-basis: 1;
+}
+
+.ess-list-tags {
+    padding: 0;
+}
+
+.ess-string {
+    background-color: #f6f6f6;
+    padding: 5px;
+    display: inline-block;
+}
+
+.ess-doc-link {
+    padding: 3px 8px;
+    border: 1px solid #6dadda;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+    font-weight: 700;
+    background-color: #fff;
+    font-size: 85%;
+}
+
+.ess-doc-link:hover {
+    opacity: 0.65;
+}
+
+.ess-list-tags li {
+    padding: 3px 12px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    display: inline-block;
+    font-weight: 700;
+    background-color: #eee;
+    font-size: 85%;
+}
+
+.ess-mini-badge {
+    display: inline-block !important;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+@media (min-width: 1220px) and (max-width: 1720px) {
+    .ess-column-split > div {
+        width: 450px;
+        float: left;
+    }
+}
+
+.bdr-left-blue {
+    border-left: 2pt solid #5b7dff !important;
+}
+
+.bdr-left-indigo {
+    border-left: 2pt solid #6610f2 !important;
+}
+
+.bdr-left-purple {
+    border-left: 2pt solid #6f42c1 !important;
+}
+
+.bdr-left-pink {
+    border-left: 2pt solid #a180da !important;
+}
+
+.bdr-left-red {
+    border-left: 2pt solid #f44455 !important;
+}
+
+.bdr-left-orange {
+    border-left: 2pt solid #fd7e14 !important;
+}
+
+.bdr-left-yellow {
+    border-left: 2pt solid #fcc100 !important;
+}
+
+.bdr-left-green {
+    border-left: 2pt solid #5fc27e !important;
+}
+
+.bdr-left-teal {
+    border-left: 2pt solid #20c997 !important;
+}
+
+.bdr-left-cyan {
+    border-left: 2pt solid #47bac1 !important;
+}
+
+@media print {
+    #summary-content .tab-content > .tab-pane {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    #summary-content .no-print {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    #summary-content .tab-pane {
+        page-break-after: always;
+    }
+}
+
+@media screen {
+    #summary-content .print-only {
+        display: none !important;
+        visibility: hidden !important;
+    }
+}
+.stat {
+    border: 1pt solid #d3d3d3;
+    border-radius: 4px;
+    margin: 5px;
+    padding: 3px;
+}
+.lbl-large {
+    font-size: 200%;
+    border-radius: 5px;
+    margin-right: 10%;
+    margin-left: 10%;
+    text-align: center;
+    /* display: inline-block; */
+    /* width: 60px; */
+    box-shadow: 2px 2px 2px #d3d3d3;
+}
+.lbl-big {
+    font-size: 150%;
+}
+.roleBlob {
+    background-color: rgb(68, 182, 179);
+}
+
+.date-box {
+    background-color: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 20px;
+    max-width: 400px;
+    margin: 20px auto;
+    font-family: "Courier New", Courier, monospace; /* Mimics the monospace font of flight boards */
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.dateTitle {
+    font-size: 13px;
+    margin-bottom: 4px;
+    letter-spacing: 0px;
+    font-weight: bold;
+}
+
+.dateColumns {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dateColumn {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: center;
+    background-color: #696969; /* Slightly lighter background for columns */
+    padding: 4px;
+    border-radius: 5px;
+    color: #ffe14c;
+    font-weight: bold;
+    height: 35px;
+}
+
+.dateLabel {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.dateNums {
+    color: #ffe14c;
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.animated-path {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 500; /* Adjusted for each segment based on its length */
+    stroke-dashoffset: 500;
+    animation: draw-path 2s linear forwards; /* Each segment animates separately */
+}
+.connect-line {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 500; /* Adjusted for each segment based on its length */
+    stroke-dashoffset: 500;
+    animation: draw-path 2s linear forwards; /* Each segment animates separately */
+    stroke: #2980b9; /* Default color for connecting lines */
+    stroke-width: 2;
+}
+text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #2980b9;
+}
+.name-text {
+    font-weight: bold;
+    dy: "-1em"; /* Shifts the name text up */
+}
+.date-text {
+    dy: "1em"; /* Positions the date text just below the center line */
+}
+@keyframes draw-path {
+    from {
+        stroke-dashoffset: 500;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+#timeline1 svg {
+    overflow: visible;
+}
+.planBox {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: left; /* Horizontal alignment */
+    min-height: 35px;
+    border: 1pt solid #d3d3d3;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #00203fff !important;
+    border-radius: 5px;
+    padding: 3px;
+    font-size: 1.1.em;
+}
+.planBox > a {
+    color: #00203fff;
+}
+.planBoxDescription {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: left; /* Horizontal alignment */
+    min-height: 35px;
+    padding: 3px;
+    font-size: 1.1.em;
+    border: 1pt solid #d3d3d3;
+    background-color: #f2f2f2;
+    color: #00203fff;
+    border-radius: 5px;
+}
+.badgeHeader {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment */
+    height: 25px;
+    font-weight: bold;
+    width: 120px;
+    padding: 3px;
+    font-size: 1.1em;
+    border: 1pt solid #d3d3d3;
+    border-radius: 5px;
+}
+.objectiveBox {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: left; /* Horizontal alignment */
+    min-height: 35px;
+    border: 1pt solid #d3d3d3;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #1b1b1b !important;
+    border-radius: 5px;
+    padding: 3px;
+    font-size: 1.1.em;
+}
+.objectiveBoxData {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: left; /* Horizontal alignment */
+    min-height: 35px;
+    border: 1pt solid #d3d3d3;
+    background-color: #c4c5ba;
+    font-weight: bold;
+    color: #1b1b1b !important;
+    border-radius: 5px;
+    padding: 3px;
+    font-size: 1.1.em;
+}
+.objectiveBoxDataList {
+    display: flex;
+    align-items: left; /* Vertical alignment */
+    justify-content: left; /* Horizontal alignment */
+    min-height: 35px;
+    border: 1pt solid #d3d3d3;
+    background-color: #c4c5ba;
+    font-weight: normal;
+    color: #1b1b1b !important;
+    border-radius: 5px;
+    padding: 3px;
+    font-size: 1.1.em;
+}
+.objectiveBox,
+.objectiveBoxData {
+    height: 98%; /* Makes divs fill their parent cell's height */
+    display: flex; /* Use flexbox to manage content */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center content vertically if needed */
+}
+
+.objectiveBox a,
+.objectiveBoxData ul {
+    width: 98%; /* Optional: ensure content uses all horizontal space */
+    margin: 0; /* Removes default margins */
+    padding: 0; /* Adjust padding as needed */
+}
+
+.objcard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.objcard {
+    position: relative;
+    width: 250px;
+    min-height: 150px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    border-left: 3px solid #c96ee6;
+    border-radius: 5px;
+}
+
+.objcontent,
+.objpanel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    font-size: 1em;
+}
+
+.objcontent {
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+.icon,
+.close {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.objpanel {
+    background-color: #ddd;
+    transform: translateX(100%);
+    padding: 20px;
+}
+
+.objpanel.open {
+    transform: translateX(0%);
+}
+.descriptionBox {
+    padding: 3px;
+    font-size: 1em;
+    border: 1pt solid #d3d3d3;
+    background-color: #ffffff;
+    color: #000000;
+    overflow-y: scrollable;
+    border-radius: 5px;
+}
+.planElement {
+    padding: 2px;
+    padding-bottom: 3px;
+    margin: 2px;
+    display: inline-block;
+    border: 1pt solid #d3d3d3;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.textStatus {
+    display: inline-block;
+}

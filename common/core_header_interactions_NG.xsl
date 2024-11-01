@@ -166,25 +166,6 @@
 				'isApprover': <xsl:value-of select="$sysUserIsApprover"/>
 			};
 
-			/***********************************
-			Dynamic CSRF token request functionality 
-			************************************/
-
-			// Set the essViewer.csrfToken
-			var aRequest = new XMLHttpRequest();
-			aRequest.open("GET", essViewer.baseUrl + "/report?GET-CSRF=true", false);
-			aRequest.send(null);
-
-			if(aRequest.status == 200)
-			{
-				essViewer.csrfToken = aRequest.responseText;
-			}
-			else
-			{
-				alert("CSRF Issue. Please try refreshing the page, or logging out and back in again. If this issue persists, please contact Support.");
-			}
-
-
 			// define the global object to hold environment variables
 			// note we have to define this script in-line to make use of the xsl values
 			<xsl:variable name="targetReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theCurrentXSL]"/>
@@ -290,8 +271,8 @@
 			
 </script>
 
-<!-- Call the JS script to load the CSRF token -->
-<!-- <script defer="defer" src="common/js/ess-csrf.js"></script> -->
+<!-- Call the JS script to load the CSRF token! -->
+<script defer="defer" src="common/js/ess-csrf.js"></script>
 
 <!--Include library containing common API platform functions for retrieving and updating repository data-->
 <script type="text/javascript" src="common/js/core_common_api_functions.js"/>

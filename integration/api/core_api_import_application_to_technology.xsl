@@ -24,7 +24,10 @@
 	<xsl:key name="tputpu_key" match="/node()/simple_instance[type=(':TPU-TO-TPU-RELATION')]" use="own_slot_value[slot_reference = ':FROM']/value"/>
 	<xsl:key name="techprod_key" match="/node()/simple_instance[type=('Technology_Product')]" use="own_slot_value[slot_reference = 'implements_technology_components']/value"/>
 	<xsl:key name="techcomp_key" match="/node()/simple_instance[type=('Technology_Component')]" use="own_slot_value[slot_reference = 'realised_by_technology_products']/value"/>
-
+	<xsl:key name="techprodname_key" match="/node()/simple_instance[type=('Technology_Product')]" use="name"/>
+	<xsl:key name="techcompname_key" match="/node()/simple_instance[type=('Technology_Component')]" use="name"/>
+	<xsl:key name="tpr_key" match="/node()/simple_instance[type=('Technology_Product_Role')]" use="name"/>
+	
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -73,7 +76,7 @@
 			<xsl:variable name="thisTechCompsSource" select="key('techcomp_key',$sourcetechProductRole/name)"/>  
 			<xsl:variable name="thisTechCompsTarget" select="key('techcomp_key',$targettechProductRole/name)"/>  
 			<xsl:variable name="thisDeployment" select="$deploymentRole[name=$deploymentType]"/>  
-			{ 
+			{ "debug":"<xsl:value-of select="$thistpu/name"/>", 
 				<xsl:variable name="tempProd" as="map(*)" select="map{'fromTechProduct': string(translate(translate($thisTechProdsSource/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
 				<xsl:variable name="result" select="serialize($tempProd, map{'method':'json', 'indent':true()})"/>  
 				<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
@@ -97,7 +100,33 @@
 			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 			}, 
 		</xsl:for-each>
-		 
+		</xsl:for-each>{}],
+		"allTechProds":[<xsl:for-each select="$thisDeployment">
+	  <xsl:variable name="thisProductBuild" select="$techProductBuild[name=current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value]"/>
+	 <xsl:variable name="thistechBuildArchitecture" select="key('apptechbuild_key',$thisProductBuild/name)"/>   
+	 <xsl:variable name="thistpu" select="key('tpu_key',$thistechBuildArchitecture/name)"/>   
+	 <xsl:variable name="thisTprRelation" select="key('tpr_key',$thistpu/own_slot_value[slot_reference='provider_as_role']/value)"/>   
+
+	 <xsl:variable name="deploymentType" select="current()/own_slot_value[slot_reference='application_deployment_role']/value"/>
+	 <xsl:variable name="thisDeployment" select="$deploymentRole[name=$deploymentType]"/>  
+	 
+			<xsl:for-each select="$thisTprRelation">
+				<xsl:variable name="thisTechComp" select="key('techcompname_key',current()/own_slot_value[slot_reference='implementing_technology_component']/value)"/>
+				<xsl:variable name="thisTechProd" select="key('techprodname_key',current()/own_slot_value[slot_reference='role_for_technology_provider']/value)"/>
+			{   
+			"tpr":"<xsl:value-of select="current()/name"/>",
+			"productId":"<xsl:value-of select="current()/own_slot_value[slot_reference='role_for_technology_provider']/value"/>",
+			"componentId":"<xsl:value-of select="current()/own_slot_value[slot_reference='implementing_technology_component']/value"/>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'product': string(translate(translate($thisTechProd/own_slot_value[slot_reference = 'name']/value,'}',')'),'{',')')),
+				'component': string(translate(translate($thisTechComp/own_slot_value[slot_reference = 'name']/value,'}',')'),'{',')')),
+				'environment': string(translate(translate($thisDeployment/own_slot_value[slot_reference = 'name']/value,'}',')'),'{',')')) 
+			}"/> 
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')" />, 
+			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+			}, 
+		</xsl:for-each>
 		</xsl:for-each>{}]
 		,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
   </xsl:template>

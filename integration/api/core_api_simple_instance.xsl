@@ -34,6 +34,7 @@
             <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($thisInstance/own_slot_value[slot_reference = ('name', 'relation_name', ':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
 				<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
 				<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+            <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="$thisInstance"/></xsl:call-template>,
 			"instance": [
 				<xsl:apply-templates mode="RenderSlots" select="$thisInstance/own_slot_value">
 					
@@ -49,42 +50,54 @@
         <xsl:variable name="normalizedValues" select="normalize-space($values)"/>
         <xsl:variable name="valuesArray" select="tokenize($normalizedValues, ' ')"/>
         <xsl:variable name="valuesCount" select="count($valuesArray)"/>
-       
+    
         {
-
             "type": "<xsl:value-of select="../type"/>",
             "slotType": "<xsl:value-of select="$sltType"/>",
             "name": "<xsl:value-of select="$name"/>",
-            "value": <xsl:choose>
+             <xsl:choose>
                         <xsl:when test="starts-with($name, ':')">
                             <xsl:variable name="inst" select="$rootNode[name=$normalizedValues]"/>
-                            {"id":"<xsl:value-of select="$normalizedValues"/>"
-                                }
+                            <xsl:variable name="nametemp" as="map(*)" select="map{'value': string(translate(translate($values,'}',')'),'{',')'))}"></xsl:variable>
+                            <xsl:variable name="nameresult" select="serialize($nametemp, map{'method':'json', 'indent':true()})"/>  
+                            <xsl:value-of select="substring-before(substring-after($nameresult,'{'),'}')"></xsl:value-of>
+                            
                         </xsl:when>
                         <xsl:otherwise>
-                            [<xsl:if test="$valuesCount > 1">
-                                <xsl:for-each select="$valuesArray">
-                                    <xsl:variable name="currentValue" select="."/> 
-                                    <xsl:variable name="inst" select="$rootNode[name=$currentValue]"/>
-                                {"id":"<xsl:value-of select="$currentValue"/>",
-                                   <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($inst/own_slot_value[slot_reference = ('name', 'relation_name', ':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
-                                   <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-                                   <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>
-                                }
-                                <xsl:if test="position() != last()">,</xsl:if>
-                                </xsl:for-each>
-                             </xsl:if>
-                             <xsl:if test="$valuesCount = 1">
-                                <xsl:variable name="inst" select="$rootNode[name=$valuesArray]"/>
-                                {"id":"<xsl:value-of select="$valuesArray"/>",
-                                   <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($inst/own_slot_value[slot_reference = ('name', 'relation_name', ':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
-                                   <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-                                   <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>
-                                } 
-                             </xsl:if>]
+                            <xsl:choose>
+                                <xsl:when test="$sltType = 'string'">
+                                    <xsl:variable name="nametemp" as="map(*)" select="map{'value': string(translate(translate($normalizedValues,'}',')'),'{',')'))}"></xsl:variable>
+                                    <xsl:variable name="nameresult" select="serialize($nametemp, map{'method':'json', 'indent':true()})"/>  
+                                    <xsl:value-of select="substring-before(substring-after($nameresult,'{'),'}')"></xsl:value-of>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                   "values": [<xsl:if test="$valuesCount > 1">
+                                        <xsl:for-each select="$valuesArray">
+                                            <xsl:variable name="currentValue" select="."/> 
+                                            <xsl:variable name="inst" select="$rootNode[name=$currentValue]"/>
+                                            {"id":"<xsl:value-of select="$currentValue"/>",
+                                                <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($inst/own_slot_value[slot_reference = ('name', 'relation_name', ':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+                                                <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+                                                <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+                                                <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="$inst"/></xsl:call-template>
+                                            }
+                                            <xsl:if test="position() != last()">,</xsl:if>
+                                        </xsl:for-each>
+                                    </xsl:if>
+                                    <xsl:if test="$valuesCount = 1">
+                                        <xsl:variable name="inst" select="$rootNode[name=$valuesArray]"/>
+                                        {"id":"<xsl:value-of select="$valuesArray"/>",
+                                            <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($inst/own_slot_value[slot_reference = ('name', 'relation_name', ':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+                                            <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+                                            <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+                                            <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="$inst"/></xsl:call-template>
+                                        } 
+                                    </xsl:if>]
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:otherwise>
                      </xsl:choose> 
-        } <xsl:if test="position()!=last()">,</xsl:if>
+                     } <xsl:if test="position()!=last()">,</xsl:if>
     </xsl:template>
     
 

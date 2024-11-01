@@ -67,15 +67,17 @@
 			"costccy":[<xsl:for-each select="$inScopeCosts"> 
 				<xsl:variable name="thisCostCurrency" select="$allCurrency[name=current()/own_slot_value[slot_reference='cost_currency']/value]"/>
 				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-				"ccy":"<xsl:value-of select="$thisCostCurrency/own_slot_value[slot_reference='currency_code']/value"/>"}<xsl:if test="not(position()=last())">,</xsl:if> </xsl:for-each>],	
+				"ccy":"<xsl:value-of select="$thisCostCurrency/own_slot_value[slot_reference='currency_code']/value"/>",
+				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position()=last())">,</xsl:if> </xsl:for-each>],	
             "costs":[<xsl:for-each select="$inScopeCostComponents">
 					<xsl:variable name="thisCurrency" select="$allCurrency[name=current()/own_slot_value[slot_reference='cc_cost_currency']/value]"/>
                     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 					"ccy":"<xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='currency_code']/value"/>",
 					"name":"<xsl:value-of select="$costType[name=current()/own_slot_value[slot_reference='cc_cost_component_type']/value]/own_slot_value[slot_reference='name']/value"/>","cost":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/>","currency":"<xsl:choose><xsl:when test="$thisCurrency/own_slot_value[slot_reference='currency_code']/value"><xsl:value-of select="$thisCurrency/own_slot_value[slot_reference='currency_symbol']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="$currency"/></xsl:otherwise></xsl:choose>",
 					"startDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
-					"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>"}<xsl:if test="not(position()=last())">,</xsl:if>           
-                </xsl:for-each>]
+					"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="not(position()=last())">,</xsl:if>           
+                </xsl:for-each>],
+				<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
         <!--
 		"change":"<xsl:choose><xsl:when test="not($isAuthzForCostClasses) or not($isAuthzForCostInstances)"></xsl:when>	<xsl:otherwise>
                                 		<xsl:variable name="costTypeTotal" select="eas:get_cost_components_total($thisinScopeCostComponents, 0)"/>

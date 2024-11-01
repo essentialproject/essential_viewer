@@ -4,7 +4,13 @@
 <xsl:include href="../../common/core_js_functions.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
 <xsl:param name="param1"/> 
-<xsl:variable name="allBusCaps" select="/node()/simple_instance[type = 'Business_Capability']"></xsl:variable>
+
+<xsl:key name="allbusCaps_key" match="/node()/simple_instance[(type = 'Business_Capability')]" use="type"/>
+<xsl:key name="allApps_key" match="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]" use="type"/>
+<xsl:key name="allChildCap2ParentCapRelsKey" match="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']" use="type"/>
+<xsl:key name="a2rKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="type"></xsl:key>
+<xsl:variable name="allBusCaps" select="key('allbusCaps_key', 'Business_Capability')"></xsl:variable>
+<xsl:key name="allbusCapsName_key" match="$allBusCaps" use="name"/>
 <xsl:variable name="busClass" select="/node()/class[name = ('Business_Capability')]" />
 <xsl:variable name="busSlots" select="/node()/slot[name = $busClass/template_slot]" />
 <xsl:variable name="parentEnumClass" select="/node()/class[superclass = 'Enumeration']" />
@@ -14,24 +20,34 @@
 <xsl:variable name="allBusSlots" select="$busSlots[own_slot_value[slot_reference=':SLOT-VALUE-TYPE']/value=$enumClass/name]"/> 
 <xsl:variable name="allEnumClass" select="$enumClass[name=$targetSlots]"/> 
 <xsl:variable name="busCapReportConstant" select="/node()/simple_instance[type = 'Report_Constant' and own_slot_value[slot_reference = 'name']/value = 'Root Business Capability']"></xsl:variable>
-<xsl:variable name="rootBusCap" select="$allBusCaps[name = $busCapReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"></xsl:variable>
-<xsl:variable name="L0BusCaps" select="$allBusCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"></xsl:variable>
-<xsl:variable name="allAppProviders" select="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]"></xsl:variable>
-<xsl:variable name="allChildCap2ParentCapRels" select="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']"/>
-<xsl:variable name="a2r" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']"></xsl:variable>
+<xsl:variable name="rootBusCap" select="key('allbusCapsName_key', $busCapReportConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value)"></xsl:variable>
+<xsl:variable name="L0BusCaps" select="key('allbusCapsName_key',$rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value)"></xsl:variable>
+<xsl:variable name="allAppProviders" select="key('allApps_key', ('Application_Provider', 'Composite_Application_Provider'))"></xsl:variable>
+<xsl:variable name="allChildCap2ParentCapRels" select="key('allChildCap2ParentCapRelsKey', 'BUSCAP_TO_PARENTBUSCAP_RELATION')"/>
+<xsl:variable name="a2r" select="key('a2rKey', 'ACTOR_TO_ROLE_RELATION')"></xsl:variable>
+<xsl:key name="a2rName" match="$a2r" use="name"></xsl:key>
 <xsl:variable name="countries" select="/node()/simple_instance[type='Geographic_Region']"/>
 <xsl:variable name="allSites" select="/node()/simple_instance[(type = 'Site')]"/>
 <xsl:variable name="productConcepts" select="/node()/simple_instance[type='Product_Concept']"/>
 <xsl:variable name="allLifecycleStatus" select="/node()/simple_instance[type = 'Lifecycle_Status']"/>
 <xsl:variable name="allLifecycleStatustoShow" select="$allLifecycleStatus[(own_slot_value[slot_reference='enumeration_sequence_number']/value &gt; -1) or not(own_slot_value[slot_reference='enumeration_sequence_number']/value)]"/>
  <xsl:variable name="allElementStyles" select="/node()/simple_instance[type = 'Element_Style']"/>
-<xsl:variable name="relevantBusProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'realises_business_capability']/value = $allBusCaps/name]"></xsl:variable>
+
+ <xsl:key name="allbusProcs_key" match="/node()/simple_instance[(type = 'Business_Process')]" use="own_slot_value[slot_reference = 'realises_business_capability']/value"/>
+ <xsl:key name="allPhysProcs_key" match="/node()/simple_instance[(type = 'Physical_Process')]" use="own_slot_value[slot_reference = 'implements_business_process']/value"/>
+<xsl:variable name="relevantBusProcs" select="key('allbusProcs_key', $allBusCaps/name)"></xsl:variable>
 <xsl:key name="taxTerm" match="/node()/simple_instance[type = 'Taxonomy_Term']" use="own_slot_value[slot_reference = 'classifies_elements']/value"/>
 <xsl:key name="taxonomy" match="/node()/simple_instance[type = 'Taxonomy']" use="own_slot_value[slot_reference = 'taxonomy_terms']/value"/>
-<xsl:variable name="relevantPhysProcs" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_business_process']/value = $relevantBusProcs/name]"></xsl:variable>
+<xsl:variable name="relevantPhysProcs" select="key('allPhysProcs_key', $relevantBusProcs/name)"></xsl:variable>
 <xsl:key name="physActKey" match="$a2r" use="own_slot_value[slot_reference = 'performs_physical_processes']/value"/>
+<xsl:variable name="thisrelevantPhysProcsActorsIndirect" select="key('a2rName', $relevantPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)"></xsl:variable>
+<xsl:key name="perfMeasureKey" match="/node()/simple_instance[supertype = 'Performance_Measure']" use="own_slot_value[slot_reference = 'pm_performance_value']/value"/>
+<xsl:key name="servQualKey" match="/node()/simple_instance[supertype = 'Service_Quality_Value']" use="own_slot_value[slot_reference = 'usage_of_service_quality']/value"/>
+
+
+<!--
 <xsl:variable name="thisrelevantPhysProcsActorsIndirect" select="$a2r[name=$relevantPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
-<!--<xsl:variable name="relevantPhysProc2AppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relevantPhysProcs/name]"></xsl:variable>
+<xsl:variable name="relevantPhysProc2AppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relevantPhysProcs/name]"></xsl:variable>
 <xsl:variable name="relevantAppProRoles" select="/node()/simple_instance[name = $relevantPhysProc2AppProRoles/own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value]"></xsl:variable>
 <xsl:variable name="processToAppRel" select="/node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']"></xsl:variable>
 <xsl:variable name="directProcessToAppRel" select="$processToAppRel[name = $relevantPhysProcs/own_slot_value[slot_reference = 'phys_bp_supported_by_app_pro']/value]"></xsl:variable>
@@ -44,11 +60,11 @@
 <xsl:variable name="appTypesEnums" select="/node()/simple_instance[type='Application_Purpose']"/>
 <xsl:variable name="relevantAppTypes" select="$appTypesEnums[name = $allAppProviders/own_slot_value[slot_reference = 'application_provider_purpose']/value]"></xsl:variable>
 <xsl:variable name="BusinessFit" select="/node()/simple_instance[type = 'Business_Service_Quality'][own_slot_value[slot_reference = 'name']/value = ('Business Fit')]"></xsl:variable>
-<xsl:variable name="BFValues" select="/node()/simple_instance[type = 'Business_Service_Quality_Value'][own_slot_value[slot_reference = 'usage_of_service_quality']/value = $BusinessFit/name]"></xsl:variable>
-<xsl:variable name="perfMeasures" select="/node()/simple_instance[type = 'Business_Performance_Measure'][own_slot_value[slot_reference = 'pm_performance_value']/value = $BFValues/name]"></xsl:variable>
+<xsl:variable name="BFValues" select="key('servQualKey', $BusinessFit/name)"></xsl:variable>
+<xsl:variable name="perfMeasures" select="key('perfMeasureKey', $BFValues/name)"></xsl:variable>
 <xsl:variable name="ApplicationFit" select="/node()/simple_instance[type = 'Technology_Service_Quality'][own_slot_value[slot_reference = 'name']/value = ('Technical Fit')]"></xsl:variable>
-<xsl:variable name="AFValues" select="/node()/simple_instance[type = 'Technology_Service_Quality_Value'][own_slot_value[slot_reference = 'usage_of_service_quality']/value = $ApplicationFit/name]"></xsl:variable>
-<xsl:variable name="appPerfMeasures" select="/node()/simple_instance[type = 'Technology_Performance_Measure'][own_slot_value[slot_reference = 'pm_performance_value']/value = $AFValues/name]"></xsl:variable>
+<xsl:variable name="AFValues" select="key('servQualKey', $ApplicationFit/name)"></xsl:variable>
+<xsl:variable name="appPerfMeasures" select="key('perfMeasureKey',  $AFValues/name)"></xsl:variable>
 <xsl:variable name="style" select="/node()/simple_instance[type = 'Element_Style']"></xsl:variable>
 <xsl:variable name="unitOfMeasures" select="/node()/simple_instance[type = 'Unit_Of_Measure']"></xsl:variable>
 <xsl:variable name="criticalityStatus" select="/node()/simple_instance[type = 'Business_Criticality']"></xsl:variable>
@@ -56,11 +72,9 @@
 <xsl:variable name="delivery" select="/node()/simple_instance[type = 'Application_Delivery_Model']"></xsl:variable>
 <xsl:variable name="codebase" select="/node()/simple_instance[type = 'Codebase_Status']"></xsl:variable>
 <xsl:variable name="manualDataEntry" select="/node()/simple_instance[own_slot_value[slot_reference = 'name']/value='Manual Data Entry']"/> 
-<xsl:variable name="allAppStaticUsages" select="/node()/simple_instance[type = 'Static_Application_Provider_Usage']"/>
-<xsl:variable name="allInboundStaticAppRels" select="/node()/simple_instance[(own_slot_value[slot_reference = ':FROM']/value = $allAppStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>
-<xsl:variable name="allOutboundStaticAppRels" select="/node()/simple_instance[(own_slot_value[slot_reference = ':TO']/value = $allAppStaticUsages/name) and not(own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value = $manualDataEntry/name)]"/>
- 
-<xsl:variable name="allOrgUsers2RoleSites" select="/node()/simple_instance[name = $actors/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>	
+<xsl:key name="sitesKey" match="/node()/simple_instance[type = 'Site']" use="name"/> 
+
+<xsl:variable name="allOrgUsers2RoleSites" select="key('sitesKey', $actors/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>	
 <xsl:variable name="allOrgUsers2RoleSitesCountry" select="/node()/simple_instance[name = $allOrgUsers2RoleSites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>	
 
 <xsl:variable name="reportMenu" select="/node()/simple_instance[type = 'Report_Menu'][own_slot_value[slot_reference='report_menu_class']/value=('Business_Capability','Business_Domain','Composite_Application_Provider','Group_Actor','Business_Process','Physical_Process')]"></xsl:variable>
@@ -102,6 +116,7 @@
 	{"meta":[<xsl:apply-templates select="$reportMenu" mode="classMetaData"></xsl:apply-templates>],
 	 "busCapHierarchy":[<xsl:apply-templates select="$L0BusCaps" mode="busCapDetails"><xsl:with-param name="depth" select="0"/><xsl:sort select="own_slot_value[slot_reference='business_capability_index']/value" order="ascending"/></xsl:apply-templates>],
  	 "busCaptoAppDetails":[<xsl:apply-templates select="$allBusCaps" mode="busCapDetailsApps"><xsl:sort select="own_slot_value[slot_reference='business_capability_index']/value" order="ascending"/> </xsl:apply-templates>],
+ 
 	"rootCap":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$rootBusCap"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 	"physicalProcessToProcess":[<xsl:apply-templates select="$relevantPhysProcs" mode="processPairs"></xsl:apply-templates>],
 	"filters":[<xsl:apply-templates select="$allEnumClass" mode="createFilterJSON"></xsl:apply-templates>],
@@ -213,18 +228,38 @@
 "className":"<xsl:value-of select="current()/type"/>",
 "index":"<xsl:value-of select="own_slot_value[slot_reference='business_capability_level']/value"/>",
 "isRoot":"<xsl:value-of select="own_slot_value[slot_reference='is_root']/value"/>",
-"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<!-- note these are all processes for this capability and its children -->
-"allProcesses":[<xsl:for-each select="$thisrelevantBusProcs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<!-- note these are direct processes for this capability only, not children.  make directBusProcs thisrelevantBusProcs to change -->
+<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+}" />
+<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<!-- note these are all processes for this capability and its children -->
+"allProcesses":[<xsl:for-each select="$thisrelevantBusProcs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+}" />
+<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<!-- note these are direct processes for this capability only, not children.  make directBusProcs thisrelevantBusProcs to change -->
 "infoConcepts":[<xsl:for-each select="$thisinfoConcepts"> 
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "processes":[<xsl:for-each select="$directBusProcs">
 <xsl:variable name="thisProcessrelevantPhysProcs" select="key('physProcessKey', current()/name)"/>
-{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<!-- note these are all processes for this capability only, including children -->
+{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+}" />
+<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<!-- note these are all processes for this capability only, including children -->
 "physP":[<xsl:for-each select="$thisProcessrelevantPhysProcs">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "physP":[<xsl:for-each select="$thisrelevantPhysProcs">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "classifications":[<xsl:for-each select="$taxTerms"><xsl:variable name="thisTax" select="key('taxonomy', current()/name)"/>{"id":"<xsl:value-of select="current()/name"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", "taxonomy":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisTax"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+	'taxonomy': string(translate(translate($thisTax/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+}" />
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 "orgUserIds": [<xsl:for-each select="$allActors union $eaScopedOrgUserIds union $eaScopedCapOrgUserIds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 "domainIds":[<xsl:for-each select="distinct-values(current()/own_slot_value[slot_reference='belongs_to_business_domain']/value union current()/own_slot_value[slot_reference='belongs_to_business_domains']/value)">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 "prodConIds": [<xsl:for-each select="$thisProductConcepts">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
@@ -275,15 +310,12 @@
 		"icon": "fa-circle",
 		"color":"hsla(25, 52%, 38%, 1)",
 		"values": [
-		<xsl:for-each select="$releventEnums"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
-		</xsl:call-template>",
-		"enum_name":"<xsl:call-template name="RenderMultiLangInstanceSlot">
-		<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-		<xsl:with-param name="displaySlot" select="'enumeration_value'"/>
-		<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
-		</xsl:call-template>",
+		<xsl:for-each select="$releventEnums"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'enum_name': string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"sequence":"<xsl:value-of select="own_slot_value[slot_reference='enumeration_sequence_number']/value"/>", 
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>

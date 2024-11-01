@@ -41,6 +41,18 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Technology_Product', 'Technology_Component', 'Application_Provider', 'Composite_Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
+    <xsl:variable name="allInfoReps" select="/node()/simple_instance[type=('Information_Representation')]"/>
+
+	<xsl:variable name="allArchUsages" select="/node()/simple_instance[type='Static_Application_Provider_Usage']"/>
+    <xsl:variable name="allAPUs" select="/node()/simple_instance[type=':APU-TO-APU-STATIC-RELATION']"/>
+	<xsl:key name="allArchUsagesKey" match="/node()/simple_instance[type='Static_Application_Provider_Usage']" use="name"/>
+	<xsl:key name="allSAKey" match="/node()/simple_instance[supertype='Application_Provider']" use="own_slot_value[slot_reference='ap_static_architecture']/value"/>
+	<xsl:key name="allAppsforSAKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider','Application_Provider_Interface')]" use="name"/>
+	<xsl:key name="allAppProtoInfoKey" match="/node()/simple_instance[type=('APP_PRO_TO_INFOREP_RELATION','APP_PRO_TO_INFOREP_EXCHANGE_RELATION')]" use="name"/>
+	<xsl:key name="allInfoRepKey" match="/node()/simple_instance[type=('Information_Representation')]" use="name"/>
+	
+    <xsl:variable name="allAppProtoInfo" select="/node()/simple_instance[type='APP_PRO_TO_INFOREP_RELATION'][name=$allAPUs/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value]"/>
+    <xsl:variable name="allInfo" select="/node()/simple_instance[type='Information_Representation'][name=$allAppProtoInfo/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value]"/>
 
 
 	<!--
@@ -81,8 +93,12 @@
 
 
 	<!-- Get the Technology Product Roles defined for the production deployment of the application -->
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type = 'Technology_Product_Role']"/>
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
+	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[
+    type = 'Technology_Product_Role' and
+    own_slot_value[slot_reference = 'role_for_technology_provider']/value != '' and 
+    own_slot_value[slot_reference = 'implementing_technology_component']/value != ''
+]"/>
+<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>
 	<xsl:variable name="allSuppliers" select="/node()/simple_instance[type = 'Supplier']"/>
 	<xsl:variable name="prodDeploymentRole" select="/node()/simple_instance[type = 'Deployment_Role' and (own_slot_value[slot_reference = 'name']/value = 'Production')]"/>
 	<xsl:variable name="appProdDeployment" select="/node()/simple_instance[(own_slot_value[slot_reference = 'application_provider_deployed']/value = $appProvNode/name) and (own_slot_value[slot_reference = 'application_deployment_role']/value = $prodDeploymentRole/name)]"/>
@@ -120,6 +136,8 @@
 
 	<xsl:key name="tprProdKey" match="/node()/simple_instance[supertype='Technology_Provider']" use="own_slot_value[slot_reference = 'implements_technology_components']/value"/>
 	<xsl:key name="tprCompKey" match="/node()/simple_instance[type='Technology_Component']" use="own_slot_value[slot_reference = 'realised_by_technology_products']/value"/>
+	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Applications to Technology']"></xsl:variable>
+
 	<xsl:variable name="modelSubjectName">
 		<xsl:call-template name="RenderMultiLangInstanceName">
 			<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
@@ -179,7 +197,13 @@
 
 
 	<xsl:template match="knowledge_base">
+		<xsl:variable name="appPath">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$appsData"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:call-template name="docType"/>
+	 
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
@@ -221,6 +245,9 @@
 					}
 					#planModal {
 					z-index: 10000;}
+
+					#genDSL{ 
+					}
 				</style>
 				<script>
 					$(document).ready(function() {													
@@ -270,6 +297,14 @@
 								</xsl:call-template>
 							</h1>
 						</div>
+					 <div class="row">
+						<div class="col-xs-12">
+							<div class="input-group pull-right">                                           
+								<button class="  btn btn-default right-10" id="genDSL" ><i class="fa fa-copy right-5"/>Copy DSL to Clipboard</button>
+							</div>
+							<div class="xsmall text-right top-5"><span id="ess-copy-success-message" class="hiddenDiv"><i class="fa fa-check right-5"/>Copied!</span></div>
+						</div>
+					</div>
 						<div id="planModal" class="modal fade" role="dialog">
 							<div class="modal-dialog">
 
@@ -388,123 +423,441 @@
 						var windowWidth = $(window).width();
                         $('.simple-scroller').scrollLeft(windowWidth/2);
                     });
+
+					<xsl:call-template name="RenderViewerAPIJSFunction">
+						<xsl:with-param name="viewerAPIPath" select="$appPath"/>  
+						
+					</xsl:call-template>
 				</script>
 				
-				<script>
-					 
-				let tprs=[<xsl:apply-templates select="$allTechProdRoles" mode="tprs"/>];
-				let appNm="<xsl:value-of select="$appProvName"/>";
-			 
-					$(document).ready(function(){
-						
-					$(document).off().on('click', '.replaceBut',function(d){ 
-						let targTrp= $(this).attr('easid')
-						 
-						 let thisTpr=$(this).parent().parent().parent().parent().parent().parent().parent().parent().next().next().attr('tprid') 
-
-						 let currentTPR=tprs.find((e)=>{
-							 return e.id==thisTpr
-						 })
-						 let targetTPR=tprs.find((e)=>{
-							 return e.id==targTrp
-						 })
-
-						 let planName= appNm +" - Replace "+ currentTPR.componentName;
-
-						 let planDesc= appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+ currentTPR.componentName;
-						 $('#planName').val(planName);
-
-						 $('#planDescription').val(planDesc);
-						$('#planModal').modal('show'); 
-						$( function() {
-                            $( "#planStart" ).datepicker();
-                        } );
-                        $( function() {
-                            $( "#planEnd" ).datepicker();
-						} );
-
-						$('#save').off().on('click',function(){ 
-						 
- 
-							let planS=$('#planStart').val();
-							let planE=$('#planEnd').val();
-							let planStart=new Date(planS).toISOString();
-							let planEnd=new Date(planE).toISOString() ;
-							let planDescription = $( "#planDescription" ).val();
-							let requestor=$("#requestor").val();
-							let planIDval=$("#planID").val();
-
-					let plan  = {"name": planName,
-                                "className": "Enterprise_Strategic_Plan",
-                                "description": planDescription,
-                                "system_is_published": false,
-                                "strategic_plan_valid_from_date_iso_8601":planStart.substring(0,10),
-                                "strategic_plan_valid_to_date_iso_8601":planEnd.substring(0,10),
-								"strategic_plan_for_elements":  [{ 
-                        					"name": "replace - "+ currentTPR.productName + ' as '+currentTPR.componentName ,
-											"className": "PLAN_TO_ELEMENT_RELATION",
-											"plan_to_element_change_action": { 
-												"name": 'Replace',
-												"className": "Planning_Action"
-											},
-											"plan_to_element_ea_element": {
-												"id": currentTPR.id, 
-												"className": "Technology_Provider_Role"
-											}
-											},
-											{ 
-                        					"name": "enhance - "+ targetTPR.productName + ' as '+targetTPR.componentName ,
-											"className": "PLAN_TO_ELEMENT_RELATION",
-											"plan_to_element_change_action": { 
-												"name": 'Enhance',
-												"className": "Planning_Action"
-											},
-											"plan_to_element_ea_element": {
-												"id": targetTPR.id, 
-												"className": "Technology_Provider_Role"
-											}
-											}]
-									}
-                         
-
-                    essPromise_createAPIElement('/essential-utility/v3',plan,'instances','Enterprise_Strategic_Plan')
-                        .then(function(response){
-                           
-                            console.log('Plan Created');
-                            console.log(response);
-
-							let decision = {"name": appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName,
-							  	"className": "Enterprise_Decision",
-								"decision_result": {
-									"className": "Decision_Result",
-									"name": 'Proposed'},
-								"description":"Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+targetTPR.componentName,	 
-								"ea_notes": requestor,
-								"governance_reference":'ap'+planIDval,
-								"decision_elements":[{id: currentTPR.id, className: 'Technology_Provider_Role'},{id:  targetTPR.id, className:'Technology_Provider_Role'},{"id":response.id, "className":"Enterprise_Strategic_Plan" }]
-                                };
-								console.log('decision',decision)
-								
-                                essPromise_createAPIElement('/essential-utility/v3',decision,'instances','Decision')
-                                .then(function(response){
-                                  
-                                    console.log('Decision created with elements');
-                                    console.log(response);
-                                    //delete planElements;
-                                    //delete plan;
-
-                                    $('#planModal').modal('hide');
-                                }); 
-                        });
-					});
-				});
-<!--  end  --> 
-});
-				</script>
+			
 
 			</body>
 		</html>
 	</xsl:template>
+
+	<xsl:template name="RenderViewerAPIJSFunction">
+			<xsl:param name="viewerAPIPath"/>  
+			//a global variable that holds the data returned by an Viewer API Report
+			var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>'; 
+            var selectedApp='<xsl:value-of select="$param1"/>';
+			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+		   
+		   var promise_loadViewerAPIData = function(apiDataSetURL) {
+				return new Promise(function (resolve, reject) {
+					if (apiDataSetURL != null) {
+						var xmlhttp = new XMLHttpRequest(); 
+						xmlhttp.onreadystatechange = function () {
+							if (this.readyState == 4 &amp;&amp; this.status == 200) { 
+								var viewerData = JSON.parse(this.responseText);
+								resolve(viewerData);
+								$('#ess-data-gen-alert').hide();
+							}
+						};
+						xmlhttp.onerror = function () {
+							reject(false);
+						};
+						xmlhttp.open("GET", apiDataSetURL, true);
+						xmlhttp.send();
+					} else {
+						reject(false);
+					}
+				});
+			};
+			Promise.all([
+			promise_loadViewerAPIData(viewAPIData)
+			]).then(function(responses) {
+
+				let allApps = responses[0].application_technology_architecture;
+
+				let match=allApps.find((a)=>{
+					return a.id== selectedApp;
+				})
+ 
+			 	match.supportingTech=match.supportingTech.filter((e)=>{return e.environmentName=='Production'})
+			
+  
+				// Function to generate Structurizr DSL
+				// Data to generate DSL
+ 
+				// Function to generate Structurizr DSL with valid identifiers
+                function generateDSL(data) {
+                    let dsl = `
+                      workspace {
+                        model {
+                          softwareSystem = softwareSystem "${data.application}" {
+                            description "${data.application} Application"
+                    `;
+                  
+                    // Collect containers and relationships
+                    const containers = new Map(); // Use Map to track unique containers by valid identifier
+                    const relationships = [];
+                    const processedIdentifiers = new Set();
+                  
+                    // Helper function to check if a container with the same name already exists
+                    function containerWithNameExists(name) {
+                      for (let container of containers.values()) {
+                        if (container.name === name) {
+                          return true;
+                        }
+                      }
+                      return false;
+                    }
+                    let allTags=[]
+                    // Generate valid identifiers for tech products and add containers and relationships
+                    data.supportingTech.forEach((tech) => {
+                      const fromIdentifier = generateValidIdentifier(tech.fromTechProduct);
+                      const toIdentifier = generateValidIdentifier(tech.toTechProduct);
+             
+                      // Add identifiers to the set
+                      processedIdentifiers.add(fromIdentifier);
+                      processedIdentifiers.add(toIdentifier);
+
+                      let thisTpr=tprs.find((e)=>{
+                        return tech.tpr==e.id
+                    })
+                   
+                    if(thisTpr){
+                    allTags.push({ name: thisTpr.lifecycle || 'Unnamed',
+                    productName: thisTpr.productName,
+                    componentName: thisTpr.componentName,
+                    colour: thisTpr.lifecycle_colour, textColour: thisTpr.lifecycle_text_colour})
+                    }else{
+                        thisTpr=""
+                    }
+                  
+                      // Add containers if they don't already exist
+                      if (!containerWithNameExists(tech.fromTechProduct)) {
+                        containers.set(fromIdentifier, {
+                          name: tech.fromTechProduct,
+                          description: tech.fromTechComponent || tech.fromTechProduct,
+                          tags: thisTpr.lifecycle ? thisTpr.lifecycle.replace(/\s/g, '_') : ''
+                        });
+                      }
+                  
+                      if (!containerWithNameExists(tech.toTechProduct)) {
+                        containers.set(toIdentifier, {
+                          name: tech.toTechProduct,
+                          description: tech.toTechComponent || tech.toTechProduct,
+                          tags: thisTpr.lifecycle ? thisTpr.lifecycle.replace(/\s/g, '_') : ''
+                        });
+                      }
+                  
+                      // Add relationships
+                      relationships.push({
+                        from: fromIdentifier,
+                        to: toIdentifier,
+                        description: `Sends requests from ${tech.fromTechComponent} to ${tech.toTechComponent}`,
+                      });
+                    });
+                  
+                    // Add main application container
+                    const mainAppIdentifier = data.application.replace(/\./g, '_').replace(/\s/g, '_');
+                    containers.set(mainAppIdentifier, {
+                      name: data.application,
+                      description: `${data.application} Application`,
+                    });
+                  
+                    // Add containers for all tech products
+                   
+					// Inside the allTechProds forEach loop
+					// Track identifiers of containers with "Contains" relationships
+					const containsProcessed = new Set();
+
+					// Inside the allTechProds forEach loop
+					data.allTechProds.forEach((tech) => {
+						let thisTpr = tprs.find((e) => tech.tpr == e.id);
+						if (thisTpr) {
+							allTags.push({
+								name: thisTpr.lifecycle || 'Unnamed',
+								productName: thisTpr.productName,
+								componentName: thisTpr.componentName,
+								colour: thisTpr.lifecycle_colour || '#d3d3d3',
+								textColour: thisTpr.lifecycle_text_colour || '#000000',
+							});
+						}
+
+						const identifier = generateValidIdentifier(tech.product);
+
+						// Check if the product has already been processed
+						if (!processedIdentifiers.has(identifier)) {
+							// Add the container if it doesn't exist
+							containers.set(identifier, {
+								name: tech.product,
+								description: tech.component || tech.product,
+								tags: thisTpr &amp;&amp; thisTpr.lifecycle ? thisTpr.lifecycle.replace(/\s/g, '_') : '',
+							});
+
+							// Now add the identifier to processedIdentifiers
+							processedIdentifiers.add(identifier);
+						}
+
+						// Check if a "Contains" relationship has already been established
+						if (!containsProcessed.has(identifier)) {
+							if(identifier){
+								// Add a "Contains" relationship to the main application
+								
+								relationships.push({
+									to: identifier,
+									from: mainAppIdentifier,
+									description: "Contains",
+								});
+
+								// Mark that this container has had a "Contains" relationship established
+								containsProcessed.add(identifier);
+							}
+						}
+					});
+                
+                    const uniqueTags = Array.from(
+                        new Set(allTags.map(tag => tag.name))
+                      ).map(id => allTags.find(tag => tag.name === id));
+                  
+                    // Add containers to DSL
+                    containers.forEach((container, identifier) => {
+                       if(container.name){
+                        let thistags={}
+                        thisTags=allTags.find((f)=>{
+                            return f.productName==container.name  &amp;&amp; f.componentName==container.description;
+                        })
+                     
+                        if (!thisTags) {
+                            thisTags = { name: "Not Set" };
+                        }
+                      dsl += `
+                          ${identifier} = container "${container.name}" {
+                            description "${container.description || container.name}"
+                            technology "${container.name}"
+                            tags "${thisTags.name.replace(/ /g, '_')}"
+
+                          }
+                      `;
+						}
+                    });
+                  
+                    // Add relationships to DSL
+                    relationships.forEach((relationship) => {
+                      dsl += `
+                          ${relationship.from} -> ${relationship.to} "${relationship.description}"
+                      `;
+                    });
+                  
+                  
+                    // Close the DSL structure
+                    dsl += `
+                        }
+                        `
+                        // Add unique applications to the top level
+                        uniqueApps.forEach((app) => {
+                          if (app !== data.application) {
+                            dsl += `
+                              ${app.replace(/\./g, '_').replace(/\s/g, '_')} = softwareSystem "${app}" {
+                                description "${app} Application"
+                              }
+                            `;
+                          }
+                        });
+                      
+                        // Define APU relationships if defined
+                        (thisFromAPUs || []).forEach((ap) => {
+                          dsl += `
+                              ${ap.fromApp.replace(/\./g, '_').replace(/\s/g, '_')} -> ${ap.toApp.replace(/\./g, '_').replace(/\s/g, '_')} "Sends data to"
+                          `;
+                        });
+                      
+                        (thisToAPUs || []).forEach((ap) => {
+                          dsl += `
+                              ${ap.fromApp.replace(/\./g, '_').replace(/\s/g, '_')} -> ${ap.toApp.replace(/\./g, '_').replace(/\s/g, '_')} "Sends data to"
+                          `;
+                        });    
+
+                        dsl += `
+                        }
+                      views {
+                        systemContext softwareSystem {
+                          include *
+                          autolayout lr
+                        }
+                        container softwareSystem {
+                          include *
+                          autolayout lr
+                        }
+                        theme default
+                        styles {
+                          element "Container" {
+                            background #438dd5
+                            color #ffffff
+                          }
+                          `
+
+                      uniqueTags.forEach((t)=>{
+                            dsl += ` element ${t.name.replace(/ /g, '_')} {
+                                background ${t.colour}
+                                color ${t.textColour}
+                              }
+                              `
+                        })
+
+                     dsl += `
+                        }
+                        }
+                      }
+                    
+                    `;
+
+                   
+                  
+                    return dsl;
+                  }
+                  
+				
+				// Function to generate valid identifier by replacing invalid characters
+				function generateValidIdentifier(name) {
+				 
+					if (name) {
+						return name.toLowerCase().replace(/[.#\s]/g, '_');
+					}
+				}
+				   
+		$('#genDSL').on('click', function(){
+
+				const dsl = generateDSL(match);
+				const tempTextArea = document.createElement("textarea");
+				tempTextArea.value = dsl;
+				document.body.appendChild(tempTextArea);
+				tempTextArea.select();
+				document.execCommand("copy");
+				document.body.removeChild(tempTextArea); 
+
+				// Output the DSL
+				$("#ess-copy-success-message").fadeIn('slow').animate({opacity: 1.0}, 1500).effect("pulsate", { times: 2 }, 800).fadeOut('slow');
+		})
+
+
+			})
+	let tprs=[<xsl:apply-templates select="$allTechProdRoles" mode="tprs"/>];
+	let appNm="<xsl:value-of select="$appProvName"/>";
+    var apus=[<xsl:apply-templates select="$allAPUs" mode="allAPUs"/>];
+ 
+    var thisFromAPUs=apus.filter((a)=>{
+        return a.fromAppId == selectedApp
+    })
+    var thisToAPUs=apus.filter((a)=>{
+        return a.toAppId == selectedApp
+    })
+
+    allThisAPU=[...thisFromAPUs,...thisToAPUs]
+    // Extract unique app names using Set
+    const uniqueApps = Array.from(
+        new Set(
+            allThisAPU
+            .flatMap((item) => [item.fromApp, item.toApp])
+        )
+      );
+
+// Log the result
+
+		$(document).ready(function(){
+			
+		$(document).off().on('click', '.replaceBut',function(d){ 
+			let targTrp= $(this).attr('easid')
+			 
+			 let thisTpr=$(this).parent().parent().parent().parent().parent().parent().parent().parent().next().next().attr('tprid') 
+
+			 let currentTPR=tprs.find((e)=>{
+				 return e.id==thisTpr
+			 })
+			 let targetTPR=tprs.find((e)=>{
+				 return e.id==targTrp
+			 })
+
+			 let planName= appNm +" - Replace "+ currentTPR.componentName;
+
+			 let planDesc= appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+ currentTPR.componentName;
+			 $('#planName').val(planName);
+
+			 $('#planDescription').val(planDesc);
+			$('#planModal').modal('show'); 
+			$( function() {
+				$( "#planStart" ).datepicker();
+			} );
+			$( function() {
+				$( "#planEnd" ).datepicker();
+			} );
+
+			$('#save').off().on('click',function(){ 
+			 
+
+				let planS=$('#planStart').val();
+				let planE=$('#planEnd').val();
+				let planStart=new Date(planS).toISOString();
+				let planEnd=new Date(planE).toISOString() ;
+				let planDescription = $( "#planDescription" ).val();
+				let requestor=$("#requestor").val();
+				let planIDval=$("#planID").val();
+
+		let plan  = {"name": planName,
+					"className": "Enterprise_Strategic_Plan",
+					"description": planDescription,
+					"system_is_published": false,
+					"strategic_plan_valid_from_date_iso_8601":planStart.substring(0,10),
+					"strategic_plan_valid_to_date_iso_8601":planEnd.substring(0,10),
+					"strategic_plan_for_elements":  [{ 
+								"name": "replace - "+ currentTPR.productName + ' as '+currentTPR.componentName ,
+								"className": "PLAN_TO_ELEMENT_RELATION",
+								"plan_to_element_change_action": { 
+									"name": 'Replace',
+									"className": "Planning_Action"
+								},
+								"plan_to_element_ea_element": {
+									"id": currentTPR.id, 
+									"className": "Technology_Provider_Role"
+								}
+								},
+								{ 
+								"name": "enhance - "+ targetTPR.productName + ' as '+targetTPR.componentName ,
+								"className": "PLAN_TO_ELEMENT_RELATION",
+								"plan_to_element_change_action": { 
+									"name": 'Enhance',
+									"className": "Planning_Action"
+								},
+								"plan_to_element_ea_element": {
+									"id": targetTPR.id, 
+									"className": "Technology_Provider_Role"
+								}
+								}]
+						}
+			 
+
+		essPromise_createAPIElement('/essential-utility/v3',plan,'instances','Enterprise_Strategic_Plan')
+			.then(function(response){
+
+				let decision = {"name": appNm +" - Replace "+currentTPR.productName+" with "+targetTPR.productName,
+					  "className": "Enterprise_Decision",
+					"decision_result": {
+						"className": "Decision_Result",
+						"name": 'Proposed'},
+					"description":"Replace "+currentTPR.productName+" with "+targetTPR.productName +" for "+targetTPR.componentName,	 
+					"ea_notes": requestor,
+					"governance_reference":'ap'+planIDval,
+					"decision_elements":[{id: currentTPR.id, className: 'Technology_Provider_Role'},{id:  targetTPR.id, className:'Technology_Provider_Role'},{"id":response.id, "className":"Enterprise_Strategic_Plan" }]
+					};
+		
+					
+					essPromise_createAPIElement('/essential-utility/v3',decision,'instances','Decision')
+					.then(function(response){
+					  
+						//delete planElements;
+						//delete plan;
+
+						$('#planModal').modal('hide');
+					}); 
+			});
+		});
+	});
+<!--  end  --> 
+});
+</xsl:template>
 
 	<xsl:template name="modelScript">
 		<xsl:param name="targetID"/>
@@ -601,7 +954,6 @@
 					// paper.scale(0.9, 0.9);
 					// paper.scaleContentToFit();
 		    
-					
 				</script>
 		</xsl:if>
 	</xsl:template>
@@ -714,10 +1066,14 @@
 		var <xsl:value-of select="$containingTPRName"/>LCYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisLifecycleYPos"/>;
 		
 		<xsl:variable name="nodeColour" select="eas:get_node_colour(current())"/>
+
+		<xsl:variable name="nodeTextColour" select="eas:get_node_standard_text_colour(current())"/>
 		<xsl:variable name="strokeColour" select="$objectOutlineColour"/>
 		<xsl:variable name="techProdRoleLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
 		<xsl:variable name="techProd" select="$allTechProds[name = current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 		<xsl:variable name="techProdLifecycleStatus" select="$allLifecycleStatii[name = $techProd/own_slot_value[slot_reference = 'technology_provider_lifecycle_status']/value]"/>
+	
+		
 		<xsl:variable name="tprLifecycleStatusName">
 			<xsl:choose>
 				<xsl:when test="count($techProdRoleLifecycleStatus) > 0">
@@ -729,10 +1085,11 @@
 				<xsl:otherwise><xsl:value-of select="eas:i18n('Undefined')"/></xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		<xsl:variable name="nodetext" select="eas:get_element_style_textcolour($techProdRoleLifecycleStatus)"/> 
 		<xsl:variable name="elementVarName" select="concat($containingTPRName, 'LifecycleStatus')"/>
 		var <xsl:value-of select="$elementVarName"/>Title = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>LCTitleXpos, y: <xsl:value-of select="$containingTPRName"/>LCTitleYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockTitleHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: 'white' }, text: { fill: 'black', text: '<xsl:value-of select="eas:i18n('Lifecycle Status')"/>', <xsl:value-of select="$objectSubBlockTitleFont"/>} } });
 		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>Title);
-		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>LCXpos, y: <xsl:value-of select="$containingTPRName"/>LCYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: 'white', text: '<xsl:value-of select="$tprLifecycleStatusName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
+		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>LCXpos, y: <xsl:value-of select="$containingTPRName"/>LCYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: '<xsl:value-of select="$nodetext"/>', text: '<xsl:value-of select="$tprLifecycleStatusName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
 		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>);
 		graph.addCells([<xsl:value-of select="$elementVarName"/>, <xsl:value-of select="$elementVarName"/>Title]); <xsl:text>
 						
@@ -755,10 +1112,12 @@
 		var <xsl:value-of select="$containingTPRName"/>StdXpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').x + <xsl:value-of select="$thisStandardXPos"/>;
 		var <xsl:value-of select="$containingTPRName"/>StdYpos = clusters.<xsl:value-of select="$containingTPRName"/>.get('position').y + <xsl:value-of select="$thisStandardYPos"/>;
 		
-		<xsl:variable name="nodeColour" select="eas:get_node_standard_colour(current())"/>
+		<xsl:variable name="nodeColour" select="eas:get_node_standard_colour(current())"/> 
 		<xsl:variable name="strokeColour" select="$objectOutlineColour"/>
 		<xsl:variable name="techProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>
 		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $techProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+
+		<xsl:variable name="nodetext" select="eas:get_element_style_textcolour($techProdRoleStandardStrength)"/> 
 		<xsl:variable name="tprStandardName">
 			<xsl:choose>
 				<xsl:when test="count($techProdRoleStandardStrength) > 0">
@@ -770,7 +1129,7 @@
 		<xsl:variable name="elementVarName" select="concat($containingTPRName, 'Standard')"/>
 		var <xsl:value-of select="$elementVarName"/>Title = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>StdTitleXpos, y: <xsl:value-of select="$containingTPRName"/>StdTitleYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockTitleHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: 'white' }, text: { fill: 'black', text: '<xsl:value-of select="eas:i18n('Standard Level')"/>', <xsl:value-of select="$objectSubBlockTitleFont"/>} } });
 		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>Title);
-		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>StdXpos, y: <xsl:value-of select="$containingTPRName"/>StdYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: 'white', text: '<xsl:value-of select="$tprStandardName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
+		var <xsl:value-of select="$elementVarName"/> = new joint.shapes.basic.Rect({ position: { x: <xsl:value-of select="$containingTPRName"/>StdXpos, y: <xsl:value-of select="$containingTPRName"/>StdYpos }, size: { width: <xsl:value-of select="$objectWidth div 2"/>, height: <xsl:value-of select="$objectSubBlockHeight"/> }, attrs: { rect: { stroke: '<xsl:value-of select="$strokeColour"/>', fill: '<xsl:value-of select="$nodeColour"/>' }, text: { fill: '<xsl:value-of select="$nodetext"/>', text: '<xsl:value-of select="$tprStandardName"/>', <xsl:value-of select="$objectSubBlockFont"/> } } });
 		clusters.<xsl:value-of select="$containingTPRName"/>.embed(<xsl:value-of select="$elementVarName"/>);
 		graph.addCells([<xsl:value-of select="$elementVarName"/>, <xsl:value-of select="$elementVarName"/>Title]); <xsl:text>
 						
@@ -866,7 +1225,39 @@
 		</xsl:choose>
 		
 	</xsl:function>
-	
+	<xsl:function as="xs:string" name="eas:get_node_standard_text_colour">
+		<xsl:param name="node"/>
+		
+		
+		<xsl:variable name="techProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $node/name]"/>
+		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $techProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+		
+		<xsl:choose>
+			<xsl:when test="count($techProdRoleStandard) > 0">
+				<xsl:variable name="standardStyle" select="$allStandardStyles[name = $techProdRoleStandardStrength[1]/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+				<xsl:choose>
+					<xsl:when test="count($standardStyle) = 0">
+						<xsl:value-of select="$noStandardColour"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:variable name="styleColour" select="$standardStyle[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>
+						<xsl:choose>
+							<xsl:when test="string-length($styleColour) = 0">
+								<xsl:value-of select="$noStandardColour"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$styleColour"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$noStandardColour"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		
+	</xsl:function>
 	
 	<xsl:function as="xs:string" name="eas:get_node_standard_label">
 		<xsl:param name="node"/>
@@ -1065,9 +1456,17 @@
 			
 			<xsl:variable name="lifecycleLabel" select="eas:get_node_lifecycle_label(current())"/>
 			<xsl:variable name="lifecycleStyle" select="eas:get_node_style(current())"/>
+
+			<xsl:variable name="thisTechProdRoleLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+			<xsl:variable name="lifeNodeText" select="eas:get_element_style_textcolour($thisTechProdRoleLifecycleStatus)"/> 
+
+			<xsl:variable name="lifeNodeStyle" select="eas:get_element_style_colour($thisTechProdRoleLifecycleStatus)"/> 
 			
 			<xsl:variable name="standardLabel" select="eas:get_node_standard_label(current())"/>
 			<xsl:variable name="standardStyle" select="eas:get_node_standard_colour(current())"/>
+			<xsl:variable name="thistechProdRoleStandard" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>
+		<xsl:variable name="techProdRoleStandardStrength" select="$allStandardStrengths[name = $thistechProdRoleStandard/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+			<xsl:variable name="nodeText" select="eas:get_element_style_textcolour($techProdRoleStandardStrength)"/> 
 			
 			<td><xsl:attribute name="easid" select="$thisTechProd/name"/><xsl:attribute name="tprid" select="current()/name"/>
 				<div>
@@ -1080,8 +1479,8 @@
 			<td>
 				<xsl:choose>
 					<xsl:when test="string-length($lifecycleLabel) > 0">
-						<div class="label label-block impact {$lifecycleStyle}">
-							<xsl:value-of select="$lifecycleLabel"/>
+						<div class="label label-block impact {$lifecycleStyle}" style="background-color: {$lifeNodeStyle};color: {$lifeNodeText}">
+							<xsl:value-of select="$lifecycleLabel"/> 
 						</div>
 					</xsl:when>
 				</xsl:choose>
@@ -1089,7 +1488,7 @@
 			<td>
 				<xsl:choose>
 					<xsl:when test="string-length($standardLabel) > 0">
-						<div style="background-color: {$standardStyle};color: white" class="label label-block impact">
+						<div style="background-color: {$standardStyle};color: {$nodeText}" class="label label-block impact">
 							<xsl:value-of select="$standardLabel"/>
 						</div>
 					</xsl:when>
@@ -1176,13 +1575,71 @@
 <xsl:template match="node()" mode="tprs">
 	<xsl:variable name="thisProd" select="key('tprProdKey',current()/name)"/>
 	<xsl:variable name="thisComp" select="key('tprCompKey',current()/name)"/>
+    <xsl:variable name="thisTechProdRoleLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'strategic_lifecycle_status']/value]"/>
+    <xsl:variable name="lifeNodeText" select="eas:get_element_style_textcolour($thisTechProdRoleLifecycleStatus)"/> 
+
+    <xsl:variable name="lifeNodeStyle" select="eas:get_element_style_colour($thisTechProdRoleLifecycleStatus)"/> 
 {"id":"<xsl:value-of select="current()/name"/>",
 "product":"<xsl:value-of select="$thisProd/name"/>",
+"lifecycle_colour":"<xsl:value-of select="$lifeNodeStyle"/>",
+"lifecycle_text_colour":"<xsl:value-of select="$lifeNodeText"/>",
+
+"lifecycle":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisTechProdRoleLifecycleStatus"/></xsl:call-template>",
 "productName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisProd"/></xsl:call-template>",
 "component":"<xsl:value-of select="$thisComp/name"/>",
 "componentName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="theSubjectInstance" select="$thisComp"/></xsl:call-template>",
 }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 
+<xsl:template name="GetViewerAPIPath">
+			<xsl:param name="apiReport"></xsl:param>
+	
+			<xsl:variable name="dataSetPath">
+				<xsl:call-template name="RenderAPILinkText">
+					<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:variable>
+	
+			<xsl:value-of select="$dataSetPath"></xsl:value-of>
+	
+		</xsl:template>	
 
+<xsl:template match="node()" mode="allAPUs">
+            <xsl:variable name="thisFrom" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+            <xsl:variable name="thisTo" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':TO']/value)"/>
+            <xsl:variable name="fromApp" select="key('allAppsforSAKey', $thisFrom/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+            <xsl:variable name="toApp" select="key('allAppsforSAKey', $thisTo/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+            <xsl:variable name="edgeInfo" select="key('allAppProtoInfoKey', current()/own_slot_value[slot_reference='apu_to_apu_relation_inforeps']/value)"/>
+            <xsl:variable name="edgeInfoIndirect" select="key('allAppProtoInfoKey', $edgeInfo/own_slot_value[slot_reference='atire_app_pro_to_inforep']/value)"/>
+            <xsl:variable name="allInfoEdges" select="$edgeInfo union $edgeInfoIndirect"/>
+            <xsl:variable name="thisInfoReps" select="key('allInfoRepKey', $allInfoEdges/own_slot_value[slot_reference='app_pro_to_inforep_to_inforep']/value)"/>
+            
+        {
+        "id":"<xsl:value-of select="current()/name"/>",
+        <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = (':relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+        <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+        <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
+    
+        "fromtype":"<xsl:value-of select="$fromApp/type"/>",
+        "totype":"<xsl:value-of select="$toApp/type"/>",
+        "edgeName":"<xsl:value-of select="$fromApp/name"/> to <xsl:value-of select="$toApp/name"/>",
+        "fromAppId":"<xsl:value-of select="$fromApp/name"/>",
+        "toAppId":"<xsl:value-of select="$toApp/name"/>",
+        <xsl:variable name="ftemp" as="map(*)" select="map{'fromApp': string(translate(translate($fromApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+        <xsl:variable name="fresult" select="serialize($ftemp, map{'method':'json', 'indent':true()})"/>  
+        <xsl:value-of select="substring-before(substring-after($fresult,'{'),'}')"></xsl:value-of>,
+        <xsl:variable name="ttemp" as="map(*)" select="map{'toApp': string(translate(translate($toApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+        <xsl:variable name="tresult" select="serialize($ttemp, map{'method':'json', 'indent':true()})"/>  
+        <xsl:value-of select="substring-before(substring-after($tresult,'{'),'}')"></xsl:value-of>,
+        "info":[<xsl:for-each select="$thisInfoReps">
+            {
+                "id":"<xsl:value-of select="current()/name"/>",
+                "type":"<xsl:value-of select="current()/type"/>",
+                <xsl:variable name="infoTemp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+                <xsl:variable name="infoResult" select="serialize($infoTemp, map{'method':'json', 'indent':true()})"/>  
+                <xsl:value-of select="substring-before(substring-after($infoResult,'{'),'}')"></xsl:value-of>
+            }<xsl:if test="position()!=last()">,</xsl:if>
+        </xsl:for-each>]
+        }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 </xsl:stylesheet>

@@ -152,7 +152,7 @@
 					};
 					
 					function essGetDataSetAPIUrl(dataSetLabel) {
-						let apiURL = essDataSetAPIs[dataSetLabel].url;
+						let apiURL = essDataSetAPIs[dataSetLabel]?.url;
 						return apiURL;
 					}
 					

@@ -11,9 +11,10 @@
 	<!--<xsl:param name="param4" />-->
 
 	<xsl:variable name="anyViews" select="/node()/simple_instance[type='Report']"/>
-	<xsl:variable name="anyEditors" select="/node()/simple_instance[type=('Editor', 'Simple_Editor', 'Configured_Editor')]"/>
+	<xsl:variable name="anyEditors" select="/node()/simple_instance[type=('Editor', 'Simple_Editor', 'Configured_Editor', 'Catalogue')]"/>
 	<xsl:variable name="enabledViews" select="$anyViews[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
-	<xsl:variable name="enabledEditors" select="$anyEditors[own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
+	<xsl:variable name="enabledEditors" select="$anyEditors[not(type = 'Catalogue')][own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
+	<xsl:variable name="enabledDynamicCatalogues" select="$anyEditors[type = 'Catalogue'][own_slot_value[slot_reference = 'report_is_enabled']/value = 'true']"/>
 	<xsl:variable name="allTaxonomyTerms" select="/node()/simple_instance[type = 'Taxonomy_Term']"/>
 	<xsl:variable name="allReportConstants" select="/node()/simple_instance[type = 'Report_Constant']"/>
 	<xsl:variable name="eaArchViewsTaxonomyTerm" select="$allTaxonomyTerms[own_slot_value[slot_reference = 'name']/value = 'Enterprise Architecture Views']"/>
@@ -309,17 +310,33 @@
 							</xsl:if>
 							<xsl:if test="count($catalogueViews) > 0">
 								<ul>
-									<xsl:for-each select="$catalogueViews">
+									<xsl:for-each select="($catalogueViews, $enabledDynamicCatalogues)">
 										<xsl:sort select="own_slot_value[slot_reference = 'report_label']/value"/>
-										<li class="fontSemi large">
-											<xsl:call-template name="RenderCatalogueLink">
-												<xsl:with-param name="theCatalogue" select="current()"/>
-												<xsl:with-param name="viewScopeTerms" select="$homeViewScopeTerms"/>
-												<xsl:with-param name="targetReport" select="()"/>
-												<xsl:with-param name="targetMenu" select="()"/>
-												<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
-											</xsl:call-template>
-										</li>
+										<xsl:if test="eas:isUserAuthZ(current())">
+											<li class="fontSemi large">
+												<xsl:choose>
+													<xsl:when test="$eipMode and (current()/type = 'Catalogue')">
+														<a class="text-darkgrey">
+															<xsl:attribute name="href">
+																<xsl:call-template name="RenderEditorLinkHref">
+																	<xsl:with-param name="theEditor" select="current()"></xsl:with-param>
+																</xsl:call-template>
+															</xsl:attribute>
+															<xsl:value-of select="current()/own_slot_value[slot_reference='report_label']/value"/>
+														</a>
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:call-template name="RenderCatalogueLink">
+															<xsl:with-param name="theCatalogue" select="current()"/>
+															<xsl:with-param name="viewScopeTerms" select="$homeViewScopeTerms"/>
+															<xsl:with-param name="targetReport" select="()"/>
+															<xsl:with-param name="targetMenu" select="()"/>
+															<xsl:with-param name="anchorClass">text-darkgrey</xsl:with-param>
+														</xsl:call-template>
+													</xsl:otherwise>
+												</xsl:choose>
+											</li>
+										</xsl:if>
 									</xsl:for-each>
 								</ul>
 							</xsl:if>

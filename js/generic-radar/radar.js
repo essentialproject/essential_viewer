@@ -22,7 +22,7 @@
 
 
 function radar_visualization(config) {
-
+ 
   // custom random number generator, to make random sequence reproducible
   // source: https://stackoverflow.com/questions/521295
   var seed = 42;
@@ -46,12 +46,16 @@ function radar_visualization(config) {
     { radial_min: -1, radial_max: -0.5, factor_x: -1, factor_y: -1 },
     { radial_min: -0.5, radial_max: 0, factor_x: 1, factor_y: -1 }
   ];
-var ringcount=config.rings.length;
+var ringcount=config.rings.length + 1;
     var rd=400/config.rings.length;
  
   const rings = []
       config.rings.forEach(function(d,i){
           rings.push({radius: (i*rd)+100});
+          if (i === config.rings.length - 1) {
+            // Add the final ring with a specific radius
+            rings.push({ radius: ((i + 1) * rd) + 100 });
+          }
       });
     
   const title_offset =
@@ -103,7 +107,7 @@ var ringcount=config.rings.length;
     }
   }
 
-  function segment(quadrant, ring) {
+  function segment(quadrant, ring) { 
     var polar_min = {
       t: quadrants[quadrant].radial_min * Math.PI,
       r: ring === 0 ? 30 : rings[ring - 1].radius
@@ -150,7 +154,9 @@ var ringcount=config.rings.length;
     entry.x = point.x;
     entry.y = point.y;
     entry.color = entry.active || config.print_layout ?
-      config.rings[entry.ring].color : config.colors.inactive;
+    (config.rings[entry.ring] && config.rings[entry.ring].color) || config.colors.default :
+    config.colors.inactive;
+
   }
 
   // partition entries according to segments
@@ -161,7 +167,9 @@ var ringcount=config.rings.length;
       segmented[quadrant][ring] = [];
     }
   }
+ 
   for (var i=0; i<config.entries.length; i++) {
+    
     var entry = config.entries[i];
     segmented[entry.quadrant][entry.ring].push(entry);
   }
@@ -232,20 +240,29 @@ var ringcount=config.rings.length;
     .attr("in", "SourceGraphic");
 
   // draw rings
-  for (var i = 0; i < rings.length; i++) {
+  for (var i = 0; i < rings.length - 1; i++) {
+    let endRing = rings.length - 1;
+    console.log(i+':'+endRing)
     grid.append("circle")
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("r", rings[i].radius)
       .style("stroke", config.colors.grid)
-      .style("fill",'none')
+      .style("fill", function(){
+        console.log(config.rings[i])
+          if(i==0){ 
+            return '#000000'
+          }else{
+            return '#d3d3d333'
+          }
+          })
       .style("stroke-width", 1);
     if (config.print_layout) {
       grid.append("text")
         .text(config.rings[i].name)
         .attr("y", -rings[i].radius -5)
         .attr("text-anchor", "middle")
-        .style("fill", "#e5e5e5")
+        .style("fill", "#000000")
         .style("font-family", "Arial, Helvetica")
         .style("font-size", 14)
         .style("font-weight", "bold")

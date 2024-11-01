@@ -1453,11 +1453,17 @@ var redrawView=function(){
 
 filters=filters.sort((a, b) => a.order - b.order);
 $('#chartsArea').html(chartTemplate(filters));
+ 
 				filters.forEach((d)=>{
-					
+					 
 					let checkType=settings?.app_dashboard?.find((e)=>{
 						return e.id==d.id;
 					})
+
+					let sequenceMap = {};
+					d.values.forEach(item => {
+						sequenceMap[item.id] = parseInt(item.sequence); // Map ID to its sequence as an integer
+					});
 				
 					let type='doughnut';
 					if(checkType){type=checkType.type}
@@ -1472,9 +1478,22 @@ $('#chartsArea').html(chartTemplate(filters));
 					let hoverData=[];
 					
 					let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
-                 
+ 
+
+					//filterCount
+					filterCount.sort((a, b) => {
+						const seqA = sequenceMap[a.key];
+						const seqB = sequenceMap[b.key];
+						
+						// If sequence is missing (undefined), place the item at the end by treating it as a very large number
+						if (seqA === undefined) return 1;  // a goes to the end if it has no sequence
+						if (seqB === undefined) return -1; // b goes to the end if it has no sequence
+					
+						return seqA - seqB; // Sort in ascending order based on sequence
+					});
+
 					filterCount.forEach((e,i)=>{  
-					 
+					
 							let thisFilter=d.values.find((f)=>{return f.id==e.key})
 						 
 							if(thisFilter){
@@ -1496,7 +1515,7 @@ $('#chartsArea').html(chartTemplate(filters));
 							$('div[name="'+checkType.id+'"]').hide()
 							$('a[easlinkid="'+checkType.id+'"]').hide()
 						}
-		
+		 
 							drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
 						 
 					//console.log('chartData',  chartData);

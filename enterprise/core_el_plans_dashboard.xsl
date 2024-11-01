@@ -50,8 +50,6 @@
 	
 	<!-- Set up the required link classes -->
 
-
-
 	<xsl:key name="projects_key" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference = 'contained_in_programme']/value"/>
 	<xsl:key name="budgets_key" match="/node()/simple_instance[type='Budget']" use="own_slot_value[slot_reference = 'budget_for_change_activity']/value"/>
 	<xsl:key name="budget_elements_key" match="/node()/simple_instance[supertype='Budgetary_Element']" use="own_slot_value[slot_reference = 'budgetary_element_of_budget']/value"/>
@@ -86,7 +84,7 @@
 	<xsl:variable name="defaultCurrencySymbol" select="eas:get_string_slot_values($defaultCurrency, 'currency_symbol')"/>
 
 	<xsl:key name="lifes" match="/node()/simple_instance[(type = 'Element_Style')]" use="own_slot_value[slot_reference = 'style_for_elements']/value"/>
-						
+				
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -703,6 +701,53 @@
 						height: 350px;
 						color: #fff;
 					}
+					.monopoly-card-container {
+						display: flex;
+						justify-content: top;
+						align-items: top; 
+					}
+					
+					.monopoly-card {
+						width: 120px;
+						min-height:80px;
+						padding: 7px;
+						border: 2px solid black;
+						border-radius: 10px;
+						background-color: whitesmoke;
+						text-align: center;
+						margin: 3px;
+						position: relative;
+						border-left: 4px solid lightseagreen;
+						box-shadow: 
+					}
+					
+					.card-name {
+						font-size: 0.9em;
+						font-weight: normal;
+						color: darkblue;
+						margin-bottom: 10px;
+					}
+					
+					.card-action {
+						font-size: 0.9em;
+						color: black;
+						position: absolute;
+						bottom: 2px;
+						right: 6px;
+					}
+					.card-head {
+						font-size: 0.5em;
+						color: black;
+						background-color: white;
+						position: absolute;
+						top: -5px;
+						padding: 2px;
+						padding-right: 4px;
+						left: -1px;
+						border: 1px solid black;
+						border-radius: 10px 0px 10px 0px;
+					}
+					
 				 
 				</style>
 				<script src='js/d3/d3.v5.9.7.min.js'></script>
@@ -822,6 +867,19 @@
 				
 				<div class="top-10"><strong>Start Date: </strong>{{this.actualStartDate}}</div>
 				<div><strong>End Date: </strong>{{this.forecastEndDate}}</div>
+				<div class="costsPanel">
+					{{#if this.costbreakdown}}
+					<b>Costs</b><br/>
+					{{#each this.costbreakdown}}
+						{{#ifEquals @key 'Adhoc_Cost_Component'}}
+							<span class="label label-info">Adhoc</span> {{../this.currency}}{{formatCost this}}<br/>
+						{{else}}
+						
+						<span class="label label-info">Annual</span> {{../this.currency}}{{formatCost this}}<br/>
+						{{/ifEquals}}
+					{{/each}}
+					{{/if}}
+				</div>
 				<div class="plan-attr-wrapper top-10" style="display: flex; gap:10px;">
 					<div class="infoBlock" style="background-color: var(--yellow);">{{this.p2e.length}}<span> Impacts</span>
 					<i class="fa fa-info-circle impactsInfo left-5"><xsl:attribute name="impactid">{{this.id}}</xsl:attribute></i>
@@ -840,7 +898,7 @@
 			<!-- required for floating -->
 			<!-- Nav tabs -->
 			<span id="tabs"/>
-			<ul class="nav nav-tabs tabs-left">
+			<ul class="nav nav-tabs tabs-left" style="max-height: 80vh;overflow-y: auto">
 				<li class="active">
 					<a href="#roadmapTab" data-toggle="tab"><i class="fa fa-fw fa-road right-10"></i><xsl:value-of select="eas:i18n('All Roadmaps')"/></a>
 				</li>		
@@ -963,8 +1021,8 @@
 		<polygon stroke="#00000059" stroke-width="1" ><xsl:attribute name="fill">{{#getProjectColour this}}{{/getProjectColour}}59</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.forecastEndDatePos this }}{{/nudgeBack}},{{#getTopRight @index forecastEndDatePos}}{{/getTopRight}}  {{this.forecastEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.forecastEndDatePos this}}{{/nudgeBack}},{{#getbottomRight @index forecastEndDatePos}}{{/getbottomRight}} {{this.actualStartDatePos}},{{#getbottomLeft @index actualStartDatePos}}{{/getbottomLeft}} {{this.actualStartDatePos}},{{#getTopLeft @index actualStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
     	<foreignObject eas-type="projname" x="23" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow @index}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
+                <xsl:attribute name="y">{{#getFORow @index this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
                 <xhtml> 
                         {{#ifEquals this.late 'Yes'}}<i class="fa fa-exclamation-triangle" style="color:#FF0000"></i>
 						{{/ifEquals}}<span style="font-size:1em"><i class="fa fa-tasks"></i> {{{essRenderInstanceMenuLink this}}} </span> 
@@ -1001,11 +1059,13 @@
  -->
 		 <foreignObject eas-type="progname" x="3" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow @index}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
+                <xsl:attribute name="y">{{#getFORow @index this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
                 <xhtml> 
-					<xsl:text> </xsl:text><span style="font-size:1.1em">{{{essRenderInstanceMenuLink this}}} 
+					<div style="white-space: normal; word-wrap: break-word;width:270px">
+					<xsl:text> </xsl:text><span style="font-size:1em">{{{essRenderInstanceMenuLink this}}} 
 						</span>
+					</div>
 	    		 </xhtml>
         </foreignObject>
 	  <circle cx="20" r="8" stroke="black" stroke-width="2" fill="white"><xsl:attribute name="cx">{{this.validStartDatePos}}</xsl:attribute><xsl:attribute name="cy">{{#getRow @index}}{{/getRow}}</xsl:attribute></circle>
@@ -1023,8 +1083,8 @@
 		<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">{{#getProjectColour this}}{{/getProjectColour}}</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.forecastEndDatePos}}{{/nudgeBack}},{{#getTopRight @index forecastEndDatePos}}{{/getTopRight}}  {{this.forecastEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.forecastEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index forecastEndDatePos}}{{/getbottomRight}} {{this.actualStartDatePos}},{{#getbottomLeft @index actualStartDatePos}}{{/getbottomLeft}} {{this.actualStartDatePos}},{{#getTopLeft @index actualStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
     	<foreignObject eas-type="projname" x="3" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow this.pos}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
+                <xsl:attribute name="y">{{#getFORow this.pos this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
                 <xhtml> 
                         {{#ifEquals this.late 'Yes'}}<i class="fa fa-exclamation-triangle" style="color:#FF0000"></i>
 						{{/ifEquals}}<span style="font-size:1.1em">{{{essRenderInstanceMenuLink this}}} </span> 
@@ -1074,8 +1134,8 @@
 			<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">#c6a6ee73</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getTopRight @index validEndDatePos}}{{/getTopRight}}  {{this.validEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index validEndDatePos}}{{/getbottomRight}} {{this.validStartDatePos}},{{#getbottomLeft @index validStartDatePos}}{{/getbottomLeft}} {{this.validStartDatePos}},{{#getTopLeft @index validStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
 			<foreignObject eas-type="projname" x="30" width="270" class="nameClick">
 					<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-					<xsl:attribute name="y">{{#getFORow @index}}{{/getFORow}}</xsl:attribute>
-					<xsl:attribute name="height">20</xsl:attribute>
+					<xsl:attribute name="y">{{#getFORow @index this}}{{/getFORow}}</xsl:attribute>
+					<xsl:attribute name="height">40</xsl:attribute>
 					<xhtml> 
 							<i class="fa fa-fw fa-columns right-10"></i><span style="font-size:1em">{{{essRenderInstanceMenuLink this}}} </span> 
 						<!--	<i class="fa fa-caret-right expandPlan"><xsl:attribute name="planId">{{this.id}}</xsl:attribute></i>
@@ -1086,8 +1146,8 @@
 			<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">#2980B9</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getTopRight @index validEndDatePos}}{{/getTopRight}}  {{this.validEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index validEndDatePos}}{{/getbottomRight}} {{this.validStartDatePos}},{{#getbottomLeft @index validStartDatePos}}{{/getbottomLeft}} {{this.validStartDatePos}},{{#getTopLeft @index validStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
 			<foreignObject eas-type="projname" x="3" width="280" class="nameClick">
 					<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-					<xsl:attribute name="y">{{#getFORow @index}}{{/getFORow}}</xsl:attribute>
-					<xsl:attribute name="height">20</xsl:attribute>
+					<xsl:attribute name="y">{{#getFORow @index this}}{{/getFORow}}</xsl:attribute>
+					<xsl:attribute name="height">40</xsl:attribute>
 					<xhtml> 
 							<span style="font-size:1.1em">{{{essRenderInstanceMenuLink this}}} </span> 
 						{{#ifEquals this.selected 'Yes'}}<i class="fa fa-arrow-circle-up closeRoadmap"><xsl:attribute name="roadmapId">{{this.id}}</xsl:attribute></i>{{/ifEquals}}
@@ -1108,8 +1168,8 @@
 		<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">#2980B9</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getTopRight @index validEndDatePos}}{{/getTopRight}}  {{this.validEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index validEndDatePos}}{{/getbottomRight}} {{this.validStartDatePos}},{{#getbottomLeft @index validStartDatePos}}{{/getbottomLeft}} {{this.validStartDatePos}},{{#getTopLeft @index validStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
     	<foreignObject eas-type="projname" x="3" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow @index}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
+                <xsl:attribute name="y">{{#getFORow @index this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
                 <xhtml> 
                         <span style="font-size:1.1em">{{{essRenderInstanceMenuLink this}}} </span> 
 						<i class="fa fa-arrow-circle-right expandRoadmap"><xsl:attribute name="roadmapId">{{this.id}}</xsl:attribute></i>
@@ -1132,8 +1192,8 @@
             <line style="stroke:rgb(206, 116, 185);stroke-width:30"><xsl:attribute name="x1">{{this.validEndDatePos}}</xsl:attribute><xsl:attribute name="x2">{{this.validStartDatePos}}</xsl:attribute><xsl:attribute name="y2">{{#getRow @index}}{{/getRow}}</xsl:attribute><xsl:attribute name="y1">{{#getRow @index}}{{/getRow}}</xsl:attribute></line>
             <foreignObject eas-type="progname" x="3" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow this.pos}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
+                <xsl:attribute name="y">{{#getFORow this.pos this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
                 <xhtml> 
                         {{#ifEquals this.plans.length 0}}{{else}}<i class="fa fa-info-circle roadInfo"><xsl:attribute name="onclick">roadInfo('{{this.id}}')</xsl:attribute></i>{{/ifEquals}} <xsl:text> </xsl:text>{{{essRenderInstanceMenuLink this}}} 
                         <!--   {{#formatName this.name}}{{/formatName}}:{{#getFORow  this.pos}}{{/getFORow}}-->
@@ -1165,12 +1225,14 @@
 		<!--	<line style="stroke:rgb(67, 67, 67);stroke-width:4"><xsl:attribute name="x1">{{this.todayPos}}</xsl:attribute><xsl:attribute name="x2">{{this.validStartDatePos}}</xsl:attribute><xsl:attribute name="y2">{{#getRow @index}}{{/getRow}}</xsl:attribute><xsl:attribute name="y1">{{#getRow @index}}{{/getRow}}</xsl:attribute></line> -->
             <foreignObject eas-type="progname" x="3" width="280" class="nameClick">
                 <xsl:attribute name="easid">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="y">{{#getFORow this.pos}}{{/getFORow}}</xsl:attribute>
-                <xsl:attribute name="height">20</xsl:attribute>
-                <xhtml> 
+                <xsl:attribute name="y">{{#getFORow this.pos this}}{{/getFORow}}</xsl:attribute>
+                <xsl:attribute name="height">40</xsl:attribute>
+                <xhtml>  
+					<div style="white-space: normal; word-wrap: break-word;">
 						<!--{{#ifEquals this.projects.length 0}}{{else}}<i class="fa fa-info-circle"><xsl:attribute name="onclick">projInfo('{{this.id}}')</xsl:attribute></i>{{/ifEquals}}-->
-						<xsl:text> </xsl:text><span style="font-size:1.1em">{{{essRenderInstanceMenuLink this}}} 
+						<xsl:text> </xsl:text><span style="font-size:1em">{{{essRenderInstanceMenuLink this}}} 
 						</span>
+					</div>
 						
                         <!--   {{#formatName this.name}}{{/formatName}}:{{#getFORow  this.pos}}{{/getFORow}}-->
                 </xhtml>
@@ -1187,9 +1249,16 @@
 	
 <script id="impacts-template" type="text/x-handlebars-template">
 	<h3>Impacts</h3>
-{{#each this.p2e}}
- <b>{{this.name}}</b> <xsl:text> </xsl:text> <span class="label label-info">{{this.action}}</span><br/>
-{{/each}}
+
+	<div class="monopoly-card-container">
+	{{#each this.p2e}}
+		<div class="monopoly-card">
+			<div class="card-name">{{this.name}}</div>
+			<div class="card-action"><span class="label label-info">{{this.action}}</span></div>
+			<div class="card-head">{{this.eletype}}</div>
+		</div>  
+	{{/each}}
+	</div>
 </script>	 
 <script id="life-template" type="text/x-handlebars-template">
 Project Status:
@@ -1250,10 +1319,12 @@ Project Status:
  <xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
 	<xsl:with-param name="linkClasses" select="$linkClasses"/>
 </xsl:call-template>
- 
- 
+
+	var defaultCurrency='<xsl:value-of select="/node()/simple_instance[type='Currency'][own_slot_value[slot_reference='currency_is_default']/value='true']/own_slot_value[slot_reference='currency_symbol']/value"/>';
+
+
  	var lifes=[<xsl:apply-templates select="$projectStatus" mode="lifecycle"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
- 
+ console.log('defaultCurrency', defaultCurrency)
 lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 
 	 
@@ -1275,6 +1346,11 @@ console.log('allp', allPlans)
 		Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 		});
+
+		Handlebars.registerHelper('formatCost', function (arg1) {
+			return new Intl.NumberFormat().format(arg1) 
+		});
+
 
 		Handlebars.registerHelper('checkStatus', function(arg1, arg2, options) {
 			let colours='';
@@ -1305,8 +1381,20 @@ console.log('allp', allPlans)
 			return (arg1 * 42)+43;
 		});
 		
-        Handlebars.registerHelper('getFORow', function(arg1, options) {
-			return (arg1 * 42)+30;
+        Handlebars.registerHelper('getFORow', function(arg1, arg2, options) {
+			if(arg2){
+				 
+				if(arg2.name.length &gt;45){
+					return (arg1 * 42)+20;
+
+				}else{
+
+					return (arg1 * 42)+30;
+				}
+
+			} else{
+				return (arg1 * 42)+30;
+			}
 		});
 		
         Handlebars.registerHelper('getRecRow', function(arg1, options) {
@@ -1665,8 +1753,8 @@ if(roadmaps.length&gt;0){
 					else{
 						thisDate=moment(today).subtract(1, 'days')
 					}   
-
-					if((moment(thisDate).isSameOrAfter(moment(today)))){projectToShow.push(e)}
+					projectToShow.push(e)
+			//		if((moment(thisDate).isSameOrAfter(moment(today)))){projectToShow.push(e)}
 					if((moment(e.targetEndDate).isSameOrAfter(moment(today)))){liveProjects=liveProjects+1}
 				});  
 			}
@@ -1709,7 +1797,14 @@ if(roadmaps.length&gt;0){
 
 	*/		
 			projs=projectToShow; 
-
+ 
+			projs.forEach((p)=>{
+				let costNum=expandCostData(p.costs)
+				let tots=calculateTotals(costNum)
+		 
+				p['costbreakdown']=tots;
+				p['currency']=defaultCurrency;
+			})
 			$('#planTabs').html(planstabsvgTemplate(plansToShow))
 
 			drawView(plansToShow, projs, roadmapsToShow );
@@ -1737,6 +1832,7 @@ var redrawView = function () {
     scopedProject.resources = scopedProject.resources.filter((elem, index, self) => 
         self.findIndex( (t) => { return (t.id === elem.id)}) === index
     );
+
 
     let scopedProgramme = essScopeResources(programmesToShow, [orgScopingDef, geoScopingDef, visibilityDef]);
     let scopedRoadmaps = essScopeResources(roadmapsToShow, [orgScopingDef, geoScopingDef, visibilityDef]);
@@ -2205,7 +2301,17 @@ thisPlans.forEach((d) => {
 				  return acc;
 				}
 			  }, []);
+
+			  let costNum=expandCostData(d.costs)
+				let tots=calculateTotals(costNum)
+		 
+				d['costbreakdown']=tots;
+
+				d['currency']=defaultCurrency;
 		})
+
+
+		console.log('pm',planMatch)
 
 	$('#informationBox').html(planInfo(planMatch))
 		openNav();
@@ -2213,7 +2319,7 @@ thisPlans.forEach((d) => {
 	$('.impactsInfo').on('click' , function(){
 			let thisId=$(this).attr('impactid')
 			let focusPlan=planMatch.projects.find((e)=>{return e.id==thisId});
-		
+		console.log('fp', focusPlan)
 			$('#slideUpData').html(impactsTemplate(focusPlan));
 			$('#appPanel').show( "blind",  { direction: 'down', mode: 'show' },200 );
 			
@@ -2283,6 +2389,150 @@ function closeNav()
 	workingCapId=0;
 	document.getElementById("appSidenav").style.marginRight = "-854px";
 }
+
+function generateMonthlyCosts(data, startYear, years) {
+    let monthlyCosts = [];
+    let currentDate = new Date(startYear, 0, 1); // Starting from January of the start year
+    let endDate = new Date(startYear + years, 0, 1); // Up to the beginning of the year after the last year
+
+    while (currentDate &lt; endDate) {
+        let totalCostForMonth = 0;
+
+        data.forEach(item => {
+            let itemStartDate = new Date(item.startDate);
+            let itemEndDate = item.endDate ? new Date(item.endDate) : endDate;
+
+            if (itemStartDate &lt;= currentDate &amp;&amp; currentDate &lt;= itemEndDate) {
+                if (item.recurrence === "Monthly_Budgetary_Element") {
+                    totalCostForMonth += item.amount;
+                } else if (item.recurrence === "Annual_Budgetary_Element") {
+                    // Divide the annual amount by 12 to distribute it across the months
+                    totalCostForMonth += item.amount / 12;
+                }
+            }
+        });
+
+        monthlyCosts.push({
+            date: currentDate.toISOString().substring(0, 7), // Format as YYYY-MM
+            totalCost: totalCostForMonth
+        });
+
+        currentDate.setMonth(currentDate.getMonth() + 1); // Move to the next month
+    }
+
+    return monthlyCosts;
+}
+
+function expandCostData(costs) {
+	const months = { 'Monthly_Cost_Component': 1, 'Quarterly_Cost_Component': 3 };
+	let expandedCosts = {};
+
+	costs.forEach(cost => {
+		let { recurrence, amount, startDate, endDate } = cost;
+
+		// Initialize array for each cost type if not already initialized
+		if (!expandedCosts[recurrence]) {
+			expandedCosts[recurrence] = [];
+		}
+
+		// Parse the start and end dates
+		let currentDate = new Date(startDate);
+		const end = new Date(endDate);
+
+		// Set monthly or quarterly increments
+		let incrementMonths = months[recurrence] || 0;
+
+		// Generate rows based on recurrence
+		if (incrementMonths > 0) {
+			while (currentDate &lt;= end) {
+				expandedCosts[recurrence].push([currentDate.toISOString().split('T')[0], amount]); // Format as [date, amount]
+				currentDate.setMonth(currentDate.getMonth() + incrementMonths);
+			}
+		} else {
+			// For Adhoc, just add a single entry
+			expandedCosts[recurrence].push([startDate, amount]); // Format as [date, amount]
+		}
+	});
+
+	return expandedCosts;
+}
+
+//budget function
+function expandBudgetData(budgets) {
+const months = { 'Monthly_Budgetary_Element': 1, 'Quarterly_Budgetary_Element': 3 };
+let expandedBudgets = {};
+
+budgets.forEach(budget => {
+	let { recurrence, amount, startDate, endDate } = budget;
+
+	// Initialize array for each Budget type if not already initialized
+	if (!expandedBudgets[recurrence]) {
+		expandedBudgets[recurrence] = [];
+	}
+
+	// Parse the start and end dates
+	let currentDate = new Date(startDate);
+	const end = new Date(endDate);
+
+	// Set monthly or quarterly increments
+	let incrementMonths = months[recurrence] || 0;
+
+	// Generate rows based on recurrence
+	if (incrementMonths > 0) {
+		while (currentDate &lt;= end) {
+			expandedBudgets[recurrence].push([currentDate.toISOString().split('T')[0], amount]); // Format as [date, amount]
+			currentDate.setMonth(currentDate.getMonth() + incrementMonths);
+		}
+	} else {
+		// For Adhoc, just add a single entry
+		expandedBudgets[recurrence].push([startDate, amount]); // Format as [date, amount]
+	}
+});
+console.log('expandedBudget', expandedBudgets)
+return expandedBudgets;
+}    
+
+//calculate totals
+
+function calculateTotals(costData) {
+const totals = {};
+
+// Iterate over each property in the cost data
+Object.keys(costData).forEach(key => {
+	// Initialize total to 0 for each component
+	totals[key] = 0;
+
+	// Sum up all amounts in the data arrays for each component
+	costData[key].forEach(costEntry => {
+		totals[key] += costEntry[1]; // Add the second element of each array which is the cost
+	});
+
+});
+
+return totals; 
+}
+
+//merges dates with the same data type but on different lines
+function mergeAndSumDateValues(dataObject) {
+// Iterate over each property in the data object
+for (const key in dataObject) {
+	const dateSums = {};  // Temporary object to hold sums of values by date for the current property
+
+	// Process each date-value pair in the current property
+	dataObject[key].forEach(([date, value]) => {
+		if (dateSums[date]) {
+			dateSums[date] += value;  // Add to the existing sum for this date
+		} else {
+			dateSums[date] = value;  // Initialize with the first value for this date
+		}
+	});
+
+	// Replace the original array with a new array of merged and summed date-values
+	dataObject[key] = Object.entries(dateSums).map(([date, sum]) => [date, sum]);
+}
+
+return dataObject;  // Optionally return the modified object for further use
+}
  	
 		</xsl:template>
 		<xsl:template name="GetViewerAPIPath">
@@ -2311,8 +2561,7 @@ function closeNav()
 		<xsl:variable name="thisActors" select="key('orgs_key',$thisStakeholders/name)"/> 
 		<xsl:variable name="thisStakeholdersOrgs" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value][own_slot_value[slot_reference='act_to_role_from_actor']/value=$thisActors/name]"/>
 		 
-		{ "debug":"<xsl:value-of select="$projectsdirectforplan/name"/>",
-		"debug2":"<xsl:value-of select="current()/name"/>",
+		{ 
 			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="isRenderAsJSString" select="true()"/>
@@ -2501,9 +2750,11 @@ function closeNav()
 				"amount":<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='budget_amount']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='budget_amount']/value"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
 				"startDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='budget_start_date_iso_8601']/value"/>",
 				"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='budget_end_date_iso_8601']/value"/>",
+				"currency":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_currency']/value"/>",
 				"approved":"<xsl:value-of select="$budgetApproval[name=current()/own_slot_value[slot_reference='budget_approval_status']/value]/own_slot_value[slot_reference='enumeration_value']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"costs":[<xsl:for-each select="$thisCostElements">{
 				"recurrence":"<xsl:value-of select="current()/type"/>",
+				"currency":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_currency']/value"/>",
 				"amount":<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='cc_cost_amount']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_amount']/value"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
 				"startDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value"/>",
 				"endDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value"/>"

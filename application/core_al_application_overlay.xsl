@@ -1760,10 +1760,11 @@ $('#enumKey').html(keyTemplate(thisFilter))
 	let viaProcess=0;		
 		appsList.applications.forEach((app)=>{
   
-			let thisPerfMeasures=app.pm.filter((e)=>{ 
+			let thisPerfMeasures=app.pm?.filter((e)=>{ 
 				return e.categoryid.includes(measure)
 				//return e.categoryid==measure;
 			}); 	  
+	if(thisPerfMeasures){			
 			thisPerfMeasures.sort((a, b) => (a.date &lt; b.date) ? 1 : -1) 
 			
 			let inScopePMs=[];
@@ -1883,7 +1884,7 @@ app['capsScore']=capAppsScores;
 			
 				}
 			} 
-			
+		}
 			})
 			}
 

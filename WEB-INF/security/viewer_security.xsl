@@ -100,12 +100,14 @@
         
     </xsl:template>-->
     <!-- End of test harness -->
-
+    
     <!-- New templates to manage security for JSON Views -->
     <xsl:template name="RenderSecurityClassificationsJSONForInstance">
         <xsl:param name="theInstance"/>
-        
-        <xsl:variable name="thisSecClassifications" select="$classifications[name = $theInstance/own_slot_value[slot_reference='system_security_read_classification']/value]"/>       
+        <xsl:variable name="thisSecClassificationsInstance" select="$classifications[name = $theInstance/own_slot_value[slot_reference='system_security_read_classification']/value]"/>       
+        <xsl:variable name="thisSecClassificationsClass" select="$classifications[own_slot_value[slot_reference='system_secured_read_elements']/value = $theInstance/type]"/>       
+      
+        <xsl:variable name="thisSecClassifications" select="$thisSecClassificationsInstance union $thisSecClassificationsClass"/>       
         "securityClassifications":[<xsl:apply-templates mode="RenderSecurityClassificationJSON" select="$thisSecClassifications"/>]     
     </xsl:template>
     

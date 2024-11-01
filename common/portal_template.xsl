@@ -18,7 +18,7 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<!-- END GENERIC LINK VARIABLES -->
-	<xsl:variable name="anyReports" select="if ($eipMode) then /node()/simple_instance[type = ('Configured_Editor', 'Simple_Editor', 'Editor', 'Report')] else /node()/simple_instance[type = 'Report']"/>
+	<xsl:variable name="anyReports" select="if ($eipMode) then /node()/simple_instance[type = ('Configured_Editor', 'Simple_Editor', 'Editor', 'Report', 'Catalogue')] else /node()/simple_instance[type = 'Report']"/>
 	<xsl:key name="anyReports_key" match="$anyReports" use="own_slot_value[slot_reference = 'report_is_enabled']/value"/>
 	<xsl:variable name="allReports" select="key('anyReports_key','true')"/>
 	<xsl:variable name="qualifyingReports" select="$anyReports[name=$allReports/own_slot_value[slot_reference='report_qualifying_report']/value]"/>
@@ -225,7 +225,7 @@
 							<!-- Only render if user is authorised -->
 							<xsl:if test="eas:isUserAuthZ(current())">
 								<xsl:choose>
-									<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+									<xsl:when test="($eipMode) and (current()/(type, supertype) = 'Editor')">
 										<xsl:variable name="theEditorId" select="current()/name"/>
 										<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
 										<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
@@ -319,7 +319,7 @@
 					<xsl:sort select="/own_slot_value[slot_reference = 'report_label']/value"/>
 					<xsl:if test="eas:isUserAuthZ(current())">
 						<xsl:choose>
-							<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+							<xsl:when test="($eipMode) and (current()/(type, supertype) = 'Editor')">
 								<xsl:variable name="theEditorId" select="current()/name"/>
 								<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
 								<xsl:variable name="theEditorParameterInsts" select="$anyReportParameters[name = current()/own_slot_value[slot_reference = 'report_parameters']/value]"/>
@@ -454,7 +454,7 @@
 					<div class="viewElementContainer {$nameStyleSetting}">
 						<a class="noUL">
 							<xsl:choose>
-								<xsl:when test="($eipMode) and (current()/type = ('Editor', 'Simple_Editor'))">
+								<xsl:when test="($eipMode) and (current()/(type, supertype) = 'Editor')">
 									<xsl:variable name="theEditorId" select="current()/name"/>
 									<xsl:variable name="theEditorLabel" select="current()/own_slot_value[slot_reference = 'report_label']/value"/>
 									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
@@ -515,7 +515,7 @@
 					<div class="viewElementContainer {$nameStyleSetting}">
 						<a class="noUL">
 							<xsl:choose>
-								<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor'))">
+								<xsl:when test="($eipMode) and ($aReport/(type, supertype) = 'Editor')">
 									<xsl:variable name="theEditorId" select="$aReport/name"/>
 									<xsl:variable name="theEditorLabel" select="$aReport/own_slot_value[slot_reference = 'report_label']/value"/>
 									<xsl:variable name="theEditorLinkHref">report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=<xsl:value-of select="$theEditorLabel"/>&amp;EDITOR=<xsl:value-of select="$theEditorId"/></xsl:variable>
@@ -568,7 +568,7 @@
 				<!-- Check that user is authorised for the requested report -->
 				<xsl:if test="eas:isUserAuthZ($aReport)">
 					<xsl:choose>
-						<xsl:when test="($eipMode) and ($aReport/type = ('Editor', 'Simple_Editor', 'Configured_Editor'))">
+						<xsl:when test="($eipMode) and ($aReport/(type, supertype) = 'Editor')">
 							<xsl:variable name="thisEditorPath">
 								<xsl:call-template name="RenderEditorLinkHref">
 									<xsl:with-param name="theEditor" select="$aReport"></xsl:with-param>

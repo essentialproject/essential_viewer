@@ -296,6 +296,7 @@
 					
 					//function to initialise the TRM data structure
 					function initTRMData() {
+
 						var topLayer = '<xsl:value-of select="$topRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
 						var topLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == topLayer});
 						trmData.top = topLayerDomains;
@@ -313,8 +314,11 @@
 						trmData.right = rightLayerDomains;
 						
 						var bottomLayer = '<xsl:value-of select="$bottomRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
-						var bottomLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == bottomLayer});
+						var bottomLayerDomains = techDomains.techDomains.filter(function(aTD) {
+							return aTD.refLayer == bottomLayer || aTD.refLayer == "";
+						});
 						trmData.bottom = bottomLayerDomains;
+				 
 					
 					}
 					
@@ -658,6 +662,7 @@
 					
 					//function to draw the relevant dashboard components based on the currently selected Data Objects
 					function drawDashboard() {
+					 
 						updateOverlayLegend();
 						if(currentMode == trmMode) {
 							drawTRM();

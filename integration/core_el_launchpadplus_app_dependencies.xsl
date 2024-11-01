@@ -19,6 +19,9 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<xsl:variable name="allApplications" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/> 
+    <xsl:key name="allArchUsagesKey" match="/node()/simple_instance[type='Static_Application_Provider_Usage']" use="name"/>
+	
+	<xsl:key name="allAppsforSAKey" match="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider','Application_Provider_Interface')]" use="name"/>
 	
     <xsl:variable name="allArchUsages" select="/node()/simple_instance[type='Static_Application_Provider_Usage']"/>
     <xsl:variable name="allApplicationsApps" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')][name=$allArchUsages/own_slot_value[slot_reference='static_usage_of_app_provider']/value]"/> 
@@ -43,7 +46,7 @@
 
   <!-- END GENERIC LINK VARIABLES -->
  	<xsl:variable name="apiPathApps" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"/> 
-    <xsl:variable name="apiPathInfo" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"/> 
+    <xsl:variable name="apiPathInfo" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"/> 
     
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -318,7 +321,7 @@ if(appAPUList.length&gt;0){
                     "data": [],
                     "method":'',
                     "frequency":'',
-                    "fromApp": a.fromApp,
+                    "fromApp": a.toApp,
                     "fromData": a.fromData,
                     "fromtype": a.fromtype,
                     "to": a.to,
@@ -328,7 +331,7 @@ if(appAPUList.length&gt;0){
                     }) 
             }
         })
-      
+      console.log('apiList', apiList)
         apiList.forEach((a)=>{
             if(a.fromData.length&gt;0){
                 a.fromData.forEach((dt)=>{
@@ -341,7 +344,7 @@ if(appAPUList.length&gt;0){
                 "fromtype": a.fromtype,
                 "method":dt.method,
                 "frequency":dt.frequency,
-                "to": a.to,
+                "to": a.toApp,
                 "toApp": a.toApp,
                 "toAppId": a.toAppId,
                 "type": a.type
@@ -357,7 +360,7 @@ if(appAPUList.length&gt;0){
                 "fromtype": a.fromtype,
                 "method":'',
                 "frequency":'',
-                "to": a.to,
+                "to": a.toApp,
                 "toApp": a.toApp,
                 "toAppId": a.toAppId,
                 "type": a.type
@@ -366,7 +369,7 @@ if(appAPUList.length&gt;0){
         
      
         })
-
+        console.log('apiList2', apiList)
         let uniqueRows = [];
         let seen = new Set();
 
@@ -387,9 +390,7 @@ if(appAPUList.length&gt;0){
  	var ExcelArray=[];		
 	
 	statusSet={}
-		 
-    $('document').ready(function () {
-	});
+ 
 	
 var getXML = function promise_getExcelXML(excelXML_URL) {
     return new Promise(
@@ -2000,6 +2001,7 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
 		ExcelArray=[];
 	var worksheetText='';
    worksheetText  
+   console.log('apulist', appAPUList)
  
 	   ExcelString=xmlhead+worksheetText+listTemplate(appList)+infoTemplate(infoList)+appDependencyTemplate(appAPUList)+'&lt;/Workbook>';
  
@@ -2030,16 +2032,34 @@ var getXML = function promise_getExcelXML(excelXML_URL) {
     <xsl:template match="node()" mode="getAPUtoAPUFrom"> 
         <xsl:variable name="data" select="key('allInfotoAPUkey',current()/name)"/>    
         <xsl:variable name="thisAIRwithAPU" select="$allAPPINFOREPs[name=$data/own_slot_value[slot_reference='atire_app_pro_to_inforep']/value]"/>
+
+        <xsl:variable name="thisFrom" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+        <xsl:variable name="fromApp" select="key('allAppsforSAKey', $thisFrom/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+		
         <xsl:variable name="thisInfoReps" select="key('allInfoRepkey', $thisAIRwithAPU/name)"></xsl:variable>
-        {"apuid":"<xsl:value-of select="current()/name"/>","aputype":"<xsl:value-of select="current()/type"/>", "to":"<xsl:value-of select="current()/own_slot_value[slot_reference=':TO']/value"/>",
+        {"apuid":"<xsl:value-of select="current()/name"/>","aputype":"<xsl:value-of select="current()/type"/>",
+        "debug":"<xsl:value-of select="$thisFrom/name"/>",
+        "debug1":"<xsl:value-of select="$thisFrom/own_slot_value[slot_reference='static_usage_of_app_provider']/value"/>",
+        "debug2":"<xsl:value-of select="$fromApp/name"/>",
+        <xsl:variable name="ftemp" as="map(*)" select="map{'fromApp': string(translate(translate($fromApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+        <xsl:variable name="fresult" select="serialize($ftemp, map{'method':'json', 'indent':true()})"/>  
+        <xsl:value-of select="substring-before(substring-after($fresult,'{'),'}')"></xsl:value-of>,
+
          "data":[<xsl:apply-templates select="$thisInfoReps" mode="data"><xsl:with-param name="method" select="$data/own_slot_value[slot_reference='atire_acquisition_method']/value"/><xsl:with-param name="freq" select="$data/own_slot_value[slot_reference='atire_service_quals']/value"/></xsl:apply-templates>]}<xsl:if test="not(position()=last())">,</xsl:if>
     </xsl:template> 
     <xsl:template match="node()" mode="getAPUtoAPUTo"> 
         {      <xsl:variable name="data" select="key('allInfotoAPUkey',current()/name)"/>    
         <xsl:variable name="thisAIRwithAPU" select="$allAPPINFOREPs[name=$data/own_slot_value[slot_reference='atire_app_pro_to_inforep']/value]"/>
         <xsl:variable name="thisInfoReps" select="key('allInfoRepkey', $thisAIRwithAPU/name)"></xsl:variable>
-            "apuid":"<xsl:value-of select="current()/name"/>","aputype":"<xsl:value-of select="current()/type"/>",  "from":"<xsl:value-of select="current()/own_slot_value[slot_reference=':FROM']/value"/>",
-            "data":[<xsl:apply-templates select="$thisInfoReps" mode="data"><xsl:with-param name="method" select="$data/own_slot_value[slot_reference='atire_acquisition_method']/value"/><xsl:with-param name="freq" select="$data/own_slot_value[slot_reference='atire_service_quals']/value"/></xsl:apply-templates>]}<xsl:if test="not(position()=last())">,</xsl:if>
+		<xsl:variable name="thisTo" select="key('allArchUsagesKey', current()/own_slot_value[slot_reference=':TO']/value)"/>
+		
+        <xsl:variable name="toApp" select="key('allAppsforSAKey', $thisTo/own_slot_value[slot_reference='static_usage_of_app_provider']/value)"/>
+		
+        <xsl:variable name="ttemp" as="map(*)" select="map{'toApp': string(translate(translate($toApp/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"></xsl:variable>
+        <xsl:variable name="tresult" select="serialize($ttemp, map{'method':'json', 'indent':true()})"/>  
+        <xsl:value-of select="substring-before(substring-after($tresult,'{'),'}')"></xsl:value-of>,
+        "apuid":"<xsl:value-of select="current()/name"/>","aputype":"<xsl:value-of select="current()/type"/>",  
+        "data":[<xsl:apply-templates select="$thisInfoReps" mode="data"><xsl:with-param name="method" select="$data/own_slot_value[slot_reference='atire_acquisition_method']/value"/><xsl:with-param name="freq" select="$data/own_slot_value[slot_reference='atire_service_quals']/value"/></xsl:apply-templates>]}<xsl:if test="not(position()=last())">,</xsl:if>
     </xsl:template> 
  <xsl:template match="node()" mode="getContainedApps">
          <xsl:variable name="parent" select="$allApplications[own_slot_value[slot_reference='contained_application_providers']/value=current()/name]"/>

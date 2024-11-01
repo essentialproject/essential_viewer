@@ -26,6 +26,7 @@
 	<xsl:variable name="physProcAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"/>
   
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
+	<xsl:variable name="capsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<!-- START VIEW SPECIFIC SETUP VARIABES -->
 	<xsl:variable name="products" select="/node()/simple_instance[type='Product']"/>
 	<xsl:variable name="productType" select="/node()/simple_instance[type='Product_Type']"/>
@@ -68,6 +69,11 @@
 				<xsl:with-param name="apiReport" select="$appsData"/>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="capPath">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$capsData"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:variable name="ppPath">
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$physProcAppsData"/>
@@ -94,16 +100,24 @@
 				.thead input {
 					width: 100%;
 					}
+
+					.ess-blobWrapper {
+						display: flex;
+						flex-wrap: wrap;
+						gap: 15px;
+					}
+
 					.ess-blob{
-						margin: 0 15px 15px 0;
 						border: 1px solid #ccc;
-						height: 40px;
+						min-height: 40px;
 						width: 140px;
 						border-radius: 4px;
-						display: table;
 						position: relative;
 						text-align: center;
-						float: left;
+						padding: 5px;
+						display: flex;
+						justify-content: center;
+						align-items: center;
 					}
 
 					.orgName{
@@ -113,9 +127,6 @@
 					}
 
 					.ess-blobLabel{
-						display: table-cell;
-						vertical-align: middle;
-						line-height: 1.1em;
 						font-size: 90%;
 					}
 					
@@ -320,6 +331,29 @@
 						display: inline-block;
 						margin-left: 10px; 
 					}
+					// new Chart
+
+					.node rect {
+						fill: #fff; /* White background */
+						stroke: steelblue; /* Blue border */
+						stroke-width: 2px;
+						rx: 10; /* Rounded corners */
+						ry: 10;
+					}
+
+					/* Styling for the text inside the nodes */
+			 
+					.node text {
+						font: 11px sans-serif;
+						text-anchor: middle; /* Center the text horizontally */ 
+					}
+			
+					/* Styling for the connecting lines */
+					.link {
+						fill: none;
+						stroke: #ccc;
+						stroke-width: 2px;
+					}
 				</style>
 				<script>
 					
@@ -407,7 +441,7 @@
 						});
 					});
 				</script>
-				<script src='https://d3js.org/d3.v5.min.js'></script>
+				<script src='js/d3/d3.v5.9.7.min.js'></script>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
@@ -423,806 +457,11 @@
 					<xsl:with-param name="viewerAPIPath" select="$apiPath"/> 
 					<xsl:with-param name="viewerAPIPathApp" select="$appPath"/>
 					<xsl:with-param name="viewerAPIPathPP" select="$ppPath"/>
+					<xsl:with-param name="viewerAPIPathCap" select="$capPath"/>
+					
 				</xsl:call-template>
 				</script>
-
-
-				<script id="rendered-js">
-  	  
-			  function Chart() {
-			<!--	Org chart Copyright 2021 David Bumbeishvili  see https://bl.ocks.org/bumbeishvili/09a03b81ae788d2d14f750afe59eb7de
-			Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-			The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-			-->
-				  // Exposed variables
-				  var attrs = {
-					  id: 'ID' + Math.floor(Math.random() * 1000000), // Id for event handlings
-					  svgWidth: 800, 
-					  svgHeight: 600,
-					  marginTop: 0,
-					  marginBottom: 0,
-					  marginRight: 0,
-					  marginLeft: 0,
-					  container: '.chart-container',
-					  defaultTextFill: '#2C3E50',
-					  nodeTextFill:'white',
-					  defaultFont: 'Helvetica',
-					  backgroundColor: '#fafafa',
-					  data: null,
-					  depth: 180,
-					  duration: 600,
-					  strokeWidth: 3,
-					  dropShadowId: null,
-					  initialZoom:1,
-					  onNodeClick:d=>d
-				  };
-				 
-				  //InnerFunctions which will update visuals
-				  var updateData;
-			  
-				  //Main chart object
-				  var main = function() {
-					  //Drawing containers
-					  
-					  var container = d3.select('.chart-container');
-
-					  var containerRect = container.node().getBoundingClientRect();
-					  if (containerRect.width > 0) attrs.svgWidth = containerRect.width;
-			  
-					  setDropShadowId(attrs);
-			  
-					  //Calculated properties
-					  var calc = {
-						  id: null,
-						  chartTopMargin: null,
-						  chartLeftMargin: null,
-						  chartWidth: null,
-						  chartHeight: null
-					  };
-					  calc.id = 'ID' + Math.floor(Math.random() * 1000000); // id for event handlings
-					  calc.chartLeftMargin = attrs.marginLeft;
-					  calc.chartTopMargin = attrs.marginTop;
-					  calc.chartWidth = attrs.svgWidth - attrs.marginRight - calc.chartLeftMargin;
-					  calc.chartHeight = attrs.svgHeight - attrs.marginBottom - calc.chartTopMargin;
-					  calc.nodeMaxWidth = d3.max(attrs.data, d => d.width);
-					  calc.nodeMaxHeight = d3.max(attrs.data, d => d.height);
-			  
-					  attrs.depth = calc.nodeMaxHeight + 100;
-			  
-					  calc.centerX = calc.chartWidth / 2;
-			  
-					  //********************  LAYOUTS  ***********************
-					  const layouts = {
-						  treemap: null
-					  }
-			  
-					  layouts.treemap = d3.tree().size([calc.chartWidth, calc.chartHeight])
-						  .nodeSize([calc.nodeMaxWidth + 100, calc.nodeMaxHeight + attrs.depth])
-			  
-					  // ******************* BEHAVIORS . **********************
-					  const behaviors = {
-						  zoom: null
-					  }
-			  
-					  behaviors.zoom = d3.zoom().on("zoom", zoomed)
-					
-					  
-						
-			  
-					  //****************** ROOT node work ************************
-					  const root = d3.stratify()
-						  .id(function(d) {
-							  return d.nodeId;
-						  })
-						  .parentId(function(d) {
-							  return d.parentNodeId;
-						  })
-						  (attrs.data)
-			  
-					  root.x0 = 0;
-					  root.y0 = 0;
-					
-					  const allNodes = layouts.treemap(root).descendants()
-					  
-					  allNodes.forEach(d=>{
-						Object.assign(d.data,{
-						  directSubordinates:d.children?d.children.length:0,
-						  totalSubordinates:d.descendants().length-1
-						})
-					  })
-					
-					  root.children.forEach(collapse);
-					  root.children.forEach(expandSomeNodes);
-					
-			  
-			  
-					  //Add svg
-					  var svg = container
-						  .patternify({
-							  tag: 'svg',
-							  selector: 'svg-chart-container'
-						  })
-						  .attr('width', attrs.svgWidth)
-						  .attr('height', attrs.svgHeight)
-						  .attr('font-family', attrs.defaultFont)
-						  .call(behaviors.zoom)
-						  .attr('cursor', 'move')
-						  .style('background-color', attrs.backgroundColor)
-			  
-					  //Add container g element
-					  var chart = svg
-						  .patternify({
-							  tag: 'g',
-							  selector: 'chart'
-						  })
-						  .attr('transform', 'translate(' + calc.chartLeftMargin + ',' + calc.chartTopMargin + ')');
-			  
-					  var centerG = chart.patternify({
-							  tag: 'g',
-							  selector: 'center-group'
-						  })
-						  .attr('transform', `translate(${calc.centerX},${calc.nodeMaxHeight/2}) scale(${attrs.initialZoom})`)
-					  
-					  if(attrs.lastTransform)
-						{
-						  behaviors.zoom
-							.scaleBy(chart,attrs.lastTransform.k)
-							.translateTo(chart,attrs.lastTransform.x,attrs.lastTransform.y)
-						}
-			  
-					  const defs = svg.patternify({
-						  tag: 'defs',
-						  selector: 'image-defs'
-					  });
-			  
-					  const filterDefs = svg.patternify({
-						  tag: 'defs',
-						  selector: 'filter-defs'
-					  });
-			  
-					 var filter = filterDefs.patternify({tag:'filter',selector:'shadow-filter-element'})
-					  .attr('id', attrs.dropShadowId)
-					  .attr('y',`${-50}%`)
-					  .attr('x',`${-50}%`)
-					  .attr('height', `${200}%`)
-					  .attr('width',`${200}%`)
-			  
-				   filter.patternify({tag:'feGaussianBlur',selector:'feGaussianBlur-element'})
-					 .attr('in', 'SourceAlpha')
-					 .attr('stdDeviation', 3.1)
-					 .attr('result', 'blur');
-			  
-				   filter.patternify({tag:'feOffset',selector:'feOffset-element'})
-					 .attr('in', 'blur')
-					 .attr('result', 'offsetBlur')
-					 .attr("dx", 4.28)
-					 .attr("dy", 4.48)
-					 .attr("x", 8)
-					 .attr("y", 8)
-			  
-					filter.patternify({tag:'feFlood',selector:'feFlood-element'})
-					  .attr("in", "offsetBlur")
-					  .attr("flood-color",'black')
-					  .attr("flood-opacity", 0.3)
-					  .attr("result", "offsetColor");
-			  
-					filter.patternify({tag:'feComposite',selector:'feComposite-element'})
-					  .attr("in", "offsetColor")
-					  .attr("in2", "offsetBlur")
-					  .attr("operator", "in")
-					  .attr("result", "offsetBlur");
-			  
-					var feMerge = filter.patternify({tag:'feMerge',selector:'feMerge-element'})
-			  
-					feMerge.patternify({tag:'feMergeNode',selector:'feMergeNode-blur'})
-					  .attr('in', 'offsetBlur')
-				  
-					feMerge.patternify({tag:'feMergeNode',selector:'feMergeNode-graphic'})
-					  .attr('in', 'SourceGraphic')
-			  
-			  
-					  // Display tree contenrs
-					  update(root)
-			  
-					  // Smoothly handle data updating
-					  updateData = function() {};
-			  
-					  //#########################################  UTIL FUNCS ##################################
-					  function setDropShadowId(d) {
-						  if (d.dropShadowId) return;
-			  
-						  let id = d.id + "-drop-shadow";
-						  //@ts-ignore
-						  if (typeof DOM != 'undefined') {
-						  //@ts-ignore
-							  id = DOM.uid(d.id).id;
-						  }
-						  Object.assign(d, {
-							  dropShadowId: id
-						  })
-					  }
-			  
-					  function rgbaObjToColor(d) {
-						  return `rgba(${d.red},${d.green},${d.blue},${d.alpha})`
-					  }
-			  
-					  // Zoom handler func
-					  function zoomed() {
-						  var transform = d3.event.transform;
-						  attrs.lastTransform = transform;
-						  chart.attr('transform', transform);
-					  }
-			  
-					  // Toggle children on click.
-					  function click(d) {
-						  if (d.children) {
-							  d._children = d.children;
-							  d.children = null;
-						  } else {
-							  d.children = d._children;
-							  d._children = null;
-						  }
-						  update(d);
-					  }
-			  
-					  function diagonal(s, t) {
-						  const x = s.x;
-						  const y = s.y;
-						  const ex = t.x;
-						  const ey = t.y;
-			  
-						  let xrvs = ex - x&lt;0 ? -1 : 1;
-						  let yrvs = ey - y&lt;0 ? -1 : 1;
-			  
-						  let rdef = 35;
-						  let r = Math.abs(ex - x) / 2&lt;rdef ? Math.abs(ex - x) / 2 : rdef;
-			  
-						  r = Math.abs(ey - y) / 2&lt;r ? Math.abs(ey - y) / 2 : r;
-			  
-						  let h = Math.abs(ey - y) / 2 - r;
-						  let w = Math.abs(ex - x) - r * 2;
-						  //w=0;
-						  const path = `
-						  M ${x} ${y}
-						  L ${x} ${y+h*yrvs}
-						  C  ${x} ${y+h*yrvs+r*yrvs} ${x} ${y+h*yrvs+r*yrvs} ${x+r*xrvs} ${y+h*yrvs+r*yrvs}
-						  L ${x+w*xrvs+r*xrvs} ${y+h*yrvs+r*yrvs}
-						  C ${ex}  ${y+h*yrvs+r*yrvs} ${ex}  ${y+h*yrvs+r*yrvs} ${ex} ${ey-h*yrvs}
-						  L ${ex} ${ey}
-			   `
-						  return path;
-					  }
-			  
-					  function collapse(d) {
-						  if (d.children) {
-							  d._children = d.children;
-							  d._children.forEach(collapse);
-							  d.children = null;
-						  }
-					  }
-					
-					function expandSomeNodes(d){
-					   if(d.data.expanded){
-			  
-							let parent = d.parent;
-							while(parent){
-			  
-							  if(parent._children){
-			  
-								parent.children = parent._children;
-			  
-								//parent._children=null;
-							  }
-							  parent = parent.parent;
-							}
-						}
-						if(d._children){
-						  d._children.forEach(expandSomeNodes);
-						}
-						
-					}
-			  
-			  
-					  function update(source) {
-						  //  Assigns the x and y position for the nodes
-			  
-						  const treeData = layouts.treemap(root);
-			  
-						  // Get tree nodes and links
-						  const nodes = treeData.descendants().map(d => {
-							  if (d.width) return d;
-			  
-							  let imageWidth = 100;
-							  let imageHeight = 100;
-							  let imageBorderColor = 'steelblue';
-							  let imageBorderWidth = 0;
-							  let imageRx = 0;
-							  let imageCenterTopDistance = 0;
-							  let imageCenterLeftDistance = 0;
-							  let borderColor = 'steelblue';
-							  let backgroundColor = 'steelblue';
-							  let width = d.data.width;
-							  let height = d.data.height;
-							  let dropShadowId = `none`
-							  if(d.data.nodeImage &amp;&amp; d.data.nodeImage.shadow){
-								  dropShadowId = `url(#${attrs.dropShadowId})`
-							  }
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.width) {
-								  imageWidth = d.data.nodeImage.width
-							  };
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.height) {
-								  imageHeight = d.data.nodeImage.height
-							  };
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.borderColor) {
-								  imageBorderColor = rgbaObjToColor(d.data.nodeImage.borderColor)
-							  };
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.borderWidth) {
-								  imageBorderWidth = d.data.nodeImage.borderWidth
-							  };
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.centerTopDistance) {
-								  imageCenterTopDistance = d.data.nodeImage.centerTopDistance
-							  };
-							  if (d.data.nodeImage &amp;&amp; d.data.nodeImage.centerLeftDistance) {
-								  imageCenterLeftDistance = d.data.nodeImage.centerLeftDistance
-							  };
-							  if (d.data.borderColor) {
-								  borderColor = rgbaObjToColor(d.data.borderColor);
-							  }
-							  if (d.data.backgroundColor) {
-								  backgroundColor = rgbaObjToColor(d.data.backgroundColor);
-							  }
-							  if (d.data.nodeImage &amp;&amp;
-								  d.data.nodeImage.cornerShape.toLowerCase() == "circle") {
-								  imageRx = Math.max(imageWidth, imageHeight);
-							  }
-							  if (d.data.nodeImage &amp;&amp;
-								  d.data.nodeImage.cornerShape.toLowerCase() == "rounded") {
-								  imageRx = Math.min(imageWidth, imageHeight) / 6;
-							  }
-							  return Object.assign(d, {
-								  imageWidth,
-								  imageHeight,
-								  imageBorderColor,
-								  imageBorderWidth,
-								  borderColor,
-								  backgroundColor,
-								  imageRx,
-								  width,
-								  height,
-								  imageCenterTopDistance,
-								  imageCenterLeftDistance,
-								  dropShadowId
-							  });
-						  });
-			  
-						  const links = treeData.descendants().slice(1);
-			  
-						  // Set constant depth for each nodes
-						  nodes.forEach(d => d.y = d.depth * attrs.depth);
-						  // ------------------- FILTERS ---------------------
-			  
-						  const patternsSelection = defs.selectAll('.pattern')
-							  .data(nodes, d => d.id);
-			  
-						  const patternEnterSelection = patternsSelection.enter().append('pattern')
-			  
-						  const patterns = patternEnterSelection
-							  .merge(patternsSelection)
-							  .attr('class', 'pattern')
-							  .attr('height', 1)
-							  .attr('width', 1)
-							  .attr('id', d => d.id)
-			  
-						  const patternImages = patterns.patternify({
-								  tag: 'image',
-								  selector: 'pattern-image',
-								  data: d => [d]
-							  })
-							  .attr('x', 0)
-							  .attr('y', 0)
-							  .attr('height', d => d.imageWidth)
-							  .attr('width', d => d.imageHeight)
-							  .attr('xlink:href', d => d.data.nodeImage.url)
-							  .attr('viewbox', d => `0 0 ${d.imageWidth*2} ${d.imageHeight}`)
-							  .attr('preserveAspectRatio', 'xMidYMin slice')
-			  
-						  patternsSelection.exit().transition().duration(attrs.duration).remove();
-			  
-						  // --------------------------  LINKS ----------------------
-			  
-						  // Update the links...
-						  var linkSelection = centerG.selectAll('path.link')
-							  .data(links, function(d) {
-								  return d.id;
-							  });
-			  
-						  // Enter any new links at the parent's previous position.
-						  var linkEnter = linkSelection.enter()
-							  .insert('path', "g")
-							  .attr("class", "link")
-							  .attr('d', function(d) {
-								  var o = {
-									  x: source.x0,
-									  y: source.y0
-								  }
-								  return diagonal(o, o)
-							  });
-			  
-						  // UPDATE
-						  var linkUpdate = linkEnter.merge(linkSelection)
-			  
-						  // Styling links
-						  linkUpdate
-							  .attr("fill", "none")
-							  .attr("stroke-width", d => d.data.connectorLineWidth || 2)
-							  .attr('stroke', d => {
-								  if (d.data.connectorLineColor) {
-									  return rgbaObjToColor(d.data.connectorLineColor);
-								  }
-								  return 'green';
-							  })
-							  .attr('stroke-dasharray', d => {
-								  if (d.data.dashArray) {
-									  return d.data.dashArray;
-								  }
-								  return '';
-							  })
-			  
-						  // Transition back to the parent element position
-						  linkUpdate.transition()
-							  .duration(attrs.duration)
-							  .attr('d', function(d) {
-								  return diagonal(d, d.parent)
-							  });
-			  
-						  // Remove any exiting links
-						  var linkExit = linkSelection.exit().transition()
-							  .duration(attrs.duration)
-							  .attr('d', function(d) {
-								  var o = {
-									  x: source.x,
-									  y: source.y
-								  }
-								  return diagonal(o, o)
-							  })
-							  .remove();
-			  
-			  
-						  // --------------------------  NODES ----------------------
-						  // Updating nodes
-						  const nodesSelection = centerG.selectAll('g.node')
-							  .data(nodes, d => d.id)
-			  
-						  // Enter any new nodes at the parent's previous position.
-						  var nodeEnter = nodesSelection.enter().append('g')
-							  .attr('class', 'node')
-							  .attr("transform", function(d) {
-								  return "translate(" + source.x0 + "," + source.y0 + ")";
-							  })
-							  .attr('cursor', 'pointer')
-							  .on('click', function(d){
-								 if([...d3.event.srcElement.classList].
-									 includes('node-button-circle')){
-								   return;
-								 }
-								 attrs.onNodeClick(d.data.nodeId);
-							  })
-			  
-						  // Add rectangle for the nodes 
-						  nodeEnter
-							  .patternify({
-								  tag: 'rect',
-								  selector: 'node-rect',
-								  data: d => [d]
-							  })
-							  .attr('width', 1e-6)
-							  .attr('height', 1e-6)
-							  .style("fill", function(d) {
-								  return d._children ? "lightsteelblue" : "#fff";
-							  })
-						
-						  // Add foreignObject element
-						  const fo = nodeEnter
-							  .patternify({
-								  tag: 'foreignObject',
-								  selector: 'node-foreign-object',
-								  data: d => [d]
-							  })
-							  .attr('width', d=> d.width)
-							  .attr('height',d=> d.height)
-							  .attr('x', d=> -d.width/2)
-							  .attr('y', d=> -d.height/2 )
-			  
-						  // Add foreign object 
-						  fo.patternify({
-								  tag: 'xhtml:div',
-								  selector: 'node-foreign-object-div',
-								  data: d => [d]
-							  })
-							  .style('width', d=> d.width + 'px')
-							  .style('height',d=> d.height + 'px')
-							  .style('color', 'white')
-							  .html(d=>d.data.template)
-			  
-					 /*  nodeEnter
-							  .patternify({
-								  tag: 'image',
-								  selector: 'node-icon-image',
-								  data: d => [d]
-							  })
-							  .attr('width', d=>  d.data.nodeIcon.size)
-							  .attr('height', d=>  d.data.nodeIcon.size)
-							  .attr("xlink:href",d=>d.data.nodeIcon.icon)
-							  .attr('x',d=>-d.width/2+5)
-							  .attr('y',d=> d.height/2 - d.data.nodeIcon.size-5)
-						*/
-						 nodeEnter
-							  .patternify({
-								  tag: 'text',
-								  selector: 'node-icon-text-total',
-								  data: d => [d]
-							  })
-							  .text('test')
-							  .attr('x',d=>-d.width/2+10 )
-							  .attr('y',d=> d.height/2 - d.data.nodeIcon.size-5)
-							  //.attr('text-anchor','middle')
-							  .text(d=>d.data.totalSubordinates + ' Subordinates')
-							  .attr('fill',attrs.nodeTextFill)
-							  .attr('font-weight','bold')
-							  .attr('font-size','12pt')
-						
-						 nodeEnter
-							  .patternify({
-								  tag: 'text',
-								  selector: 'node-icon-text-direct',
-								  data: d => [d]
-							  })
-							  .text('test')
-							  .attr('x',d=>-d.width/2+10)
-							  .attr('y',d=> d.height/2 - 10)
-							  .text(d=>d.data.directSubordinates +' Direct ')
-							  .attr('fill',attrs.nodeTextFill)
-							  .attr('font-weight','bold')
-							  .attr('font-size','12pt')
-			  
-						
-						  // Node images
-						  const nodeImageGroups = nodeEnter.patternify({
-							  tag: 'g',
-							  selector: 'node-image-group',
-							  data: d => [d]
-						  })
-			  
-						  // Node image rectangle 
-						  nodeImageGroups
-							  .patternify({
-								  tag: 'rect',
-								  selector: 'node-image-rect',
-								  data: d => [d]
-							  })
-			  
-						  // Node button circle group
-						  const nodeButtonGroups = nodeEnter
-							  .patternify({
-								  tag: 'g',
-								  selector: 'node-button-g',
-								  data: d => [d]
-							  })
-							  .on('click', click)
-			  
-						  // Add button circle 
-						  nodeButtonGroups
-							  .patternify({
-								  tag: 'circle',
-								  selector: 'node-button-circle',
-								  data: d => [d]
-							  })
-			  
-						  // Add button text 
-						  nodeButtonGroups
-							  .patternify({
-								  tag: 'text',
-								  selector: 'node-button-text',
-								  data: d => [d]
-							  })
-							  .attr('pointer-events','none')
-			  
-			  
-			  
-						  // Node update styles
-						  var nodeUpdate = nodeEnter.merge(nodesSelection)
-							  .style('font', '12px sans-serif')
-			  
-						  // Transition to the proper position for the node
-						  nodeUpdate.transition()
-							  .attr('opacity', 0)
-							  .duration(attrs.duration)
-							  .attr("transform", function(d) {
-								  return "translate(" + d.x + "," + d.y + ")";
-							  })
-							  .attr('opacity', 1)
-			  
-						  // Move images to desired positions
-						  nodeUpdate.selectAll('.node-image-group')
-							  .attr('transform', d => {
-								  let x = -d.imageWidth / 2 - d.width / 2;
-								  let y = -d.imageHeight / 2 - d.height / 2;
-								  return `translate(${x},${y})`
-							  })
-			  
-			  
-						  nodeUpdate.select('.node-image-rect')
-							  .attr('fill', d => `url(#${d.id})`)
-							  .attr('width', d => d.imageWidth)
-							  .attr('height', d => d.imageHeight)
-							  .attr('stroke', d => d.imageBorderColor)
-							  .attr('stroke-width', d => d.imageBorderWidth)
-							  .attr('rx', d => d.imageRx)
-							  .attr('y', d => d.imageCenterTopDistance)
-							  .attr('x', d => d.imageCenterLeftDistance)
-							  .attr('filter',d=> d.dropShadowId)
-			  
-						  // Update  node attributes and style
-						  nodeUpdate.select('.node-rect')
-							  .attr('width', d => d.data.width)
-							  .attr('height', d => d.data.height)
-							  .attr('x', d => -d.data.width / 2)
-							  .attr('y', d => -d.data.height / 2)
-							  .attr('rx', d => d.data.borderRadius || 0)
-							  .attr('stroke-width', d => d.data.borderWidth || attrs.strokeWidth)
-							  .attr('cursor', 'pointer')
-							  .attr('stroke', d => d.borderColor)
-							  .style("fill", d => d.backgroundColor)
-			  
-			  
-			  
-			  
-						  // Move node button group to the desired position
-						  nodeUpdate.select('.node-button-g')
-							  .attr('transform', d => {
-								  return `translate(0,${d.data.height/2})`
-							  })
-							  .attr('opacity', d => {
-								  if (d.children || d._children) {
-									  return 1;
-								  }
-								  return 0;
-							  })
-			  
-						  // Restyle node button circle
-						  nodeUpdate.select('.node-button-circle')
-							  .attr('r', 16)
-							  .attr('stroke-width', d => d.data.borderWidth || attrs.strokeWidth)
-							  .attr('fill', attrs.backgroundColor)
-							  .attr('stroke', d => d.borderColor)
-			  
-						  // Restyle texts
-						  nodeUpdate.select('.node-button-text')
-							  .attr('text-anchor', 'middle')
-							  .attr('alignment-baseline', 'middle')
-							  .attr('fill', attrs.defaultTextFill)
-							  .attr('font-size', d => {
-								  if (d.children) return 40;
-								  return 26;
-							  })
-							  .text(d => {
-								  if (d.children) return '-';
-								  return '+';
-							  })
-			  
-						  // Remove any exiting nodes
-			  
-			  
-			  
-						  var nodeExitTransition = nodesSelection.exit()
-							  .attr('opacity', 1)
-							  .transition()
-							  .duration(attrs.duration)
-							  .attr("transform", function(d) {
-								  return "translate(" + source.x + "," + source.y + ")";
-							  })
-							  .on('end', function() {
-								  d3.select(this).remove();
-							  })
-							  .attr('opacity', 0)
-			  
-			  
-						  // On exit reduce the node rects size to 0
-						  nodeExitTransition.selectAll('.node-rect')
-							  .attr('width', 10)
-							  .attr('height', 10)
-							  .attr('x', 0)
-							  .attr('y', 0);
-			  
-						  // On exit reduce the node image rects size to 0
-						  nodeExitTransition.selectAll('.node-image-rect')
-							  .attr('width', 10)
-							  .attr('height', 10)
-							  .attr('x', d => d.width / 2)
-							  .attr('y', d => d.height / 2)
-			  
-						  // Store the old positions for transition.
-						  nodes.forEach(function(d) {
-							  d.x0 = d.x;
-							  d.y0 = d.y;
-						  });
-			  
-			  
-						  // debugger;
-					  }
-			  
-					  d3.select(window).on('resize.' + attrs.id, function() {
-						  var containerRect = container.node().getBoundingClientRect();
-						  //	if (containerRect.width > 0) attrs.svgWidth = containerRect.width;
-						  //	main();
-					  });
-				  };
-			  
-				  //----------- PROTOTYPE FUNCTIONS  ----------------------
-				  d3.selection.prototype.patternify = function(params) {
-					  var container = this;
-					  var selector = params.selector;
-					  var elementTag = params.tag;
-					  var data = params.data || [selector];
-			  
-					  // Pattern in action
-					  var selection = container.selectAll('.' + selector).data(data, (d, i) => {
-						  if (typeof d === 'object') {
-							  if (d.id) {
-								  return d.id;
-							  }
-						  }
-						  return i;
-					  });
-					  selection.exit().remove();
-					  selection = selection.enter().append(elementTag).merge(selection);
-					  selection.attr('class', selector);
-					  return selection;
-				  };
-			  
-				  //Dynamic keys functions
-				  Object.keys(attrs).forEach((key) => {
-					  // Attach variables to main function
-					  //@ts-ignore
-					  main[key] = function(_) {
-						  var string = `attrs['${key}'] = _`;
-						  if (!arguments.length) {
-							  return eval(` attrs['${key}'];`);
-						  }
-						  eval(string);
-						  return main;
-					  };
-					  return main;
-				  });
-			  
-				  //Set attrs as property
-				  //@ts-ignore
-				  main['attrs'] = attrs;
-			  
-				  //Exposed update functions
-				  //@ts-ignore
-				  main['data'] = function(value) {
-					  if (!arguments.length) return attrs.data;
-					  attrs.data = value;
-					  if (typeof updateData === 'function') {
-						  updateData();
-					  }
-					  return main;
-				  };
-			  
-				  // Run  visual
-				  //@ts-ignore
-				  main['render'] = function() {
-					  main();
-					  return main;
-				  };
-			  
-				  return main;
-			  }
-				  </script>				
+ 		
 			</body>
 			<script>
                     $(document).ready(function(){
@@ -1239,8 +478,9 @@
 					<div class="page-header">
 						<h1>
 							<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-							<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Summary for')"/> </span><xsl:text> </xsl:text>
-							<span class="text-primary">{{this.name}}</span>
+							<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Summary for')"/> </span><xsl:text> </xsl:text> 
+							<span class="text-primary headerName"><select id="subjectSelection" style="width: 600px;"></select></span>
+							
 						</h1>
 					</div>
 				</div>
@@ -1414,7 +654,11 @@
 							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Hierarchy')"/></h2>
 						 		<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-table right-10"></i><xsl:value-of select="eas:i18n('Organisation Hierarchy')"/></h3><span id="hierarchyInfo"><label class="label label-warning">No hierarchy defined for this organisation</label></span>
-									<div class="bottom-10">
+									<div class="bottom-10"><div class="pull-right"> 
+										<!--<button class="btn btn-sm btn-secondary" id="download-svg"><i class="fa fa-cloud-download"/></button>
+										-->
+									</div>
+										<div id="orgchart"/>
 										<div class="chart-container" style=" padding-top:10px; width:100%; height:1800px "> </div>
 									</div>
 
@@ -1461,6 +705,9 @@
 													<th>
 														<xsl:value-of select="eas:i18n('Process')"/>
 													</th>
+													<th>
+														<xsl:value-of select="eas:i18n('Capabilities Supporting')"/>
+													</th>
                                                     <th>
 														<xsl:value-of select="eas:i18n('Organisation Performing')"/>
 													</th>
@@ -1480,6 +727,15 @@
 													<tr>
 														<td>
 															{{this.processName}}
+														</td>
+														<td>
+															
+															<ul class="ess-list-tags"> 
+																{{#each this.caps}}
+																<li class="roleBlob" style="background-color: #f3da67">{{this}}</li> 
+																{{/each}}
+															</ul> 
+															 
 														</td>
                                                         <td>
 															<ul class="ess-list-tags"> 
@@ -1759,10 +1015,12 @@
 			<xsl:param name="viewerAPIPath"/> 
 			<xsl:param name="viewerAPIPathApp"/>
 			<xsl:param name="viewerAPIPathPP"/>
+			<xsl:param name="viewerAPIPathCap"/>
 			//a global variable that holds the data returned by an Viewer API Report
 			var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
 			var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApp"/>';
 			var viewAPIDataPP = '<xsl:value-of select="$viewerAPIPathPP"/>';
+			var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCap"/>';
 			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		   
 		   var promise_loadViewerAPIData = function(apiDataSetURL) {
@@ -1789,7 +1047,8 @@
 		   
 	  var orgData=[];
 	  var appsData=[];
-	 
+	  var orgOptions='';
+	  var processLookupObj;
 	  var focusID="<xsl:value-of select='eas:getSafeJSString($param1)'/>";
 	  var rolesFragment, appsnippetTemplate, appsnippetFragment, appsFragment, processesFragment, sitesFragment, rolesTemplate, appsTemplate, processesTemplate,sitesTemplate ;
 	
@@ -1836,15 +1095,88 @@
 	Promise.all([
 			promise_loadViewerAPIData(viewAPIData),
 			promise_loadViewerAPIData(viewAPIDataApps),
-			promise_loadViewerAPIData(viewAPIDataPP)
+			promise_loadViewerAPIData(viewAPIDataPP),
+			promise_loadViewerAPIData(viewAPIDataCaps)
+			
 			]).then(function(responses) {
 				let orgRoles=[];		
 				   orgData=responses[0].orgData; 
+
+				   orgData.forEach((o)=>{
+						orgOptions=orgOptions+'<option value="'+o.id+'">'+o.name+'</option>'
+				   })
+
+				   function createOrgChart(org, orgData) {
+					const orgChart = {
+						id: org.id,
+						name: org.name,
+						description: org.description,
+						parentOrgs: org.parentOrgs,
+						childOrgs: [],
+						allChildOrgs: org.allChildOrgs,
+						parents: org.parents
+					};
+				
+					// Find child organisations recursively
+					org.childOrgs.forEach(childId => {
+						const childOrg = orgData.find(item => item.id === childId);
+						if (childOrg) {
+							orgChart.childOrgs.push(createOrgChart(childOrg, orgData));
+						}
+					});
+				
+					return orgChart;
+				}
+				
+				function createFullHierarchy(orgData) {
+					const hierarchies = {};
+				
+					// Create hierarchy for every org in the array
+					orgData.forEach(org => {
+						hierarchies[org.id] = createOrgChart(org, orgData);
+					});
+				
+					return hierarchies;
+				}
+				const fullHierarchy = createFullHierarchy(orgData);
+console.log('fullHierarchy',fullHierarchy);
+
+
+				   console.log('orgOptions',orgOptions)
+				   let busCaps=responses[3].busCaptoAppDetails;
+
+				   const processLookup = new Map();
+
+					// Standard `for` loops for better performance in large arrays
+					for (let i = 0; i &lt; busCaps.length; i++) {
+						const cap = busCaps[i];
+						
+						// Iterate through the processes in `allProcesses`
+						for (let j = 0; j &lt; cap.processes.length; j++) {
+							const process = cap.processes[j];
+
+							// If the process ID already exists, add the capability to the array
+							if (processLookup.has(process.id)) {
+								processLookup.get(process.id).push(cap.name);
+							} else {
+								// Otherwise, create a new array with the current capability
+								processLookup.set(process.id, [cap.name]);
+							}
+						}
+					}
+
+					// Convert the Map back to an object if needed
+					processLookupObj = Object.fromEntries(processLookup);
+				 
+				   responses[3].busCapHierarchy=[];
+				   responses[3].physicalProcessToProcess=[];
 				   if(responses[0].orgRoles){
 				   	orgRoles=responses[0].orgRoles;
 				   }
 				   appData=responses[1];
 				   physProc=responses[2];  
+
+				   console.log('appData',appData)
 				  let orgProductTypes=[];
 			
 				   products.forEach((prod)=>{
@@ -1854,16 +1186,18 @@
 							let thisMatch=physProc.process_to_apps.filter((p)=>{
 								return p.id == e;
 							});
-
-							if(thisMatch){
-								if(thisMatch['product']){
-								thisMatch['product'].push(prod.name);
-							
-								}
-								else
-								{
-								thisMatch['product']=[prod.name];	
-								} 
+					 	   console.log('thisMatch',thisMatch)
+							if(thisMatch){ 
+								thisMatch.forEach((m)=>{
+									 
+									if(m['product']){
+										m['product'].push(prod.name); 
+									}
+									else
+									{
+										m['product']=[prod.name];	
+									} 
+								})
 							 
 							}
 						 
@@ -1872,6 +1206,7 @@
 				   })
   
 				   modelData=[]
+				   console.log(orgData)
 				   orgData.forEach((d)=>{
   
 					 if(orgRoles.length&gt;0){
@@ -1970,9 +1305,10 @@
 					   allSites=allSites.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   let appList=[]; 
 					   let parentappList=[]; 
-					   allAppsUsedParent = allAppsUsedParent.filter(x => !allAppsUsed.includes(x));   
+					   allAppsUsedParent = allAppsUsedParent.filter(x => !allAppsUsed.includes(x)); 
+					   let appsAndAPIs= [...appData.applications, ...appData.apis]; 
 					   allAppsUsed.forEach((ap)=>{ 
-						   let thisApp=appData.applications.find((e)=>{
+						   let thisApp=appsAndAPIs.find((e)=>{
 							   return e.id == ap.id;
 						   })
 						   appList.push(thisApp)
@@ -1993,209 +1329,229 @@
 						 //  $('.selectOrgBox').append('&lt;option value='+d.id+' >'+d.name+'&lt;option>');
 					
 					});
-					
-					let toShow = orgData.find((e)=>{
-					return e.id == focusID;
-					})
-				 	
-	 	 			getThisHierarchy(toShow, null, modelData )
-					  
-					  let appProcMap=[];
-					  orgProductTypes=[]; 
-					 
-					  toShow.allBusProcs.forEach((e)=>{ 
-						let thisProcess=physProc.process_to_apps.filter((f)=>{
-							return e.id == f.processid;
-						});
 
-
-						if(thisProcess){
-							thisProcess.forEach((pr)=>{
-							pr['criticality']=e.criticality;
-							appProcMap.push(pr)
-							if(thisProcess.product){
-							orgProductTypes=[...orgProductTypes, ...pr.product];
-							}
-							})
-						}
+					<!--- HERE   --> 
+					redrawPage(focusID)
  
-						appProcMap = appProcMap.filter((ap)=>{
-							return toShow.id == ap.orgid;
-						});
- 
-						orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
-					 
-						toShow['orgProductTypes']=orgProductTypes
-					  }); 
-					
-					let parentProcs = appProcMap.filter((e)=>{
-						  return e.orgid ==  toShow.id;
-					  });
-				 
-					  let childProcs = toShow.allChildren.flatMap(e => {
-						let thisProcs = appProcMap.filter(f => f.orgid == e.id).map(p => ({
-							...p,
-							criticality: e.criticality
-						}));
-						return thisProcs;
-					});
-					
-					toShow['physicalProcesses']=[...parentProcs, ...childProcs, ...appProcMap]
-					toShow.physicalProcesses=toShow.physicalProcesses.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-					
-					toShow.physicalProcesses.sort((a,b) => (a.processName > b.processName) ? 1 : ((b.processName > a.processName) ? -1 : 0))
-					toShow.physicalProcesses.forEach(pp => {
-						pp.appsdirect = pp.appsdirect.map(app => ({ ...app, appName: app.name }));
-					
-						pp.appsviaservice = pp.appsviaservice.map(app => {
-							let thisApp = appData.applications.find(fa => fa.id == app.appid);
-							return thisApp ? { ...app, appName: thisApp.name } : app;
-						});
-					});
-					
-			 var docSort = d3.nest()
-			 	.key(function(d) { return d.index; })
-			 	.entries(toShow.documents);
-			  toShow.documents=docSort;
-
-			 drawView(toShow, modelData);
-  
 				})
 				.catch (function (error) {
 					//display an error somewhere on the page   
 				});
+				
 	  
 			});
 
-function getThisHierarchy(node, chartParent, modelData){
-
-
-	if(chartParent==null){
-	 
-			let thisParent=orgData.find((f)=>{
-				return f.id == node.parentOrgs[0]
-			}); 
-		//	console.log('thisParent',thisParent) 
-			if(thisParent){	
-				let thisNode = {
-					"nodeId": thisParent.id,
-					"parentNodeId": null,
-					"width": 342,
-					"height": 146,
-					"borderWidth": 1,
-					"borderRadius": 5,
-					"borderColor": {
-						"red": 15,
-						"green": 140,
-						"blue": 121,
-						"alpha": 1
-					},
-					"backgroundColor": {
-						"red": 51,
-						"green": 182,
-						"blue": 208,
-						"alpha": 1
-					},
-					"nodeImage": {
-						"url": "images/icon_target.png",
-						"width": 50,
-						"height": 50,
-						"centerTopDistance": 0,
-						"centerLeftDistance": 0,
-						"cornerShape": "SQUARE",
-						"shadow": false,
-						"borderWidth": 0,
-						"borderColor": {
-							"red": 19,
-							"green": 123,
-							"blue": 128,
-							"alpha": 1
-						}
-					},
-					"nodeIcon": {
-						"icon": "images/icon_person.png",
-						"size": 30
-					},
-					"template": jsonTemplate(thisParent),
-					"connectorLineColor":{
-						"red":220,
-						"green":189,
-						"blue":207,
-						"alpha":1},
-						"connectorLineWidth":5,
-						"dashArray":"",
-						"expanded":false,
-						"directSubordinates":4,
-						"totalSubordinates":1515}
+		
+		 
+				// Function to create hierarchy for selected id
 				
-						modelData.push(thisNode)
-						chartParent=thisParent.id
-			}
-		}
+				
+				// Function to create hierarchy for selected id (handling both parents and children)
+				function createOrgChart(orgId, orgData, visited = new Set(), depth = 0, maxDepth = 10) {
+					if (visited.has(orgId) || depth > maxDepth) {
+						return null; // Prevent infinite recursion or deep stack issues
+					}
+		
+					const org = orgData.find(item => item.id === orgId);
+					if (!org) {
+						return null;
+					}
+		
+					visited.add(orgId); // Mark the node as visited
+		
+					const chart = {
+						id: org.id,
+						name: org.name,
+						description: org.description,
+						parentOrgs: org.parentOrgs,
+						children: org.childOrgs.map(childId => {
+							const childOrg = orgData.find(item => item.id === childId);
+							return createOrgChart(childOrg.id, orgData, visited, depth + 1, maxDepth);
+						}).filter(child => child !== null),
+						parents: org.parentOrgs.map(parentId => {
+							const parentOrg = orgData.find(item => item.id === parentId);
+							return createOrgChart(parentOrg.id, orgData, visited, depth + 1, maxDepth);
+						}).filter(parent => parent !== null)
+					};
+		
+					visited.delete(orgId); // Allow this org to be revisited in other branches
+					return chart;
+				}
+		
+				// Create a visualisation of the org chart using D3.js
+				function drawOrgChart(orgChartData) { 
+					const windowHeight = $(window).innerHeight();
+					const svgContainer = d3.select("#orgchart")
+					.append("svg")
+					.attr("id", "orgChartSvg")
+					.attr("width", "800px")
+					.attr("height", windowHeight - 200);
+	
+					console.log('orgChartData',orgChartData)
+					$('#hierarchyInfo').hide();
+				const g = svgContainer.append("g");
+	
+				const treeLayout = d3.tree().nodeSize([180, 100]); // Adjust spacing here for closer nodes
+	
+				// Generate the hierarchy from the selected org data
+				const root = d3.hierarchy(orgChartData);
+				treeLayout(root);
+	
+				// Get the bounding box for the tree layout (to dynamically resize the SVG)
+				const minX = d3.min(root.descendants(), d => d.x);
+				const maxX = d3.max(root.descendants(), d => d.x);
+				const minY = d3.min(root.descendants(), d => d.y);
+				const maxY = d3.max(root.descendants(), d => d.y);
+	
+				let width = maxX - minX + 200; // Add padding
+				const height = maxY - minY + 200; // Add padding
 
-   let thisNode = {
-	"nodeId": node.id,
-	"parentNodeId": chartParent,
-	"width": 342,
-	"height": 146,
-	"borderWidth": 1,
-	"borderRadius": 5,
-	"borderColor": {
-		"red": 15,
-		"green": 140,
-		"blue": 121,
-		"alpha": 1
-	},
-	"backgroundColor": {
-		"red": 51,
-		"green": 182,
-		"blue": 208,
-		"alpha": 1
-	},
-	"nodeImage": {
-		"url": "images/icon_target.png",
-		"width": 50,
-		"height": 50,
-		"centerTopDistance": 0,
-		"centerLeftDistance": 0,
-		"cornerShape": "SQUARE",
-		"shadow": false,
-		"borderWidth": 0,
-		"borderColor": {
-			"red": 19,
-			"green": 123,
-			"blue": 128,
-			"alpha": 1
-		}
-	},
-	"nodeIcon": {
-		"icon": "images/icon_person.png",
-		"size": 30
-	},
-	"template": jsonTemplate(node),
-	"connectorLineColor":{
-		"red":220,
-		"green":189,
-		"blue":207,
-		"alpha":1},
-		"connectorLineWidth":5,
-		"dashArray":"",
-		"expanded":false,
-		"directSubordinates":4,
-		"totalSubordinates":1515}
- 
-		modelData.push(thisNode)
-
-		node.childOrgs.forEach((e)=>{
-			let thisChild=orgData.find((f)=>{
-				return f.id == e
-			}); 
+				const parentWidth = $('#orgchart').parent().width();
+				const screenWidth = $(window).width();
 			 
-			getThisHierarchy(thisChild, node.id, modelData)
+				if (width > 1000) { 
+					width = screenWidth - 300; 
+				  }
+				 
+				svgContainer
+					.attr("width", width)
+					.attr("height", height);
+	
+				g.attr("transform", `translate(${(width / 2) - (minX + maxX) / 2}, ${100 - minY})`); // Center the chart
+	
+				// Implement zoom behavior
+				const zoom = d3.zoom()
+					.scaleExtent([0.1, 6]) // Set zoom range (min and max zoom)
+					.on("zoom", function() {
+						g.attr("transform", d3.event.transform); // Update the transform on zoom
+					});
+	
+				// Apply the zoom behavior to the SVG container
+				svgContainer.call(zoom);
+	
+				// Draw links between nodes using right-angle connectors
+				g.selectAll(".link")
+					.data(root.links())
+					.enter()
+					.append("path")
+					.attr("class", "link")
+					.attr("d", d => `
+						M${d.source.x},${d.source.y}
+						V${(d.source.y + d.target.y) / 2}
+						H${d.target.x}
+						V${d.target.y}
+					`)  // Right-angle path generation
+					.attr("fill", "none")
+					.attr("stroke", "#ccc")
+					.attr("stroke-width", 2); // Line styles applied directly
+	
+				// Draw nodes
+				const node = g.selectAll(".node")
+					.data(root.descendants())
+					.enter()
+					.append("g")
+					.attr("class", "node")
+					.attr("transform", d => "translate(" + d.x + "," + d.y + ")");
+	
+				// Add rounded rectangle for each node
+				node.append("rect")
+					.attr("width", 120)
+					.attr("height", 50)
+					.attr("x", -60)  // Center the rect horizontally
+					.attr("y", -25)  // Center the rect vertically
+					.attr("rx", 10)  // Rounded corners for width
+					.attr("ry", 10)  // Rounded corners for height
+					.attr("fill", "#fff")  // White background color
+					.attr("stroke", "steelblue")  // Blue border
+					.attr("stroke-width", 2);  // Stroke width
+	
+				// Add text inside each node
+				node.append("text")
+					.attr("x", 0) // Center the text horizontally
+					.attr("y", -5) // Slightly above the center
+					.text(d => d.data.name);
+				}
+		 
+var selectedOrgChart
+
+function redrawPage(focusOrg){ 
+console.log('focusOrg', focusOrg)
+console.log('orgData', orgData)
+	 selectedOrgChart = createOrgChart(focusOrg, orgData);
+	console.log('selectedOrgChart', selectedOrgChart)
+
+
+	let toShow = orgData.find((e)=>{
+		return e.id == focusOrg;
 		})
 
-}			
+		toShow['parentNodeId']=null;
+		  
+		  let appProcMap=[];
+		  orgProductTypes=[]; 
+		 
+		  toShow.allBusProcs.forEach((e)=>{ 
+			let thisProcess=physProc.process_to_apps.filter((f)=>{
+				return e.id == f.processid;
+			});
 
+
+			if(thisProcess){
+				thisProcess.forEach((pr)=>{
+				 
+				pr['criticality']=e.criticality;
+				pr['caps']= processLookupObj[pr.processid] || '';
+				appProcMap.push(pr)
+				if(thisProcess.product){
+				orgProductTypes=[...orgProductTypes, ...pr.product];
+				}
+				})
+			}
+
+			appProcMap = appProcMap.filter((ap)=>{
+				return toShow.id == ap.orgid;
+			});
+
+			orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
+		 
+			toShow['orgProductTypes']=orgProductTypes
+		  }); 
+		
+		let parentProcs = appProcMap.filter((e)=>{
+			  return e.orgid ==  toShow.id;
+		  });
+	 
+		  let childProcs = toShow.allChildren.flatMap(e => {
+			let thisProcs = appProcMap.filter(f => f.orgid == e.id).map(p => ({
+				...p,
+				criticality: e.criticality
+			}));
+			return thisProcs;
+		});
+		
+		toShow['physicalProcesses']=[...parentProcs, ...childProcs, ...appProcMap]
+		toShow.physicalProcesses=toShow.physicalProcesses.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
+		
+		toShow.physicalProcesses.sort((a,b) => (a.processName > b.processName) ? 1 : ((b.processName > a.processName) ? -1 : 0))
+		toShow.physicalProcesses.forEach(pp => {
+			pp.appsdirect = pp.appsdirect.map(app => ({ ...app, appName: app.name }));
+		
+			pp.appsviaservice = pp.appsviaservice.map(app => {
+				let thisApp = appData.applications.find(fa => fa.id == app.appid);
+				return thisApp ? { ...app, appName: thisApp.name } : app;
+			});
+		});
+		
+ var docSort = d3.nest()
+	 .key(function(d) { return d.index; })
+	 .entries(toShow.documents);
+  toShow.documents=docSort;
+  console.log('to', toShow)
+
+ drawView(toShow, modelData);
+
+}			
+  
 function getChildren(arr, allApp, allBus, allOrgs, allSites){ 
 	if(arr.applicationsUsedbyOrgUser){
 		arr.applicationsUsedbyOrgUser.forEach((f)=>{
@@ -2277,21 +1633,39 @@ function getParents(arr, allApp, allBus, allOrgs, allSites){
 			
 function drawView(orgToShowData, modelData){  
 	$('#mainPanel').html(panelTemplate(orgToShowData))
-	 
+	$('#subjectSelection').append(orgOptions); 
+	$('#subjectSelection').select2(); 
+ 
+	$('#subjectSelection').val(orgToShowData.id).trigger('change');
+ 
+	drawOrgChart(selectedOrgChart);
+/*
+	document.getElementById("download-svg").addEventListener("click", function() {
+		const svg = document.getElementById("orgChartSvg");
+		const serializer = new XMLSerializer();
+		const svgString = serializer.serializeToString(svg);
+
+		const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+		const url = URL.createObjectURL(svgBlob);
+
+		// Create a download link for the SVG
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = "org_chart.svg";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+		URL.revokeObjectURL(url); // Clean up
+	});
+*/
 	initPopoverTrigger();
 	initTable(orgToShowData);
-	Chart()
-	.container('.chart-container')
-	.data(modelData)
-	.svgWidth(window.innerWidth)
-	.svgHeight(window.innerHeight)
-	.initialZoom(0.6)
-	.onNodeClick(d=> console.log(d+' node clicked'))
-	.render()
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){ $($.fn.dataTable.tables(true)).DataTable() .columns.adjust(); });
-	if(modelData.length &gt;1){
-		$('#hierarchyInfo').hide()
-	}
+	console.log('modelData', modelData)
+	$('#subjectSelection').off().on('change', function(){
+		modelData=[] 
+		redrawPage($(this).val());
+	})
 }
  
 function initTable(dt){
@@ -2357,7 +1731,13 @@ function initTable(dt){
 	if(thisproc){thisproc='Process'}else{thisproc=''}
 	if(thisproc =='' &amp;&amp; thisorg==''){thisproc='Indirect'}
 	apps.push({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "parent":""})
-	let appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "className":"Application_Provider"})
+	let appHTML
+	if(d.class!='Application_Provider_Interface'){
+		 appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "className":"Application_Provider"})
+	}else{
+		appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "className":"Application_Provider_Interface"})
+
+	}
  
 	d['appHTML']=appHTML;
 

@@ -1233,10 +1233,10 @@ function getProds(products, index) {
 		"url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=" + thiscp,
 		"method": "GET",
         "timeout": 0,
-       /*	"headers": {
-            Authorization: 'apiKey='+apiKey
-          }
-		  */
+		"headers": {
+            "apiKey": apiKey  // Correct way to include the API key
+        }
+		   
 	};
  
 }

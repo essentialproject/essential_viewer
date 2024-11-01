@@ -160,14 +160,14 @@
 													sort: true,
 													responsive: true,
 													columns: [
-													    { "width": "140px" },
-													    { "width": "160px" },
-													    { "width": "260px" },
-													    { "width": "120px" },
-													    { "width": "120px" },
-													    { "width": "160px" },
-													    { "width": "120px" },
-													    { "width": "120px" }
+													    { "width": "20%" },
+													    { "width": "30%" },
+													    <!-- { "width": "260px" }, -->
+													    { "width": "7%" },
+													    { "width": "6%" },
+													    { "width": "15%" },
+													    { "width": "7%" },
+													    { "width": "15%" }
 													],
 													dom: 'Bfrtip',
 												    buttons: [
@@ -208,9 +208,9 @@
 														<th>
 															<xsl:value-of select="eas:i18n('Information Type (View)')"/>
 														</th>
-														<th>
+														<!-- <th>
 															<xsl:value-of select="eas:i18n('Description')"/>
-														</th>
+														</th> -->
 														<th>
 															<xsl:value-of select="eas:i18n('Currency')"/>
 														</th>
@@ -236,9 +236,9 @@
 														<th>
 															<xsl:value-of select="eas:i18n('Information Type (View)')"/>
 														</th>
-														<th>
+														<!-- <th>
 															<xsl:value-of select="eas:i18n('Description')"/>
-														</th>
+														</th> -->
 														<th>
 															<xsl:value-of select="eas:i18n('Currency')"/>
 														</th>
@@ -508,15 +508,27 @@
 					</xsl:attribute>
 					<xsl:value-of select="$infoObjName" />
 				</a>-->
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="$infoObj"/>
-					<xsl:with-param name="theXML" select="$reposXML"/>
-					<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-				</xsl:call-template>
+				<ul>
+					<xsl:for-each select="$infoObj">
+						<li>
+							<xsl:call-template name="RenderInstanceLink">
+								<xsl:with-param name="theSubjectInstance" select="current()"/>
+								<xsl:with-param name="theXML" select="$reposXML"/>
+								<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+							</xsl:call-template>
+							<xsl:variable name="infoDesc">
+								<xsl:call-template name="RenderMultiLangInstanceDescription">
+									<xsl:with-param name="theSubjectInstance" select="current()"/>
+								</xsl:call-template>
+							</xsl:variable>
+							<xsl:if test="string-length($infoDesc) > 0">&#160;-&#160;<xsl:value-of select="$infoDesc"/></xsl:if>
+						</li>
+					</xsl:for-each>
+				</ul>
 			</td>
-			<td>
+			<!-- <td>
 				<xsl:value-of select="$infoObjDesc"/>
-			</td>
+			</td> -->
 			<td>
 				<xsl:choose>
 					<xsl:when test="count($currency) > 0">
@@ -608,7 +620,6 @@
         
         <xsl:variable name="displayNamewithScope" select="substring-before(substring-after($phyName,'&#40;'),'-')"/>
         <tr>
-
 			<td>
 				<strong>
 					<!--<xsl:value-of select="$dataRepName" />-->

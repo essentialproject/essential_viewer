@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
-	<xsl:include href="../common/core_doctype.xsl"/>
-	<xsl:include href="../common/core_common_head_content.xsl"/>
-	<xsl:include href="../common/core_header.xsl"/>
-	<xsl:include href="../common/core_footer.xsl"/>
+    <xsl:import href="../common/core_utilities.xsl"/>
+    <xsl:include href="../common/core_doctype.xsl"/>
+    <xsl:include href="../common/core_common_head_content.xsl"/>
+    <xsl:include href="../common/core_header.xsl"/>
+    <xsl:include href="../common/core_handlebars_functions.xsl"/>
+    <xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
+    <xsl:include href="../common/core_footer.xsl"/>
+    <xsl:include href="../common/core_external_doc_ref.xsl"/>
+    <xsl:include href="../common/datatables_includes.xsl"/>
 
 	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
-
-	<xsl:include href="../common/core_external_repos_ref.xsl"/>
-	<xsl:include href="../common/core_external_doc_ref.xsl"/>
-
 
 	<!-- param1 = the ID of the strategic plan to be summarised -->
 	<xsl:param name="param1"/>
@@ -104,7 +105,7 @@
 
 	<!-- Set up the requierd link classes -->
 	<xsl:variable name="impactedElementClasses" select="($currentPlan union $impactedElements union $dependentPlans union $supportingPlans union $supportedObjectives)/type"/>
-	<xsl:variable name="linkClasses" select="($impactedElementClasses, 'Project')"/>
+	<xsl:variable name="linkClasses" select="($impactedElementClasses, 'Project', 'Programme')"/>
 
 	<xsl:variable name="allDates" select="/node()/simple_instance[(type = 'Year') or (type = 'Quarter') or (type = 'Gregorian')]"/>
 
@@ -170,51 +171,262 @@
 				</xsl:for-each>
 				<script src="js/d3/d3.v2.min.js?release=6.19" type="application/javascript"/>
 				<script src="js/d3/timeknots.js?release=6.19" type="application/javascript"/>
+                <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
+				<script src='js/d3/d3.v5.9.7.min.js'></script> 
+                <link rel="stylesheet" href="css/ess-summary.css"/>
+				<style>
+					.typeBox{
+						padding-left: 2px;
+						padding-right: 2px;
+						margin-top:3px;
+						border:1pt solid #d3d3d3;
+						border-radius:5px;
+					}
+				</style>
+
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading">
 					<xsl:with-param name="contentID" select="$param1"/>
 				</xsl:call-template> 
+            <xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
+		 
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
 					<div class="row">
-						<div>
-							<div class="col-xs-12">
-								<div class="page-header">
-									<h1>
-										<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-										<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Strategic Plan Summary')"/>&#160;<xsl:value-of select="eas:i18n('for')"/>&#160;</span>
-										<xsl:call-template name="RenderInstanceLink">
-											<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
-											<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
-										</xsl:call-template>
-									</h1>
-								</div>
+						<div class="col-xs-12">
+							<div class="page-header">
+								<h1>
+									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Strategic Plan Summary')"/>&#160;<xsl:value-of select="eas:i18n('for')"/>&#160;</span>
+									<xsl:call-template name="RenderInstanceLink">
+										<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
+										<xsl:with-param name="anchorClass">text-primary</xsl:with-param>
+									</xsl:call-template>
+								</h1>
 							</div>
 						</div>
+						<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 no-print">
+							<!-- required for floating -->
+							<!-- Nav tabs -->
+							<ul class="nav nav-tabs tabs-left">
+								<li class="active">
+									<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Overview')"/></a>
+								</li>
+								<li>
+									<a href="#impacts" data-toggle="tab"><i class="fa fa-fw fa-random right-10"></i><xsl:value-of select="eas:i18n('Impacts')"/></a>
+								</li> 
+								<li>
+									<a href="#projects" data-toggle="tab"><i class="fa fa-fw fa-wrench right-10"></i><xsl:value-of select="eas:i18n('Projects')"/></a>
+								</li> 
+								<li>
+									<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-book right-10"></i><xsl:value-of select="eas:i18n('Documentation &amp; Links')"/></a>
+								</li> 
+							</ul>
+						</div>
+						<div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+							<!-- Tab panes -->
+							<div class="tab-content">
+								<div class="tab-pane active" id="details">
+									<!--  <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Overview')"/></h2>-->
+									<div class="parent-superflex">
+										<div class="superflex">
+											<h3 class="text-primary"><i class="fa fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Overview')"/></h3>
+											<label><xsl:value-of select="eas:i18n('Plan Name')"/></label>
+											<div class="ess-string">
+													<xsl:call-template name="RenderMultiLangInstanceName">
+														<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
+													</xsl:call-template>
+											</div>
+											<div class="clearfix bottom-10"></div>
+											<label><xsl:value-of select="eas:i18n('Description')"/></label>
+											<div class="ess-string">
+												<xsl:call-template name="RenderMultiLangInstanceDescription">
+													<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
+												</xsl:call-template>
+											</div>
+											<!--
+											<div class="clearfix bottom-10"></div> 
+											<label><xsl:value-of select="eas:i18n('Approval')"/></label>
+											<div class="ess-string">{{{this.approvalStatus}}}</div>
+										-->
+											<div class="clearfix bottom-10"></div> 
+											<label><xsl:value-of select="eas:i18n('Status')"/></label>
+											<div class="ess-string"> 
+												<xsl:choose>
+												<xsl:when test="count($currentPlanStatus) &gt; 0">
+													<xsl:variable name="statusColour">
+														<xsl:choose>
+															<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Active'">#1db41d</xsl:when>
+															<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Old'">#666</xsl:when>
+															<xsl:otherwise>#4848d1</xsl:otherwise>
+														</xsl:choose>
+													</xsl:variable>
+													<div class="keySample">
+														<xsl:attribute name="style" select="concat('background-color: ', $statusColour, ';')"/>
+														
+													</div>
+													<div class="textStatus">
+														<xsl:value-of select="$currentPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+													</div>
+													
+												</xsl:when>
+												<xsl:otherwise>
+													<p>-</p>
+												</xsl:otherwise>
+											</xsl:choose>
+												</div>
+											<div class="clearfix bottom-10"></div> 
+										</div>
+										<div class="superflex">
+											<h2 class="text-primary">
+												<i class="fa fa-calendar right-10"></i>
+												<xsl:value-of select="eas:i18n('Timeline')"/>
+											</h2>
+											<div>
+												<xsl:choose>
+													<xsl:when test="$noPlanDates">
+														<em>
+															<xsl:value-of select="eas:i18n('No start or end dates defined')"/>
+														</em>
+													</xsl:when>
+													<xsl:otherwise> 
+														<svg id="svgdates"/> 
+													</xsl:otherwise>
+												</xsl:choose>
+											</div>
 
+										</div>
+										<div class="superflex">
+											<h2 class="text-primary">
+												<i class="fa fa-paper-plane right-10"></i>
+												<xsl:value-of select="eas:i18n('Supported Objectives')"/>
+											</h2>  
+											<div class="objcard-container">
+											<xsl:for-each select="$supportedObjectives">
+											<xsl:variable name="currentObj" select="current()"/>
+											<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
+											<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
+											<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
+											<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+							
+											<div class="objcard">
+												<div class="objcontent">
+													<i class="fa fa-bullseye text-primary right-5"></i>
+													
+													<b> <xsl:value-of select="eas:i18n('Name')"/>: </b>     
+													<xsl:call-template name="RenderInstanceLink">
+														<xsl:with-param name="theSubjectInstance" select="current()"/>
+														<xsl:with-param name="theXML" select="$reposXML"/>
+														<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+													</xsl:call-template>
+													<br/>
+													
+													<xsl:if test="$objectiveDesc">
+														<div class="descriptionBox">
+															<xsl:value-of select="$objectiveDesc"/>
+														</div>
+													</xsl:if>
+													<div class="icon"><i class="fa fa-arrow-circle-o-right"></i></div> <!-- Arrow Icon -->
+												</div>
+												<div class="objpanel" style="overflow-y:scroll">
+													<h5> <i class="fa fa-line-chart text-primary right-5"></i><b>KPIs</b></h5> 
+													<xsl:choose>
+														<xsl:when test="count($measureValues) > 0">
+															
+																	<xsl:for-each select="$measureValues">
+																		<xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+																		<i class="fa fa-caret-right text-primary right-5"></i><xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
+																	</xsl:for-each> 
+															
+														</xsl:when>
+														<xsl:otherwise><xsl:value-of select="eas:i18n('None Mapped')"/></xsl:otherwise>
+													</xsl:choose> 
+													<h5> <i class="fa fa-tags text-primary right-5"></i><b>Drivers</b></h5> 
+								
+														<xsl:for-each select="$relatedDrivers"> 
+															<i class="fa fa-caret-right text-primary right-5"></i><xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/> <br/>
+														</xsl:for-each>
+												
+													<div class="close"><i class="fa fa-arrow-circle-o-left"></i></div> <!-- Close Icon -->
+												</div>
+											</div>
+										</xsl:for-each>    
+									</div>
+										</div>
+										<div class="superflex" style="width: 100%;">
+											<h2 class="text-primary">
+												<i class="fa fa-map-signs right-10"></i>
+												<xsl:value-of select="eas:i18n('Strategic Plan Dependencies')"/>
+											</h2> 
+											<div class="badgeHeader" style="background-color:green;color:white"> <i class="fa fa-caret-left right-5" style="color:white"></i> Depends On </div> 
+											<xsl:call-template name="StrategicPlansTable">
+												<xsl:with-param name="thePlans" select="$dependentPlans"/>
+											</xsl:call-template>
+									
+											<div class="badgeHeader" style="background-color:#d96060; color:white; text-align:right;">
+													Supports<i class="fa fa-caret-right left-5" style="color:white"></i> 
+											</div>
+											
+											<xsl:call-template name="StrategicPlansTable">
+												<xsl:with-param name="thePlans" select="$supportingPlans"/>
+											</xsl:call-template>
+
+											<div class="badgeHeader" style="background-color:#D96EE6; color:white; text-align:left;"> <i class="fa fa-warning right-5" style="color:white"></i> Indirect </div>
+											<p><xsl:value-of select="eas:i18n('Plans impacting the same elements as this plan')"/></p>
+											<div id="tertiaryImpacts"/>
+
+										</div>
+									</div> 
+								</div> 
+								<div class="tab-pane" id="impacts">
+									<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h2>-->
+									<div class="parent-superflex">
+										<div class="superflex">
+											<h3 class="text-primary"><i class="fa fa-random right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h3>
+											<div id="impactsTable"/>
+										</div>
+									</div> 
+								</div> 
+								<div class="tab-pane" id="projects">
+									<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Projects')"/></h2>-->
+									<div class="parent-superflex">
+										<div class="superflex">
+											<h2 class="text-primary">
+												<i class="fa fa-wrench right-10"></i>
+												<xsl:value-of select="eas:i18n('Projects')"/>
+											</h2>
+											<p><xsl:value-of select="eas:i18n('Projects implementing this strategic plan')"/></p>
+											<div>
+												<xsl:call-template name="Projects"/>
+											</div>
+										</div>
+									</div> 
+								</div> 
+								<div class="tab-pane" id="documents">
+						<!--             <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Documents')"/></h2>-->
+									<div class="parent-superflex">
+										<div class="superflex"> 
+												<h2 class="text-primary">
+													<i class="fa fa-book right-10"></i>
+													<xsl:value-of select="eas:i18n('Documents')"/>
+												</h2>
+												<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
+												<xsl:if test="not(anExternalDocRefList)"> <xsl:text> </xsl:text><xsl:value-of select="eas:i18n('None Mapped')"/></xsl:if>
+											
+										</div>
+									</div> 
+								</div> 
+							</div> 
+						</div> 
 						<!--Setup Description Section-->
 
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-list-ul icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Description')"/>
-							</h2>
-							<div class="content-section">
-								<p>
-									<xsl:value-of select="$currentPlanDesc"/>
-								</p>
-							</div>
-							<hr/>
-						</div>
 
 
 
-						<!--Setup Strat Plan Action Section-->
+							<!--Setup Strat Plan Action Section-->
 						<xsl:if test="count($directPlanImpact) > 0">
 							<xsl:variable name="planImpactStyle" select="concat('impact ', eas:get_element_style_class($directPlanImpact))"/>
 							<div class="col-xs-12">
@@ -224,7 +436,7 @@
 								<h2 class="text-primary">
 									<xsl:value-of select="eas:i18n('Plan Action')"/>
 								</h2>
-								<div class="content-section">
+								<div>
 									<p>
 										<xsl:attribute name="class" select="$planImpactStyle"/>
 										<xsl:value-of select="$currentPlanAction/own_slot_value[slot_reference = 'enumeration_value']/value"/>
@@ -240,284 +452,6 @@
 							</div>
 						</xsl:if>
 
-						<!--Setup Strat Plan Action Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-info-circle icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Plan Status')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:choose>
-									<xsl:when test="count($currentPlanStatus) &gt; 0">
-                                        <xsl:variable name="statusColour">
-                                            <xsl:choose>
-                                                <xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Active'">#1db41d</xsl:when>
-                                                <xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Old'">#666</xsl:when>
-                                                <xsl:otherwise>#4848d1</xsl:otherwise>
-                                            </xsl:choose>
-                                        </xsl:variable>
-										<div class="keySample">
-											<xsl:attribute name="style" select="concat('background-color: ', $statusColour, ';')"/>
-										</div>
-										<p class="impact">
-											<xsl:value-of select="$currentPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-										</p>
-									</xsl:when>
-									<xsl:otherwise>
-										<p>-</p>
-									</xsl:otherwise>
-								</xsl:choose>
-							</div>
-							<hr/>
-						</div>
-
-
-						<!--Setup Dates Section-->
-
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-calendar icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Timeline')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:choose>
-									<xsl:when test="$noPlanDates">
-										<em>
-											<xsl:value-of select="eas:i18n('No start or end dates defined')"/>
-										</em>
-									</xsl:when>
-									<xsl:otherwise>
-										<div id="timeline1" style="width:500px;"/>
-										<script type="text/javascript">
-											var projectTimeline = [
-													<xsl:if test="not($noStartDate)">
-														{name:"Start Date", date: "<xsl:value-of select="$jsPlanStartDate"/>", color: "<xsl:value-of select="$startColour"/>"}<xsl:if test="not($noStartDate) and not($noEndDate)">,</xsl:if>
-													</xsl:if>
-													<xsl:if test="not($noEndDate)">
-														{name:"End Date", date: "<xsl:value-of select="$jsPlanEndDate"/>", color: "<xsl:value-of select="$endColour"/>"}
-													</xsl:if>										
-											];
-											TimeKnots.draw("#timeline1", projectTimeline, {dateFormat: "%d %B %Y", color: "grey", radius: 20, height: 100, width:500, showLabels: true, labelFormat: "%B %Y"});
-										</script>
-									</xsl:otherwise>
-								</xsl:choose>
-							</div>
-							<hr/>
-						</div>
-
-						<xsl:choose>
-							<xsl:when test="count($impactedElements) = 0">
-								<div class="col-xs-12">
-									<div class="sectionIcon">
-										<i class="fa fa-bullseye icon-section icon-color"/>
-									</div>
-
-									<h2 class="text-primary">
-										<xsl:value-of select="eas:i18n('Impacted Elements')"/>
-									</h2>
-									<div class="content-section">
-										<em>
-											<xsl:value-of select="eas:i18n('No impacted elements defined for this Strategic Plan')"/>
-										</em>
-									</div>
-									<hr/>
-								</div>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:variable name="busLayerElements" select="$impactedElements[type = $businessLayerClasses]"/>
-								<xsl:if test="count($busLayerElements) > 0">
-									<div class="col-xs-12">
-										<div class="sectionIcon">
-											<i class="fa fa-users icon-section icon-color"/>
-										</div>
-
-										<h2 class="text-primary">
-											<xsl:value-of select="eas:i18n('Impacted Business Elements')"/>
-										</h2>
-										<div class="content-section">
-											<xsl:call-template name="ImpactedElements">
-												<xsl:with-param name="layerElements" select="$busLayerElements"/>
-												<xsl:with-param name="layerClasses" select="$businessLayerClasses"/>
-												<xsl:with-param name="layerLabels" select="$businessLayerLabels"/>
-												<xsl:with-param name="layerType">Business</xsl:with-param>
-											</xsl:call-template>
-										</div>
-										<hr/>
-									</div>
-								</xsl:if>
-
-
-								<!--Impacted Information Elements-->
-								<xsl:variable name="infoDataLayerElements" select="$impactedElements[type = $infoLayerClasses]"/>
-								<xsl:if test="count($infoDataLayerElements) > 0">
-									<div class="col-xs-12">
-										<div class="sectionIcon">
-											<i class="fa fa-file-text icon-section icon-color"/>
-										</div>
-
-
-										<h2 class="text-primary">
-											<xsl:value-of select="eas:i18n('Impacted Information/Data Elements')"/>
-										</h2>
-										<div class="content-section">
-											<xsl:call-template name="ImpactedElements">
-												<xsl:with-param name="layerElements" select="$infoDataLayerElements"/>
-												<xsl:with-param name="layerClasses" select="$infoLayerClasses"/>
-												<xsl:with-param name="layerLabels" select="$infoLayerLabels"/>
-												<xsl:with-param name="layerType">Information/Data</xsl:with-param>
-											</xsl:call-template>
-										</div>
-										<hr/>
-									</div>
-								</xsl:if>
-
-
-
-								<!--Impacted Application Elements-->
-								<xsl:variable name="appLayerElements" select="$impactedElements[type = $appLayerClasses]"/>
-								<xsl:if test="count($appLayerElements) > 0">
-									<div class="col-xs-12">
-										<div class="sectionIcon">
-											<i class="fa fa-desktop icon-section icon-color"/>
-										</div>
-
-										<h2 class="text-primary">
-											<xsl:value-of select="eas:i18n('Impacted Application Elements')"/>
-										</h2>
-										<div class="content-section">
-											<xsl:call-template name="ImpactedElements">
-												<xsl:with-param name="layerElements" select="$appLayerElements"/>
-												<xsl:with-param name="layerClasses" select="$appLayerClasses"/>
-												<xsl:with-param name="layerLabels" select="$appLayerLabels"/>
-												<xsl:with-param name="layerType">Application</xsl:with-param>
-											</xsl:call-template>
-										</div>
-										<hr/>
-									</div>
-								</xsl:if>
-
-
-
-								<!--Impacted Technology Elements-->
-								<xsl:variable name="techLayerElements" select="$impactedElements[type = $techLayerClasses]"/>
-								<xsl:if test="count($techLayerElements) > 0">
-									<div class="col-xs-12">
-										<div class="sectionIcon">
-											<i class="fa fa-cogs icon-section icon-color"/>
-										</div>
-
-										<h2 class="text-primary">
-											<xsl:value-of select="eas:i18n('Impacted Technology Elements')"/>
-										</h2>
-										<div class="content-section">
-											<xsl:call-template name="ImpactedElements">
-												<xsl:with-param name="layerElements" select="$techLayerElements"/>
-												<xsl:with-param name="layerClasses" select="$techLayerClasses"/>
-												<xsl:with-param name="layerLabels" select="$techLayerLabels"/>
-												<xsl:with-param name="layerType">Technology</xsl:with-param>
-											</xsl:call-template>
-										</div>
-										<hr/>
-									</div>
-								</xsl:if>
-							</xsl:otherwise>
-						</xsl:choose>
-
-
-						<!--Impacted Businss Elements-->
-
-
-
-
-						<!--Setup Plan Dependencies Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Depends on Plans')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:call-template name="StrategicPlansTable">
-									<xsl:with-param name="thePlans" select="$dependentPlans"/>
-								</xsl:call-template>
-							</div>
-							<hr/>
-						</div>
-
-
-
-						<!--Setup Supports Plans Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-blocks icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Supports Plans')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:call-template name="StrategicPlansTable">
-									<xsl:with-param name="thePlans" select="$supportingPlans"/>
-								</xsl:call-template>
-							</div>
-							<hr/>
-						</div>
-
-
-
-
-						<!--Setup Objectives Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-check icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Supported Objectives')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:call-template name="Objectives"/>
-							</div>
-							<hr/>
-						</div>
-
-
-
-						<!--Setup Supporting Projects Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-wrench icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Delivery Projects')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:call-template name="Projects"/>
-							</div>
-							<hr/>
-						</div>
-
-
-
-
-						<!--Setup the Supporting Documentation section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-file-text-o icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Supporting Documentation')"/>
-							</h2>
-							<div class="content-section">
-								<!--<xsl:call-template name="extDocRef"></xsl:call-template>-->
-								<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
-							</div>
-							<hr/>
-						</div>
-
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
@@ -525,6 +459,323 @@
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 			</body>
+            <script id="impacts-template" type="text/x-handlebars-template">
+                <table class="table table-striped">
+                    <tr><th>Type</th><th>Name</th><th>Description</th><th>Action</th></tr>
+                {{#each this}}
+                    <tr>
+                        <td><i style="color:#810947"><xsl:attribute name="class">fa {{this.icon}} right-5</xsl:attribute></i>{{this.type}}</td>
+                        <td>{{this.name}}</td>
+                        <td>{{this.description}}</td>
+                        <td><span class="label label-success">{{this.action}}</span></td>
+                    </tr>
+                {{/each}}
+                </table>
+            </script>
+            <script id="tertiary-template" type="text/x-handlebars-template">
+				{{#if this}}
+                {{#isNotEmpty this}}
+				 
+                <table class="table">
+					<thead>
+						<tr>
+							<th class="cellWidth-30pc">
+								<xsl:value-of select="eas:i18n('Strategic Plan')"/>
+							</th>
+							<th class="cellWidth-40pc">
+								<xsl:value-of select="eas:i18n('Impacting')"/>
+							</th>
+							 
+							<th class="cellWidth-15pc">
+								<xsl:value-of select="eas:i18n('End Date')"/>
+							</th>
+						</tr>
+					</thead>
+                {{#each this}} 
+              
+					<tbody> 
+                     
+                        <tr>
+                            <td>
+                                <div class="planBox">
+                                    {{@key}}
+                                </div>
+                            </td>
+                            <td>
+                                {{#each this}}
+                            
+                                    <div class="planElement">
+                                    {{this.elementName}}
+                                        <span class="label label-info">
+                                            {{actionType}}
+                                        </span>
+                                    </div>
+                                    
+                                {{/each}}
+                            </td>
+                             
+                            <td>
+                                <div class="dateColumn">
+                                {{setDate this.0.endDate}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                    </tbody>
+                </table>    
+                {{/isNotEmpty}}
+				{{/if}}
+            </script>
+            <script>
+				$('#viewpoint-bar').hide();
+                var impactedElements=[<xsl:apply-templates select="$impactedElements" mode="impacts"/>];
+console.log('impactedElements',impactedElements)
+var impactTemplate;
+var thisId='<xsl:value-of select="$param1"/>';
+console.log('t', thisId)
+$(document).ready(function(){
+    var impactsFragment = $("#impacts-template").html();
+    impactTemplate = Handlebars.compile(impactsFragment);
+
+    var tertiaryFragment = $("#tertiary-template").html();
+    tertiaryImpactsTemplate = Handlebars.compile(tertiaryFragment);
+	
+    Handlebars.registerHelper('isNotEmpty', function (obj, options) {
+		return Object.keys(obj).length > 0 ? options.fn(this) : options.inverse(this);
+	});
+
+	essInitViewScoping	(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept', 'Business_Domain'], '', true);
+    Handlebars.registerHelper('setDate', function(arg1) {
+        if (arg1) {
+            // Create a new Date object from the ISO date string
+            const date = new Date(arg1);
+    
+            // Function to get the day with suffix
+            function getDayWithSuffix(day) {
+                const j = day % 10,
+                      k = day % 100;
+                if (j == 1 &amp;&amp; k != 11) {
+                    return day + "st";
+                }
+                if (j == 2 &amp;&amp; k != 12) {
+                    return day + "nd";
+                }
+                if (j == 3 &amp;&amp; k != 13) {
+                    return day + "rd";
+                }
+                return day + "th";
+            }
+    
+            // Get the day, month and year
+            const day = date.getDate();
+            const month = date.toLocaleString('en-GB', { month: 'long' });
+            const year = date.getFullYear().toString(); // last 2 digits of year
+    
+            // Format the date in dd MonthName YY with suffix
+            return `${getDayWithSuffix(day)} ${month} ${year}`;
+        } else {
+            return 'Not Set';
+        }
+    });
+    
+    var setDatehelper = Handlebars.helpers.setDate;
+
+
+                let timelineData=[ 
+				{"id": "abc1", "name": "Start Date", "data": "<xsl:value-of select="$jsPlanStartDate"/>", "color": "#e74c3c"},
+				{"id": "abc2", "name": "End Start", "data": "<xsl:value-of select="$jsPlanEndDate"/>", "color": "#2ecc71"}
+				]		
+                //convert date to nice format
+                timelineData.forEach((d)=>{
+                    d['newDate']=setDatehelper(d.data)
+                })
+                //create svg timeline
+                const svgNamespace = "http://www.w3.org/2000/svg";
+					const svgElement = document.querySelector('#svgdates');
+					 
+					let currentX = 30; // Start at the center of the first loop
+					// Get the parent element of the SVG
+					const parentElement = svgElement.parentNode.parentNode;
+              
+					// Retrieve the client width of the parent element
+					let svgWidth = parentElement.clientWidth;// Calculate total width needed based on number of data items
+				 
+					let currentXdynamic = (svgWidth)/timelineData.length;
+					let lineWidth = currentXdynamic-80;
+					 
+					svgElement.setAttribute('width', svgWidth.toString()); // Set dynamic width based on calculated width
+					
+					timelineData.forEach((item, index) => {
+					  // Create each circle with its specific color
+					  const circle = document.createElementNS(svgNamespace, 'path');
+					  circle.setAttribute('d', `M${currentX},60 a10,10 0 1,0 80,0 a10,10 0 1,0 -80,0`);
+					  circle.setAttribute('stroke', item.color);
+					  circle.classList.add('animated-path');
+					  circle.style.animationDelay = `${index * 0.1}s`;
+					  svgElement.appendChild(circle);
+					
+					  if (index &lt; timelineData.length - 1) {
+						if (index == 0) {
+						// Draw connecting line in default color
+						const line = document.createElementNS(svgNamespace, 'path');
+						line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80 + lineWidth},60`);
+						line.setAttribute('stroke', '#2980b9');
+						line.classList.add('connect-line');
+						line.setAttribute('stroke-width', '2');
+						line.style.animationDelay = `${index * 2}s`;
+						svgElement.appendChild(line);
+					  }else{
+						const line = document.createElementNS(svgNamespace, 'path');
+						line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80+ lineWidth},60`);
+						line.setAttribute('stroke', '#2980b9');
+						line.classList.add('connect-line');
+						line.setAttribute('stroke-width', '2');
+						line.style.animationDelay = `${index * 0.3}s`;
+						svgElement.appendChild(line);
+					  }
+					}
+					  
+					  // Add name and date text
+					  const nameText = document.createElementNS(svgNamespace, 'text');
+					  nameText.setAttribute('class', 'name-text');
+					  nameText.setAttribute('x', currentX + 40);
+					  nameText.setAttribute('y', '65');
+					  nameText.textContent = item.name;
+					  svgElement.appendChild(nameText);
+					
+					  const dateText = document.createElementNS(svgNamespace, 'text');
+					  dateText.setAttribute('class', 'date-text');
+					  dateText.setAttribute('x', currentX + 40);
+					  dateText.setAttribute('y', '115');
+					  dateText.textContent = item.newDate;
+                      dateText.setAttribute('style', 'font-weight: bold;');
+					  svgElement.appendChild(dateText);
+					
+					  currentX += currentXdynamic; // Move to next circle's center
+					});
+		 
+})
+
+
+var redrawView=function(){
+    essResetRMChanges();
+ 
+ 
+		projectsArray=essRMApiData.rpp?.changeActivities ? essRMApiData.rpp?.changeActivities : [];
+ console.log('essRMApiData',essRMApiData)
+		let data=essRMApiData?.plans
+        let plans= essRMApiData?.rpp?.strategicPlans;
+		instance2planArray = {};
+ 
+        console.log('projectsArray',projectsArray)
+        console.log('plans',plans) 
+
+        const groupByInstId = (data) => {
+            return data.reduce((acc, item) => {
+                // Check if the instId key already exists in the accumulator
+                if (!acc[item.instId]) {
+                    acc[item.instId] = []; // If not, create a new array for this instId
+                }
+                acc[item.instId].push(item); // Add the current item to the array for this instId
+                return acc;
+            }, {}); // Initialize the accumulator as an empty object
+        };
+        const groupedData = groupByInstId(data);
+console.log('gd',groupedData);
+const planMap = Object.fromEntries(plans.map(plan => [plan.id, plan]));
+
+console.log('pm',planMap);
+
+let tertiaryImpacts=[]
+impactedElements.forEach((e)=>{
+    console.log('i', groupedData[e.id]);
+    if(groupedData[e.id].length&gt;1){
+        let otherPlans=groupedData[e.id].filter((p)=>{
+            return p.planId !== thisId
+        })
+        const seenIds = new Set();
+        let uniquePlans = otherPlans.filter(plan => {
+            const isDuplicate = seenIds.has(plan.planId);
+            seenIds.add(plan.planId);
+            return !isDuplicate;
+        });
+
+        uniquePlans.forEach((s)=>{
+                    console.log(planMap[s.planId])
+            s['planName']=planMap[s.planId].name;
+        })
+
+        tertiaryImpacts.push({"id":e.id, "name": e.name, "plans": uniquePlans})
+
+    }
+})
+ 
+console.log(planMap);
+console.log('TA', tertiaryImpacts)
+    const typePriority = ['Business_', 'Application_Provider', 'Composite_Application','Application_Service', 'Technology_', 'Information_Component'];
+
+   let icons= [{type:'business',icon:'fa-tasks'},{type:'application',icon:'fa-desktop'},{type:'technology',icon:'fa-server'},{type:'information',icon:'fa-table'}, {type:'data',icon:'fa-database'},{type:'actor', icon:'fa-users'}]
+
+    impactedElements.sort((a, b) => {
+    const getIndex = (type) => {
+        const index = typePriority.findIndex(element => type.startsWith(element));
+        return index === -1 ? 999 : index; // return a large number if not found
+    };
+
+    return getIndex(a.type) - getIndex(b.type);
+    });
+
+    function findIcon(type) {
+        // Normalize the type string to lower case
+        const normalizedType = type.toLowerCase();
+        // Find the first icon where the type keyword is found in the object's type property
+        const foundIcon = icons.find(icon => normalizedType.includes(icon.type));
+        // Return the icon class if found, otherwise undefined
+        return foundIcon ? foundIcon.icon : "fa-circle";
+    }
+    
+    impactedElements = impactedElements.map(item => ({
+        ...item,
+        icon: findIcon(item.type), 
+        type: item.type.replace(/_/g, ' ')
+    }));
+
+    console.log('impactedElements',impactedElements)
+ 
+    const groupedPlans = {};
+
+    tertiaryImpacts.forEach(element => {
+        element.plans.forEach(plan => {
+            if (!groupedPlans[plan.planName]) {
+                groupedPlans[plan.planName] = [];
+            }
+            groupedPlans[plan.planName].push({
+                elementName: element.name,
+                actionType: plan.actionType,
+                endDate: plan.end
+            });
+        });
+    });
+    
+    console.log('gps', groupedPlans);
+ 
+$('#impactsTable').html(impactTemplate(impactedElements));
+$('#tertiaryImpacts').html(tertiaryImpactsTemplate(groupedPlans))
+
+}
+
+document.querySelectorAll('.objcard').forEach(card => {
+    card.querySelector('.icon').addEventListener('click', function() {
+        card.querySelector('.objpanel').classList.add('open');
+    });
+
+    card.querySelector('.close').addEventListener('click', function() {
+        card.querySelector('.objpanel').classList.remove('open');
+    });
+});
+
+            </script>
 		</html>
 	</xsl:template>
 
@@ -606,7 +857,7 @@
 		<!--I've put a simple xsl:choose in here but you''ll need to set the test properly-->
 		<xsl:choose>
 			<xsl:when test="count($supportedObjectives) > 0">
-				<table class="table table-bordered table-striped ">
+				<table class="table ">
 					<thead>
 						<tr>
 							<th class="cellWidth-25pc">
@@ -632,37 +883,45 @@
 							<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
 							<tr>
 								<td>
-									<!--<xsl:value-of select="$objectiveName" />-->
-									<xsl:call-template name="RenderInstanceLink">
-										<xsl:with-param name="theSubjectInstance" select="current()"/>
-										<xsl:with-param name="theXML" select="$reposXML"/>
-										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-									</xsl:call-template>
+									<div class="objectiveBox">
+                                        <xsl:call-template name="RenderInstanceLink">
+                                            <xsl:with-param name="theSubjectInstance" select="current()"/>
+                                            <xsl:with-param name="theXML" select="$reposXML"/>
+                                            <xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+                                        </xsl:call-template>
+                                    </div>
 								</td>
 								<td>
-									<xsl:value-of select="$objectiveDesc"/>
+                                    <xsl:if test="$objectiveDesc">
+                                        <div class="objectiveBoxData">
+                                            <xsl:value-of select="$objectiveDesc"/>
+                                        </div>
+                                    </xsl:if>
+                                </td>
+								<td>
+                                    
+                                        <xsl:choose>
+                                            <xsl:when test="count($measureValues) > 0">
+                                                <div class="objectiveBoxDataList"> 
+                                                        <xsl:for-each select="$measureValues">
+                                                            <xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+                                                           - <xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
+                                                        </xsl:for-each> 
+                                                </div>
+                                            </xsl:when>
+                                            <xsl:otherwise>-</xsl:otherwise>
+                                        </xsl:choose> 
 								</td>
 								<td>
-									<xsl:choose>
-										<xsl:when test="count($measureValues) > 0">
-											<ul>
-												<xsl:for-each select="$measureValues">
-													<xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
-													<li><xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/></li>
-												</xsl:for-each>
-											</ul>
-										</xsl:when>
-										<xsl:otherwise>-</xsl:otherwise>
-									</xsl:choose>
-								</td>
-								<td>
-									<ul>
-										<xsl:for-each select="$relatedDrivers">
-											<li>
-												<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
-											</li>
-										</xsl:for-each>
-									</ul>
+                                    <xsl:if test="$relatedDrivers">
+                                        <div class="objectiveBoxDataList">
+                                 
+                                                <xsl:for-each select="$relatedDrivers"> 
+                                                         <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/> <br/>
+                                                </xsl:for-each>
+                                      
+                                        </div>
+                                    </xsl:if>
 								</td>
 							</tr>
 						</xsl:for-each>
@@ -681,7 +940,7 @@
 		<!--I've put a simple xsl:choose in here but you''ll need to set the test properly-->
 		<xsl:choose>
 			<xsl:when test="count($allSupportingProjects) > 0">
-				<table class="table table-bordered table-striped">
+				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th class="cellWidth-20pc">
@@ -799,84 +1058,91 @@
 							<xsl:variable name="actualStartStyle" select="eas:get_date_style($jsPlanEndDate, $jsActualStartDate)"/>
 							<xsl:variable name="targetEndStyle" select="eas:get_date_style($jsPlanEndDate, $jsTargetEndDate)"/>
 							<xsl:variable name="forecastEndStyle" select="eas:get_date_style($jsPlanEndDate, $jsForecastEndDate)"/>
-
+							<xsl:if test="current()/type = 'Project'">
 							<tr>
 								<td>
-									<!--<xsl:value-of select="$projectName" />-->
-									<xsl:call-template name="RenderInstanceLink">
-										<xsl:with-param name="theSubjectInstance" select="current()"/>
-										<xsl:with-param name="theXML" select="$reposXML"/>
-										<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-										<!--<xsl:with-param name="anchorClass" select="$projectFormat"/>-->
-									</xsl:call-template>
+									
+                                    <div class="planBox"> 
+                                        <xsl:call-template name="RenderInstanceLink">
+                                            <xsl:with-param name="theSubjectInstance" select="current()"/>
+                                            <xsl:with-param name="theXML" select="$reposXML"/>
+                                            <xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+                                            <!--<xsl:with-param name="anchorClass" select="$projectFormat"/>-->
+                                        </xsl:call-template>
+                                    </div> 
 								</td>
 								<td>
-									<span>
+									<div class="planBoxDescription">
 										<!--<xsl:attribute name="class" select="$projectFormat"/>-->
 										<xsl:value-of select="$projectDesc"/>
-									</span>
+                                    </div>
+								</td>
+								<td>       
+                                    <div class="dateColumn">
+                              
+                                        <xsl:choose>
+                                            <xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value) > 0) or (count($plannedISOStartDate) > 0)">
+                                                <xsl:call-template name="FullFormatDate">
+                                                    <xsl:with-param name="theDate" select="$jsPlannedStartDate"/>
+                                                </xsl:call-template>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <em>undefined</em>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
 								</td>
 								<td>
-									<xsl:attribute name="class" select="$plannedStartStyle"/>
-									<xsl:choose>
-										<xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value) > 0) or (count($plannedISOStartDate) > 0)">
-											<xsl:call-template name="FullFormatDate">
-												<xsl:with-param name="theDate" select="$jsPlannedStartDate"/>
-											</xsl:call-template>
-										</xsl:when>
-										<xsl:otherwise>
-											<em>undefined</em>
-										</xsl:otherwise>
-									</xsl:choose>
-
+                                   
+                                    <div class="dateColumn">
+                                        <xsl:choose>
+                                            <xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_actual_start_date']/value) > 0) or (count($actualISOStartDate) > 0)">
+                                                <xsl:call-template name="FullFormatDate">
+                                                    <xsl:with-param name="theDate" select="$jsActualStartDate"/>
+                                                </xsl:call-template>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <em>undefined</em>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
+								</td>
+								<td> 
+									
+                                    <div class="dateColumn">
+                                        <xsl:choose>
+                                            <xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_target_end_date']/value) > 0) or (count($targetEndISOStartDate) > 0)">
+                                                <xsl:call-template name="FullFormatDate">
+                                                    <xsl:with-param name="theDate" select="$jsTargetEndDate"/>
+                                                </xsl:call-template>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <em>
+                                                    <xsl:value-of select="eas:i18n('undefined')"/>
+                                                </em>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
 								</td>
 								<td>
-									<xsl:attribute name="class" select="$actualStartStyle"/>
-									<xsl:choose>
-										<xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_actual_start_date']/value) > 0) or (count($actualISOStartDate) > 0)">
-											<xsl:call-template name="FullFormatDate">
-												<xsl:with-param name="theDate" select="$jsActualStartDate"/>
-											</xsl:call-template>
-										</xsl:when>
-										<xsl:otherwise>
-											<em>undefined</em>
-										</xsl:otherwise>
-									</xsl:choose>
-
-								</td>
-								<td>
-									<xsl:attribute name="class" select="$targetEndStyle"/>
-									<xsl:choose>
-										<xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_target_end_date']/value) > 0) or (count($targetEndISOStartDate) > 0)">
-											<xsl:call-template name="FullFormatDate">
-												<xsl:with-param name="theDate" select="$jsTargetEndDate"/>
-											</xsl:call-template>
-										</xsl:when>
-										<xsl:otherwise>
-											<em>
-												<xsl:value-of select="eas:i18n('undefined')"/>
-											</em>
-										</xsl:otherwise>
-									</xsl:choose>
-
-								</td>
-								<td>
-									<xsl:attribute name="class" select="$forecastEndStyle"/>
-									<xsl:choose>
-										<xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value) > 0) or (count($forecastEndISOStartDate) > 0)">
-											<xsl:call-template name="FullFormatDate">
-												<xsl:with-param name="theDate" select="$jsForecastEndDate"/>
-											</xsl:call-template>
-										</xsl:when>
-										<xsl:otherwise>
-											<em>
-												<xsl:value-of select="eas:i18n('undefined')"/>
-											</em>
-										</xsl:otherwise>
-									</xsl:choose>
-
+									 
+                                    <div class="dateColumn">
+                                        <xsl:choose>
+                                            <xsl:when test="(count($project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value) > 0) or (count($forecastEndISOStartDate) > 0)">
+                                                <xsl:call-template name="FullFormatDate">
+                                                    <xsl:with-param name="theDate" select="$jsForecastEndDate"/>
+                                                </xsl:call-template>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <em>
+                                                    <xsl:value-of select="eas:i18n('undefined')"/>
+                                                </em>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
 								</td>
 							</tr>
+						</xsl:if>
 						</xsl:for-each>
 					</tbody>
 				</table>
@@ -1082,7 +1348,7 @@
 		<xsl:param name="thePlans"/>
 		<xsl:choose>
 			<xsl:when test="count($thePlans) > 0">
-				<table class="table table-bordered table-striped">
+				<table class="table">
 					<thead>
 						<tr>
 							<th class="cellWidth-30pc">
@@ -1108,7 +1374,7 @@
 			</xsl:when>
 			<xsl:otherwise>
 				<em>
-					<xsl:value-of select="eas:i18n('No plans defined')"/>
+					<xsl:value-of select="eas:i18n('No supporting plans defined')"/>
 				</em>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -1149,38 +1415,46 @@
 
 		<tr>
 			<td>
-				<xsl:call-template name="RenderInstanceLink">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
+                <div class="planBox">
+                    <xsl:call-template name="RenderInstanceLink">
+                        <xsl:with-param name="theSubjectInstance" select="current()"/>
+                    </xsl:call-template>
+                </div>
 			</td>
 			<td>
-				<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>
+                <div class="planBoxDescription">
+                    <xsl:call-template name="RenderMultiLangInstanceDescription">
+                        <xsl:with-param name="theSubjectInstance" select="current()"/>
+                    </xsl:call-template>
+                </div>
 			</td>
 			<td>
-				<xsl:choose>
-					<xsl:when test="(count(current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value) = 0) and (count($thisPlanISOStartDate) = 0)">
-						<em>Undefined</em>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:call-template name="FullFormatDate">
-							<xsl:with-param name="theDate" select="$jsThisPlanStartDate"/>
-						</xsl:call-template>
-					</xsl:otherwise>
-				</xsl:choose>
+                <div class="dateColumn">
+                    <xsl:choose>
+                        <xsl:when test="(count(current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value) = 0) and (count($thisPlanISOStartDate) = 0)">
+                            <em>Undefined</em>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="FullFormatDate">
+                                <xsl:with-param name="theDate" select="$jsThisPlanStartDate"/>
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </div>
 			</td>
 			<td>
-				<xsl:choose>
-					<xsl:when test="(count(current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value) = 0) and (count($thisPlanISOEndDate) = 0)">
-						<em>Undefined</em>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:call-template name="FullFormatDate">
-							<xsl:with-param name="theDate" select="$jsThisPlanEndDate"/>
-						</xsl:call-template>
-					</xsl:otherwise>
-				</xsl:choose>
+                <div class="dateColumn">
+                    <xsl:choose>
+                        <xsl:when test="(count(current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value) = 0) and (count($thisPlanISOEndDate) = 0)">
+                            <em>Undefined</em>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="FullFormatDate">
+                                <xsl:with-param name="theDate" select="$jsThisPlanEndDate"/>
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </div>
 			</td>
 		</tr>
 	</xsl:template>
@@ -1207,7 +1481,68 @@
 
 	</xsl:function>
 
+<xsl:template match="node()" mode="impacts">
+    <xsl:variable name="thisStrategicPlanRels" select="$strategicPlanRelations[(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value =current()/name) and not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $directStrategicPlanImpactedElements/name)]"/>
+ 
 
+    <xsl:variable name="thisAllDeprectatedStrategicPlanRels" select="$deprectatedStrategicPlanRelations[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = current()/name]"/>
+    <xsl:variable name="thisFilteredDeprectatedStrategicPlanRels" select="$thisAllDeprectatedStrategicPlanRels[not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $directStrategicPlanImpactedElements/name)]"/>
+    <xsl:variable name="thisDeprectatedStrategicPlanRels" select="$thisFilteredDeprectatedStrategicPlanRels[not((own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and (own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))]"/>
+
+    <xsl:variable name="action" select="$impactActions[name=$thisStrategicPlanRels/own_slot_value[slot_reference='plan_to_element_change_action']/value]"/>
+    <xsl:variable name="actionOld" select="$impactActions[name=$thisDeprectatedStrategicPlanRels/own_slot_value[slot_reference='strategic_planning_action']/value]"/>
+   <xsl:variable name="action" select="$action union $actionOld"/>
+    <!--
+    <xsl:call-template name="RenderPlan2ElementsRelations">
+        <xsl:with-param name="relations" select="$thisDeprectatedStrategicPlanRels"/>
+        <xsl:with-param name="usedRelations" select="()"/>
+        <xsl:with-param name="layerElements" select="$layerElements"/>
+        <xsl:with-param name="layerClasses" select="$layerClasses"/>
+        <xsl:with-param name="layerLabels" select="$layerLabels"/>
+    </xsl:call-template>
+-->
+<xsl:variable name="elementName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'name']/value"/>
+<xsl:variable name="elementRelationName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_name']/value"/>
+<xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'description']/value"/>  
+<xsl:choose>
+	<xsl:when test="count($action)>1">
+		<xsl:variable name="main" select="current()"/>
+		<xsl:for-each select="$action">
+		{
+			"id":"<xsl:value-of select="$main/name"/>",
+			<xsl:variable name="temp" as="map(*)" select="map{
+				'description': string(translate(translate($main/own_slot_value[slot_reference = ('relation_description')]/value, '}', ')'), '{', ')')),
+				'name': string($main/own_slot_value[slot_reference = 'name']/value)
+			}"></xsl:variable>
+			<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+			<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"></xsl:value-of>,
+			"type":"<xsl:value-of select="$main/type"/>",
+		    "action":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="current()"/>
+			</xsl:call-template>" 
+		
+		}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:for-each>
+	</xsl:when>
+	<xsl:otherwise>
+		{
+			"id":"<xsl:value-of select="current()/name"/>",
+			<xsl:variable name="temp" as="map(*)" select="map{
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('relation_description')]/value, '}', ')'), '{', ')')),
+				'name': string(current()/own_slot_value[slot_reference = 'name']/value)
+			}"></xsl:variable>
+			<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
+			<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"></xsl:value-of>,
+			"type":"<xsl:value-of select="current()/type"/>",
+		    "action":"<xsl:call-template name="RenderMultiLangInstanceName">
+				<xsl:with-param name="theSubjectInstance" select="$action"/>
+			</xsl:call-template>" 
+		
+		} 
+	</xsl:otherwise>
+	</xsl:choose>	
+	<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 
 
 </xsl:stylesheet>

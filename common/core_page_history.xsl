@@ -28,95 +28,73 @@
 	 11.11.2011	JWC	Revised structure of breadcrumb object - no longer HTML code but structured String.
 	 17.06.2014	JWC Fixed a bug in translating / i18n the label for the history entry
 	 15.06.2018	JMK protect text rendering in javascript
+	 01.10.2024 NJW Convert to pure javascript history
 -->
-	<!-- theCurrentXSL = relative path of current report XSL file passed in by the reporting engine  -->
-	<xsl:param name="theCurrentXSL"/>
-
-	<!-- theCurrentURL = full path of the current page  -->
-	<xsl:param name="theCurrentURL"/>
-
-	<!-- theSubjectID = the ID of the subject of the current page  -->
-	<xsl:param name="theSubjectID"/>
-
+	
 	<xsl:template match="node()" name="Page_History">
-		<xsl:param name="breadcrumbs"/>
-
-
-		<xsl:variable name="currentReport" select="$utilitiesAllReports[own_slot_value[slot_reference = 'report_xsl_filename']/value = $theCurrentXSL]"/>
-		<xsl:variable name="currentSubject" select="/node()/simple_instance[name = $theSubjectID]"/>
-		<xsl:variable name="subjectLabelSlot">
-			<xsl:call-template name="GetDisplaySlotForInstance">
-				<xsl:with-param name="theInstance" select="$currentSubject"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="subjectLabel">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$currentSubject"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="reportHistoryPrefix" select="eas:i18n($currentReport/own_slot_value[slot_reference = 'report_history_label']/value)"/>
-		<xsl:variable name="reportHistoryLabel" select="concat($reportHistoryPrefix, ' ', $subjectLabel)"/>
-
+		<style>
+			.pageHistoryPanel{
+				max-height: 160px;
+				overflow-y: auto;
+			}
+		</style>
 		<div id="pageHistoryContainer">
 
-			<script type="text/javascript">
-				function goToPage()
-				{
-				var pageIndex = document.pageHistory.page.value;
-				if(pageIndex != -1) {
-				location.href = pageIndex;
-				}
-				}
-			</script>
-
-			<script type="text/javascript">
+			<script>
+				// Function to add the current page title and URL to history
+				function addPageToHistory() {
+					const pageTitle = document.title; // Get the title of the current page
+					let pageUrl = window.location.href.split('#')[0]; // Remove fragment part (after '#')
 				
-                $(document).ready(function ()
-                {
-                    $.ajax(
-                    {
-                        type: "POST",
-                        url: "viewHistory",
-                        data:
-                        {
-                            label: "<xsl:value-of select="eas:renderJSText($reportHistoryLabel)"/>", url: "<xsl:value-of select="$theCurrentURL"/>"
-                        },
-                        success: function (data)
-                        {
-                            // successful request; create the view history drop down list
-                            $('#historyList').empty();
-                            $(data).find('visit').each(function (i)
-                            {
-                                $('#historyList').append('&lt;li&gt;&lt;a href=&quot;' + $(this).find('url').text() + '">' + decodeURI($(this).find('label').text()) + '&lt;/a&gt;&lt;/li&gt;');
-                            });
-                        },
-                        <!--
-					contentType (default: 'application/x-www-form-urlencoded; charset=UTF-8'),//-->
-                        error: function ()
-                        {
-                            // failed request; give feedback to user
-                            $('#historyList').append('<li>Page history unavailable</li>');
-                        }
-                    });
-                });
-			</script>
+					let history = JSON.parse(localStorage.getItem('pageHistory')) || []; // Fetch existing history or set an empty array
+				
+					// Create an object with the page title and URL
+					const pageEntry = { title: pageTitle, url: pageUrl };
+				
+					// Check if the page is already in the history (based on the URL)
+					const isPageInHistory = history.some(entry => entry.url === pageUrl);
+					if (!isPageInHistory) {
+						history.unshift(pageEntry); // Add the new page entry to the start of the array
+					}
+				
+					// Limit the history to the latest 50 entries
+					if (history.length > 50) {
+						history = history.slice(0, 50);
+					}
+				
+					// Store the updated history in local storage
+					localStorage.setItem('pageHistory', JSON.stringify(history));
+				}
+				
+				// Function to display the history as clickable links
+				function displayHistory() {
+					const historyList = document.getElementById('history-list');
+					let history = JSON.parse(localStorage.getItem('pageHistory')) || [];
+				
+					// Clear the existing list
+					historyList.innerHTML = '';
+				
+					// Loop through the history and create list items with links
+					history.forEach(entry => {
+						const listItem = document.createElement('li');
+						const link = document.createElement('a');
+						link.textContent = entry.title;
+						link.href = entry.url;
+						listItem.appendChild(link);
+						historyList.appendChild(listItem);
+					});
+				}
+				$('document').ready(function(){
+					addPageToHistory();
+					displayHistory();
+				});
 
-			<div class="pageHistoryPanel">
-				<ul id="historyList">
-					<!--<xsl:for-each select="tokenize($breadcrumbs, '§')">
-						<xsl:variable name="aURL" select="substring-before(current(), '±')">							
-						</xsl:variable>
-						<xsl:variable name="aLabel" select="substring-after(current(), '±')"></xsl:variable>
-						<li>
-							<a>
-								<xsl:attribute name="href"><xsl:value-of select="$aURL"></xsl:value-of></xsl:attribute>
-								<xsl:value-of select="$aLabel"></xsl:value-of>
-							</a>
-						</li>
-					</xsl:for-each>-->
+				</script>
+
+			<div class="pageHistoryPanel bottom-15">
+				<ul id="history-list">
 				</ul>
 			</div>
-			<br/>
 
 		</div>
 	</xsl:template>

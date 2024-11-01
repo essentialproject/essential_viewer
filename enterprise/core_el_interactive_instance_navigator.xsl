@@ -225,7 +225,7 @@
 					{{#unless enum}}
 				<i class="fa fa-caret-right"></i><xsl:text> </xsl:text> <b>{{this.name}}</b>
 						<ul class="fa-ul">
-									{{#each this.value}}
+									{{#each this.values}}
 							
 										<li>
 											<xsl:attribute name="id">p{{this.id}}</xsl:attribute>
@@ -351,9 +351,7 @@ function getData(dta){
                 //after the first data set is retrieved, set a global variable and render the view elements from the returned JSON data (e.g. via handlebars templates)
                 thisviewAPIData = response1;
                //DO HTML stuff
-         thisviewAPIData=response1; 
-
-		 console.log('thisviewAPIData',thisviewAPIData)
+         thisviewAPIData=response1;  
     $('#spinner').hide();
 		return thisviewAPIData
 		
@@ -368,7 +366,7 @@ async function getNode(parentNode,idToCall,pos, slot){
         var viewAPIData = '<xsl:value-of select="$viewerAPIPath2"/>&amp;PMA='+idToCall;
               
         const result = await getData(viewAPIData);
-
+ 
  	 <!--
 		result.instance.forEach((d)=>{
 			 
@@ -413,8 +411,7 @@ async function getNode(parentNode,idToCall,pos, slot){
 	var slots2show=	result.instance.filter(function(d){
 		return d.name!='external_repository_instance_reference';
 		})
-	slots2show={"instance":slots2show}	 
-
+	slots2show={"instance":slots2show}	  
   	$('#slots').append(slotCardTemplate(slots2show));
        
          
@@ -499,12 +496,11 @@ var g=g1.setGraph({});
 states.forEach(function(state) { g.setNode(state.id, { label: state.name, easid:state.id }); });
 
 data.nodes.forEach(function(d) { g.setEdge(d.parent, d.child,{ label: d.label,curve: d3.curveBasis}); });	
-console.log('data',data)
- console.log('states',states)
+ 
 var res=dagreD3.graphlib.json.write(g1);
  		
 g.nodes().forEach(function(v) {
-	console.log('v',v)
+	 
   var node = g.node(v);
   node.rx = node.ry = 5;	
 	 
