@@ -4,7 +4,7 @@
 <xsl:include href="../../common/core_js_functions.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
 <xsl:param name="param1"/> 
-
+<xsl:key name="BusCapsKey" match="/node()/simple_instance[type = 'Business_Capability']" use="name"/>
 <xsl:key name="allbusCaps_key" match="/node()/simple_instance[(type = 'Business_Capability')]" use="type"/>
 <xsl:key name="allApps_key" match="/node()/simple_instance[(type = 'Application_Provider') or (type = 'Composite_Application_Provider')]" use="type"/>
 <xsl:key name="allChildCap2ParentCapRelsKey" match="/node()/simple_instance[type = 'BUSCAP_TO_PARENTBUSCAP_RELATION']" use="type"/>
@@ -44,7 +44,43 @@
 <xsl:key name="perfMeasureKey" match="/node()/simple_instance[supertype = 'Performance_Measure']" use="own_slot_value[slot_reference = 'pm_performance_value']/value"/>
 <xsl:key name="servQualKey" match="/node()/simple_instance[supertype = 'Service_Quality_Value']" use="own_slot_value[slot_reference = 'usage_of_service_quality']/value"/>
 
+<!-- bus model data -->
+<xsl:key name="BusModels" match="/node()/simple_instance[type='Business_Model']" use="name"/>
+<xsl:key name="BusModelsType" match="/node()/simple_instance[type='Business_Model']" use="type"/>
+<xsl:variable name="appRepImpls" select="/node()/simple_instance[type='Application_Reference_Implementation']"/>
+<xsl:key name="appRepImpls" match="/node()/simple_instance[type='Application_Reference_Implementation']" use="type"/>
+<xsl:variable name="BusProcessesRefUsage" select="/node()/simple_instance[type='Business_Process_Reference_Usage']"/>
+<xsl:variable name="BusModelUsage" select="/node()/simple_instance[type='Business_Model_Business_Usage']"/>
+<xsl:variable name="busRefArch" select="/node()/simple_instance[type='Business_Reference_Architecture']"/>  
+<xsl:key name="BPKey" match="$relevantBusProcs" use="name"/>
+<xsl:key name="BRAKey" match="$busRefArch" use="own_slot_value[slot_reference='business_reference_architecture_elements']/value"/> 
 
+<xsl:variable name="groupActors" select="/node()/simple_instance[type='Group_Actor']"/>
+
+<xsl:key name="busRefKey" match="$busRefArch" use="name"/>
+<xsl:variable name="BusModelArch" select="/node()/simple_instance[type='Business_Model_Architecture']"/>
+<xsl:key name="BusModArch" match="$BusModelArch" use="own_slot_value[slot_reference='architecture_of_business_model']/value"/>
+<xsl:key name="BusModelArchname" match="$BusModelArch" use="name"/>
+<xsl:variable name="ARITs" select="/node()/simple_instance[type=':ARIT-TO-ARIT-REFERENCE-RELATION']"/>
+
+<xsl:variable name="BRAMap" select="/node()/simple_instance[type=':BMC-BRAU-DEPENDS_ON-ARIU']"/>
+<xsl:variable name="BRUsages" select="/node()/simple_instance[type='Business_Reference_Architecture_Config_Usage']"/>
+<xsl:variable name="ARUsages" select="/node()/simple_instance[type='Application_Reference_Implementation_Config_Usage']"/>
+<xsl:variable name="BusModelConfigurations" select="/node()/simple_instance[type='Business_Model_Configuration']"/>
+<xsl:key name="aritARI" match="key('appRepImpls', 'Application_Reference_Implementation')" use="own_slot_value[slot_reference='application_reference_implementation_dependencies']/value"/>
+<xsl:key name="aritARIName" match="key('appRepImpls', 'Application_Reference_Implementation')" use="name"/>
+<xsl:key name="aritARITypes" match="/node()/simple_instance[supertype='Application_Reference_Implementation_Type']" use="name"/>
+
+<!-- configurations -->
+<xsl:key name="BRACUTypes" match="$BRUsages" use="name"/>
+<xsl:variable name="BMCA" select="/node()/simple_instance[type='Business_Model_Configuration_Architecture']"/>
+<xsl:key name="BRAC" match="$BMCA" use="own_slot_value[slot_reference='bmc_architecture_elements']/value"/>
+<xsl:key name="BRACname" match="$BMCA" use="name"/>
+
+<xsl:key name="ARICUTypes" match="/node()/simple_instance[type='Application_Reference_Implementation_Config_Usage']" use="name"/>
+<xsl:key name="ARIC" match="/node()/simple_instance[type='Business_Reference_Architecture_Configuration']" use="own_slot_value[slot_reference='bmc_architecture_elements']/value"/>
+<xsl:key name="aritARIAPRs" match="/node()/simple_instance[type = 'Application_Provider_Role']" use="name"/>
+<xsl:key name="aritAPRs" match="/node()/simple_instance[type = 'Application_Provider_Role']" use="type"/>
 <!--
 <xsl:variable name="thisrelevantPhysProcsActorsIndirect" select="$a2r[name=$relevantPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"></xsl:variable>
 <xsl:variable name="relevantPhysProc2AppProRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'apppro_to_physbus_to_busproc']/value = $relevantPhysProcs/name]"></xsl:variable>
@@ -123,7 +159,18 @@
 	"rootOrgs":[<xsl:for-each select="$rootActors">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 	</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
-	"version":"618"		
+	"bus_model_management":{
+		"businessModels":[<xsl:apply-templates select="key('BusModelsType', 'Business_Model')" mode="busMods"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"businessModelConfigurations":[<xsl:apply-templates select="$BusModelConfigurations" mode="busModConfigs"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"aris":[<xsl:apply-templates select="key('appRepImpls', 'Application_Reference_Implementation')" mode="ariSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"bras":[<xsl:apply-templates select="$busRefArch" mode="ariSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"arits":[<xsl:apply-templates select="$ARITs" mode="aritSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"busRefConf":[<xsl:apply-templates select="$BRAMap" mode="brcSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"busModelProcess":[<xsl:apply-templates select="$BusModelUsage" mode="busProArchSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"ref2Process":[<xsl:apply-templates select="$BusProcessesRefUsage" mode="busProtoArchSheet"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>],
+		"application_provider_roles": [<xsl:apply-templates select="key('aritAPRs', 'Application_Provider_Role')" mode="aprs"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>]	
+	},
+	"version":"620"		
 	 }
 </xsl:template>
 
@@ -159,6 +206,8 @@
 "className":"<xsl:value-of select="current()/type"/>",
 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
 </xsl:call-template>",
+"position":"<xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/>",
+"order":"<xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/>",
 "diffLevelIds":[
 		<xsl:for-each select="$thisDiffLevels">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>
 	],
@@ -226,18 +275,22 @@
 "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 "link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param></xsl:call-template>",
 "className":"<xsl:value-of select="current()/type"/>",
-"index":"<xsl:value-of select="own_slot_value[slot_reference='business_capability_level']/value"/>",
-"isRoot":"<xsl:value-of select="own_slot_value[slot_reference='is_root']/value"/>",
+"index":"<xsl:value-of select="current()/own_slot_value[slot_reference='business_capability_index']/value"/>",
+"isRoot":"<xsl:value-of select="current()/own_slot_value[slot_reference='is_root']/value"/>",
 <xsl:variable name="combinedMap" as="map(*)" select="map{
 	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
 }" />
 <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<!-- note these are all processes for this capability and its children -->
-"allProcesses":[<xsl:for-each select="$thisrelevantBusProcs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
-	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+"allProcesses":[<xsl:for-each select="$thisrelevantBusProcs">
+<xsl:variable name="criticality" select="$criticalityStatus[name=current()/own_slot_value[slot_reference = ('bpt_business_criticality')]/value]"/>
+{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+	'criticality': string(translate(translate($criticality/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')'))
 }" />
 <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<!-- note these are direct processes for this capability only, not children.  make directBusProcs thisrelevantBusProcs to change -->
+  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+  "criticalityId":"<xsl:value-of select="eas:getSafeJSString($criticality/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<!-- note these are direct processes for this capability only, not children.  make directBusProcs thisrelevantBusProcs to change -->
 "infoConcepts":[<xsl:for-each select="$thisinfoConcepts"> 
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	<xsl:variable name="combinedMap" as="map(*)" select="map{
@@ -319,5 +372,153 @@
 		"sequence":"<xsl:value-of select="own_slot_value[slot_reference='enumeration_sequence_number']/value"/>", 
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
-				</xsl:template>	
+	</xsl:template>
+	
+		<!-- bus model info -->
+
+<xsl:template match="node()" mode="busModConfigs">
+    <xsl:variable name="thisActors" select="$groupActors[name=current()/own_slot_value[slot_reference='bmc_org_scope']/value]"/>
+    <xsl:variable name="thisBM" select="key('BusModels', current()/own_slot_value[slot_reference='bmc_for_business_model']/value)"/>
+	<!--
+    <xsl:variable name="thisBM" select="$BusModels[name=current()/own_slot_value[slot_reference='bmc_for_business_model']/value]"/>-->
+	{  
+	    "id":"<xsl:value-of select="current()/name"/>",
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'model': string(translate(translate($thisBM/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'label': string(translate(translate(current()/own_slot_value[slot_reference = ('bmc_label')]/value,'}',')'),'{',')')),
+            'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+            'org1':string(translate(translate($thisActors[1]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'org2':string(translate(translate($thisActors[2]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'org3':string(translate(translate($thisActors[3]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'org4':string(translate(translate($thisActors[4]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'org5':string(translate(translate($thisActors[5]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'org6':string(translate(translate($thisActors[6]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/> 
+	 }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="ariSheet">
+    <xsl:variable name="thisActors" select="$groupActors[name=current()/own_slot_value[slot_reference='sm_organisational_scope']/value]"/>
+  
+	{  
+	    "id":"<xsl:value-of select="current()/name"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+			'org1': string(translate(translate($thisActors[1]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'org2': string(translate(translate($thisActors[2]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'org3': string(translate(translate($thisActors[3]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'org4': string(translate(translate($thisActors[4]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'org5': string(translate(translate($thisActors[5]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'org6': string(translate(translate($thisActors[6]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+	 }<xsl:if test="position()!=last()">,</xsl:if>
+
+</xsl:template>
+<xsl:template match="node()" mode="aritSheet">
+    <xsl:variable name="thisari" select="key('aritARI', current()/name)"/>
+    <xsl:variable name="usagesFrom" select="key('aritARITypes', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+    <xsl:variable name="aprFrom" select="key('aritARIAPRs', $usagesFrom/own_slot_value[slot_reference='apru_usage_of_application_provider']/value)"/>
+ 
+    <xsl:variable name="usagesTo" select="key('aritARITypes', current()/own_slot_value[slot_reference=':TO']/value)"/>
+    <xsl:variable name="aprTo" select="key('aritARIAPRs',$usagesTo/own_slot_value[slot_reference='apru_usage_of_application_provider']/value)"/>
+{
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate($thisari/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+		'from': string(translate(translate($aprFrom/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+		'to': string(translate(translate($aprTo/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+
+<xsl:template match="node()" mode="brcSheet">
+     
+    <!--<xsl:variable name="thisari" select="key('aritARI', current()/name)"/>-->
+    <xsl:variable name="usagesFrom" select="key('BRACUTypes', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+    <xsl:variable name="bracFrom" select="key('busRefKey', $usagesFrom/own_slot_value[slot_reference='bracu_usage_of_business_reference_architecture']/value)"/>
+    <xsl:variable name="usagesTo" select="key('ARICUTypes', current()/own_slot_value[slot_reference=':TO']/value)"/>
+    <xsl:variable name="ariTo" select="key('aritARIName', $usagesTo/own_slot_value[slot_reference='aricu_usage_of_application_reference_implementation']/value)"/>
+    <xsl:variable name="thisbrac" select="key('BRACname', current()/own_slot_value[slot_reference='bmc_relation_in_business_model_config_architecture']/value)"/>
+    <xsl:variable name="thisbrconfig" select="$BusModelConfigurations[name=$thisbrac/own_slot_value[slot_reference='architecture_of_business_model_configuration']/value]"/>
+
+    <xsl:variable name="thisBM" select="key('BusModels', $thisbrconfig/own_slot_value[slot_reference='bmc_for_business_model']/value)"/>
+ <!--
+  <xsl:variable name="thisBM" select="$BusModels[name=$thisbrconfig/own_slot_value[slot_reference='bmc_for_business_model']/value]"/>
+ <xsl:variable name="aprTo" select="key('aritARIAPRs',$usagesTo/own_slot_value[slot_reference='apru_usage_of_application_provider']/value)"/>
+ 
+       bracu_usage_of_business_reference_architecture  busRefArch
+       aritARIName
+ -->
+{ 
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate($thisBM/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+		'from': string(translate(translate($bracFrom/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+		'to': string(translate(translate($ariTo/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+
+<xsl:template match="node()" mode="busProArchSheet">
+    
+    <xsl:variable name="thisBusCap" select="key('BusCapsKey', current()/own_slot_value[slot_reference='bmbu_used_business_capability']/value)"/>
+    <xsl:variable name="thisBusModelArch" select="key('BusModelArchname',current()/own_slot_value[slot_reference='used_in_business_model_architecture']/value)"/>
+	
+	<xsl:variable name="thisBusModels" select="key('BusModels', $thisBusModelArch/own_slot_value[slot_reference='architecture_of_business_model']/value)"/>
+	<!--
+    <xsl:variable name="thisBusModels" select="$BusModels[name=$thisBusModelArch/own_slot_value[slot_reference='architecture_of_business_model']/value]"/>-->
+    
+    {  
+         <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'model': string(translate(translate($thisBusModels/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'leafBC': string(translate(translate($thisBusCap/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+    }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="busProtoArchSheet">
+    <xsl:variable name="thisProc" select="key('BPKey', current()/own_slot_value[slot_reference='bpru_usage_of_business_process']/value)"></xsl:variable>
+    <xsl:variable name="thisBRA" select="key('busRefKey', current()/own_slot_value[slot_reference='bramt_used_in_business_reference_architecture']/value)"></xsl:variable>
+    { 
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'refArch': string(translate(translate($thisBRA/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'process': string(translate(translate($thisProc/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+   }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="busMods">
+    <!--<xsl:variable name="thisBusDomain" select="$BusDomains[name=current()/own_slot_value[slot_reference='bm_business_domain']/value]"/>-->
+	{ 
+	    "id":"<xsl:value-of select="current()/name"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'domain': string(translate(translate(current()/own_slot_value[slot_reference = ('bm_business_domain')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+		<!--     "domain":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisBusDomain"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>"-->
+	 }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+<xsl:template match="node()" mode="aprs">
+	{"id":"<xsl:value-of select="current()/name"/>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+	"role":"<xsl:value-of select="current()/own_slot_value[slot_reference = ('implementing_application_service')]/value"/>",
+	"application":"<xsl:value-of select="current()/own_slot_value[slot_reference = ('role_for_application_provider')]/value"/>"
+	<!--     "domain":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisBusDomain"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>"-->
+ }<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
 </xsl:stylesheet>

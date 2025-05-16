@@ -8,13 +8,16 @@
 
 	<xsl:variable name="techProductBuild" select="/node()/simple_instance[type=('Technology_Product_Build')]"/>
 
+	<xsl:key name="techProductBuild" match="/node()/simple_instance[type=('Technology_Product_Build')]" use="name"/>
 	<xsl:variable name="deploymentRole" select="/node()/simple_instance[type=('Deployment_Role')]"/>
 	<xsl:variable name="applicationDeployment" select="/node()/simple_instance[type=('Application_Deployment')][own_slot_value[slot_reference='application_deployment_technical_arch']/value=$techProductBuild/name]"/>
 	<xsl:variable name="techBuildArchitecture" select="/node()/simple_instance[type=('Technology_Build_Architecture')]"/>
 	<xsl:variable name="techComponent" select="/node()/simple_instance[type=('Technology_Component')]"/>
 	<xsl:variable name="techProduct" select="/node()/simple_instance[type=('Technology_Product')]"/>
 	<xsl:variable name="techProductRole" select="/node()/simple_instance[type=('Technology_Product_Role')]"/>
+	<xsl:key name="techProductRole" match="/node()/simple_instance[type=('Technology_Product_Role')]" use="name"/>
 	<xsl:variable name="tpu" select="/node()/simple_instance[type=('Technology_Provider_Usage')]"/>
+	<xsl:key name="tpu" match="/node()/simple_instance[type=('Technology_Provider_Usage')]" use="name"/>
 	<xsl:variable name="tpuRelation" select="/node()/simple_instance[type=(':TPU-TO-TPU-RELATION')]"/>
  	 <xsl:variable name="applications" select="/node()/simple_instance[type=('Application_Provider', 'Composite_Application_Provider')][name=$applicationDeployment/own_slot_value[slot_reference='application_provider_deployed']/value]"/>
  
@@ -58,25 +61,29 @@
 	<xsl:variable name="thisDeployment" select="key('appDeployment_key',current()/name)"/>  
 	{
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"application":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'application': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
 	"supportingTech":[<xsl:for-each select="$thisDeployment">
-	  <xsl:variable name="thisProductBuild" select="$techProductBuild[name=current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value]"/>
+	  <xsl:variable name="thisProductBuild" select="key('techProductBuild', current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value)"/>
 	 <xsl:variable name="thistechBuildArchitecture" select="key('apptechbuild_key',$thisProductBuild/name)"/>    
 	 <xsl:variable name="thistpu" select="key('tpu_key',$thistechBuildArchitecture/name)"/>  
 	 <xsl:variable name="thisTpuRelation" select="key('tputpu_key',$thistpu/name)"/>    
 	 <xsl:variable name="deploymentType" select="current()/own_slot_value[slot_reference='application_deployment_role']/value"/>	 
 	 
 			<xsl:for-each select="$thisTpuRelation">
-			<xsl:variable name="sourcetpu" select="$tpu[name=current()/own_slot_value[slot_reference=':TO']/value]"/>
-			<xsl:variable name="sourcetechProductRole" select="$techProductRole[name=$sourcetpu/own_slot_value[slot_reference='provider_as_role']/value]"/>
-			<xsl:variable name="targettpu" select="$tpu[name=current()/own_slot_value[slot_reference=':FROM']/value]"/>
-			<xsl:variable name="targettechProductRole" select="$techProductRole[name=$targettpu/own_slot_value[slot_reference='provider_as_role']/value]"/>
+			<xsl:variable name="sourcetpu" select="key('tpu', current()/own_slot_value[slot_reference=':TO']/value)"/>
+			<xsl:variable name="sourcetechProductRole" select="key('techProductRole', $sourcetpu/own_slot_value[slot_reference='provider_as_role']/value)"/>
+			<xsl:variable name="targettpu" select="key('tpu', current()/own_slot_value[slot_reference=':FROM']/value)"/>
+			<xsl:variable name="targettechProductRole" select="key('techProductRole', $targettpu/own_slot_value[slot_reference='provider_as_role']/value)"/>
 			<xsl:variable name="thisTechProdsSource" select="key('techprod_key',$sourcetechProductRole/name)"/>  
 			<xsl:variable name="thisTechProdsTarget" select="key('techprod_key',$targettechProductRole/name)"/>  
 			<xsl:variable name="thisTechCompsSource" select="key('techcomp_key',$sourcetechProductRole/name)"/>  
 			<xsl:variable name="thisTechCompsTarget" select="key('techcomp_key',$targettechProductRole/name)"/>  
 			<xsl:variable name="thisDeployment" select="$deploymentRole[name=$deploymentType]"/>  
-			{ "debug":"<xsl:value-of select="$thistpu/name"/>", 
+			{
 				<xsl:variable name="tempProd" as="map(*)" select="map{'fromTechProduct': string(translate(translate($thisTechProdsSource/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
 				<xsl:variable name="result" select="serialize($tempProd, map{'method':'json', 'indent':true()})"/>  
 				<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
@@ -102,7 +109,7 @@
 		</xsl:for-each>
 		</xsl:for-each>{}],
 		"allTechProds":[<xsl:for-each select="$thisDeployment">
-	  <xsl:variable name="thisProductBuild" select="$techProductBuild[name=current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value]"/>
+	  <xsl:variable name="thisProductBuild" select="key('techProductBuild', current()/own_slot_value[slot_reference='application_deployment_technical_arch']/value)"/>
 	 <xsl:variable name="thistechBuildArchitecture" select="key('apptechbuild_key',$thisProductBuild/name)"/>   
 	 <xsl:variable name="thistpu" select="key('tpu_key',$thistechBuildArchitecture/name)"/>   
 	 <xsl:variable name="thisTprRelation" select="key('tpr_key',$thistpu/own_slot_value[slot_reference='provider_as_role']/value)"/>   

@@ -53,10 +53,22 @@
 	 <xsl:variable name="docs" select="key('externalDoc_key',current()/name)"/>
     <!-- last two need to be org roles as the slots have been deprecated -->
     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	 "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	 "synonyms":[<xsl:for-each select="$syns">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-	 "dataObjects":[<xsl:for-each select="$dos">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
+	<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
+	 "synonyms":[<xsl:for-each select="$syns">{<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	 "dataObjects":[<xsl:for-each select="$dos">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
 	 "category":"<xsl:value-of select="$dataCategory[name=current()/own_slot_value[slot_reference='data_category']/value]/own_slot_value[slot_reference='name']/value"/>",
 	 "orgOwner":"<xsl:value-of select="$actors[name=current()/own_slot_value[slot_reference='data_subject_organisation_owner']/value]/own_slot_value[slot_reference='name']/value"/>",
 	 "stakeholders":[<xsl:for-each select="$thisStakeholders">
@@ -67,25 +79,24 @@
 				<xsl:variable name="allthisActors" select="$thisActors union $thisgrpActors"/>
 				<xsl:variable name="allthisRoles" select="$thisRoles union $thisgrpRoles"/>
 				{"type": "<xsl:value-of select="$allthisActors/type"/>",
-				"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="$allthisActors"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
-                </xsl:call-template>",  
+				<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+					'actorName': string(translate(translate($allthisActors/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+					'roleName': string(translate(translate($allthisRoles/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+				  }"></xsl:variable>
+				  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+				  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
                 "actorId":"<xsl:value-of select="eas:getSafeJSString($allthisActors/name)"/>",
-                "roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="$allthisRoles"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
-                </xsl:call-template>",  
                 "roleId":"<xsl:value-of select="eas:getSafeJSString($allthisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:for-each>],
 	"externalDocs":[<xsl:for-each select="$docs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	"link":"<xsl:call-template name="RenderMultiLangInstanceSlot">
-		<xsl:with-param name="theSubjectInstance" select="current()"/>
-		<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
-		<xsl:with-param name="isForJSONAPI" select="true()"/>
-	</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+		'link': string(translate(translate(current()/own_slot_value[slot_reference = ('external_reference_url')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>
+	}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	"indivOwner":"<xsl:value-of select="$individual[name=current()/own_slot_value[slot_reference='data_subject_individual_owner']/value]/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
       
   </xsl:template>

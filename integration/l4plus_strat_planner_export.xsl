@@ -6959,8 +6959,19 @@
     <Row ss:AutoFitHeight="0" ss:Height="17">
     <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String"><xsl:value-of select="current()/name"/></Data></Cell>
     <Cell ss:StyleID="s76"><Data ss:Type="String"><xsl:value-of select="$vsName"/></Data></Cell>
-   <Cell ss:StyleID="s80"><Data ss:Type="Number"><xsl:value-of select="current()/own_slot_value[slot_reference='vsg_index']/value"/></Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String"><xsl:value-of select="$valueStageLabel[name=current()/own_slot_value[slot_reference='vsg_label']/value]/own_slot_value[slot_reference='name']/value"/></Data></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="Number"><xsl:value-of select="current()/own_slot_value[slot_reference='vsg_index']/value"/></Data></Cell>
+    <Cell ss:StyleID="s65">
+        <Data ss:Type="String">
+            <xsl:choose>
+              <xsl:when test="current()/own_slot_value[slot_reference = 'vsg_display_label']/value">
+                <xsl:value-of select="current()/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+              </xsl:when>
+              <xsl:otherwise>
+                  <xsl:value-of select="$valueStageLabel[name=current()/own_slot_value[slot_reference='vsg_label']/value]/own_slot_value[slot_reference='name']/value"/>
+              </xsl:otherwise>
+            </xsl:choose>
+        </Data>
+    </Cell>
     <Cell ss:StyleID="s65"><Data ss:Type="String"><xsl:value-of select="current()/own_slot_value[slot_reference='description']/value"/></Data></Cell>
     <Cell ss:Formula="=CONCATENATE(RC[-4],&quot;: &quot;,RC[-3],&quot;. &quot;,RC[-2])"><Data
       ss:Type="String"></Data>

@@ -283,138 +283,159 @@
 
 				<!--ADD THE CONTENT-->
 				<!--<xsl:variable name="modelSubjectDesc" select="$appProvNode/own_slot_value[slot_reference='description']/value" />-->
-				<div class="container-fluid">
-					<div class="row">
-						<div class="col-xs-12">
-							<h1 id="viewName">
-								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-								<span class="text-darkgrey">
-									<xsl:value-of select="$pageTitle"/>
-								</span>
-								<xsl:call-template name="RenderInstanceLink">
-									<xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
-									<xsl:with-param name="anchorClass" select="'text-primary'"/>
-								</xsl:call-template>
-							</h1>
-						</div>
-					 <div class="row">
-						<div class="col-xs-12">
-							<div class="input-group pull-right">                                           
-								<button class="  btn btn-default right-10" id="genDSL" ><i class="fa fa-copy right-5"/>Copy DSL to Clipboard</button>
-							</div>
-							<div class="xsmall text-right top-5"><span id="ess-copy-success-message" class="hiddenDiv"><i class="fa fa-check right-5"/>Copied!</span></div>
-						</div>
-					</div>
-						<div id="planModal" class="modal fade" role="dialog">
-							<div class="modal-dialog">
+			<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1 id="viewName">
+        <span class="text-primary">
+          <xsl:value-of select="eas:i18n('View')"/>:
+        </span>
+        <span class="text-darkgrey">
+          <xsl:value-of select="$pageTitle"/>
+        </span>
+        <xsl:call-template name="RenderInstanceLink">
+          <xsl:with-param name="theSubjectInstance" select="$appProvNode"/>
+          <xsl:with-param name="anchorClass" select="'text-primary'"/>
+        </xsl:call-template>
+      </h1>
+    </div>
+  </div>
 
-								<!-- Modal content-->
-								<div class="modal-content">
-								<div class="modal-header">
-									<h3 class="modal-title strong text-primary"><i class="fa fa-tasks right-5"/><xsl:value-of select="eas:i18n('Create Plan to Switch')"/></h3>
-								</div>
-								<div class="modal-body">
-									<label><xsl:value-of select="eas:i18n('Plan Name')"/>:</label>
-									<input class="form-control"  id="planName"></input>
-									<br/>
-									<label><xsl:value-of select="eas:i18n('Plan Description')"/>:</label>
-									<textarea class="form-control" rows="3" id="planDescription"></textarea>
-									<br/>
-									<label><xsl:value-of select="eas:i18n('Plan Start Date')"/>:</label>
-									<input  class="form-control" id="planStart"></input><br/>
-									<label><xsl:value-of select="eas:i18n('Plan End Date')"/>:</label>
-									<input  class="form-control"  id="planEnd"></input><br/>
-									<label><xsl:value-of select="eas:i18n('Requestor')"/>:</label><input class="form-control"  id="requestor"></input>
-									<label><xsl:value-of select="eas:i18n('ID')"/>:</label><input class="form-control"  id="planID"></input>
-								 
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-danger right-10" data-dismiss="modal">Cancel</button>
-									<button class="btn btn-success" id="save"><xsl:value-of select="eas:i18n('Create Plan')"/></button><xsl:text> </xsl:text><span id="savefeedback"></span> 
-								</div>
-								</div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="input-group pull-right">
+        <button class="btn btn-default right-10" id="genDSL" aria-describedby="copyDesc">
+          <i class="fa fa-copy right-5" aria-hidden="true"></i>
+          <xsl:value-of select="eas:i18n('Copy DSL to Clipboard')"/>
+        </button>
+      </div>
+      <div class="xsmall text-right top-5">
+        <span id="ess-copy-success-message" class="sr-only" role="status" aria-live="polite">
+          <i class="fa fa-check right-5" aria-hidden="true"></i>
+          <xsl:value-of select="eas:i18n('Copied!')"/>
+        </span>
+      </div>
+    </div>
+  </div>
 
-							</div>
-						</div>
-						<!--Setup Description Section-->
-						<!--<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-list-ul icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary">
-								<xsl:value-of select="eas:i18n('Description')"/>
-							</h2>
-							<div class="content-section">
-								<xsl:value-of select="$modelSubjectDesc"/>
-							</div>
-							<hr/>
-						</div>-->
+  <!-- Modal -->
+  <div id="planModal" class="modal fade" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
 
-						<!--Setup Logical Architecture Model Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa essicon-boxesdiagonal icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Logical Technology Architecture')"/></h2>
-							<div class="verticalSpacer_5px"/>
-							<xsl:call-template name="legend"/>
-							<div class="verticalSpacer_10px"/>
-							<xsl:choose>
-								<xsl:when test="count($techProdRoles) > 0">
-									<div class="simple-scroller" style="overflow: scroll;">
-										<div id="mainPageDiv"/>
-									</div>
-									<xsl:call-template name="modelScript">
-										<xsl:with-param name="targetID">mainPageDiv</xsl:with-param>
-									</xsl:call-template>
-								</xsl:when>
-								<xsl:otherwise>
-									<em>
-										<xsl:value-of select="eas:i18n('No Technology Platform Architecture Defined')"/>
-									</em>
-								</xsl:otherwise>
-							</xsl:choose>
-							<hr/>
-						</div>
-						<!--Setup Closing Tags-->
+        <div class="modal-header">
+          <h2 id="modalTitle" class="modal-title strong text-primary">
+            <i class="fa fa-tasks right-5" aria-hidden="true"></i>
+            <xsl:value-of select="eas:i18n('Create Plan to Switch')"/>
+          </h2>
+        </div>
 
-						<!--Setup Logical Architecture Model Section-->
-						<div class="col-xs-12">
-							<div class="sectionIcon">
-								<i class="fa fa-check-circle icon-section icon-color"/>
-							</div>
-							<h2 class="text-primary"><xsl:value-of select="eas:i18n('Strategy Alignment')"/></h2>
-							<div class="verticalSpacer_5px"/>
-							<xsl:choose>
-								<xsl:when test="count($techProdRoles) > 0">
-									<table class="table table-bordered table-striped tot">
-										<thead>
-											<tr>
-												<th>&#160;</th>
-												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Required Component')"/></th>
-												<th class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Products Used')"/></th>
-												<th class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></th>
-												<th class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Standard Level')"/></th>
-											</tr>
-										</thead>
-										<tbody>
-											<xsl:apply-templates mode="RenderTechProdRoleTableRows" select="$techComps">
-												<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
-											</xsl:apply-templates>
-										</tbody>
-									</table>
-								</xsl:when>
-								<xsl:otherwise>
-									<em>
-										<xsl:value-of select="eas:i18n('No Technology Products Defined')"/>
-									</em>
-								</xsl:otherwise>
-							</xsl:choose>
-							<hr/>
-						</div>
-						<!--Setup Closing Tags-->
-					</div>
-				</div>
+        <div class="modal-body" id="modalDesc">
+          <div class="form-group">
+            <label for="planName"><xsl:value-of select="eas:i18n('Plan Name')"/>:</label>
+            <input class="form-control" id="planName" name="planName" autocomplete="off"/>
+          </div>
+
+          <div class="form-group">
+            <label for="planDescription"><xsl:value-of select="eas:i18n('Plan Description')"/>:</label>
+            <textarea class="form-control" rows="3" id="planDescription" name="planDescription"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="planStart"><xsl:value-of select="eas:i18n('Plan Start Date')"/>:</label>
+            <input class="form-control" id="planStart" name="planStart" type="date"/>
+          </div>
+
+          <div class="form-group">
+            <label for="planEnd"><xsl:value-of select="eas:i18n('Plan End Date')"/>:</label>
+            <input class="form-control" id="planEnd" name="planEnd" type="date"/>
+          </div>
+
+          <div class="form-group">
+            <label for="requestor"><xsl:value-of select="eas:i18n('Requestor')"/>:</label>
+            <input class="form-control" id="requestor" name="requestor" autocomplete="off"/>
+          </div>
+
+          <div class="form-group">
+            <label for="planID"><xsl:value-of select="eas:i18n('ID')"/>:</label>
+            <input class="form-control" id="planID" name="planID" autocomplete="off"/>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger right-10" data-dismiss="modal">
+            <xsl:value-of select="eas:i18n('Cancel')"/>
+          </button>
+          <button class="btn btn-success" id="save">
+            <xsl:value-of select="eas:i18n('Create Plan')"/>
+          </button>
+          <span id="savefeedback" aria-live="polite" role="status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logical Technology Architecture Section -->
+  <div class="col-xs-12">
+    <div class="sectionIcon">
+      <i class="fa essicon-boxesdiagonal icon-section icon-color" aria-hidden="true"></i>
+    </div>
+    <h2 class="text-primary">
+      <xsl:value-of select="eas:i18n('Logical Technology Architecture')"/>
+    </h2>
+    <xsl:call-template name="legend"/>
+    <xsl:choose>
+      <xsl:when test="count($techProdRoles) > 0">
+        <div class="simple-scroller" style="overflow: auto;">
+          <div id="mainPageDiv"></div>
+        </div>
+        <xsl:call-template name="modelScript">
+          <xsl:with-param name="targetID">mainPageDiv</xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <p><em><xsl:value-of select="eas:i18n('No Technology Platform Architecture Defined')"/></em></p>
+      </xsl:otherwise>
+    </xsl:choose>
+    <hr/>
+  </div>
+
+  <!-- Strategy Alignment Section -->
+  <div class="col-xs-12">
+    <div class="sectionIcon">
+      <i class="fa fa-check-circle icon-section icon-color" aria-hidden="true"></i>
+    </div>
+    <h2 class="text-primary">
+      <xsl:value-of select="eas:i18n('Strategy Alignment')"/>
+    </h2>
+
+    <xsl:choose>
+      <xsl:when test="count($techProdRoles) > 0">
+        <table class="table table-bordered table-striped tot">
+          <thead>
+            <tr>
+              <th scope="col">&#160;</th>
+              <th scope="col" class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Required Component')"/></th>
+              <th scope="col" class="cellWidth-30pc"><xsl:value-of select="eas:i18n('Products Used')"/></th>
+              <th scope="col" class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></th>
+              <th scope="col" class="alignCentre cellWidth-20pc"><xsl:value-of select="eas:i18n('Standard Level')"/></th>
+            </tr>
+          </thead>
+          <tbody>
+            <xsl:apply-templates mode="RenderTechProdRoleTableRows" select="$techComps">
+              <xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+            </xsl:apply-templates>
+          </tbody>
+        </table>
+      </xsl:when>
+      <xsl:otherwise>
+        <p><em><xsl:value-of select="eas:i18n('No Technology Products Defined')"/></em></p>
+      </xsl:otherwise>
+    </xsl:choose>
+    <hr/>
+  </div>
+</div>
+
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 				<script>

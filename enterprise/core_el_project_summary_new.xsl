@@ -1534,12 +1534,11 @@ var currencies, defaultCcy, defaultCcySymbol;
 					if(arg1){
 						// Create a new Date object from the ISO date string
 						const date = new Date(arg1);
-						let currentLang="<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>"
-
+						let currentLang="<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>";
+						
 						if (!currentLang || currentLang === '') {
 							currentLang = 'en-GB';
 						}
-					
 						return formatDateforLocale(date, currentLang)
 											
 					}else{
@@ -1750,8 +1749,7 @@ var redrawView=function(){
 				}
 	
 				return promise_loadViewerAPIData(viewAPIImpacts)
-					.then(impact => {
-					 
+					.then(impact => { 
 	
 						let thisp2eplan = p2emap[d.planId];
 						thisp2eplan = thisp2eplan.find((e) => {
@@ -1783,7 +1781,7 @@ var redrawView=function(){
 			// Return the promise from loadImpactWithRetry so it can be tracked
 			return loadImpactWithRetry(d);
 		});
-	
+	 
 		Promise.all(promises)
 			.then(() => {
 				 
@@ -1899,23 +1897,30 @@ var redrawView=function(){
 		
 			return tables;
 		}
-
-		const groupedData = groupByType(impactList);
  
+		const groupedData = groupByType(impactList); 
 		const tables = createTablesForGroups(groupedData);
 
 		function removeDuplicates(arr) {
+			console.log('arr',arr)
 			const seen = new Set();
 			return arr.filter(item => {
-				const duplicate = seen.has(item.description);
-				seen.add(item.description);
-				return !duplicate;
+				// Create a composite key from the three properties.
+				const key = `${item.description}-${item.plan}-${item.name.id}-${item.action.name}`;
+				if (seen.has(key)) {
+				// If the composite key is already seen, skip this item.
+				return false;
+				} else {
+				// Otherwise, add the key to the set and keep the item.
+				seen.add(key);
+				return true;
+				}
 			});
-		}
-
+			}
+ 
 		for (let key in tables) {
 			if (Array.isArray(tables[key])) {
-				tables[key] = removeDuplicates(tables[key]);
+				//tables[key] = removeDuplicates(tables[key]);
 			}
 		}
 
@@ -2162,7 +2167,7 @@ const order = [
 	"Technology_Node",
 	"Information_Representation"
 ];
- 
+   
 const sortedData = order.reduce((acc, key) => {
     if (tables[key]) {
         acc[key] = tables[key];
@@ -2170,7 +2175,6 @@ const sortedData = order.reduce((acc, key) => {
     return acc;
 }, {});
  
-
 $('#impactsBox').html(impactsTemplate(sortedData)) 
 $('#planimpacts').html(listTemplate(pDetail))
 	}).catch(error => {
@@ -2604,8 +2608,8 @@ function initPopoverTrigger()
 		<xsl:variable name="temp" as="map(*)" select="map{
 			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
 			'enumName': string(current()/own_slot_value[slot_reference = 'enumeration_value']/value),
-			'colour': string($styleForThis/own_slot_value[slot_reference = 'element_style_text_colour']/value),
-			'bgColour': string($styleForThis/own_slot_value[slot_reference = 'element_style_colour']/value)
+			'colour': string($styleForThis[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value),
+			'bgColour': string($styleForThis[1]/own_slot_value[slot_reference = 'element_style_colour']/value)
 		}"></xsl:variable>
 		<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
 		<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"></xsl:value-of>

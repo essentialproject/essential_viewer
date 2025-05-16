@@ -6,7 +6,9 @@
 	<xsl:param name="param1"/> 
 	
 	<xsl:variable name="orgs" select="/node()/simple_instance[type='Group_Actor']"/> 
-   	<xsl:variable name="sites" select="/node()/simple_instance[type='Site'][name=$orgs/own_slot_value[slot_reference='actor_based_at_site']/value]"/> 
+	<xsl:key name="orgs" match="/node()/simple_instance[type='Group_Actor']" use="name"/> 
+	<xsl:key name="sites" match="/node()/simple_instance[type='Site']" use="name"/> 
+   	<xsl:variable name="sites" select="key('sites', $orgs/own_slot_value[slot_reference='actor_based_at_site']/value)"/> 
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -34,16 +36,28 @@
 	</xsl:template>
 
 <xsl:template match="node()" mode="orgs">
-	<xsl:variable name="thisparents" select="$orgs[name=current()/own_slot_value[slot_reference='is_member_of_actor']/value]"/>
-	<xsl:variable name="thissites" select="$sites[name=current()/own_slot_value[slot_reference='actor_based_at_site']/value]"/>
+	<xsl:variable name="thisparents" select="key('orgs', current()/own_slot_value[slot_reference='is_member_of_actor']/value)"/>
+	<xsl:variable name="thissites" select="key('sites', current()/own_slot_value[slot_reference='actor_based_at_site']/value)"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-             </xsl:call-template>",
-		"external":"<xsl:value-of select="current()/own_slot_value[slot_reference='external_to_enterprise']/value"/>"<xsl:if test="$thisparents">,
-		"parents":[<xsl:for-each select="$thisparents">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]</xsl:if>
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+        'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')')),
+		'external': string(translate(translate(current()/own_slot_value[slot_reference = 'external_to_enterprise']/value, '}', ')'), '{', ')'))
+        }"/>
+    <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+	<xsl:if test="$thisparents">,
+		"parents":[<xsl:for-each select="$thisparents">{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+			}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]</xsl:if>
 		<xsl:if test="$thissites">,
-		"site":[<xsl:for-each select="$thissites">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]</xsl:if>}<xsl:if test="position()!=last()">,</xsl:if>
+		"site":[<xsl:for-each select="$thissites">{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+			}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]</xsl:if>}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>	
  
 </xsl:stylesheet>

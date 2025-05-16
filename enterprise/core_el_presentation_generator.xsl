@@ -361,7 +361,10 @@
 					// define the global object to hold environment variables
 					// note we have to define this script in-line to make use of the xsl values
 					var presentationEnvironment = {};
-					presentationEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
+					const url = new URL(window.location.href);
+					let basePath = url.origin + url.pathname;
+					basePath = basePath.slice(0, -'/report'.length);
+					presentationEnvironment.baseUrl = basePath;
 					presentationEnvironment.csrfToken = '<xsl:value-of select="$X-CSRF-TOKEN"/>';
 
 

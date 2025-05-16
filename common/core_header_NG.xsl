@@ -171,7 +171,14 @@
 							return $(this).next().html();
 						}
 					});
+
+					// Set the link for the language selection page
+					const languageSelectPage='report?XML=reportXML.xml&amp;XSL=common/core_language_select.xsl&amp;LABEL=Select&#160;a&#160;Language&amp;currentPageLink=';
+					const languageSelectPageLink=languageSelectPage+encodeURIComponent(window.location.href);
+					$('#language_select a').attr('href',languageSelectPageLink);
 					
+					// Set the feedback page URL
+					$('#feedbackPageLink').attr('value',window.location.href);
 				});				
 			</script>
 		<style>
@@ -432,13 +439,7 @@
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown"><xsl:value-of select="$userData//user:firstname"/>&#160;<xsl:value-of select="$userData//user:lastname"/>&#160;<span class="caret"/></a>
 										<ul class="dropdown-menu" role="menu">
 											<li id="language_select">
-												<!--<a href="#">Select Language</a>-->
-												<xsl:variable name="currentPageEncodedURL" select="encode-for-uri($theURLFullPath)"/>
-												<xsl:variable name="languageSelectPageLink">
-													<xsl:text>report?XML=reportXML.xml&amp;XSL=common/core_language_select.xsl&amp;LABEL=Select&#160;a&#160;Language&amp;currentPageLink=</xsl:text>
-													<xsl:value-of select="$currentPageEncodedURL"/>
-												</xsl:variable>
-												<a class="text-primary right-5" href="{$languageSelectPageLink}"><xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="flag"/></a>
+												<a class="text-primary right-5" href="#"><xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="flag"/></a>
 											</li>
 											<li class="divider"/>
 											<li>
@@ -449,17 +450,9 @@
 								</xsl:when>
 								<xsl:otherwise>
 									<li id="language_select">
-										<xsl:variable name="currentPageEncodedURL" select="encode-for-uri($theURLFullPath)"/>
-										<xsl:variable name="languageSelectPageLink">
-											<xsl:text>report?XML=reportXML.xml&amp;XSL=common/core_language_select.xsl&amp;LABEL=Select&#160;a&#160;Language&amp;currentPageLink=</xsl:text>
-											<xsl:value-of select="$currentPageEncodedURL"/>
-										</xsl:variable>
-
-										<a class="text-primary" href="{$languageSelectPageLink}">
+										<a class="text-primary" href="#">
 											<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>
 										</a>
-
-
 									</li>
 								</xsl:otherwise>
 							</xsl:choose>
@@ -568,12 +561,7 @@
 							</xsl:attribute>
 						</input>
 						<!-- Set the hidden field value to the URI of the current page -->
-						<xsl:variable name="encodedURL" select="$theURLFullPath"/>
-						<input type="hidden" name="pageLink">
-							<xsl:attribute name="value">
-								<xsl:value-of select="$encodedURL" disable-output-escaping="yes"/>
-							</xsl:attribute>
-						</input>
+						<input type="hidden" name="pageLink" id="feedbackPageLink"/>
 						<input type="button" value="Email This Form" onclick="emailForm()"/>
 					</form>
 					<div class="verticalSpacer_20px"/>

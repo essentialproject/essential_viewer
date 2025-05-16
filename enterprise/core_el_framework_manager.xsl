@@ -26,7 +26,7 @@
 	<xsl:variable name="physProcAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"/>
 	<xsl:variable name="techProdData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Technology Products']"/>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
-	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart']"></xsl:variable>
+	<xsl:variable name="infoData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Information Mart'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
 	<!-- START VIEW SPECIFIC SETUP VARIABES -->
 	<xsl:variable name="controlFramework" select="/node()/simple_instance[type='Control_Framework']"/>
 	<xsl:variable name="controls" select="/node()/simple_instance[type='Control'][name=$controlFramework/own_slot_value[slot_reference = 'cf_controls']/value]"/>
@@ -57,7 +57,7 @@
 	<xsl:variable name="solutionApplicationElement" select="/node()/simple_instance[supertype=('Application_Logical', 'Application_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_application_elements']/value]"/>
 	<xsl:variable name="solutionTechnologyElement" select="/node()/simple_instance[supertype=('Technology_Logical', 'Technology_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_technology_elements']/value]"/>
 	<xsl:variable name="solutionInformationElement" select="/node()/simple_instance[supertype=('Information_Logical', 'Information_Physical')][name=$csa/own_slot_value[slot_reference = 'control_solution_information_elements']/value]"/>
-	
+	<xsl:key name="eascope" match="/node()/simple_instance[supertype=('EA_Class')]" use="name"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -383,6 +383,7 @@
 						border-radius: 4px;
 						margin: 2px;
 						background-color: #fff;
+						color: #000000;
 						border: 1px solid #000;
 						padding: 2px;
 						}
@@ -413,11 +414,11 @@
 						padding:3px; 
 						}
 					
-					.eas-logo-spinner {​​​​​​​​
+					.eas-logo-spinner {
 						display: flex;
 						justify-content: center;
-					}​​​​​​​​
-					#editor-spinner {​​​​​​​​
+					}
+					#editor-spinner {
 						height: 100vh;
 						width: 100vw;
 						position: fixed;
@@ -426,28 +427,39 @@
 						z-index:999999;
 						background-color: hsla(255,100%,100%,0.75);
 						text-align: center;
-					}​​​​​​​​
-					#editor-spinner-text {​​​​​​​​
+					}
+					#editor-spinner-text {
 						width: 100vw;
 						z-index:999999;
 						text-align: center;
-					}​​​​​​​​
-					.spin-text {​​​​​​​​
+					}
+					.spin-text {
 						font-weight: 700;
 						animation-duration: 1.5s;
 						animation-iteration-count: infinite;
 						animation-name: logo-spinner-text;
 						color: #aaa;
 						float: left;
-					}​​​​​​​​
-					.spin-text2 {​​​​​​​​
+					}
+					.spin-text2 {
 						font-weight: 700;
 						animation-duration: 1.5s;
 						animation-iteration-count: infinite;
 						animation-name: logo-spinner-text2;
 						color: #666;
 						float: left;
-					}​​​​​​​​
+					}
+					.scopeBox{
+						min-height:20px;
+						width:150px;
+						border:1px solid #d3d3d3;
+						border-radius:4px;
+						border-left: 3px solid #2f92cf;
+						padding:3px;
+						display:inline-block;
+						vertical-align: top;
+
+					}
 					
 				</style>
 				<script src='https://d3js.org/d3.v5.min.js'></script>
@@ -574,6 +586,18 @@
 									</div>
 									
 								</div>
+								{{#if this.scope}}
+								<div class="col-xs-12"/>
+								<div class="superflex">
+								<h3 class="text-primary"><i class="fa fa-bar-chart right-10"></i><xsl:value-of select="eas:i18n('Scope')"/></h3>
+									
+										{{#each this.scope}}
+											<div class="scopeBox">
+													{{this.name}}
+											</div>
+										{{/each}}
+								</div>
+								{{/if}}
 								
 								<div class="col-xs-12"/>
 								<div class="superflex">
@@ -1050,9 +1074,11 @@ function removeEditorSpinner(){ $('#editor-spinner').addClass('hidden');
 showEditorSpinner('Loading Data - please wait');
 
  let products=[<xsl:apply-templates select="$controlFramework" mode="controlFramework"/>];
+
  let assessment=[<xsl:apply-templates select="$controlToElement" mode="elementAssessments"/>];
  let solutionAssessment=[<xsl:apply-templates select="$csa" mode="solutionAssessments"/>]
  console.log('assessment',assessment)
+ console.log('products',products)
 focusID=products[0].id;
 
 //console.log('focusID',focusID)
@@ -1768,16 +1794,23 @@ function initPopoverTrigger()
 		</xsl:template>	
 		
 <xsl:template match="node()" mode="controlFramework">
+	<xsl:variable name="inscope" select="key('eascope', current()/own_slot_value[slot_reference='ea_scope']/value)"/>
 	<xsl:variable name="thiscontrols" select="$controls[name=current()/own_slot_value[slot_reference='cf_controls']/value]"/>
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",		
+		{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"scope":[<xsl:for-each select="$inscope">
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/> 
+			}<xsl:if test="position()!=last()">,</xsl:if>
+		</xsl:for-each>],
 		"controls":[<xsl:for-each select="$thiscontrols">
 			    <xsl:variable name="controlSolution" select="key('control_key',current()/name)"/>
 				<xsl:variable name="thiscontrolToElement" select="$controlToElement[own_slot_value[slot_reference = 'control_to_element_control']/value=current()/name]"/>
@@ -1788,14 +1821,12 @@ function initPopoverTrigger()
 				<xsl:variable name="thistechnologyControls" select="$technologyControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 				<xsl:variable name="thisinformationControls" select="$informationControls[name=$thiscontrolToElement/own_slot_value[slot_reference = 'control_to_element_ea_element']/value]"/>
 				
-				{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					</xsl:call-template>",
-				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					</xsl:call-template>",	
+				{<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+					'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"solutions":[<xsl:for-each select="$controlSolution">
 						<xsl:variable name="thissolutionBusinessElement" select="$solutionBusinessElement[name=current()/own_slot_value[slot_reference = 'control_solution_business_elements']/value]"/>
@@ -1804,27 +1835,22 @@ function initPopoverTrigger()
 						<xsl:variable name="thissolutionInformationElement" select="$solutionInformationElement[name=current()/own_slot_value[slot_reference = 'control_solution_information_elements']/value]"/>
 						<xsl:variable name="allThisElements" select="$thissolutionBusinessElement union $thissolutionApplicationElement union $thissolutionTechnologyElement union $thissolutionInformationElement"/>
 						{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-						"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-						</xsl:call-template>",
+						<xsl:variable name="combinedMap" as="map(*)" select="map{
+							'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+										}" />
+						<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+						  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 						"elements":[<xsl:for-each select="$allThisElements">
 							<xsl:variable name="externalRef" select="key('external_key',current()/name)"/> 
 								{ 						
 									"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-								"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-											<xsl:with-param name="theSubjectInstance" select="current()"/>
-											<xsl:with-param name="isRenderAsJSString" select="true()"/>
-										</xsl:call-template>",
-								"urlName":"<xsl:call-template name="RenderMultiLangInstanceName">
-									<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
-									<xsl:with-param name="isRenderAsJSString" select="true()"/>
-								</xsl:call-template>",
-								"url":"<xsl:call-template name="RenderMultiLangInstanceSlot">
-									<xsl:with-param name="theSubjectInstance" select="current()"/>
-									<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
-									<xsl:with-param name="isForJSONAPI" select="false()"/>
-								</xsl:call-template>"		
+									<xsl:variable name="combinedMap" as="map(*)" select="map{
+										'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+										'urlName': string(translate(translate($externalRef/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+										'url': string(translate(translate($externalRef/own_slot_value[slot_reference = ('external_reference_url')]/value,'}',')'),'{',')'))
+									}" />
+									<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+									  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>	
 										}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 								</xsl:for-each>],
@@ -1869,14 +1895,12 @@ function initPopoverTrigger()
 <xsl:variable name="assessor" select="$actors[name=current()/own_slot_value[slot_reference='control_solution_assessor']/value]"/>	
 <xsl:variable name="thisComments" select="$commentary[name=current()/own_slot_value[slot_reference='commentary']/value]"/>	<!-- future req? -->	
 		{"id":"<xsl:value-of select="current()/name"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 		"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_solution_assessor']/value"/>",
 		"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
 		"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
@@ -1897,29 +1921,21 @@ function initPopoverTrigger()
 		<xsl:variable name="thisComments" select="$commentary[name=current()/own_slot_value[slot_reference='assessment_comments']/value]"/>		
 		<xsl:variable name="externalRef" select="key('external_key',current()/name)"/> 
 		{"id":"<xsl:value-of select="current()/name"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",				
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+			'urlName': string(translate(translate($externalRef/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'url': string(translate(translate($externalRef/own_slot_value[slot_reference = ('external_reference_url')]/value,'}',')'),'{',')'))
+								
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		  <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 			
 		"assessorid":"<xsl:value-of select="current()/own_slot_value[slot_reference='control_assessor']/value"/>",
 		"assessor":"<xsl:value-of select="$assessor/own_slot_value[slot_reference='name']/value"/>",	
 		"assessmentDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='assessment_date_iso_8601']/value"/>",
 		"assessmentFinding":"<xsl:value-of select="$assessmentResult/own_slot_value[slot_reference='enumeration_value']/value"/>",
 		"targetRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_target_date_ISO8601']/value"/>",
 		"completedRemediationDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='ca_remediation_completion_date_ISO8601']/value"/>",
-		"urlName":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$externalRef"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
-		"url":"<xsl:call-template name="RenderMultiLangInstanceSlot">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
-			<xsl:with-param name="isForJSONAPI" select="false()"/>
-		</xsl:call-template>", 
 		"plans":[<xsl:for-each select="$thisplans">{"id":"<xsl:value-of select="current()/name"/>",
 		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
 					<xsl:with-param name="theSubjectInstance" select="current()"/>

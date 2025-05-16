@@ -5,7 +5,7 @@
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/> 
  <xsl:variable name="techComponents" select="/node()/simple_instance[type='Technology_Component']"/>
-  <xsl:variable name="techCapabilities" select="/node()/simple_instance[type='Technology_Capability']"/>
+  <xsl:key name="techCapabilities" match="/node()/simple_instance[type='Technology_Capability']" use="name"/>
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -33,11 +33,14 @@
 	</xsl:template>
 
        <xsl:template mode="techComponents" match="node()">
-       <xsl:variable name="techCaps" select="$techCapabilities[name=current()/own_slot_value[slot_reference='realisation_of_technology_capability']/value]"/>
+       <xsl:variable name="techCaps" select="key('techCapabilities', current()/own_slot_value[slot_reference='realisation_of_technology_capability']/value)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-            "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-        </xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')'))
+			}"/>
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
         "caps":[<xsl:for-each select="$techCaps">"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]
 		,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
   </xsl:template> 

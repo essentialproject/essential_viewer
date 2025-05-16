@@ -29,16 +29,23 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"data_object_inherit":[<xsl:apply-templates select="$dataObjects" mode="dataObjectInherit"></xsl:apply-templates>],"version":"614"}
+		{"data_object_inherit":[<xsl:apply-templates select="$dataObjects" mode="dataObjectInherit"></xsl:apply-templates>], "version":"620"}
 	</xsl:template>
 
 	 
   <xsl:template match="node()" mode="dataObjectInherit">
 	 <xsl:variable name="children" select="$dataObjects[name=current()/own_slot_value[slot_reference='data_object_specialisations']/value]"/> 
-    <!-- last two need to be org roles as the slots have been deprecated -->
     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	 "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-	 "children":[<xsl:for-each select="$children">{"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>   
+	<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
+	 "children":[<xsl:for-each select="$children">{<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>   
   </xsl:template>
 	
 </xsl:stylesheet>

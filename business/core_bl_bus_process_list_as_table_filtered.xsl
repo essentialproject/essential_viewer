@@ -467,7 +467,7 @@ showEditorSpinner('Fetching Data...');
 			   busProcArray=responses[0].businessProcesses;
 			   busFamilyArray=responses[1];
  
-			   busFamilyArray.businessProcessFamilies.forEach((d)=>{
+			   busFamilyArray.businessProcessFamilies?.forEach((d)=>{
 					d.containedProcesses.forEach((e)=>{
 						let thispr=busProcArray.filter((bp)=>{
 							return bp.id==e.id;

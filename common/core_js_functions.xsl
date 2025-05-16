@@ -919,10 +919,10 @@
 		const getScoresByCategory = (data, categories) => {
 			return data.map(item => {
 				const categoryScores = {}; 
-				item.perfMeasures.forEach(measure => { 
-					measure.serviceQuals.forEach(qual => {
+				item.perfMeasures?.forEach(measure => { 
+					measure.serviceQuals?.forEach(qual => {
 				
-						qual.categoryName.forEach((category, index) => { 
+						qual.categoryName?.forEach((category, index) => { 
 							const categoryId = qual.categoryId[index];
 							if (categories.length === 0 || categories.includes(categoryId)) {
 								const scoreEntry = {

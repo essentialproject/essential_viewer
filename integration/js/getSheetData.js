@@ -13,7 +13,7 @@ const generateStructure = (data, refMap, idType) => {
 			ID: refValue, // Use idType to determine whether to return item.id or refMap ref
 			Name: item.name,
 			Description: item.description,
-			parent: parent.name,
+			parent: item.rootCapability ? "" : parent.name,
 			positioninparent: item.positioninParent,
 			sequencenumber: item.sequenceNumber,
 			rootCapability: item.rootCapability,
@@ -32,7 +32,7 @@ const generateStructure = (data, refMap, idType) => {
 			ID: refValue, // Use idType or refMap if idType is false
 			Name: item.name,
 			Description: item.description,
-			parent: item.name,
+			parent: item.rootCapability ? "" : item.name,
 			positioninparent: item.positioninParent,
 			sequencenumber: item.sequenceNumber,
 			rootCapability: item.rootCapability,
@@ -266,7 +266,7 @@ const generateOrgSite = (data, refMap, idType) => {
 		if (item.site && item.site.length) {
 		  return item.site
 			.map((site) => ({
-			  organisation: refValue,
+			  organisation: item.name,
 			  site: site.name,
 			}))
 			.filter(Boolean);
@@ -421,7 +421,7 @@ const generateOrgSite = (data, refMap, idType) => {
 		// Process services if they exist
 		if (item.services && item.services.length) {
 		  return item.services.map((service) => ({
-			app: refValue,
+			app: item.name,
 			service: service.name,
 		  }));
 		}
@@ -451,7 +451,7 @@ const generateOrgSite = (data, refMap, idType) => {
 		// Process services if they exist
 		if (item.services && item.services.length) {
 		  return item.services.map((service) => ({
-			capability: refValue,
+			capability: item.name,
 			service: service.name,
 		  }));
 		}
@@ -511,7 +511,7 @@ const generateBp2AppSvc = (data, refMap, idType) => {
       // Process services if they exist
       if (item.services && item.services.length) {
         return item.services.map((service) => ({
-          BusinessProcess: refValue,
+          BusinessProcess: item.name,
           ApplicationService: service.name,
           Criticality: item.criticality,
         }));
@@ -603,7 +603,7 @@ const generatePp2App = (data, refMap, idType) => {
   
 		if (item.actors && item.actors.length) {
 		  return item.actors.map((actor) => ({
-			app: refValue,
+			app: item.name,
 			org: actor.name,
 		  }));
 		}
@@ -698,13 +698,13 @@ const generatePp2App = (data, refMap, idType) => {
   
 		if (item.deployment && item.deployment.length) {
 		  return item.deployment.map((deployment) => ({
-			app: refValue,
+			app: item.name,
 			servers: item.server,
 			env: deployment.name,
 		  }));
 		} else {
 		  return {
-			app: refValue,
+			app: item.name,
 			servers: item.server,
 			env: "",
 		  };
@@ -833,7 +833,7 @@ const generatePp2App = (data, refMap, idType) => {
 			supplier: item.supplier,
 			description: item.description,
 			family: item.family && item.family.length ? item.family[0].name : "",
-			releaseStatus: item.vendor,
+			releaseStatus: item.lifecycle,
 			delivery: item.delivery,
 			usage: usage.name,
 			compliance: usage.compliance,
@@ -846,7 +846,7 @@ const generatePp2App = (data, refMap, idType) => {
 			supplier: item.supplier,
 			description: item.description,
 			family: item.family && item.family.length ? item.family[0].name : "",
-			releaseStatus: item.vendor,
+			releaseStatus: item.lifecycle,
 			delivery: item.delivery,
 			usage: "",
 			compliance: "",
@@ -930,7 +930,7 @@ const generatePp2App = (data, refMap, idType) => {
   
 		if (item.org && item.org.length) {
 		  return item.org.map((org) => ({
-			products: refValue,
+			products: item.name,
 			orgs: org.name,
 		  }));
 		}
@@ -1060,7 +1060,7 @@ const generatePp2App = (data, refMap, idType) => {
   
 		if (item.children && item.children.length) {
 		  return item.children.map((child) => ({
-			parent: refValue,
+			parent: item.name,
 			child: child.name,
 		  }));
 		}
@@ -2628,9 +2628,7 @@ $("document").ready(function () {
   });
 
   $("#techProductsCheck").on("change", function () {
-    return promise_loadViewerAPIData(viewAPIDataTechProd).then(function (
-      response1
-    ) {
+    return promise_loadViewerAPIData(viewAPIDataTechProd).then(function (response1) {
         //console.log('response1',response1)
         $("#tprods").css("border-left", "25px solid #0aa20a");
         $("#techSuppi").css("color", "red");
@@ -3420,10 +3418,10 @@ $("document").ready(function () {
           //console.log('jsonData',jsonData)
           dataRows.sheets.push({
             id: "apptotechCheck",
-            name: "Application Technology Architecture",
+            name: "App to Tech Products",
             description:
               "Defines the technology architecture supporting applications in terms of Technology Products, the components that they implement and the dependencies between them",
-            notes: "One of these per row, not both in one row",
+            notes: "One of these per row, not both in one row.  Use The Import Utility to import these",
             headerRow: 7,
             headers: [
               { name: "", width: 20 },
@@ -3455,28 +3453,28 @@ $("document").ready(function () {
                 values: "C",
                 start: 8,
                 end: 2011,
-                worksheet: "Technology Product",
+                worksheet: "Technology Products",
               },
               {
                 column: "E",
                 values: "C",
                 start: 8,
                 end: 2011,
-                worksheet: "Technology Component",
+                worksheet: "Technology Components",
               },
               {
                 column: "F",
                 values: "C",
                 start: 8,
                 end: 2011,
-                worksheet: "Technology Product",
+                worksheet: "Technology Products",
               },
               {
                 column: "G",
                 values: "C",
                 start: 8,
                 end: 2011,
-                worksheet: "Technology Component",
+                worksheet: "Technology Components",
               },
             ],
           });

@@ -25,6 +25,7 @@
 	-->
 	<!-- 03.09.2019 JP  Created	 template-->
 	<xsl:key name="busCapskey" match="/node()/simple_instance[type = 'Business_Capability']" use="type"/>
+	<xsl:key name="allElementskey" match="/node()/simple_instance[type = ('Business_Process', 'Application_Provider','Composite_Application_Provider','Technology_Product')]" use="name"/>
 	<xsl:variable name="busCaps" select="key('busCapskey','Business_Capability')"/>
 	<xsl:key name="busCapsContainedkey" match="/node()/simple_instance[type = 'Business_Capability']" use="own_slot_value[slot_reference = 'contained_business_capabilities']/value"/>
 	<xsl:key name="busCapsProcesskey" match="/node()/simple_instance[type = 'Business_Capability']" use="own_slot_value[slot_reference = 'realised_by_business_processes']/value"/>
@@ -32,6 +33,8 @@
 	<xsl:variable name="rootBusCap" select="$busCaps[name = $rootBusCaps/own_slot_value[slot_reference = 'report_constant_ea_elements']/value]"/>
 	<xsl:key name="suppBusCapskey" match="$busCaps" use="own_slot_value[slot_reference = 'supports_business_capabilities']/value"/>
 	<xsl:variable name="rootLevelBusCaps" select="key('suppBusCapskey', $rootBusCap/name)"/>
+	<xsl:variable name="contractActor" select="/node()/simple_instance[type='Group_Business_Role'][own_slot_value[slot_reference = 'name']/value='Contract Organisation Owner']"/>
+	
 	<!--
 	<xsl:variable name="rootLevelBusCaps" select="$busCaps[name = $rootBusCap/own_slot_value[slot_reference = 'contained_business_capabilities']/value]"/>
 	-->
@@ -79,9 +82,13 @@
 	<xsl:key name="allBusProcsKey" match="$allBusProcs" use="own_slot_value[slot_reference = 'implemented_by_physical_business_processes']/value"/> 
 	<xsl:variable name="allOrg" select="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION'][name = $allPhysProcsBase/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
 	<xsl:key name="allOrgKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference = 'performs_physical_process']/value"/>
+	<xsl:key name="allOrgKeyname" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="name"/>
+	<xsl:key name="allA2RKey" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="name"/>
 	<xsl:variable name="allGAs" select="/node()/simple_instance[type = 'Group_Actor']"/>
+	<xsl:key name="allGroupActors" match="/node()/simple_instance[type = 'Group_Actor']" use="name"/>
 	<xsl:key name="directOrgKey" match="$allGAs" use="own_slot_value[slot_reference = 'performs_physical_process']/value"/>
 	<xsl:variable name="directOrg" select="$allGAs[name = $allPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/> 
+	<xsl:key name="directOrgKeyName" match="$allGAs" use="name"/> 
 	<xsl:key name="allActorsKey" match="$allGAs" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 
 	<xsl:variable name="allObjectives" select="/node()/simple_instance[type = 'Business_Objective']"/>
@@ -118,68 +125,107 @@
 	<xsl:variable name="allLicenses" select="/node()/simple_instance[name = $allContractToElementRels/own_slot_value[slot_reference = 'ccr_license']/value]"/>
 	<xsl:variable name="allRenewalModels" select="/node()/simple_instance[type='Contract_Renewal_Model']"/>
 	<xsl:variable name="allContractTypes" select="/node()/simple_instance[type='Contract_Type']"/>
-	
-	<xsl:variable name="supplierRelStatii" select="/node()/simple_instance[name = $supplier/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/>
+	<xsl:variable name="allUnitTypes" select="/node()/simple_instance[type='License_Model']"/>
+	<xsl:key name="allContractsTypeKey" match="/node()/simple_instance[type = 'Contract']" use="type"/>
+	<xsl:key name="allContractsCompTypeKey" match="/node()/simple_instance[type = 'CONTRACT_COMPONENT_RELATION']" use="type"/>
+	<xsl:variable name="supplierRelStatii" select="/node()/simple_instance[type = 'Supplier_Relationship_Status']"/>
 	<xsl:key name="allExternalLink_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/>
 	<xsl:variable name="currencyRC" select="/node()/simple_instance[type='Report_Constant'][own_slot_value[slot_reference='name']/value='Default Currency']"/>
 	<xsl:variable name="allCurrencies" select="/node()/simple_instance[type='Currency']"/>
 	<xsl:variable name="currency" select="$allCurrencies[name=$currencyRC/own_slot_value[slot_reference='report_constant_ea_elements']/value]"/>
+	<xsl:key name="nameLookups" match="/node()/simple_instance[type = ('Business_Process','Composite_Application_Provider','Application_Provider', 'Technology_Product', 'Business_Capability', 'Supplier')]" use="name"/>
+	<!--$allTechProds union $supplier union $allOrg union $directOrg union $allPlannedActions union $licenseType union $allLicenses union $busCaps-->
 	<xsl:template match="knowledge_base">
 		{
 			"suppliers": [<xsl:apply-templates select="$supplier" mode="supplier"/>],
-			"capabilities":[<xsl:apply-templates select="$rootLevelBusCaps" mode="busCaps"/>],
+			"capabilities":[<xsl:apply-templates select="$rootLevelBusCaps" mode="busCaps"/>], 
+			"contracts":[<xsl:apply-templates select="key('allContractsTypeKey','Contract')" mode="RenderContractJSON"/>],
+			"contract_components":[<xsl:apply-templates select="key('allContractsCompTypeKey','CONTRACT_COMPONENT_RELATION')" mode="contractComp"/>],
+			"enums":[<xsl:apply-templates select="$allRenewalModels union $allContractTypes union $allUnitTypes union $allCurrencies union $supplierRelStatii" mode="enums"/>],
 			"plans":[<xsl:apply-templates select="$allStratPlans" mode="stratPlans"/>]      
 		}
 	</xsl:template>
-
+	
 		<xsl:template match="node()" mode="getProcesses">
 			<xsl:variable name="this" select="current()" />
 			<xsl:variable name="thisPhysProcs" select="key('allPhysProcsKey',$this/name)"/>
 			<xsl:variable name="thisOrgs"
-				select="$allOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]" />
+				select="key('allOrgKeyname', $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)" />
 			<xsl:variable name="thisdirectOrg"
-				select="$directOrg[name = $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]" />
+				select="key('directOrgKeyName', $thisPhysProcs/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)" />
 			<xsl:variable name="thisviaActors" select="key('allActorsKey',$thisOrgs/name)" />
 			<xsl:variable name="thisIsActors" select="$thisviaActors | $thisdirectOrg" /> {"id":"
-			<xsl:value-of select="eas:getSafeJSString(current()/name)" />","name":"<xsl:call-template
-				name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()" />
-				<xsl:with-param name="isForJSONAPI" select="true()" />
-			</xsl:call-template>", 
+			<xsl:value-of select="eas:getSafeJSString(current()/name)" />","repoId":"<xsl:value-of select="current()/name" />",<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>", 
 			"className":"<xsl:value-of select="current()/type"/>",
 			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 			"teams":[<xsl:apply-templates select="$thisIsActors" mode="Teams" />]}, </xsl:template>
-		<xsl:template match="node()" mode="appList"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",			"name":"<xsl:call-template
-		name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="current()" />
-		<xsl:with-param name="isForJSONAPI" select="true()" />
-		</xsl:call-template>","className":"<xsl:value-of select="current()/type"/>"}, </xsl:template>
-		<xsl:template match="node()" mode="Teams"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", "teams":[]}, </xsl:template>
+		<xsl:template match="node()" mode="appList"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",		
+		"repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"className":"<xsl:value-of select="current()/type"/>"}, </xsl:template>
+		<xsl:template match="node()" mode="Teams"> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "teams":[]}, </xsl:template>
 		<xsl:template match="node()" mode="busCaps">
 			<xsl:variable name="this" select="current()"/>
-			<xsl:variable name="subCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","className":"<xsl:value-of select="current()/type"/>","subCaps":[ <xsl:apply-templates select="$subCaps" mode="subCaps"/>],
+			<xsl:variable name="subCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"className":"<xsl:value-of select="current()/type"/>","subCaps":[ <xsl:apply-templates select="$subCaps" mode="subCaps"/>],
 			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if> </xsl:template>
 		<xsl:template match="node()" mode="subCaps">
 			<xsl:variable name="this" select="current()"/>
-			<xsl:variable name="relatedCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","className":"<xsl:value-of select="current()/type"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","relatedCaps":[<xsl:apply-templates select="$relatedCaps" mode="relatedCaps"/>{}],
+			<xsl:variable name="relatedCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","className":"<xsl:value-of select="current()/type"/>","repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"relatedCaps":[<xsl:apply-templates select="$relatedCaps" mode="relatedCaps"/>{}],
 			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 		<xsl:template match="node()" mode="relatedCaps">
 			<xsl:param name="num" select="1"/>
 			<xsl:variable name="this" select="current()"/>
-			<xsl:variable name="relatedCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","className":"<xsl:value-of select="current()/type"/>","num":<xsl:value-of select="$num"/>}<xsl:if test="position()!=last()">,</xsl:if><xsl:if test="$num &lt; 10"><xsl:choose><xsl:when test="position()!=last()"></xsl:when><xsl:otherwise>,</xsl:otherwise></xsl:choose><xsl:apply-templates select="$relatedCaps" mode="relatedCaps"><xsl:with-param name="num" select="$num + 1"/></xsl:apply-templates></xsl:if>
+			<xsl:variable name="relatedCaps" select="key('suppBusCapskey', current()/name)"/> {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"className":"<xsl:value-of select="current()/type"/>","last":"<xsl:value-of select="last()"/>", "pos":"<xsl:value-of select="position()"/>" ,"num":<xsl:value-of select="$num"/>}<xsl:if test="(position() = last())"><xsl:if test="$num=10">,</xsl:if></xsl:if><xsl:if test="position()!=last()">,</xsl:if><xsl:if test="$num &lt; 10"><xsl:choose><xsl:when test="position()!=last()"></xsl:when><xsl:otherwise>,</xsl:otherwise></xsl:choose><xsl:apply-templates select="$relatedCaps" mode="relatedCaps"><xsl:with-param name="num" select="$num + 1"/></xsl:apply-templates></xsl:if>
 		</xsl:template>
 	
 		<xsl:template match="node()" mode="supplier">
 			<xsl:variable name="this" select="current()"/>
+			<xsl:variable name="supplierRelStatus" select="$supplierRelStatii[name = current()/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/> 
 			<!--<xsl:variable name="thisTechProds" select="$allTechProds[own_slot_value[slot_reference = 'supplier_technology_product']/value = $this/name]"/>-->
 			<xsl:variable name="thisTechProds" select="key('allTechProdsKey',$this/name)"/>
 	<!--		<xsl:variable name="thisApps" select="$allApps[own_slot_value[slot_reference = 'ap_supplier']/value = $this/name]"/> --> 
 			<xsl:variable name="thisApps" select="key('appSupplierKey', $this/name)"/>
 			<xsl:variable name="thisContracts" select="key('allContractsKey', $this/name)"/>
 			
-			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>", "technologies":[<xsl:apply-templates select="$thisTechProds" mode="supplierTech"/>], "apps":[<xsl:apply-templates select="$thisApps" mode="supplierApp"/>],
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+				'supplier_url': string(translate(translate(current()/own_slot_value[slot_reference = ('supplier_url')]/value,'}',')'),'{',')')),
+				'supplierRelStatus': string(translate(translate($supplierRelStatus/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "technologies":[<xsl:apply-templates select="$thisTechProds" mode="supplierTech"/>], "apps":[<xsl:apply-templates select="$thisApps" mode="supplierApp"/>],
 			"visId": ["<xsl:value-of select="current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value"/>"],
 <!-- system_content_lifecycle_status -->
 			"licences":[<xsl:apply-templates select="$thisApps" mode="productList"/>],
@@ -189,11 +235,12 @@
 			}<xsl:if test="position()!=last()">,</xsl:if> </xsl:template>
 	
 	
-		<xsl:template match="node()" mode="supplierTech"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template
-		name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="$this" />
-		<xsl:with-param name="isForJSONAPI" select="true()" />
-	</xsl:call-template>", "className":"<xsl:value-of select="current()/type"/>", "impacted":[<xsl:apply-templates select="$this" mode="TechCaps"/>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		<xsl:template match="node()" mode="supplierTech"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "className":"<xsl:value-of select="current()/type"/>", "impacted":[<xsl:apply-templates select="$this" mode="TechCaps"/>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 }<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 	
 		<xsl:template match="node()" mode="TechCaps"><xsl:variable name="this" select="current()"/>
@@ -225,17 +272,15 @@
 	 		<xsl:variable name="thisBusProcs" select="key('allBusProcsKey',$thisPhysProcs/name)"/>
 			<xsl:variable name="thisBusCaps" select="key('busCapsProcesskey',$thisBusProcs/name)" />
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
-			"simplename":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$this" />
-				<xsl:with-param name="isForJSONAPI" select="true()" />
-			</xsl:call-template>",
 			"className":"<xsl:value-of select="current()/type"/>",
 			<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
-			"name":"<xsl:call-template
-			name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$this" />
-			<xsl:with-param name="isForJSONAPI" select="true()" />
-		</xsl:call-template>",
+			"repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'simplename': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"license":"tbc",
 			"capAscendents":[<xsl:for-each select="$thisBusCaps"><xsl:apply-templates select="current()" mode="parentBusCaps"></xsl:apply-templates></xsl:for-each>""],
 			"capabilitiesImpacted":[<xsl:apply-templates select="$thisBusCaps" mode="capImpact">
@@ -263,40 +308,47 @@
 				select="$allPlannedElements[name = $this/own_slot_value[slot_reference = 'strategic_plan_for_elements']/value]" />-->
 			<xsl:variable name="thisPlannedElements" select="key('allPlannedElementsKey', $this/name)"/>
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
-			"name":"<xsl:call-template
-				name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$this" />
-				<xsl:with-param name="isForJSONAPI" select="true()" />
-			</xsl:call-template>",
+			"repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"fromDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value" />",
 			"endDate":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value" />",
 			"impacts":[<xsl:apply-templates select="$thisPlannedElements" mode="planImpact" />], 
 			"objectives":[<xsl:apply-templates select="$thisStratPlans" mode="stdImpact" />] }<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:template>
-	
+		
 		<xsl:template match="node()" mode="planImpact">
 			<xsl:variable name="this" select="current()" />
 			<xsl:variable name="thisPlannedActions"
 				select="$allPlannedActions[name = $this/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]" />
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)" />",
 			"impacted_element":"<xsl:value-of select="$this/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value" />",
-			"planned_action":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisPlannedActions" />
-				<xsl:with-param name="isForJSONAPI" select="true()" />
-			</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
+			"repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'planned_action': string(translate(translate($thisPlannedActions/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:template>
 	
-		<xsl:template match="node()" mode="stdImpact"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","simplename":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","name":"<xsl:call-template
-		name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="$this" />
-		<xsl:with-param name="isForJSONAPI" select="true()" />
-	</xsl:call-template>","className":"<xsl:value-of select="current()/type"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
+		<xsl:template match="node()" mode="stdImpact"><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"repoId":"<xsl:value-of select="current()/name" />",		
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'simplename': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'name': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"className":"<xsl:value-of select="current()/type"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 	
-		<xsl:template match="node()" mode="capImpact"><xsl:param name="thisBusProcs"/><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template
-		name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="current()" />
-		<xsl:with-param name="isForJSONAPI" select="true()" />
-	</xsl:call-template>",
+		<xsl:template match="node()" mode="capImpact"><xsl:param name="thisBusProcs"/><xsl:variable name="this" select="current()"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 	"className":"<xsl:value-of select="current()/type"/>",
 	"processes":[<xsl:apply-templates select="$thisBusProcs" mode="stdImpact"/>]}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 	
@@ -315,22 +367,23 @@
 					<xsl:variable name="period" select="$thisLicenses/own_slot_value[slot_reference = 'license_months_to_renewal']/value"/>
 					<xsl:variable name="endYear"><xsl:choose><xsl:when test="$thisLicenses"><xsl:value-of select="functx:add-months(xs:date(substring($thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value, 1, 10)), $period)"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable> 
 						{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-						  "productSimple":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-						  "product": "<xsl:call-template
-						  name="RenderMultiLangInstanceName">
-						  <xsl:with-param name="theSubjectInstance" select="$this" />
-						  <xsl:with-param name="isForJSONAPI" select="true()" />
-					  </xsl:call-template>",
+						"repoId":"<xsl:value-of select="current()/name" />",		
+						<xsl:variable name="combinedMap" as="map(*)" select="map{
+							'productSimple': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+							'product': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+							'Contract': string(translate(translate($thisContracts/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+							'Licence': string(translate(translate($thisLicenses/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+							'licenseOnContract': string(translate(translate($thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value,'}',')'),'{',')'))
+						}" />
+						<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+						<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 					  <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 						"oid":"<xsl:value-of select="$this/name"/>",
-						"Contract":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisContracts"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-						"Licence":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisLicenses"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
 						"LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>",
-						"licenseOnContract":"<xsl:value-of select="$thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value"/>", 
 						"dateISO":"<xsl:value-of select="$endYear"/>",
 						"status":"contract"
 					}<xsl:if test="position()!=last()">,</xsl:if>
-				 
+					
 		</xsl:template>
 		<xsl:template match="node()" mode="techproductList">
 			<xsl:param name="appCount"/>
@@ -348,41 +401,46 @@
 								<xsl:variable name="period" select="$thisLicenses/own_slot_value[slot_reference = 'license_months_to_renewal']/value"/>
 								<xsl:variable name="endYear"><xsl:choose><xsl:when test="$thisLicenses"><xsl:value-of select="functx:add-months(xs:date(substring($thisLicenses/own_slot_value[slot_reference = 'license_start_date']/value, 1, 10)), $period)"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable> 
 									  {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-									  "productSimple":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+									  "repoId":"<xsl:value-of select="current()/name" />",		
+									<xsl:variable name="combinedMap" as="map(*)" select="map{
+										'productSimple': string(translate(translate($this/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+										'Contract': string(translate(translate($thisContracts/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+										'Licence': string(translate(translate($thisLicenses/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+										'licenseOnContract': string(translate(translate($thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value,'}',')'),'{',')'))
+									}" />
+									<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+									<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 									  "product": "<xsl:call-template name="RenderInstanceLinkForJS">
 										<xsl:with-param name="theSubjectInstance" select="current()"/>
 										<xsl:with-param name="anchorClass">text-black</xsl:with-param>
 									</xsl:call-template>",
 									<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>,
 									"oid":"<xsl:value-of select="$this/name"/>",
-									"Contract":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisContracts"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-									"Licence":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisLicenses"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-									"LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>",
-									"licenseOnContract":"<xsl:value-of select="$thisActualContract/own_slot_value[slot_reference = 'contract_number_of_units']/value"/>", 
+									"LicenceType":"<xsl:value-of select="$licenseType[name = $thisLicenses/own_slot_value[slot_reference = 'license_type']/value]/own_slot_value[slot_reference = 'name']/value"/>", 
 									"dateISO":"<xsl:value-of select="$endYear"/>",
 									"status":"contract"}  
 		</xsl:template>
 	<xsl:template match="node()" mode="contractList">
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"
+		"repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 	}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
 	<xsl:template match="node()" mode="RenderContractJSON">
 		<xsl:variable name="this" select="current()"/>
-		
-		<xsl:variable name="thisDesc">
-			<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="theSubjectInstance" select="$this"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>
-		</xsl:variable>
+	 
 		<!--
 		<xsl:variable name="thisDocLinks" select="$allContractLinks[name = $this/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
 		<xsl:variable name="thisContractRels" select="$allContractToElementRels[own_slot_value[slot_reference = 'contract_component_from_contract']/value = $this/name]"/>
 		-->
 		<xsl:variable name="thisDocLinks" select="key('allExternalLink_key',$this/name)"/>
 		
-		<xsl:variable name="thisSupplier" select="$supplier[name = $this/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
+		<xsl:variable name="thisSupplier" select="key('nameLookups',  $this/own_slot_value[slot_reference = 'contract_supplier']/value)"/>
 		
 		<xsl:variable name="thisContractRels" select="key('ccrfromContract_Key',$this/name)"/>
 	 
@@ -410,19 +468,33 @@
 			</xsl:choose>
 		</xsl:variable>
 		
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
-		<xsl:variable name="thisApps" select="$allApplications[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
-		<xsl:variable name="thisTechProds" select="$allTechProds[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
+		<xsl:variable name="thisBusProcs" select="key('nameLookups', $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
+		<xsl:variable name="thisApps" select="key('nameLookups',  $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
+		<xsl:variable name="thisTechProds" select="key('nameLookups',  $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
 
-		<xsl:variable name="thisApps" select="$allApplications[name = $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
-		
+		<xsl:variable name="thisApps" select="key('nameLookups',  $thisContractRels/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
+	<xsl:variable name="thisa2r" select="key('allA2RKey', current()/own_slot_value[slot_reference = 'stakeholders']/value)"/>
+	<xsl:variable name="thisa2rFilter" select="$thisa2r[own_slot_value[slot_reference = 'act_to_role_to_role']/value=$contractActor/name]"/>
+	<xsl:variable name="thisa2rActor" select="key('allActorsKey', $thisa2rFilter/name)"/>
+	<xsl:variable name="thisContractType" select="$allContractTypes[name=current()/own_slot_value[slot_reference = ('contract_type')]/value]"/>
+	<xsl:variable name="thisActor" select="key('allGroupActors', current()/own_slot_value[slot_reference = ('contract_customer')]/value)"/>
+	
 		{
-		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>"
-		,"description": "<xsl:value-of select="$thisDesc"/>"
-		,"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$this"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>"
+		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"repoId":"<xsl:value-of select="current()/name" />",		
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'supplier_name': string(translate(translate($thisSupplier/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+			'signature_date': string(translate(translate(current()/own_slot_value[slot_reference = ('contract_signature_date_ISO8601')]/value,'}',')'),'{',')')),
+			'contract_end_date': string(translate(translate(current()/own_slot_value[slot_reference = ('contract_end_date_ISO8601')]/value,'}',')'),'{',')')),
+			'contract_customer': string(translate(translate($thisActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'contract_type': string(translate(translate($thisContractType/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'contract_ref': string(translate(translate(current()/own_slot_value[slot_reference = ('contract_ref')]/value,'}',')'),'{',')')),
+			'owner': string(translate(translate($thisa2rActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
 		,"supplierId": "<xsl:value-of select="eas:getSafeJSString($thisSupplier/name)"/>"
 		,"relStatusId": "<xsl:value-of select="eas:getSafeJSString($supplierRelStatus/name)"/>"
 		,"startDate": <xsl:choose><xsl:when test="string-length($contractSigDate) > 0">"<xsl:value-of select="$contractSigDate"/>"</xsl:when><xsl:otherwise>null</xsl:otherwise></xsl:choose>
@@ -439,11 +511,11 @@
 				<xsl:variable name="thisUrl" select="$thisLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 				{
 				"label": "<xsl:value-of select="$thisLinkName"/>",
-				"url": "<xsl:call-template name="RenderMultiLangInstanceSlot">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
-					<xsl:with-param name="isForJSONAPI" select="true()"/>
-				</xsl:call-template>"
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'url': string(translate(translate(current()/own_slot_value[slot_reference = ('external_reference_url')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
 				}<xsl:if test="not(position() = last())">,
 				</xsl:if>
 			</xsl:for-each>
@@ -463,7 +535,7 @@
 		<xsl:variable name="currentContract" select="key('allContractsforKey',$this/name)"/>
 		<xsl:variable name="currentContractLinks" select="key('allExternalLink_key',$this/name)"/>
 	
-		<xsl:variable name="currentContractSupplier" select="$supplier[name = $currentContract/own_slot_value[slot_reference = 'contract_supplier']/value]"/>
+		<xsl:variable name="currentContractSupplier" select="key('nameLookups',  $currentContract/own_slot_value[slot_reference = 'contract_supplier']/value)"/>
 		<xsl:variable name="supplierRelStatus" select="$supplierRelStatii[name = $currentContractSupplier/own_slot_value[slot_reference = 'supplier_relationship_status']/value]"/>
 		
 		<xsl:variable name="currentLicense" select="$allLicenses[name = $this/own_slot_value[slot_reference = 'ccr_license']/value]"/>
@@ -536,12 +608,13 @@
 			</xsl:choose>
 		</xsl:variable>-->
 		
-		<xsl:variable name="thisBusProcs" select="$allBusProcs[name = $this/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
-		<xsl:variable name="thisApps" select="$allApplications[name = $this/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>
-		<xsl:variable name="thisTechProds" select="$allTechProds[name = $this/own_slot_value[slot_reference = 'contract_component_to_element']/value]"/>   
+		<xsl:variable name="thisBusProcs" select="key('nameLookups',  $this/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
+		<xsl:variable name="thisApps" select="key('nameLookups',  $this/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>
+		<xsl:variable name="thisTechProds" select="key('nameLookups', $this/own_slot_value[slot_reference = 'contract_component_to_element']/value)"/>   
 		  
 		{
-		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>"
+		"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
+		"repoid": "<xsl:value-of select="$this/name"/>"
 		,"contractId": "<xsl:value-of select="eas:getSafeJSString($currentContract/name)"/>"
 		,"docLinks": <xsl:choose><xsl:when test="count($currentContractLinks) > 0"> [
 			<xsl:for-each select="$currentContractLinks">
@@ -550,11 +623,11 @@
 				<xsl:variable name="thisUrl" select="$thisLink/own_slot_value[slot_reference = 'external_reference_url']/value"/>
 				{
 				"label": "<xsl:value-of select="$thisLinkName"/>",
-				"url": "<xsl:call-template name="RenderMultiLangInstanceSlot">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="displaySlot" select="'external_reference_url'"/>
-					<xsl:with-param name="isForJSONAPI" select="true()"/>
-				</xsl:call-template>"
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'url': string(translate(translate(current()/own_slot_value[slot_reference = ('external_reference_url')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
 				}<xsl:if test="not(position() = last())">,
 				</xsl:if>
 			</xsl:for-each>
@@ -576,4 +649,78 @@
 		}<xsl:if test="not(position() = last())">,
 		</xsl:if>
 	</xsl:template>
+	<xsl:template match="node()" mode="contract">
+		{"id": "<xsl:value-of select="current()/name"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+	<xsl:template match="node()" mode="contractComp">
+	<xsl:variable name="uom" select=" $allUnitTypes[name=current()/own_slot_value[slot_reference = ('ccr_contract_unit_of_measure')]/value]"/>
+	<xsl:variable name="thisccy" select=" $allCurrencies[name=current()/own_slot_value[slot_reference = ('ccr_currency')]/value]"/>
+	<xsl:variable name="thisren" select="$allRenewalModels[name=current()/own_slot_value[slot_reference = ('ccr_renewal_model')]/value]"/>
+	<xsl:variable name="thiscont" select=" $allContracts[name=current()/own_slot_value[slot_reference = ('contract_component_from_contract')]/value]"/>
+		{"id": "<xsl:value-of select="current()/name"/>",
+		"debug":"<xsl:value-of select="current()/own_slot_value[slot_reference = ('ccr_currency')]/value"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'contract_component_from_contract': string(translate(translate($thiscont/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'ccr_renewal_model': string(translate(translate($thisren/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'ccr_contract_unit_of_measure': string(translate(translate($uom/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'ccr_contracted_units': string(translate(translate(current()/own_slot_value[slot_reference = ('ccr_contracted_units')]/value,'}',')'),'{',')')),
+			'ccr_total_annual_cost': string(translate(translate(current()/own_slot_value[slot_reference = ('ccr_total_annual_cost')]/value,'}',')'),'{',')')),
+			'ccr_currency': string(translate(translate($thisccy/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'ccr_renewal_notice_days': string(translate(translate(current()/own_slot_value[slot_reference = ('ccr_renewal_notice_days')]/value,'}',')'),'{',')')),
+			'ccr_start_date_ISO8601': string(translate(translate(current()/own_slot_value[slot_reference = ('ccr_start_date_ISO8601')]/value,'}',')'),'{',')')),
+			'ccr_end_date_ISO8601': string(translate(translate(current()/own_slot_value[slot_reference = ('ccr_end_date_ISO8601')]/value,'}',')'),'{',')')) 
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+		"busElements":[<xsl:for-each select="key('allElementskey', current()/own_slot_value[slot_reference = ('contract_component_to_element')]/value)[type='Business_Process']">	{"id": "<xsl:value-of select="current()/name"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if>
+			</xsl:for-each>],
+		"appElements":[<xsl:for-each select="key('allElementskey', current()/own_slot_value[slot_reference = ('contract_component_to_element')]/value)[type=('Application_Provider', 'Composite_Application_Provider')]">	{"id": "<xsl:value-of select="current()/name"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if>
+			</xsl:for-each>],
+		"techElements":[<xsl:for-each select="key('allElementskey', current()/own_slot_value[slot_reference = ('contract_component_to_element')]/value)[type='Technology_Product']">	{"id": "<xsl:value-of select="current()/name"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if>
+			</xsl:for-each>], 
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
+	<xsl:template match="node()" mode="enums">
+ 	<xsl:variable name="backgroundColour" select="eas:get_element_style_colour(current())"/> 
+	<xsl:variable name="textColour" select="eas:get_element_style_textcolour(current())"/> 
+	<xsl:variable name="styleClass" select="eas:get_element_style_class(current())"/>  
+		{"id": "<xsl:value-of select="current()/name"/>",
+		"type": "<xsl:value-of select="current()/type"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+			'sequence_no': string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_sequence_number')]/value,'}',')'),'{',')')),
+			'backgroundColour': string(translate(translate($backgroundColour,'}',')'),'{',')')),
+			'textColour': string(translate(translate($textColour,'}',')'),'{',')')),
+			'styleClass': string(translate(translate($styleClass,'}',')'),'{',')')),
+			'label':string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')')),
+			'enumeration_score':string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_score')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+		<xsl:if test="current()/own_slot_value[slot_reference = ('csrs_contract_review_notice_days')]/value">,"notice_period":<xsl:value-of select="current()/own_slot_value[slot_reference = ('csrs_contract_review_notice_days')]/value"/></xsl:if>}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:template>
 </xsl:stylesheet>
+<!--,
+			'background_colour': string(translate(translate($backgroundColour,'}',')'),'{',')')),
+			'text_colour': string(translate(translate($textColour,'}',')'),'{',')')),
+			'enum_value': string(translate(translate($styleClass,'}',')'),'{',')'))-->

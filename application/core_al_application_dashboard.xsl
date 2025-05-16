@@ -1180,16 +1180,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 let allPhys=responses[3] 
                 allApps.forEach((d)=>{
                     let thisProc=[];
-                    
-                    d.physP.forEach((e)=>{
-                        let thisMatch = allPhys.process_to_apps.find((f)=>{
-                            return f.id ==e;
-                        })
-                        thisProc.push(thisMatch);
-                    });
-                    let uniqueProcs = thisProc.filter((elem, index, self) => self.findIndex( (t) => {return (t.processName === elem.processName)}) === index) 
-                    d['processes']=uniqueProcs;
- 
+
+					const processMap = new Map(allPhys.process_to_apps.map(p => [p.id, p]));
+					d.physP.forEach(e => {
+					const thisMatch = processMap.get(e);
+					if (thisMatch) {
+						thisProc.push(thisMatch);
+					}
+					});
+
+					// Use a Set to filter unique processes by processName
+					const seenProcessNames = new Set();
+					const uniqueProcs = [];
+					for (const proc of thisProc) {
+					if (!seenProcessNames.has(proc.processName)) {
+						seenProcessNames.add(proc.processName);
+						uniqueProcs.push(proc);
+					}
+					}
+
+					d['processes'] = uniqueProcs;
+
                     let thisCodebase=codebases.find((e)=>{
                         return e.id==d.codebaseID;
                     }) 
@@ -1263,8 +1274,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			   }
 			 })
 			 .catch(error => console.error(error));
-		   
-	
+		    
 			  
 			}). catch (function (error)
 			{
@@ -1288,10 +1298,7 @@ var appCount = d3.nest()
 var charts = [];
 var chartData=[];
 function drawChart(canvasId, type, labels, inputData, title, colours, detailedData, ctype) {
-	//console.log('canvasId',canvasId)
-	//console.log('canvasId',type)
-	//console.log('canvasId',labels)
- 
+  
 	if(charts[canvasId]){charts[canvasId].destroy()};			
  	charts[canvasId] = new Chart(document.getElementById(canvasId), { type: ctype,
                 data: {
@@ -1360,8 +1367,7 @@ $(document).on('click', '.appInfoButton',function ()
  
         // let thisCaps = appToShow[0].caps.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index);
         // let thisProcesses = appToShow[0].processes.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index);
-        let thisServs = appToShow[0].services.filter((elem, index, self) => self.findIndex(
-                            (t) => {return (t.id === elem.id)}) === index);							
+    				
         //  appToShow[0]['capList']=thisCaps;
         //  appToShow[0]['processList']=thisProcesses;
 
@@ -1421,16 +1427,18 @@ var redrawView=function(){
                      return d.id == selectedCap;
 				 }); 
 			
-                 let showApps=[];
-                 chosenCap.apps.forEach((ap)=>{
-                    let thisApp=scopedApps.resources.find((a)=>{
-                        return a.id == ap;
-					})
-					
-					if(thisApp){
-						showApps.push(thisApp)
-					}
-                 });
+                 // Build a lookup map for apps by id
+				const appMap = new Map(scopedApps.resources.map(a => [a.id, a]));
+
+				// Use the map to quickly filter chosen apps
+				const showApps = [];
+				chosenCap.apps.forEach(id => {
+				const app = appMap.get(id);
+				if (app) {
+					showApps.push(app);
+				}
+				});
+
 				scopedApps.resources = showApps;
 				}
 		
@@ -1454,69 +1462,69 @@ var redrawView=function(){
 filters=filters.sort((a, b) => a.order - b.order);
 $('#chartsArea').html(chartTemplate(filters));
  
-				filters.forEach((d)=>{
-					 
-					let checkType=settings?.app_dashboard?.find((e)=>{
-						return e.id==d.id;
-					})
+filters.forEach((d)=>{
+		
+	let checkType=settings?.app_dashboard?.find((e)=>{
+		return e.id==d.id;
+	})
 
-					let sequenceMap = {};
-					d.values.forEach(item => {
-						sequenceMap[item.id] = parseInt(item.sequence); // Map ID to its sequence as an integer
-					});
-				
-					let type='doughnut';
-					if(checkType){type=checkType.type}
-			 
-					var filterCount = d3.nest()
-					.key(function(e) {return e[d.slotName]}) 
-					.entries(scopedApps.resources);
-				
-					let labels=[];
-					let labelcolours=[];
-					let inputData=[];
-					let hoverData=[];
-					
-					let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
+	let sequenceMap = {};
+		for (let i = 0, len = d.values.length; i &lt; len; i++) {
+		const item = d.values[i];
+		sequenceMap[item.id] = +item.sequence;
+	}
+	let type='doughnut';
+	if(checkType){type=checkType.type}
+
+	var filterCount = d3.nest()
+	.key(function(e) {return e[d.slotName]}) 
+	.entries(scopedApps.resources);
+
+	let labels=[];
+	let labelcolours=[];
+	let inputData=[];
+	let hoverData=[];
+	
+	let missingBackgroundColour=['#a6cee3','#1f78b4', '#b2df8a','#33a02c', '#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
+
+
+	//filterCount
+	filterCount.sort((a, b) => {
+		const seqA = sequenceMap[a.key];
+		const seqB = sequenceMap[b.key];
+		
+		// If sequence is missing (undefined), place the item at the end by treating it as a very large number
+		if (seqA === undefined) return 1;  // a goes to the end if it has no sequence
+		if (seqB === undefined) return -1; // b goes to the end if it has no sequence
+	
+		return seqA - seqB; // Sort in ascending order based on sequence
+	});
  
+const dValuesMap = new Map(d.values.map(f => [f.id, f]));
 
-					//filterCount
-					filterCount.sort((a, b) => {
-						const seqA = sequenceMap[a.key];
-						const seqB = sequenceMap[b.key];
-						
-						// If sequence is missing (undefined), place the item at the end by treating it as a very large number
-						if (seqA === undefined) return 1;  // a goes to the end if it has no sequence
-						if (seqB === undefined) return -1; // b goes to the end if it has no sequence
-					
-						return seqA - seqB; // Sort in ascending order based on sequence
-					});
+	filterCount.forEach((e, i) => {
+	// Use the map for a quick lookup
+	const thisFilter = dValuesMap.get(e.key);
 
-					filterCount.forEach((e,i)=>{  
-					
-							let thisFilter=d.values.find((f)=>{return f.id==e.key})
-						 
-							if(thisFilter){
-							labels.push(thisFilter.name +' ('+e.values.length+')'); 
-							labelcolours.push(thisFilter.backgroundColor)
-							hoverData.push({"id":thisFilter.name +' ('+e.values.length+')', "values": e.values})
-						 
-							}
-							else
-							{labels.push('Not Set ('+e.values.length+')');
-							labelcolours.push(missingBackgroundColour[i])
-							hoverData.push({"id":'Not Set ('+e.values.length+')', "values": e.values})
-						 
-							}
-						 
-							inputData.push(e.values.length) 
-						})
-						if(checkType?.show=='N'){
-							$('div[name="'+checkType.id+'"]').hide()
-							$('a[easlinkid="'+checkType.id+'"]').hide()
-						}
+	if (thisFilter) {
+		labels.push(`${thisFilter.name} (${e.values.length})`);
+		labelcolours.push(thisFilter.backgroundColor);
+		hoverData.push({ id: `${thisFilter.name} (${e.values.length})`, values: e.values });
+	} else {
+		labels.push(`Not Set (${e.values.length})`);
+		labelcolours.push(missingBackgroundColour[i]);
+		hoverData.push({ id: `Not Set (${e.values.length})`, values: e.values });
+	}
+	
+	inputData.push(e.values.length);
+	});
+
+		if(checkType?.show=='N'){
+			$('div[name="'+checkType.id+'"]').hide()
+			$('a[easlinkid="'+checkType.id+'"]').hide()
+		}
 		 
-							drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
+		drawChart(d.id, 'doughnut', labels, inputData, d.name, labelcolours, hoverData, type) 
 						 
 					//console.log('chartData',  chartData);
 					var COLORS_ACCENT = ["4472C4", "ED7D31", "FFC000", "70AD47"]; // 1,2,4,6
@@ -1611,10 +1619,17 @@ $('#chartsArea').html(chartTemplate(filters));
             return d.id==selected;	
         });
 
-       let thisServs = appToShow[0].services.filter((elem, index, self) => self.findIndex(
-                            (t) => {return (t.id === elem.id)}) === index);							
- 
-        appToShow[0]['servList']=thisServs; 	 
+       const uniqueServices = [];
+		const seenIds = new Set();
+
+		for (const service of appToShow[0].services) {
+			if (!seenIds.has(service.id)) {
+				seenIds.add(service.id);
+				uniqueServices.push(service);
+			}
+		}					
+		
+        appToShow[0]['servList']=uniqueServices; 	 
  
         $('#appData').html(appTemplate(appToShow[0]));
  
@@ -1626,66 +1641,77 @@ $('#chartsArea').html(chartTemplate(filters));
     });
  
     }
-function applyFilters(apps){
-		filters.forEach((d)=>{
-		apps.resources.forEach((ap)=>{
-
-		 
-			let thisEnum = ap.enums.find((e)=>{
-				return d.name==e.type;
-			})
-		 
-		})
- 
-	})
-		return apps
+function applyFilters(apps) {
+  // Pre-index each resource's enums into a Map keyed by type
+  apps.resources.forEach(ap => {
+    ap.enumsMap = new Map(ap.enums.map(e => [e.type, e]));
+  });
+  
+  filters.forEach(filter => {
+    apps.resources.forEach(ap => {
+      // Use constant-time lookup with the Map
+      let thisEnum = ap.enumsMap.get(filter.name);
+      // Process thisEnum as needed
+    });
+  });
+  return apps;
 }
-function getApps(capid){
-	 
-	let thisCapAppList = inScopeCapsApp.filter(function (d)
-	{
-		return d.id == capid;
-	});
-   
-	appsToShow['applications']=scopedApps.resources;
-	
-	let filteredApps = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
 
-	let test = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
-	
-	let appArrayToShow=[];
-	filteredApps.forEach((app)=>{
-		let anApp=appArray.applications.filter((d)=>{
-			return d.id ==app;
-		})
-		
-		appArrayToShow.push(anApp[0]);
-	})
+function getApps(capid) {
+  // Find the cap object once (assumes capid is unique)
+  const capObj = inScopeCapsApp.find(d => d.id == capid);
+  if (!capObj) return; // Handle the case if no cap is found
 
-	let panelData=[];
-		panelData['apps']=appArrayToShow;
-		let capName=inScopeCapsApp.filter((d)=>{return d.id==capid})
-		panelData['cap']=capid;
-		panelData['capName']=capName[0].name; 
+  // Set the applications to show from scopedApps.resources
+  appsToShow['applications'] = scopedApps.resources;
 
-panelData.apps.forEach((d)=>{
-	let capsList = d.caps.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
-	d['capsList']=capsList;
-	let processList = d.processes.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
-	d['processList']=processList;
-})
+  // Convert resourceIds to a Set for fast lookups
+  const resourceIdsSet = new Set(scopedApps.resourceIds);
 
-		$('#appData').html(appTemplate(panelData));
+  // Filter the apps for this cap that exist in scopedApps.resourceIds
+  const filteredApps = capObj.apps.filter(id => resourceIdsSet.has(id));
 
-	workingAppsList=appArrayToShow;
+  // Build a Map for fast lookup from id to app object from appArray.applications
+  const appMap = new Map(appArray.applications.map(app => [app.id, app]));
 
-	$('#appsList').empty();
-	$('#appsList').html(appListTemplate(panelData))
-	openNav(); 
-	thisCapAppList[0].apps.forEach((d)=>{ 
-		rationalisationList.push(d)
-	});
-    }
+  // Use the Map to quickly create the array of apps to show
+  const appArrayToShow = filteredApps
+    .map(id => appMap.get(id))
+    .filter(app => app); // Remove any undefined results
+
+  // Build panelData object
+  const panelData = {
+    apps: appArrayToShow,
+    cap: capid,
+    capName: capObj.name
+  };
+
+  // Helper function to return unique items by id
+  const uniqueById = arr => {
+    const seen = new Set();
+    return arr.filter(item => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  };
+
+  // For each app, generate unique lists of caps and processes
+  panelData.apps.forEach(app => {
+    app.capsList = uniqueById(app.caps);
+    app.processList = uniqueById(app.processes);
+  });
+
+  // Update the UI
+  $('#appData').html(appTemplate(panelData));
+  workingAppsList = appArrayToShow;
+  $('#appsList').empty().html(appListTemplate(panelData));
+  openNav();
+
+  // Populate rationalisationList with all app IDs from the cap
+  rationalisationList.push(...capObj.apps);
+}
+
     
  
 

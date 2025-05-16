@@ -18,23 +18,27 @@
 	<!-- START GENERIC PARAMETERS -->
 	<xsl:param name="viewScopeTermIds"/>
     <!-- END GENERIC PARAMETERS -->
+	<xsl:key name="allPlans" match="/node()/simple_instance[supertype='Strategic_Plan']" use="type"/> 
     <xsl:variable name="enterpriseStrategicPlans" select="/node()/simple_instance[type='Enterprise_Strategic_Plan']"/>
     <xsl:variable name="busStrategicPlans" select="/node()/simple_instance[type='Business_Strategic_Plan']"/>
     <xsl:variable name="appStrategicPlans" select="/node()/simple_instance[type='Application_Strategic_Plan']"/>
     <xsl:variable name="infoStrategicPlans" select="/node()/simple_instance[type='Information_Strategic_Plan']"/>
     <xsl:variable name="techStrategicPlans" select="/node()/simple_instance[type='Technology_Strategic_Plan']"/>
     <xsl:variable name="securityStrategicPlans" select="/node()/simple_instance[type='Security_Strategic_Plan']"/>
-    <xsl:variable name="allStrategicPlans" select="$enterpriseStrategicPlans union $busStrategicPlans union $appStrategicPlans union $infoStrategicPlans union $techStrategicPlans union $securityStrategicPlans "/>
-	<xsl:variable name="programmes" select="/node()/simple_instance[type='Programme']"/>
+    <xsl:variable name="allStrategicPlans" select="key('allPlans',('Enterprise_Strategic_Plan','Business_Strategic_Plan','Application_Strategic_Plan','Information_Strategic_Plan','Technology_Strategic_Plan','Security_Strategic_Plan'))"/>
+	<xsl:key name="programmes" match="/node()/simple_instance[type='Programme']" use="type"/>
+	<xsl:variable name="programmes" select="key('programmes', 'Programme')"/>
 	<xsl:variable name="planningActions" select="/node()/simple_instance[type='Planning_Action']"/>
 	<xsl:variable name="planningStatus" select="/node()/simple_instance[type='Planning_Status']"/>
 	<xsl:variable name="projectStatus" select="/node()/simple_instance[type=('Project_Approval_Status','Project_Lifecycle_Status')]"/>
 	<xsl:variable name="budgetApproval" select="/node()/simple_instance[type=('Budget_Approval_Status')]"/>
-	
+	<xsl:key name="instances" match="/node()/simple_instance[type='EA_Class']" use="name"/>
 	<xsl:variable name="p2eNodes" select="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']"/>
 	<xsl:variable name="allActor2Roles" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>
+
+	<xsl:key name="allActor2RolesKey" match="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']" use="name"/>
     <xsl:variable name="allRoadmaps" select="/node()/simple_instance[type='Roadmap']"/>
-	<xsl:variable name="programmeStakeholders" select="$allActor2Roles[name = $programmes/own_slot_value[slot_reference = 'stakeholders']/value]"/>
+	<xsl:variable name="programmeStakeholders" select="key('allActor2RolesKey', $programmes/own_slot_value[slot_reference = 'stakeholders']/value)"/>
 	 
 	<xsl:variable name="fullprojectsList" select="/node()/simple_instance[type='Project']"/>
 
@@ -65,7 +69,8 @@
 	
 	<xsl:key name="plans_key" match="/node()/simple_instance[supertype='Strategic_Plan']" use="own_slot_value[slot_reference = 'strategic_plan_for_elements']/value"/>
 	<xsl:key name="plans4Programme_key" match="/node()/simple_instance[supertype='Strategic_Plan']" use="own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value"/>
-	<xsl:variable name="allImpactedElements" select="/node()/simple_instance[name = $p2eNodes/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+ 
+	<xsl:variable name="allImpactedElements" select="key('instances', $p2eNodes/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)"/>
 	
 	<xsl:variable name="allProjects" select="key('projects_key',$programmes/name)"/>	
 	<xsl:variable name="allP2E" select="key('p2e_key',$allProjects/name)"/>
@@ -774,12 +779,12 @@
 			</div>
 			<div class="row">
 				<div class="pull-right bottom-5 right-5">
-				Start Date: 
+				<xsl:value-of select="eas:i18n('Start Date')"/>: 
 				<select class="years" id="startYear"></select>
-					 End Date: 
+					 <xsl:value-of select="eas:i18n('End Date')"/>: 
 				<select class="years" id="endYear"></select>
-					 Programme:
-				<select class="prog years" id="programme"><option value="all">All</option></select>
+					 <xsl:value-of select="eas:i18n('Programme')"/>:
+				<select class="prog years" id="programme"><option value="all"><xsl:value-of select="eas:i18n('All')"/></option></select>
 				</div>
 			</div>
 			<!--Setup Vertical Tabs-->
@@ -805,7 +810,7 @@
 							
 							<!-- Modal Header -->
 							<div class="modal-header">
-							<h4 class="modal-title">Project Impacts</h4>
+							<h4 class="modal-title"><xsl:value-of select="eas:i18n('Project Impacts')"/></h4>
 							</div>
 							
 							<!-- Modal body -->
@@ -815,7 +820,7 @@
 							
 							<!-- Modal footer -->
 							<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal"><xsl:value-of select="eas:i18n('Close')"/></button>
 							</div>
 							
 					  		</div>
@@ -844,44 +849,44 @@
                     });
 				</script>
 	<script id="planInformation-template" type="text/x-handlebars-template">
-			<h3><span class="uppercase detail-outer-type" style="font-weight:300"><i class="fa fa-fw fa-columns right-5"></i><xsl:text> </xsl:text>Plan</span><br/>
+			<h3><span class="uppercase detail-outer-type" style="font-weight:300"><i class="fa fa-fw fa-columns right-5"></i><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Plan')"/></span><br/>
 			{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</h3> 
-			<span class="label label-default lbPanel">Description</span><br/> <b>{{this.description}}</b> <br/>
-			<span class="label label-default lbPanel">Plan Start</span> <xsl:text> </xsl:text><span class="label label-info">{{this.validStartDate}}</span>
+			<span class="label label-default lbPanel"><xsl:value-of select="eas:i18n('Description')"/></span><br/> <b>{{this.description}}</b> <br/>
+			<span class="label label-default lbPanel"><xsl:value-of select="eas:i18n('Plan Start')"/></span> <xsl:text> </xsl:text><span class="label label-info">{{this.validStartDate}}</span>
 			
-			<span class="label label-default lbPanel left-20">Plan Complete</span><xsl:text> </xsl:text> <span class="label label-info">{{this.validEndDate}}</span><br/>
-			<span class="label label-default lbPanel">Status</span> <xsl:text> </xsl:text> <b>{{this.planStatus}}</b> <br/>
-			<span class="label label-default lbPanel">Objectives</span><br/>
+			<span class="label label-default lbPanel left-20"><xsl:value-of select="eas:i18n('Plan Complete')"/></span><xsl:text> </xsl:text> <span class="label label-info">{{this.validEndDate}}</span><br/>
+			<span class="label label-default lbPanel"><xsl:value-of select="eas:i18n('Status')"/></span> <xsl:text> </xsl:text> <b>{{this.planStatus}}</b> <br/>
+			<span class="label label-default lbPanel"><xsl:value-of select="eas:i18n('Objectives')"/></span><br/>
 			{{#each this.objectives}} 
 				<div class="objcard">{{this.name}}</div>
 			{{/each}}
 			 <br/><br/>
-			 <span class="label label-default top-10 lbPanel">Projects</span><br/>
+			 <span class="label label-default top-10 lbPanel"><xsl:value-of select="eas:i18n('Projects')"/></span><br/>
 			{{#each this.projects}} 
 			<div class="detail-outer top-5">
-				<div class="detail-outer-type uppercase small top-5"><i class="fa fa-fw fa-calendar right-5"></i>Project</div>
+				<div class="detail-outer-type uppercase small top-5"><i class="fa fa-fw fa-calendar right-5"></i><xsl:value-of select="eas:i18n('Project')"/></div>
 				<div class="detail-outer-name obj-detail planClick">
 					<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
 					{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 				</div>
 				
-				<div class="top-10"><strong>Start Date: </strong>{{this.actualStartDate}}</div>
-				<div><strong>End Date: </strong>{{this.forecastEndDate}}</div>
+				<div class="top-10"><strong><xsl:value-of select="eas:i18n('Start Date')"/>: </strong>{{this.actualStartDate}}</div>
+				<div><strong><xsl:value-of select="eas:i18n('End Date')"/>: </strong>{{this.forecastEndDate}}</div>
 				<div class="costsPanel">
 					{{#if this.costbreakdown}}
-					<b>Costs</b><br/>
+					<b><xsl:value-of select="eas:i18n('Costs')"/></b><br/>
 					{{#each this.costbreakdown}}
 						{{#ifEquals @key 'Adhoc_Cost_Component'}}
-							<span class="label label-info">Adhoc</span> {{../this.currency}}{{formatCost this}}<br/>
+							<span class="label label-info"><xsl:value-of select="eas:i18n('Adhoc')"/></span> {{../this.currency}}{{formatCost this}}<br/>
 						{{else}}
 						
-						<span class="label label-info">Annual</span> {{../this.currency}}{{formatCost this}}<br/>
+						<span class="label label-info"><xsl:value-of select="eas:i18n('Annual')"/></span> {{../this.currency}}{{formatCost this}}<br/>
 						{{/ifEquals}}
 					{{/each}}
 					{{/if}}
 				</div>
 				<div class="plan-attr-wrapper top-10" style="display: flex; gap:10px;">
-					<div class="infoBlock" style="background-color: var(--yellow);">{{this.p2e.length}}<span> Impacts</span>
+					<div class="infoBlock" style="background-color: var(--yellow);">{{this.p2e.length}}<span><xsl:value-of select="eas:i18n('Impacts')"/></span>
 					<i class="fa fa-info-circle impactsInfo left-5"><xsl:attribute name="impactid">{{this.id}}</xsl:attribute></i>
 
 					</div>
@@ -958,15 +963,15 @@
 							<div class="superflex grad">
 								<h3 class="text-primary"><i class="fa fa-road right-10"></i><xsl:value-of select="eas:i18n('Strategic Plans and Projects')"/></h3>                                  
 									<svg width="100%" height="30px">
-									<text x="5" y="14">Key:</text>
+									<text x="5" y="14"><xsl:value-of select="eas:i18n('Key')"/>:</text>
 									<circle cx="40" r="7" stroke="#89CFF0" stroke-width="2" fill="#ffffffAA" cy="10"></circle>
-									<text x="50" y="14">Proposed Start Date</text>
+									<text x="50" y="14"><xsl:value-of select="eas:i18n('Proposed Start Date')"/></text>
 									<circle cx="190" r="7" stroke="black" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="200" y="14">Actual Start Date</text>
+									<text x="200" y="14"><xsl:value-of select="eas:i18n('Actual Start Date')"/></text>
 									<circle cx="340" r="7" stroke="green" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="350" y="14">Forecast End Date</text>
+									<text x="350" y="14"><xsl:value-of select="eas:i18n('Forecast End Date')"/></text>
 									<circle cx="490" r="7" stroke="gray" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="500" y="14">Target End Date</text>
+									<text x="500" y="14"><xsl:value-of select="eas:i18n('Target End Date')"/></text>
 									</svg>
 									<div class="lifekey pull-right bottom-5"></div>
 									<svg id="plansProjSvg" width="100%"></svg>
@@ -986,15 +991,15 @@
 								<div class="row">
 									<h3 class="text-primary"><i class="fa fa-columns right-10"></i>{{this.name}}</h3>
 									<svg width="100%" height="30px">
-									<text x="5" y="14">Key:</text>
+									<text x="5" y="14"><xsl:value-of select="eas:i18n('Key')"/>:</text>
 									<circle cx="40" r="7" stroke="#89CFF0" stroke-width="2" fill="#ffffffAA" cy="10"></circle>
-									<text x="50" y="14">Proposed Start Date</text>
+									<text x="50" y="14"><xsl:value-of select="eas:i18n('Proposed Start Date')"/></text>
 									<circle cx="190" r="7" stroke="black" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="200" y="14">Actual Start Date</text>
+									<text x="200" y="14"><xsl:value-of select="eas:i18n('Actual Start Date')"/></text>
 									<circle cx="340" r="7" stroke="green" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="350" y="14">Forecast End Date</text>
+									<text x="350" y="14"><xsl:value-of select="eas:i18n('Forecast End Date')"/></text>
 									<circle cx="490" r="7" stroke="gray" stroke-width="2" fill="white" cy="10"></circle>
-									<text x="500" y="14">Target End Date</text>
+									<text x="500" y="14"><xsl:value-of select="eas:i18n('Target End Date')"/></text>
 									</svg>
 									<div class="lifekey pull-right bottom-5"></div>
 								
@@ -1129,6 +1134,7 @@
 			<text y="10" style="font-size:8pt"><xsl:attribute name="x">{{#yearText this.pos}}{{/yearText}}</xsl:attribute>{{this.year}}</text>
 			<line style="stroke:rgb(182, 182, 182);stroke-width:1" stroke-dasharray="5,5"><xsl:attribute name="x1">{{this.pos}}</xsl:attribute><xsl:attribute name="x2">{{this.pos}}</xsl:attribute><xsl:attribute name="y2">10</xsl:attribute><xsl:attribute name="y1">{{#roadmaplineHeight ../this}}{{/roadmaplineHeight}}</xsl:attribute></line>
 		{{/each}}
+		
 		{{#each this}} 
 			{{#ifEquals this.className 'Enterprise_Strategic_Plan'}}
 			<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">#c6a6ee73</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getTopRight @index validEndDatePos}}{{/getTopRight}}  {{this.validEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index validEndDatePos}}{{/getbottomRight}} {{this.validStartDatePos}},{{#getbottomLeft @index validStartDatePos}}{{/getbottomLeft}} {{this.validStartDatePos}},{{#getTopLeft @index validStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
@@ -1142,6 +1148,7 @@
 						   {{#formatName this.name}}{{/formatName}}:{{#getFORow  this.pos}}{{/getFORow}}-->
 					</xhtml>
 			</foreignObject>	
+			
 			{{else}}
 			<polygon stroke="black" stroke-width="1" ><xsl:attribute name="fill">#2980B9</xsl:attribute><xsl:attribute name="points">{{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getTopRight @index validEndDatePos}}{{/getTopRight}}  {{this.validEndDatePos}},{{#getRow @index}}{{/getRow}} {{#nudgeBack this.validEndDatePos}}{{/nudgeBack}},{{#getbottomRight @index validEndDatePos}}{{/getbottomRight}} {{this.validStartDatePos}},{{#getbottomLeft @index validStartDatePos}}{{/getbottomLeft}} {{this.validStartDatePos}},{{#getTopLeft @index validStartDatePos}}{{/getTopLeft}}</xsl:attribute></polygon> 
 			<foreignObject eas-type="projname" x="3" width="280" class="nameClick">
@@ -1154,7 +1161,10 @@
 						<!--   {{#formatName this.name}}{{/formatName}}:{{#getFORow  this.pos}}{{/getFORow}}-->
 					</xhtml>
 			</foreignObject>	
+			{{#each this.plans}}
+			<circle r="5" class="plancircle" stroke="#d3d3d3" stroke-width="2" fill="#d3d3d3AA"><xsl:attribute name="cx">{{this.validEndDatePos}}</xsl:attribute><xsl:attribute name="cy">{{#getRow @../index}}{{/getRow}}</xsl:attribute><xsl:attribute name="easplanid">{{this.id}}</xsl:attribute><xsl:attribute name="easid">{{../this.name}}</xsl:attribute></circle>
 
+			{{/each}} 
 			{{/ifEquals}}
 		{{/each}}	
 	</script>
@@ -1248,7 +1258,7 @@
 	</script>
 	
 <script id="impacts-template" type="text/x-handlebars-template">
-	<h3>Impacts</h3>
+	<h3><xsl:value-of select="eas:i18n('Impacts')"/></h3>
 
 	<div class="monopoly-card-container">
 	{{#each this.p2e}}
@@ -1324,7 +1334,7 @@ Project Status:
 
 
  	var lifes=[<xsl:apply-templates select="$projectStatus" mode="lifecycle"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
- console.log('defaultCurrency', defaultCurrency)
+
 lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 
 	 
@@ -1335,7 +1345,7 @@ lifes=lifes.sort((a, b) => a.enumeration_value - b.enumeration_value);
 	let allProject=[<xsl:apply-templates select="$fullprojectsList" mode="projects"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
 	let currency = "<xsl:value-of select="$defaultCurrencySymbol"/>";
 	let activeTab
-console.log('allp', allPlans)
+ 
 	var tab = $('.tab-content > .active').get(0);  
 	
 	$(document).ready(function ()
@@ -1549,7 +1559,7 @@ console.log('allp', allPlans)
 			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 			let programmesToShow=[];
 			let plansToShowAll=[];
-			let roadmapsToShow=[];
+			var roadmapsToShow=[];
 			let projectToShow=[];
 
 			let progToShowData=[];
@@ -1559,7 +1569,7 @@ console.log('allp', allPlans)
 			let liveProjects;
 			$('#appPanel').hide();
 		   var programmes=[<xsl:apply-templates select="$programmes" mode="programme"><xsl:sort order="ascending" select="own_slot_value[slot_reference='name']/value"/></xsl:apply-templates>];
-	console.log('programmes',programmes)
+ 
 		   var promise_loadViewerAPIData = function(apiDataSetURL) {
 				return new Promise(function (resolve, reject) {
 					if (apiDataSetURL != null) {
@@ -1735,7 +1745,7 @@ if(roadmaps.length&gt;0){
 			rd['endYY']=moment().toISOString().substring(0,10); 
 		}
 		});
-
+ 
 };
  
 		projectToShow=[]
@@ -1758,21 +1768,35 @@ if(roadmaps.length&gt;0){
 					if((moment(e.targetEndDate).isSameOrAfter(moment(today)))){liveProjects=liveProjects+1}
 				});  
 			}
-				if(roadmaps){
-					roadmaps.filter((road)=>{
-
+		 
+				if (roadmaps) {
+					  roadmapsToShow = [];
+					const today = moment();
+					const eighteenMonthsAgo = today.clone().subtract(18, 'months');
+					
+					roadmaps.forEach((road) => { 
 						let thisDate;
-						if(road.end){
-							thisDate = moment(road.end, "YYYY-MM-DD").toDate()}
-						else if(road.start){
-							thisDate = moment(road.start, "YYYY-MM-DD").toDate()}   
-						else{
-							thisDate=moment(today).subtract(1, 'days')
-						}   
-						if((moment(thisDate).isSameOrAfter(moment(today)))){roadmapsToShow.push(road)}
+						
+						if (road.end) {
+							thisDate = moment(road.end, "YYYY-MM-DD");
+						} else if (road.start) {
+							thisDate = moment(road.start, "YYYY-MM-DD");
+						} else {
+							// If neither end nor start is available, set to yesterday
+							thisDate = moment().subtract(1, 'days');
+						}
+						  
+						// Check if thisDate is same as or after eighteenMonthsAgo
+						if (thisDate.isSameOrAfter(eighteenMonthsAgo)) {
+							roadmapsToShow.push(road);
+						}
 					});
+					  
+				} else {
+					console.log('No roadmaps provided.');
+					 
 				}
-				  
+		  
 			programmesToShow['inperiod']='checked';
 			if(allPlans.length&gt;0){			
 				allPlans.filter((e)=>{
@@ -1806,7 +1830,7 @@ if(roadmaps.length&gt;0){
 				p['currency']=defaultCurrency;
 			})
 			$('#planTabs').html(planstabsvgTemplate(plansToShow))
-
+ 
 			drawView(plansToShow, projs, roadmapsToShow );
 			essInitViewScoping(redrawView, ['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS']);
 
@@ -1832,8 +1856,7 @@ var redrawView = function () {
     scopedProject.resources = scopedProject.resources.filter((elem, index, self) => 
         self.findIndex( (t) => { return (t.id === elem.id)}) === index
     );
-
-
+ 
     let scopedProgramme = essScopeResources(programmesToShow, [orgScopingDef, geoScopingDef, visibilityDef]);
     let scopedRoadmaps = essScopeResources(roadmapsToShow, [orgScopingDef, geoScopingDef, visibilityDef]);
 
@@ -1842,6 +1865,7 @@ var redrawView = function () {
     scopedPlan.resources.forEach((d)=>{
         newPlanToShow.push(d);
     })
+
     newPlanToShow['years'] = plansToShow.years;
     newPlanToShow['posCount'] = plansToShow.posCount;
 
@@ -1851,7 +1875,6 @@ var redrawView = function () {
     })
     newProjectToShow['years'] = projectToShow.years;
     newProjectToShow['posCount'] = projectToShow.posCount;
-
 
     // Draw view with new resources
     drawView(newPlanToShow, newProjectToShow, newRoadmapsToShow)
@@ -1866,12 +1889,13 @@ function drawView(plansToShow, projs, roadmaps){
     })
 	*/
     // Prepare dataset
+ 
     let dataSet=[{
         "plans": plansToShow,
         "projects": projs,
 		"roadmapsToShow": roadmapsToShow
     }]
-
+ 
     // Promise to resolve or reject
     let panelSet = new Promise(function(myResolve, myReject) {
         let csddate = moment(chartStartDate, 'DD-MM-YYYY').toISOString();
@@ -1910,8 +1934,6 @@ function setNewYears(){
 	
 	for(i=0; i&lt; (ed-sd);i++){  
 		getYears.push({"year":'01-01-'+(parseInt(thisYr)+i)});
- 
-		
 	};
 		
 	let check=$(this).is(":checked")
@@ -2090,7 +2112,7 @@ if (lastYear) {
 		"pos": getPosition(chartStartPoint, chartWidth, chartStartDate.replace(/-/g, '/'), chartEndDate.replace(/-/g, '/'), finalYear.replace(/-/g, '/'))
 	})
 }
-console.log('gy2',getYears)
+ 
 var plcount = 0;
 thisPlans['years'] = getYears;
 thisPlans.forEach((pl) => {
@@ -2256,13 +2278,14 @@ thisPlans.forEach((d) => {
 
 	cleanRoadmap.splice(index+1, 0, ...plansToUse);
 	cleanRoadmap['years']=thisRoadmaps.years
-
+ 
 	$('#roadmapsSvg').attr('height', (cleanRoadmap.length + 1) * 48);
 	$('#roadmapsSvg').html(roadmapsvgwithPlansTemplate(cleanRoadmap)) 
 	focusRM['selected']='';
 	})
 
 	$(document).on('click','.closeRoadmap', function(){
+ 
 		$('#roadmapsSvg').html(roadmapsvgTemplate(thisRoadmaps))
 	});
 
@@ -2309,17 +2332,14 @@ thisPlans.forEach((d) => {
 
 				d['currency']=defaultCurrency;
 		})
-
-
-		console.log('pm',planMatch)
-
+  
 	$('#informationBox').html(planInfo(planMatch))
 		openNav();
 
 	$('.impactsInfo').on('click' , function(){
 			let thisId=$(this).attr('impactid')
 			let focusPlan=planMatch.projects.find((e)=>{return e.id==thisId});
-		console.log('fp', focusPlan)
+	 
 			$('#slideUpData').html(impactsTemplate(focusPlan));
 			$('#appPanel').show( "blind",  { direction: 'down', mode: 'show' },200 );
 			
@@ -2488,7 +2508,7 @@ budgets.forEach(budget => {
 		expandedBudgets[recurrence].push([startDate, amount]); // Format as [date, amount]
 	}
 });
-console.log('expandedBudget', expandedBudgets)
+ 
 return expandedBudgets;
 }    
 
@@ -2557,42 +2577,36 @@ return dataObject;  // Optionally return the modified object for further use
  
 		<xsl:variable name="objectivesforplan" select="key('objectives_key', current()/name)"/>  
 		<xsl:variable name="driversforplan" select="$drivers[name=current()/own_slot_value[slot_reference = 'strategic_plan_drivers']/value]"/>  
-		<xsl:variable name="thisStakeholders" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
+		<xsl:variable name="thisStakeholders" select="key('allActor2RolesKey',current()/own_slot_value[slot_reference='stakeholders']/value)"/>
 		<xsl:variable name="thisActors" select="key('orgs_key',$thisStakeholders/name)"/> 
 		<xsl:variable name="thisStakeholdersOrgs" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value][own_slot_value[slot_reference='act_to_role_from_actor']/value=$thisActors/name]"/>
 		 
 		{ 
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",	
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))		
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
         "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
         "className":"<xsl:value-of select="current()/type"/>",
 		"validStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>", 
 		"validEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>",
 		"objectives":[<xsl:for-each select="$objectivesforplan">
-			{ "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
+			{ <xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))		
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"drivers":[<xsl:for-each select="$driversforplan">
-			{ "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
+			{<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))		
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],	
 		"planStatus":"<xsl:choose><xsl:when test="$thisPlanStatus"><xsl:value-of select="$thisPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/></xsl:when><xsl:otherwise>Not Set</xsl:otherwise></xsl:choose>",
 		"projects":[<xsl:apply-templates select="$projectsforplan union $projectsdirectforplan" mode="projects"></xsl:apply-templates>],
@@ -2605,15 +2619,14 @@ return dataObject;  // Optionally return the modified object for further use
 				<xsl:variable name="thisIndivActors" select="key('actors_key',current()/name)"/>
 				<xsl:variable name="thisActors" select="$thisIndivActors union $thisOrgs"/>
 				<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
-				{"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisActors"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
+				{
+					<xsl:variable name="combinedMap" as="map(*)" select="map{
+						'actorName': string(translate(translate($thisActors/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+						'roleName': string(translate(translate($thisRoles/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+					}" />
+					<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+					<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"actorId":"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>",
-				"roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisRoles"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
 				"type":"<xsl:value-of select="$thisActors/type"/>",
 				"roleId":"<xsl:value-of select="eas:getSafeJSString($thisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
         </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
@@ -2621,10 +2634,11 @@ return dataObject;  // Optionally return the modified object for further use
 <xsl:template match="node()" mode="lifecycle">
 	<xsl:variable name="thisLife" select="key('lifes',current()/name)"/>
 	{
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 	"className":"<xsl:value-of select="current()/type"/>",
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	"colour":"<xsl:value-of select="$thisLife/own_slot_value[slot_reference='element_style_text_colour']/value"/>",
@@ -2640,15 +2654,13 @@ return dataObject;  // Optionally return the modified object for further use
         <xsl:variable name="thisMilestones" select="key('milestone_key',current()/name)"/>
         <xsl:variable name="thisActors" select="key('orgs_key',$thisprogrammeStakeholders/name)"/> 
 		<xsl:variable name="thisStakeholdersOrgs" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value][own_slot_value[slot_reference='act_to_role_from_actor']/value=$thisActors/name]"/>
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-            </xsl:call-template>",
+		{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))		
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
         "className":"<xsl:value-of select="current()/type"/>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",	
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		"orgUserIds":[<xsl:for-each select="$thisStakeholdersOrgs">
 				<xsl:variable name="thisActors" select="key('orgs_key',current()/name)"/> 
@@ -2657,22 +2669,21 @@ return dataObject;  // Optionally return the modified object for further use
 		"stakeholders":[<xsl:for-each select="$thisprogrammeStakeholders">
 				<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
 				<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
-				{"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisActors"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
+				{<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'actorName': string(translate(translate($thisActors/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+					'roleName': string(translate(translate($thisRoles/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"actorId":"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>",
-				"roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisRoles"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
 				"roleId":"<xsl:value-of select="eas:getSafeJSString($thisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
         </xsl:for-each>],
         "milestones":[<xsl:for-each select="$thisMilestones">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
-        "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-            <xsl:with-param name="theSubjectInstance" select="current()"/>
-            <xsl:with-param name="isRenderAsJSString" select="true()"/>
-        </xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
         "milestone_date":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'cm_date_iso_8601']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"proposedStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'ca_proposed_start_date_iso_8601']/value"/>",
 		"targetEndDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'ca_target_end_date_iso_8601']/value"/>",
@@ -2692,14 +2703,12 @@ return dataObject;  // Optionally return the modified object for further use
 		<xsl:variable name="thisStakeholders" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>
 		<xsl:variable name="thisActors" select="key('orgs_key',$thisStakeholders/name)"/> 
 		<xsl:variable name="thisStakeholdersOrgs" select="$allActor2Roles[name=current()/own_slot_value[slot_reference='stakeholders']/value][own_slot_value[slot_reference='act_to_role_from_actor']/value=$thisActors/name]"/>
-		{"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",	
+		{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))		
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"orgUserIds":[<xsl:for-each select="$thisStakeholdersOrgs">
 				<xsl:variable name="thisActors" select="key('orgs_key',current()/name)"/> 
 				"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>"<xsl:if test="position()!=last()">,</xsl:if>
@@ -2707,15 +2716,13 @@ return dataObject;  // Optionally return the modified object for further use
 		"stakeholders":[<xsl:for-each select="$thisStakeholders">
 				<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
 				<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
-				{"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisActors"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
+				{<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'actorName': string(translate(translate($thisActors/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+					'roleName': string(translate(translate($thisRoles/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"actorId":"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>",
-				"roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisRoles"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",	
 				"roleId":"<xsl:value-of select="eas:getSafeJSString($thisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
         </xsl:for-each>],	
         "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -2737,10 +2744,11 @@ return dataObject;  // Optionally return the modified object for further use
 			<xsl:variable name="thisCost" select="key('costs_key',current()/name)"/>
 			<xsl:variable name="thisCostElements" select="key('cost_elements_key',$thisCost/name)"/>
 		"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))	
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"orgUserIds":[<xsl:for-each select="$thisStakeholdersOrgs">
 				<xsl:variable name="thisActors" select="key('orgs_key',current()/name)"/> 
 				"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>"<xsl:if test="position()!=last()">,</xsl:if>
@@ -2763,22 +2771,21 @@ return dataObject;  // Optionally return the modified object for further use
 		"stakeholders":[<xsl:for-each select="$thisStakeholders">
 		<xsl:variable name="thisActors" select="key('actors_key',current()/name)"/>
 		<xsl:variable name="thisRoles" select="key('roles_key',current()/name)"/>
-		{"actorName":"<xsl:call-template name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="$thisActors"/>
-		<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",	
+		{<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'actorName': string(translate(translate($thisActors/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'roleName': string(translate(translate($thisRoles/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"actorId":"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>",
-		"roleName":"<xsl:call-template name="RenderMultiLangInstanceName">
-		<xsl:with-param name="theSubjectInstance" select="$thisRoles"/>
-		<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",	
 		"roleId":"<xsl:value-of select="eas:getSafeJSString($thisRoles/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>], 
 		"milestones":[<xsl:for-each select="$thisMilestones">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",			
-        "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-            <xsl:with-param name="theSubjectInstance" select="current()"/>
-            <xsl:with-param name="isRenderAsJSString" select="true()"/>
-        </xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))	
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
         "milestone_date":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'cm_date_iso_8601']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"className":"<xsl:value-of select="current()/type"/>",
 		"proposedStartDate":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'ca_proposed_start_date_iso_8601']/value"/>",
@@ -2792,25 +2799,22 @@ return dataObject;  // Optionally return the modified object for further use
 		"p2e":[<xsl:for-each select="$thisP2E">{ 
 			<xsl:variable name="thisPlan" select="key('plans_key',current()/name)"/>
 			<xsl:variable name="thisAction" select="$planningActions[name=current()/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/> 
-			<xsl:variable name="ele" select="$allImpactedElements[name=current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+			<xsl:variable name="ele2" select="$allImpactedElements[name=current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+			<xsl:variable name="ele" select="key('instances',current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)"/>
+			
 			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"actionid":"<xsl:value-of select="eas:getSafeJSString($thisAction/name)"/>",
-			"action":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisAction"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",
 			"impactedElement":"<xsl:value-of select="eas:getSafeJSString($ele/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="$ele"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
 			"eletype":"<xsl:value-of select="translate($ele/type,'_',' ')"/>",
 			"type":"<xsl:value-of select="$ele/supertype"/>",
-			"plan":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisPlan"/>
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-			</xsl:call-template>",
-			"planid":"<xsl:value-of select="eas:getSafeJSString($thisPlan/name)"/>"
+			"planid":"<xsl:value-of select="eas:getSafeJSString($thisPlan/name)"/>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'action': string(translate(translate($thisAction/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'name': string(translate(translate($ele/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'plan': string(translate(translate($thisPlan/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))		
+			}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 	}<xsl:if test="position()!=last()">,</xsl:if>

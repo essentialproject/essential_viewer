@@ -36,7 +36,7 @@
 	<xsl:key name="appservicesTypeKey" match="node()/simple_instance[type = 'Application_Service']" use="type"/>
 	<xsl:variable name="appservices" select="key('appservicesTypeKey', 'Application_Service')"/>
 	<xsl:key name="appservicesKey" match="$appservices" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/> 
-    <xsl:variable name="codebaseStatus" select="node()/simple_instance[type = 'Codebase_Status'][name=$apps/own_slot_value[slot_reference = 'ap_codebase_status']/value]"/>
+    <xsl:variable name="codebaseStatus" select="node()/simple_instance[type = 'Codebase_Status']"/>
 	
 	<xsl:key name="appsproPhysBusTypeKey" match="node()/simple_instance[type = 'APP_PRO_TO_PHYS_BUS_RELATION']" use="type"/>
 	<xsl:variable name="appsproPhysBus" select="key('appsproPhysBusTypeKey', 'APP_PRO_TO_PHYS_BUS_RELATION')"/>

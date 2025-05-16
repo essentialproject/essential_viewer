@@ -518,13 +518,12 @@
                 promise_loadViewerAPIData(viewAPIData),
 				promise_loadViewerAPIData(viewAPIDataOrgs)
 			]).then(function (responses) { 
-				filters=responses[0].filters;
-            
+				filters=responses[0].filters; 
                 vendorLifecycleStatus=filters.filter((e)=>{return e.id == 'Vendor_Lifecycle_Status'})
  
                 const lifecycleStatusMap = new Map();
-
-                vendorLifecycleStatus[0].values.forEach(value => {
+		 
+                vendorLifecycleStatus[0]?.values?.forEach(value => {
                     lifecycleStatusMap.set(value.id, {
                         name: value.name,
                         enum_name: value.enum_name,
@@ -533,16 +532,18 @@
                         colour: value.colour
                     });
                 });
-          
+		 
                 meta=responses[0].meta;
-                workingArr = responses[0].technology_products;  
+                workingArr = responses[0].technology_products; 
+				workingArr = workingArr.sort((a, b) => a.name.localeCompare(b.name)); 
+				
                 orgsRolesList=responses[1].a2rs;
-
+			 
 				slotNames = filters.map(obj => ({
 					"id": obj.slotName,
 					"name": obj.name
 				}));
-
+			 
 				 colSettings=[
 			{
 				"data" : "select",
@@ -610,7 +611,7 @@
 				"title": "Vendor Lifecycle"		
 
             })
-      
+		
 		    const today = new Date();
             let currentLocale="<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>" 
 			if (!currentLocale || currentLocale === '') {
@@ -618,20 +619,22 @@
 			}
 				workingArr.forEach((d)=>{ 
                 
-                    d.vendor_lifecycle.sort((a, b) => a.order - b.order);
+                    d.vendor_lifecycle?.sort((a, b) => a.order - b.order);
                 
                     // Find the current status
                     let current = null;
-                    d.vendor_lifecycle.forEach(item => {
+                    d.vendor_lifecycle?.forEach(item => {
                         let match = lifecycleStatusMap.get(item.statusId);
-                        item['statusColour']=match.colour
-                        item['statusBgColour']=match.backgroundColor
-                        const startDate = new Date(item.start_date);
-                        if (startDate &lt;= today &amp;&amp; (!current || startDate > new Date(current.start_date))) {
-                            current = item;
-                        }
-                        item['formattedStartDate']=formatDateforLocale(item.start_date,currentLocale)
-
+						 
+						if(match){
+							item['statusColour']=match.colour
+							item['statusBgColour']=match.backgroundColor
+							const startDate = new Date(item.start_date);
+								if (startDate &lt;= today &amp;&amp; (!current || startDate > new Date(current.start_date))) {
+									current = item;
+								}
+                       	 	item['formattedStartDate']=formatDateforLocale(item.start_date,currentLocale)
+						}
                     });
 
                     // Mark the current status

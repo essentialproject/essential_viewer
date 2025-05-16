@@ -489,9 +489,8 @@
 					};
 					showEditorSpinner('Fetching Data');
 			        // Render the template with the data and append to the row-container div
-						$(document).ready(function(){
-								window.addEventListener('load', (event) => {
-									// After page is loaded, add click event to the expandButton
+						$(document).ready(function(){ 
+								 
 									document.getElementById('expandButton').addEventListener('click', function() {
 										 
 										$('.appvs').addClass('expanded')
@@ -510,8 +509,7 @@
 											 
 											});
 										});
-									});
-								})
+									}); 
 							})
 							
 			 	</script>
@@ -961,15 +959,27 @@
 <!--	
 	<xsl:variable name="lbl" select="$labels[name=current()/own_slot_value[slot_reference='vsg_label']/value]"/>
 	<xsl:variable name="thisRoles" select="$roles[name=current()/own_slot_value[slot_reference='vsg_participants']/value]"/>-->
-	<xsl:variable name="lbl" select="key('labelsKey',current()/own_slot_value[slot_reference='vsg_label']/value)"/>
+	<xsl:variable name="lbl">
+		<xsl:choose>
+			<xsl:when test="current()/own_slot_value[slot_reference = 'vsg_display_label']/value">
+				<xsl:value-of select="current()/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="lblSyn" select="key('labelsKey',current()/own_slot_value[slot_reference='vsg_label']/value)"/>
+				<xsl:call-template name="RenderMultiLangInstanceName">
+					<xsl:with-param name="theSubjectInstance" select="$lblSyn"/>
+					<xsl:with-param name="isRenderAsJSString" select="true()"/>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
+	<!-- <xsl:variable name="lbl" select="key('labelsKey',current()/own_slot_value[slot_reference='vsg_label']/value)"/> -->
 	<xsl:variable name="thisRoles" select="key('rolesKey', current()/own_slot_value[slot_reference='vsg_participants']/value)"/>
 	<xsl:variable name="indexValue" select="current()/own_slot_value[slot_reference='vsg_index']/value"/>
 	{
 		"id":"<xsl:value-of select="current()/name"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
+		"name":"<xsl:value-of select="$lbl"/>",
 		"index":<xsl:choose>
 				<!-- Check if the indexValue variable has a value -->
 				<xsl:when test="$indexValue">
@@ -986,10 +996,7 @@
 			<xsl:with-param name="theSubjectInstance" select="current()"/>
 			<xsl:with-param name="isRenderAsJSString" select="true()"/>
 		</xsl:call-template>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-		"label":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$lbl"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-</xsl:call-template>",
+		"label": "<xsl:value-of select="$lbl"/>",
 		"busCaps":[<xsl:for-each select="current()/own_slot_value[slot_reference='vsg_required_business_capabilities']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"busProcs":[<xsl:for-each select="current()/own_slot_value[slot_reference='vs_supporting_bus_processes']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>

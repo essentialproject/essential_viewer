@@ -42,9 +42,9 @@
   
     <xsl:variable name="anAPIReport" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Supplier Impact']"/>
     <xsl:variable name="supplierData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Suppliers']"></xsl:variable>
-    <xsl:variable name="supplierKPI" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Support KPIs']"></xsl:variable>
+    <xsl:variable name="supplierKPI" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: Support KPIs'[own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
 	<xsl:variable name="capsAppsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
-    <xsl:variable name="techProdSuppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart']"></xsl:variable>
+    <xsl:variable name="techProdSuppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Application Mart'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
      <!--<xsl:variable name="techProdSuppData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Technology Products and Suppliers']"></xsl:variable>
    
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.

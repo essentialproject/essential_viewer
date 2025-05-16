@@ -7,7 +7,7 @@
 	
 
 	<xsl:variable name="applicationServices" select="/node()/simple_instance[type='Application_Service']"/>
-	 
+	<xsl:key name="applicationServices" match="/node()/simple_instance[type='Application_Service']" use="type"/>
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -30,14 +30,17 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 
 	<xsl:template match="knowledge_base">
-		{"application_services":[<xsl:apply-templates select="$applicationServices" mode="appServices"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"615"}
+		{"application_services":[<xsl:apply-templates select="$applicationServices" mode="appServices"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],"version":"620"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="appServices">
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-			 </xsl:call-template>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')'))
+		}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"aprs":[<xsl:for-each select="current()/own_slot_value[slot_reference='provided_by_application_provider_roles']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

@@ -3,25 +3,32 @@
 <xsl:include href="../../common/core_utilities.xsl"/>
 <xsl:include href="../../common/core_js_functions.xsl"/>
 <xsl:output method="text" encoding="UTF-8"/>
-<xsl:variable name="allAppProviders" select="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')][own_slot_value[slot_reference = 'performance_measures']/value]"/>
-<xsl:variable name="appAPRs" select="/node()/simple_instance[type='Application_Provider_Role'][own_slot_value[slot_reference = 'role_for_application_provider']/value = $allAppProviders/name]"/>
+<xsl:key name="allAppProviders" match="/node()/simple_instance[type = ('Composite_Application_Provider','Application_Provider')]" use="type"/>
+<xsl:key name="appAPRs" match="/node()/simple_instance[type = ('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
+<xsl:variable name="allAppProviders" select="key('allAppProviders', ('Composite_Application_Provider','Application_Provider'))[own_slot_value[slot_reference = 'performance_measures']/value]"/>
+<xsl:variable name="appAPRs" select="key('appAPRs', $allAppProviders/name)"/>
 <xsl:key name="appAPRskey" match="/node()/simple_instance[type='Application_Provider_Role']" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
-<xsl:variable name="physProcessesDirect" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value=$allAppProviders/name]"/>
-<xsl:key name="physProcessesDirectkey" match="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value"/> 
-
-<xsl:variable name="physProcessesIndirect" select="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION'][own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value=$appAPRs/name]"/>
-<xsl:key name="physProcessesIndirectkey" match="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/> 
+<xsl:key name="appbrkey" match="/node()/simple_instance[type='APP_PRO_TO_PHYS_BUS_RELATION']" use="type"/>
+<xsl:key name="appbr" match="key('appbrkey', 'APP_PRO_TO_PHYS_BUS_RELATION')" use="own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value"/>
+<xsl:variable name="physProcessesDirect" select="key('appbr', $allAppProviders/name)"/>
+<xsl:key name="physProcessesDirectkey" match="key('appbrkey', 'APP_PRO_TO_PHYS_BUS_RELATION')" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_apppro']/value"/> 
+<xsl:key name="appbrpro" match="key('appbrkey', 'APP_PRO_TO_PHYS_BUS_RELATION')" use="own_slot_value[slot_reference='apppro_to_physbus_from_appprorole']/value"/>
+<xsl:variable name="physProcessesIndirect" select="key('appbrpro', $appAPRs/name)"/>
+<xsl:key name="physProcessesIndirectkey" match="key('appbrkey', 'APP_PRO_TO_PHYS_BUS_RELATION')" use="own_slot_value[slot_reference = 'apppro_to_physbus_from_appprorole']/value"/> 
 <xsl:variable name="allPhysProcesses" select="$physProcessesDirect union $physProcessesIndirect"/>
-<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=$allAppProviders/type]"/> 
-<xsl:variable name="perfMeasures" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allAppProviders/own_slot_value[slot_reference='performance_measures']/value]"/> 
-<xsl:variable name="appProcessPerfMeasures" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allPhysProcesses/own_slot_value[slot_reference='performance_measures']/value]"/> 
+<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=('Composite_Application_Provider','Application_Provider','Application_Provider_Interface','Application_Provider_Role')]"/> 
+<xsl:key name="perfMeasureKey" match="/node()/simple_instance[supertype='Performance_Measure']" use="name"/>
+<xsl:variable name="perfMeasures" select="key('perfMeasureKey', $allAppProviders/own_slot_value[slot_reference='performance_measures']/value)"/> 
+<xsl:variable name="appProcessPerfMeasures" select="key('perfMeasureKey', $allPhysProcesses/own_slot_value[slot_reference='performance_measures']/value)"/> 
 
 <xsl:key name="perfMeasureskey" match="/node()/simple_instance[supertype='Performance_Measure']" use="own_slot_value[slot_reference='pm_measured_element']/value"/> 
-
-<xsl:variable name="serviceQualities" select="/node()/simple_instance[supertype = 'Service_Quality'][name=$perfCategory/own_slot_value[slot_reference = 'pmc_service_qualities']/value]"></xsl:variable>
+<xsl:key name="sqKey" match="/node()/simple_instance[supertype='Service_Quality']" use="name"/>
+<xsl:variable name="serviceQualities" select="key('sqKey', $perfCategory/own_slot_value[slot_reference = 'pmc_service_qualities']/value)"></xsl:variable>
+ 
 <xsl:variable name="serviceQualityValues" select="/node()/simple_instance[supertype = 'Service_Quality_Value'][own_slot_value[slot_reference = 'usage_of_service_quality']/value=$serviceQualities/name]"></xsl:variable>
 <xsl:key name="serviceQualityValueskey" match="/node()/simple_instance[supertype = 'Service_Quality_Value']" use="own_slot_value[slot_reference = 'usage_of_service_quality']/value"/>
 <xsl:variable name="allElementStyles" select="/node()/simple_instance[type = 'Element_Style']"/>
+<xsl:key name="allClasses" match="/node()/class[type = ':ESSENTIAL-CLASS']" use="name"/>
 <!--
 <xsl:variable name="BusinessFit" select="/node()/simple_instance[type = 'Business_Service_Quality'][own_slot_value[slot_reference = 'name']/value = ('Business Fit')]"></xsl:variable>
 <xsl:variable name="BFValues" select="/node()/simple_instance[type = 'Business_Service_Quality_Value'][own_slot_value[slot_reference = 'usage_of_service_quality']/value = $BusinessFit/name]"></xsl:variable>
@@ -77,8 +84,12 @@
 		
 		<xsl:variable name="thisperfCategory" select="$perfCategory[own_slot_value[slot_reference='pmc_measures_ea_classes']/value=current()/type]"/> 
 		{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"app": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+		'app': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"perfMeasures":[<xsl:apply-templates select="$thisperfMeasures" mode="performanceMeasures"/>],
 		"processPerfMeasures":[<xsl:apply-templates select="$allthisPhysProcesses" mode="processPerformanceMeasures"/>],
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
@@ -101,8 +112,12 @@
 				<xsl:variable name="thisserviceQualityValues" select="key('serviceQualityValueskey',current()/name)"/> 
 				<xsl:variable name="thisserviceQualityMax" select="$serviceQualityValues[name = current()/own_slot_value[slot_reference = 'sq_maximum_value']/value]"></xsl:variable>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+					'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+					}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"type": "<xsl:value-of select="current()/type"/>",
 				"shortName":"<xsl:value-of select="current()/own_slot_value[slot_reference='short_name']/value"/>",
 				"maxScore":"<xsl:value-of select="$thisserviceQualityMax/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
@@ -113,19 +128,35 @@
 		</xsl:template>
 		<xsl:template match="node()" mode="perf">
 				<xsl:variable name="thisServiceQualities" select="$serviceQualities[name=current()/own_slot_value[slot_reference = 'pmc_service_qualities']/value]"></xsl:variable>
-				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+				<xsl:variable name="thisClasses" select="key('allClasses', current()/own_slot_value[slot_reference = ('enumeration_value_for_classes')]/value)"/>
+				{
+				"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"type": "<xsl:value-of select="current()/type"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"qualities":[<xsl:for-each select="$thisServiceQualities">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+					'enumeration_value': string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')')),
+					'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+					'enumeration_sequence_number': string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_sequence_number')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+				"classes":[<xsl:for-each select="current()/own_slot_value[slot_reference='pmc_measures_ea_classes']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
+				"enumeration_value_for_classes":[<xsl:for-each select="$thisClasses">"<xsl:value-of select="current()/name"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+				"qualities":[<xsl:for-each select="$thisServiceQualities">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position() != last()"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
 		<xsl:template match="node()" mode="sqvalues">
 			<xsl:variable name="thisStyle" select="$allElementStyles[name=current()/own_slot_value[slot_reference='element_styling_classes']/value]"/>
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"type": "<xsl:value-of select="current()/type"/>",
-				"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-				"index": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'sqv_index']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
-          		"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>","value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+				'score': string(translate(translate(current()/own_slot_value[slot_reference = ('service_quality_value_score')]/value,'}',')'),'{',')')),
+				'value': string(translate(translate(current()/own_slot_value[slot_reference = ('service_quality_value_value')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+				"index": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'sqv_index']/value"/>",
 				"elementColour": "<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>",
 				"elementBackgroundColour": "<xsl:value-of select="$thisStyle/own_slot_value[slot_reference = 'element_style_colour']/value"/>"
 				}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
@@ -135,13 +166,21 @@
 			<xsl:variable name="thisAppserviceQualities" select="/node()/simple_instance[supertype = 'Service_Quality'][name=current()/own_slot_value[slot_reference = 'pmc_service_qualities']/value]"></xsl:variable>
 			
 			{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"serviceQuals":[<xsl:for-each select="$thisAppserviceQualities">
 				
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"type": "<xsl:value-of select="current()/type"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+					}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 			</xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
 
@@ -156,7 +195,7 @@
 					</xsl:for-each>
 				</xsl:when>
 				<xsl:otherwise>
-					{"categoryid": "<xsl:value-of select="$thisperfCategory/name"/>", 
+					{ "categoryid": "<xsl:value-of select="$thisperfCategory/name"/>", 
 					"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 					<!--"category":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisperfCategory"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
 					"date":"<xsl:value-of select="current()/own_slot_value[slot_reference='pm_measure_date_iso_8601']/value"/>",
@@ -167,7 +206,11 @@
 						{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 						"type": "<xsl:value-of select="current()/type"/>",
 					<!--	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
-						"serviceName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisServiceQuality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+					<xsl:variable name="combinedMap" as="map(*)" select="map{
+						'serviceName': string(translate(translate($thisServiceQuality/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+							}" />
+						<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+						<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 						"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",
 						"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
 						"value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",
@@ -183,7 +226,11 @@
 				
 				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"proid":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='apppro_to_physbus_to_busproc']/value)"/>",
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+					}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"scores":[<xsl:for-each select="$thisProcessperfMeasures">
 						<xsl:variable name="thisServQualityValues" select="$serviceQualityValues[name=current()/own_slot_value[slot_reference='pm_performance_value']/value]"/> 
 						<xsl:variable name="thisperfCategory" select="$perfCategory[name=current()/own_slot_value[slot_reference='pm_category']/value]"/> 
@@ -197,7 +244,11 @@
 					{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 					"type": "<xsl:value-of select="current()/type"/>",
 				<!--	"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",-->
-					"serviceName":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisServiceQuality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'serviceName': string(translate(translate($thisServiceQuality/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+						}" />
+					<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+					<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 					"serviceId":"<xsl:value-of select="eas:getSafeJSString($thisServiceQuality/name)"/>",
 					"score": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>",
 					"value": "<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_value']/value"/>",

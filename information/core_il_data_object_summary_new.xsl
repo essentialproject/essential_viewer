@@ -8,7 +8,7 @@
 	<xsl:include href="../common/core_arch_image.xsl"/>
 	<xsl:include href="../common/core_external_repos_ref.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
-	<xsl:include href="../common/datatables_includes.xsl"/>
+	<xsl:include href="../common/datatables_includes.xsl"/> 
 
 	<!--<xsl:include href="../information/menus/core_data_subject_menu.xsl" />-->
 
@@ -33,6 +33,7 @@
 	<xsl:variable name="allActors" select="/node()/simple_instance[type=('Group_Actor','Individual_Actor')]"/>
 	<xsl:variable name="allActor2RoleRelations" select="/node()/simple_instance[type=('ACTOR_TO_ROLE_RELATION')]"/>
 	<xsl:variable name="allActorsInstances" select="$allActors union $allActor2RoleRelations"/>
+	<xsl:key name="allActorsInstances" match="$allActorsInstances" use="name"/>
 	<xsl:key name="physProcsKey" match="/node()/simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference = 'implements_business_process']/value"/>
 	<xsl:key name="physProcsToAppKey" match="$allProctoApp" use="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_from_physbusproc']/value"/>
 
@@ -460,7 +461,28 @@
 	 
 					
 					$(document).ready(function(){
-						 
+						 const tabs = document.querySelectorAll('ul.nav-tabs li');
+							const tabPanels = document.querySelectorAll('.tab-content > div');
+
+							tabs.forEach((tab, index) => {
+							tab.addEventListener('keydown', (event) => {
+								if (event.key === 'Enter' || event.key === ' ') {
+								event.preventDefault();
+								selectTab(index);
+								}
+							});
+							});
+
+							function selectTab(index) {
+							tabs.forEach((tab, i) => {
+								tab.setAttribute('aria-selected', i === index);
+							});
+							tabPanels.forEach((panel, i) => {
+								panel.style.display = i === index ? 'block' : 'none';
+							});
+							tabs[index].focus();
+							}
+
 					});
 				</script>
 			</head>
@@ -476,12 +498,12 @@
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
 									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Data Object Summary for')"/> </span><xsl:text> </xsl:text>
-									<span class="text-primary headerName"><select id="subjectSelection"></select></span>
+									<span class="text-primary headerName"><select id="subjectSelection"  aria-label="Select Data Subject"></select></span>
 								</h1>
 							</div>
 						</div>
 					</div>
-					<div id="mainPanel"/>
+					<div id="mainPanel" role="main" aria-label="Data Object Summary Panel"/>
 				</div>
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"></xsl:call-template>
@@ -502,13 +524,16 @@
 				<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 no-print">
 					<!-- required for floating -->
 					<!-- Nav tabs -->
-					<ul class="nav nav-tabs tabs-left">
-						<li class="active">
-							<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Data Object Details</a>
-						</li> 
+					<ul class="nav nav-tabs tabs-left" role="tablist">
+						<li class="active" role="presentation">
+							<a href="#details" id="tab-details" data-toggle="tab" role="tab" aria-controls="details" aria-selected="true">
+							<i class="fa fa-fw fa-tag right-10" aria-hidden="true"></i>
+							<xsl:value-of select="eas:i18n('Data Object Details')"/>
+							</a>
+						</li>
 						{{#if this.dataAttributes}}	
-						<li>
-							<a href="#datattributes" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Data Attributes</a>
+						<li role="presentation">
+							<a href="#datattributes" data-toggle="tab" role="tab" aria-controls="datattributes" aria-selected="false"><i class="fa fa-fw fa-tag right-10" aria-hidden="true"></i><xsl:value-of select="eas:i18n('Data Attributes')"/></a>
 						</li> 
 						{{/if}}
 						<!--		
@@ -519,25 +544,25 @@
 						{{/if}}
 						-->
 						{{#if this.processes}}
-				 		<li>
-							<a href="#dataprocess" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Process Usage</a>
+				 		<li role="presentation">
+							<a href="#dataprocess" data-toggle="tab" role="tab" aria-controls="datattributes" aria-selected="false"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Process Usage')"/></a>
 						</li>
 						{{/if}}
 						{{#if this.appsArray}}
-				 		<li>
-							<a href="#dataapps" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Usage</a>
+				 		<li role="presentation">
+							<a href="#dataapps" data-toggle="tab" role="tab" aria-controls="datattributes" aria-selected="false"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Usage')"/></a>
 						</li>
 						{{else}}
 							{{#if this.requiredByApps}}
-								<li>
-									<a href="#dataapps" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i>Application Usage</a>
+								<li role="presentation">
+									<a href="#dataapps" data-toggle="tab" role="tab" aria-controls="datattributes" aria-selected="false"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Usage')"/></a>
 								</li>
 							{{/if}}
 						{{/if}}
 						
 						{{#if this.externalDocs}}
-						<li>
-							<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i >Documents</a>
+						<li role="presentation">
+							<a href="#documents" data-toggle="tab" role="tab" aria-controls="datattributes" aria-selected="false"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Documents')"/></a>
 						</li>
 						{{/if}}
 					</ul>
@@ -547,30 +572,35 @@
 					<!-- Tab panes -->
 					<div class="tab-content">
 						<div class="tab-pane active" id="details">
-							<h2 class="print-only"><i class="fa fa-fw fa-desktop right-10"></i>Data Object Details</h2>
+							<h2 class="print-only"><i class="fa fa-fw fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Data Object Details')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Data Object</h3>
-									<label>Name</label>
-									<div class="ess-string">{{this.name}}</div>
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Data Object')"/></h3>
+									<label id="name-label" for="name-for-data-object">
+										<xsl:value-of select="eas:i18n('Name')"/>
+									</label>
+									<div id="name-for-data-object" class="ess-string" aria-labelledby="name-for-data-object">{{this.name}}</div>
 									<div class="clearfix bottom-10"></div>
-									<label>Description</label>
-									<div class="ess-string">{{{breaklines this.description}}}</div>
+									<label id="name-label" for="description-for-data-object">
+										<xsl:value-of select="eas:i18n('Description')"/>
+									</label>
+									<div id="description-for-data-object" class="ess-string" aria-labelledby="description-for-data-object">{{{breaklines this.description}}}</div>
+									
 									<div class="clearfix bottom-10"></div>
 									 
 								</div>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-users right-10"></i>Key Information</h3>
-									<label>Data Category</label>
-									<div class="bottom-10">
+									<h3 class="text-primary"><i class="fa fa-users right-10"></i><xsl:value-of select="eas:i18n('Key Information')"/></h3>
+									<label  id="data-category-label"><xsl:value-of select="eas:i18n('Data Category')"/></label>
+									<div class="bottom-10" role="text" aria-labelledby="data-category-label">
 											{{#if this.category}}
 											<span class="label label-info">{{this.category}}</span>
 											{{else}}
 											<span class="label label-warning">Not Set</span>
 											{{/if}}
 									</div>
-									<label>Parent Data Subject</label>
-									<div class="bottom-10">
+									<label id="parent-data-subject-label"><xsl:value-of select="eas:i18n('Parent Data Subject')"/></label>
+									<div class="bottom-10" role="text" aria-labelledby="parent-data-subject-label">
 											{{#if this.parents}}
 											{{#each this.parents}}
 											<span class="label label-success">{{this.name}}</span>
@@ -579,8 +609,8 @@
 											<span class="label label-warning">Not Set</span>
 											{{/if}}
 									</div>
-									<label>System of Record</label>
-									<div class="bottom-10">
+									<label id="system-of-record-label"><xsl:value-of select="eas:i18n('System of Record')"/></label>
+									<div class="bottom-10" role="text" aria-labelledby="system-of-record-label">
 											{{#if this.systemOfRecord}}
 											{{#each this.systemOfRecord}}
 											<span class="label label-primary">{{this.name}}</span>
@@ -594,7 +624,7 @@
 								
 								</div>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-building right-10"></i>Ownership</h3>
+									<h3 class="text-primary"><i class="fa fa-building right-10"></i><xsl:value-of select="eas:i18n('Ownership')"/></h3>
 									{{#if this.stakeholders}}
 										{{#each this.stakeholders}}
 											{{#ifContains this 'Owner'}}{{/ifContains}}
@@ -605,7 +635,7 @@
 								</div> 
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>Relevant Regulations</h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 									{{#each this.classifications}}<span class="label label-info">{{this.name}}</span>{{/each}}
 									{{#ifEquals this.classifications 0}}<span class="label label-primary">None</span>{{/ifEquals}}
 								</div>
@@ -613,15 +643,18 @@
 								<div class="col-xs-12"/>
 								{{#if this.stakeholdersList}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i>People &amp; Roles</h3>
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('People &amp; Roles')"/></h3>
 									
-									<table class="table table-striped table-bordered" id="dt_stakeholders">
+									<table class="table table-striped table-bordered" id="dt_stakeholders"  aria-describedby="stakeholdersDesc">
+									  <caption id="stakeholdersDesc">
+										<xsl:value-of select="eas:i18n('List of stakeholders with roles')"/>
+										</caption>
 											<thead>
 												<tr>
-													<th class="cellWidth-30pc">
+													<th class="cellWidth-30pc"  scope="col"> 
 														<xsl:value-of select="eas:i18n('Role')"/>
 													</th>
-													<th class="cellWidth-30pc">
+													<th class="cellWidth-30pc"  scope="col">
 														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
 													</th>
 													 
@@ -648,10 +681,10 @@
 											</tbody>
 											<tfoot>
 												<tr>
-													<th>
+													<th  scope="col">
 														<xsl:value-of select="eas:i18n('Role')"/>
 													</th>
-													<th>
+													<th  scope="col">
 														<xsl:value-of select="eas:i18n('Person or Organisation')"/>
 													</th>
 													 
@@ -670,42 +703,62 @@
 						 
 						</div>	
 						{{#if this.dataAttributes}}	
-						<div class="tab-pane" id="datattributes">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i>Data Attributes</h2>
+					<div class="tab-pane" id="datattributes" role="tabpanel" aria-labelledby="tab-attributes">
+							<h2 class="print-only top-30">
+								<i class="fa fa-fw fa-tag right-10" aria-hidden="true"></i>
+								<xsl:value-of select="eas:i18n('Data Attributes')"/>
+							</h2>
+
 							<div class="parent-superflex">
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Data Attributes</h3>
-									<p>Attributes for this data object</p>
-									<table id="dt_dobjecttable" class="table table-striped table-bordered" >
+								<h3 class="text-primary">
+									<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Data Attributes')"/>
+								</h3>
+
+								<p id="dobjecttable-desc">
+									<xsl:value-of select="eas:i18n('Attributes for this data object')"/>
+								</p>
+
+								<table id="dt_dobjecttable"
+										class="table table-striped table-bordered"
+										aria-describedby="dobjecttable-desc"
+										summary="This table lists attributes for the selected data object, including name, description, and type.">
+
+									<caption class="sr-only">
+									<xsl:value-of select="eas:i18n('Data Object Attributes Table')"/>
+									</caption>
+
 									<thead>
-										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Type</th>
-										</tr>
-										 
+									<tr>
+										<th scope="col"><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th scope="col"><xsl:value-of select="eas:i18n('Description')"/></th>
+										<th scope="col"><xsl:value-of select="eas:i18n('Type')"/></th>
+									</tr>
 									</thead>
+
 									<tbody>
 									{{#each this.dataAttributes}}
-										<tr>
-											<td>{{this.name}}</td>
-											<td>{{this.description}}</td>
-											<td>{{this.type}}</td>
-										</tr>
+									<tr>
+										<td>{{this.name}}</td>
+										<td>{{this.description}}</td>
+										<td>{{this.type}}</td>
+									</tr>
 									{{/each}}
 									</tbody>
+
 									<tfoot>
-										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Type</th>
-										</tr>
+									<tr>
+										<th scope="col"><xsl:value-of select="eas:i18n('Name')"/></th>
+										<th scope="col"><xsl:value-of select="eas:i18n('Description')"/></th>
+										<th scope="col"><xsl:value-of select="eas:i18n('Type')"/></th>
+									</tr>
 									</tfoot>
-									</table>
+								</table>
 								</div>
 							</div>
-
 						</div>
+
 						{{/if}}
 			<!--	 	<div class="tab-pane" id="datarep">
 						  <div class="parent-superflex">
@@ -762,105 +815,263 @@
 						 
 						</div>
 					-->	
-						<div class="tab-pane" id="dataapps">
-							<div class="parent-superflex">
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Applications</h3>
-									<div class="ess-dos-apps-wrapper">
-										{{#each this.appsArray}}
-										<div class="ess-dos-app bg-offwhite">   
-											<div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
-												
-											{{#each this.values}}
-												<div class="bottom-5"><strong>Appears in: </strong><span class="label label-link bg-darkgrey">{{this.nameirep}}</span></div>
-												<div>
-												{{#if this.datarepsimplemented}}
-													<span class="dbicon">{{this.category}}</span>
-													<span class="classiflist">
-														{{#each ../this.classifications}}
-														<span class="label label-info">{{this.name}}</span>
-														{{/each}}
-													</span>
-													<div>
-														<strong>Where:</strong>
-													</div>
-													{{#each this.datarepsimplemented}}
-													<div class="datatype"><span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span> </div>
-													<div class="datacrud">
-														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-													</div>
-													<div class="clearfix"/>
-													{{/each}}
-													{{else}}
-													<div class="datacrud">
-														<div class="strong small bottom-5">Operations:</div>
-														<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-														<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-														<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-														<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-													</div>
-												{{/if}}
-												</div>
-											{{/each}}			 
-										</div>
-										{{/each}}
-										{{#each this.requiredByApps}}
-										<div class="ess-dos-app bg-offwhite">   
-											<button class="btn btn-primary btn-xs">Required</button> by <div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
-										</div>
-										{{/each}}
-									</div>
-								</div>
-							</div>
-						</div>
-						{{#if processes}}
-						<div class="tab-pane" id="dataprocess">
-							<div class="parent-superflex">
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Processes</h3>
-									<div class="ess-dos-processes-wrapper">
-										{{#each processes}}
-											
-											<div class="ess-dos-process bg-offwhite">
-												<div class="large impact bottom-5">{{{essRenderInstanceMenuLink this}}}</div>
-												<div class="bottom-5"><strong>Performed by: </strong><span class="label label-link bg-darkgrey">{{{this.actor}}}</span></div>
-												<div class="bottom-5"><strong>Using: </strong><span class="label label-link bg-purple-40">{{this.nameirep}} ({{this.category}})</span></div>
-												<div class="datacrud">
-													<div class="strong small bottom-5">Operations:</div>
-													<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
-													<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
-													<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
-													<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
-												</div>
-												
-											</div>
-											
-											
-											
-										{{/each}} 
-									</div>
-								</div>
-							</div>							
-						</div>
-						{{/if}}
-						{{#if this.externalDocs}}
-						<div class="tab-pane" id="documents">
+						<div class="tab-pane" id="dataapps" role="tabpanel" aria-labelledby="tab-dataapps">
 						<div class="parent-superflex">
+						
+							<!-- Applications Using the Data Object -->
 							<div class="superflex">
-								<h3 class="text-primary"><i class="fa fa-desktop right-10"></i>Documentation</h3>
-								{{#each this.externalDocs}}
-									<div class="doc-link-blob bdr-left-blue">
-										<div class="doc-link-icon"><i class="fa fa-file-o"></i></div>
-										<div class="doc-link-label"><a target="_blank"><xsl:attribute name="href">{{this.link}}</xsl:attribute>{{this.name}}<xsl:text> </xsl:text><i class="fa fa-external-link"></i></a></div>
-										<div class="doc-description">{{this.description}}</div>
+							<h3 class="text-primary" id="apps-using-heading">
+								<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+								<xsl:value-of select="eas:i18n('Applications Using the Data Object')"/>
+							</h3>
+
+							<div class="ess-dos-apps-wrapper" aria-labelledby="apps-using-heading">
+								{{#each this.appsArray}}
+								<section class="ess-dos-app bg-offwhite" role="region" aria-label="{{this.name}}">
+								<h4 class="large impact bottom-5">
+									{{{essRenderInstanceMenuLink this}}}
+								</h4>
+
+								{{#each this.values}}
+								<div class="bottom-5">
+									<strong><xsl:value-of select="eas:i18n('Appears in')"/>:</strong>
+									<span class="label label-link bg-darkgrey">{{this.nameirep}}</span>
+								</div>
+
+								<div>
+									{{#if this.datarepsimplemented}} 
+									<span class="dbicon" aria-label="{{this.category}}">{{this.category}}</span>
+									<span class="classiflist">
+										{{#each ../this.classifications}}
+										<span class="label label-info">{{this.name}}</span>
+										{{/each}}
+									</span>
+									<div><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></div>
+
+									{{#each this.datarepsimplemented}}
+									<div class="datatype">
+										<span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span>
 									</div>
+									<div class="datacrud" aria-label="CRUD permissions">
+										<span class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</span>
+										<span class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</span>
+										<span class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</span>
+										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
+									</div>
+									<div class="clearfix"></div>
+									{{/each}}
+
+									{{else}}
+									<div class="datacrud" aria-label="CRUD permissions">
+										<div class="strong small bottom-5">
+										<xsl:value-of select="eas:i18n('Operations')"/>:
+										</div>
+										<span class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</span>
+										<span class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</span>
+										<span class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</span>
+										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
+									</div>
+									{{/if}}
+								</div>
+								{{/each}}
+								</section>
 								{{/each}}
 							</div>
+							</div>
+
+							<!-- Applications Impacted by the Information Representation(s) -->
+							<div class="superflex">
+							<h3 class="text-primary" id="apps-impacted-heading">
+								<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+								<xsl:value-of select="eas:i18n('Applications Impacted by the Information Representation(s) using the Object')"/>
+							</h3>
+
+							<div class="ess-dos-apps-wrapper" aria-labelledby="apps-impacted-heading">
+								{{#each this.appsImpactedArray}}
+								<section class="ess-dos-app bg-offwhite" role="region" aria-label="{{this.name}}">
+								<h4 class="large impact bottom-5">
+									{{{essRenderInstanceMenuLink this}}}
+								</h4>
+
+								{{#each this.values}}
+								<div class="bottom-5">
+									<strong><xsl:value-of select="eas:i18n('Appears in')"/>:</strong>
+									<span class="label label-link bg-darkgrey">{{this.nameirep}}</span>
+								</div>
+
+								<div>
+									{{#if this.datarepsimplemented}} 
+									<span class="dbicon" aria-label="{{this.category}}">{{this.category}}</span>
+									<span class="classiflist">
+										{{#each ../this.classifications}}
+										<span class="label label-info">{{this.name}}</span>
+										{{/each}}
+									</span>
+									<div><strong><xsl:value-of select="eas:i18n('Where')"/>:</strong></div>
+
+									{{#each this.datarepsimplemented}}
+									<div class="datatype">
+										<span class="appTableHeader">{{#getDataRep this.dataRepid}}{{/getDataRep}}</span>
+									</div>
+									<div class="datacrud" aria-label="CRUD permissions">
+										<span class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</span>
+										<span class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</span>
+										<span class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</span>
+										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
+									</div>
+									<div class="clearfix"></div>
+									{{/each}}
+
+									{{else}}
+									<div class="datacrud" aria-label="CRUD permissions">
+										<div class="strong small bottom-5">
+										<xsl:value-of select="eas:i18n('Operations')"/>:
+										</div>
+										<span class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</span>
+										<span class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</span>
+										<span class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</span>
+										<span class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</span>
+									</div>
+									{{/if}}
+								</div>
+								{{/each}}
+								</section>
+								{{/each}}
+
+								<!-- Required by other apps -->
+								{{#each this.requiredByApps}}
+								<section class="ess-dos-app bg-offwhite" role="region" aria-label="{{this.name}} required data object">
+								<p>
+									<button class="btn btn-primary btn-xs" aria-label="Required application">Required</button>
+									<span>by</span>
+								</p>
+								<h4 class="large impact bottom-5">
+									{{{essRenderInstanceMenuLink this}}}
+								</h4>
+								</section>
+								{{/each}}
+							</div>
+							</div>
+
 						</div>
 						</div>
+
+						{{#if processes}}
+						<div class="tab-pane" id="dataprocess" role="tabpanel" aria-labelledby="tab-dataprocess">
+						<div class="parent-superflex">
+							<div class="superflex">
+
+							<h3 class="text-primary" id="dataprocess-heading">
+								<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+								<xsl:value-of select="eas:i18n('Processes')"/>
+							</h3>
+
+							<div class="ess-dos-processes-wrapper" aria-labelledby="dataprocess-heading">
+								{{#each processes}}
+
+								<section class="ess-dos-process bg-offwhite" role="region" aria-label="{{this.name}}">
+								<h4 class="large impact bottom-5">
+									{{{essRenderInstanceMenuLink this}}} 
+								</h4>
+
+								<p class="bottom-5">
+									<strong><xsl:value-of select="eas:i18n('Performed by')"/>: </strong>
+									<span class="label label-link bg-darkgrey">{{{essRenderInstanceMenuLink this.actor}}} </span>
+								</p>
+
+								<p class="bottom-5">
+									<strong><xsl:value-of select="eas:i18n('Using')"/>: </strong>
+									<span class="label label-link bg-purple-40">
+									{{this.nameirep}} ({{this.category}})
+									</span>
+								</p>
+
+								<div class="datacrud" aria-label="CRUD operations for {{this.name}}">
+									<p class="strong small bottom-5">
+									<xsl:value-of select="eas:i18n('Operations')"/>:
+									</p>
+									<div class="ess-crud">C {{#CRUDVal this.create}}{{/CRUDVal}}</div>
+									<div class="ess-crud">R {{#CRUDVal this.read}}{{/CRUDVal}}</div>
+									<div class="ess-crud">U {{#CRUDVal this.update}}{{/CRUDVal}}</div>
+									<div class="ess-crud">D {{#CRUDVal this.delete}}{{/CRUDVal}}</div>
+								</div>
+								</section>
+
+								{{/each}}
+							</div>
+
+							</div>
+						</div>
+						</div>
+						{{else}}
+							{{#if this.requiredByProcesses}}
+								<div class="tab-pane" id="dataprocess" role="tabpanel" aria-labelledby="tab-dataprocess">
+									<div class="parent-superflex">
+										<div class="superflex">
+											<h3 class="text-primary" id="dataprocess-heading">
+												<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+												<xsl:value-of select="eas:i18n('Processes')"/>
+											</h3>
+
+											<div class="ess-dos-processes-wrapper" aria-labelledby="dataprocess-heading">
+												{{#each this.requiredByProcesses}}
+												<section class="ess-dos-process bg-offwhite" role="region" aria-label="{{this.name}}">
+													<p>
+														<button class="btn btn-primary btn-xs" aria-label="Required process">Required</button>
+														<span>by</span>
+													</p>
+													<h4 class="large impact bottom-5">
+														{{{essRenderInstanceMenuLink this}}}
+													</h4>
+												</section>
+												{{/each}}
+											</div>
+
+										</div>
+									</div>
+								</div>
+							{{/if}}
+
+						{{/if}}
+						{{#if this.externalDocs}}
+					<div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="tab-documents">
+					<div class="parent-superflex">
+						<div class="superflex">
+
+						<h3 class="text-primary" id="documents-heading">
+							<i class="fa fa-desktop right-10" aria-hidden="true"></i>
+							<xsl:value-of select="eas:i18n('Documentation')"/>
+						</h3>
+
+						{{#each this.externalDocs}}
+						<section class="doc-link-blob bdr-left-blue" role="region" aria-labelledby="doc-title-{{@index}}">
+							
+							<div class="doc-link-icon" aria-hidden="true">
+							<i class="fa fa-file-o"></i>
+							</div>
+
+							<div class="doc-link-label">
+							<h4 id="doc-title-{{@index}}">
+								<a
+								target="_blank"
+								rel="noopener noreferrer"
+								aria-label="Open documentation: {{this.name}} (opens in a new window)"><xsl:attribute name="href">{{this.link}}</xsl:attribute>
+								{{this.name}} <i class="fa fa-external-link" aria-hidden="true"></i>
+								</a>
+							</h4>
+							</div>
+
+							<div class="doc-description">
+							{{this.description}}
+							</div>
+
+						</section>
+						{{/each}}
+
+						</div>
+					</div>
+					</div>
+
 						{{/if}}
 					</div>
 				</div>
@@ -913,7 +1124,7 @@
 					}
 				});
 			}; 
-	
+	  
 			 function showEditorSpinner(message) {
 				$('#editor-spinner-text').text(message);                            
 				$('#editor-spinner').removeClass('hidden');                         
@@ -937,7 +1148,8 @@
 			var busProcs=[<xsl:apply-templates select="$busProcs" mode="procInfo"/>];
 			var physProcs=[<xsl:apply-templates select="$physProcs" mode="physProcInfo"/>];
 			var appProToProcess=[<xsl:apply-templates select="$allProctoApp" mode="infoToProcess"/>];
- 
+ console.log('physProcs',physProcs)
+  console.log('busProcs',busProcs)
 			var allDO=[];
 			var table;
 			var stakeholdertable;
@@ -967,10 +1179,11 @@
 						return '<div class="ess-circle" title="Unknown" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-question-circle" style="color:#f0ad4e;font-size:12pt"></i></div>'
 					}
 				});
-
+ 
 			Promise.all([ 
 				promise_loadViewerAPIData(viewAPIDataDO) 
 				]).then(function (responses){  
+				 
 					allDO=responses[0];
 					let focusDOid='<xsl:value-of select="$param1"/>';
 					let focusDO=allDO.data_objects.find((f)=>{
@@ -986,8 +1199,9 @@
 					
 					DOList=responses[0] ; 
 					DRList=responses[0].data_representation ; 
-		 
+		  
 					allDO.data_objects.forEach((e)=>{
+					 
 						var option = new Option(e.name, e.id); 
 						$('#subjectSelection').append($(option));  
 							let theDrs=[]
@@ -998,7 +1212,7 @@
 								theDrs.push(thisDr)
 							});
 							e['dataReps']=theDrs
-
+  
 							var nested_apps = d3.nest()
 								.key(function(f) { return f.id; })
 								.entries(e.infoRepsToApps); 
@@ -1013,8 +1227,23 @@
 								})
 
 								nested_apps=nested_apps.sort((a, b) => a.key.localeCompare(b.name))
-							e['appsArray']=nested_apps;
-							
+
+								const useData = [];
+								const impactedBy = [];
+
+								nested_apps.forEach(app => {
+									const datareps = app.values?.[0]?.datarepsimplemented || [];
+
+									if (datareps.length > 0) {
+										useData.push(app);
+									} else {
+										impactedBy.push(app);
+									}
+								});
+
+
+							e['appsArray']=useData;
+							e['appsImpactedArray']=impactedBy; 
 							e['processes']=[];
 							e.infoRepsToApps.forEach((doira)=>{
 								let thisProcess=appProToProcess.filter((f)=>{
@@ -1027,7 +1256,7 @@
 										return m.id==p.id
 									})
 									if(match){
-										e.processes.push({"id":thisProcess[0].processes[0].id,"infoRepid":thisProcess[0].app_info_rep,"name":thisProcess[0].processes[0].name, "actor":match.actor, "category": doira.category, "nameirep":doira.nameirep, "create":doira.create, "read":doira.read, "update":doira.update ,"delete":doira.delete, "persisted": doira.persisted, "className":'Business_Process'})
+										e.processes.push({"id":thisProcess[0].processes[0].id,"infoRepid":thisProcess[0].app_info_rep,"name":thisProcess[0].processes[0].name, "actor":match.actorDetail, "category": doira.category, "nameirep":doira.nameirep, "create":doira.create, "read":doira.read, "update":doira.update ,"delete":doira.delete, "persisted": doira.persisted, "className":'Business_Process'})
 									}
 
 								})
@@ -1472,42 +1701,48 @@
 	<xsl:variable name="physProcess" select="key('physProcsKey', current()/name)"/>
 	<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isForJSONAPI" select="true()"/>
-		 </xsl:call-template>",
+	<xsl:variable name="combinedMapName" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultName" select="serialize($combinedMapName, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultName,'{'),'}')"/>,
 		"physProcesses":[
 		<xsl:for-each select="$physProcess"> 
-		<xsl:variable name="thisActor" select="$allActorsInstances[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+		<xsl:variable name="thisActor" select="key('allActorsInstances', current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)"/>
 		<xsl:variable name="thisActorviaA2R" select="key('allActors_key',$thisActor/name)"/>
 		<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-			</xsl:call-template>",
+			<xsl:variable name="combinedMapName" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultName" select="serialize($combinedMapName, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultName,'{'),'}')"/>,
 			<xsl:choose>
 				<xsl:when test="$thisActor/type='ACTOR_TO_ROLE_RELATION'"> 
-				"actor":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="$thisActorviaA2R"/>
-							<xsl:with-param name="isForJSONAPI" select="true()"/>
-						</xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'actor': string(translate(translate($thisActorviaA2R/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActorviaA2R/name)"/>",			
 				</xsl:when>
 				<xsl:otherwise> 
-				"actor":"<xsl:call-template name="RenderInstanceLinkForJS">
-							<xsl:with-param name="theSubjectInstance" select="$thisActor"/>
-							<xsl:with-param name="isForJSONAPI" select="true()"/>
-						</xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate($thisActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+				"actorDetail":{"id":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>",<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "className":"Group_Actor"},
 				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>",		
 				</xsl:otherwise>
 			</xsl:choose>
 			"usages":[<xsl:for-each select="$physProcesstoApp">  
 					{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-					"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-						<xsl:with-param name="theSubjectInstance" select="current()"/>
-						<xsl:with-param name="isForJSONAPI" select="true()"/>
-					</xsl:call-template>",
+						<xsl:variable name="combinedMapName" as="map(*)" select="map{
+						'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+					}" />
+					<xsl:variable name="resultName" select="serialize($combinedMapName, map{'method':'json', 'indent':true()})" />
+					<xsl:value-of select="substring-before(substring-after($resultName,'{'),'}')"/>,
 					"appInfoRep":"<xsl:value-of select="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if> 
 				</xsl:for-each>]
 			}<xsl:if test="position()!=last()">,</xsl:if> 
@@ -1515,27 +1750,31 @@
 	}<xsl:if test="position()!=last()">,</xsl:if> 
 </xsl:template>
 <xsl:template match="node()" mode="physProcInfo">  
-	 <xsl:variable name="thisActor" select="$allActorsInstances[name=current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value]"/>
+	 <xsl:variable name="thisActor" select="key('allActorsInstances', current()/own_slot_value[slot_reference = 'process_performed_by_actor_role']/value)"/>
 		<xsl:variable name="thisActorviaA2R" select="key('allActors_key',$thisActor/name)"/>
 		<xsl:variable name="physProcesstoApp" select="key('physProcsToAppKey', current()/name)"/>
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-			</xsl:call-template>",
+			<xsl:variable name="combinedMapName" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultName" select="serialize($combinedMapName, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultName,'{'),'}')"/>,
 			<xsl:choose>
 				<xsl:when test="$thisActor/type='ACTOR_TO_ROLE_RELATION'"> 
-				"actor":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="$thisActorviaA2R"/>
-							<xsl:with-param name="isForJSONAPI" select="true()"/>
-						</xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'actor': string(translate(translate($thisActorviaA2R/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActorviaA2R/name)"/>"			
 				</xsl:when>
 				<xsl:otherwise> 
-				"actor":"<xsl:call-template name="RenderInstanceLinkForJS">
-							<xsl:with-param name="theSubjectInstance" select="$thisActor"/>
-							<xsl:with-param name="isForJSONAPI" select="true()"/>
-						</xsl:call-template>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate($thisActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+				}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+				"actorDetail":{"id":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>",<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "className":"Group_Actor"},
 				"actorid":"<xsl:value-of select="eas:getSafeJSString($thisActor/name)"/>"
 				</xsl:otherwise>
 			</xsl:choose>
@@ -1555,16 +1794,18 @@
 <xsl:variable name="busProcess" select="key('busProcsKey', $physProcesstoApp/name)"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 	"app_info_rep":"<xsl:value-of select="own_slot_value[slot_reference = 'physbusproc_to_appinfoview_to_appinforep']/value"/>",
-	"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isForJSONAPI" select="true()"/>
-		 </xsl:call-template>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 	"processes":[<xsl:for-each select="$busProcess">
 			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-			</xsl:call-template>"
+			<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
 			}<xsl:if test="position()!=last()">,</xsl:if> 
 			</xsl:for-each>
 		],
@@ -1598,6 +1839,9 @@
 			if(instance != null) {
                 let linkMenuName = essGetMenuName(instance); 
 				let instanceLink = instance.name;    
+				console.log('linkMenuName', linkMenuName)
+					console.log('instanceLink', instanceLink)
+						console.log('instance', instance)
 				if(linkMenuName) {
 					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
 					let linkClass = 'context-menu-' + linkMenuName;
@@ -1626,10 +1870,11 @@
 		<xsl:variable name="reg" select="key('regRels', current()/name)"/>
 
 		{"id":"<xsl:value-of select="current()/name"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>", 
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"elements":[<xsl:for-each select="$reg/own_slot_value[slot_reference = 'regulated_component_to_element']/value">{"id":"<xsl:value-of select="."/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:template>
 </xsl:stylesheet>

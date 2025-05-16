@@ -45,9 +45,21 @@
 	<xsl:variable name="techProdData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core View API: TRM Get All Tech Product Roles']"></xsl:variable>
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="apuData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: App APUs']"></xsl:variable>
+	<xsl:variable name="instanceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Simple Instance']"></xsl:variable>
 
+	<xsl:variable name="lastPublishDateTime" select="/node()/timestamp"/>
+	<xsl:variable name="repo" select="/node()/repository/repositoryID"/>
 	<xsl:variable name="decisions" select="/node()/simple_instance[type=('Application_Decision','Enterprise_Decision')]"/>
 	<xsl:key name="instance" match="/node()/simple_instance[supertype=('EA_Class')]" use="name"/>
+	<xsl:key name="overallCurrencyDefault" match="/node()/simple_instance[type='Report_Constant']" use="own_slot_value[slot_reference = 'name']/value"/>
+    <xsl:variable name="overallCurrencyDefault" select="key('overallCurrencyDefault', 'Default Currency')"/> 
+	<xsl:variable name="currency" select="/node()/simple_instance[type='Currency'][name=$overallCurrencyDefault/own_slot_value[slot_reference='report_constant_ea_elements']/value]"/>
+	<xsl:variable name="isEIPMode">
+ 		<xsl:choose>
+ 			<xsl:when test="$eipMode = 'true'">true</xsl:when>
+ 			<xsl:otherwise>false</xsl:otherwise>
+ 		</xsl:choose>
+ 	</xsl:variable>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -132,6 +144,11 @@
 				<xsl:with-param name="apiReport" select="$apuData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="apiInstance">
+			<xsl:call-template name="GetViewerAPIPathText">
+				<xsl:with-param name="apiReport" select="$instanceData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:call-template name="docType"></xsl:call-template>
 		<html>
 			<head>
@@ -153,7 +170,16 @@
 				<script src="js/FileSaver.min.js?release=6.19"></script>
 				<script src="js/jszip/jszip.min.js?release=6.19"></script>
 
+				<script src="application/renderTimelineFunction.js" type="text/javascript"></script>
+				<xsl:if test="$isEIPMode">
+				<script type="text/javascript" src="editors/assets/js/joint-plus/package/joint-plus.js"></script>
+				<script src="editors/configurable/sketch-diagram-tab/jointjs-sketch/js/shapes/links.js"></script> 
+				</xsl:if>
 				<style type="text/css">
+					.v-line {
+ 				   		font-family: arial;
+						font-size: 0.9em;
+					}
 					.headerName > .select2 {top: -3px; font-size: 25px;}
 					.headerName > .select2 > .selection > .select2-selection {height: 32px;}
 					.dataTables_filter{
@@ -518,7 +544,7 @@
 					    margin-bottom: 10px;
 					    border: 1px solid #bbb;
 					    border-bottom: 1px solid #666;
-					    background-color: #ccc;
+					    background-color: #fff;
 					}
 					
 					.tech-item-label{
@@ -529,7 +555,7 @@
 					.tech-item-label-sub{
 					    width: 400px;
 					    display: inline-block;
-					    color: #fff;
+					    color: #000;
 					}
 					.tech-item-component{
 					    display: inline-block;
@@ -676,7 +702,7 @@
 					    z-index: 999999;
 					    text-align: center;
 					}
-				.spin-text{
+					.spin-text{
 					    font-weight: 700;
 					    animation-duration: 1.5s;
 					    animation-iteration-count: infinite;
@@ -722,7 +748,7 @@
 					    position: absolute;
 					    right: 5px;
 					    top: 5px;
-					    background-color: #fff;
+					    background-color: #f1f1f1;
 					    padding: 4px;
 					    min-width: 85px;
 					    border-radius: 8px;
@@ -1040,12 +1066,35 @@
 						display: inline-block;
 						margin-right: 10px; /* Adjust the spacing as needed */
 					  }
+
+					#paper-container {
+						display: flex;
+						justify-content: flex-start;
+						align-items: flex-start; /* Align to the top */
+						overflow: auto; /* Ensure scrolling */
+						width: 100%;
+						height: 100%;
+						position: relative;
+					}
+
+					#paper-container .joint-paper {
+							top: 40px !important;
+							left: 0px !important;
+					}
+
+					.control-group{
+						display:inline-block;
+						padding:2px;
+						margin:2px;
+						border:1pt solid #d3d3d3;
+						text-align:center;
+					}
 				</style>
 				 
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
-				<xsl:call-template name="Heading"></xsl:call-template>
+				<xsl:call-template name="Heading"></xsl:call-template> 
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
@@ -1057,6 +1106,7 @@
 										<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
 										<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Application Summary for')"/> </span>&#160;
 										<span class="text-primary headerName"><select id="subjectSelection" style="width: 600px;"></select></span>
+										<span id="selectMenu"></span>
 									</h1> 
 									<div class="pull-right wordIcon"> 
 										<i class="fa fa-file-word-o fa-2x" id="getWord" title="word"></i> 
@@ -1105,6 +1155,7 @@
 				</div>
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"></xsl:call-template>
+
 			</body>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction"> 
@@ -1119,13 +1170,11 @@
 					<xsl:with-param name="viewerAPIPathPlans" select="$apiPlans"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathTech" select="$apiTech"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathBusCap" select="$apiBusCap"></xsl:with-param>
-					<xsl:with-param name="viewerAPIPathAPU" select="$apiAPU"></xsl:with-param>
+					<xsl:with-param name="viewerAPIPathAPU" select="$apiAPU"></xsl:with-param>	
+					<xsl:with-param name="viewerAPIPathInstance" select="$apiInstance"></xsl:with-param>
 				</xsl:call-template>  
 			</script>	
-			<script>
-
-
-				</script>
+ 
  	
 <script id="lifecycle-template" type="text/x-handlebars-template">	
 	<div class="parent-superflex">
@@ -1289,6 +1338,11 @@
 							<a href="#otherEnums" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Other')"/></a>
 						</li>
 						{{/if}}
+						{{#if this.eipmode}}
+						<li> 
+							<a href="#diagrams" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Diagrams')"/></a>
+						</li> 
+						{{/if}}
 						{{#if this.documents}}
 						<li>
 							<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Documents')"/></a>
@@ -1333,6 +1387,13 @@
 									<div class="ess-string">{{this.short_name}}</div>
 									<div class="clearfix bottom-10"></div>
 									{{/if}}
+									{{#if this.synonyms}}
+									<label><xsl:value-of select="eas:i18n('Synonyms')"/></label>
+									{{#each this.synonyms}}
+										<span class="label label-default">{{this.name}}</span>
+									{{/each}} 
+									{{/if}}
+									
 									
 									 
 								</div>
@@ -1591,7 +1652,7 @@
 								<div class="superflex">
 									<div>
 										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></h3>
-										<p><xsl:value-of select="eas:i18n('High-level integration view of')"/> <u><xsl:value-of select="eas:i18n('application-level')"/></u> <xsl:value-of select="eas:i18n('integrations.  See detailed view for a higher level of granularity, including APIs and data flow information.')"/></p>
+										<p><xsl:value-of select="eas:i18n('High-level integration view of')"/><xsl:text> </xsl:text> <u><xsl:value-of select="eas:i18n('application-level')"/></u> <xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('integrations.  See detailed view for a higher level of granularity, including APIs and data flow information.')"/></p>
 										<div class="pull-right"><button class="btn btn-success interfaceButton"><xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:value-of select="eas:i18n('View Integration Detail')"/></button></div>
 									</div>						 
 									<div id="svgBox">
@@ -1889,7 +1950,7 @@
 														{{#each this.standards}}
 														<i class="fa fa-circle fa-fw"><xsl:attribute name="style">color:{{this.statusBgColour}}</xsl:attribute></i>
 														{{/each}} 
-														<div class="pull-right left-5"><xsl:value-of select="eas:i18n('Standards')"/> 
+														<div class="pull-right left-5"><xsl:value-of select="eas:i18n('Standards')"/> <xsl:text> </xsl:text>
 															<a tabindex="-1" class="popover-trigger" data-toggle="popover" style="color:#333;">
 																<xsl:attribute name="easid">{​​​​​​​​​{​​​​​​​​​this.id}​​​​​​​​​}​​​​​​​​​</xsl:attribute>
 																<i class="fa fa-info-circle"></i>
@@ -1934,6 +1995,7 @@
 							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h2>
 							<div class="parent-superflex">
 								<div class="superflex">
+								<div class="pull-right"><b>Currency</b>: <select id="ccySelect"><option>Choose</option></select></div>
 									<div class="costTotal-container">
 										 
 									</div>
@@ -1977,7 +2039,7 @@
 											<td><span class="label label-primary">{{this.name}}</span></td>
 											<td><span class="label label-primary">{{#getType this.costType}}{{/getType}}</span></td>
 											<td>{{this.description}}</td>
-											<td>{{this.currency}}{{#formatCurrency this.cost}}{{/formatCurrency}}</td>
+											<td>{{#if this.this_currency}}{{this.this_currency}}{{else}}{{this.currency}}{{/if}}{{#formatCurrency this.cost}}{{/formatCurrency}}</td>
 											<td>{{#formatDate this.fromDate}}{{/formatDate}}</td>
 											<td>{{#formatDate this.toDate}}{{/formatDate}}</td>
 										</tr>
@@ -2111,7 +2173,7 @@
 								<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-road right-10"></i><xsl:value-of select="eas:i18n('Application Lifecycles')"/></h3>
 									<p><xsl:value-of select="eas:i18n('Lifecycles for the application')"/></p>
-
+<!--
 									<i class="fa fa-chevron-circle-left right-5" id="lifecycleDown"></i><small><xsl:value-of select="eas:i18n('Move Start Date')"/></small>
 									
 									<i class="fa fa-chevron-circle-right right-5" id="lifecycleUp"></i> 
@@ -2121,6 +2183,8 @@
 										<i class="fa fa-chevron-circle-right right-5" id="lifecycleEndUp"></i> 
 									</div>
 								 <div id="lifecyclePanel"></div>
+-->
+								 <div id="TimelinePanel"></div>
 								</div>
 							</div> 
 						</div>
@@ -2293,16 +2357,6 @@
 												{{/if}}
 											  </div>
 											  
-											  <!-- UM_Business Domain -->
-											  <div class="mt-2">
-												<span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('UM_Business Domain')"/></span>
-												{{#if this.umBusinessDomain}}
-												  <span class="text-muted">{{this.umBusinessDomain}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-											  
 											  
 											  <!-- Project Description -->
 											  <div class="mt-2">
@@ -2444,17 +2498,6 @@
 											  {{/if}}
 											</div>
 											
-											<!-- UM_Business Domain -->
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('UM_Business Domain')"/></span>
-											  {{#if this.umBusinessDomain}}
-												<span class="text-muted">{{this.umBusinessDomain}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											
-											
 											<!-- Project Description -->
 											<div class="mt-2">
 											  <span class="label label-default top-5 ms-3"><xsl:value-of select="eas:i18n('Description')"/></span>
@@ -2590,16 +2633,6 @@
 											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('Parent Program')"/></span>
 											  {{#if this.programmeName}}
 												<span class="text-muted">{{this.programmeName}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											
-											<!-- UM_Business Domain -->
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('UM_Business Domain')"/></span>
-											  {{#if this.umBusinessDomain}}
-												<span class="text-muted">{{this.umBusinessDomain}}</span>
 											  {{else}}
 												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
 											  {{/if}}
@@ -2876,7 +2909,17 @@
 									  </div>
 								</div>
 							</div>
+						</div> 
+						<div class="tab-pane" id="diagrams">
+						<div class="parent-superflex">
+							<div class="superflex">
+								<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Diagrams')"/></h3>
+								<div class="clearfix"/>
+								<select id="appDiagrams"><option>Choose</option></select>
+								<div id="paper-container"/>
+							</div>
 						</div>
+						</div> 
 						{{#if this.documents}}
 						<div class="tab-pane" id="documents">
 						<div class="parent-superflex">
@@ -2919,20 +2962,20 @@
 	<script id="costTotal-template" type="text/x-handlebars-template">
 		<h3 class="text-primary"><i class="fa fa-money right-10"></i><b><xsl:value-of select="eas:i18n('Costs')"/></b></h3>
 		
-		<h3><b><xsl:value-of select="eas:i18n('Annual Cost')"/></b>: {{this.annualCost}}</h3>
-		<h3><b><xsl:value-of select="eas:i18n('Monthly Cost')"/></b>: {{this.monthlyCost}}</h3>
+		<h3><b><xsl:value-of select="eas:i18n('Regular Annual Cost')"/></b>: <span id="regAnnual">{{this.annualCost}}</span></h3>
+		<h3><b><xsl:value-of select="eas:i18n('Regular Monthly Cost')"/></b>: <span id="regMonthly">{{this.monthlyCost}}</span></h3>
 	</script>
 	<script id="kpiWord-template" type="text/x-handlebars-template">
-	[{{#each this.perfsGrp}} 
-		  {{#each this.values}} 
-				{"header":"KPI - {{../this.name}}",
-				"level":1,
-				"intro":"{{this.date}}",
-				"type":"bullets",
-				"content":[{{#each this.serviceQuals}}
-				 "{{this.serviceName}} - {{this.score}}"{{#unless @last}},{{/unless}}{{/each}}]}{{#unless @last}},{{/unless}}
-			{{/each}}{{#unless @last}},{{/unless}}
-	{{/each}}]
+		[{{#each this.perfsGrp}} 
+			{{#each this.values}} 
+					{"header":"KPI - {{../this.name}}",
+					"level":1,
+					"intro":"{{this.date}}",
+					"type":"bullets",
+					"content":[{{#each this.serviceQuals}}
+					"{{this.serviceName}} - {{this.score}}"{{#unless @last}},{{/unless}}{{/each}}]}{{#unless @last}},{{/unless}}
+				{{/each}}{{#unless @last}},{{/unless}}
+		{{/each}}]
 	</script>
 	<script id="techWord-template" type="text/x-handlebars-template">	
 		[{{#each this.environments}}
@@ -2953,6 +2996,11 @@
 		{{/ifEquals}}
 		{{/each}}]
 	</script>		
+	<script id="select-template" type="text/x-handlebars-template"> 
+		 
+		<xsl:text> </xsl:text>{{#essRenderInstanceLinkSelect this}}{{/essRenderInstanceLinkSelect}}       
+		 
+		</script>
 	<xsl:call-template name="wordHandlebars"/>
 		</html>
 	</xsl:template>  
@@ -2970,6 +3018,7 @@
 			<xsl:param name="viewerAPIPathTech"></xsl:param>
 			<xsl:param name="viewerAPIPathBusCap"></xsl:param>
 			<xsl:param name="viewerAPIPathAPU"></xsl:param>
+			<xsl:param name="viewerAPIPathInstance"></xsl:param> 
 			
 			<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>		
 			//a global variable that holds the data returned by an Viewer API Report 
@@ -2985,38 +3034,157 @@
 			var viewAPIDataCapMart = '<xsl:value-of select="$viewerAPIPathBusCap"/>';
 			var viewAPIDataAPU = '<xsl:value-of select="$viewerAPIPathAPU"/>';
 			
-			//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
-	
-			var promise_loadViewerAPIData = function (apiDataSetURL)
-			{
-				return new Promise(function (resolve, reject)
-				{
-					if (apiDataSetURL != null)
-					{
-						var xmlhttp = new XMLHttpRequest();
-						xmlhttp.onreadystatechange = function ()
-						{
-							if (this.readyState == 4 &amp;&amp; this.status == 200)
-							{
-								
-								var viewerData = JSON.parse(this.responseText);
-								resolve(viewerData);
-							}
-						};
-						xmlhttp.onerror = function ()
-						{
-							reject(false);
-						};
-						
-						xmlhttp.open("GET", apiDataSetURL, true);
-						xmlhttp.send();
-					} else
-					{
-						reject(false);
-					}
-				});
-			}; 
-	
+			const openDB = () => {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open("viewerDataDB", 3);
+
+        request.onupgradeneeded = (event) => {
+            let db = event.target.result;
+            if (!db.objectStoreNames.contains("datasets")) {
+                db.createObjectStore("datasets", { keyPath: "url" });
+            }
+        };
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = () => reject("IndexedDB connection failed");
+    });
+};
+
+const cacheData = async (url, data, lastPublished, repoId) => {
+    try {
+        let db = await openDB();
+        let tx = db.transaction("datasets", "readwrite");
+        let store = tx.objectStore("datasets");
+
+        store.put({ url, data, lastPublished, repoId }); // Store repoId andlastPublished timestamp
+
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => reject("Error caching data");
+        });
+    } catch (error) {
+        return Promise.reject("IndexedDB connection failed");
+    }
+};
+
+const getCachedData = async (url) => {
+    try {
+        let db = await openDB();
+        let tx = db.transaction("datasets", "readonly");
+        let store = tx.objectStore("datasets");
+        let getRequest = store.get(url);
+
+        return new Promise((resolve, reject) => {
+            getRequest.onsuccess = () => {
+                if (getRequest.result) {
+                    resolve({
+                        data: getRequest.result.data,
+                        lastPublished: getRequest.result.lastPublished || null,
+                        repoId: getRequest.result.repoId || null,
+                    });
+                } else {
+                    resolve(null);
+                }
+            };
+            getRequest.onerror = () => reject("Error retrieving cached data");
+        });
+    } catch (error) {
+        return Promise.reject("IndexedDB connection failed");
+    }
+};
+var rid="<xsl:value-of select="$overallCurrencyDefault/own_slot_value[slot_reference='report_constant_ea_elements']/value"/>"
+console.log('rid', rid)
+var rcCcyId= {ccyCode: "<xsl:value-of select="$currency/own_slot_value[slot_reference='currency_code']/value"/>", ccySymbol: "<xsl:value-of select="$currency/own_slot_value[slot_reference='currency_symbol']/value"/>", ccyName: "<xsl:value-of select="$currency/own_slot_value[slot_reference='name']/value"/>", ccyId: "<xsl:value-of select="$currency/name"/>"};
+if(rcCcyId.ccyCode==''){
+	rcCcyId= {ccyCode: "USD", ccySymbol: "$", ccyName: "Dollar"}
+
+}
+var defaultCurrency    
+const isIndexedDBSupported = () => {
+    return !!window.indexedDB;
+};
+
+const getServerLastPublished = async (url) => {
+    try {
+        let response = await fetch(url, { method: "HEAD" });
+        if (!response.ok) throw new Error("Failed to fetch headers");
+
+        return response.headers.get("Last-Published") || null;
+    } catch (error) {
+        console.warn("Could not fetch last published timestamp:", error);
+        return null;
+    }
+};
+
+const promise_loadViewerAPIData = async (apiDataSetURL, serverLastPublished, repoId) => {
+    if (!apiDataSetURL) return Promise.reject(false);
+
+    try {
+        if (isIndexedDBSupported()) {
+            let cachedData = await getCachedData(apiDataSetURL);
+
+            let cachedTimestamp = cachedData ? cachedData.lastPublished : null;
+            let cachedRepoId = cachedData ? cachedData.repoId : null;
+
+            let cachedTimeMillis = cachedTimestamp ? new Date(cachedTimestamp).getTime() : 0;
+            let serverTimeMillis = Number(serverLastPublished);
+
+            if (cachedData &amp;&amp; cachedRepoId === repoId &amp;&amp; cachedTimeMillis >= serverTimeMillis) {
+                return cachedData.data;
+            }
+        } else {
+            console.warn("IndexedDB not supported, falling back to fetch.");
+        }
+
+        let response = await fetch(apiDataSetURL);
+        if (!response.ok) throw new Error("Failed to load data");
+
+        let data = await response.json();
+
+        if (isIndexedDBSupported()) {
+            await cacheData(apiDataSetURL, data, serverLastPublished, repoId);
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return Promise.reject(false);
+    }
+};
+
+const timestamp = '<xsl:value-of select="$lastPublishDateTime"/>';
+const repoId = '<xsl:value-of select="$repo"/>';
+
+const apiDataSets = [
+    viewAPIDataDO,
+    viewAPIDataApps,
+    viewAPIDataOrgs,
+    viewAPIDataMart,
+    viewAPIDataLifecycles,
+    viewAPIDataKpi,
+    viewAPIDataPhysProcs,
+    viewAPIDataPlans,
+    viewAPIDataTech,
+    viewAPIDataCapMart
+];
+
+getServerLastPublished(apiDataSets[0])
+    .then((serverLastPublished) => {
+        if (!serverLastPublished) {
+            serverLastPublished = Date.now();
+        }
+
+        return Promise.all(
+            apiDataSets.map((url) => promise_loadViewerAPIData(url, serverLastPublished, repoId))
+        );
+    })
+    .then(function (responses) {
+        console.log("All data loaded");
+    })
+    .catch(function (error) {
+        console.error("Error loading one or more datasets:", error);
+    });
+  
 			function showEditorSpinner(message) {
 				$('#editor-spinner-text').text(message);                            
 				$('#editor-spinner').removeClass('hidden');                         
@@ -3031,7 +3199,7 @@
 			var focusAppId='<xsl:value-of select="$param1"/>'
 			var allDO=[];
 			var appList=[];
-			var byPerfName, defaultCcy; 
+			var byPerfName, defaultCcy, ccy; 
 			var stakeholdertable, interfaceReport;
 			var stakeholdertable2, costTotalTemplate; 
 			var pmc, procServices,table, costtable, appServiceList;
@@ -3043,8 +3211,107 @@
 			var svgEndDate=new Date (today.setFullYear(today.getFullYear() + 3));
 			var svgWidth=1000;
 			var appToCapabilityObj;
-			var decisions = [<xsl:apply-templates select="$decisions" mode="decisions"/>];
+			var decisions = [<xsl:apply-templates select="$decisions" mode="decisions"/>]; 
+<xsl:if test="$isEIPMode">
+function refreshDiagram(aDiagram) {
  
+    showEditorSpinner('Loading diagram...');
+    essPromise_getAPIElement('/essential-core/v1', 'diagrams', aDiagram.id, 'Diagram')
+    .then(function(response) { 
+		removeEditorSpinner();
+        drawDiagram(response.config);  
+		 
+		return;
+    })
+    .catch(function (error) {
+        removeEditorSpinner();
+        console.log(error);
+        //Show an error message: error
+    });
+}
+function drawDiagram(diagramData) {
+    document.getElementById('paper-container').appendChild(paperScroller.el);
+    const container = document.getElementById('paper-container');
+
+    paperScroller.setCursor('grab'); 
+    graph.fromJSON(diagramData);
+
+    paper.fitToContent({
+        padding: 5,
+        minWidth: 800,
+        minHeight: 600,
+        allowNewOrigin: 'any'
+    });
+
+    setTimeout(() => {
+        paper.scaleContentToFit({
+            padding: 5, 
+            minScale: 0.1, 
+            maxScale: 1, 
+            preserveAspectRatio: true
+        });
+        paperScroller.center();
+    }, 300);
+
+    // Enable paper dragging when clicking on the background
+    paper.on('blank:pointerdown', function(event, x, y) {
+        paperScroller.startPanning(event);
+    });
+
+    // Fix zooming
+    paperScroller.el.addEventListener('wheel', function(event) {
+	
+        event.preventDefault(); // Prevent default scrolling
+
+        if (event.ctrlKey || event.metaKey) {
+            // Zoom in or out
+            let delta = event.deltaY > 0 ? -0.1 : 0.1;
+            let newScale = Math.max(0.2, Math.min(paperScroller.zoom() + delta, 2));
+
+            paperScroller.zoom(newScale, { absolute: true, grid: 0.05 });
+        } else {
+            // Scroll normally if no modifier key is pressed
+            paperScroller.el.scrollBy({
+                top: event.deltaY,
+                left: event.deltaX,
+                behavior: 'smooth'
+            });
+        }
+    });
+
+    // Fix container scrolling
+    document.getElementById('paper-container').style.overflow = 'auto';
+}
+
+var graph = new joint.dia.Graph({ type: 'standard.HeaderedRectangle' }, { cellNamespace: joint.shapes });
+
+var windowWidth = $('#processModal').width();
+var windowHeight = $('#processModal').height();
+var paper = new joint.dia.Paper({
+    width: window.innerWidth - 200,
+    height: window.innerHeight - 200,
+    model: graph,
+    gridSize: 5,
+    async: true,
+    sorting: joint.dia.Paper.sorting.APPROX,
+    interactive: { 
+        linkMove: false,
+        elementMove: false, // Enable dragging elements
+        paper: true // Allow interactions with the background
+    },
+    snapLabels: true,
+    cellViewNamespace: joint.shapes,
+    restrictTranslate: false // Allow elements to move freely
+});
+
+
+var paperScroller = new joint.ui.PaperScroller({
+    autoResizePaper: true,
+    padding: 20,
+    paper: paper,
+    scrollWhileDragging: true // Enable scrolling while dragging
+});
+</xsl:if>
 			$('document').ready(function (){ 
 				<xsl:call-template name="wordHandlebarsJS"/>
 
@@ -3177,11 +3444,12 @@
 				 
 					orgsRolesList=responses[2].a2rs
 					allActors=[...responses[2].indivData, ...responses[2].orgData]
-					const ownerMap = new Map();
+					const ownerMap = new WeakMap();
 					allActors.forEach(owner => {
-						ownerMap.set(owner.id, owner);
+						ownerMap.set(owner, owner.id);  // Stores only while the owner object exists
 					});
 					appMart=responses[3];
+					ccy=responses[3].ccy
 					allPerfMeasures=responses[5]
 					appLifecycles=responses[4];
 					physProc=responses[6]; 
@@ -3196,13 +3464,15 @@
 							impact.className.toLowerCase().includes('application_provider')
 						)
 					);
-
-					const decisionImpactMap = new Map();
-
+ 
+					const decisionImpactMap = new Map(); 
 					// Populate the map with `impact.id` as the key and `decision` as the value
 					filteredDecisions.forEach((decision) => {
 						decision.impacts.forEach((impact) => {
-							decisionImpactMap.set(impact.id, decision);
+							if (!decisionImpactMap.has(impact.id)) {
+									decisionImpactMap.set(impact.id, []);
+								}
+							decisionImpactMap.get(impact.id).push(decision);
 						});
 					});
   
@@ -3252,10 +3522,11 @@
 					appMart.capability_hieararchy=[]; 
 					interfaceReport=appList.reports.filter((d)=>{return d.name=='appInterface'});
 					let thefocusApp=appList.applications.find((e)=>{return e.id==focusAppId});
+			
  
 					let appDataMap=[]; 
-			defaultCurrency = appMart.ccy.find(currency => currency.default === "true");
-			//console.log('defaultCurrency',defaultCurrency)
+					defaultCurrency = appMart.ccy.find(currency => currency.default === "true");
+	 
 					<!-- create project pairs for speed -->
 					
 					plans.allProject.forEach((p)=>{
@@ -3327,7 +3598,7 @@
 
 					let requiredByAppsArray=[];
 					// Create a map for DRList to allow constant-time lookups
-					const drMap = new Map(DRList.map((dr) => [dr.id, dr]));
+					const drMap = new Map(Array.isArray(DRList) ? DRList.map((dr) => [dr.id, dr]) : []);
 					
 					allDO.data_objects?.forEach((e) => {
 						// Update dataReps and collect theDrs in one loop
@@ -3394,6 +3665,7 @@ function collateByApp(data) {
 const collatedApps = collateByApp(requiredByAppsArray);
  
 const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
+
 
 						var appDataSet = d3.nest()
 						.key(function(f) { return f.id; })
@@ -3559,13 +3831,17 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 						} 
 						appAnalytics.push({}) 
 						const decision = decisionImpactMap.get(ap.id);   
+				 
 						if (decision) {
+						 
 							if (!ap.decisions) {
 								ap.decisions = [];  // Ensure the `decisions` property exists
 							}
-
-							decision['ownerInfo'] = ownerMap.get(decision.owner)
-							ap.decisions.push(decision);  // Add the decision to the application's decisions array
+ 
+							decision.forEach((d)=>{
+								d['ownerInfo'] = ownerMap.get(d.owner)
+								ap.decisions.push(d);  // Add the decision to the application's decisions array
+							})
 						}
 						ap.decisions?.sort((a, b) => new Date(b.decision_date) - new Date(a.decision_date));
 
@@ -3578,7 +3854,9 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 					appLifecycles.application_lifecycles=[];
 					$('#subjectSelection').select2();  
 					$('#subjectSelection').val(focusAppId).change();
-					
+				 
+					var selectFragment = $("#select-template").html();
+					selectTemplate = Handlebars.compile(selectFragment);
 					
 					var panelFragment = $("#panel-template").html();
 					panelTemplate = Handlebars.compile(panelFragment);
@@ -3674,13 +3952,15 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 						let list=appList.filters.find((e)=>{
 							return e.id==arg2
 						}) 
-					 				
-						let itemVals=list.values.find((f)=>{
-							return f.id==arg1;
-						}) 
- 
+					 	let itemVals = list.values.find((f) => f.id == arg1);
+
+						if (!itemVals) {
+							 
+						
+						} else{ 
 						return '<span class="label label-info" style="background-color: '+itemVals.backgroundColor+';color:'+itemVals.color+'">'+itemVals.enum_name+'</span>';
 						}
+					  }
 					});
 				 
 					
@@ -3690,13 +3970,14 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 					    return new Handlebars.SafeString(html);
 					});
 										
-		 
+					$('#selectMenu').html(selectTemplate(thefocusApp))
+					$('.context-menu-appProviderGenMenu').html('<i class="fa fa-bars"></i> Menu');
 					redrawPage(thefocusApp)
 			 
 	});
 
 function redrawPage(focusApp){   
-
+console.log('redraw')
 	if (focusApp &amp;&amp; focusApp.children) {
 		focusApp.children = focusApp.children.map(d => appList.applications.find(f => d === f.id)).filter(Boolean);
 	}
@@ -3915,8 +4196,17 @@ focusApp['aprprojectElements']=thisaprProj;
 <!-- merge objects -->
 
 let res = {};
-thisPlan.forEach(a => res[a.id] = {...res[a.id], ...a});
-thisPlan = Object.values(res);
+if(thisPlan){
+	thisPlan.forEach(a => {
+		if (a) {
+		  res[a.id] = { ...res[a.id], ...a };
+		}
+	  });
+	  
+	thisPlan = Object.values(res);
+}else{
+	thisPlan=[]
+}
   
 	focusApp['plans']=thisPlan;
 	focusApp['projects']=thisProj;
@@ -4034,7 +4324,39 @@ let appDetail=appMart.applications.find((d)=>{
 	if(appDetail.short_name !=""){
 		focusApp['short_name']=appDetail.short_name;
 	}
+	if(appDetail.synonyms?.length&gt;0){ 
+		focusApp['synonyms']=appDetail.synonyms;
+	}
+ 
+	//let defaultCurrency = ccy.find(ccy => ccy.default === "true");
+ 
+ console.log('defaultCurrency:', defaultCurrency)
 
+if (!defaultCurrency || Object.keys(defaultCurrency).length === 0) {
+	console.log('changing')
+    defaultCurrency = rcCcyId || {};
+}
+
+  
+const calculateDefaultCosts = (costArray, currencyArray) => {
+   
+    let defaultExchangeRate = defaultCurrency ? parseFloat(defaultCurrency.exchangeRate) : 1;
+  
+      if(isNaN(defaultExchangeRate)){defaultExchangeRate=1} 
+    return costArray?.map(cost => {
+        const matchingCurrency = currencyArray.find(ccy => ccy.ccySymbol === cost.component_currency);
+        let exchangeRate = matchingCurrency ? parseFloat(matchingCurrency.exchangeRate) : 1;
+        if(isNaN(exchangeRate)){exchangeRate=1}
+        const defaultCost = parseFloat(cost.cost) * (exchangeRate / defaultExchangeRate); 
+        return {
+            ...cost,
+            defaultCost: defaultCost.toFixed(2)
+        };
+    });
+};
+
+const updatedCosts = calculateDefaultCosts(appDetail.costs, ccy);
+ appDetail.costs=updatedCosts
 
 let costByCategory=[];
 let costByType=[];
@@ -4047,7 +4369,6 @@ if(appDetail.costs){
 	total: d3.sum(v, function(d) { return d.cost; })
 }})
 .entries(appDetail.costs);
-
 
 costByType = d3.nest()
 .key(function(d) { return d.name; })
@@ -4064,115 +4385,216 @@ costByFreq = d3.nest()
 .entries(appDetail.costs);
 }
 let costDivider;
-let fromDateArray=[];
-let toDateArray=[];
-let totalCostForPanel=0
-if(appDetail.costs) {
-	appDetail.costs.forEach((d)=>{
-		if(d.fromDate!=''){
-			fromDateArray.push(d.fromDate)
-		}
-		if(d.toDate!=''){
-		toDateArray.push(d.toDate)
-		}
+let fromDateArray = [];
+let toDateArray = [];
+let totalAnnualCost = 0;
+let totalMonthlyCost = 0;
+let monthsActive = 0;
+let today = new Date();
+let nextMonth = new Date();
+nextMonth.setMonth(today.getMonth() + 1);
 
-	if(d.costType == "Adhoc_Cost_Component"){ 
-			//calculate the number of months between start and end dates
-			if(d.fromDate != null &amp;&amp; d.toDate != null) {
-				let endDate = moment(d.toDate);
-				let startDate = moment(d.fromDate);
-				let monthDiff = endDate.diff(startDate, 'months', true);
-				if(monthDiff > 0) {
-					costDivider = monthDiff;
-				}else{
-					costDivider = 1
-				}
-			}
+if (appDetail.costs) {
+    appDetail.costs.forEach((d) => {
+
+        let numericCost = parseFloat(d.cost); // Convert string to number
+ 
+        let costDivider = 1; // Default: 1 (full cost)
+ 
+        // Determine how to distribute costs
+        if (d.costType === "Adhoc_Cost_Component") {
+            return; // Skip Adhoc costs in monthly and annual calculations
+        } else if (d.costType === "Annual_Cost_Component") {
+            costDivider = 12; // Spread annual cost over 12 months
+        } else if (d.costType === "Quarterly_Cost_Component") {
+            costDivider = 1; // Apply cost every 3 months
+        } else if (d.costType === "Monthly_Cost_Component") {
+            costDivider = 1; // Already a monthly cost
+        }
+
+        d.monthlyAmount = numericCost / costDivider; // Base calculation
+ 
+		// **Guard code** to handle NaN for monthlyAmount
+        if (isNaN(d.monthlyAmount)) {
+            d.monthlyAmount = 0; // Set to 0 if NaN
+        }
+
+        let fromDate = d.fromDate ? new Date(d.fromDate) : today;
+        let toDate = d.toDate ? new Date(d.toDate) : nextMonth;
+
+		// If toDate is not set, make it 12 months from fromDate, assumes no date so just a recurring cost
+		if (!d.toDate) {
+			toDate.setFullYear(toDate.getFullYear() + 1);
 		}
-	else 	
-	if(d.costType == "Annual_Cost_Component"){ 
-			//calculate the monthly cost by dividing the amount by 12
-			costDivider = 12;
-		}
-	if(d.costType == "Quarterly_Cost_Component"){ 	
-			//calculate the monthly cost by dividing the amount by 3
-			costDivider = 3;					
-	}
-	if(d.costType == "Monthly_Cost_Component"){ 	
-		//calculate the monthly cost by dividing the amount by 3
-		costDivider = 1;					
-}
+ 
+        // **Keep monthsActive for other calculations**
+        monthsActive = (toDate.getFullYear() - fromDate.getFullYear()) * 12 + (toDate.getMonth() - fromDate.getMonth()) + 1; 
+
+        // **Condition for Annual Cost**
+        if (d.costType === "Annual_Cost_Component") {
+            totalAnnualCost += numericCost; // Add the full cost for the year
+        } else if (d.costType === "Quarterly_Cost_Component") {
+            for (let i = 0; i &lt; 12; i++) {
+                if (i % 3 === 0) { // Apply cost every 3 months
+                    totalAnnualCost += d.monthlyAmount
+ 
+                }
+            }
+        } else if (d.costType === "Monthly_Cost_Component") {
 	 
-if(d.cost > 0) {
-	d['monthlyAmount'] = d.cost / costDivider;									
+            totalAnnualCost += d.monthlyAmount * 12; // Monthly cost components
+        }
+		 
+    });
 }
-})
+ 
+// **Fix totalMonthlyCost Calculation**
+// If the period is less than 12 months, calculate based on the actual period
+ 
+if (monthsActive &lt; 12) {
+	if(monthsActive==0){
+		monthsActive=1;
+	}
+
+    totalMonthlyCost = totalAnnualCost / monthsActive;
+} else {
+    totalMonthlyCost = totalAnnualCost / 12; // Spread across 12 months if the period is full-year or more
+}
+ 
+// Format cost output
+let costNumbers = {};
+ 
+ console.log('defaultCurrency',defaultCurrency)
+let formatter = new Intl.NumberFormat(undefined, { style: "currency", currency: defaultCurrency.ccyCode  });
+if (isNaN(totalMonthlyCost)) {
+    totalMonthlyCost = 0; // Set to 0 if NaN
 }
 
-appDetail.costs?.forEach((c)=>{
-	totalCostForPanel=totalCostForPanel+c.monthlyAmount
-})
+costNumbers['annualCost'] = formatter.format(Math.round(totalAnnualCost));
+costNumbers['monthlyCost'] = formatter.format(Math.round(totalMonthlyCost));
  
-let costNumbers={};
-var formatter = new Intl.NumberFormat(undefined, {  });
-costNumbers['annualCost']= appDetail.costs[0]?.currency + formatter.format(Math.round(totalCostForPanel) *12)
-costNumbers['monthlyCost']= appDetail.costs[0]?.currency + formatter.format(Math.round(totalCostForPanel))
-  
-fromDateArray= fromDateArray.sort((a, b) => a.localeCompare(b))
-toDateArray= toDateArray.sort((a, b) => a.localeCompare(b))
  
+if (appDetail.costs) {
+    appDetail.costs.forEach((d) => {
+        if (d.fromDate) fromDateArray.push(d.fromDate);
+        if (d.toDate) toDateArray.push(d.toDate);
+    });
+}
+
+// **Fix sorting issue**
+fromDateArray.sort((a, b) => new Date(a) - new Date(b));
+toDateArray.sort((a, b) => new Date(a) - new Date(b));
 
 let momentStartFinYear = moment(fromDateArray[0]);
-let momentEndFinYear = moment(toDateArray[toDateArray.length-1]);  
-if(momentEndFinYear &lt; moment()) {momentEndFinYear=moment()}
-let costChartRowList=[];
+let momentEndFinYear = moment(toDateArray[toDateArray.length - 1]);
+
+if (momentEndFinYear.isBefore(moment())) {
+    momentEndFinYear = moment();
+}
+
+let costChartRowList = [];
 let costCurrency;
-	appDetail.costs?.forEach(function(aCost) {
-		costCurrency=aCost.ccy_code;
-		if(!aCost.toDate){aCost['toDate']=momentEndFinYear.format('YYYY-MM-DD')}
-		if(!aCost.fromDate  || aCost.fromDate == ''){aCost['fromDate']=momentStartFinYear.format('YYYY-MM-DD')}
-		if((aCost.fromDate != null) &amp;&amp; (aCost.toDate != null)) {
-			let thisStart = moment.max(moment(aCost.fromDate), momentStartFinYear);
-			let thisEnd = moment.min(moment(aCost.toDate), momentEndFinYear);
-			let monthCount = Math.max(thisEnd.diff(thisStart, 'months', true), 0);
-			aCost['monthCount'] = Math.round(monthCount)+1;
-			aCost['monthStart'] = Math.max(thisStart.diff(momentStartFinYear, 'months', true), 0);
-			aCost['inScopeAmount'] = Math.round(aCost['monthlyAmount'] * monthCount);
-		}
-		
-		let momentCostStart = moment(aCost.startDate);
-		if((aCost.fromDate != null) &amp;&amp; ( moment(aCost.fromDate).isSameOrAfter(momentStartFinYear) ) &amp;&amp; ( moment(aCost.fromDate).isSameOrAfter(momentEndFinYear) )) {
-		if( (aCost.fromDate != null) &amp;&amp; (moment(aCost.fromDate).isBetween(momentStartFinYear, momentEndFinYear, null, '[]'))  ) {
-			aCost['inScopeAmount'] = aCost.cost;
-		} else {
-			aCost['inScopeAmount'] = 0;
-		}
-	}
-	let costChartRow=[];
-		for(i=1;i&lt;aCost.monthStart;i++){
-			costChartRow.push(0)
-		}
-		for(i=0;i&lt;aCost.monthCount;i++){
-			costChartRow.push(aCost.monthlyAmount)
-		}
-	
-		costChartRowList.push(costChartRow)
-})
 
-let monthsListCount = Math.max(momentEndFinYear.diff(momentStartFinYear, 'months', true), 0);
-let monthsList=[];
+// **Iterate over each cost component**
+appDetail.costs?.forEach(function (aCost) {
+    let numericCost = parseFloat(aCost.cost); // Ensure cost is a number
 
+    // **Ensure numericCost is valid**
+    if (isNaN(numericCost)) {
+        console.error(`Invalid cost for:`, aCost);
+        numericCost = 0; // Default to zero to avoid NaN propagation
+    }
 
-let sumsList=[]
-for(i=0;i&lt;monthsListCount+1;i++){
-	monthsList.push(moment(momentStartFinYear).add(i, 'months').format('MM/YYYY'));
-	let tot=0;
-	costChartRowList.forEach((e)=>{
-		if(e[i]){
-			tot=tot+e[i];
-		}
-	})
-	sumsList[i] = tot;
+    // **Fix cost validity period**
+	let thisFromDate = aCost.fromDate ? new Date(aCost.fromDate) : today;
+	let thisToDate = aCost.toDate ? new Date(aCost.toDate) : nextMonth;
+    let thisStart = moment(thisFromDate, 'YYYY-MM-DD', true);
+    let thisEnd = moment(thisToDate, 'YYYY-MM-DD', true);
+
+    // **Ensure valid dates before proceeding**
+    if (!thisStart.isValid() || !thisEnd.isValid()) {
+        console.error(`Invalid date range for:`, aCost);
+        return; // Skip this cost entry
+    }
+
+    thisStart = moment.max(thisStart, momentStartFinYear);
+    thisEnd = moment.min(thisEnd, momentEndFinYear);
+
+    // **Fix month count calculation (ensure inclusive of both start and end months)**
+    let monthCount = thisEnd.diff(thisStart, 'months') + 1;
+
+    // **Ensure monthCount is valid**
+	if(monthCount==0){monthCount=1}
+
+    if (isNaN(monthCount) || monthCount &lt;= 0) {
+        console.error(`Invalid monthCount for:`, aCost, `Calculated monthCount:`, monthCount);
+        monthCount = 1; // Ensure at least 1 month
+    }
+    aCost['monthCount'] = Math.ceil(monthCount);
+
+    // **Fix monthStart calculation**
+    let monthStart = thisStart.diff(momentStartFinYear, 'months');
+    if (isNaN(monthStart) || monthStart &lt; 0) {
+        console.error(`Invalid monthStart for:`, aCost, `Calculated monthStart:`, monthStart);
+        monthStart = 0; // Ensure valid 0-based index
+    }
+    aCost['monthStart'] = Math.floor(monthStart);
+
+    // **Ensure correct cost distribution**
+    if (aCost.costType === "Adhoc_Cost_Component") {  
+        aCost.monthlyAmount = numericCost / aCost.monthCount;
+    } else if (aCost.costType === "Annual_Cost_Component") {
+        aCost.monthlyAmount = numericCost / 12;
+    } else if (aCost.costType === "Quarterly_Cost_Component") {
+        aCost.monthlyAmount = numericCost; // Keep full amount but apply only every 3 months
+    } else {
+        aCost.monthlyAmount = numericCost;
+    }
+
+    // Assign currency dynamically
+    costCurrency = aCost.ccy_code; 
+    // **Fix missing dates dynamically**
+    if (!aCost.toDate) aCost['toDate'] = momentEndFinYear.format('YYYY-MM-DD');
+    if (!aCost.fromDate || aCost.fromDate === '') aCost['fromDate'] = momentStartFinYear.format('YYYY-MM-DD');
+
+    // **Fix total amount for valid months**
+    aCost['inScopeAmount'] = Math.round(aCost['monthlyAmount'] * aCost['monthCount']);
+
+    // **Fix costChartRow creation**
+    let costChartRow = new Array(aCost.monthStart).fill(0); // Fill with zeros for inactive months
+
+    if (aCost.costType === "Quarterly_Cost_Component") {
+        for (let i = 0; i &lt; aCost.monthCount; i++) {
+            if ((i + aCost.monthStart) % 3 === 0) { // Apply cost every 3rd month
+                costChartRow.push(aCost.monthlyAmount);
+            } else {
+                costChartRow.push(0); // Keep zero in other months
+            }
+        }
+    } else {
+        for (let i = 0; i &lt; aCost.monthCount; i++) {
+            costChartRow.push(aCost.monthlyAmount);
+        }
+    } 
+    costChartRowList.push(costChartRow);
+});
+
+// **Fix month-by-month cost distribution**
+let monthsListCount = momentEndFinYear.diff(momentStartFinYear, 'months') + 1;
+let monthsList = [];
+let sumsList = Array(monthsListCount).fill(0);
+
+for (let i = 0; i &lt; monthsListCount; i++) {
+    monthsList.push(moment(momentStartFinYear).add(i, 'months').format('MM/YYYY'));
+
+    let monthlyTotal = 0;
+    costChartRowList.forEach((row) => {
+        if (row[i]) {
+            monthlyTotal += row[i];
+        }
+    });
+
+    sumsList[i] = monthlyTotal;
 }
 
 cbcLabels=[];
@@ -4270,7 +4692,9 @@ byPerfName=byPerfName.filter((d)=>{
 focusApp['perfsGrp']=byPerfName
 }
 focusApp['lifecyclesKey']=appList.lifecycles
- // console.log('fa', focusApp)
+ 
+<xsl:if test="$isEIPMode='true'">focusApp.eipmode=true</xsl:if>
+console.log('fa', focusApp)
 $('#mainPanel').html(panelTemplate(focusApp))
 
 $('[data-toggle="collapse"]').on('click', function() {
@@ -4289,7 +4713,392 @@ $('.interfaceButton').off().on('click', function(){
 })
 
 $('.costTotal-container').html(costTotalTemplate(costNumbers))
+
+function renderLifecycleTimeline(containerId, lifecycleData) {
+      const $container = $('#' + containerId);
+
+      if ($container.length === 0) {
+        console.error('Container not found: ' + containerId);
+        return;
+      }
+
+      $container.html(`
+        <div class="controls">
+          <div class="control-group">
+            <div class="date-display">Start Date</div>
+            <div class="button-group"> 
+              <button id="startDateBackSmall"><i class="fa fa-caret-left"></i></button>
+              <button id="startDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="date-display">End Date</div>
+            <div class="button-group"> 
+              <button id="endDateBackSmall"><i class="fa fa-caret-left"></i></button>
+              <button id="endDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
+            </div>
+          </div>
+          <div class="control-group">
+            <button id="zoomIn">Zoom In</button>
+            <button id="zoomOut">Zoom Out</button>
+            <button id="resetView" class="reset-button">Reset View</button>
+			<button id="exportPNG">Export as PNG</button>
+          </div>
+        </div>
+        <div id="timeline"></div>
+        <div class="legend" id="legend"></div>
+        <div class="tooltip" id="tooltip"></div>
+      `);
  
+      lifecycleData.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
+
+      // Constants for SVG dimensions and styling
+      const tlwidth = 1100;
+      const tlheight = 400;
+      const margin = { top: 50, right: 50, bottom: 120, left: 50 };
+      const innerWidth = tlwidth - margin.left - margin.right;
+      const innerHeight = tlheight - margin.top - margin.bottom;
+      const nodeRadius = 15;
+      const lineHeight = 6;
+
+      // Process dates
+      const dates = lifecycleData.map(d => new Date(d.dateOf));
+      const actualMinDate = new Date(Math.min(...dates));
+      const actualMaxDate = new Date(Math.max(...dates));
+      
+      // Add default buffers
+      let currentMinDate = new Date(actualMinDate);
+      let currentMaxDate = new Date(actualMaxDate);
+      currentMinDate.setMonth(currentMinDate.getMonth() - 3);
+      currentMaxDate.setMonth(currentMaxDate.getMonth() + 3);
+
+      // Initialize timeline variables
+      let svg, tooltipEl;
+
+      // Format date for display
+      function formatDateForDisplay(date) {
+          return date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+          });
+      }
+ 
+
+      // Create and draw the timeline
+      function drawTimeline() {
+          // Clear previous timeline
+          const timelineContainer = document.getElementById('timeline');
+          timelineContainer.innerHTML = '';
+          
+          // Create SVG element
+          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("width", tlwidth);
+          svg.setAttribute("height", tlheight);
+ 		  svg.setAttribute("viewBox", "0 0 " + tlwidth + " " + tlheight);
+          svg.setAttribute("style", "max-width: 100%; height: auto;");
+
+          // Create a background for the timeline
+          const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          background.setAttribute("x", margin.left);
+          background.setAttribute("y", margin.top);
+          background.setAttribute("width", innerWidth);
+          background.setAttribute("height", innerHeight);
+          background.setAttribute("fill", "#f9f9f9");
+          background.setAttribute("rx", "8");
+          svg.appendChild(background);
+
+          // Function to map date to x position
+          const getX = (date) => {
+              const totalDays = (currentMaxDate - currentMinDate) / (1000 * 60 * 60 * 24);
+              const currentDays = (new Date(date) - currentMinDate) / (1000 * 60 * 60 * 24);
+              return margin.left + (currentDays / totalDays) * innerWidth;
+          }
+
+          // Create timeline line
+          const timeline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          timeline.setAttribute("x1", margin.left);
+          timeline.setAttribute("y1", margin.top + innerHeight / 2);
+          timeline.setAttribute("x2", margin.left + innerWidth);
+          timeline.setAttribute("y2", margin.top + innerHeight / 2);
+          timeline.setAttribute("stroke", "#ccc");
+          timeline.setAttribute("stroke-width", lineHeight);
+          timeline.setAttribute("stroke-linecap", "round");
+          svg.appendChild(timeline);
+
+          // Get visible items
+          const visibleItems = lifecycleData.filter(item => {
+              const itemDate = new Date(item.dateOf);
+              return itemDate >= currentMinDate &amp;&amp; itemDate &lt;= currentMaxDate;
+          });
+
+          // Create markers for each visible status
+          tooltipEl = document.getElementById('tooltip');
+          let lastLabelY = 0;
+          let labelYDirection = 1;
+
+          visibleItems.forEach((item, index) => {
+              const x = getX(item.dateOf);
+              const y = margin.top + innerHeight / 2;
+              
+              // Create a circle for the milestone
+              const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+              circle.setAttribute("cx", x);
+              circle.setAttribute("cy", y);
+              circle.setAttribute("r", nodeRadius);
+              circle.setAttribute("fill", item.backgroundColour);
+              circle.setAttribute("stroke", "#fff");
+              circle.setAttribute("stroke-width", "2");
+              circle.setAttribute("class", "milestone");
+              circle.setAttribute("data-id", item.id);
+              svg.appendChild(circle);
+ 
+              // Create a line connecting the circle to the label
+              // Alternate above and below the timeline
+              const labelY = y + (labelYDirection * (nodeRadius + 40));
+              labelYDirection *= -1;
+              lastLabelY = labelY;
+
+              const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              line.setAttribute("x1", x);
+              line.setAttribute("y1", y + (labelY > y ? nodeRadius : -nodeRadius));
+              line.setAttribute("x2", x);
+              line.setAttribute("y2", labelY - (labelY > y ? 20 : -20));
+              line.setAttribute("stroke", item.backgroundColour);
+              line.setAttribute("stroke-width", "2");
+              line.setAttribute("stroke-dasharray", "3,3");
+              svg.appendChild(line);
+
+              // Create a text label for the milestone
+              const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+              label.setAttribute("x", x);
+              label.setAttribute("y", labelY);
+              label.setAttribute("text-anchor", "middle");
+              label.setAttribute("fill", "#333");
+              label.setAttribute("font-size", "12px");
+              label.textContent = item.enumname;
+              svg.appendChild(label);
+
+              // Create a smaller date label
+              const dateLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+              dateLabel.setAttribute("x", x);
+              dateLabel.setAttribute("y", labelY + (labelY > y ? 20 : -20));
+              dateLabel.setAttribute("text-anchor", "middle");
+              dateLabel.setAttribute("fill", "#777");
+              dateLabel.setAttribute("font-size", "11px");
+              dateLabel.textContent = formatDateForDisplay(new Date(item.dateOf));
+              svg.appendChild(dateLabel);
+
+              // Add event listeners for tooltip
+              circle.addEventListener('mouseover', (e) => {
+                 tooltipEl.innerHTML = `
+					<div style="font-weight: bold; margin-bottom: 5px;">${item.enumname}</div>
+					<div>Date: ${new Date(item.dateOf).toLocaleDateString('en-US', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric'
+					})}</div>
+					<div>Sequence: ${item.seq}</div>
+					`;
+                  tooltipEl.style.opacity = '1';
+                  tooltipEl.style.left = (e.pageX + 10) + 'px';
+                  tooltipEl.style.top = (e.pageY + 10) + 'px';
+              });
+
+              circle.addEventListener('mouseout', () => {
+                  tooltipEl.style.opacity = '0';
+              });
+
+              circle.addEventListener('mousemove', (e) => {
+                  tooltipEl.style.left = (e.pageX + 10) + 'px';
+                  tooltipEl.style.top = (e.pageY + 10) + 'px';
+              });
+          });
+
+          // Add subtle grid lines
+          const numGridLines = 6;
+          for (let i = 0; i &lt;= numGridLines; i++) {
+              const x = margin.left + (i * innerWidth / numGridLines);
+              const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              gridLine.setAttribute("x1", x);
+              gridLine.setAttribute("y1", margin.top);
+              gridLine.setAttribute("x2", x);
+              gridLine.setAttribute("y2", margin.top + innerHeight);
+              gridLine.setAttribute("stroke", "#ddd");
+              gridLine.setAttribute("stroke-width", "1");
+              gridLine.setAttribute("stroke-dasharray", "3,3");
+              svg.appendChild(gridLine);
+
+              // Add date labels on the grid lines
+              const dateOffset = i / numGridLines;
+              const date = new Date(currentMinDate.getTime() + dateOffset * (currentMaxDate.getTime() - currentMinDate.getTime()));
+              const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+              dateText.setAttribute("x", x);
+              dateText.setAttribute("y", margin.top + innerHeight + 20);
+              dateText.setAttribute("text-anchor", "middle");
+              dateText.setAttribute("fill", "#555");
+              dateText.setAttribute("font-size", "11px");
+              dateText.textContent = date.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short'
+              });
+              svg.appendChild(dateText);
+          }
+   
+          // Append the SVG to the container
+          timelineContainer.appendChild(svg);
+      }
+
+      // Create the legend for all items (not just visible ones)
+      function createLegend() {
+          const legendContainer = document.getElementById('legend');
+          legendContainer.innerHTML = '';
+          
+          lifecycleData.forEach(item => {
+              const legendItem = document.createElement('div');
+              legendItem.className = 'legend-item';
+              
+              const colorBox = document.createElement('div');
+              colorBox.className = 'legend-color';
+              colorBox.style.backgroundColor = item.backgroundColour;
+              
+              const label = document.createElement('span');
+             label.textContent = `${item.seq}. ${item.enumname}`;
+              
+              legendItem.appendChild(colorBox);
+              legendItem.appendChild(label);
+              legendContainer.appendChild(legendItem);
+          });
+      }
+
+      // Date manipulation functions
+		function moveStartDate(years) {
+				const newDate = new Date(currentMinDate);
+				newDate.setFullYear(newDate.getFullYear() + years);
+
+				const minEndDate = new Date(currentMaxDate);
+				minEndDate.setFullYear(minEndDate.getFullYear() - 1);
+
+				if (newDate &lt; minEndDate) {
+					currentMinDate = newDate; 
+					drawTimeline();
+				}
+		}
+
+      function moveEndDate(years) {
+			const newDate = new Date(currentMaxDate);
+			newDate.setFullYear(newDate.getFullYear() + years);
+
+			const maxStartDate = new Date(currentMinDate);
+			maxStartDate.setFullYear(maxStartDate.getFullYear() + 1);
+
+			if (newDate > maxStartDate) {
+				currentMaxDate = newDate; 
+				drawTimeline();
+			}
+		}
+
+      // Reset to original view with buffer
+      function resetView() {
+          currentMinDate = new Date(actualMinDate);
+          currentMaxDate = new Date(actualMaxDate);
+          currentMinDate.setMonth(currentMinDate.getMonth() - 3);
+          currentMaxDate.setMonth(currentMaxDate.getMonth() + 3); 
+          drawTimeline();
+      }
+
+      // Zoom functions
+      function zoomIn() {
+          // Zoom in by reducing the range by 25% from both sides
+          const currentRange = currentMaxDate - currentMinDate;
+          const adjustment = currentRange * 0.125; // 12.5% from each side
+          
+          const newMinDate = new Date(currentMinDate.getTime() + adjustment);
+          const newMaxDate = new Date(currentMaxDate.getTime() - adjustment);
+          
+          // Ensure there's still a reasonable range
+          if (newMaxDate - newMinDate >= 30 * 24 * 60 * 60 * 1000) { // At least 30 days
+              currentMinDate = newMinDate;
+              currentMaxDate = newMaxDate; 
+              drawTimeline();
+          }
+      }
+
+      function zoomOut() {
+          // Zoom out by increasing the range by 50% from both sides
+          const currentRange = currentMaxDate - currentMinDate;
+          const adjustment = currentRange * 0.25; // 25% to each side
+          
+          currentMinDate = new Date(currentMinDate.getTime() - adjustment);
+          currentMaxDate = new Date(currentMaxDate.getTime() + adjustment); 
+          drawTimeline();
+      }
+
+      // Initialize the visualization
+      function initialize() { 
+          drawTimeline();
+          //createLegend();
+          
+          // Set up event listeners for controls 
+          $('#startDateBackSmall').off().on('click', () => moveStartDate(-1));
+           $('#startDateForwardSmall').off().on('click', () => moveStartDate(1)); 
+           
+           $('#endDateBackSmall').off().on('click', () => moveEndDate(-1));
+           $('#endDateForwardSmall').off().on('click', () => moveEndDate(1)); 
+          
+          $('#zoomIn').off().on('click', zoomIn);
+          $('#zoomOut').off().on('click', zoomOut);
+          $('#resetView').off().on('click', resetView);
+		  $('#exportPNG').off().on('click', function () {
+				const svgElement = document.querySelector('#timeline svg');
+				if (!svgElement) return;
+
+				const svgData = new XMLSerializer().serializeToString(svgElement);
+				const canvas = document.createElement('canvas');
+				canvas.width = svgElement.viewBox.baseVal.width;
+				canvas.height = svgElement.viewBox.baseVal.height;
+				const ctx = canvas.getContext('2d');
+
+				const img = new Image();
+				const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+				const url = URL.createObjectURL(svgBlob);
+
+				img.onload = function () {
+					ctx.drawImage(img, 0, 0);
+					URL.revokeObjectURL(url);
+
+					const pngData = canvas.toDataURL('image/png');
+					const downloadLink = document.createElement('a');
+					downloadLink.href = pngData;
+					downloadLink.download = 'lifecycle_timeline.png';
+					document.body.appendChild(downloadLink);
+					downloadLink.click();
+					document.body.removeChild(downloadLink);
+				};
+
+				img.src = url;
+			});
+
+
+      }
+
+      // Start the visualization
+      initialize();
+
+      // The rest of your original JS can follow here —
+      // just replace `document.getElementById(...)` with `$('#...')` where appropriate
+      // and set up event handlers using jQuery: e.g., `$('#zoomIn').on('click', ...)`
+
+      // Example:
+      // $('#zoomIn').on('click', function () { zoomIn(); });
+      // or use jQuery equivalents for manipulating SVG if needed
+
+      // After setup:
+      initialize(); // if you wrap the internal logic as an `initialize()` function inside
+    }
+
+renderLifecycleTimeline('TimelinePanel', focusApp.lifecycles)
+ <!--
 svgWidth=$('#lifecyclePanel').parent().parent().parent().parent().width()-30;
 focusApp['svgwidth']=svgWidth;
 
@@ -4350,7 +5159,7 @@ $('#lifecycleEndUp').off().on("click", function(){
 	 getYears(svgStartDate,svgEndDate) 
 	 $('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
 })
-
+ 
 $('#lifecycleEndDown').off().on("click", function(){
 	focusApp.years.pop();
 	svgEndDate=new Date (svgEndDate.setFullYear(svgEndDate.getFullYear() -1 ));
@@ -4373,116 +5182,188 @@ $('#lifecycleDown').off().on("click", function(){
  
 	$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
 }) 
+-->
+ccy.forEach((c)=>{
+	$('#ccySelect').append('&lt;option value="'+c.id+'">'+c.ccyCode+'&lt;/option>');
+})
+
+$('#ccySelect').select2({
+  width:'100px'
+});
+
+$('#ccySelect').on('change', function() {
+  const currency = $(this).val();
+  updateCharts(currency);
+});
 
 if(cbfLabels.length&gt;0){
-new Chart(document.getElementById("costByFrequency-chart"), {
-    type: 'doughnut',
-    data: {
-      labels: cbfLabels,
-      datasets: [
-        {
-          label: "Frequency",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: cbfVals
-        }
-      ]
+const chartCostByFrequency = new Chart(document.getElementById("costByFrequency-chart"), {
+  type: 'doughnut',
+  data: {
+    labels: cbfLabels,
+    datasets: [
+      {
+        label: "Frequency",
+        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+        data: cbfVals
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    title: {
+      display: true,
+      text: 'Cost By Frequency'
     },
-    options: {
-	responsive: true,
-      title: {
-        display: true,
-        text: 'Cost By Frequency'
-	  },
-	  legend: {
-		position: "bottom",
-		align: "middle"
-	}
+    legend: {
+      position: "bottom",
+      align: "middle"
     }
+  }
+});
+
+// Repeat for other charts
+const chartCostByCategory = new Chart(document.getElementById("costByCategory-chart"), {
+  type: 'doughnut',
+  data: {
+    labels: cbcLabels,
+    datasets: [
+      {
+        label: "Type",
+        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+        data: cbcVals
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    title: {
+      display: true,
+      text: 'Cost By Category'
+    },
+    legend: {
+      position: "bottom",
+      align: "middle"
+    }
+  }
+});
+
+const chartCostByType = new Chart(document.getElementById("costByType-chart"), {
+  type: 'doughnut',
+  data: {
+    labels: cbtLabels,
+    datasets: [
+      {
+        label: "Type",
+        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+        data: cbtVals
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    title: {
+      display: true,
+      text: 'Cost By Type'
+    },
+    legend: {
+      position: "right",
+      align: "middle"
+    }
+  }
+});
+
+const locale = navigator.language || 'en-US';
+
+const chartCostByMonth = new Chart(document.getElementById("costByMonth-chart"), {
+  type: 'bar',
+  data: {
+    labels: monthsList,
+    datasets: [
+      {
+        label: "Cost Per Month",
+        backgroundColor: "#f5aa42",
+        data: sumsList
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          callback: function(value) {
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: defaultCurrency.ccyCode}).format(value); // Change to the selected currency
+          }
+        }
+      }]
+    },
+    plugins: {
+      labels: false
+    }
+  }
 });
 
 
-new Chart(document.getElementById("costByCategory-chart"), {
-    type: 'doughnut',
-    data: {
-      labels: cbcLabels,
-      datasets: [
-        {
-          label: "Type",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: cbcVals
-        }
-      ]
-    },
-    options: {
-	  responsive: true,
-      title: {
-        display: true,
-        text: 'Cost By Category'
-	  },
-	  legend: {
-		position: "bottom",
-		align: "middle"
-	}
-    }
-});
- 
-new Chart(document.getElementById("costByType-chart"), {
-    type: 'doughnut',
-    data: {
-      labels: cbtLabels,
-      datasets: [
-        {
-          label: "Type",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: cbtVals
-        }
-      ]
-    },
-    options: {
-	  responsive: true,
-      title: {
-        display: true,
-        text: 'Cost By Type'
-	  },
-	  legend: {
-		position: "right",
-		align: "middle"
-	}
-    }
-});
- 
- 
 
-new Chart(document.getElementById("costByMonth-chart"), {
-    type: 'bar',
-    data: {
-      labels: monthsList,
-      datasets: [
-        {
-          label: "Cost Per Month",
-          backgroundColor: "#f5aa42",
-          data: sumsList
-        }
-      ]
-    },
-    options: {
-		responsive: true,
-		scales: {
-		  yAxes: [{
-			ticks: {
-			  beginAtZero: true,
-			  callback: function(value) {
-				 
-				return new Intl.NumberFormat('en-US', { style: 'currency', currency: costCurrency }).format(value);
-			  }
-			}
-		  }]
-		},
-		plugins: {
-			labels: false // Disable the labels plugin for this chart
-		  }
-	  }
-});
+function updateCharts(currency) {
+	 
+	let ccySelected=ccy.find(d => d.id == currency)
+ 	let rate = ccySelected.exchangeRate;
+	let ccyCd = ccySelected.ccyCode;
+	
+  // Convert the rate to a float
+  rate = parseFloat(rate); 
+
+  if (isNaN(rate)) {
+    rate = 1;
+  } 
+  // Remove the currency symbol and commas, then convert the string to a float
+  let annualCostValue = parseFloat(costNumbers.annualCost.replace(/[^\d.-]/g, ''));
+  let monthlyCostValue = parseFloat(costNumbers.monthlyCost.replace(/[^\d.-]/g, ''));
+
+  // Multiply the costs by the exchange rate
+  annualCostValue *= rate;
+  monthlyCostValue *= rate;
+
+	$('#regAnnual').text(new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: ccyCd 
+    }).format(annualCostValue));
+
+	$('#regMonthly').text(new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: ccyCd 
+    }).format(monthlyCostValue));
+
+  // Multiply the values by the exchange rate
+  const updatedCbfVals = cbfVals.map(value => value * rate);
+  const updatedCbcVals = cbcVals.map(value => value * rate);
+  const updatedCbtVals = cbtVals.map(value => value * rate);
+  const updatedSumsList = sumsList.map(value => value * rate);
+
+    // Update the Y-axis label with the selected currency symbol
+  chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: ccyCd 
+    }).format(value);
+  };
+
+  // Update each chart
+  chartCostByFrequency.data.datasets[0].data = updatedCbfVals;
+  chartCostByCategory.data.datasets[0].data = updatedCbcVals;
+  chartCostByType.data.datasets[0].data = updatedCbtVals;
+  chartCostByMonth.data.datasets[0].data = updatedSumsList;
+
+  // Re-render the charts
+  chartCostByFrequency.update();
+  chartCostByCategory.update();
+  chartCostByType.update();
+  chartCostByMonth.update();
+}
+
 }
 }
 
@@ -4599,6 +5480,38 @@ myReject(); // when error
 
 panelSet.then(function(response) {
 
+	//get diagrams - only works on Cloud/Docker
+	<xsl:if test="$isEIPMode">
+let viewAPIDiagramInfo= '<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+focusApp.id; 
+		 			promise_loadViewerAPIData(viewAPIDiagramInfo)
+						.then(function(response) { 
+
+							console.log('instance', response.instance)
+								 const instance = response.instance.find(inst => inst.name === "ea_diagrams");
+					 
+									if (instance &amp;&amp; instance.values.length > 0) { 
+										$('#appDiagrams').empty();
+										$('#appDiagrams').append('<option>Choose</option>')
+										instance.values.forEach((s)=>{
+										 
+											$('#appDiagrams').append('<option value="'+s.id+'">'+s.name+'</option>')
+											console.log('r', response) 
+										})
+										$('#appDiagrams').select2({width:"200px"});
+
+										$('#appDiagrams').off().on('change', function(){  
+											let selectedDiagram=$(this).val()
+			
+											let diagramtoShow={"id": selectedDiagram}
+												
+											refreshDiagram(diagramtoShow)  
+										})
+									}else{
+											
+									}  
+						})
+						
+		</xsl:if>
 <!-- set word -->
  $('#getWord').off().on('click',function(){
   <xsl:call-template name="RenderOfficetUtilityFunctions"/>
@@ -4629,7 +5542,7 @@ function getWord(applicationToReport){
  <!-- calls to get the ODT structure which the content needs -->
 let  stylesXML, metaXML, manifestXML, mimetypeXML, settingsXML;
 
- byPerfName.forEach((d)=>{
+ byPerfName?.forEach((d)=>{
  let thisPM= pmc.find((p)=>{
 	return p.id == d.key
 })
@@ -5210,10 +6123,15 @@ let selected=$(this).val();
 let focusApp=appList.applications.find((f)=>{
 	return f.id==selected;
 });
+
+$('#selectMenu').html(selectTemplate(focusApp))
+
+$('.context-menu-appProviderGenMenu').html('<i class="fa fa-bars"></i> Menu');
   
 redrawPage(focusApp);
 });
 }
+
 });
 	</xsl:template>
 	
@@ -5271,5 +6189,16 @@ redrawPage(focusApp);
 			</xsl:for-each>]
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
-	
+	<xsl:template name="GetViewerAPIPathText">
+		<xsl:param name="apiReport"></xsl:param>
+
+		<xsl:variable name="dataSetPath">
+			<xsl:call-template name="RenderLinkText">
+				<xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:value-of select="$dataSetPath"></xsl:value-of>
+
+	</xsl:template>
 </xsl:stylesheet>

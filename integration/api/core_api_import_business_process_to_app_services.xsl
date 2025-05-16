@@ -5,8 +5,10 @@
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/> 
 	<xsl:variable name="businessProcess" select="/node()/simple_instance[type=('Business_Process')]"/> 
-	<xsl:variable name="asbr" select="/node()/simple_instance[type=('APP_SVC_TO_BUS_RELATION')][name=$businessProcess/own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value]"/>
-	<xsl:variable name="applicationService" select="/node()/simple_instance[type=('Application_Service')][name=$asbr/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>
+	<xsl:key name="asbr" match="/node()/simple_instance[type=('APP_SVC_TO_BUS_RELATION')]" use="name"/> 
+	<xsl:variable name="asbr" select="key('asbr', $businessProcess/own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value)"/>
+	<xsl:key name="applicationService" match="/node()/simple_instance[type=('Application_Service')]" use="name"/> 
+	<xsl:variable name="applicationService" select="key('applicationService', $asbr/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value)"/>
 	<xsl:variable name="businessCriticality" select="/node()/simple_instance[type=('Business_Criticality')][name=$asbr/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>
  
 	<xsl:key name="asbr_key" match="/node()/simple_instance[type=('APP_SVC_TO_BUS_RELATION')]" use="own_slot_value[slot_reference = 'appsvc_to_bus_to_busproc']/value"/>
@@ -40,9 +42,20 @@
 <!--	<xsl:variable name="thisasbr" select="$asbr[name=current()/own_slot_value[slot_reference = 'bp_supported_by_app_svc']/value]"/>-->
 	<xsl:variable name="thisASBR" select="key('asbr_key',current()/name)"/>
 	{	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"services":[<xsl:for-each select="$thisASBR"><xsl:variable name="thisapplicationService" select="key('as_key',current()/name)"/>
 				<xsl:variable name="thisapplicationService" select="$applicationService[name=current()/own_slot_value[slot_reference = 'appsvc_to_bus_from_appsvc']/value]"/>	
-				<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"id":"<xsl:value-of select="eas:getSafeJSString($thisapplicationService/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisapplicationService"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>","criticality":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisbusinessCriticality"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+				<xsl:variable name="thisbusinessCriticality" select="$businessCriticality[name=current()/own_slot_value[slot_reference = 'app_to_process_business_criticality']/value]"/>	{"id":"<xsl:value-of select="eas:getSafeJSString($thisapplicationService/name)"/>",
+				<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate($thisapplicationService/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+					'criticality': string(translate(translate($thisbusinessCriticality/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+					}"/>
+					<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+					<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
+					 <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

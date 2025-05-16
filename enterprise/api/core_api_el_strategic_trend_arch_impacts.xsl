@@ -45,15 +45,15 @@
 			<xsl:if test="$impactBrands">,</xsl:if><xsl:apply-templates mode="BrandImpactJSON" select="$impactBrands"/>
 			<xsl:if test="$impactProdTypes">,</xsl:if><xsl:apply-templates mode="ProdTypeImpactJSON" select="$impactProdTypes"/>
 			<xsl:if test="$impactExternalRoles">,</xsl:if><xsl:apply-templates mode="RoleImpactJSON" select="$impactExternalRoles"/>
-			<!--<xsl:if test="$impactBusProcesses">,</xsl:if><xsl:apply-templates mode="BusProcImpactJSON" select="$impactBusProcesses"/>-->
+			<xsl:if test="$impactBusProcesses">,</xsl:if><xsl:apply-templates mode="BusProcImpactJSON" select="$impactBusProcesses"/>
 			<xsl:if test="$impactInfoConcepts">,</xsl:if><xsl:apply-templates mode="InfoConceptImpactJSON" select="$impactInfoConcepts"/>
-			<!--<xsl:if test="$impactInfoViews">,</xsl:if><xsl:apply-templates mode="InfoViewImpactJSON" select="$impactInfoViews"/>-->
+			<xsl:if test="$impactInfoViews">,</xsl:if><xsl:apply-templates mode="InfoViewImpactJSON" select="$impactInfoViews"/>
 			<xsl:if test="$impactApplicationCapabilities">,</xsl:if><xsl:apply-templates mode="AppCapImpactJSON" select="$impactApplicationCapabilities"/>
-			<!--<xsl:if test="$impactApplicatonServices">,</xsl:if><xsl:apply-templates mode="AppServiceImpactJSON" select="$impactApplicatonServices"/>
-			<xsl:if test="$impactAppProviders">,</xsl:if><xsl:apply-templates mode="AppImpactJSON" select="$impactAppProviders"/>-->
+			<xsl:if test="$impactApplicatonServices">,</xsl:if><xsl:apply-templates mode="AppServiceImpactJSON" select="$impactApplicatonServices"/>
+			<xsl:if test="$impactAppProviders">,</xsl:if><xsl:apply-templates mode="AppImpactJSON" select="$impactAppProviders"/>
 			<xsl:if test="$impactTechCapabilities">,</xsl:if><xsl:apply-templates mode="TechCapImpactJSON" select="$impactTechCapabilities"/>
-			<!--<xsl:if test="$impactTechComponents">,</xsl:if><xsl:apply-templates mode="TechCompImpactJSON" select="$impactTechComponents"/>
-			<xsl:if test="$impactTechProducts">,</xsl:if><xsl:apply-templates mode="TechProdImpactJSON" select="$impactTechProducts"/>-->
+			<xsl:if test="$impactTechComponents">,</xsl:if><xsl:apply-templates mode="TechCompImpactJSON" select="$impactTechComponents"/>
+			<xsl:if test="$impactTechProducts">,</xsl:if><xsl:apply-templates mode="TechProdImpactJSON" select="$impactTechProducts"/>
 			<xsl:if test="$impactCostTypes">,</xsl:if><xsl:apply-templates mode="CostTypeImpactJSON" select="$impactCostTypes"/>
 			<xsl:if test="$impactRevenueTypes">,</xsl:if><xsl:apply-templates mode="RevenueTypeImpactJSON" select="$impactRevenueTypes"/>
 			<xsl:if test="$impactBusOutcomeSQs">,</xsl:if><xsl:apply-templates mode="BusOutcomeImpactJSON" select="$impactBusOutcomeSQs"/>

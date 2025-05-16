@@ -750,6 +750,7 @@
 		<tr class="inner-tr collapse in" aria-expanded="false" style="display:hide; background-color:#f6f6f6;"><xsl:attribute name="id">{{this.id}}</xsl:attribute>
 				<td class="impact" colspan="" width="250px">
 					<span color="#d3d3d3">{{name}}</span>	
+					<span style="opacity:0">{{criticality}}</span>
 				</td>
 				<td class="" colspan="" width="100px">
 				</td>
@@ -1193,10 +1194,7 @@
  
 				workingArray=newArray;
 				essInitViewScoping(redrawView,['Group_Actor'],'', true);
- 
-				
-					
-
+  
 					
 			}).catch (function (error)
 			{
@@ -1217,8 +1215,7 @@ var redrawView=function(){
 	scopedApps = essScopeResources(workingArray, [appOrgScopingDef], typeInfo);
 	 
 	if(apptable){
-		$('#rpTable').DataTable().destroy()
-		
+		$('#rpTable').DataTable().destroy() 
 		apptable=null;
 		}
 
@@ -1242,10 +1239,7 @@ var redrawView=function(){
 		  ],
 		  bSort : false  
 		});
-
-	
-
-
+ 
 		// Apply the search
 		apptable.columns().every( function () {
 			var that = this;

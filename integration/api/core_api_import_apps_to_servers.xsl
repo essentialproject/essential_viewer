@@ -7,10 +7,14 @@
 	
     <xsl:variable name="technodes" select="/node()/simple_instance[type = 'Technology_Node']"/> 
     <xsl:variable name="appswinstance" select="/node()/simple_instance[type = 'Application_Software_Instance'][own_slot_value[slot_reference='technology_instance_deployed_on_node']/value=$technodes/name]"/> 
+
     <xsl:variable name="appsdeployment" select="/node()/simple_instance[type = 'Application_Deployment'][own_slot_value[slot_reference='application_deployment_technology_instance']/value=$appswinstance/name]"/> 
     <xsl:variable name="deploymentRole" select="node()/simple_instance[type = 'Deployment_Role']"/>
-    <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider')]"/>  
-	 
+    <xsl:variable name="applications" select="/node()/simple_instance[type = ('Composite_Application_Provider', 'Application_Provider')]"/>  
+ 
+	<xsl:key name="applications" match="/node()/simple_instance[type = ('Composite_Application_Provider')]" use="own_slot_value[slot_reference='deployments_of_application_provider']/value"/>
+	<xsl:key name="appswinstance" match="/node()/simple_instance[type = 'Application_Software_Instance']" use="own_slot_value[slot_reference='technology_instance_deployed_on_node']/value"/>
+	<xsl:key name="appsdeployment" match="/node()/simple_instance[type = 'Application_Deployment']" use="own_slot_value[slot_reference='application_deployment_technology_instance']/value"/>
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -38,9 +42,9 @@
 
 	
  <xsl:template match="node()" mode="app2Serv"> 
-    <xsl:variable name="thisappswinstance" select="$appswinstance[own_slot_value[slot_reference='technology_instance_deployed_on_node']/value=current()/name]"/> 
-    <xsl:variable name="thisappsdeployment" select="$appsdeployment[own_slot_value[slot_reference='application_deployment_technology_instance']/value=$thisappswinstance/name]"/> 
-    <xsl:variable name="thisapps" select="$applications[own_slot_value[slot_reference='deployments_of_application_provider']/value=$thisappsdeployment/name]"/> 
+    <xsl:variable name="thisappswinstance" select="key('appswinstance', current()/name)"/> 
+    <xsl:variable name="thisappsdeployment" select="key('appsdeployment', $thisappswinstance/name)"/> 
+    <xsl:variable name="thisapps" select="key('applications', $thisappsdeployment/name)"/> 
     
     <xsl:apply-templates select="$thisapps" mode="app2ServRow">
       <xsl:with-param name="srv" select="current()"/>
@@ -54,10 +58,17 @@
       
     <xsl:variable name="thisdeploymentRole" select="$deploymentRole[name=$appdep/own_slot_value[slot_reference='application_deployment_role']/value]"/> 
       {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"server":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="$srv"/>
-             </xsl:call-template>",
-      "deployment":[<xsl:for-each select="$thisdeploymentRole">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+	  <xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+		'server': string(translate(translate($srv/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+      "deployment":[<xsl:for-each select="$thisdeploymentRole">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		},
    
   </xsl:template> 

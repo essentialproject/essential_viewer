@@ -8,7 +8,7 @@
 	<xsl:variable name="codebase" select="/node()/simple_instance[type='Codebase_Status']"/> 
 	<xsl:variable name="delivery" select="/node()/simple_instance[type='Application_Delivery_Model']"/> 
 	<xsl:variable name="lifecycle" select="/node()/simple_instance[type='Lifecycle_Status']"/> 
- 
+	<xsl:key name="enums" match="/node()/simple_instance[supertype='Enumeration']" use="name"/> 
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -36,24 +36,25 @@
 	</xsl:template>
 
 <xsl:template match="node()" mode="apps">
-		<xsl:variable name="thiscodebase" select="$codebase[name=current()/own_slot_value[slot_reference='ap_codebase_status']/value]"/>
-		<xsl:variable name="thisdelivery" select="$delivery[name=current()/own_slot_value[slot_reference='ap_delivery_model']/value]"/>
-		<xsl:variable name="thislifecycle" select="$lifecycle[name=current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value]"/>
+		<xsl:variable name="thiscodebase" select="key('enums', current()/own_slot_value[slot_reference='ap_codebase_status']/value)"/>
+		<xsl:variable name="thisdelivery" select="key('enums', current()/own_slot_value[slot_reference='ap_delivery_model']/value)"/>
+		<xsl:variable name="thislifecycle" select="key('enums', current()/own_slot_value[slot_reference='lifecycle_status_application_provider']/value)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		<xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
-		<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-		<xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,
-		<xsl:variable name="tempDescription" as="map(*)" select="map{'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))}"></xsl:variable>
-		<xsl:variable name="resultDesc" select="serialize($tempDescription, map{'method':'json', 'indent':true()})"/>  
-		<xsl:value-of select="substring-before(substring-after($resultDesc,'{'),'}')"></xsl:value-of>,
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')')),
+			'codebase_name': string(translate(translate($thiscodebase/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'delivery_name': string(translate(translate($thisdelivery/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'codebase': string(translate(translate($thiscodebase/own_slot_value[slot_reference = 'enumeration_value']/value, '}', ')'), '{', ')')),
+			'delivery': string(translate(translate($thisdelivery/own_slot_value[slot_reference = 'enumeration_value']/value, '}', ')'), '{', ')')),
+			'lifecycle_name': string(translate(translate($thislifecycle/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'lifecycle': string(translate(translate($thislifecycle/own_slot_value[slot_reference = 'enumeration_value']/value, '}', ')'), '{', ')'))
+		}"/>
+		
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,		
 		"class":"<xsl:value-of select="current()/type"/>",	 
-		"codebase_name":"<xsl:value-of select="$thiscodebase/own_slot_value[slot_reference='name']/value"/>",
 		"dispositionId":"<xsl:value-of select="own_slot_value[slot_reference='ap_disposition_lifecycle_status']/value"/>",
-		"delivery_name":"<xsl:value-of select="$thisdelivery/own_slot_value[slot_reference='name']/value"/>",
-		"codebase":"<xsl:value-of select="$thiscodebase/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"delivery":"<xsl:value-of select="$thisdelivery/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"lifecycle":"<xsl:value-of select="$thislifecycle/own_slot_value[slot_reference='enumeration_value']/value"/>",
-		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
-		"lifecycle_name":"<xsl:value-of select="$thislifecycle/own_slot_value[slot_reference='name']/value"/>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>

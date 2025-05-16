@@ -155,7 +155,10 @@
 			// define the global object to hold environment variables
 			const essViewer = {};
 			essViewer.repoId = '<xsl:value-of select="repository/repositoryID"/>';
-			essViewer.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';	
+			const url = new URL(window.location.href);
+			let basePath = url.origin + url.pathname;
+			basePath = basePath.slice(0, -'/report'.length);
+			essViewer.baseUrl = basePath;
 			essViewer.currentXSL = '<xsl:value-of select="translate($theCurrentXSL, '/', '-')"/>';
 			essViewer.user = {
 				'id': '<xsl:value-of select="$userData//user:email"/>',
@@ -272,7 +275,7 @@
 </script>
 
 <!-- Call the JS script to load the CSRF token! -->
-<script defer="defer" src="common/js/ess-csrf.js"></script>
+<script src="common/js/ess-csrf.js"></script>
 
 <!--Include library containing common API platform functions for retrieving and updating repository data-->
 <script type="text/javascript" src="common/js/core_common_api_functions.js"/>

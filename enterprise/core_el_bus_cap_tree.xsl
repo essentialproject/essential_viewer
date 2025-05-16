@@ -1198,7 +1198,8 @@ let aprsAndPojects=thisProc.appsviaservice
 } 
 })
 
-
+console.log('r', result)
+if(result){
 treeData.push({"id": result.name,"name":result.name,"type":"Business_Capability", "children":[{"name":"Sub-Capabilities", "colour":"#90afa2", "children": result.childrenCaps},{"name":"Processes", "colour":"#7cc4cf", "children": thisCap.processes}]}) 
 
 //console.log('treeData',treeData)
@@ -1523,7 +1524,7 @@ let colours=[{"name":"Sub-Capabilities", "colour":"#90afa2"},
 					$('#caps').val(selectedID).trigger('change');
 				})	
 				}
-
+			}
 				
 			}			
 				rationReport=responses[1].reports.filter((d)=>{return d.name=='appRat'});
@@ -1639,8 +1640,7 @@ thisProjs=thisProjs.filter((elem, index, self) => self.findIndex( (t) =>{return 
 			   $('.appInDivBox').hide();
 
 			})
-		 
-	
+		  
 			}). catch (function (error)
 			{
 				//display an error somewhere on the page

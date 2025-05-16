@@ -94,7 +94,7 @@
 
     <xsl:key name="aritARIAPRs" match="$appProRoles" use="name"/>
  
-	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: App KPIs']"></xsl:variable>
+	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: App KPIs'][own_slot_value[slot_reference='report_xsl_filename']/value!=''][1]"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="processData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Physical Process to Apps via Services']"></xsl:variable>
  	<!-- 
@@ -778,15 +778,22 @@
 <xsl:template match="node()" mode="idName">
     {   "row":"<xsl:value-of select="position()+7"/>",
 	    "id":"<xsl:value-of select="current()/name"/>",
-	    "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>"
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
     }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="idNameDesc">
     {   "row":"<xsl:value-of select="position()+7"/>",
 	    "id":"<xsl:value-of select="current()/name"/>", 
-	    "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",
-        "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>"
-    }<xsl:if test="position()!=last()">,</xsl:if>
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>    }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="busModConfigs">
     <xsl:variable name="thisActors" select="$groupActors[name=current()/own_slot_value[slot_reference='bmc_org_scope']/value]"/>
@@ -868,7 +875,11 @@
     { 
         "row":"<xsl:value-of select="position()+7"/>",
         "model":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisBusModels"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",
-        "leafBC":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$thisBusCap"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>"
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'leafBC': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
     }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="busProtoArchSheet">

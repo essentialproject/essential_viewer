@@ -579,10 +579,8 @@
         var infoFragment = $("#info-template").html();
         infoTemplate = Handlebars.compile(infoFragment); 
 
-
         var dictionaryFragment = $("#dictionary-template").html();
         dictionaryTemplate = Handlebars.compile(dictionaryFragment); 
-        
 
         Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
             return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
@@ -607,6 +605,14 @@
                                 })
                                 icArray.push(match);
                             })
+
+                                icArray.sort((a, b) => {
+                                    // Convert the string values to numbers using parseInt (or Number)
+                                    const seqA = parseInt(a.sequence_number, 10);
+                                    const seqB = parseInt(b.sequence_number, 10);
+                                    return seqA - seqB;
+								});
+                            console.log('icArray',icArray)
                             d['info_concepts']=icArray;
                         }) 
 

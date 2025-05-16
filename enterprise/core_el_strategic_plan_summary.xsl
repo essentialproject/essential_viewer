@@ -211,214 +211,273 @@
 						<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 no-print">
 							<!-- required for floating -->
 							<!-- Nav tabs -->
-							<ul class="nav nav-tabs tabs-left">
-								<li class="active">
-									<a href="#details" data-toggle="tab"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Overview')"/></a>
+							<ul class="nav nav-tabs tabs-left" role="tablist">
+								<li class="active" role="presentation">
+									<a href="#details" id="tab-details" role="tab" aria-controls="details" aria-selected="true" tabindex="0" data-toggle="tab">
+									<i class="fa fa-fw fa-users right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Overview')"/>
+									</a>
 								</li>
-								<li>
-									<a href="#impacts" data-toggle="tab"><i class="fa fa-fw fa-random right-10"></i><xsl:value-of select="eas:i18n('Impacts')"/></a>
-								</li> 
-								<li>
-									<a href="#projects" data-toggle="tab"><i class="fa fa-fw fa-wrench right-10"></i><xsl:value-of select="eas:i18n('Projects')"/></a>
-								</li> 
-								<li>
-									<a href="#documents" data-toggle="tab"><i class="fa fa-fw fa-book right-10"></i><xsl:value-of select="eas:i18n('Documentation &amp; Links')"/></a>
-								</li> 
-							</ul>
+								<li role="presentation">
+									<a href="#impacts" id="tab-impacts" role="tab" aria-controls="impacts" aria-selected="false" tabindex="-1" data-toggle="tab">
+									<i class="fa fa-fw fa-random right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Impacts')"/>
+									</a>
+								</li>
+								<li role="presentation">
+									<a href="#projects" id="tab-projects" role="tab" aria-controls="projects" aria-selected="false" tabindex="-1" data-toggle="tab">
+									<i class="fa fa-fw fa-wrench right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Projects')"/>
+									</a>
+								</li>
+								<li role="presentation">
+									<a href="#documents" id="tab-documents" role="tab" aria-controls="documents" aria-selected="false" tabindex="-1" data-toggle="tab">
+									<i class="fa fa-fw fa-book right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Documentation &amp; Links')"/>
+									</a>
+								</li>
+								</ul>
+
 						</div>
 						<div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
 							<!-- Tab panes -->
 							<div class="tab-content">
-								<div class="tab-pane active" id="details">
-									<!--  <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Overview')"/></h2>-->
+								<div class="tab-pane active" id="details" role="tabpanel" aria-labelledby="tab-details">
 									<div class="parent-superflex">
 										<div class="superflex">
-											<h3 class="text-primary"><i class="fa fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Overview')"/></h3>
-											<label><xsl:value-of select="eas:i18n('Plan Name')"/></label>
-											<div class="ess-string">
-													<xsl:call-template name="RenderMultiLangInstanceName">
-														<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
-													</xsl:call-template>
+											<h3 class="text-primary">
+												<i class="fa fa-users right-10" aria-hidden="true"></i>
+												<xsl:value-of select="eas:i18n('Plan Overview')"/>
+											</h3>
+											
+											<label for="plan-name">
+												<xsl:value-of select="eas:i18n('Plan Name')"/>
+											</label>
+											<div class="ess-string" id="plan-name">
+												<xsl:call-template name="RenderMultiLangInstanceName">
+													<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
+												</xsl:call-template>
 											</div>
+
 											<div class="clearfix bottom-10"></div>
-											<label><xsl:value-of select="eas:i18n('Description')"/></label>
-											<div class="ess-string">
+
+											<label for="plan-description">
+												<xsl:value-of select="eas:i18n('Description')"/>
+											</label>
+											<div class="ess-string" id="plan-description">
 												<xsl:call-template name="RenderMultiLangInstanceDescription">
 													<xsl:with-param name="theSubjectInstance" select="$currentPlan"/>
 												</xsl:call-template>
 											</div>
-											<!--
+
 											<div class="clearfix bottom-10"></div> 
-											<label><xsl:value-of select="eas:i18n('Approval')"/></label>
-											<div class="ess-string">{{{this.approvalStatus}}}</div>
-										-->
-											<div class="clearfix bottom-10"></div> 
-											<label><xsl:value-of select="eas:i18n('Status')"/></label>
-											<div class="ess-string"> 
+
+											<label for="plan-status">
+												<xsl:value-of select="eas:i18n('Status')"/>
+											</label>
+											<div class="ess-string" id="plan-status">
 												<xsl:choose>
-												<xsl:when test="count($currentPlanStatus) &gt; 0">
-													<xsl:variable name="statusColour">
-														<xsl:choose>
-															<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Active'">#1db41d</xsl:when>
-															<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Old'">#666</xsl:when>
-															<xsl:otherwise>#4848d1</xsl:otherwise>
-														</xsl:choose>
-													</xsl:variable>
-													<div class="keySample">
-														<xsl:attribute name="style" select="concat('background-color: ', $statusColour, ';')"/>
-														
-													</div>
-													<div class="textStatus">
-														<xsl:value-of select="$currentPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
-													</div>
-													
-												</xsl:when>
-												<xsl:otherwise>
-													<p>-</p>
-												</xsl:otherwise>
-											</xsl:choose>
-												</div>
-											<div class="clearfix bottom-10"></div> 
-										</div>
-										<div class="superflex">
-											<h2 class="text-primary">
-												<i class="fa fa-calendar right-10"></i>
-												<xsl:value-of select="eas:i18n('Timeline')"/>
-											</h2>
-											<div>
-												<xsl:choose>
-													<xsl:when test="$noPlanDates">
-														<em>
-															<xsl:value-of select="eas:i18n('No start or end dates defined')"/>
-														</em>
+													<xsl:when test="count($currentPlanStatus) &gt; 0">
+														<xsl:variable name="statusColour">
+															<xsl:choose>
+																<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Active'">#1db41d</xsl:when>
+																<xsl:when test="$currentPlanStatus/own_slot_value[slot_reference='enumeration_value']/value='Old'">#666</xsl:when>
+																<xsl:otherwise>#4848d1</xsl:otherwise>
+															</xsl:choose>
+														</xsl:variable>
+														<div class="keySample" aria-hidden="true">
+															<xsl:attribute name="style" select="concat('background-color: ', $statusColour, ';')"/>
+														</div>
+														<div class="textStatus">
+															<xsl:value-of select="$currentPlanStatus/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+														</div>
 													</xsl:when>
-													<xsl:otherwise> 
-														<svg id="svgdates"/> 
+													<xsl:otherwise>
+														<p>-</p>
 													</xsl:otherwise>
 												</xsl:choose>
 											</div>
 
+											<div class="clearfix bottom-10"></div> 
 										</div>
+
 										<div class="superflex">
-											<h2 class="text-primary">
-												<i class="fa fa-paper-plane right-10"></i>
+											<h2 class="text-primary" id="timeline-heading">
+												<i class="fa fa-calendar right-10" aria-hidden="true"></i>
+												<xsl:value-of select="eas:i18n('Timeline')"/>
+											</h2>
+											<div role="region" aria-labelledby="timeline-heading">
+												<xsl:choose>
+													<xsl:when test="$noPlanDates">
+														<em><xsl:value-of select="eas:i18n('No start or end dates defined')"/></em>
+													</xsl:when>
+													<xsl:otherwise> 
+														<svg id="svgdates" aria-label="Timeline graphic"/> 
+													</xsl:otherwise>
+												</xsl:choose>
+											</div>
+										</div>
+
+										<div class="superflex">
+											<h2 class="text-primary" id="objectives-heading">
+												<i class="fa fa-paper-plane right-10" aria-hidden="true"></i>
 												<xsl:value-of select="eas:i18n('Supported Objectives')"/>
 											</h2>  
-											<div class="objcard-container">
-											<xsl:for-each select="$supportedObjectives">
-											<xsl:variable name="currentObj" select="current()"/>
-											<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
-											<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
-											<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-											<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
-							
-											<div class="objcard">
-												<div class="objcontent">
-													<i class="fa fa-bullseye text-primary right-5"></i>
-													
-													<b> <xsl:value-of select="eas:i18n('Name')"/>: </b>     
-													<xsl:call-template name="RenderInstanceLink">
-														<xsl:with-param name="theSubjectInstance" select="current()"/>
-														<xsl:with-param name="theXML" select="$reposXML"/>
-														<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
-													</xsl:call-template>
-													<br/>
-													
-													<xsl:if test="$objectiveDesc">
-														<div class="descriptionBox">
-															<xsl:value-of select="$objectiveDesc"/>
+											<div class="objcard-container" role="region" aria-labelledby="objectives-heading">
+												<xsl:for-each select="$supportedObjectives">
+													<xsl:variable name="currentObj" select="current()"/>
+													<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
+													<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
+													<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
+													<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+
+													<div class="objcard">
+														<div class="objcontent">
+															<i class="fa fa-bullseye text-primary right-5" aria-hidden="true"></i>
+															<b> <xsl:value-of select="eas:i18n('Name')"/>: </b>     
+															<xsl:call-template name="RenderInstanceLink">
+																<xsl:with-param name="theSubjectInstance" select="current()"/>
+																<xsl:with-param name="theXML" select="$reposXML"/>
+																<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+															</xsl:call-template>
+															<br/>
+
+															<xsl:if test="$objectiveDesc">
+																<div class="descriptionBox">
+																	<xsl:value-of select="$objectiveDesc"/>
+																</div>
+															</xsl:if>
+															<div class="icon">
+																<i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+															</div>
 														</div>
-													</xsl:if>
-													<div class="icon"><i class="fa fa-arrow-circle-o-right"></i></div> <!-- Arrow Icon -->
-												</div>
-												<div class="objpanel" style="overflow-y:scroll">
-													<h5> <i class="fa fa-line-chart text-primary right-5"></i><b>KPIs</b></h5> 
-													<xsl:choose>
-														<xsl:when test="count($measureValues) > 0">
-															
+
+														<div class="objpanel" style="overflow-y:scroll">
+															<h5>
+																<i class="fa fa-line-chart text-primary right-5" aria-hidden="true"></i>
+																<b><xsl:value-of select="eas:i18n('KPIs')"/></b>
+															</h5> 
+															<xsl:choose>
+																<xsl:when test="count($measureValues) > 0">
 																	<xsl:for-each select="$measureValues">
 																		<xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
-																		<i class="fa fa-caret-right text-primary right-5"></i><xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
+																		<i class="fa fa-caret-right text-primary right-5" aria-hidden="true"></i>
+																		<xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - 
+																		<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
 																	</xsl:for-each> 
-															
-														</xsl:when>
-														<xsl:otherwise><xsl:value-of select="eas:i18n('None Mapped')"/></xsl:otherwise>
-													</xsl:choose> 
-													<h5> <i class="fa fa-tags text-primary right-5"></i><b>Drivers</b></h5> 
-								
-														<xsl:for-each select="$relatedDrivers"> 
-															<i class="fa fa-caret-right text-primary right-5"></i><xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/> <br/>
-														</xsl:for-each>
-												
-													<div class="close"><i class="fa fa-arrow-circle-o-left"></i></div> <!-- Close Icon -->
-												</div>
+																</xsl:when>
+																<xsl:otherwise><xsl:value-of select="eas:i18n('None Mapped')"/></xsl:otherwise>
+															</xsl:choose> 
+
+															<h5>
+																<i class="fa fa-tags text-primary right-5" aria-hidden="true"></i>
+																<b><xsl:value-of select="eas:i18n('Drivers')"/></b>
+															</h5> 
+
+															<xsl:for-each select="$relatedDrivers"> 
+																<i class="fa fa-caret-right text-primary right-5" aria-hidden="true"></i>
+																<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/> <br/>
+															</xsl:for-each>
+
+															<div class="close">
+																<i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+															</div>
+														</div>
+													</div>
+												</xsl:for-each>    
 											</div>
-										</xsl:for-each>    
-									</div>
 										</div>
+
 										<div class="superflex" style="width: 100%;">
-											<h2 class="text-primary">
-												<i class="fa fa-map-signs right-10"></i>
+											<h2 class="text-primary" id="dependencies-heading">
+												<i class="fa fa-map-signs right-10" aria-hidden="true"></i>
 												<xsl:value-of select="eas:i18n('Strategic Plan Dependencies')"/>
 											</h2> 
-											<div class="badgeHeader" style="background-color:green;color:white"> <i class="fa fa-caret-left right-5" style="color:white"></i> Depends On </div> 
-											<xsl:call-template name="StrategicPlansTable">
-												<xsl:with-param name="thePlans" select="$dependentPlans"/>
-											</xsl:call-template>
-									
-											<div class="badgeHeader" style="background-color:#d96060; color:white; text-align:right;">
-													Supports<i class="fa fa-caret-right left-5" style="color:white"></i> 
-											</div>
-											
-											<xsl:call-template name="StrategicPlansTable">
-												<xsl:with-param name="thePlans" select="$supportingPlans"/>
-											</xsl:call-template>
+											<div role="region" aria-labelledby="dependencies-heading">
+												<div class="badgeHeader" style="background-color:green;color:white">
+													<i class="fa fa-caret-left right-5" style="color:white" aria-hidden="true"></i> 
+													<xsl:value-of select="eas:i18n('Depends On')"/> 
+												</div> 
+												<xsl:call-template name="StrategicPlansTable">
+													<xsl:with-param name="thePlans" select="$dependentPlans"/>
+												</xsl:call-template>
 
-											<div class="badgeHeader" style="background-color:#D96EE6; color:white; text-align:left;"> <i class="fa fa-warning right-5" style="color:white"></i> Indirect </div>
-											<p><xsl:value-of select="eas:i18n('Plans impacting the same elements as this plan')"/></p>
-											<div id="tertiaryImpacts"/>
+												<div class="badgeHeader" style="background-color:#d96060; color:white; text-align:right;">
+													<xsl:value-of select="eas:i18n('Supports')"/>
+													<i class="fa fa-caret-right left-5" style="color:white" aria-hidden="true"></i> 
+												</div>
 
-										</div>
-									</div> 
-								</div> 
-								<div class="tab-pane" id="impacts">
-									<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h2>-->
-									<div class="parent-superflex">
-										<div class="superflex">
-											<h3 class="text-primary"><i class="fa fa-random right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h3>
-											<div id="impactsTable"/>
-										</div>
-									</div> 
-								</div> 
-								<div class="tab-pane" id="projects">
-									<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Projects')"/></h2>-->
-									<div class="parent-superflex">
-										<div class="superflex">
-											<h2 class="text-primary">
-												<i class="fa fa-wrench right-10"></i>
-												<xsl:value-of select="eas:i18n('Projects')"/>
-											</h2>
-											<p><xsl:value-of select="eas:i18n('Projects implementing this strategic plan')"/></p>
-											<div>
-												<xsl:call-template name="Projects"/>
+												<xsl:call-template name="StrategicPlansTable">
+													<xsl:with-param name="thePlans" select="$supportingPlans"/>
+												</xsl:call-template>
+
+												<div class="badgeHeader" style="background-color:#D96EE6; color:white; text-align:left;">
+													<i class="fa fa-warning right-5" style="color:white" aria-hidden="true"></i> 
+													<xsl:value-of select="eas:i18n('Indirect')"/> 
+												</div>
+												<p><xsl:value-of select="eas:i18n('Plans impacting the same elements as this plan')"/></p>
+												<div id="tertiaryImpacts"/>
 											</div>
 										</div>
 									</div> 
+								</div>
+
+							<div class="tab-pane" id="impacts" role="tabpanel" aria-labelledby="tab-impacts">
+								<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h2>-->
+								<div class="parent-superflex">
+									<div class="superflex">
+										<h3 class="text-primary" id="impacts-heading">
+											<i class="fa fa-random right-10" aria-hidden="true"></i>
+											<xsl:value-of select="eas:i18n('Plan Impacts')"/>
+										</h3>
+										<div id="impactsTable" role="region" aria-labelledby="impacts-heading"/>
+									</div>
 								</div> 
-								<div class="tab-pane" id="documents">
-						<!--             <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Documents')"/></h2>-->
-									<div class="parent-superflex">
-										<div class="superflex"> 
-												<h2 class="text-primary">
-													<i class="fa fa-book right-10"></i>
-													<xsl:value-of select="eas:i18n('Documents')"/>
-												</h2>
-												<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/><xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/><xsl:call-template name="RenderExternalDocRefList"><xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/></xsl:call-template>
-												<xsl:if test="not(anExternalDocRefList)"> <xsl:text> </xsl:text><xsl:value-of select="eas:i18n('None Mapped')"/></xsl:if>
-											
+							</div> 
+
+							<div class="tab-pane" id="projects" role="tabpanel" aria-labelledby="tab-projects">
+								<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Projects')"/></h2>-->
+								<div class="parent-superflex">
+									<div class="superflex">
+										<h2 class="text-primary" id="projects-heading">
+											<i class="fa fa-wrench right-10" aria-hidden="true"></i>
+											<xsl:value-of select="eas:i18n('Projects')"/>
+										</h2>
+										<p><xsl:value-of select="eas:i18n('Projects implementing this strategic plan')"/></p>
+										<div role="region" aria-labelledby="projects-heading">
+											<xsl:call-template name="Projects"/>
 										</div>
-									</div> 
+									</div>
 								</div> 
+							</div> 
+
+							<div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="tab-documents">
+	<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Documents')"/></h2> -->
+								<div class="parent-superflex">
+									<div class="superflex"> 
+										<h2 class="text-primary" id="documents-heading">
+											<i class="fa fa-book right-10" aria-hidden="true"></i>
+											<xsl:value-of select="eas:i18n('Documents')"/>
+										</h2>
+
+										<div role="region" aria-labelledby="documents-heading">
+											<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/>
+											<xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+											
+											<xsl:call-template name="RenderExternalDocRefList">
+												<xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/>
+											</xsl:call-template>
+											
+											<xsl:if test="not(anExternalDocRefList)">
+												<xsl:text> </xsl:text>
+												<xsl:value-of select="eas:i18n('None Mapped')"/>
+											</xsl:if>
+										</div>
+
+									</div>
+								</div> 
+							</div>
+
 							</div> 
 						</div> 
 						<!--Setup Description Section-->
@@ -460,80 +519,89 @@
 				<xsl:call-template name="Footer"/>
 			</body>
             <script id="impacts-template" type="text/x-handlebars-template">
-                <table class="table table-striped">
-                    <tr><th>Type</th><th>Name</th><th>Description</th><th>Action</th></tr>
-                {{#each this}}
-                    <tr>
-                        <td><i style="color:#810947"><xsl:attribute name="class">fa {{this.icon}} right-5</xsl:attribute></i>{{this.type}}</td>
-                        <td>{{this.name}}</td>
-                        <td>{{this.description}}</td>
-                        <td><span class="label label-success">{{this.action}}</span></td>
-                    </tr>
-                {{/each}}
-                </table>
+               <table class="table table-striped" role="table">
+						<thead>
+							<tr>
+								<th scope="col"><xsl:value-of select="eas:i18n('Type')"/></th>
+								<th scope="col"><xsl:value-of select="eas:i18n('Name')"/></th>
+								<th scope="col"><xsl:value-of select="eas:i18n('Description')"/></th>
+								<th scope="col"><xsl:value-of select="eas:i18n('Action')"/></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each this}}
+							<tr>
+								<td>
+									<i style="color:#810947" aria-hidden="true">
+										<xsl:attribute name="class">fa {{this.icon}} right-5</xsl:attribute>
+									</i>
+									{{this.type}}
+								</td>
+								<td>{{this.name}}</td>
+								<td>{{this.description}}</td>
+								<td><span class="label label-success">{{this.action}}</span></td>
+							</tr>
+							{{/each}}
+						</tbody>
+					</table>
+
             </script>
             <script id="tertiary-template" type="text/x-handlebars-template">
 				{{#if this}}
-                {{#isNotEmpty this}}
-				 
-                <table class="table">
+				{{#isNotEmpty this}}
+
+				<table class="table" role="table">
 					<thead>
 						<tr>
-							<th class="cellWidth-30pc">
+							<th scope="col" class="cellWidth-30pc">
 								<xsl:value-of select="eas:i18n('Strategic Plan')"/>
 							</th>
-							<th class="cellWidth-40pc">
+							<th scope="col" class="cellWidth-40pc">
 								<xsl:value-of select="eas:i18n('Impacting')"/>
 							</th>
-							 
-							<th class="cellWidth-15pc">
+							<th scope="col" class="cellWidth-15pc">
 								<xsl:value-of select="eas:i18n('End Date')"/>
 							</th>
 						</tr>
 					</thead>
-                {{#each this}} 
-              
-					<tbody> 
-                     
-                        <tr>
-                            <td>
-                                <div class="planBox">
-                                    {{@key}}
-                                </div>
-                            </td>
-                            <td>
-                                {{#each this}}
-                            
-                                    <div class="planElement">
-                                    {{this.elementName}}
-                                        <span class="label label-info">
-                                            {{actionType}}
-                                        </span>
-                                    </div>
-                                    
-                                {{/each}}
-                            </td>
-                             
-                            <td>
-                                <div class="dateColumn">
-                                {{setDate this.0.endDate}}
-                                </div>
-                            </td>
-                        </tr>
 
-                    {{/each}}
-                    </tbody>
-                </table>    
-                {{/isNotEmpty}}
+					{{#each this}} 
+					<tbody> 
+						<tr>
+							<td>
+								<div class="planBox">
+									{{@key}}
+								</div>
+							</td>
+							<td>
+								{{#each this}}
+								<div class="planElement">
+									{{this.elementName}}
+									<span class="label label-info">{{actionType}}</span>
+								</div>
+								{{/each}}
+							</td>
+							<td>
+								<div class="dateColumn">
+									{{setDate this.0.endDate}}
+								</div>
+							</td>
+						</tr>
+					</tbody>
+					{{/each}}
+
+				</table>    
+
+				{{/isNotEmpty}}
 				{{/if}}
             </script>
             <script>
 				$('#viewpoint-bar').hide();
                 var impactedElements=[<xsl:apply-templates select="$impactedElements" mode="impacts"/>];
-console.log('impactedElements',impactedElements)
+ 
 var impactTemplate;
 var thisId='<xsl:value-of select="$param1"/>';
-console.log('t', thisId)
+ 
 $(document).ready(function(){
     var impactsFragment = $("#impacts-template").html();
     impactTemplate = Handlebars.compile(impactsFragment);
@@ -682,15 +750,14 @@ var redrawView=function(){
             }, {}); // Initialize the accumulator as an empty object
         };
         const groupedData = groupByInstId(data);
-console.log('gd',groupedData);
+ 
 const planMap = Object.fromEntries(plans.map(plan => [plan.id, plan]));
-
-console.log('pm',planMap);
+ 
 
 let tertiaryImpacts=[]
-impactedElements.forEach((e)=>{
-    console.log('i', groupedData[e.id]);
-    if(groupedData[e.id].length&gt;1){
+impactedElements.forEach((e)=>{ 
+	
+    if(groupedData[e.id] &amp;&amp; groupedData[e.id].length&gt;1){
         let otherPlans=groupedData[e.id].filter((p)=>{
             return p.planId !== thisId
         })
@@ -701,8 +768,7 @@ impactedElements.forEach((e)=>{
             return !isDuplicate;
         });
 
-        uniquePlans.forEach((s)=>{
-                    console.log(planMap[s.planId])
+        uniquePlans.forEach((s)=>{ 
             s['planName']=planMap[s.planId].name;
         })
 
@@ -711,8 +777,7 @@ impactedElements.forEach((e)=>{
     }
 })
  
-console.log(planMap);
-console.log('TA', tertiaryImpacts)
+ 
     const typePriority = ['Business_', 'Application_Provider', 'Composite_Application','Application_Service', 'Technology_', 'Information_Component'];
 
    let icons= [{type:'business',icon:'fa-tasks'},{type:'application',icon:'fa-desktop'},{type:'technology',icon:'fa-server'},{type:'information',icon:'fa-table'}, {type:'data',icon:'fa-database'},{type:'actor', icon:'fa-users'}]

@@ -113,9 +113,13 @@
 								<xsl:call-template name="viewLibrary"/>
 							</div>
 						</div>
-						<xsl:apply-templates mode="portalPanels" select="$portalPanels">
-							<xsl:sort select="current()/own_slot_value[slot_reference = 'portal_panel_sequence']/value"/>
-						</xsl:apply-templates>
+						<div class="col-xs-12 col-sm-4">
+							<div class="row">
+								<xsl:apply-templates mode="portalPanels" select="$portalPanels">
+									<xsl:sort select="current()/own_slot_value[slot_reference = 'portal_panel_sequence']/value"/>
+								</xsl:apply-templates>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -232,7 +236,7 @@
 	<!--		<xsl:variable name="portalPanelSections" select="$allPortalPanelSections[name = current()/own_slot_value[slot_reference = 'portal_panel_sections']/value]"/>-->
 			<xsl:variable name="portalPanelSections" select="key('allPortalPanelSections_key',current()/name)"/>
 			<xsl:variable name="panelReports" select="$allReports[name = current()/own_slot_value[slot_reference = 'reports_for_portal_panel']/value]"/>
-			<div class="col-xs-12 col-sm-4 bg-offwhite">
+			<div class="col-xs-12 bg-offwhite">
 				<h1 class="text-primary">
 					<xsl:value-of select="current()/own_slot_value[slot_reference = 'portal_panel_label']/value"/>
 				</h1>

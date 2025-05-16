@@ -4,10 +4,14 @@
 	<xsl:include href="../../common/core_js_functions.xsl"/>
 	<xsl:output method="text" encoding="UTF-8"/>
 	<xsl:param name="param1"/> 
-	<xsl:variable name="taxonomy" select="/node()/simple_instance[type='Taxonomy'][own_slot_value[slot_reference='name']/value=('Reference Model Layout')]"/> 
-	<xsl:variable name="taxonomyCat" select="/node()/simple_instance[type='Taxonomy'][own_slot_value[slot_reference='name']/value=('Application Capability Category')]"/> 
-	<xsl:variable name="taxonomyTerm" select="/node()/simple_instance[type='Taxonomy_Term'][name=$taxonomy/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
-	<xsl:variable name="taxonomyTermCat" select="/node()/simple_instance[type='Taxonomy_Term'][name=$taxonomyCat/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
+	<xsl:variable name="taxonomies" select="/node()/simple_instance[type='Taxonomy']"/>
+	<xsl:variable name="taxonomyTerms" select="/node()/simple_instance[type='Taxonomy_Term']"/>
+	<xsl:variable name="taxonomy" select="$taxonomies[own_slot_value[slot_reference='name']/value=('Reference Model Layout')]"/> 
+	<xsl:variable name="taxonomyCat" select="$taxonomies[own_slot_value[slot_reference='name']/value=('Application Capability Category')]"/> 
+	<xsl:variable name="taxonomyTerm" select="$taxonomyTerms[name=$taxonomy/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
+	<xsl:variable name="taxonomyTermCat" select="$taxonomyTerms[name=$taxonomyCat/own_slot_value[slot_reference='taxonomy_terms']/value]"/> 
+	<xsl:key name="appCaps" match="/node()/simple_instance[type='Application_Capability']" use="type"/> 
+	<xsl:key name="busCaps" match="/node()/simple_instance[type='Business_Capability']" use="type"/> 
 	<xsl:variable name="appCaps" select="/node()/simple_instance[type='Application_Capability']"/> 
  	<xsl:variable name="busCaps" select="/node()/simple_instance[type='Business_Capability']"/> 
 	<xsl:variable name="busDomains" select="/node()/simple_instance[type='Business_Domain']"/> 
@@ -45,17 +49,32 @@
 <xsl:variable name="categoryLayer" select="$taxonomyTermCat[name=current()/own_slot_value[slot_reference='element_classified_by']/value]"/>	
 	{
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-		"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-             </xsl:call-template>",
-		"appCapCategory":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$categoryLayer"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')')),
+		'appCapCategory': string(translate(translate($categoryLayer[1]/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+		'ReferenceModelLayer': string(translate(translate($refLayer/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+	}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,	
 		"businessDomain":[<xsl:for-each select="$businessDomains">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"ParentAppCapability":[<xsl:for-each select="$parentAppCaps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-		"SupportedBusCapability":[<xsl:for-each select="$supportedBusCaps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-		"ReferenceModelLayer":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$refLayer"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template> 
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		"SupportedBusCapability":[<xsl:for-each select="$supportedBusCaps">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template> 
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>	
  

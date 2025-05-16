@@ -35,7 +35,6 @@
 	<xsl:key name="applicationsUsedMapping_key" match="/node()/simple_instance[(type = 'APP_PRO_TO_PHYS_BUS_RELATION')]" use="type"/>
     <xsl:variable name="applicationsUsedMapping" select="key('applicationsUsedMapping_key', 'APP_PRO_TO_PHYS_BUS_RELATION')"/>
 
-
     <xsl:variable name="applicationOrgUser" select="$allRoles[own_slot_value[slot_reference='name']/value='Application Organisation User']"/>
 	<xsl:variable name="applicationOrgUserA2R" select="key('allallActor2RoleRelations_key', $applicationOrgUser/name)"/>
 	<xsl:key name="ao2rKey" match="$applicationOrgUserA2R" use="own_slot_value[slot_reference = 'act_to_role_from_actor']/value"/>
@@ -72,7 +71,9 @@
 
 	<xsl:key name="allDocs_key" match="/node()/simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
 	<xsl:key name="allTaxTerms_key" match="/node()/simple_instance[type = 'Taxonomy_Term']" use="own_slot_value[slot_reference = 'classifies_elements']/value"/> 
-	 
+	<xsl:key name="regtoSubject_key" match="/node()/simple_instance[type = 'REGULATED_COMPONENT_RELATION']" use="own_slot_value[slot_reference = 'regulated_component_to_element']/value"/> 
+	<xsl:key name="regs_key" match="/node()/simple_instance[type = 'Regulation']" use="name"/> 
+	
 	<!--
 		* Copyright © 2008-2021 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -148,8 +149,6 @@
 
 <xsl:variable name="thisEmployees" select="$allOrgUserIds[type='Individual_Actor']"/>
      
-		  
-       
 		<xsl:variable name="parentActorName" select="$thisparentActor/own_slot_value[slot_reference = 'name']/value"/>
 	<!--	<xsl:variable name="thisactor2role" select="$allActor2RoleRelations[own_slot_value[slot_reference='act_to_role_from_actor']/value=current()/name]"/>-->
 		<xsl:variable name="thisactor2role" select="key('allActor2RoleRelations_key',current()/name)"/>		
@@ -170,17 +169,9 @@
 -->
 <!--		<xsl:variable name="thisapplicationsUsed" select="$allApplicationsUsed[name=$thisapplicationsUsedMapping/own_slot_value[slot_reference='apppro_to_physbus_from_apppro']/value]"/> -->
 		<xsl:variable name="thisapplicationsUsed" select="key('appToPhysDirect_key',$thisapplicationsUsedMapping/name)"/>	
-		
 		<xsl:variable name="thisallApplicationsUsed" select="$thisapplicationsUsed union $thisapplicationsUsedAPR"/>
-	
 		<xsl:variable name="thisbaseSites" select="$allSites[name = current()/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-
 		<xsl:variable name="thisA2RForActor" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
-
-<!--	
-		<xsl:variable name="thisA2RForActor" select="$allActor2RoleRelations[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
--->
-
   <xsl:variable name="thisA2RForAppOrgUser" select="key('ao2rKey', current()/name)"/>
  <!--	       <xsl:variable name="thisA2RForAppOrgUser" select="$applicationOrgUserA2R[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>-->
 		<xsl:variable name="thisA2RForAppOrgUserApps" select="key('applicationsAOU_key',$thisA2RForAppOrgUser/name)"/>	
@@ -194,13 +185,24 @@
 <xsl:variable name="thisDocs" select="key('allDocs_key',current()/name)"/>
 <!-- for all children, not just direct -->
 <xsl:variable name="relevantchildren" select="eas:get_descendants(current(), $allActors, 0, 10, 'is_member_of_actor')"/>
-		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+<xsl:variable name="regsForOrg" select="key('regtoSubject_key', current()/name)"/>
+<xsl:variable name="thisRegs" select="key('regs_key', $regsForOrg/own_slot_value[slot_reference='regulated_component_regulation']/value)"/>
+ 
+		{
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		<xsl:variable name="combinedMap" as="map(*)" select="map{
             'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
             'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value,'}',')'),'{',')'))
         }" />
         <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-          <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,         
+          <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,     
+		"regulations":[<xsl:for-each select="$thisRegs">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+            'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+            'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value,'}',')'),'{',')'))
+        }" />
+        <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+        <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],		    
         "parentOrgs":[<xsl:for-each select="$thisparentActor">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		"childOrgs":[<xsl:for-each select="$thisChildActors">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
 		"allChildOrgs":[<xsl:for-each select="$relevantchildren">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],

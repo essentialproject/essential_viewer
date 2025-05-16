@@ -56,8 +56,6 @@
 	<!-- TECHNOLOGY REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderTechDomains" match="node()">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="techDomainName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techDomainDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
 		<xsl:variable name="techDomainLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -74,11 +72,15 @@
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name": "<xsl:value-of select="$techDomainName"/>",
-		"description": "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+			'refLayer': string(translate(translate($thisRefLayer/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"link": "<xsl:value-of select="$techDomainLink"/>",
 		<xsl:if test="string-length($thisDocLink) > 0">"docLink": <xsl:value-of select="$thisDocLink"/>,</xsl:if>
-		"refLayer": "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
 		"childTechCapIds": [
 		<xsl:for-each select="$childTechCaps/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
 		]
@@ -90,8 +92,6 @@
 	
 	<xsl:template match="node()" mode="TechCapDetails">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="techCapName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techCapDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
 		<xsl:variable name="techCapLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -108,11 +108,14 @@
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name": "<xsl:value-of select="$techCapName"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+			}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"link": "<xsl:value-of select="$techCapLink"/>",
-		<xsl:if test="string-length($thisDocLink) > 0">"docLink": <xsl:value-of select="$thisDocLink"/>,</xsl:if>
-		"description": "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
-		
+		<xsl:if test="string-length($thisDocLink) > 0">"docLink": <xsl:value-of select="$thisDocLink"/>,</xsl:if>		
 		"techComponentIds": [	
 		<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
 		]
@@ -124,8 +127,6 @@
 	
 	<xsl:template match="node()" mode="RenderTechCompDetails">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="techCompName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techCompDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
 		<xsl:variable name="techCompLink">
 			<xsl:call-template name="RenderInstanceLinkForJS">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
@@ -142,10 +143,13 @@
 		
 		{
 		"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name": "<xsl:value-of select="$techCompName"/>",
-		"link": "<xsl:value-of select="$techCompLink"/>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+			}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		<xsl:if test="string-length($thisDocLink) > 0">"docLink": <xsl:value-of select="$thisDocLink"/>,</xsl:if>
-		"description": "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
 		"techProdCount": <xsl:value-of select="count($thisTechProdRoles)"/>
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>

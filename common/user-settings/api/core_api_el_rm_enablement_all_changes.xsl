@@ -25,12 +25,14 @@
 
 	<xsl:variable name="changeTypeTax" select="/node()/simple_instance[(type = 'Taxonomy')][own_slot_value[slot_reference = 'name']/value ='Planning Action Change Types']"/>
 	<xsl:variable name="changeTypeTaxTerms" select="/node()/simple_instance[own_slot_value[slot_reference = 'term_in_taxonomy']/value =$changeTypeTax/name]"/>
-	<xsl:variable name="planningActions" select="/node()/simple_instance[own_slot_value[slot_reference = 'element_classified_by']/value =$changeTypeTaxTerms/name]"/>
+	<xsl:variable name="planningActions" select="/node()/simple_instance[own_slot_value[slot_reference = 'element_classified_by']/value =$changeTypeTaxTerms/name]"/> 
 	<xsl:variable name="strategicPlans" select="/node()/simple_instance[supertype='Strategic_Plan'][string-length(own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value) > 0]"/>
 	<xsl:variable name="plan2ElementRels" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION'][string-length(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) > 0][own_slot_value[slot_reference = 'plan_to_element_plan']/value = $strategicPlans/name][own_slot_value[slot_reference = 'plan_to_element_change_action']/value =$planningActions/name]"/>
+	<xsl:key name="allElements" match="/node()/simple_instance[type='EA_Class']" use="name"/>
 	<xsl:variable name="allChangedElements" select="/node()/simple_instance[name = $plan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
 	<xsl:variable name="changeActivities" select="/node()/simple_instance[name=$plan2ElementRels/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value]"/>
 	<xsl:variable name="roadmaps" select="/node()/simple_instance[own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $strategicPlans/name]"/>
+	<xsl:key name="roadmaps" match="/node()/simple_instance[type='Roadmap']" use="own_slot_value[slot_reference = 'roadmap_strategic_plans']/value"/>
 
 	<xsl:template match="knowledge_base">
 		{
@@ -46,10 +48,11 @@
 		<xsl:variable name="thisElId" select="$thisPlan2El/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"/>
 		<xsl:variable name="thisPlanningAction" select="$planningActions[name = $thisPlan2El/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>
 		<xsl:variable name="thisActionType" select="$changeTypeTaxTerms[name = $thisPlanningAction/own_slot_value[slot_reference = 'element_classified_by']/value]"/>
-		<xsl:variable name="thisPlan" select="$strategicPlans[name=$thisPlan2El/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/>
-		<xsl:variable name="thisRoadmaps" select="$roadmaps[own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $thisPlan/name]"/>
+		<xsl:variable name="thisPlan" select="$strategicPlans[name=$thisPlan2El/own_slot_value[slot_reference = 'plan_to_element_plan']/value]"/> 
+		<xsl:variable name="thisRoadmaps" select="key('roadmaps', $thisPlan/name)"/>
 		<xsl:variable name="thisChangeActivityId" select="$thisPlan2El/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value"/>
 		<xsl:variable name="planEndDate" select="$thisPlan/own_slot_value[slot_reference = 'strategic_plan_valid_to_date_iso_8601']/value"/>
+		
 		{
 		"instId": "<xsl:value-of select="eas:getSafeJSString($thisElId)"/>",
 		"roadmapIds": [<xsl:for-each select="$thisRoadmaps">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],

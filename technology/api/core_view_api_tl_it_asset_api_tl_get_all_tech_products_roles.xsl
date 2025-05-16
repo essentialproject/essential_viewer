@@ -25,7 +25,8 @@
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
  	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
+	 <xsl:key name="allTechProdRoles" match="/node()/simple_instance[supertype = 'Technology_Provider_Role']" use="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
+	<xsl:variable name="allTechProdRoles" select="key('allTechProdRoles', $allTechComps/name)"/>
 	<xsl:template match="knowledge_base">
         {"tprs":[<xsl:apply-templates select="$allTechProdRoles" mode="RenderTPRJSONList"/>]}
 	</xsl:template>

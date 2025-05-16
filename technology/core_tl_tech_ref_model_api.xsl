@@ -280,6 +280,14 @@
 						techDomains.techDomains.forEach(function (aTD) {
 							var techCapIds = aTD.childTechCapIds;
 							var childTechCaps = getObjectsByIds(techCapDetails, "id", techCapIds);
+						
+							childTechCaps.sort((a, b) => {
+								// Convert the string values to numbers using parseInt (or Number)
+								const seqA = parseInt(a.sequence, 10);
+								const seqB = parseInt(b.sequence, 10);
+								return seqA - seqB;
+								});
+									 
 							aTD.childTechCaps = childTechCaps;
 						});
 					}
@@ -497,8 +505,7 @@
 							var relevantTechProds = getObjectsByIds(selectedTechProds, "id", relevantTechProdIds);
 							thisTechProdCount = relevantTechProds.length;
 							
-							
-							if(thisTechProdCount > 0) {
+							 
 								aTechCompDetail = {};
 								aTechCompDetail["link"] = aTechComp.link;
 								aTechCompDetail["className"] = "Technology_Component";
@@ -508,7 +515,7 @@
 								techProdList = techProdList.concat(relevantTechProds);
 							 
 								techCompDetailList.techCapProds.push(aTechCompDetail);
-							} 
+						 
 						}
 						
 						var techCapBlob = $(techCapBlobId);
@@ -594,12 +601,13 @@
 					
 					//function to draw the full TRM
 					function drawTRM() {
-					
+
 						$("#techRefModelContainer").html(trmTemplate(trmData)).promise().done(function(){
 					        $('.tech-domain-drill').click(function(){
 								var techDomainId = $(this).attr('eas-id');
 								
 								var selectedTechDomain = techDomains.techDomains.find(function(aTD) {return aTD.id === techDomainId});
+												 
 								if(selectedTechDomain != null) {
 									currentMode = techDomainMode;
 									currentTechDomain = selectedTechDomain;
@@ -840,7 +848,7 @@
 							<div class="page-header">
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"/>: </span>
-									<span class="text-darkgrey">Technology Reference Model</span>
+									<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Technology Reference Model')"/></span>
 								</h1>
 							</div>
 						</div>
@@ -895,16 +903,14 @@
 				<script id="tech-domain-template" type="text/x-handlebars-template">
 					<div class="col-xs-12">						
 							<div class="row">			
-								{{#childTechCaps}}
-									{{#if techProdCount}}
+								{{#childTechCaps}} 
 										<div class="col-xs-12 bottom-15">
 											<div class="refModel-l0-outer" style="">
 												<div class="refModel-l0-title large strong">
 													{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
 												</div>
 												<div class="row">
-													{{#techComponents}}
-														{{#if techProdCount}}
+													{{#techComponents}} 
 															<div class="col-xs-4">
 																<div class="refModel-l1-outer">
 																	<div class="tech-comp refModel-l1-title bg-darkblue-80">
@@ -913,6 +919,7 @@
 																	</div>
 																	<div class="refModel-l1-inner">
 																		<!--Tech Product-->
+																		{{#if techProdCount}}
 																		{{#inScopeTechProds}}
 																			<div class="tech-prod techRefModel-blob bg-lightblue-80">
 																				<xsl:attribute name="eas-id"><xsl:text disable-output-escaping="yes">{{id}}</xsl:text></xsl:attribute>
@@ -932,9 +939,9 @@
 																						<div class="hiddenDiv" id="xyz789">
 																						<table class="table table-striped table-small">
 																						<thead><tr>
-																						<th>Status</th>
-																						<th>Geography</th>
-																						<th>Organisations</th>
+																						<th><xsl:value-of select="eas:i18n('Status')"/></th>
+																						<th><xsl:value-of select="eas:i18n('Geography')"/></th>
+																						<th><xsl:value-of select="eas:i18n('Organisations')"/></th>
 																						</tr></thead>
 																						<tbody>
 																						{{#each this.standards}}
@@ -967,17 +974,20 @@
 																				{{/if}}
 																			</div>
 																		{{/inScopeTechProds}}
+																		{{else}}
+																		<div class="techRefModel-blob bg-lightgrey" style="border-style: dashed; opacity:0.5">
+																					<div class="refModel-blob-title"><xsl:value-of select="eas:i18n('No products mapped')"/></div>
+																		</div>
+																		{{/if}}
 																		<div class="clearfix"></div>
 																	<!--End Tech Product-->
 																	</div>
 																</div>
-															</div>
-														{{/if}}
+															</div> 
 													{{/techComponents}}
 												</div>								
 											</div>
-										</div>
-									{{/if}}
+										</div> 
 								{{/childTechCaps}}
 							</div>
 					</div>
@@ -1010,7 +1020,7 @@
 											<div class="hiddenDiv">
 												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
 													<p>{{description}}</p>
-													<h4>Technology Products</h4>
+													<h4><xsl:value-of select="eas:i18n('Technology Products')"/></h4>
 													<table class="table table-striped table-condensed xsmall">
 														<thead>
 															<tr>
@@ -1149,7 +1159,7 @@
 											<div class="hiddenDiv">
 												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
 													<p>{{description}}</p>
-													<h4>Technology Products</h4>
+													<h4><xsl:value-of select="eas:i18n('Technology Products')"/></h4>
 													<table class="table table-striped table-condensed xsmall">
 														<thead>
 															<tr>
@@ -1195,7 +1205,7 @@
 											<div class="hiddenDiv">
 												<xsl:attribute name="id"><xsl:text disable-output-escaping="yes">{{id}}_popup</xsl:text></xsl:attribute>
 													<p>{{description}}</p>
-													<h4>Technology Products</h4>
+													<h4><xsl:value-of select="eas:i18n('Technology Products')"/></h4>
 													<table class="table table-striped table-condensed xsmall">
 														<thead>
 															<tr>
@@ -1239,7 +1249,7 @@
 		
 		<div class="col-xs-12">
 			<div id="techRefModelPanel" class="dashboardPanel bg-offwhite">
-				<h2 id="ref-model-head-title" class="text-secondary">Reference Model</h2>
+				<h2 id="ref-model-head-title" class="text-secondary"><xsl:value-of select="eas:i18n('Reference Model')"/></h2>
 				<div class="row">
 					<!-- REFERTENCE MODEL LEGEND SECTION -->
 					<div class="col-xs-6 bottom-15" id="trmLegend">
@@ -1346,8 +1356,8 @@
 			"className":"<xsl:value-of select="current()/type"/>",
 			link: "<xsl:value-of select="$techCapLink"/>",
 			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
-
-        techComponentIds: [	
+			sequence:"<xsl:value-of select="current()/own_slot_value[slot_reference='sequence_number']/value"/>",
+        	techComponentIds: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechComponents"/>-->
 				<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>
 			]
@@ -1371,7 +1381,7 @@
 				<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRoles/name]"/>
         <xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 	-->	 <xsl:variable name="thisTechProdRoles2" select="current()/own_slot_value[slot_reference = 'realised_by_technology_products']"/>
-		{debug:"test",
+		{
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>

@@ -37,8 +37,16 @@
 	<xsl:variable name="thisa2r" select="$a2r[name=current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
 	<xsl:variable name="thisactor" select="$actor[name=$thisa2r/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/> 
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+	  }"></xsl:variable>
+	  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+	  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>, 
 		"org":[<xsl:for-each select="$thisactor">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
+		<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+		  }"></xsl:variable>
+		  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+		  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>, <xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template> 
 </xsl:stylesheet>

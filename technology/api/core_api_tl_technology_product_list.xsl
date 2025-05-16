@@ -34,8 +34,8 @@
 <!--<xsl:variable name="allTechSuppliers" select="/node()/simple_instance[type='Supplier']"/>	
 <xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>-->
 <xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
-<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>	
-<xsl:variable name="allTechComponents" select="/node()/simple_instance[type = 'Technology_Component'][name=$allTechProdRoles/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>	
+<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/> 
+<xsl:key name="allTechComponents" match="/node()/simple_instance[type = 'Technology_Component']" use="name"/>
 <!--<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
 <xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 <xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>	-->
@@ -59,7 +59,7 @@
 		<xsl:variable name="thisTPR" select="$allTechProdRoles[name=current()/own_slot_value[slot_reference='implements_technology_components']/value]"/>
 	<xsl:variable name="thisTechComp" select="$allTechComponents[name=$thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/>-->
 		<xsl:variable name="thisTPR" select="key('allTechProdRolesKey', current()/name)"/> 
-	 <xsl:variable name="thisTechComp" select="$allTechComponents[name=$thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value]"/> 
+	 <xsl:variable name="thisTechComp" select="key('allTechComponents', $thisTPR/own_slot_value[slot_reference='implementing_technology_component']/value)"/> 
 		
 		
 	<!--	<xsl:variable name="theSupplier" select="$allTechSuppliers[name=current()/own_slot_value[slot_reference='supplier_technology_product']/value]"/>-->
@@ -71,7 +71,7 @@
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
 				<xsl:with-param name="displayString" select="$thisName"/> 
 			</xsl:call-template>","supplier":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='supplier_technology_product']/value)"/>",	 <!--		"caps":[<xsl:for-each select="$thisTechCap">{<xsl:call-template name="RenderRoadmapJSONPropertiesDataAPI"><xsl:with-param name="isRoadmapEnabled" select="$isRoadmapEnabled"/><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="current()"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->"comp":[<xsl:for-each select="$thisTPR"> 
-				<xsl:variable name="thisTechComp" select="$allTechComponents[name=current()/own_slot_value[slot_reference='implementing_technology_component']/value]"/> 
+				<xsl:variable name="thisTechComp" select="key('allTechComponents', current()/own_slot_value[slot_reference='implementing_technology_component']/value)"/> 
 		<xsl:for-each select="$thisTechComp"><xsl:variable name="thisName">
 			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>

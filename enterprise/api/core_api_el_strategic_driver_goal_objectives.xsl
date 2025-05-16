@@ -57,13 +57,20 @@
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 			"type": "Business_Driver",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
-			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))
+			  }"></xsl:variable>
+			  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
 		    "goals":[<xsl:apply-templates select="$thisGoals" mode="renderGoals"/>], 
             "motivatingObjectives":[<xsl:for-each select="$motivatingObjs">{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]  
+			<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+			  }"></xsl:variable>
+			  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]  
 		} <xsl:if test="not(position()=last())">, </xsl:if>
 	</xsl:template>
 	<xsl:template mode="renderGoals" match="node()">
@@ -72,10 +79,13 @@
 	 <xsl:variable name="allObjsMappedtoGoal" select="$goalObjs union $oldgoalObjs"/>
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			<xsl:variable name="combinedMap" as="map(*)" select="map{ 
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))
+			  }"></xsl:variable>
+			  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
 			"type": "Business_Goal",
-			"description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
 		    "supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
 			"objectives":[<xsl:apply-templates select="$allObjsMappedtoGoal" mode="renderObjectives"/>] 		
 		} <xsl:if test="not(position()=last())">,</xsl:if>
@@ -83,10 +93,13 @@
 	<xsl:template mode="renderObjectives" match="node()">
 		   {
 			   "id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			   "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+			   <xsl:variable name="combinedMap" as="map(*)" select="map{ 
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')')),
+				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value, '}', ')'), '{', ')'))
+			  }"></xsl:variable>
+			  <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
+			  <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
 			   "type": "<xsl:value-of select="current()/type"/>",
-			   "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
 			   "targetDate":"<xsl:value-of select="current()/own_slot_value[slot_reference='bo_target_date_iso_8601']/value"/>",
 			   "boDriverMotivated":[<xsl:for-each select="current()/own_slot_value[slot_reference='bo_motivated_by_driver']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>],
 			  	"supportingCapabilities":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_business_capabilities']/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]

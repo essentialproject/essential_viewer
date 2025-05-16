@@ -1108,12 +1108,21 @@
 		
 		<xsl:variable name="parentValStreamId" select="$allValueStreams[name = $this/own_slot_value[slot_reference = 'vsg_value_stream']/value]"/>
 		<xsl:variable name="parentValStageId" select="$allValueStages[name = $this/own_slot_value[slot_reference = 'vsg_value_stream']/value]"/>
-		<xsl:variable name="vsgLabel"><xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template></xsl:variable>
+		<xsl:variable name="vsgLabel">
+			<xsl:choose>
+				<xsl:when test="$this/own_slot_value[slot_reference = 'vsg_display_label']/value">
+					<xsl:value-of select="$this/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 
 		{
 			"id": "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-			"name": "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			"name": "<xsl:value-of select="$vsgLabel"/>",
 			"description": "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
 			"link": "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
 			"parentValStreamId": "",

@@ -302,7 +302,9 @@
 			</td>
 			<td>
 				<xsl:variable name="currentType" select="type"/>
-				<xsl:value-of select="eas:i18n(translate($currentType, '_', ' '))"/>
+				<xsl:for-each select="$currentType">
+					<xsl:value-of select="eas:i18n(translate(., '_', ' '))"/><xsl:if test="position()!=last()">,<xsl:text> </xsl:text></xsl:if>  
+				</xsl:for-each>
 			</td>
 		</tr>
 	</xsl:template>

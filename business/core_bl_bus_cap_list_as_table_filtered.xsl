@@ -248,7 +248,7 @@
 		<script id="processes-name" type="text/x-handlebars-template"> 
             <ul> 
 			{{#each this.processes}}	
-            <li>  {{#essRenderInstanceLinkMenuOnly this 'Business_Domain'}}{{/essRenderInstanceLinkMenuOnly}}</li>
+            <li>  {{#essRenderInstanceLinkMenuOnly this 'Business_Process'}}{{/essRenderInstanceLinkMenuOnly}}</li>
             {{/each}}
             </ul>
         </script>   
@@ -477,6 +477,7 @@
 		        let thisMeta = meta.filter((d) => {
 		            return d.classes.includes(type)
 		        });
+				 
 		        instance['meta'] = thisMeta[0]
 		        let linkMenuName = essGetMenuName(instance);
 		        let instanceLink = instance.name;

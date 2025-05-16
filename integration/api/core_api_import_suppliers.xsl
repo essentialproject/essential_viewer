@@ -62,12 +62,11 @@ exclude-result-prefixes="#all">
 			<xsl:variable name="thisActor" select="key('allactorSuppliersName', own_slot_value[slot_reference='supplier_actor']/value)"/>
 			<xsl:variable name="thisActorSite" select="key('site', $thisActor/own_slot_value[slot_reference='actor_based_at_site']/value)"/>
 		   {"id":"<xsl:value-of select="$this/name"/>",
-		   <xsl:variable name="temp" as="map(*)" select="map{'name': string(translate(translate($this/own_slot_value[slot_reference = ('name', 'relation_name')]/value,'}',')'),'{',')'))}"></xsl:variable>
-		   <xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-		   <xsl:value-of select="substring-before(substring-after($result,'{'),'}')"></xsl:value-of>,"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="$this"/>
-			<xsl:with-param name="isRenderAsJSString" select="true()"/>
-		</xsl:call-template>",
+		   <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+			}"/>
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"className":"<xsl:value-of select="current()/type"/>",	
 		<!-- ARRAY of instances $thisActorSite, creates a map of objects with name and id -->
 			<xsl:variable name="maps" as="item()*">
@@ -91,35 +90,36 @@ exclude-result-prefixes="#all">
 		<xsl:variable name="thisA2r" select="key('actortoRole',current()/name)"/>
 		<xsl:variable name="thisProcesses" select="key('actorProcesses',$thisA2r/name)"/>
 		{"id":"<xsl:value-of select="current()/name"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-						</xsl:call-template>",	
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+			}"/>
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"supplierActor":"<xsl:value-of select="$allSupplier[own_slot_value[slot_reference='supplier_actor']/value=current()/name]/name"/>",						
 		"processes":[<xsl:for-each select="$thisProcesses">
 		<xsl:variable name="thisProcess" select="key('processes',current()/name)"/>
 				{"id":"<xsl:value-of select="current()/name"/>",
-				 "busProc":{"id":"<xsl:value-of select="$thisProcess/name"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="$thisProcess"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>","className":"<xsl:value-of select="$thisProcess/type"/>"},
-				"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="$thisProcess"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-						</xsl:call-template>",
-				"physname":"<xsl:call-template name="RenderMultiLangInstanceName">
-							<xsl:with-param name="theSubjectInstance" select="current()"/>
-							<xsl:with-param name="isRenderAsJSString" select="true()"/>
-						</xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if>
+				 "busProc":{"id":"<xsl:value-of select="$thisProcess/name"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate($thisProcess/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+					}"/>
+					<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+					<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"className":"<xsl:value-of select="$thisProcess/type"/>"},
+					<xsl:variable name="combinedMap" as="map(*)" select="map{
+						'name': string(translate(translate($thisProcess/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+						'physname': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+						}"/>
+						<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+						<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if>
         </xsl:for-each>]
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>
  <xsl:template match="node()" mode="supps">
 {"id":"<xsl:value-of select="current()/name"/>",
-"name":"<xsl:call-template name="RenderMultiLangInstanceName">
-            <xsl:with-param name="theSubjectInstance" select="current()"/>
-            <xsl:with-param name="isRenderAsJSString" select="true()"/>
-</xsl:call-template>",<xsl:variable name="thisApps" select="key('appsKey', current()/name)"/>
+<xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+	}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:variable name="thisApps" select="key('appsKey', current()/name)"/>
 "apps":[<xsl:for-each select="$thisApps">{"id":"<xsl:value-of select="current()/name"/>",
 		<xsl:variable name="nameMap" as="map(*)" select="map{
 			'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))}"/>
@@ -140,15 +140,12 @@ exclude-result-prefixes="#all">
 		"icon": "fa-circle",
 		"color":"hsla(25, 52%, 38%, 1)",
 		"values": [
-		<xsl:for-each select="$releventEnums"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", "name":"<xsl:call-template name="RenderMultiLangInstanceName">
-			<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-			<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
-		</xsl:call-template>",
-		"enum_name":"<xsl:call-template name="RenderMultiLangInstanceSlot">
-		<xsl:with-param name="theSubjectInstance" select="current()"></xsl:with-param>
-		<xsl:with-param name="displaySlot" select="'enumeration_value'"/>
-		<xsl:with-param name="isForJSONAPI" select="true()"></xsl:with-param>
-		</xsl:call-template>",
+		<xsl:for-each select="$releventEnums"><xsl:sort select="own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>", <xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'enum_name': string(translate(translate(current()/own_slot_value[slot_reference = 'enumeration_value']/value, '}', ')'), '{', ')'))
+			}"/>
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"sequence":"<xsl:value-of select="own_slot_value[slot_reference='enumeration_sequence_number']/value"/>", 
 		"backgroundColor":"<xsl:value-of select="eas:get_element_style_colour(current())"/>",
 		"colour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>"}<xsl:if test="position()!=last()">,</xsl:if> </xsl:for-each>]}<xsl:if test="position()!=last()">,</xsl:if>

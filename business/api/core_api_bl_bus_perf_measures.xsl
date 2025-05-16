@@ -12,7 +12,7 @@
 <xsl:variable name="allProcess" select="$allPhysProcess union $allBusProcess"/>
 <!-- add new classes here -->
 <xsl:variable name="allData" select="$allPhysProcess union $allBusProcess union $allBusCaps"/>
-<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=$allData/type]"/> 
+<xsl:variable name="perfCategory" select="/node()/simple_instance[type='Performance_Measure_Category'][own_slot_value[slot_reference='pmc_measures_ea_classes']/value=('Business_Capability','Business_Process','Physical_Process')]"/> 
 <xsl:variable name="perfMeasures" select="/node()/simple_instance[supertype='Performance_Measure'][name=$allData/own_slot_value[slot_reference='performance_measures']/value]"/> 
   
 <xsl:key name="perfMeasureskey" match="/node()/simple_instance[supertype='Performance_Measure']" use="own_slot_value[slot_reference='pm_measured_element']/value"/> 
@@ -94,6 +94,7 @@
 				{"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 				"type": "<xsl:value-of select="current()/type"/>",
 				"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+				"classes":[<xsl:for-each select="current()/own_slot_value[slot_reference='pmc_measures_ea_classes']/value">"<xsl:value-of select="."/>"<xsl:if test="not(position() = last())">,</xsl:if></xsl:for-each>],
 				"qualities":[<xsl:for-each select="$thisServiceQualities">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]}<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if>
 		</xsl:template>
 		<xsl:template match="node()" mode="sqvalues">

@@ -26,13 +26,18 @@
 	<!-- 03.09.2019 JP  Created	 -->
 	 <xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
 	 <xsl:variable name="allTechStandards" select="/node()/simple_instance[type = 'Standard_Strength']"/>
-
+ 
 	 <xsl:variable name="allGeos" select="/node()/simple_instance[type = ('Geographic_Region','Geographic_Location')]"/>
 	 <xsl:variable name="allOrgs" select="/node()/simple_instance[type = ('Group_Actor')]"/>
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
-	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
+	 <xsl:key name="allOrgs" match="/node()/simple_instance[type = ('Group_Actor')]" use="name"/>
+	 <xsl:key name="allGeos" match="/node()/simple_instance[type =  ('Geographic_Region','Geographic_Location')]" use="name"/>
+
+	 <xsl:key name="allTechProdRoles" match="/node()/simple_instance[supertype='Technology_Provider_Role']" use="own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
+	<xsl:variable name="allTechProdRoles" select="key('allTechProdRoles', $allTechComps/name)"/>
+	<xsl:key name="allTechProdStandards" match="/node()/simple_instance[type='Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value"/>
+	<xsl:variable name="allTechProdStandards" select="key('allTechProdStandards', $allTechProdRoles/name)"/>
 	<xsl:key name="allTechProdStandardsKey" match="/node()/simple_instance[type = 'Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value"/>
-	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
+	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[type='Standard_Strength'][name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = ('Technology_Product','Technology_Product_Build')]"/> 
 	<xsl:key name="allTechProdsKey" match="$allTechProds" use="own_slot_value[slot_reference = 'implements_technology_components']/value"/>
 
@@ -41,7 +46,8 @@
 
 	<xsl:variable name="techProdLFCModels" select="key('techProd_lfc_models_key', $allTechProds/name)"></xsl:variable>
 	<xsl:variable name="techProdLFCUsages" select="key('techProd_lfc_usages_key', $techProdLFCModels/name)"></xsl:variable>
-	<xsl:variable name="techProdLFCs" select="/node()/simple_instance[name = $techProdLFCUsages/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"></xsl:variable>
+	<xsl:variable name="techProdLFCs" select="/node()/simple_instance[supertype='Lifecycle_Status_Usage' and type='Lifecycle_Status_Usage'][name = $techProdLFCUsages/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"></xsl:variable>
+	<xsl:key name="techProdLFCs" match="/node()/simple_instance[supertype='Lifecycle_Status_Usage' and type='Lifecycle_Status_Usage']" use="name"></xsl:key>
 	<xsl:variable name="currentDateString"><xsl:call-template name="JSFormatDate"><xsl:with-param name="theDate" select="current-date()"/></xsl:call-template></xsl:variable>
  
 
@@ -63,38 +69,42 @@
 		"osid": "<xsl:value-of select="$thisTPR/name"/>",
 		"techProdid": "<xsl:value-of select="eas:getSafeJSString($thisTechProdid)"/>",
 		"ostpid": "<xsl:value-of select="$thisTPR/name"/>",
-        "techProdName": "<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="$thisTechProd"/>
-                <xsl:with-param name="isForJSONAPI" select="true()"/>
-			</xsl:call-template>",
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'techProdName': string(translate(translate($thisTechProd/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			}" />
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"techCompid": "<xsl:value-of select="eas:getSafeJSString($thisTechCompid)"/>",
 		"ostcid": "<xsl:value-of select="$thisTPR/name"/>",
 		<xsl:value-of select="$currentLFCName"/>
 		"standard": [<xsl:for-each select="$thisTechProdStandard">
 				<xsl:variable name="thisTechStd" select="$allTechStandards[name=current()/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>		 
-				<xsl:variable name="thisTechStdGeo" select="$allGeos[name=current()/own_slot_value[slot_reference = 'sm_geographic_scope']/value]"/>		 
-				<xsl:variable name="thisTechStdOrg" select="$allOrgs[name=current()/own_slot_value[slot_reference = 'sm_organisational_scope']/value]"/>		 
+				<xsl:variable name="thisTechStdGeo" select="key('allGeos',current()/own_slot_value[slot_reference = 'sm_geographic_scope']/value)"/>		 
+				<xsl:variable name="thisTechStdOrg" select="key('allOrgs', current()/own_slot_value[slot_reference = 'sm_organisational_scope']/value)"/>		 
 		
-			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isForJSONAPI" select="true()"/>
-			</xsl:call-template>", 
-				"status":"<xsl:value-of select="$thisTechStd/own_slot_value[slot_reference = 'enumeration_value']/value"/>",
+			{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+				'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+				'status': string(translate(translate($thisTechStd/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')'))
+				}" />
+			<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 				"statusColour":"<xsl:value-of select="eas:get_element_style_textcolour($thisTechStd)"/>",
 				"statusBgColour":"<xsl:value-of select="eas:get_element_style_colour($thisTechStd)"/>",
 				"scopeGeo":[
 				<xsl:for-each select="$thisTechStdGeo">
-				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isForJSONAPI" select="true()"/>
-				</xsl:call-template>"}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+					}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>
 			 ],
 			 	"scopeOrg":[
 				<xsl:for-each select="$thisTechStdOrg">
-				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","name":"<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="isForJSONAPI" select="true()"/>
-				</xsl:call-template>"}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>
+				{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",<xsl:variable name="combinedMap" as="map(*)" select="map{
+					'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+					}" />
+				<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+				<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>
 		  ]}<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]
 		} <xsl:if test="not(position()=last())">,
 		</xsl:if>
@@ -103,18 +113,18 @@
 		<xsl:param name="lfcUsages"/>
 		<xsl:choose>
 			<xsl:when test="count($lfcUsages) = 1">
-				<xsl:variable name="currentLFC" select="$techProdLFCs[name = $lfcUsages[1]/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"/>"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>",
+				<xsl:variable name="currentLFC" select="key('techProdLFCs', $lfcUsages[1]/own_slot_value[slot_reference='lcm_lifecycle_status']/value)"/>"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>",
 			</xsl:when>
 			<xsl:otherwise>
 				"allLifecycles":[<xsl:for-each select="$lfcUsages"><xsl:sort select="own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"></xsl:sort><xsl:variable name="thisLfcUsage" select="current()"/>
-				<xsl:variable name="currentLFC" select="$techProdLFCs[name = $thisLfcUsage/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"/>{"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+				<xsl:variable name="currentLFC" select="key('techProdLFCs',$thisLfcUsage/own_slot_value[slot_reference='lcm_lifecycle_status']/value)"/>{"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
 				</xsl:for-each>],
 			</xsl:otherwise>
 		</xsl:choose>
 			<xsl:for-each select="$lfcUsages[own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value &lt;= $currentDateString]"><xsl:sort select="own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"></xsl:sort>
 					<xsl:if test="position() = last()">
 						<xsl:variable name="thisLfcUsage" select="current()"/>
-						<xsl:variable name="currentLFC" select="$techProdLFCs[name = $thisLfcUsage/own_slot_value[slot_reference='lcm_lifecycle_status']/value]"/>"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>",
+						<xsl:variable name="currentLFC" select="key('techProdLFCs', $thisLfcUsage/own_slot_value[slot_reference='lcm_lifecycle_status']/value)"/>"lifecycle":"<xsl:value-of select="$currentLFC/own_slot_value[slot_reference='enumeration_value']/value"/>","date":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>",
 					</xsl:if></xsl:for-each>
 	
 	</xsl:template>

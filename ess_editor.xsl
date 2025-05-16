@@ -22,6 +22,8 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
+	<xsl:variable name="allEditorMenus" select="/node()/simple_instance[type='Report_Menu'][own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true']"/>
+	
 	<!-- END GENERIC LINK VARIABLES -->
 	
 	<!-- Condigurable Editor Variables -->
@@ -36,7 +38,8 @@
 	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = ($configEditorComponents, $targetEditor)/own_slot_value[slot_reference = ('viewer_code_libraries')]/value]"/>
 	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
 	
-	<xsl:variable name="linkClasses" select="($targetEditor, $configEditorComponents)/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class', 'editor_component_required_classes')]/value"/>
+	<!-- <xsl:variable name="linkClasses" select="($targetEditor, $configEditorComponents, $allEditorMenus)/own_slot_value[slot_reference = ('editor_menu_link_classes', 'report_anchor_class', 'editor_component_required_classes', 'report_menu_class')]/value"/> -->
+	<xsl:variable name="linkClasses" select="$allEditorMenus/own_slot_value[slot_reference = 'report_menu_class']/value"/>
 	<xsl:variable name="editorLinkMenus" select="$utilitiesAllMenus[(own_slot_value[slot_reference = 'report_menu_is_default']/value = 'true') and (own_slot_value[slot_reference = 'report_menu_class']/value = $linkClasses)]"/>
 	<xsl:variable name="editorForClasses" select="$targetEditor/own_slot_value[slot_reference = 'simple_editor_for_classes']/value"/>
 	<xsl:variable name="editorHeadContent" select="$targetEditor/own_slot_value[slot_reference = 'editor_included_head_content']/value"/>
@@ -138,7 +141,10 @@
 					essEnvironment.targetEditorID = '<xsl:value-of select="$targetEditor/name"/>';
 					essEnvironment.targetEditorPath = '<xsl:value-of select="$targetEditorContent"/>';
 					essEnvironment.targetEditorLabel = '<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>';
-					essEnvironment.baseUrl = '<xsl:value-of select="replace(concat(substring-before($theURLFullPath, '/report?'), ''), 'http://', 'https://')"></xsl:value-of>';
+					const url = new URL(window.location.href);
+					let basePath = url.origin + url.pathname;
+					basePath = basePath.slice(0, -'/report'.length);
+					essEnvironment.baseUrl = basePath;
 					
 					essEnvironment.form = {
 					'id': '<xsl:value-of select="$targetEditor/name"/>',
@@ -215,6 +221,7 @@
 					})
 					};
 					
+					var essEditorAnchorClass = "<xsl:value-of select="$targetEditor/own_slot_value[slot_reference = 'report_anchor_class']/value"/>";
 					
 					var esslinkMenuNames = {
 					<xsl:apply-templates mode="RenderClassMenu" select="$linkClasses"/>
@@ -243,6 +250,14 @@
 						} else {
 							return null;
 						}
+					});
+
+					Handlebars.registerHelper('getFormattedDate', function(dateString){
+						let formattedDate = '';
+						if(dateString?.length >= 10) {
+							formattedDate = moment(dateString).format('Do MMM YYYY');
+						}
+						return formattedDate;
 					});
 
 					Handlebars.registerHelper('essRenderInstanceLink', function(instance){
@@ -419,11 +434,42 @@
 						</button>
 					</div>
 				</script>
+
+
+				<!-- Handlebars template for the contents of the Yes/No/Cancel ACTION Modal -->
+				<script id="ess-yes-no-cancel-modal-template" type="text/x-handlebars-template">
+					<div class="modal-header">
+						<p class="modal-title xlarge" id="essYesNoCancelModalLabel"><i class="fa fa-exclamation-triangle right-10"/><strong><span>{{title}}</span></strong></p>
+					</div>
+					<div class="modal-body">
+						{{#each messages}}
+							<p>{{this}}</p>
+						{{/each}}
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="essCancelledBtn" class="pull-left btn btn-primary right-5">
+							<xsl:value-of select="eas:i18n('Cancel')"/>
+						</button>
+						<button type="button" id="essNoBtn" class="btn btn-danger right-5">
+							<xsl:value-of select="eas:i18n('No')"/>
+						</button>
+						<button type="button" id="essYesBtn" class="btn btn-success">
+							<xsl:value-of select="eas:i18n('Yes')"/>
+						</button>
+					</div>
+				</script>
 				
 				<!-- Div for the CONFIRM ACTION modal -->
 				<div class="modal fade" id="essConfirmModal" tabindex="-1" role="dialog" aria-labelledby="essConfirmModalLabel" data-backdrop="static" data-keyboard="false">
 					<div class="modal-dialog">
 						<div class="modal-content" id="essConfirmModalContent"/>				
+					</div>
+				</div>
+
+				<!-- Div for the YES/NO/CANCEL ACTION modal -->
+				<div class="modal fade" id="essYesNoCancelModal" tabindex="-1" role="dialog" aria-labelledby="essYesNoCancelModalLabel" data-backdrop="static" data-keyboard="false">
+					<div class="modal-dialog">
+						<div class="modal-content" id="essYesNoCancelModalContent"/>				
 					</div>
 				</div>
 				

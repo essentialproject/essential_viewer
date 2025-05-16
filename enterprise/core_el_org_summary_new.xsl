@@ -88,7 +88,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title><xsl:value-of select="eas:i18n('Summary')"/></title>
+				<title><xsl:value-of select="eas:i18n('Organisation Summary')"/></title>
 				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"></link>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"></script>
@@ -354,6 +354,16 @@
 						stroke: #ccc;
 						stroke-width: 2px;
 					}
+					.regulationBox{
+						min-height:90px;
+						width:200px;
+						border:1px solid #d3d3d3;
+						border-radius:4px;
+						border-left: 5px solid #368e6c;
+						padding:2px;
+						display:inline-block;
+						vertical-align: top;
+					}
 				</style>
 				<script>
 					
@@ -478,7 +488,7 @@
 					<div class="page-header">
 						<h1>
 							<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-							<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Summary for')"/> </span><xsl:text> </xsl:text> 
+							<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Organisation Summary for')"/> </span><xsl:text> </xsl:text> 
 							<span class="text-primary headerName"><select id="subjectSelection" style="width: 600px;"></select></span>
 							
 						</h1>
@@ -567,6 +577,23 @@
 									</ul>
 									
 								</div>
+								{{#if this.regulations}}
+								<div class="col-xs-12"/>
+								<div class="superflex">
+									<h3 class="text-primary"><i class="fa fa-list-alt right-10"></i><xsl:value-of select="eas:i18n('Regulations')"/></h3>
+									<xsl:value-of select="eas:i18n('Regulations impacting this organisation')"/>
+									<br/>
+										{{#each this.regulations}}
+											<div class="regulationBox">
+													{{this.name}}<br/>
+												<span style="font-size:0.8em">{{this.description}}</span>
+											</div>
+										{{/each}}
+									
+									<div class="clearfix bottom-10"></div>
+								</div>
+								{{/if}}
+						 
 								<div class="col-xs-12"/>
 								{{#if this.orgProductTypes}}
 								<div class="superflex">
@@ -776,6 +803,9 @@
 												<tr>
 													<th>
 														<xsl:value-of select="eas:i18n('Process')"/>
+													</th>
+													<th>
+														<xsl:value-of select="eas:i18n('Capabilities Supporting')"/>
 													</th>
 													<th>
 														<xsl:value-of select="eas:i18n('Organisation Performing')"/>
@@ -1106,7 +1136,16 @@
 						orgOptions=orgOptions+'<option value="'+o.id+'">'+o.name+'</option>'
 				   })
 
-				   function createOrgChart(org, orgData) {
+				function createOrgChart(org, orgData, visited = new Set()) {
+					// Check if the current organization has already been visited
+					if (visited.has(org.id)) {
+						console.warn(`Cycle detected: Organization with ID ${org.id} has already been processed.`);
+						return null; // or handle as needed (e.g., skip, throw an error, etc.)
+					}
+				
+					// Mark the current organization as visited
+					visited.add(org.id); 
+				
 					const orgChart = {
 						id: org.id,
 						name: org.name,
@@ -1116,14 +1155,23 @@
 						allChildOrgs: org.allChildOrgs,
 						parents: org.parents
 					};
+					
+					// Recursively process child organizations
 				
-					// Find child organisations recursively
 					org.childOrgs.forEach(childId => {
 						const childOrg = orgData.find(item => item.id === childId);
 						if (childOrg) {
-							orgChart.childOrgs.push(createOrgChart(childOrg, orgData));
+							const childChart = createOrgChart(childOrg, orgData, visited);
+							if (childChart) {
+								orgChart.childOrgs.push(childChart);
+							}
+						} else {
+							console.warn(`Child organization with ID ${childId} not found.`);
 						}
 					});
+				  
+					// Optionally, remove the organization from the visited set if it can appear in multiple branches
+					  visited.delete(org.id);
 				
 					return orgChart;
 				}
@@ -1138,11 +1186,8 @@
 				
 					return hierarchies;
 				}
-				const fullHierarchy = createFullHierarchy(orgData);
-console.log('fullHierarchy',fullHierarchy);
-
-
-				   console.log('orgOptions',orgOptions)
+				const fullHierarchy = createFullHierarchy(orgData); 
+			
 				   let busCaps=responses[3].busCaptoAppDetails;
 
 				   const processLookup = new Map();
@@ -1175,10 +1220,9 @@ console.log('fullHierarchy',fullHierarchy);
 				   }
 				   appData=responses[1];
 				   physProc=responses[2];  
-
-				   console.log('appData',appData)
+ 
 				  let orgProductTypes=[];
-			
+		
 				   products.forEach((prod)=>{
 				 
 					   prod.processes.forEach((e)=>{
@@ -1186,7 +1230,7 @@ console.log('fullHierarchy',fullHierarchy);
 							let thisMatch=physProc.process_to_apps.filter((p)=>{
 								return p.id == e;
 							});
-					 	   console.log('thisMatch',thisMatch)
+			 
 							if(thisMatch){ 
 								thisMatch.forEach((m)=>{
 									 
@@ -1205,10 +1249,9 @@ console.log('fullHierarchy',fullHierarchy);
 					   
 				   })
   
-				   modelData=[]
-				   console.log(orgData)
+				   modelData=[] 
 				   orgData.forEach((d)=>{
-  
+				
 					 if(orgRoles.length&gt;0){
 						let thisRoles=orgRoles.find((or)=>{
 							return or.id==d.id;
@@ -1217,7 +1260,7 @@ console.log('fullHierarchy',fullHierarchy);
 							d['orgRoles']=thisRoles.roles;
 						};
 					 };
-
+					
 					let parent=[];
 					let childrenOrgs=[];
 					d.parentOrgs.forEach((e)=>{
@@ -1238,7 +1281,7 @@ console.log('fullHierarchy',fullHierarchy);
 						})
 					}
 					d['childrenOrgs']=childrenOrgs;
-
+				
 					   let allAppsUsed=[];
 					   let allBusProcs=[];
 					   let allSubOrgs=[];
@@ -1267,20 +1310,22 @@ console.log('fullHierarchy',fullHierarchy);
 						}
 						
 					 if(d.parentOrgs?.length&gt;0){
+						
 						d.parentOrgs?.forEach((e)=>{	
 							let thisOrg=orgData.find((f)=>{
 								return f.id == e
 							});
+						
 						 if(thisOrg){
 							allParentOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
 							  }
 							
 							getParents(thisOrg, allAppsUsedParent, allBusProcsParent, allParentOrgs, allSitesParent)
-						
+							
 						   });
-						  
+						 
 						 } 
-
+						
 						if(d.childOrgs?.length&gt;0){
 
 					   d.childOrgs.forEach((e)=>{
@@ -1292,11 +1337,11 @@ console.log('fullHierarchy',fullHierarchy);
 						allSubOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
 				
 						getChildren(thisOrg, allAppsUsed, allBusProcs, allSubOrgs, allSites)
-						  
+					
 					   })
 					   
 					}
-					
+				
 					   allAppsUsed=allAppsUsed.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 					   allAppsUsedParent=allAppsUsedParent.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
 
@@ -1320,16 +1365,16 @@ console.log('fullHierarchy',fullHierarchy);
 						})
 						parentappList.push(thisApp)
 						})
-	 
+					
 					   d['allAppsUsedParent']=parentappList;
 					   d['allAppsUsed']=appList;
 					   d['allBusProcs']=allBusProcs;
 					   d['allChildren']=allSubOrgs;
 					   d['allSites']=allSites;
 						 //  $('.selectOrgBox').append('&lt;option value='+d.id+' >'+d.name+'&lt;option>');
-					
+						 
 					});
-
+					
 					<!--- HERE   --> 
 					redrawPage(focusID)
  
@@ -1386,8 +1431,7 @@ console.log('fullHierarchy',fullHierarchy);
 					.attr("id", "orgChartSvg")
 					.attr("width", "800px")
 					.attr("height", windowHeight - 200);
-	
-					console.log('orgChartData',orgChartData)
+	 
 					$('#hierarchyInfo').hide();
 				const g = svgContainer.append("g");
 	
@@ -1465,21 +1509,70 @@ console.log('fullHierarchy',fullHierarchy);
 					.attr("stroke", "steelblue")  // Blue border
 					.attr("stroke-width", 2);  // Stroke width
 	
-				// Add text inside each node
-				node.append("text")
-					.attr("x", 0) // Center the text horizontally
-					.attr("y", -5) // Slightly above the center
-					.text(d => d.data.name);
+node.each(function(d) {
+  const maxWidth = 100; // Ensure it fits inside the 120px node rectangle
+const words = d.data.name.split(/[\s_]+/); // Split text by spaces and underscores
+let line = [];
+let lines = [];
+
+// Create a temporary SVG text element **outside the node** for measurement
+const tempSvg = d3.select("body").append("svg").attr("width", 0).attr("height", 0);
+const tempText = tempSvg.append("text").attr("font-size", "10px").attr("text-anchor", "middle");
+
+let testTspan = tempText.append("tspan").text("");
+
+words.forEach(word => {
+    let testLine = line.concat(word).join(" ");
+    testTspan.text(testLine);
+
+    // Force a DOM update before measuring width
+    document.body.appendChild(tempSvg.node());
+
+    if (testTspan.node().getComputedTextLength() > maxWidth &amp;&amp; line.length > 0) {
+        lines.push(line.join(" ")); // Save current line
+        line = [word]; // Start a new line
+    } else {
+        line.push(word);
+    }
+});
+
+lines.push(line.join(" ")); // Push the last line
+tempSvg.remove(); // Remove the measurement element
+
+// Set font size based on the number of lines
+ 
+const fontSize = lines.length > 3 ? "8px" : "10px";
+const lineSpacing = lines.length > 3 ? "8" : "12";
+const centre = lines.length > 3 ? "3" : "5";
+
+// Now create the actual text inside the node
+const finalTextElement = d3.select(this).append("text")
+    .attr("x", 0)
+    .attr("y", -(lines.length * centre)) // centre text vertically
+    .attr("text-anchor", "middle")
+    .attr("font-size", fontSize);
+
+
+lines.forEach((line, i) => {
+    finalTextElement.append("tspan")
+        .attr("x", 0)
+        .attr("dy", i === 0 ? "3" : lineSpacing) // Proper spacing for each line
+        .text(line)
+		.attr("font-size", fontSize);;
+});
+
+});
+
+
+
+
 				}
 		 
 var selectedOrgChart
 
 function redrawPage(focusOrg){ 
-console.log('focusOrg', focusOrg)
-console.log('orgData', orgData)
-	 selectedOrgChart = createOrgChart(focusOrg, orgData);
-	console.log('selectedOrgChart', selectedOrgChart)
 
+	 selectedOrgChart = createOrgChart(focusOrg, orgData); 
 
 	let toShow = orgData.find((e)=>{
 		return e.id == focusOrg;
@@ -1546,8 +1639,7 @@ console.log('orgData', orgData)
 	 .key(function(d) { return d.index; })
 	 .entries(toShow.documents);
   toShow.documents=docSort;
-  console.log('to', toShow)
-
+  
  drawView(toShow, modelData);
 
 }			
@@ -1660,8 +1752,7 @@ function drawView(orgToShowData, modelData){
 	});
 */
 	initPopoverTrigger();
-	initTable(orgToShowData);
-	console.log('modelData', modelData)
+	initTable(orgToShowData); 
 	$('#subjectSelection').off().on('change', function(){
 		modelData=[] 
 		redrawPage($(this).val());
@@ -1827,6 +1918,7 @@ dt.allAppsUsed = dt.allAppsUsed.concat(dt.allAppsUsedParent);
 				}
 			} );
 		} );
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){ $($.fn.dataTable.tables(true)).DataTable() .columns.adjust(); } );
   		
 }
 

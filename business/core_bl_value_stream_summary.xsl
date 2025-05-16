@@ -20,7 +20,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Value_Stream', 'Business_Capability', 'Product_Type', 'Group_Actor', 'Project', 'Application_Provider', 'Composite_Application_Provider')"/>
+	<xsl:variable name="linkClasses" select="('Value_Stream', 'Business_Capability', 'Product_Type', 'Group_Actor', 'Project', 'Application_Provider', 'Composite_Application_Provider', 'Business_Process')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 
 	<!-- 19.04.2008 JP  Migrated to new servlet reporting engine	 -->
@@ -590,11 +590,18 @@
 	<!-- TEMPLATE TO RENDER A JSON OBJECT REPRESENTING A VALUE STAGE -->
 	<xsl:template mode="RenderValueStageJSON" match="node()">
 		<xsl:variable name="this" select="current()"/>
-		<xsl:variable name="thisLabel" select="$allValueStageLabels[name = $this/own_slot_value[slot_reference = 'vsg_label']/value]"/>
 		<xsl:variable name="thisName">
-			<xsl:call-template name="RenderMultiLangInstanceName">
-				<xsl:with-param name="theSubjectInstance" select="$thisLabel"/>
-			</xsl:call-template>
+			<xsl:choose>
+				<xsl:when test="$this/own_slot_value[slot_reference = 'vsg_display_label']/value">
+					<xsl:value-of select="$this/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="thisLabel" select="$allValueStageLabels[name = $this/own_slot_value[slot_reference = 'vsg_label']/value]"/>
+					<xsl:call-template name="RenderMultiLangInstanceName">
+						<xsl:with-param name="theSubjectInstance" select="$thisLabel"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="vsgParticipants" select="$allStakeholderRoles[name = $this/own_slot_value[slot_reference = 'vsg_participants']/value]"/>
 		<xsl:variable name="vsgEntranceEvents" select="$allBusinessEvents[name = $this/own_slot_value[slot_reference = 'vsg_entrance_events']/value]"/>

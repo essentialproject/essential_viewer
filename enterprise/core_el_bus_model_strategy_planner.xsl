@@ -6783,7 +6783,16 @@
 		<!-- Customer Journey Phases -->
 		<xsl:variable name="thisCustomerJourneyPhases" select="$allCustomerJourneyPhases[own_slot_value[slot_reference = 'cjp_value_stages']/value = $this/name]"/>
 		
-		<xsl:variable name="vsgLabel"><xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template></xsl:variable>
+		<xsl:variable name="vsgLabel">
+			<xsl:choose>
+				<xsl:when test="$this/own_slot_value[slot_reference = 'vsg_display_label']/value">
+					<xsl:value-of select="$this/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		<!-- measures -->
 		<xsl:variable name="emotionScore" select="eas:getEmotionScoreAverage($thisCustomerJourneyPhases, 0, 0)"/>
@@ -6794,7 +6803,7 @@
 		
 		{
 			id: "<xsl:value-of select="$this/name"/>",
-			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			name: "<xsl:value-of select="$vsgLabel"/>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
 			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderAsIsElementIDListForJs" select="$thisCustomerJourneyPhases"/>],

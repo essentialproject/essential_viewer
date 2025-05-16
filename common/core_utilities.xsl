@@ -667,7 +667,7 @@
 		<xsl:param name="theCatalogue"/>
 		<xsl:param name="theXML">reportXML.xml</xsl:param>
 		<xsl:param name="userParams"/>
-		<xsl:param name="viewScopeTerms"/>
+		<xsl:param name="viewScopeTerms" select="()"/>
 		<xsl:param name="targetMenu"/>
 		<xsl:param name="targetReport"/>
 		<xsl:param name="displayString"/>
@@ -683,7 +683,15 @@
 						<xsl:value-of select="$displayString"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="eas:i18n($theCatalogue/own_slot_value[slot_reference = 'report_label']/value)"/>
+						<xsl:variable name="catalogueSynonym" select="$utilitiesAllSynonyms[(name = $theCatalogue/own_slot_value[slot_reference = 'synonyms']/value) and (own_slot_value[slot_reference = 'synonym_language']/value = $currentLanguage/name)]"/>
+						<xsl:choose>
+							<xsl:when test="count($catalogueSynonym) > 0">
+								<xsl:value-of select="$catalogueSynonym[1]/own_slot_value[slot_reference = 'name']/value"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="eas:i18n($theCatalogue/own_slot_value[slot_reference = 'report_label']/value)"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
@@ -1943,6 +1951,7 @@
 		<xsl:choose>
 			<xsl:when test="$instancesSize > 0">
 				<xsl:variable name="nextInstance" select="$instances[1]"/>
+				<!-- <xsl:variable name="instanceId" select="if ($nextInstance) then string($nextInstance/name) else ''"/> -->
 				<xsl:variable name="instanceId" select="$nextInstance/name"/>
 				<xsl:variable name="newQueryString" select="concat($queryString, $instanceId)"/>
 				<xsl:choose>

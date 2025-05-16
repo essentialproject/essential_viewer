@@ -1861,7 +1861,7 @@ $(document).ready(function() {
 		Handlebars.registerHelper('getFocusHeight', function (arg1, arg2, options) {
  
 			let tot = arg1 ;
-			return Math.max(minFocusHeight, (tot * 32)+10);
+			return Math.max(minFocusHeight, (tot * 35));
 		});
 		
 		Handlebars.registerHelper('getTextRow', function (arg1, options) {

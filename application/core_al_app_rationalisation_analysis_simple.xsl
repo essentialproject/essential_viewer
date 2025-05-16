@@ -84,8 +84,8 @@
 						<xsl:with-param name="newWindow" select="true()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Rationalisation Analysis</title>
-               		<style>
+				<title><xsl:value-of select="eas:i18n('Application Rationalisation Analysis')"/></title>
+               	<style>
                     .appCard_Container{
                         width:216px;
                         float: left;
@@ -427,173 +427,173 @@
                         border-radius: 6px;
                     }
 
-.card-container {
-  display: flex;
-  flex-direction: row; 
-}
+                            .card-container {
+                            display: flex;
+                            flex-direction: row; 
+                            }
 
-.card {
-  background-color: white;
-  border: 1px solid black;
-  width: 70px;
-  height: 100px;
-  border-radius: 0px 5px 5px 5px;
-  display: flex;
-  flex-direction: column;
-  font-family: arial, sans-serif;
-  font-size: 0.9em;
-  text-align: center;
-  margin:3px;
-}
-.textcard{
-  background-color: white;
-  border: 1px solid black;
-  width: 100px;
-  height: 100px;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  font-family: arial, sans-serif;
-  font-size: 0.9em;
-  text-align: center;
-  margin:3px;
-  position: relative;
-}
+                            .card {
+                            background-color: white;
+                            border: 1px solid black;
+                            width: 70px;
+                            height: 100px;
+                            border-radius: 0px 5px 5px 5px;
+                            display: flex;
+                            flex-direction: column;
+                            font-family: arial, sans-serif;
+                            font-size: 0.9em;
+                            text-align: center;
+                            margin:3px;
+                            }
+                            .textcard{
+                            background-color: white;
+                            border: 1px solid black;
+                            width: 100px;
+                            height: 100px;
+                            border-radius: 5px;
+                            display: flex;
+                            flex-direction: column;
+                            font-family: arial, sans-serif;
+                            font-size: 0.9em;
+                            text-align: center;
+                            margin:3px;
+                            position: relative;
+                            }
 
-.summaryCardBox{
-   display: inline-block;
-   font-size: 0.7em;
-   position: relative;
-   top: 2px;
-   left: 10px;
-}
+                            .summaryCardBox{
+                            display: inline-block;
+                            font-size: 0.7em;
+                            position: relative;
+                            top: 2px;
+                            left: 10px;
+                            }
 
-.card-header {
-  background-color: #0c2340;
-  color: white;
-  border-radius: 0px 5px 0px 0px;
- // border-top-left-radius: 5px;
- // border-top-right-radius: 5px;
-  font-size:0.8em;
-  padding: 5px;
-  height: 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+                            .card-header {
+                            background-color: #0c2340;
+                            color: white;
+                            border-radius: 0px 5px 0px 0px;
+                            // border-top-left-radius: 5px;
+                            // border-top-right-radius: 5px;
+                            font-size:0.8em;
+                            padding: 5px;
+                            height: 32px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            }
 
-.card-title {
-  font-size: 0.8em;
-  margin: 0;
-}
+                            .card-title {
+                            font-size: 0.8em;
+                            margin: 0;
+                            }
 
-.card-subtitle {
-  font-size: 8px;
-  margin: 0;
-}
+                            .card-subtitle {
+                            font-size: 8px;
+                            margin: 0;
+                            }
 
-.card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 2;
-  padding: 5px;
-}
+                            .card-body {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            flex-grow: 2;
+                            padding: 5px;
+                            }
 
 
-.card-action {
-font-size:0.7em;
-}
-.action{
-    width:90%;
-    border:1pt solid #d3d3d3;
-    border-radius:3px;
-    font-size:0.8em;
-    font-family:verdana;
-}
-.rotated-text {
-    width: 20px;
-    height: 98px;
-    background-color: #f7f7f7;
-    position: relative;
-    font-family: verdana;
-    border-radius: 6px;
-    position: absolute;
-    font-weight:bold;
-    font-size:0.9em;
-}
+                            .card-action {
+                            font-size:0.7em;
+                            }
+                            .action{
+                                width:90%;
+                                border:1pt solid #d3d3d3;
+                                border-radius:3px;
+                                font-size:0.8em;
+                                font-family:verdana;
+                            }
+                            .rotated-text {
+                                width: 20px;
+                                height: 98px;
+                                background-color: #f7f7f7;
+                                position: relative;
+                                font-family: verdana;
+                                border-radius: 6px;
+                                position: absolute;
+                                font-weight:bold;
+                                font-size:0.9em;
+                            }
 
-.rotated-text span {
-  display: block;
-  position: absolute;
-  left: 105%;
-  top: 84%;
-  transform: translate(-50%, -50%) rotate(-90deg);
-  transform-origin: 0 0;
-  white-space: nowrap;
-  font-family:verdana;
-}
-.infoCircle{
-    border-radius:20px;
-    border:1pt solid #d3d3d3;
-    font-size:0.7em;
-    width:15px;
-    height:15px;
-    position:absolute;
-    right:3px;
-    bottom:3px;
-    background-color:#4196D9;
-    font-weight:bold;
-    color:white;
-}
-.subServiceName {
-    background-color:#359159;
-    font-size:0.7em;
-    color:#fff;
-    display:inline-block;
-    padding:2px;
-    margin:2px;
-} 
-.subAppName  {
-     background-color:#afdfbc;
-     font-size:0.7em;
-     color:#000000;
-     display:inline-block;
-     padding:2px;
-     margin:2px;
-}
+                            .rotated-text span {
+                            display: block;
+                            position: absolute;
+                            left: 105%;
+                            top: 84%;
+                            transform: translate(-50%, -50%) rotate(-90deg);
+                            transform-origin: 0 0;
+                            white-space: nowrap;
+                            font-family:verdana;
+                            }
+                            .infoCircle{
+                                border-radius:20px;
+                                border:1pt solid #d3d3d3;
+                                font-size:0.7em;
+                                width:15px;
+                                height:15px;
+                                position:absolute;
+                                right:3px;
+                                bottom:3px;
+                                background-color:#4196D9;
+                                font-weight:bold;
+                                color:white;
+                            }
+                            .subServiceName {
+                                background-color:#359159;
+                                font-size:0.7em;
+                                color:#fff;
+                                display:inline-block;
+                                padding:2px;
+                                margin:2px;
+                            } 
+                            .subAppName  {
+                                background-color:#afdfbc;
+                                font-size:0.7em;
+                                color:#000000;
+                                display:inline-block;
+                                padding:2px;
+                                margin:2px;
+                            }
 
-.subAction{
-     background-color:#b76bba;
-     font-size:0.7em;
-     color:#ffffff;
-     display:inline-block;
-     padding:2px;
-     margin:2px;
-}
+                            .subAction{
+                                background-color:#b76bba;
+                                font-size:0.7em;
+                                color:#ffffff;
+                                display:inline-block;
+                                padding:2px;
+                                margin:2px;
+                            }
 
-.appAction{
-     background-color:#000;
-     font-size:0.8em;
-     border-radius:6px;
-     color:#ffffff;
-     display:inline-block;
-     padding:2px;
-     width:70px;
-     text-align:center;
-     margin:2px;
-     right:2px;
-     top:2px;
-     position:absolute;
-}
-.otherChanges{
-    border-radius:6px;
-    background-color:#000;
-    color:#fff;
-    font-weight:bold;
-    width:30px;
-    text-align:center;
-}
+                            .appAction{
+                                background-color:#000;
+                                font-size:0.8em;
+                                border-radius:6px;
+                                color:#ffffff;
+                                display:inline-block;
+                                padding:2px;
+                                width:70px;
+                                text-align:center;
+                                margin:2px;
+                                right:2px;
+                                top:2px;
+                                position:absolute;
+                            }
+                            .otherChanges{
+                                border-radius:6px;
+                                background-color:#000;
+                                color:#fff;
+                                font-weight:bold;
+                                width:30px;
+                                text-align:center;
+                            }
 
                       </style>
                 <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
@@ -752,6 +752,7 @@ font-size:0.7em;
                         function showFocusType(){
                         		var radioValue = $("input[name='focusType']:checked").val();
                         		if(radioValue == 'radioService'){
+                               
                                     $('#selBox').val(null).trigger('change');
                                     $("#application").val(null).trigger('change');
 						        	$('#appSearch').hide();
@@ -796,32 +797,55 @@ font-size:0.7em;
 						</div>
                         <xsl:call-template name="RenderDataSetAPIWarning"/>
 						<div class="col-xs-12">
-							<ul class="nav nav-tabs" id="mainPageTabs">
-								<li class="active"><a data-toggle="tab" href="#home" id="homeTab"><xsl:value-of select="eas:i18n('Analysis')"/></a></li>
-                                <li id="insightTab" ><a data-toggle="tab" href="#ideas" id="insightTabText"><xsl:value-of select="eas:i18n('Insight')"/></a></li>
-							</ul>
+							<ul class="nav nav-tabs" id="mainPageTabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a role="tab" data-toggle="tab" href="#home" id="homeTab"
+                                    aria-controls="home" aria-selected="true">
+                                    <xsl:value-of select="eas:i18n('Analysis')"/>
+                                    </a>
+                                </li>
+                                <li role="presentation" id="insightTab">
+                                    <a role="tab" data-toggle="tab" href="#ideas" id="insightTabText"
+                                    aria-controls="ideas" aria-selected="false">
+                                    <xsl:value-of select="eas:i18n('Insight')"/>
+                                    </a>
+                                </li>
+                            </ul>
+
 	                    	<div class="tab-content">
-		                      	<div id="home" class="tab-pane fade in active">
-		                      		<div class="row">
+		                      	 <div id="home" role="tabpanel" tabindex="0" aria-labelledby="homeTab" class="tab-pane fade in active">
+                                     <div class="row">
 		                            	<div class="col-xs-2">
-		                        			<h3 class="text-primary"><xsl:value-of select="eas:i18n('Search by')"/>:</h3>
-		                        	
-											<label><input class="radio-inline" type="radio" name="focusType" value="radioApp" onclick="showFocusType()" checked="checked" id="radioApp"/><xsl:value-of select="eas:i18n('Application')"/></label>
-											<label><input class="radio-inline" type="radio" name="focusType" value="radioService"  onclick="showFocusType()"/><xsl:value-of select="eas:i18n('Service')"/></label>
-		                        	
-											<div id="appSearch" class="top-15">
-											    <h3 class="text-primary" style="display:inline-block"><xsl:value-of select="eas:i18n('Focus Application')"/></h3>
-											    <div class="form-group span-3">
-													<select id="application" class="form-control select2" style="width:90%;">
-											           <option value="1selectOne" selected="true" disabled="true"><xsl:value-of select="eas:i18n('Select an Application')"/></option>
-											           <!-- <xsl:apply-templates select="$apps" mode="getOptions">
-											                <xsl:sort select="upper-case(own_slot_value[slot_reference='name']/value)" order="ascending"/>
-											            </xsl:apply-templates>
-				                                        -->
-				                                    </select><xsl:text> </xsl:text>
-				                                    <i><xsl:attribute name="class">fa fa-question-circle appCompareButtonFocus</xsl:attribute></i>
-											    </div>
-											</div>
+                                            <fieldset>
+                                            <legend><xsl:value-of select="eas:i18n('Search by')"/>:</legend>
+                                            <label>
+                                                <input class="radio-inline" type="radio" name="focusType" value="radioApp" 
+                                                    onclick="showFocusType()" checked="checked" id="radioApp"/>
+                                                <xsl:value-of select="eas:i18n('Application')"/>
+                                            </label>
+                                            <label>
+                                                <input class="radio-inline" type="radio" name="focusType" value="radioService"
+                                                    onclick="showFocusType()" id="radioService"/>
+                                                <xsl:value-of select="eas:i18n('Service')"/>
+                                            </label>
+                                            </fieldset>
+
+                                            <div id="appSearch" class="top-15">
+                                            <label for="application" class="text-primary">
+                                                <xsl:value-of select="eas:i18n('Focus Application')"/>
+                                            </label>
+                                            <div class="form-group span-3">
+                                                <select id="application" class="form-control select2" style="width:90%;">
+                                                <option value="1selectOne" selected="true" disabled="true">
+                                                    <xsl:value-of select="eas:i18n('Select an Application')"/>
+                                                </option>
+                                                <!-- Application options go here -->
+                                                </select>
+                                                <xsl:text> </xsl:text>
+                                                <i class="fa fa-question-circle appCompareButtonFocus" aria-hidden="true"></i>
+                                            </div>
+                                            </div>
+
 									            
 											<div id="servSearch" class="top-15 hiddenDiv"> 
 											    <h3  class="text-primary" style="display:inline-block"><xsl:value-of select="eas:i18n('Select Services')"/></h3>
@@ -837,13 +861,13 @@ font-size:0.7em;
                                                 <select class="servicesNew select2" name="servicesOnlt" multiple="multiple" style="width:100%;" id="selBox">
 											       
 												</select>
-											    <button class="btn btn-sm btn-default top-5" onclick="selectNewApp();showInfoTooltips();">Go</button>
+											    <button class="btn btn-sm btn-default top-5" onclick="selectNewApp();showInfoTooltips();" aria-label="New application selection"><xsl:value-of select="eas:i18n('Go')"/></button>
 											</div>
 											<div id="services" class="top-15"> 
 												<h3 class="text-primary"><xsl:value-of select="eas:i18n('Services')"/></h3>
 												<ul id="appServs" class="small fa-ul"/>
-												<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Hide')"/></button>
-												<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default"><xsl:value-of select="eas:i18n('Show')"/></button>
+												<button id="hide" onclick="$('#appServs').hide();$('#hide').hide();$('#show').show()" class="btn btn-sm btn-default" aria-label="Hide Services"><xsl:value-of select="eas:i18n('Hide')"/></button>
+												<button id="show" onclick="$('#appServs').show();$('#hide').show();$('#show').hide()" class="btn btn-sm btn-default" aria-label="Show Services"><xsl:value-of select="eas:i18n('Show')"/></button>
 											</div>
 											<div id="carriedApps" style="display:none;border:1pt solid #d3d3d3;border-radius:3px;padding:3px" class="top-15"> 
 												<h4><xsl:value-of select="eas:i18n('Application Basket')"/></h4>
@@ -856,15 +880,15 @@ font-size:0.7em;
 				                            <div id="filters">
 				                            <h3 class="text-primary pull-left"><xsl:value-of select="eas:i18n('Filters')"/></h3>
 											<div style="width:100%;text-align:right">
-												<button class="btn btn-xs btn-default left-5" id="reset" onclick="ResetAll()" style="display: inline-block;"><xsl:value-of select="eas:i18n('Reset All Filters')"/></button>
+												<button class="btn btn-xs btn-default left-5" id="reset" onclick="ResetAll()" style="display: inline-block;" aria-label="Reset Filters"><xsl:value-of select="eas:i18n('Reset All Filters')"/></button>
 											</div>
 											<div class="clearfix"></div>
 											<div class="row">
 												<div class="col-md-2 col-lg-2">
 													
 				                                    <div>
-														<button class="btn btn-sm btn-default left-5" id="primeHide" onclick="$('#primeHide').hide();$('#primeShow').show();showPrime('on')"><xsl:value-of select="eas:i18n('Off')"/></button>
-														<button class="btn btn-sm btn-default left-5" id="primeShow" onclick="$('#primeHide').show();$('#primeShow').hide();showPrime('off')" style="display:none"><xsl:value-of select="eas:i18n('On')"/></button></div>
+														<button class="btn btn-sm btn-default left-5" id="primeHide" onclick="$('#primeHide').hide();$('#primeShow').show();showPrime('on')" aria-label="Show Main Candidates"><xsl:value-of select="eas:i18n('Off')"/></button>
+														<button class="btn btn-sm btn-default left-5" id="primeShow" onclick="$('#primeHide').show();$('#primeShow').hide();showPrime('off')" style="display:none" aria-label="Show Main Candidates"><xsl:value-of select="eas:i18n('On')"/></button></div>
 													</div>
 												
 													<div class="col-md-2 col-lg-2">
@@ -955,7 +979,7 @@ font-size:0.7em;
 				                                <span class="left-5 right-5">|</span>
 												<i class="fa fa-copy right-5 text-primary" style="color:'+colour+'"></i><xsl:value-of select="eas:i18n('Overlap')"/>
 												<span class="left-5 right-5">|</span>
-												<i class="fa essicon-radialdots right-5 text-primary"></i><xsl:value-of select="eas:i18n('Total Number of Services')"/>
+												<i class="fa essicon-radialdots right-5 text-primary"></i><xsl:value-of select="eas:i18n('Total Number of Services (used in processes)')"/>
 												<span class="left-5 right-5">|</span>
 												<i class="fa essicon-boxesdiagonal right-5 text-primary"></i><xsl:value-of select="eas:i18n('Processes Supporting')"/>
 												<span class="left-5 right-5">|</span>
@@ -971,30 +995,31 @@ font-size:0.7em;
 				                		</div>
 				                    </div>
 		                      	</div>
-                                <div id="ideas" class="tab-pane fade ">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <div id="chart"></div>
-                                        </div>
-                                         
-                                        <div class="col-xs-12" style="text-align:center">  
-                                            <div id="compBox" class="compBox" >
-                                            <small><b><span id="clickedApp"></span></b></small>
-                                            <xsl:text> </xsl:text>
-                                                    <i class="fa fa-caret-left" style="color:#32a852"></i><xsl:text> </xsl:text>
-                                                    <small><xsl:value-of select="eas:i18n('Overlap')"/></small>
-                                                    <xsl:text> </xsl:text>
-                                                
-                                                    <i class="fa fa-caret-right" style="color:#2fa5b5"></i><xsl:text> </xsl:text>
-                                                    <small><xsl:value-of select="eas:i18n('Inverse')"/>
-                                                </small>
-                                                <div id="comparison"> 
-                                                </div>
-                                            </div>
-                                        </div>
+                              <div id="ideas" role="tabpanel" tabindex="0" aria-labelledby="insightTabText" class="tab-pane fade" aria-hidden="true">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                    <div id="chart"></div>
                                     </div>
- 
+                                    <div class="col-xs-12" style="text-align:center">
+                                    <div id="compBox" class="compBox">
+                                        <small><b><span id="clickedApp"></span></b></small>
+                                        <xsl:text> </xsl:text>
+                                        <i class="fa fa-caret-left" style="color:#32a852" aria-hidden="true"></i>
+                                        <xsl:text> </xsl:text>
+                                        <small>
+                                        <xsl:value-of select="eas:i18n('Overlap')"/>
+                                        </small>
+                                        <xsl:text> </xsl:text>
+                                        <i class="fa fa-caret-right" style="color:#2fa5b5" aria-hidden="true"></i>
+                                        <xsl:text> </xsl:text>
+                                        <small>
+                                        <xsl:value-of select="eas:i18n('Inverse')"/>
+                                        </small>
+                                        <div id="comparison"></div>
+                                    </div>
+                                    </div>
                                 </div>
+                                </div> 
 	                    	</div>
 
 	                    <!--Setup Closing Tags-->
@@ -1015,116 +1040,190 @@ font-size:0.7em;
             </xsl:call-template>
             </script>
 
-            <script id="app-template" type="text/x-handlebars-template">
-            	<div class="row">
-            		<div class="col-sm-8">
-            			<h4 class="text-normal strong inline-block right-30">{{name}} - Overview</h4>
-            			<div class="ess-tag ess-tag-default"><i class="fa fa-money right-5"/>Cost: {{costValue}}</div>
-                		<div class="inline-block">{{#calcComplexity this}}{{/calcComplexity}}</div>
-            		</div>
-            		<div class="col-sm-4">
-            			<div class="text-right">
-            				<!--<span class="dropdown">
-            					<button class="btn btn-default btn-sm dropdown-toggle panelHistoryButton" data-toggle="dropdown"><i class="fa fa-clock-o right-5"/>Panel History<i class="fa fa-caret-down left-5"/></button>
-	            				<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="#">Page 1</a></li>
-									<li><a href="#">Page 2</a></li>
-									<li><a href="#">Page 3</a></li>
-								</ul>
-            				</span>-->
-            				<i class="fa fa-times closePanelButton left-30"></i>
-            			</div>
-            			<div class="clearfix"/>
-            		</div>
-            	</div>   
-                <div class="row">
-                	<div class="col-sm-12">
-						<ul class="nav nav-tabs ess-small-tabs">
-			                <li class="active"><a data-toggle="tab" href="#sum">Summary</a></li>
-			                <li><a data-toggle="tab" href="#processes">Processes<span class="badge dark">{{processesSupporting}}</span></a></li>
-			                <li><a data-toggle="tab" href="#integrations">Integrations<span class="badge dark">{{totalIntegrations}}</span></a></li>
-			                <li><a data-toggle="tab" href="#overlap">Application Overlap</a></li> 
-		                </ul>
-                		<div class="tab-content vertical-scroller dark" style="height:250px;">
-                			<div id="sum" class="tab-pane fade in active bottom-10">
-			                    <div>
-			                    	<strong>Description</strong>
-			                    	<br/>
-			                        {{description}}    
-			                    </div>
-                				<div class="ess-tags-wrapper top-10">
-                					<div class="ess-tag ess-tag-default"><i class="fa fa-code right-5"/>{{codebase}}</div>
-                			<!--		<div class="ess-tag ess-tag-default"><i class="fa fa-desktop right-5"/>{{appDelivery}}</div> -->
-                					<div class="ess-tag ess-tag-default"><i class="fa fa-users right-5"/>{{processesSupporting}} Processes Supported</div>
-                					<div class="ess-tag ess-tag-default"><i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inboundIntegrations}} in / {{outboundIntegrations}} out)</div>
-                					
-                				</div>
-                			</div>
-			                <div id="processes" class="tab-pane fade">
-			                    <p class="strong">This Application supports the following Business Processes:</p>
-			                    <div>
-		                            {{#each processesList}}
-		                            <div class="ess-tag ess-tag-default">{{name}}</div>   
-		                            {{/each}}
-			                    </div>
-			                </div>
-			                <div id="integrations" class="tab-pane fade">
-			                    <p class="strong">This Application has the following Integrations:</p>
-			                	<div class="row">
-			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Inbound</div>
-			                				{{#each inIList}}
-			                                <div class="ess-tag bg-lightblue-100">{{name}}</div>
-			                            	{{/each}}
-			                		</div>
-			                		<div class="col-md-6">
-			                			<div class="impact bottom-10">Outbound</div>
-			                				{{#each outIList}}
-			                                <div class="ess-tag bg-pink-100">{{name}}</div>
-			                            	{{/each}}
-			                		</div>
-			                	</div>
-			                </div>
-			                <div id="overlap" class="tab-pane fade">
-			                    <p class="strong">Other Applications providing overlapping Services to this Application</p>
-		                        <table class="sticky-headers">
-		                        	<thead>
-		                        		<tr>
-		                        			<th class="bg-darkgrey" width="250px">Application</th>
-		                        			<th class="bg-darkgrey" width="120px">High Overlap?</th>
-		                        			<th class="bg-darkgrey">Services</th>
-		                        		</tr>
-		                        	</thead>
-		                        	<tbody>
-		                        		{{#each appMap}}
-		                        		<tr>
-		                        			<td>{{this.key}}</td>
-		                        			<td>{{#if candidate}}<i class="fa fa-check"/>{{/if}}</td>
-		                        			<td>{{#drawDots this.value}}{{/drawDots}}</td>
-		                        		</tr>
-		                        		{{/each}}
-		                        	</tbody>
-		                        </table>
-			                </div> 
-                		</div>
-                	</div>
-                	<!--<div class="col-sm-4">
-                		<h4 class="strong">Related Views</h4>
-                		<ul class="fa-ul dark">
-                			<li><i class="fa fa-li fa-list-alt"/><a>Application Provider Summary</a></li>
-                			<li><i class="fa fa-li fa-area-chart"/><a>Application Information Dependency</a></li>
-                			<li><i class="fa fa-li fa-list-alt"/><a>Application Info/Data Summary</a></li>
-                			<li><i class="fa fa-li fa-area-chart"/><a>Application Lifecycle Model</a></li>
-                			<li><i class="fa fa-li fa-bar-chart"/><a>Application Impact Analysis</a></li>
-                			<li><i class="fa fa-li fa-list-alt"/><a>Application Deployment Summary</a></li>
-                			<li><i class="fa fa-li fa-area-chart"/><a>Application Software Architecture</a></li>
-                			<li><i class="fa fa-li fa-pie-chart"/><a>Application Cost Summary</a></li>
-                			<li><i class="fa fa-li fa-area-chart"/><a>Technology Platform Model</a></li>
-                			<li><i class="fa fa-li fa-area-chart"/><a>Application Strategy Alignment</a></li>
-                		</ul>
-                	</div>-->
-                </div>
-            </script>
+           <script id="app-template" type="text/x-handlebars-template">
+  <div class="row">
+    <div class="col-sm-8">
+      <h4 class="text-normal strong inline-block right-30">
+        {{name}} - Overview
+      </h4>
+      <div class="ess-tag ess-tag-default">
+        <i class="fa fa-money right-5" aria-hidden="true"></i>
+        Cost: {{costValue}}
+      </div>
+      <div class="inline-block">
+        {{#calcComplexity this}}{{/calcComplexity}}
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="text-right">
+        <!-- Example of an enhanced close control with an accessible label -->
+        <button class="btn btn-link closePanelButton left-30" aria-label="Close panel">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <!-- Enhanced tab navigation with ARIA roles and attributes -->
+      <ul class="nav nav-tabs ess-small-tabs" role="tablist">
+        <li role="presentation" class="active">
+          <a role="tab" data-toggle="tab" href="#sum" id="tab-summary" aria-controls="sum" aria-selected="true">
+            Summary
+          </a>
+        </li>
+        <li role="presentation">
+          <a role="tab" data-toggle="tab" href="#processes" id="tab-processes" aria-controls="processes" aria-selected="false">
+            Processes
+            <span class="badge dark">{{processesSupporting}}</span>
+          </a>
+        </li>
+        <li role="presentation">
+          <a role="tab" data-toggle="tab" href="#integrations" id="tab-integrations" aria-controls="integrations" aria-selected="false">
+            Integrations
+            <span class="badge dark">{{totalIntegrations}}</span>
+          </a>
+        </li>
+        <li role="presentation">
+          <a role="tab" data-toggle="tab" href="#overlap" id="tab-overlap" aria-controls="overlap" aria-selected="false">
+            Application Overlap
+          </a>
+        </li>
+      </ul>
+      <!-- Enhanced tab panels with ARIA roles, focus support, and proper labelling -->
+      <div class="tab-content vertical-scroller dark" style="height:250px;">
+        <div id="sum" role="tabpanel" tabindex="0" aria-labelledby="tab-summary"
+             class="tab-pane fade in active bottom-10" aria-hidden="false">
+          <div>
+            <strong>Description</strong>
+            <br/>
+            {{description}}
+          </div>
+          <div class="ess-tags-wrapper top-10">
+            <div class="ess-tag ess-tag-default">
+              <i class="fa fa-code right-5" aria-hidden="true"></i>
+              {{codebase}}
+            </div>
+            <!--<div class="ess-tag ess-tag-default">
+              <i class="fa fa-desktop right-5" aria-hidden="true"></i>
+              {{appDelivery}}
+            </div>-->
+            <div class="ess-tag ess-tag-default">
+              <i class="fa fa-users right-5" aria-hidden="true"></i>
+              {{processesSupporting}} Processes Supported
+            </div>
+            <div class="ess-tag ess-tag-default">
+              <i class="fa fa-exchange right-5" aria-hidden="true"></i>
+              {{totalIntegrations}} Integrations ({{inboundIntegrations}} in / {{outboundIntegrations}} out)
+            </div>
+          </div>
+        </div>
+        <div id="processes" role="tabpanel" tabindex="0" aria-labelledby="tab-processes"
+             class="tab-pane fade" aria-hidden="true">
+          <p class="strong">This Application supports the following Business Processes:</p>
+          <div>
+            {{#each processesList}}
+              <div class="ess-tag ess-tag-default">{{name}}</div>
+            {{/each}}
+          </div>
+        </div>
+        <div id="integrations" role="tabpanel" tabindex="0" aria-labelledby="tab-integrations"
+             class="tab-pane fade" aria-hidden="true">
+          <p class="strong">This Application has the following Integrations:</p>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="impact bottom-10">Inbound</div>
+              {{#each inIList}}
+                <div class="ess-tag bg-lightblue-100">{{name}}</div>
+              {{/each}}
+            </div>
+            <div class="col-md-6">
+              <div class="impact bottom-10">Outbound</div>
+              {{#each outIList}}
+                <div class="ess-tag bg-pink-100">{{name}}</div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+        <div id="overlap" role="tabpanel" tabindex="0" aria-labelledby="tab-overlap"
+             class="tab-pane fade" aria-hidden="true">
+          <p class="strong">Other Applications providing overlapping Services to this Application</p>
+          <table class="sticky-headers">
+            <caption class="sr-only">Application Overlap Table</caption>
+            <thead>
+              <tr>
+                <th class="bg-darkgrey" width="250px">Application</th>
+                <th class="bg-darkgrey" width="120px">High Overlap?</th>
+                <th class="bg-darkgrey">Services</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each appMap}}
+                <tr>
+                  <td>{{this.key}}</td>
+                  <td>
+                    {{#if candidate}}
+                      <i class="fa fa-check" aria-hidden="true"></i>
+                    {{/if}}
+                  </td>
+                  <td>{{#drawDots this.value}}{{/drawDots}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Commented out related views section with additional potential enhancements -->
+    <!--<div class="col-sm-4">
+      <h4 class="strong">Related Views</h4>
+      <ul class="fa-ul dark">
+        <li>
+          <i class="fa fa-li fa-list-alt" aria-hidden="true"></i>
+          <a>Application Provider Summary</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-area-chart" aria-hidden="true"></i>
+          <a>Application Information Dependency</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-list-alt" aria-hidden="true"></i>
+          <a>Application Info/Data Summary</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-area-chart" aria-hidden="true"></i>
+          <a>Application Lifecycle Model</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-bar-chart" aria-hidden="true"></i>
+          <a>Application Impact Analysis</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-list-alt" aria-hidden="true"></i>
+          <a>Application Deployment Summary</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-area-chart" aria-hidden="true"></i>
+          <a>Application Software Architecture</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-pie-chart" aria-hidden="true"></i>
+          <a>Application Cost Summary</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-area-chart" aria-hidden="true"></i>
+          <a>Technology Platform Model</a>
+        </li>
+        <li>
+          <i class="fa fa-li fa-area-chart" aria-hidden="true"></i>
+          <a>Application Strategy Alignment</a>
+        </li>
+      </ul>
+    </div>-->
+  </div>
+</script>
+
                   <xsl:call-template name="AppCardHandlebarsTemplate"/>
                  <xsl:call-template name="costHandlebarsTemplate"/>
                 <script id="servicesSVG-template" type="text/x-handlebars-template">
@@ -1196,132 +1295,185 @@ font-size:0.7em;
 	</xsl:template>
     
  	<xsl:template name="costHandlebarsTemplate">
-		  <script id="cost-card-template" type="text/x-handlebars-template">
-              <div class="col-xs-12">
-                  <div class="col-md-5 costApp"><xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
-                 <b> {{this.name}}</b>
-                  <div class="appAction">{{this.action}}</div><br/>
-                  {{#each this.otherChanges}} 
-                    <div class="subServiceName">{{this.service}}</div><div class="subAppName">{{this.appname}}</div><div class="subAction pull-right">{{this.action}}</div><br/>{{/each}}
-                  </div>
-                  <div class="col-md-2 fullCost costNum"><xsl:attribute name="data-cost">{{this.cost}}</xsl:attribute><xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>{{this.costValue}}</div>
-                   
-                  <div class="col-md-3 fullspend costNum"><xsl:attribute name="data-spend">{{this.scenarioCost}}</xsl:attribute><xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>{{this.scenarioCost}}</div>
-                  <div class="col-md-1 costNumNoBorder"><xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
-                     
-                        <i class="fa fa-trash removeApp "><xsl:attribute name="data-aid">{{this.id}}</xsl:attribute></i>
-                        
-                </div> 
-              </div>
-              <div class="clearfix"></div>
-            </script>
-        </xsl:template>
-    
+  <script id="cost-card-template" type="text/x-handlebars-template">
+    <div class="col-xs-12" role="article" aria-labelledby="cost-card-{{this.id}}">
+      <div class="col-md-5 costApp">
+        <xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
+        <b><xsl:attribute name="id">cost-card-{{this.name}}</xsl:attribute>{{this.name}}</b>
+        <div class="appAction">{{this.action}}</div>
+        <br/>
+        {{#each this.otherChanges}}
+          <div class="subServiceName">{{this.service}}</div>
+          <div class="subAppName">{{this.appname}}</div>
+          <div class="subAction pull-right">{{this.action}}</div>
+          <br/>
+        {{/each}}
+      </div>
+      <div class="col-md-2 fullCost costNum">
+        <xsl:attribute name="data-cost">{{this.cost}}</xsl:attribute>
+        <xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
+        {{this.costValue}}
+      </div>
+      <div class="col-md-3 fullspend costNum">
+        <xsl:attribute name="data-spend">{{this.scenarioCost}}</xsl:attribute>
+        <xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
+        {{this.scenarioCost}}
+      </div>
+      <div class="col-md-1 costNumNoBorder">
+        <xsl:attribute name="eas-id">{{this.id}}</xsl:attribute>
+        <!-- Replacement for delete control with an accessible button -->
+        <button type="button"
+                class="removeApp btn btn-link"><xsl:attribute name="aria-label">Remove {{this.name}}</xsl:attribute>
+                <xsl:attribute name="data-aid">{{this.id}}</xsl:attribute>
+          <i class="fa fa-trash" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </script>
+</xsl:template>
+
 	
     
 	<xsl:template name="AppCardHandlebarsTemplate">
 		<script id="app-card-template" type="text/x-handlebars-template">
-            <div>
-                <xsl:attribute name="class">carddiv {{this.codebaseID}} s{{this.statusID}} appCard_Container</xsl:attribute>
-                <xsl:attribute name="id">{{this.id}}</xsl:attribute>
-                <xsl:attribute name="data-num">{{this.num}}</xsl:attribute>
-                <xsl:attribute name="data-cost">{{this.cost}}</xsl:attribute>
-                <xsl:attribute name="data-interface">{{this.totalIntegrations}}</xsl:attribute>
-                <xsl:attribute name="data-prime">{{#prime}}true{{/prime}}{{^prime}}false{{/prime}}</xsl:attribute>
-               
-			<div class="appCard_Top">
-				<div class="appCard_TopLeft small bg-midgrey fontBold">
-					<div class="appCard_Label">{{{name}}}</div>
-				</div>
-				<div class="appCard_TopRight">
-					<div class="appCard_Label alignCentre">{{#switch}}
-                    <i class="fa fa-exchange textBlue left-5"><xsl:attribute name="onclick">selectApp('{{this.id}}');getAllApps();$("#application").val('{{this.id}}').prop('selected', true).change()</xsl:attribute></i>{{/switch}}</div>
-				</div>
-			</div>
-			<div class="appCard_Middle">
-				<div class="appCard_Section25pc appCard_Divider alert-success"><xsl:attribute name="style">background-color:{{costColour}}</xsl:attribute>
-					<div class="appCard_Label xxsmall">
-						<i class="fa fa-copy right-5"/>{{getScore score}}%
-					</div>
-				</div>
-				<div class="appCard_Section25pc appCard_Divider">
-					<div class="appCard_Label xxsmall">
-						<i class="fa essicon-radialdots right-5"/>{{services.length}}
-					</div>
-				</div>
-				<div class="appCard_Section25pc appCard_Divider">
-					<div class="appCard_Label xxsmall">
-						<i class="fa essicon-boxesdiagonal right-5"/>{{processesSupporting}}
-					</div>
-				</div>
-				<div class="appCard_Section25pc">
-					<div class="appCard_Label xxsmall">
-						<i class="fa essicon-connections right-5"/>{{totalIntegrations}}
-					</div>
-				</div>
-			</div>
-            <div class="appCard_Middle">
-				<div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
-					<div class="appCard_Label xxxsmall">Capabilities</div>
-				</div>
-				<div class="appCard_Section25pc appCard_Divider">
-					<div class="appCard_Label xxsmall">
-						<i class="fa essicon-target right-5"/>{{commodity}}
-					</div>
-				</div>
-				<div class="appCard_Section25pc appCard_Divider">
-					<div class="appCard_Label xxsmall">
-						<i class="fa essicon-valuechain right-5"/>{{differentiating}}
-					</div>
-				</div>
-			</div>
-			<div class="appCard_Middle">
-				<div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
-					<div class="appCard_Label xxxsmall">Service Match</div>
-				</div>
-				<div class="appCard_Section50pc displayTable">
-					<div class="appCard_Label xxsmall">{{num}}
-						<i class="fa fa-info-circle left-5"></i>
-						<div class="text-default small hiddenDiv">
-							<h5>Matched Services</h5>
-							<ul class="small fa-ul">
-								{{#each matchedServices}}<li><i class="fa fa-li essicon-radialdots"/>{{this.name}}</li>{{/each}}
-							</ul>
-							
-						</div>	
-					</div>
-				</div>
-			</div>
-			<div class="appCard_Middle">
-				<div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
-					<div class="appCard_Label xxxsmall">Codebase</div></div>
-				<div class="appCard_Section50pc displayTable">
-					<div class="appCard_Label xxsmall">{{nameSubString codebase}}</div>
-				</div>
-			</div>
-			<div class="appCard_Middle">
-				<div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
-					<div class="appCard_Label xxxsmall">Lifecycle</div>
-				</div>
-				<div class="appCard_Section50pc displayTable">
-					<div class="appCard_Label xxsmall">{{nameSubString status}}</div>
-				</div>
-			</div>
-			<div class="appCard_Bottom">
-				<div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
-					<div class="appCard_Label xxxsmall">Annual Cost</div>
-				</div>
-				<div class="appCard_Section50pc displayTable">
-                    <div class="appCard_Label xxsmall">{{currency}}{{getCost cost}}</div>
-                    <div style="float:right">
-                        <i style="color:#a67fcd"><xsl:attribute name="class">fa fa-question-circle appCompareButton right-5</xsl:attribute><xsl:attribute name="easid">{{id}}</xsl:attribute></i>
-                    	</div>
-				</div>
-			</div>
-		
-		
-		</div>
-        </script>
+  <div>
+    <xsl:attribute name="class">carddiv {{this.codebaseID}} s{{this.statusID}} appCard_Container</xsl:attribute>
+    <xsl:attribute name="id">{{this.id}}</xsl:attribute>
+    <xsl:attribute name="data-num">{{this.num}}</xsl:attribute>
+    <xsl:attribute name="data-cost">{{this.cost}}</xsl:attribute>
+    <xsl:attribute name="data-interface">{{this.totalIntegrations}}</xsl:attribute>
+    <xsl:attribute name="data-prime">
+      {{#prime}}true{{/prime}}{{^prime}}false{{/prime}}
+    </xsl:attribute>
+    <!-- Accessibility enhancements: -->
+    <xsl:attribute name="role">article</xsl:attribute>
+    <xsl:attribute name="aria-labelledby">appCardTitle-{{this.id}}</xsl:attribute>
+    
+    <!-- App Card Top Section -->
+    <div class="appCard_Top">
+      <div class="appCard_TopLeft small bg-midgrey fontBold" id="appCardTitle-{{this.id}}">
+        <div class="appCard_Label">{{{name}}}</div>
+      </div>
+      <div class="appCard_TopRight">
+        <div class="appCard_Label alignCentre">
+          {{#switch}}
+            <!-- Converted clickable icon into a button for better accessibility -->
+            <button type="button"
+                    onclick="selectApp('{{this.id}}');getAllApps();$('#application').val('{{this.id}}').prop('selected', true).change();"
+                    aria-label="Select Application {{this.name}}">
+              <i class="fa fa-exchange textBlue left-5" aria-hidden="true"></i>
+            </button>
+          {{/switch}}
+        </div>
+      </div>
+    </div>
+    
+    <!-- App Card Middle Section: Scores and Counts -->
+    <div class="appCard_Middle">
+      <div class="appCard_Section25pc appCard_Divider alert-success">
+        <xsl:attribute name="style">background-color:{{costColour}}</xsl:attribute>
+        <div class="appCard_Label xxsmall">
+          <i class="fa fa-copy right-5" aria-hidden="true"></i>{{getScore score}}%
+        </div>
+      </div>
+      <div class="appCard_Section25pc appCard_Divider">
+        <div class="appCard_Label xxsmall">
+          <i class="fa essicon-radialdots right-5" aria-hidden="true"></i>{{services.length}}
+        </div>
+      </div>
+      <div class="appCard_Section25pc appCard_Divider">
+        <div class="appCard_Label xxsmall">
+          <i class="fa essicon-boxesdiagonal right-5" aria-hidden="true"></i>{{processesSupporting}}
+        </div>
+      </div>
+      <div class="appCard_Section25pc">
+        <div class="appCard_Label xxsmall">
+          <i class="fa essicon-connections right-5" aria-hidden="true"></i>{{totalIntegrations}}
+        </div>
+      </div>
+    </div>
+    
+    <!-- App Card Middle Section: Capabilities -->
+    <div class="appCard_Middle">
+      <div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
+        <div class="appCard_Label xxxsmall">Capabilities</div>
+      </div>
+      <div class="appCard_Section25pc appCard_Divider">
+        <div class="appCard_Label xxsmall">
+          <i class="fa essicon-target right-5" aria-hidden="true"></i>{{commodity}}
+        </div>
+      </div>
+      <div class="appCard_Section25pc appCard_Divider">
+        <div class="appCard_Label xxsmall">
+          <i class="fa essicon-valuechain right-5" aria-hidden="true"></i>{{differentiating}}
+        </div>
+      </div>
+    </div>
+    
+    <!-- App Card Middle Section: Service Match -->
+    <div class="appCard_Middle">
+      <div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
+        <div class="appCard_Label xxxsmall">Service Match</div>
+      </div>
+      <div class="appCard_Section50pc displayTable">
+        <div class="appCard_Label xxsmall">
+          {{num}}
+          <!-- Accessible info button for more details -->
+          <i class="fa fa-info-circle left-5"></i>
+          <div class="text-default small hiddenDiv" aria-hidden="true">
+            <h5>Matched Services</h5>
+            <ul class="small fa-ul">
+              {{#each matchedServices}}
+                <li>
+                  <i class="fa fa-li essicon-radialdots" aria-hidden="true"></i>{{this.name}}
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- App Card Middle Section: Codebase -->
+    <div class="appCard_Middle">
+      <div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
+        <div class="appCard_Label xxxsmall">Codebase</div>
+      </div>
+      <div class="appCard_Section50pc displayTable">
+        <div class="appCard_Label xxsmall">{{nameSubString codebase}}</div>
+      </div>
+    </div>
+    
+    <!-- App Card Middle Section: Lifecycle -->
+    <div class="appCard_Middle">
+      <div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
+        <div class="appCard_Label xxxsmall">Lifecycle</div>
+      </div>
+      <div class="appCard_Section50pc displayTable">
+        <div class="appCard_Label xxsmall">{{nameSubString status}}</div>
+      </div>
+    </div>
+    
+    <!-- App Card Bottom Section: Annual Cost -->
+    <div class="appCard_Bottom">
+      <div class="appCard_Section50pc appCard_Divider displayTable impact bg-offwhite">
+        <div class="appCard_Label xxxsmall">Annual Cost</div>
+      </div>
+      <div class="appCard_Section50pc displayTable">
+        <div class="appCard_Label xxsmall">{{currency}}{{getCost cost}}</div>
+        <div style="float:right">
+          <i class="fa fa-question-circle appCompareButton right-5"
+             style="color:#a67fcd"
+             aria-hidden="true">
+            <xsl:attribute name="easid">{{id}}</xsl:attribute>
+          </i>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
 	</xsl:template>
     <xsl:template name="GetViewerAPIPath">
         <xsl:param name="apiReport"/>
@@ -1403,7 +1555,7 @@ font-size:0.7em;
                   $('.servicesNew option:selected').each(function(){ selitems.push({"selectId":$(this).attr('name'),"name":$(this).text()}) });	
                   focusServices=selitems;
                   focusedServices=focusServices.length;
-          
+console.log('focusServices',focusServices )
                   $("#appServs > tbody").empty();          
                                   <![CDATA[ $("#appServs").append("<tbody>");]]>
                                   for(i=0; i &lt; focusServices.length;i++){                                         
@@ -1412,7 +1564,7 @@ font-size:0.7em;
                   getAllApps();
                   }
                        
-               function selectApp(appl){
+            function selectApp(appl){
                     var appServs = $("#appServs");
                     var emptyTbody = $("<tbody></tbody>");
                     appServs.empty().append(emptyTbody.clone());
@@ -1425,6 +1577,11 @@ font-size:0.7em;
                     var appSelected = appoptions.filter(function(d) {
                         return d.key === appl;
                     });
+ 
+                if(appSelected.length &gt; 0){
+                    appSelected[0].values[0].allServices =appSelected[0].values[0]['allServices'].filter((item, index, self) =>
+                        index === self.findIndex((t) => t.serviceId === item.serviceId))
+ 
 
                     var servicesHtml = appSelected.map(function(item) {
                         var services = item.values[0].allServices.filter(function(item) {
@@ -1454,7 +1611,7 @@ font-size:0.7em;
                         return service.process;
                         }));
                     }, []);
-
+                 }
               };        
                                    
               function getRelevantApps() {
@@ -1592,8 +1749,7 @@ font-size:0.7em;
                               thisapp[0]['currency']=currency;
                               thisapp[0]['interface']=thisapp[0].services;
                               thisapp[0]['url']='report?XML=reportXML.xml&amp;PMA='+thisapp[0].id+'&amp;cl=en-gb&amp;XSL=application/core_al_app_provider_summary.xsl';
-                              thisapp[0]['score']=score;
-                     
+                              thisapp[0]['score']=score; 
                               $("#cardsBlock").append(appCardTemplate(thisapp[0]));
               
 
@@ -1971,8 +2127,10 @@ font-size:0.7em;
                     if (match.cost) {
                         a.cost = match.cost;
                     }
-
+ 
                     if (match.services) {
+                        match.services = match.services.filter((item, index, self) =>
+                        index === self.findIndex((t) => t.serviceId === item.serviceId))
                         a.allServices = match.services;
                     }
 

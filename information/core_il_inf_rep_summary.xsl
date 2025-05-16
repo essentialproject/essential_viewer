@@ -854,23 +854,26 @@
 		<xsl:variable name="appDepRelation" select="current()"/>
  		<xsl:variable name="thisapu2apu" select="$apu2apu[own_slot_value[slot_reference = 'apu_to_apu_relation_inforeps']/value = current()/name]"/>
 		
-		<xsl:variable name="thisFrom" select="$allAppUsages[name=$thisapu2apu/own_slot_value[slot_reference = ':FROM']/value]"/>
-		<xsl:variable name="thisTo" select="$allAppUsages[name=$thisapu2apu/own_slot_value[slot_reference = ':TO']/value]"/>
+		
+	 
+		
+		
+<xsl:if test="$thisapu2apu">
+
+<xsl:for-each select="$thisapu2apu">
+<xsl:variable name="thisFrom" select="$allAppUsages[name=current()/own_slot_value[slot_reference = ':FROM']/value]"/>
+		<xsl:variable name="thisTo" select="$allAppUsages[name=current()/own_slot_value[slot_reference = ':TO']/value]"/>
 		<xsl:variable name="thisFromApp" select="$allApps[name=$thisFrom/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 		<xsl:variable name="thisToApp" select="$allApps[name=$thisTo/own_slot_value[slot_reference = 'static_usage_of_app_provider']/value]"/>
 		 
 		<!--<xsl:variable name="inboundAcquisitionMethod" select="$allAcquisitionMethods[name = $appDepRelation/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>-->
 		<xsl:variable name="currencyIRex" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
-		<xsl:variable name="currencythisapu2apu" select="$allServiceQualVals[(name = $thisapu2apu/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
+		<xsl:variable name="currencythisapu2apu" select="$allServiceQualVals[(name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value) and (own_slot_value[slot_reference = 'usage_of_service_quality']/value = $timelinessQualityType/name)]"/>
 		<xsl:variable name="currency" select="$currencythisapu2apu union $currencyIRex"/>
 		
 		<xsl:variable name="anSqvListIRex" select="$allServiceQualVals[(name = $appDepRelation/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
-		<xsl:variable name="anSqvListAPU" select="$allServiceQualVals[(name = $thisapu2apu/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
+		<xsl:variable name="anSqvListAPU" select="$allServiceQualVals[(name = current()/own_slot_value[slot_reference = ('apu_to_apu_relation_inforep_service_quals', 'atire_service_quals')]/value)]"/>
 		<xsl:variable name="anSqvList" select="$anSqvListIRex union $anSqvListAPU"/>
-	 
-		
-		
-<xsl:if test="$thisapu2apu">
  
 			<tr width="100%" style="border-bottom: 1pt solid #d3d3d3">
 				<td width="25%"><xsl:value-of select="$thisToApp/own_slot_value[slot_reference = 'name']/value"/></td>
@@ -899,10 +902,14 @@
 			<xsl:otherwise>&#160;Not Set</xsl:otherwise>
 		</xsl:choose>
 		</td>
-				<td>
-				<xsl:value-of select="$dam[name=$thisapu2apu/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]/own_slot_value[slot_reference = 'name']/value"/>
-				</td>
+			<td>
+			<xsl:variable name="allthisdams" select="$dam[name=current()/own_slot_value[slot_reference = 'apu_to_apu_relation_inforep_acquisition_method']/value]"/>
+			   <xsl:for-each select="$allthisdams">
+			   	-<xsl:text> </xsl:text><xsl:value-of select="current()/own_slot_value[slot_reference = 'name']/value"/>
+			   </xsl:for-each>
+			</td>
 				</tr>
+</xsl:for-each>
 	</xsl:if>	
 		
 	</xsl:template>

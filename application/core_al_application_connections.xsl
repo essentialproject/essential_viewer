@@ -2,7 +2,6 @@
 
 <xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
 	<xsl:import href="../common/core_js_functions.xsl"/>
-	 <xsl:include href="../common/core_roadmap_functions.xsl"></xsl:include>
 	<xsl:include href="../common/core_doctype.xsl"/>
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
@@ -26,7 +25,7 @@
 	<!-- END GENERIC LINK VARIABLES -->
 	
     <xsl:variable name="allInfoReps" select="/node()/simple_instance[type=('Information_Representation')]"/>
-
+	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Connections']"></xsl:variable>
 	<xsl:variable name="allArchUsages" select="/node()/simple_instance[type='Static_Application_Provider_Usage']"/>
     <xsl:variable name="allAPUs" select="/node()/simple_instance[type=':APU-TO-APU-STATIC-RELATION']"/>
 	<xsl:key name="allArchUsagesKey" match="/node()/simple_instance[type='Static_Application_Provider_Usage']" use="name"/>
@@ -592,15 +591,15 @@
 	<!-- {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}-->
 		</span><xsl:text> </xsl:text>
 		<i class="fa fa-search focusApp" style="color:blue"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i><br/>
-	 	{{#if this.ap_codebase_status.[0]}}
-		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_codebase_status.[0].backgroundColor}};color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute>
-			<i class="fa fa-code"><xsl:attribute name="style">color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
-			{{this.ap_codebase_status.[0].enum_name}}</div>
+	 	{{#if this.ap_codebase_status_view.[0]}}
+		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_codebase_status_view.[0].backgroundColor}};color:{{this.ap_codebase_status_view.[0].colour}}</xsl:attribute>
+			<i class="fa fa-code"><xsl:attribute name="style">color:{{this.ap_codebase_status_view.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
+			{{this.ap_codebase_status_view.[0].enum_name}}</div>
 		{{/if}}
-		{{#if this.ap_delivery_model.[0]}}	
-		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_delivery_model.[0].backgroundColor}};color:{{this.ap_delivery_model.[0].colour}}</xsl:attribute>
-			<i class="fa fa-truck"><xsl:attribute name="style">color:{{this.ap_codebase_status.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
-			{{this.ap_delivery_model.[0].enum_name}}</div>
+		{{#if this.ap_delivery_model_view.[0]}}	
+		<div class="enumLozenge"><xsl:attribute name="style">background-color:{{this.ap_delivery_model_view.[0].backgroundColor}};color:{{this.ap_delivery_model_view.[0].colour}}</xsl:attribute>
+			<i class="fa fa-truck"><xsl:attribute name="style">color:{{this.ap_delivery_model_view.[0].colour}}</xsl:attribute></i><xsl:text> </xsl:text>
+			{{this.ap_delivery_model_view.[0].enum_name}}</div>
 		{{/if}}
 	  
 	
@@ -692,7 +691,7 @@ var appList, appListMap, appListMapScoped;
 var infoList <!--[<xsl:apply-templates select="$allInfoReps" mode="allApps">
 	<xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
 </xsl:apply-templates>]; -->
- 
+let filterExcludes = [<xsl:for-each select="$theReport/own_slot_value[slot_reference='report_filter_excluded_slots']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>];
 
  
 var inner, svg;
@@ -898,6 +897,7 @@ $(window).scroll(function() {
 			promise_loadViewerAPIData(viewAPIDataAppMart) 
 			]).then(function (responses)
 			{
+			 
 			appList = responses[0].applications.concat(responses[0].apis);
 			
 			appListMap  = new Map(appList.map(app => [app.id, app]));
@@ -1039,6 +1039,11 @@ apus.forEach(apu => {
 		})
 	}
 });
+			filterExcludes.forEach((e)=>{
+				filters=filters?.filter((f)=>{
+					return f.slotName !=e;
+				})
+			}) 
  
 			dynamicAppFilterDefs=filters?.map(function(filterdef){
 				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
@@ -1062,28 +1067,31 @@ apus.forEach(apu => {
 			$('#infoRepList').html(optionsInfoHtml + optionsHtmlInfo);
 			$('#dataObjList').html(optionsInfoChooseHtml + optionsHtmlData);
 			let appMax=1000;
+ 
 			appList.forEach((e,i) => {
 				
 				// Iterate over each slotName in valueLookups
 				Object.keys(valueLookups).forEach(slotName => {
 					// Check if the current object has the property matching the slotName
 					if (e.hasOwnProperty(slotName) &amp;&amp; Array.isArray(e[slotName])) {
+						 
 						// Update each ID in the array with the corresponding value from the lookup table
-						e[slotName] = e[slotName].map(id => valueLookups[slotName][id] || id);
+						e[slotName+'_view'] = e[slotName].map(id => valueLookups[slotName][id] || id);
 					}
+				 
 				});
 
 				let appContent={
 					"id": e.id,
 					"name": e.name, 
-					"ap_codebase_status":e.ap_codebase_status,
-					"ap_delivery_model":e.ap_delivery_model,
+					"ap_codebase_status_view":e.ap_codebase_status_view,
+					"ap_delivery_model_view":e.ap_delivery_model_view,
 					"className": e.className				
 				}
 				 
 				// Update nodes and DOM elements
 					nodes.push({ id: e.id, label: e.name, content: appContent });
-				
+					e.realises_application_capabilities = e.allServices.flatMap(s => s.capabilities);
 			});
 			
 			// Build and append HTML for options
@@ -1193,25 +1201,30 @@ $('#connectedApps').on('change', function(){
 
 	
 	var redrawView = function () { 
+
+		essResetRMChanges();
 		$('#diagram').empty();
 		let scopedRMApps = [];
+ 
 		appList.forEach((d) => {
 			scopedRMApps.push(d)
 		});
-		let toShow =   appList;  
-	
-		let appOrgScopingDef = new ScopingProperty('stakeholdersA2R', 'ACTOR_TO_ROLE_RELATION');
+		let toShow =appList;  
+		let appOrgScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION');
 		let capOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 		let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
-		let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-
-		essResetRMChanges();
+		let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS'); 
+		let msDef = new ScopingProperty('ms_managed_app_elements', 'Managed_Service');
+		let acDef = new ScopingProperty('realises_application_capabilities', 'Application_Capability');
+		
+		
 		let typeInfo = {
 			"className": "Application_Provider",
 			"label": 'Application',
 			"icon": 'fa-desktop'
 		}
-		let scopedApps = essScopeResources(toShow, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef].concat(dynamicAppFilterDefs), typeInfo);
+ 
+		let scopedApps = essScopeResources(scopedRMApps, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef, msDef, acDef].concat(dynamicAppFilterDefs), typeInfo);
  
 		scopedAppsList = scopedApps.resourceIds;  
 	
@@ -1793,8 +1806,8 @@ $('#appCapList').off('change.appCapListChange').on('change.appCapListChange', fu
 				let appContent={
 					"id": e.id,
 					"name": e.name, 
-					"ap_codebase_status":e.ap_codebase_status,
-					"ap_delivery_model":e.ap_delivery_model,
+					"ap_codebase_status_view":e.ap_codebase_status_view,
+					"ap_delivery_model_view":e.ap_delivery_model_view,
 					"className": e.className					
 				}
 				
@@ -1921,8 +1934,21 @@ function setDODrop(){
 	setDODrop()
 	}
 
+	hardClasses=[{"class":"Group_Actor", "slot":"stakeholders"},
+	{"class":"Geographic_Region", "slot":"ap_site_access"},
+	{"class":"SYS_CONTENT_APPROVAL_STATUS", "slot":"system_content_quality_status"}, 
+	{"class":"ACTOR_TO_ROLE_RELATION", "slot":"act_to_role_to_role"},
+	{"class":"Managed_Service", "slot":"ms_managed_app_elements'"},
+	{"class":"Application_Capability", "slot":"realises_application_capabilities"}]
 
-essInitViewScoping(redrawView,['Group_Actor', 'SYS_CONTENT_APPROVAL_STATUS','ACTOR_TO_ROLE_RELATION','Geographic_Region'], responses[0].filters, true);
+	hardClasses = hardClasses.filter(item => 
+		!filterExcludes.some(exclude => item.slot.includes(exclude))
+	);
+
+let classesToShow = hardClasses.map(item => item.class);
+ 
+essInitViewScoping	(redrawView, classesToShow, filters, true);
+  
 
 		
 	//end of promise			

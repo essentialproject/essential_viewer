@@ -24,6 +24,8 @@
 	<!--<xsl:variable name="reportPath" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
 	<xsl:variable name="reportPathApps" select="/node()/simple_instance[type = 'Report'][own_slot_value[slot_reference='name']/value='Core: Application Rationalisation Analysis']"/>
 	-->
+	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Reference Model']"></xsl:variable>
+	
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
@@ -1126,6 +1128,8 @@
 			});
 		}; 
 
+		let filterExcludes = [<xsl:for-each select="$theReport/own_slot_value[slot_reference='report_filter_excluded_slots']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>];
+	 
 	 	function showEditorSpinner(message) {
 			$('#editor-spinner-text').text(message);                            
 			$('#editor-spinner').removeClass('hidden');                         
@@ -1227,12 +1231,21 @@ $('document').ready(function () {
 
 			let appHtml = '';
 			let appArr = [];
+			
 			instance.supportingServices.forEach((d) => {
 				let thisSvc = workingArray.application_services.find((e) => {
 					return e.id == d;
 				})
+			 
 				appArr.push(thisSvc)
 			})
+			
+			appArr.sort((a, b) => {
+				// Convert the string values to numbers using parseInt (or Number)
+				const seqA = parseInt(a.sequence_number, 10);
+				const seqB = parseInt(b.sequence_number, 10);
+				return seqA - seqB;
+			});
 
 			appHtml = svcTemplate(appArr);
 
@@ -1405,13 +1418,18 @@ $('#hideCaps').on('click',function(){
 		appfilters = responses[1].filters
 
 		compserv=responses[1].compositeServices;
-		
+
+		filterExcludes.forEach((e)=>{
+			appfilters=appfilters.filter((f)=>{
+				return f.slotName !=e;
+			})
+		 })
+ 
 		appfilters.sort((a, b) => (a.id > b.id) ? 1 : -1)
 		dynamicAppFilterDefs=appfilters?.map(function(filterdef){
 			return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 		});
-
-
+ 
 		let selBoxCompOptionsHtml = compserv?.map(service => ' &lt;option name="' + service.id + '" value="' + service.id + '">' + service.name + '&lt;/option>').join('');
        
 		$('#selCompBox').append(selBoxCompOptionsHtml);
@@ -1420,7 +1438,7 @@ $('#hideCaps').on('click',function(){
 		workingArray.capability_hierarchy.forEach((f) => {
 			workingArrayCaps.push(f.id)
 		});
-//console.log('workingArray',workingArray)
+ 
 		workingCaps = responses[0];
 		workingSvcs = responses[0].application_services;
 
@@ -1476,9 +1494,23 @@ $('#hideCaps').on('click',function(){
 
 			capMod.then((d) => {
 				workingArray = [];
-				
-				essInitViewScoping(redrawView, ['Group_Actor', 'Geographic_Region', 'ACTOR_TO_ROLE_RELATION', 'SYS_CONTENT_APPROVAL_STATUS'],appfilters,true);
+				// known classes added by EAS, slot allows exclusion in the report instance
+				hardClasses=[{"class":"Group_Actor", "slot":"stakeholders"},
+						{"class":"Geographic_Region", "slot":"ap_site_access"},
+						{"class":"SYS_CONTENT_APPROVAL_STATUS", "slot":"system_content_quality_status"},
+						{"class":"Product_Concept", "slot":"product_concept_supported_by_capability"},
+						{"class":"Business_Domain", "slot":"belongs_to_business_domain"},
+						{"class":"ACTOR_TO_ROLE_RELATION", "slot":"act_to_role_to_role"},
+						{"class":"Managed_Service", "slot":"ms_managed_app_elements'"},
+						{"class":"Application_Capability", "slot":"realises_application_capabilities"}]
 
+						hardClasses = hardClasses.filter(item => 
+							!filterExcludes.some(exclude => item.slot.includes(exclude))
+						);
+
+					let classesToShow = hardClasses.map(item => item.class);
+					 
+					essInitViewScoping	(redrawView, classesToShow, appfilters, true);
 				
 			});
 			removeEditorSpinner()
@@ -1508,6 +1540,7 @@ $('#hideCaps').on('click',function(){
 				} else {
 					d['delivery'] = "Not Set";
 				}
+				d.realises_application_capabilities = d.allServices.flatMap(s => s.capabilities);
 			});
 		})
 
@@ -1544,13 +1577,16 @@ var scopedService;
 			let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 			let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
 			let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-			let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION');
+			let a2rScopingDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION'); 
+			let msDef = new ScopingProperty('ms_managed_app_elements', 'Managed_Service');
+			let acDef = new ScopingProperty('realises_application_capabilities', 'Application_Capability');
+			
 		//	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	 
 
 			let apps = appArray.applications;
 
-			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef].concat(dynamicAppFilterDefs), appTypeInfo);
+			scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef, a2rScopingDef, msDef, acDef].concat(dynamicAppFilterDefs), appTypeInfo);
 			scopedCaps = essScopeResources(workingArrayAppsCaps, [visibilityDef], busCapTypeInfo);
 
 			workingsvcArray.forEach(obj => {

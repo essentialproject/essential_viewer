@@ -20,13 +20,13 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<xsl:variable name="styles" select="/node()/simple_instance[type='Element_Style']"/>
  
-    <xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status')]"/>
+    <xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status','Disposition_Lifecycle_Status')]"/>
         
 	<xsl:variable name="products" select="/node()/simple_instance[type='Technology_Product']"/>
 	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	<xsl:variable name="allproducts" select="$products union $apps"/>
-    <xsl:variable name="productLifecycles" select="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model')][own_slot_value[slot_reference='lifecycle_model_subject']/value=$allproducts/name]"/>
-    <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
+    <xsl:variable name="productLifecycles" select="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model', 'Disposition_Lifecycle_Model')][own_slot_value[slot_reference='lifecycle_model_subject']/value=$allproducts/name]"/>
+    <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage', 'Disposition_Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
     <xsl:variable name="allSupplier" select="/node()/simple_instance[type = 'Supplier']"/>     
     <xsl:variable name="allTechstds" select="/node()/simple_instance[type = 'Technology_Provider_Standard_Specification']"/>
     <xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>
@@ -237,7 +237,7 @@
 					border: 1px solid #ddd;
 					margin-top: -5px;
 				}
-	/*			
+				/*			
 				/*------ Heading ------*/
 				.vls-heading > h2{
 					font-weight: 600;
@@ -271,7 +271,7 @@
 					position:relative;
 					margin: 20px 0;
 				}
-			*/
+				*/
 				/* ================================= */
 				/* -------- main Content CSS ------- */
 				/* ================================= */
@@ -451,7 +451,7 @@
 					text-align: center;
 					position: fixed;
 					right: 0;
-					width: 400px;
+					width: 1000px;
 					top: 0;
 					height: 100%;
 					overflow: hidden;
@@ -611,16 +611,17 @@
 				}
 				.appPanel {
 						overflow: scroll;
-						padding: 5px;
+						padding: 3px;
 						margin:3px;
 						border: 1px solid #ccc;
 						border-radius:5px;
 						position: fixed;
 						z-index: 100;
-						width: 380px;
+						width: 300px;
 						color: #000;
 						text-align:left;
-						height:90%
+						height:90%;
+						font-size:0.8em;
 					}
 				 .stdRow {
 					 padding:3px;
@@ -645,6 +646,16 @@
 					 border-radius:5px;
 					 font-size:0.8em;
 				 }
+				 rect {
+					transition: transform 0.3s ease, fill 0.3s ease;
+				}
+				rect {
+					filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+				}
+				rect:hover {
+					transform: scale(1.01);
+					fill: #66bb6a;
+				}
 			</style>		
 			</head>
 			<body class="vls-body">
@@ -667,80 +678,88 @@
 					<div class="col-xs-12">
 						
 					<!-- Side Bar Start -->
-					<aside class="vls-side-bar">
+					<aside class="vls-side-bar" role="complementary" aria-labelledby="filterSectionHeading">
 						<div class="vls-main-wrapp">
 							<div class="vls-heading">
-								<h3><span class="vls-text-danger">Filters</span></h3>
+								<h3 id="filterSectionHeading"><span class="vls-text-danger">Filters</span></h3>
 							</div>
+
 							<div class="vls-heading">
-									<h6><span class="vls-text-dark">Type</span></h6>
-								</div>
-								<select class="vls-type form-control filter">
-									<option value="Technology">Technology</option>
-									<option value="Application">Applications</option>
-								</select>
+								<h6><span class="vls-text-dark">Type</span></h6>
+							</div>
+							<label for="typeFilter" class="sr-only">Type Filter</label>
+							<select id="typeFilter" class="vls-type form-control filter" aria-label="Filter by type">
+								<option value="Technology">Technology</option>
+								<option value="Application">Applications</option>
+							</select>
 
 							<div class="vls-heading vendor">
 								<h6><span class="vls-text-dark">Vendor</span></h6>
 							</div>
-			
-							<select class="vls-vendor form-control filter vendor">
-								<option value="all">All</option>
+							<label for="vendorFilter" class="sr-only">Vendor Filter</label>
+							<select id="vendorFilter" class="vls-vendor form-control filter vendor" aria-label="Filter by vendor">
+								<option value="all" selected="true">All</option>
 							</select>
 
 							<div class="vls-heading caps">
-									<h6><span class="vls-text-dark">By Capability</span></h6>
-								</div>
-				
-								<select class="vls-caps form-control filter caps">
-									<option value="all">All</option>
-								</select>
-			
+								<h6><span class="vls-text-dark">By Capability</span></h6>
+							</div>
+							<label for="capabilityFilter" class="sr-only">Capability Filter</label>
+							<select id="capabilityFilter" class="vls-caps form-control filter caps" aria-label="Filter by capability">
+								<option value="all" selected="true">All</option>
+							</select>
+
 							<div class="vls-heading">
 								<h6><span class="vls-text-dark">Lifecycle Type</span></h6>
 							</div>
-							
-							<select class="vls-lifecycle form-control filter" id="lifecycleOptions">
-						
-							</select>
-			
-			
+							<label for="lifecycleOptions" class="sr-only">Lifecycle Type Filter</label>
+							<select id="lifecycleOptions" class="vls-lifecycle form-control filter" aria-label="Filter by lifecycle type"></select>
+
 							<div class="vls-heading">
 								<h6><span class="vls-text-dark">Years</span></h6>
 							</div>
-						 
-								<div class="form-group">
-									From: 
-									<input class="filter form-control" type="text" id="fromYear" size="4"/>
-								 
-									To: 
-									<input class="filter form-control" type="text" id="toYear" size="4"/>
-								</div> 
-							 
-			
+							<div class="form-group">
+								<label for="fromYear" class="sr-only">From Year</label>
+								From: 
+								<input class="filter form-control" type="text" id="fromYear" size="4" aria-label="Filter from year" />
+
+								<label for="toYear" class="sr-only">To Year</label>
+								To: 
+								<input class="filter form-control" type="text" id="toYear" size="4" aria-label="Filter to year" />
+							</div>
 						</div>
 					</aside>
+
 					<!-- Side Bar Ends -->
 				
 					<!-- Main content Start -->
-					<div class="vls-main-content my-main">
+					<div class="vls-main-content my-main" role="main" aria-labelledby="mainContentHeading">
 						<div class="vls-main-wrapp my-main-wrapp height-100">
-								<svg id ="time-chart" height="400" width="100%">
-									 
-									  </svg> 
+							<h2 id="mainContentHeading" class="sr-only">Main Content</h2>
+							<svg id="time-chart" height="400" width="100%" role="img" aria-labelledby="timeChartTitle timeChartDesc">
+								<title id="timeChartTitle">Time Chart</title>
+								<desc id="timeChartDesc">A visual representation of time-based data. Adjust the chart settings as needed.</desc>
+							</svg>
 						</div>
 					</div>
+
 					<!-- Main content End -->
 			
 					<!-- Right Side Start -->
 					<div class="vls-cg-right-side" id="slideInNav">
-							<a href="javascript:void(0)" class="closebtn text-default">
-									<i class="fa fa-times"></i>
-								</a>
-					 
-						<div id="techInfo">
+						<a href="javascript:void(0)" class="closebtn text-default">
+							<i class="fa fa-times"></i>
+						</a>
+						<div class="pull-right">
+							<label>
+								<input type="checkbox" id="filterHighCriticality"/> High Criticality Processes Only
+							</label>
 						</div>
-
+						<dic class="clearfix"/>
+					 	<div class="col-xs-4" id="techInfo">
+							 
+						</div>
+						<div class="col-xs-8" id="impact-container"/>
 	 
 					</div> 
 					<!-- Right Side End -->
@@ -751,52 +770,156 @@
 		 
 				<script id="life-list-template" type="text/x-handlebars-template">
 					{{#each this}}
-						<option><xsl:attribute name="value">{{this.id}}</xsl:attribute>{{this.name}}</option><br/>
+						<option><xsl:attribute name="value">{{this.id}}</xsl:attribute><xsl:attribute name="selected">{{#ifEquals this.type 'Vendor_Lifecycle'}}true{{else}}false{{/ifEquals}}</xsl:attribute>{{this.name}}</option> 
+					{{/each}}
+				</script>
+				<script id="list-template" type="text/x-handlebars-template">
+					{{#each this}}
+						<option><xsl:attribute name="value">{{this.id}}</xsl:attribute>{{this.name}}</option> 
 					{{/each}}
 				</script>
 				<script id="info-template" type="text/x-handlebars-template">
+				<div class="appPanel">
 					<h4>{{this.name}} Overview</h4>
-					<div class="appPanel">
-					{{#if this.applications}}
-					<b>Applications Impacted</b><br/>
-					{{#each this.applications}}
-						<div class="celldiv"> {{this.name}}</div>
-					{{/each}}
-					<hr/>
-					{{/if}}
-					
-					{{#if this.standards}}
-				
-					<b>Standards</b><br/>
-						<table>
-							<tr><th>Strength</th><th>Organisations</th><th>Geographies</th></tr>
-							{{#each this.standards}}
-							<tr><td colspan="3" class="roleRow"><xsl:attribute name="style">background-color:#000000;color:#fff;</xsl:attribute>{{this.componentName}}</td></tr>
-								 
-								<tr> {{{getStandardColour this.standardStrength}}} 
-									<td class="stdRow">{{#each this.orgScope}}<i class="fa fa-caret-right"></i> {{this.name}}<br/>{{/each}}</td>
-									<td class="stdRow">{{#each this.geoScope}}<i class="fa fa-caret-right"></i> {{this.name}}<br/>{{/each}}</td>
-								</tr>
-							{{/each}}
-						 
-						</table>
 
-					{{/if}}
-					{{#if this.processes}}
-					<b>Processes Impacted</b><br/>
-					<table>
-						<tr><th>Process</th><th>Organisation</th></tr>
-						{{#each this.processes}}
-						<tr>  
-							 <td class="stdRow">{{this.key}}</td>
-							<td class="stdRow">{{#each this.values}}<div class="celldiv"><i class="fa fa-caret-right"></i> {{this.org}}</div>{{/each}}</td>
-						</tr>
+					{{#if this.applications}}
+					<section aria-labelledby="applications-heading">
+						<h5 id="applications-heading">Applications Impacted</h5>
+						{{#each this.applications}}
+						<div class="celldiv">
+							<span>{{this.name}}</span>
+							<div class="pull-right">
+							<i 
+								class="fa fa-caret-down expand-btn"
+								role="button"
+								tabindex="0"
+								aria-expanded="false"
+								aria-controls="processes-{{@index}}"
+							>
+								<xsl:attribute name="data-app-id">{{@index}}</xsl:attribute>
+								<xsl:text> </xsl:text> 
+								<span style="font-family:arial">Show</span>
+							</i>
+							</div>
+						</div>
+						<div 
+							class="processes-section" 
+							style="display: none;"
+						>
+							<xsl:attribute name="id">processes-{{@index}}</xsl:attribute>
+							{{#if this.processes}}
+							<table>
+								<thead>
+								<tr>
+									<th scope="col">Process</th>
+									<th scope="col">Organisation</th>
+									<th scope="col">Criticality</th>
+								</tr>
+								</thead>
+								<tbody>
+								{{#each this.processes}}
+									<tr>
+									<td>{{this.key}}</td>
+									<td>
+										{{#each this.values}}
+										<span class="label label-primary">{{this.org}}</span>
+										{{/each}}
+									</td>
+									<td>
+										{{#each this.criticality}}
+										<xsl:text> </xsl:text>
+										<span 
+											class="label label-default"
+										>
+											<xsl:attribute name="style">{{#criticalityColour this}}{{/criticalityColour}}</xsl:attribute>
+											{{this}}
+										</span>
+										{{/each}}
+									</td>
+									</tr>
+								{{/each}}
+								</tbody>
+							</table>
+							{{else}}
+							<p>No processes available for this application.</p>
+							{{/if}}
+						</div>
 						{{/each}}
-					 
-					</table>
+						<hr />
+					</section>
 					{{/if}}
-					</div>
+
+					{{#if this.standards}}
+					<section aria-labelledby="standards-heading">
+						<h5 id="standards-heading">Standards</h5>
+						<table>
+						<thead>
+							<tr>
+							<th scope="col">Strength</th>
+							<th scope="col">Organisations</th>
+							<th scope="col">Geographies</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each this.standards}}
+							<tr>
+								<td 
+								colspan="3" 
+								class="roleRow"
+								>
+								<xsl:attribute name="style">background-color:#000000;color:#fff;</xsl:attribute>
+								{{this.componentName}}
+								</td>
+							</tr>
+							<tr>
+								{{{getStandardColour this.standardStrength}}}
+								<td class="stdRow">
+								{{#each this.orgScope}}
+									<i class="fa fa-caret-right"></i> {{this.name}}<br />
+								{{/each}}
+								</td>
+								<td class="stdRow">
+								{{#each this.geoScope}}
+									<i class="fa fa-caret-right"></i> {{this.name}}<br />
+								{{/each}}
+								</td>
+							</tr>
+							{{/each}}
+						</tbody>
+						</table>
+					</section>
+					{{/if}}
+
+					{{#if this.processes}}
+					<section aria-labelledby="processes-heading">
+						<h5 id="processes-heading">Processes Impacted</h5>
+						<table>
+						<thead>
+							<tr>
+							<th scope="col">Process</th>
+							<th scope="col">Organisation</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each this.processes}}
+							<tr>
+								<td class="stdRow">{{this.key}}</td>
+								<td class="stdRow">
+								{{#each this.values}}
+									<div class="celldiv">
+									<i class="fa fa-caret-right"></i> {{this.org}}
+									</div>
+								{{/each}}
+								</td>
+							</tr>
+							{{/each}}
+						</tbody>
+						</table>
+					</section>
+					{{/if}}
+				</div>
 				</script>
+
 				<script id="standard-template" type="text/x-handlebars-template">
 					<td class="stdRow"><xsl:attribute name="style">background-color:{{this.backgroundColour}};color:{{this.colour}};vertical-align: top;</xsl:attribute>{{this.name}}</td>
 				</script>
@@ -812,14 +935,24 @@
 					{{/each}}
 					{{#each this.products}} 
 						{{#each this.showDates}}
-							<rect height="16">
+							<rect height="16" rx="4" ry="0">  
 								<xsl:attribute name="style">fill:{{getColour this}}</xsl:attribute>
 								<xsl:attribute name="y">{{yPos @../index 20}}</xsl:attribute>
 								<xsl:attribute name="x">{{this.startPos}}</xsl:attribute>
 								<xsl:attribute name="width">{{getWidth this.startPos this.endPos this}}px</xsl:attribute>
+								<xsl:attribute name="role">img</xsl:attribute>
+								<xsl:attribute name="aria-label">Bar representing {{this.name}} with value {{this.value}}</xsl:attribute>
 							</rect>
 						{{/each}}
-						<foreignObject x="2" fill="black" width="240" height="20"><xsl:attribute name="y">{{yPosText @index 20}}</xsl:attribute><i class="fa fa-info-circle"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i> {{this.name}}</foreignObject>
+						<foreignObject x="2" fill="black" width="240" height="20"><xsl:attribute name="y">{{yPosText @index 20}}</xsl:attribute><xsl:attribute name="aria-label">Information about {{this.name}}</xsl:attribute><xsl:attribute name="role">text</xsl:attribute>
+							<i class="fa fa-info-circle" aria-hidden="false" tabindex="0">
+								<xsl:attribute name="role">button</xsl:attribute>
+								<xsl:attribute name="aria-label">Information about {{this.name}}</xsl:attribute>
+								<xsl:attribute name="easid">{{this.id}}</xsl:attribute>
+							</i>
+							<xsl:text> </xsl:text>
+							<span role="text" aria-hidden="true">{{this.name}}</span>
+						</foreignObject>
 					{{/each}}
 					{{#each this.years}} 
 						<line style="stroke:rgb(194, 194, 194);stroke-width:1;stroke-dasharray:4 4"><xsl:attribute name="x1">{{this.pos}}</xsl:attribute><xsl:attribute name="y1">0</xsl:attribute>
@@ -827,11 +960,7 @@
 						</line> 
 					{{/each}}
 				</script>
-				<script>		
-				$('document').ready(function(){	
-
-				});
-				</script>
+			
 			</body>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction"> 
@@ -855,9 +984,7 @@
 		<xsl:param name="viewerAPIPathAppLife"></xsl:param> 
 		<xsl:param name="viewerAPIPathSupplier"></xsl:param> 
 		<xsl:param name="viewerAPIPathProcess"></xsl:param> 
-
-		
-		
+  
 		//a global variable that holds the data returned by an Viewer API Report 
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>'; 
 		var viewAPIDataAppCapSvcs = '<xsl:value-of select="$viewerAPIPathAppCapSvcs"/>'; 
@@ -906,428 +1033,869 @@
 			$('#editor-spinner').addClass('hidden');
 			$('#editor-spinner-text').text('');
 		};
-
+	 
+		var groupedData;
+		const businessCriticalityMap = new Map();
 		showEditorSpinner('Fetching Data...');
-		$('document').ready(function (){
+		$('document').ready(function () {
 			productFragment = $("#product-template").html();
-			productTemplate = Handlebars.compile(productFragment); 
-			 
-
+			productTemplate = Handlebars.compile(productFragment);
+		
 			standardFragment = $("#standard-template").html();
-			standardTemplate = Handlebars.compile(standardFragment); 
-
+			standardTemplate = Handlebars.compile(standardFragment);
+		
 			infoFragment = $("#info-template").html();
-			infoTemplate = Handlebars.compile(infoFragment); 
-
+			infoTemplate = Handlebars.compile(infoFragment);
+		
 			keyFragment = $("#key-template").html();
-			keyTemplate = Handlebars.compile(keyFragment); 
-			
-			Handlebars.registerHelper("yPos", function(row, height) {
-					  return (row * height)+18;  
+			keyTemplate = Handlebars.compile(keyFragment);
+
+			let lifeListFragment = $("#life-list-template").html();
+			lifeListTemplate = Handlebars.compile(lifeListFragment);
+
+			let listFragment = $("#list-template").html();
+			listTemplate = Handlebars.compile(listFragment); 
+
+		
+			Handlebars.registerHelper("criticalityColour", function (val) {
+				 
+				let match= businessCriticalityMap.get(val)
+				if(match){
+				return 'background-color:'+ match.backgroundColor +';color:'+ match.colour;
+				}else{
+
+				}
 			});
 
-			Handlebars.registerHelper("getColour", function(instance) {
+			Handlebars.registerHelper("yPos", function (row, height) {
+				return (row * height) + 18;
+			});
+
+			Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+				return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+			});
+		
+			Handlebars.registerHelper("getColour", function (instance) {
+				
+				const thisLife = $('#lifecycleOptions').val();
+				const colourMap = lifeMap.get(thisLife);
+				
+				return colourMap ? colourMap.get(instance.id) : null;
+			});
 		 
-				let thisLife=$('#lifecycleOptions').val();
-				let lifes = lifeByType.filter((d)=>{
-							return d.key==thisLife;
-						}); 
 
-				let thisColour = lifes[0].values.filter((d)=>{
-					return d.id == instance.id
-					})	 
-					  return thisColour[0].backgroundColour;  
-			});
+			Handlebars.registerHelper("getStandardColour", function (instanceId) { 
 
-			Handlebars.registerHelper("getStandardColour", function(instanceId) {
-				let thisColours=standardsJSON.filter((d)=>{
-					return d.id==instanceId;
-				});
-		 
-				let thisStdColour=standardTemplate(thisColours[0])
-					  return  thisStdColour
+				let thisColours = standardsMap.get(instanceId); 
+		
+				let thisStdColour = standardTemplate(thisColours)
+				return thisStdColour
 			});
-			
-			Handlebars.registerHelper("yearLines", function() {
+		
+			Handlebars.registerHelper("yearLines", function () {
 				let cheight = $('#time-chart').height();
-					  return  cheight+30;  
+				return cheight + 30;
 			});
-			Handlebars.registerHelper("yPosText", function(row, height) {
-					  return (row * height) +15;  
+		
+			Handlebars.registerHelper("yPosText", function (row, height) {
+				return (row * height) + 15;
 			});
-			Handlebars.registerHelper("getWidth", function(st, end, ap) {
-		 
-						let wresult = end-st;
-						if(wresult &lt;0)
-							{
-								return 0
-							}else{
-					 		 	return end - st;  
-							}
+		
+			Handlebars.registerHelper("getWidth", function (st, end, ap) {
+				let wresult = end - st;
+				if (wresult &lt; 0) {
+					return 0
+				} else {
+					return end - st;
+				}
 			});
-			
-			$('#fromYear').val(moment(chartStartDate).subtract(1,'year').format('YYYY'))
-			$('#toYear').val(moment(chartEndDate).add(4,'year').format('YYYY'))
-			
-			let divWidth=$('.my-main-wrapp').width();
+ 
+		
+			$('#fromYear').val(moment(chartStartDate).subtract(1, 'year').format('YYYY'))
+			$('#toYear').val(moment(chartEndDate).add(4, 'year').format('YYYY'))
+		
+			let divWidth = $('.my-main-wrapp').width();
 			var svgWidth = parseInt(divWidth);
-			var startDatePoint= 250;  // where timeline begins
-			var dateWidth= svgWidth - (startDatePoint + 30);
+			var startDatePoint = 250;  // where timeline begins
+			var dateWidth = svgWidth - (startDatePoint + 30);
 			var chartStartDate = moment().subtract(18, 'months')
 			var chartEndDate = moment().add(2, 'years')
-			var lifeByType;
-			let techJSON=[];
-			let appDetailJSON=[];
-			let appJSON=[];
-			let productJSON=techJSON;
-			let suppliers=[];
-			let lifecycleTypes=[{"id":"Lifecycle_Status","name":"Lifecycle Status"},{"id":"Vendor_Lifecycle_Status","name":"Vendor Lifecycle Status"}]
-			let lifecycleJSON=[];
-			let standardsJSON=[];
-			let processJSON=[];
-			let appCapsJSON=[];
-			let panelOpen=0;
-			Promise.all([
-			promise_loadViewerAPIData(viewAPIDataApps),
-			promise_loadViewerAPIData(viewAPIDataTechLife),
-			promise_loadViewerAPIData(viewAPIDataSupplier),
-			promise_loadViewerAPIData(viewAPIDataAppLife),
-			promise_loadViewerAPIData(viewAPIDataProcess),
-			promise_loadViewerAPIData(viewAPIDataAppCapSvcs)
-			]).then(function (responses)
-			{
+			
+			var lifeByType, lifeMap, lifecycleTypes,standardsMap;
+			let techJSON = [];
+			let appDetailJSON = [];
+			let appJSON = [];
+			let productJSON = techJSON;
+			let suppliers = []; ;
+			let lifecycleJSON = [];
+			let standardsJSON = [];
+			let processJSON = [];
+			let appCapsJSON = [];
+			let panelOpen = 0;
 
+			Promise.all([
+				promise_loadViewerAPIData(viewAPIDataApps),
+				promise_loadViewerAPIData(viewAPIDataTechLife),
+				promise_loadViewerAPIData(viewAPIDataSupplier),
+				promise_loadViewerAPIData(viewAPIDataAppLife),
+				promise_loadViewerAPIData(viewAPIDataProcess),
+				promise_loadViewerAPIData(viewAPIDataAppCapSvcs)
+			]).then(function (responses) {
+		
+			
+				allTechJSONLifecycles = responses[1].all_lifecycles;
+				allAppJSONLifecycles = responses[3].all_lifecycles;
+
+				responses[0].filters.find((e)=>{return e.valueClass == 'Business_Criticality'}).values.forEach(item => {
+					businessCriticalityMap.set(item.enum_name, {
+						name: item.name,
+						backgroundColor: item.backgroundColor,
+						colour: item.colour
+					});
+					});
+		
+		 	const collateDatesByProduct = (dataArray) => {
+					return dataArray.reduce((acc, data) => {
+						const productId = data.productId;
+				
+						// Ensure an entry exists for this productId
+						if (!acc[productId]) {
+							acc[productId] = { productId, datesByType: {} };
+						}
+				
+						// Collate dates into the correct type grouping
+						data.dates.forEach(date => {
+							if (!acc[productId].datesByType[date.type]) {
+								acc[productId].datesByType[date.type] = [];
+							}
+							const { type, ...dateWithoutType } = date;
+							acc[productId].datesByType[date.type].push(dateWithoutType);
+						});
+				
+						return acc;
+					}, {});
+				};
+		 
+				if(allTechJSONLifecycles){
+				groupedData = collateDatesByProduct(allTechJSONLifecycles);
+				appGroupedData = collateDatesByProduct(allAppJSONLifecycles); 
+				}
 			 
-			let lifeListFragment = $("#life-list-template").html();
-			techJSON=responses[1].technology_lifecycles;
-			appJSON=responses[3].application_lifecycles;
-			appDetailJSON=responses[0].applications;
-			productJSON=techJSON;
-			suppliers=responses[2].suppliers;
-			lifecycleTypes=[{"id":"Lifecycle_Status","name":"Lifecycle Status"},{"id":"Vendor_Lifecycle_Status","name":"Vendor Lifecycle_Status"}]
-			lifecycleJSON=responses[1].lifecycleJSON;
-			standardsJSON=responses[1].standardsJSON;
-			processJSON=responses[4].process_to_apps;
-			appCapsJSON=responses[5];
-  //console.log('appJSON',appJSON)
-			let capToSvs=[];
-			appCapsJSON.application_capabilities_services.forEach((d)=>{
-				d.services.forEach((e)=>{
-					capToSvs.push({"capId":d.id,"capName":d.name,"svcId":e.id});
+				// get types based on what data is captured
+				const uniqueTypesMap = new Map();
+mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
+				for (let i = 0; i &lt; mergedLifecycles.length; i++) {
+					const lifecycle = mergedLifecycles[i];
+					const dates = lifecycle.dates;
+
+					for (let j = 0; j &lt; dates.length; j++) {
+						const type = dates[j].type;
+						const name = type.replace(/_/g, ' ');
+						// Add to the map if it doesn't already exist
+						if (!uniqueTypesMap.has(type)) {
+							uniqueTypesMap.set(type, { id: type, name: name });
+						}
+					}
+				}
+ 
+				const uniqueTypes = Array.from(uniqueTypesMap.values()); 
+				
+				// Convert the Set back to an array if needed
+				lifecycleTypes = uniqueTypes;
+				techJSON = responses[1].technology_lifecycles;
+				appJSON = responses[3].application_lifecycles;
+				appDetailJSON = responses[0].applications;
+				productJSON = techJSON;
+				suppliers = responses[2].suppliers;
+			 	lifecycleJSON = responses[1].lifecycleJSON;
+				standardsJSON = responses[1].standardsJSON;
+				processJSON = responses[4].process_to_apps;
+				appCapsJSON = responses[5];
+
+				standardsMap = new Map(standardsJSON.map(d => [d.id, d]));
+		
+				let capToSvs = [];
+				appCapsJSON.application_capabilities_services.forEach((d) => {
+					d.services.forEach((e) => {
+						capToSvs.push({ "capId": d.id, "capName": d.name, "svcId": e.id });
+					});
 				});
-			});
-let capOptions=[];
-capOptions.push({"id":"unknown", "name":"Unknown"})
-				appDetailJSON.forEach((d)=>{
-			 
-					let caps=[];
-					d.services.forEach((e)=>{
-			 
-						let thisCap = capToSvs.filter((f) => {return f.svcId == e.id});
-					
-						if(thisCap.length &gt;0){
-							capOptions.push({"id":thisCap[0].capId, "name":thisCap[0].capName})
-							caps.push({"id":thisCap[0].capId})
+		
+				let capOptions = [];
+				capOptions.push({ "id": "unknown", "name": "Unknown" })
+				appDetailJSON.forEach((d) => {
+		
+					let caps = [];
+					d.allServices.forEach((e) => {
+						let thisCap = capToSvs.filter((f) => { return f.svcId == e.serviceId });
+		
+						if (thisCap.length &gt; 0) {
+							thisCap.forEach((c) => {
+								capOptions.push({ "id": c.capId, "name": c.capName })
+								caps.push({ "id": c.capId })
+							})
 						}
 					})
-					d['caps']=caps; 
+					d['caps'] = caps;
 				})
-			 
-				appJSON.forEach((e)=>{
-					let thisA=appDetailJSON.filter((d)=>{
+		
+				appJSON.forEach((e) => {
+					let thisA = appDetailJSON.filter((d) => {
 						return d.id == e.id;
-					}) 
-					if(thisA[0]){
-						if(thisA[0].caps.length==0){
-							e['caps']=[{'id':'unknown'}]
-						}else
-						{
-							e['caps']=thisA[0].caps;
+					})
+					if (thisA[0]) {
+						if (thisA[0].caps.length == 0) {
+							e['caps'] = [{ 'id': 'unknown' }]
+						} else {
+							e['caps'] = thisA[0].caps;
 						}
 					}
-					else
-					{
-						e['caps']=[{'id':'unknown'}]
+					else {
+						e['caps'] = [{ 'id': 'unknown' }]
 					}
 				})
-			 
-			 
-capOptions=capOptions.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
- 
-				lifeListTemplate = Handlebars.compile(lifeListFragment);  
+		
+				capOptions = capOptions.filter((elem, index, self) => self.findIndex((t) => { return (t.id === elem.id) }) === index)
+				capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
 		 
 				$('#lifecycleOptions').html(lifeListTemplate(lifecycleTypes))
-				$('.vls-vendor').append(lifeListTemplate(suppliers))
-				$('.vls-caps').append(lifeListTemplate(capOptions))
+		 
+		 		if(lifecycleTypes.some(option => option.id === "Vendor_Lifecycle_Status")){
+					$('#lifecycleOptions').val('Vendor_Lifecycle_Status').change()
+				}
+				$('.vls-vendor').append(listTemplate(suppliers))
+ 
+				$('.vls-caps').append(listTemplate(capOptions))
 				closeNav();
 				lifeByType = d3.nest()
-				.key(function(d) { return d.type; })
-				.entries(lifecycleJSON);
+					.key(function (d) { return d.type; })
+					.entries(lifecycleJSON);
  
+				lifeMap = new Map(
+					lifeByType.map(life => [life.key, new Map(life.values.map(val => [val.id, val.backgroundColour]))])
+					);	
+	 
 				setChart();
-	
-				$('.filter').on('change',function(){
-	
+	 
+				$('.filter').on('change', function () {
+		
 					setChart();
-				});	
-				$('.vls-type').on('change',function(){
-					let viewType=$('.vls-type').val();
-					if(viewType=='Application'){
-						productJSON=appJSON;
-					}else
-					{
-						productJSON=techJSON;
+				});
+ 
+				$('.vls-type').on('change', function () {
+					let viewType = $('.vls-type').val();
+ 
+					if (viewType == 'Application') { 
+						 $('#lifecycleOptions option[value="Vendor_Lifecycle_Status"]').hide();
+						$('#lifecycleOptions').val('Lifecycle_Status').change()
+						productJSON = appJSON;
+					} else {
+						 $('#lifecycleOptions option[value="Vendor_Lifecycle_Status"]').show();
+						$('#lifecycleOptions').val('Vendor_Lifecycle_Status').change()
+						productJSON = techJSON;
 					}
 					setChart();
-				});	
- 
-				$('.closebtn').on('click', function(){
+				});
+		
+				$('.closebtn').on('click', function () {
 					closeNav();
 				})
-
-
-			}). catch (function (error)
-			{
+  
+			}).catch(function (error) {
 				//display an error somewhere on the page
-			});		
-			function openNav()
-			{
-				panelOpen=1;
-				$('#slideInNav').css('marginRight','-0px').effect( 'slide', { direction: "right" }, 200 );
+			});
+		
+			function openNav() {
+				panelOpen = 1;
+				$('#slideInNav').css('marginRight', '-0px').effect('slide', { direction: "right" }, 800);
 				//document.getElementById("slideInNav").style.marginRight = "0";
 			}
-			
-			function closeNav()
-			{ 
-				panelOpen=0;
-			$('#slideInNav').css('marginRight','-400px');
+		
+			function closeNav() {
+				panelOpen = 0;
+				$('#slideInNav').css('marginRight', '-1000px');
 				//document.getElementById("slideInNav").style.marginRight = "-352px";
-			}		
-<!--
-var redrawView=function(){
-	essResetRMChanges();
-	let appTypeInfo = {
-		"className": "Application_Provider",
-		"label": 'Application',
-		"icon": 'fa-desktop'
-	}
-	
-	let workingAppsList=[];
-	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
-	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
-	let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
-	let apps=appArray.applications;
-	let scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef], appTypeInfo);
-	
-	let appsToShow=[];
-	console.log(scopedApps)
+			}
+		
+			var redrawView = function () {
+				essResetRMChanges();
+				let appTypeInfo = {
+					"className": "Application_Provider",
+					"label": 'Application',
+					"icon": 'fa-desktop'
+				}
+		
+				let workingAppsList = [];
+				let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+				let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');
+				let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+				let apps = appArray.applications;
+				let scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef], appTypeInfo);
+		
+				let appsToShow = []; 
+		
+			}
+		
+			function getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, thisDatetoShow) {
+				startDate = moment(chartStartDate);
+				endDate = moment(chartEndDate);
+				thisDate = moment(thisDatetoShow);
+				pixels = chartWidth / (endDate - startDate);
+		
+				let calculatedValue = ((thisDate - startDate) * pixels) + chartStartPoint;
+		
+				if (calculatedValue &lt; startDatePoint) { calculatedValue = 250 }
+				return calculatedValue;
+		
+			}
+		
+			function setChart() {
+			 
+				if (productJSON == appJSON) {
+		
+					$('.vendor').hide();
+					$('.caps').show();
+				} else {
+					$('.vendor').show();
+					$('.caps').hide();
+				}
+		
+				let startYear = $('#fromYear').val();
+				let endYear = $('#toYear').val();
+				let supplier = $('.vls-vendor').val();
+				let capability = $('.vls-caps').val();
+		
+				chartStartDate = moment(startYear + '-01-01');
+				chartEndDate = moment(endYear + '-01-01');
+		
+				let workingArr = [];
+	 
+				if (productJSON == appJSON) {
+					if (capability != 'all') {
+						productJSON.forEach((f) => {
+							if (f.caps) {
+								f.caps.forEach((g) => {
+									if (g.id == capability) { workingArr.push(f) }
+								});
+							};
+						});
+					} else {
+						workingArr = productJSON;
+					}
+		
+				}
+				else {
+					if (supplier != 'all') {
+						productJSON.forEach((f) => {
+							if (f.supplierId == supplier) { workingArr.push(f) }
+						});
+					} else {
+						workingArr = productJSON;
+					}
+				}
 
-}
--->
-function getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, thisDatetoShow){
-	startDate= moment(chartStartDate);       
-	endDate= moment(chartEndDate);
-	thisDate= moment(thisDatetoShow);
-	pixels= chartWidth/(endDate-startDate);
-
-	let calculatedValue = ((thisDate-startDate)*pixels)+chartStartPoint;
-
-	if(calculatedValue &lt; startDatePoint){calculatedValue=250}
-	return calculatedValue;
-	
-}
-function setChart(){
-	if(productJSON==appJSON){ 
-		$('#lifecycleOptions').val('Lifecycle_Status').trigger('click');
-		$('.vendor').hide();
-		$('.caps').show();
-	}else{
-		$('.vendor').show();
-		$('.caps').hide();
-	}
-
-	let startYear = $('#fromYear').val(); 
-	let endYear = $('#toYear').val(); 
-	let supplier = $('.vls-vendor').val();
-	let capability = $('.vls-caps').val();
-
-	chartStartDate=moment(startYear+'-01-01');
-	chartEndDate=moment(endYear+'-01-01');
-
-	let workingArr=[];
-
-	if(productJSON==appJSON){
-	if(capability != 'all'){ 
-		productJSON.forEach((f)=>{ 
-		 
-			if(f.caps){
-				
-			f.caps.forEach((g)=>{
-				if(g.id == capability)
-				{workingArr.push(f)}
-			});
-			};
-		});
-	}else
-	{
-		workingArr=productJSON;
-	}
-	
-}
-else{
-	if(supplier != 'all'){
-		productJSON.forEach((f)=>{
-			if(f.supplierId == supplier)
-			{workingArr.push(f)}
-		});
-	}else
-	{
-		workingArr=productJSON;
-	}
-}
- //console.log('workingArr',workingArr)
-	let yearArr=[];
-	for(let i=0;i&lt; endYear-startYear; i++){
-		let dt=String((parseInt(startYear)+i)+'-01-01')
-		let dy=moment(dt).format('YYYY-MM-DD');
-		yearArr.push({"yr":parseInt(startYear)+i, "date":dy, "pos":getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy)});
-	}
-
-let validLifes=[]
-				workingArr.forEach((d)=>{  
-				 
-								let thislifeByType = d3.nest()
-									.key(function(d) { return d.type; })
-									.entries(d.allDates);
+				let yearArr = [];
+				for (let i = 0; i &lt; endYear - startYear; i++) {
+					let dt = String((parseInt(startYear) + i) + '-01-01')
+					let dy = moment(dt).format('YYYY-MM-DD');
+					yearArr.push({ "yr": parseInt(startYear) + i, "date": dy, "pos": getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy) });
+				}
+		
+				let validLifes = []
+				let validLifes2=[]
+				workingArr.forEach((d) => {
  
-					thislifeByType= thislifeByType.filter((e)=>{
-						return e.key !=''
+				let lifeStructure=[];
+				if (groupedData[d.id] &amp;&amp; groupedData[d.id].datesByType) {
+					Object.keys(groupedData[d.id].datesByType).forEach((typeKey) => {
+					// Get the lifeGroup array and filter out entries with an invalid dateOf
+					let lifeGroup = groupedData[d.id].datesByType[typeKey].filter(life => 
+					!isNaN(new Date(life.dateOf).getTime())
+					);
+					d[typeKey] = lifeGroup;
+				
+					// Sort the filtered group by dateOf
+					lifeGroup.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
+					
+					// Process each valid life entry
+					lifeGroup.forEach((life, index) => {
+					if (index &lt; lifeGroup.length - 1) {
+						// Use the next date as endDate if not the last entry
+						life.endDate = lifeGroup[index + 1].dateOf;
+					} else {
+						// For the last entry, add 10 days to its dateOf
+						const lastDate = new Date(life.dateOf);
+						lastDate.setDate(lastDate.getDate() + 10);
+						life.endDate = lastDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+					}
+					life.startPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.dateOf);
+					life.endPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.endDate);
+
+					validLifes2.push(life.id);
+
+					const sequ = lifecycleJSON.find((lf) => lf.id === life.id);
+					if (sequ) {
+						life['seq'] = sequ.seq;
+					}
+					});
+					lifeStructure.push({ "key": typeKey, "values": lifeGroup });
+				});
+				} else if (appGroupedData[d.id] &amp;&amp; appGroupedData[d.id].datesByType) {
+				Object.keys(appGroupedData[d.id].datesByType).forEach((typeKey) => {
+					// Get the lifeGroup array and filter out entries with an invalid dateOf
+					let lifeGroup = appGroupedData[d.id].datesByType[typeKey].filter(life => 
+					!isNaN(new Date(life.dateOf).getTime())
+					);
+					d[typeKey] = lifeGroup;
+					
+					// Sort the filtered group by dateOf
+					lifeGroup.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
+					
+					// Process each valid life entry
+					lifeGroup.forEach((life, index) => {
+					if (index &lt; lifeGroup.length - 1) {
+						life.endDate = lifeGroup[index + 1].dateOf;
+					} else {
+						const lastDate = new Date(life.dateOf);
+						lastDate.setDate(lastDate.getDate() + 10);
+						life.endDate = lastDate.toISOString().split('T')[0];
+					}
+					life.startPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.dateOf);
+					life.endPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.endDate);
+
+					validLifes2.push(life.id);
+
+					const sequ = lifecycleJSON.find((lf) => lf.id === life.id);
+					if (sequ) {
+						life['seq'] = sequ.seq;
+					}
+					});
+					lifeStructure.push({ "key": typeKey, "values": lifeGroup });
+				});
+				}
+				else { 
+					//do nothing, no match
+				}
+				d['lifecycles']=lifeStructure; 
+					let thislifeByType = d3.nest()
+						.key(function (d) { return d.type; })
+						.entries(d.allDates);
+		
+					thislifeByType = thislifeByType.filter((e) => {
+						return e.key != ''
 					})
  
-								thislifeByType.forEach((life)=>{
-								 
-									for(let i=0;i&lt;life.values.length;i++){
-									 validLifes.push(life.values[i].id)
-										let sequ = lifecycleJSON.find((lf)=>{
-											return lf.id == life.values[i].id;
-										}) ;
-										life.values[i]['seq']=sequ.seq; 
-									}
-									
-								life.values.sort((a, b) => parseFloat(a.seq) - parseFloat(b.seq));	
-
-								for(let i=0;i&lt;life.values?.length;i++){  
+					thislifeByType.forEach((life) => {
 		
-									if(typeof life.values[i+1]!= 'undefined'){
-										life.values[i]['endDate']=life.values[i+1].dateOf;
-										life.values[i]['startPos']= getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i].dateOf);
-										life.values[i]['endPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i]['endDate'])
-									}
-									else
-									{
-										life.values[i]['endDate']=life.values[i].dateOf
-										life.values[i]['startPos']= getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i].dateOf);
-										life.values[i]['endPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i]['endDate'])+5
-										
-									}
-										
-									}	
-								 });
- 							
-								d['lifecycles']=thislifeByType;
+						for (let i = 0; i &lt; life.values.length; i++) {
+							validLifes.push(life.values[i].id)
+							let sequ = lifecycleJSON.find((lf) => {
+								return lf.id == life.values[i].id;
 							});
- 
-	let thisLife=$('#lifecycleOptions').val();
-
-	let lifeType=lifeByType.filter((d)=>{
-		return d.key ==thisLife;
-	});
-	 uniqueArray = [...new Set(validLifes)];
- 
-	 let keys=[]
-	 uniqueArray.forEach((e)=>{
-			let match = lifeType[0].values.find((f)=>{
-				return f.id==e
-			})
-
-			if(match){keys.push(match)}
-	 })
- 
-	let keyInfo={"values":keys}
-	$('#key').html(keyTemplate(keyInfo));
+							life.values[i]['seq'] = sequ.seq;
+						}
+		
+						life.values.sort((a, b) => parseFloat(a.seq) - parseFloat(b.seq));
+		
+						for (let i = 0; i &lt; life.values?.length; i++) {
+		
+							if (typeof life.values[i + 1] != 'undefined') {
+								life.values[i]['endDate'] = life.values[i + 1].dateOf;
+								life.values[i]['startPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i].dateOf);
+								life.values[i]['endPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i]['endDate'])
+							}
+							else {
+								life.values[i]['endDate'] = life.values[i].dateOf
+								life.values[i]['startPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i].dateOf);
+								life.values[i]['endPos'] = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.values[i]['endDate']) + 5
+		
+							}
+		
+						}
+					}); 
 				 
-
-	let productsToShow=[];
-	workingArr.forEach((d)=>{ 
-		//console.log('dsd',d)
-	let showDates = d.lifecycles.filter((d)=>{
-		return d.key==thisLife;
-	});
-	//console.log('showDates',showDates)
-if(typeof showDates!= 'undefined'){
+					if(d.lifecycles.length==0){
+						 
+						d.lifecycles = thislifeByType;
+					}else{
+						d['lifecycles2'] = thislifeByType;
+					}
+				 
+				});
+	 
+				let thisLife = $('#lifecycleOptions').val();
  
-	 if(showDates.length &gt;0){
-		d['showDates']=showDates[0].values;	
-			if(showDates.length&gt;0){
-				productsToShow.push(d)
-			}
-		}
-		}
-	});
- 
-	
-	let svgH=(productsToShow.length*21)+30;
-	let viewArray={};
-	productsToShow=productsToShow.sort((a, b) => a.name.localeCompare(b.name))
-	viewArray['products']=productsToShow;
- 
-	viewArray['years']=yearArr;
-	$('#time-chart').attr({'height':svgH+'px'});
-	$('#time-chart').html(productTemplate(viewArray));
-	$('.fa-info-circle').on('click',function(){ 
-		if(panelOpen==1){
-			closeNav();
-		}
-		else
-		{
-			let theId=$(this).attr('easid');
-			focus=productJSON.filter((d)=>{
-				return d.id==theId
-			});
-	
-			if(productJSON==appJSON){
-				 let thisDetail=appDetailJSON.filter((d)=>{
-					 return d.id==focus[0].id;
-				 });
-				 let thisAppProcesses=[];
-				 	thisDetail[0].physP.forEach((e)=>{
-						let matchedProcess=processJSON.filter((f)=>{
-							return f.id == e;
-						});
-						thisAppProcesses.push({"id":matchedProcess[0].id,"name":matchedProcess[0].processName,"org":matchedProcess[0].org})
-				 });
-				 thisAppProcesses=thisAppProcesses.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i)
+				let lifeType = lifeByType.filter((d) => {
+					return d.key == thisLife;
+				});
+				if(validLifes2.length > 0){
+					validLifes=validLifes2
+				}
 			 
-				 let byProcess = d3.nest()
-					.key(function(d) { return d.name; })
-					.entries(thisAppProcesses);
-				 focus[0]['processes']=byProcess
-				// processJSON
-			}
-
+				uniqueArray = [...new Set(validLifes)];
+				 
+				let keys = []
+			 
+				uniqueArray.forEach((e) => {
+					let match = lifeType[0].values.find((f) => {
+						return f.id == e
+					}) 
+					if (match) { keys.push(match) }
+				}) 
+				keys = keys.sort((a, b) => (a.seq > b.seq) ? 1 : -1)
+				let keyInfo = { "values": keys } 
+				$('#key').html(keyTemplate(keyInfo)); 
+		
+				let productsToShow = [];
+				workingArr.forEach((d) => {
+					//console.log('dsd',d)
+					let showDates = d.lifecycles.filter((d) => {
+						return d.key == thisLife;
+					});
+					//console.log('showDates',showDates)
+					if (typeof showDates != 'undefined') {
+		
+						if (showDates.length &gt; 0) {
+							d['showDates'] = showDates[0].values;
+							if (showDates.length &gt; 0) {
+								productsToShow.push(d)
+							}
+						}
+					}
+				});
+		 
+				let svgH = (productsToShow.length * 21) + 30;
+				let viewArray = {};
+				productsToShow = productsToShow.sort((a, b) => a.name.localeCompare(b.name))
+				viewArray['products'] = productsToShow;
+		
+				viewArray['years'] = yearArr;
+				$('#time-chart').attr({ 'height': svgH + 'px' });
+				$('#time-chart').html(productTemplate(viewArray)); 
+				function getProcesses(appObject) {
+					const thisAppProcesses = Array.from(
+						new Set(
+							appObject.physP.map((e) => {
+								const matchedProcess = processJSON.find((f) => f.id === e);
+								return matchedProcess
+									? {
+										id: matchedProcess.processid,
+										name: matchedProcess.processName,
+										org: matchedProcess.org,
+										processCriticality: matchedProcess.processCriticality
+									}
+									: null;
+							}).filter(Boolean) // Remove null values
+						)
+					);
  
-			$('#techInfo').html(infoTemplate(focus[0]))
-			openNav();
-			
-		}
-		});	
+					const byProcess = d3.nest()
+						.key((d) => d.name)
+						.entries(thisAppProcesses)
+						.map((group) => {
+							return {
+								key: group.key,
+								criticality: Array.from(new Set(group.values.map((v) => v.processCriticality))),
+								values: group.values.map((value) => {
+									return {
+										id: value.id,
+										name: value.name,
+										org: value.org,
+										processCriticality: value.processCriticality
+									};
+								})
+							};
+						});
+
+					return byProcess;
+				}
 
 				
-}
+				$('.fa-info-circle').on('click', function () {
+					if (panelOpen === 1) {
+						closeNav();
+						return; // Exit early
+					}
+				
+					const theId = $(this).attr('easid');
+					const focus = productJSON.find((d) => d.id === theId);
+				
+					if (!focus) {
+						console.error('No matching focus found');
+						return; // Exit if no matching focus
+					}
+				
+					if (productJSON === appJSON) {
+				
+						const thisDetail = appDetailJSON.find((d) => d.id === focus.id);
+						if (thisDetail) {
+							focus.processes = getProcesses(thisDetail);
+						}
+					}else{
+						// add process information
+						focus.applications.forEach((a)=>{ 
+							let match = appDetailJSON.find((e) => e.id === a.id);
+							a['processes'] = getProcesses(match); 
+						})
+
+					}
+				 
+					$('#techInfo').html(infoTemplate(focus));
+ 
+					$(document).on('click', '.expand-btn', function () {
+						const $this = $(this);
+						const appId = $this.data('app-id');
+						const $processesSection = $(`#processes-${appId}`);
+						
+						if ($processesSection.is(':visible')) {
+							$processesSection.hide();
+							$this
+								.removeClass('fa-caret-up')
+								.addClass('fa-caret-down')
+								.html('<xsl:text> </xsl:text><span style="font-family:arial">Show</span>');
+						} else {
+							$processesSection.show();
+							$this
+								.removeClass('fa-caret-down')
+								.addClass('fa-caret-up')
+								.html('<xsl:text> </xsl:text><span style="font-family:arial">Hide</span>');
+						}
+					});
+					
+
+					createForceChart("#impact-container", focus);
+					openNav();
+				});
+				
+		
+		
+			}
+		
+		
+		});
+// Function to generate the force chart
+function createForceChart(container, data) {
+    // Clear the container if it already contains an SVG
+    d3.select(container).selectAll("svg").remove();
+
+    var nodes = [{ id: data.id, name: data.name, group: "center" }];
+    const links = [];
+
+    // Process the data to create nodes and links
+	if(data.applications){
+		data.applications?.forEach(app => {
+			nodes.push({ id: app.id, name: app.name, group: "application" });
+			links.push({ source: data.id, target: app.id });
+
+			app.processes.forEach(proc => { 
+				proc.values.forEach(val => {
+					nodes.push({ id: val.id, name: val.name, group: "process", org: val.org, criticality:proc.criticality });
+					links.push({ source: app.id, target: val.id });
+				});
+			});
+		});
+	}else{
+		data.processes?.forEach(proc => { 
+			nodes.push({ id: proc.key, name: proc.key, group: "process", org: proc.values, criticality:proc.criticality });
+			links.push({ source: data.id, target: proc.key });
+		});
+	 
+	}
+
+
+// Consolidate nodes with the same name and group
+ 
+const consolidatedNodes = [];
+const nodeMap = new Map();
+
+nodes.forEach(node => { 
+    const key = `${node.name}-${node.group}`; // Unique key based on name and group
+
+    if (nodeMap.has(key)) {
+        // If the node already exists, consolidate the orgs
+        const existingNode = nodeMap.get(key);
+        existingNode.org = Array.from(new Set([...(existingNode.org || []),  { name: node.org, criticality: node.criticality }
+		])); // Merge orgs and ensure uniqueness
+    } else {
+        // Add new node to the map
+        node.org = node.org ? [{ name: node.org, criticality: node.criticality }] : []; // Convert org to an array
+        nodeMap.set(key, node);
+    }
+});
+
+const validNodeIds = new Set(nodes.map(node => node.id));
+  
+nodes = Array.from(nodeMap.values());  
+
+// Convert the map back to an array nodes = Array.from(nodeMap.values()); 
+
+
+    const width = 960;
+    const height =  window.innerHeight - 60;;
+
+    const svg = d3.select(container)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+	svg.call(d3.zoom().on("zoom", zoomed)); // Apply zoom to the SVG element
+
+	const g = svg.append("g"); 
+
+	function zoomed() {
+		g.attr("transform", `translate(${d3.event.transform.x},${d3.event.transform.y}) scale(${d3.event.transform.k})`);
+	}
+
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(50))
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    const link = g.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("stroke", "#999")
+        .style("stroke-opacity", 0.6);
+  
+    const node = g.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+		.attr("easid", d => {return d.id})
+        .attr("r", 15)
+        .attr("fill", d => d.group === "center" ? "red" : (d.group === "application" ? "#579fcfAA" : "#d4ac0dAA"))
+		.attr("stroke", d => {
+			// Check if any process contains "High" in criticality
+			return d.criticality &amp;&amp; d.criticality.some(process => process.includes("High")) 
+				? "red" 
+				: "none";
+		})
+		.attr("stroke-width", d => {
+			// Same check for stroke width
+			return d.criticality &amp;&amp; d.criticality.some(process => process.includes("High")) 
+				? 2 
+				: 0;
+		})
+		.on("mouseover", function (event, d) {
+			// Grey out other nodes
+			d3.selectAll("circle")
+				.style("opacity", 0.2); // Make all circles less visible
+			d3.select(this)
+				.style("opacity", 1); // Highlight the hovered circle
+
+			d3.selectAll("text")
+				.style("opacity", 0.2) // Grey out all text;
+			let easid=d3.select(this).attr('easid') 
+			d3.select('[easidLabel="' + easid + '"]')
+				.style("opacity", 1);
+		})
+		.on("mouseout", function () {
+			 
+			d3.selectAll("circle")
+				.style("opacity", 1);
+			d3.selectAll("text")
+				.style("opacity", 1);
+
+			const highCriticality = d3.select('#filterHighCriticality').property("checked");
+			highCriticalityNodes(highCriticality);
+			 
+		})
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    const labels = g.append("g")
+        .attr("class", "labels")
+        .selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+		.attr("easidLabel", d => {return d.id})
+        .attr("dy", -5)
+        .text(d => d.name);
+
+    simulation
+        .on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+				.each(function() { d3.select(this).raise(); });;
+
+            labels
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        });
 
 	
-});
+		function highCriticalityNodes(highlightHighCriticality){
+			node.style("opacity", d => {
+				if (d.group === "process") {
+					// Highlight high-criticality process nodes or fade others
+					return highlightHighCriticality &amp;&amp; (!d.criticality || !d.criticality.some(c => c.includes("High")))
+						? 0.2 // Fade non-high-criticality process nodes
+						: 1; // Highlight others
+				}
+				return 1; // Keep non-process nodes at full opacity
+			});
+		
+			// Adjust labels similarly if desired
+			labels.style("opacity", d => {
+				if (d.group === "process") {
+					return highlightHighCriticality &amp;&amp; (!d.criticality || !d.criticality.some(c => c.includes("High")))
+						? 0.2
+						: 1;
+				}
+				return 1;
+			});
+		
+			// Adjust links opacity
+			link.style("opacity", d => {
+				// Check if the source and target nodes are visible
+				const sourceVisible = highlightHighCriticality
+					? d.source.group !== "process" || (d.source.criticality &amp;&amp; d.source.criticality.some(c => c.includes("High")))
+					: true;
+				const targetVisible = highlightHighCriticality
+					? d.target.group !== "process" || (d.target.criticality &amp;&amp; d.target.criticality.some(c => c.includes("High")))
+					: true;
+				return sourceVisible &amp;&amp; targetVisible ? 1 : 0.2; // Fade links connected to faded nodes
+			});
+		}
+		d3.select("#filterHighCriticality").on("change", function () {
+			const highCriticality = d3.select(this).property("checked");
+			highCriticalityNodes(highCriticality)
+			// Highlight or fade nodes based on criticality
+			
+		});
+		
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+		
 </xsl:template>
 
 	<xsl:template name="GetViewerAPIPath">

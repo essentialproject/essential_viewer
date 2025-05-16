@@ -31,16 +31,25 @@
 	 
 	<xsl:template match="knowledge_base">
 		{"application_capabilities_services":[<xsl:apply-templates select="$appCaps" mode="appCaps"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>],
-		"version":"615"}
+		"version":"620"}
 	</xsl:template>
 
 <xsl:template match="node()" mode="appCaps">
 <xsl:variable name="supportedServices" select="key('appServices_key',current()/name)"/><!--<xsl:variable name="supportedServices" select="$appServices[own_slot_value[slot_reference='realises_application_capabilities']/value=current()/name]"/>-->
 	{
 	"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+   	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"services":[<xsl:for-each select="$supportedServices">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+			'sequence_number': string(translate(translate(current()/own_slot_value[slot_reference = 'sequence_number']/value, '}', ')'), '{', ')'))
+			}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 		<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:template>	

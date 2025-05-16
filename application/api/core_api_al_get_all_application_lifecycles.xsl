@@ -24,14 +24,14 @@
 		* 
 	-->
 	<!-- 03.09.2019 JP  Created	 -->
-	<xsl:key name="lifecyclesKey" match="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status')]" use="type"/>
-    <xsl:variable name="lifecycles" select="key('lifecyclesKey',('Vendor_Lifecycle_Status','Lifecycle_Status'))"/>
+	<xsl:key name="lifecyclesKey" match="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Disposition_Lifecycle_Status','Lifecycle_Status')]" use="type"/>
+    <xsl:variable name="lifecycles" select="key('lifecyclesKey',('Vendor_Lifecycle_Status','Lifecycle_Status','Disposition_Lifecycle_Status'))"/>
     <xsl:key name="productsKey" match="/node()/simple_instance[type=('Technology_Product')]" use="type"/>
     <xsl:variable name="products" select="key('productsKey','Technology_Product')"/>
 	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	<xsl:variable name="allproducts" select="$products union $apps"/>
-     <xsl:key name="productLifecyclesKey" match="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model')]" use="own_slot_value[slot_reference='lifecycle_model_subject']/value"/>
-    <xsl:key name="lifecycleStatusUsagesKey" match="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage')]" use="own_slot_value[slot_reference='used_in_lifecycle_model']/value"/>
+     <xsl:key name="productLifecyclesKey" match="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model','Disposition_Lifecycle_Model')]" use="own_slot_value[slot_reference='lifecycle_model_subject']/value"/>
+    <xsl:key name="lifecycleStatusUsagesKey" match="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage','Disposition_Lifecycle_Status_Usage')]" use="own_slot_value[slot_reference='used_in_lifecycle_model']/value"/>
     <xsl:key name="allSupplier" match="/node()/simple_instance[type = 'Supplier']" use="name"/>   
      <xsl:key name="allTechstdsKey" match="node()/simple_instance[type='Technology_Provider_Standard_Specification']" use="own_slot_value[slot_reference='tps_standard_tech_provider_role']/value"/> 
     <xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>
@@ -49,7 +49,9 @@
     <xsl:key name="appDeploymentKey" match="/node()/simple_instance[type = 'Application_Deployment']" use="own_slot_value[slot_reference='application_deployment_technical_arch']/value"/>
 	<xsl:key name="appDeployedKey" match="$apps" use="own_slot_value[slot_reference='deployments_of_application_provider']/value"/>
  
-   
+	<xsl:key name="lifecycles" match="/node()/simple_instance[supertype=('Lifecycle_Status') or type='Lifecycle_Status']" use="name"/>
+    <xsl:key name="alllifecycleModels" match="/node()/simple_instance[contains(type, 'Lifecycle_Model')]" use="name"/>   
+	<xsl:key name="alllifecycleModelUsages" match="/node()/simple_instance[contains(type, 'Lifecycle_Status_Usage')]" use="name"/>   
     
     <xsl:variable name="stdValue" select="/node()/simple_instance[type = 'Standard_Strength']"/>
      <!--  tech for app  -->
@@ -60,6 +62,7 @@
         {
 		 	"application_lifecycles": [<xsl:apply-templates select="$apps" mode="getApplicationProducts"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/>
 		</xsl:apply-templates>],
+        "all_lifecycles": [<xsl:apply-templates select="key('alllifecycleModels', $apps/own_slot_value[slot_reference='lifecycle_model_for_element']/value)" mode="alllifecycles"/>],
 			"lifecycleJSON":[<xsl:apply-templates select="$lifecycles" mode="Lifecycles"><xsl:sort order="ascending" select="own_slot_value[slot_reference='enumeration_sequence_number']/value"/></xsl:apply-templates>]
 	 	}	
 	</xsl:template>
@@ -118,5 +121,26 @@
         <xsl:with-param name="isForJSONAPI" select="true()"/>
 	</xsl:call-template>","type":"<xsl:value-of select="current()/type"/>","seq":<xsl:choose><xsl:when test="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"><xsl:value-of select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value"/></xsl:when><xsl:otherwise><xsl:value-of select="position()"/></xsl:otherwise></xsl:choose>,
 	"backgroundColour":"<xsl:value-of select="$thisStyle[1]/own_slot_value[slot_reference='element_style_colour']/value"/>","colour":"<xsl:value-of select="$thisStyle[1]/own_slot_value[slot_reference='element_style_text_colour']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:template>
+
+<xsl:template match="node()" mode="alllifecycles">
+	<xsl:variable name="usages" select="key('alllifecycleModelUsages', current()/own_slot_value[slot_reference='contained_lifecycle_model_elements']/value)"/>
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"productId":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference = 'lifecycle_model_subject']/value)"/>",		
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+	}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, "type":"<xsl:value-of select="current()/type"/>",
+	"dates":[<xsl:for-each select="$usages">
+		<xsl:variable name="thisLifecycle" select="key('lifecycles', current()/own_slot_value[slot_reference='lcm_lifecycle_status']/value)"/>
+		{"id":"<xsl:value-of select="eas:getSafeJSString($thisLifecycle/name)"/>",
+		"name":"<xsl:value-of select="$thisLifecycle/own_slot_value[slot_reference='name']/value"/>",
+		"dateOf":"<xsl:value-of select="current()/own_slot_value[slot_reference='lcm_status_start_date_iso_8601']/value"/>",
+		"thisid":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"seq":"<xsl:value-of select="$thisLifecycle/own_slot_value[slot_reference='enumeration_sequence_number']/value"/>",
+		"type":"<xsl:value-of select="$thisLifecycle/type"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+	</xsl:for-each>]
+	} <xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 </xsl:stylesheet>

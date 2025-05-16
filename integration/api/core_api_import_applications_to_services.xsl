@@ -7,7 +7,8 @@
 	<xsl:variable name="applications" select="/node()/simple_instance[type=('Application_Provider','Composite_Application_Provider')]"/> 
 	<xsl:variable name="applicationServices" select="/node()/simple_instance[type='Application_Service']"/>
 	<xsl:variable name="aprs" select="/node()/simple_instance[type='Application_Provider_Role']"/>
- 
+	<xsl:key name="apr_key" match="/node()/simple_instance[type=('Application_Provider_Role')]" use="own_slot_value[slot_reference = 'role_for_application_provider']/value"/>
+	<xsl:key name="service_key" match="/node()/simple_instance[type=('Application_Service')]" use="own_slot_value[slot_reference = 'provided_by_application_provider_roles']/value"/>
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -35,11 +36,20 @@
 	</xsl:template>
 
 <xsl:template match="node()" mode="appsvc">
-		<xsl:variable name="thisaprs" select="$aprs[name=current()/own_slot_value[slot_reference='provides_application_services']/value]"/>
-		<xsl:variable name="thisservices" select="$applicationServices[name=$thisaprs/own_slot_value[slot_reference='implementing_application_service']/value]"/>
-		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",
+	<xsl:variable name="thisaprs" select="key('apr_key',current()/name)"/>
+	<xsl:variable name="thisservices" select="key('service_key',$thisaprs/name)"/>
+	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+		}"/>
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 		"services":[<xsl:for-each select="$thisservices"><xsl:variable name="theapr" select="$thisaprs[own_slot_value[slot_reference='implementing_application_service']/value=current()/name]"/>{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>","apr":"<xsl:value-of select="eas:getSafeJSString($theapr/name)"/>",
-		"name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isForJSONAPI" select="true()"/></xsl:call-template>",<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+		<xsl:variable name="combinedMap" as="map(*)" select="map{
+			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+			}"/>
+		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+	   <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 		}<xsl:if test="position()!=last()">,</xsl:if></xsl:template>
 </xsl:stylesheet>
+ 

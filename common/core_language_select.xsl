@@ -63,7 +63,6 @@
 								</h1>
 							</div>
 							<form action="essentialLanguage" method="POST" name="languageForm">
-								<!--	<xsl:variable name="encodedURL" select="translate($theURLFullPath, '&amp;', '%26')" />-->
 								<input type="hidden" name="currentPage" value="{$aSafeCurrentPageLink}"/>
 								<label for="language">
 									<strong><xsl:value-of select="eas:i18n('Choose your language')"/>: </strong>

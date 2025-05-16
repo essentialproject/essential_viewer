@@ -762,7 +762,7 @@
 		<xsl:param name="theCatalogue"/>
 		<xsl:param name="theXML">reportXML.xml</xsl:param>
 		<xsl:param name="userParams"/>
-		<xsl:param name="viewScopeTerms"/>
+		<xsl:param name="viewScopeTerms" select="()"/>
 		<xsl:param name="targetMenu"/>
 		<xsl:param name="targetReport"/>
 		<xsl:param name="displayString"/>

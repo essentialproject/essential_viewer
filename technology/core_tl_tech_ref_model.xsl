@@ -30,39 +30,18 @@
 	<xsl:variable name="rightRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Right']"/>
 	<xsl:variable name="middleRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Middle']"/>
 	<xsl:variable name="bottomRefLayer" select="$refLayers[own_slot_value[slot_reference = 'name']/value = 'Bottom']"/>
-
-	
+	<xsl:variable name="stdStrength" select="/node()/simple_instance[type = 'Standard_Strength']"/>
 	<xsl:variable name="allTechCaps" select="/node()/simple_instance[type = 'Technology_Capability']"/>
 	<xsl:variable name="allTechComps" select="/node()/simple_instance[type = 'Technology_Component']"/>
-	<xsl:variable name="allTechProdRoles" select="/node()/simple_instance[own_slot_value[slot_reference = 'implementing_technology_component']/value = $allTechComps/name]"/>
-	<xsl:variable name="allTechProds" select="/node()/simple_instance[name = $allTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
-	
-	<xsl:variable name="allTechProdStandards" select="/node()/simple_instance[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $allTechProdRoles/name]"/>
-	<xsl:variable name="allStandardStrengths" select="/node()/simple_instance[name = $allTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
-	<xsl:variable name="allStandardStyles" select="/node()/simple_instance[name = $allStandardStrengths/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-	
-	<xsl:variable name="offStrategyStyle">backColourRed</xsl:variable>
-	<xsl:variable name="noStrategyStyle">bg-darkblue-20</xsl:variable>
-	
+
 	<xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>
-	
-	<!--<xsl:variable name="techProdDeliveryTaxonomy" select="/node()/simple_instance[(type='Taxonomy') and (own_slot_value[slot_reference = 'name']/value = 'Technology Product Delivery Types')]"/>-->
-	<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[name = $allTechProds/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
-	
-	<xsl:variable name="techOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Technology Organisation User')]"/>
-	<xsl:variable name="techOrgUser2Roles" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $techOrgUserRole/name]"/>
-	
-	<xsl:variable name="allBusinessUnits" select="/node()/simple_instance[name = $techOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-	<xsl:variable name="allBusinessUnitOffices" select="/node()/simple_instance[name = $allBusinessUnits/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-	<xsl:variable name="allBusinessUnitOfficeGeoRegions" select="/node()/simple_instance[name = $allBusinessUnitOffices/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
-	<xsl:variable name="allBusinessUnitOfficeLocations" select="$allBusinessUnitOfficeGeoRegions[type='Geographic_Location']"/>
-	<xsl:variable name="allBusinessUnitLocationCountries" select="/node()/simple_instance[own_slot_value[slot_reference = 'gr_locations']/value = $allBusinessUnitOfficeLocations/name]"/>
-	<xsl:variable name="allBusinessUnitOfficeCountries" select="$allBusinessUnitOfficeGeoRegions[type='Geographic_Region']"/>
-	<xsl:variable name="allBusinessUnitCountries" select="$allBusinessUnitLocationCountries union $allBusinessUnitOfficeCountries"/>
-	
-	
+	<xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type='Technology_Delivery_Model']"/>
 	<xsl:variable name="allTechDomains" select="/node()/simple_instance[type = 'Technology_Domain']"/>
 	
+	<xsl:variable name="anAPIReportGetBusinessUnits" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core View API: TRM Get Technology Business Units']"/>
+	<xsl:variable name="anAPIReportGetAllTechProds" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core View API: TRM Get All Tech Product Details']"/>
+	<xsl:variable name="anAPIReportGetAllTechProdRoles" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core View API: TRM Get All Tech Product Roles']"/>
+	 
 	
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -88,7 +67,23 @@
 	<!-- 29.06.2010	JWC	Fixed details links to support " ' " characters in names -->
 	<!-- 01.05.2011 NJW Updated to support Essential Viewer version 3-->
 	<!-- 05.01.2016 NJW Updated to support Essential Viewer version 5-->
-
+ <xsl:variable name="apiPathGetBusinessUnits">
+	<xsl:call-template name="GetViewerAPIPath">
+		<xsl:with-param name="apiReport" select="$anAPIReportGetBusinessUnits"/>
+	</xsl:call-template>
+</xsl:variable>
+<xsl:variable name="apiPathGetAllTechProds">
+	<xsl:call-template name="GetViewerAPIPath">
+		<xsl:with-param name="apiReport" select="$anAPIReportGetAllTechProds"/>
+	</xsl:call-template>
+</xsl:variable>	
+<xsl:variable name="apiPathGetAllTechProdRoles">
+	<xsl:call-template name="GetViewerAPIPath">
+		<xsl:with-param name="apiReport" select="$anAPIReportGetAllTechProdRoles"/>
+	</xsl:call-template>
+</xsl:variable>		
+	
+	
 
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
@@ -102,9 +97,76 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title><xsl:value-of select="eas:i18n('Technology Reference Model')"/></title>
-				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js?release=6.19"/>				
+				<title>Technology Reference Model</title>
+				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js"/>
+				<script type="text/javascript" src="js/handlebars-v4.1.2.js"/>
+				<style>
+					.dashboardPanel{
+						padding: 10px;
+						border: 1px solid #aaa;
+						box-shadow: 2px 2px 4px #ccc;
+						margin-bottom: 30px;
+						float: left;
+						width: 100%;
+						
+					}
+					
+					.popover{
+						max-width: 800px;
+					}
+					
+					.tech-domain-drill,.tech-domain-up {
+					    font-size:0.95em;
+					    position: relative;
+					    top: 1px;
+					    
+					}
+					
+					.tech-domain-drill{
+						opacity: 0.35;
+					
+					}
+					.tech-domain-up {
+						opacity: 0.75;
+					}
+					
+					.tech-domain-drill:hover {
+						cursor: pointer;
+					}
+					
+					.tech-domain-up:hover {
+						cursor: pointer;
+					}
+					
+					.hidden-ref-model {
+					    opacity: 0;
+					    transform: scale(0.98);
+					    transform-origin: center center;
+					}
+					
+					#techRefModelPanel {
+					    transition: all 100ms ease-in;
+					}
+
+					.blob-standard{
+						position:absolute;
+						left:4px;
+						bottom:0px;
+
+					}
+
+					.stdlabel{
+						border-radius:5px;
+						border:1pt solid #d3d3d3;
+						padding:2px;
+						padding-left:4px;
+						padding-right:4px
+
+					}
+				
+
+				</style>
 
 				<xsl:call-template name="refModelLegendInclude"/>
 				
@@ -119,7 +181,43 @@
 					var currentMode = trmMode;
 					
 					var scaleOptions = {};
+
+					var stdStrength=[<xsl:apply-templates select="$stdStrength" mode="stdStrength"/>];
+					console.log('stdStrength',stdStrength)
+				 
+					function generateCSS(arr) {
+						let cssString = `.status-container {
+						padding: 8px;
+						border-radius: 4px;
+						color: #fff; /* Default white color for text */
+						font-weight: bold;
+					}\n\n`;
 					
+						arr.forEach(item => {
+							// Convert status to kebab-case for the class name
+							const className = item.cls
+							cssString += `.${className} {\n`;
+							if (item.statusColour) cssString += `    color: ${item.statusColour};\n`;
+							if (item.statusBgColour) cssString += `    background-color: ${item.statusBgColour};\n`;
+							cssString += `}\n\n`;
+						});
+					
+						return cssString;
+					}
+					
+					function addCSSStylesToDOM(cssString) {
+						const styleEl = document.createElement('style');
+						styleEl.textContent = cssString;
+						document.head.appendChild(styleEl);
+					}
+
+					const cssStyles = generateCSS(stdStrength);
+					console.log(cssStyles);
+					
+					// Add the generated CSS to the DOM
+					addCSSStylesToDOM(cssStyles);
+					
+		 
 					// the list of JSON objects representing the delivery models for technology products
 				  	var techDeliveryModels = [<xsl:apply-templates select="$allTechProdDeliveryTypes" mode="RenderEnumerationJSONList"/>];
 					
@@ -127,13 +225,14 @@
 				  	var lifecycleStatii = [
 						<xsl:apply-templates select="$allLifecycleStatii" mode="getSimpleJSONList"/>					
 					];
+
 					
 					// the list of JSON objects representing the business units pf the enterprise
-				  	var businessUnits = {
+	<!--			  	var businessUnits = {
 							businessUnits: [<xsl:apply-templates select="$allBusinessUnits" mode="getBusinessUnits"/>
 				    	]
 				  	};
-				  	
+	-->			  	
 				  	// the list of JSON objects representing the technology domains in use across the enterprise
 				  	var techDomains = {
 						techDomains: [     <xsl:apply-templates select="$allTechDomains" mode="RenderTechDomains"/>
@@ -152,46 +251,7 @@
 				    	]
 				  	};
 				  	
-				  	// the list of JSON objects representing the technology products in use across the enterprise
-				  	var techProducts = {
-						techProducts: [<xsl:apply-templates select="$allTechProds" mode="getTechProducts"/>
-				    	]
-				  	};
-				  	
-				  	// the list of JSON objects representing the technology product roles in use across the enterprise
-				  	var techProdRoles = {
-						techProdRoles: [<xsl:apply-templates select="$allTechProdRoles" mode="RenderTechProdRoleJSON"/>
-				    	]
-				  	};
-
-					var tpr = techProdRoles.techProdRoles; 
-				 
-                    for(var i=0; i &lt; techComponents.techComponents.length;i++) {
-					var techprodslist=[];
-			 
-                       for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
-                         
-                            var thistpr = tpr.filter(function(d){
-							if(techComponents.techComponents[i].techProdRoles[j] === d.id){ 
-								techprodslist.push(d.techProdid);
-							}
-                
-                        })
-                    }
-					let unique = [...new Set(techprodslist)];   
-	 
-                    techComponents.techComponents[i]['techProds']=unique;
-                    
-                     <!--   d.techProdRoles.forEach(function(e){
-                            var thisTP = techProdRoles.filter(function(f){
-                              if(e === f.id){return f.techProdid;}
-                            })
-                    console.log('thisTP'); console.log(thisTP);
-                        })
-                    -->
-                    };
-				 
-                 
+          
 					// the JSON objects for the Technology Reference Model (TRM)
 				  	var trmData = {
 				  		top: [
@@ -238,7 +298,8 @@
 						var topLayer = '<xsl:value-of select="$topRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
 						var topLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == topLayer});
 						trmData.top = topLayerDomains;
-					
+						console.log('topLayer',topLayer)
+						console.log('topLayerDomains',topLayerDomains)
 						var leftLayer = '<xsl:value-of select="$leftRefLayer/own_slot_value[slot_reference = 'name']/value"/>';
 						var leftLayerDomains = techDomains.techDomains.filter(function(aTD) {return aTD.refLayer == leftLayer});
 						trmData.left = leftLayerDomains;
@@ -351,19 +412,38 @@
 						aTechDomain.childTechCaps.forEach( function(aTechCap) {
 							 techCapProdCount = 0;
 							 aTechCap.techComponents.forEach( function(aTechComp) {
-								techCompProdIDList = aTechComp.techProds;										
+								techCompProdIDList = aTechComp.techProds;	
+							 										
 								var relevantTechProdIds = getArrayIntersect([techCompProdIDList, selectedTechProdIDs]);
 								var relevantTechProds = getObjectsByIds(selectedTechProds, "id", relevantTechProdIds);
 								thisTechProdCount = relevantTechProds.length;
-								aTechComp['inScopeTechProds'] = relevantTechProds;							
+								aTechComp['inScopeTechProds'] = relevantTechProds;	
+							 						
 								aTechComp['techProdCount'] = thisTechProdCount;
 								techCapProdCount = techCapProdCount + thisTechProdCount;
 								techDomainProdCount = techDomainProdCount + thisTechProdCount;
+
+								let thisTPRs=techProdRoles.techProdRoles.filter((e)=>{
+								return e.techCompid == aTechComp.id
+								});
+								aTechComp.inScopeTechProds.forEach((p)=>{
+									let thisProd = thisTPRs.find((pr)=>{
+										return pr.techProdid == p.id
+									})
+									if(thisProd.standard){
+									p['standards']=thisProd.standard
+									} 
+								})
+
+						
 							});
 							aTechCap.techComponents.sort(function(a, b){return b.techProdCount - a.techProdCount});
 							aTechCap['techProdCount'] = techCapProdCount;
+							
+						
+						 
 						});
-						aTechDomain['techProdCount'] = techDomainProdCount;		
+						aTechDomain['techProdCount'] = techDomainProdCount;		 
 					}
 					
 					//function to set the current overlay
@@ -373,6 +453,7 @@
 						} else {
 							refreshTechDomainOverlay();
 						}
+						
 					}
 					
 					
@@ -491,6 +572,7 @@
 								$(this).attr("class", 'tech-prod techRefModel-blob bg-lightblue-80');
 							});
 						}
+						
 					}
 					
 					<!--//function to scope the relevant elements in acordance with the current roadmap period
@@ -508,7 +590,7 @@
 					
 					//function to draw the full TRM
 					function drawTRM() {
-					
+					console.log('trmData',trmData)
 						$("#techRefModelContainer").html(trmTemplate(trmData)).promise().done(function(){
 					        $('.tech-domain-drill').click(function(){
 								var techDomainId = $(this).attr('eas-id');
@@ -531,6 +613,8 @@
 							});
 							$('.matchHeight2').matchHeight();
 				 			$('.matchHeightTRM').matchHeight();
+
+							
 				 			
 				 			//Update the TRM Model overlays
 							refreshTechCapabilityOverlay();
@@ -542,7 +626,9 @@
 					//function to draw the Technology Domain drill down view
 					function drawTechDomainModel() {
 						if(currentTechDomain != null) {
+							console.log('currentTechDomain', currentTechDomain)
 							setTechDomainProducts(currentTechDomain);
+
 							$("#techRefModelContainer").html(techDomainTemplate(currentTechDomain)).promise().done(function(){
 						        $('.tech-domain-up').click(function(){
 									//currentTechDomain = null;
@@ -560,7 +646,10 @@
 				 				$('.matchHeightTRM').matchHeight();
 								//Update the Tech Domain Model overlays
 								refreshTechDomainOverlay();
+								
 								enableInfoPopups();
+								
+
 						    });	
 						}
 					}
@@ -593,9 +682,57 @@
 								return $(this).next().html();
 							}
 						});
+
+						$('.fa-bookmark').click(function() {
+							$('[role="tooltip"]').remove();
+							return false;
+						});
+						$('.fa-bookmark').popover({
+							container: 'body',
+							html: true,
+							trigger: 'click',
+							content: function(){
+								return $(this).next().html();
+							}
+						});
 					}
 					
 					$(document).ready(function(){	
+				
+			    Promise.all([
+                promise_loadViewerAPIData(viewAPIDataGetBusinessUnits),
+                promise_loadViewerAPIData(viewAPIDataGetAllTechProds),
+				promise_loadViewerAPIData(viewAPIDataGetAllTechProdRoles)	
+					
+            	]).then(function(responses) {
+			            businessUnits = responses[0];                  
+					
+					techProducts = responses[1];  		 
+					 
+					techProdRoles = responses[2];  
+					
+					var tpr = techProdRoles.techProdRoles; 
+                    for(var i=0; i &lt; techComponents.techComponents.length;i++) {
+                    var techprodslist=[];
+                       for(var j=0; j &lt;techComponents.techComponents[i].techProdRoles.length;j++) {
+                         
+                            var thistpr = tpr.filter(function(d){
+                            if(techComponents.techComponents[i].techProdRoles[j] === d.id){  techprodslist.push(d.techProdid);}
+                
+                        })
+                    }
+                    let unique = [...new Set(techprodslist)];      
+					
+                    techComponents.techComponents[i]['techProds']=unique;
+                    
+                     <!--   d.techProdRoles.forEach(function(e){
+                            var thisTP = techProdRoles.filter(function(f){
+                              if(e === f.id){return f.techProdid;}
+                            })
+                    console.log('thisTP'); console.log(thisTP);
+                        })
+                    -->
+                    };
 					
 						<!--$('h2').click(function(){
 							$(this).next().slideToggle();
@@ -616,6 +753,7 @@
 						
 						//INITIALISE THE PAGE WIDE SCOPING VARIABLES					
 						allBusUnitIDs = getObjectIds(businessUnits.businessUnits, 'id');
+				 
 						selectedBusUnitIDs = [];
 						selectedBusUnits = [];
 						setTRMCurrentTechProds();
@@ -667,60 +805,17 @@
 						
 						var techDomainFragment = $("#tech-domain-template").html();
 						techDomainTemplate = Handlebars.compile(techDomainFragment);
+
+						Handlebars.registerHelper('getCls', function(arg1) {
+							return arg1.split(' ').join('-');
+						}); 
+						
 						
 						drawDashboard();
 					});
-								  	
+							   });	  	
 				</script>
-				<style>
-					.dashboardPanel{
-						padding: 10px;
-						border: 1px solid #aaa;
-						box-shadow: 2px 2px 4px #ccc;
-						margin-bottom: 30px;
-						float: left;
-						width: 100%;
-						
-					}
-					
-					.popover{
-						max-width: 800px;
-					}
-					
-					.tech-domain-drill,.tech-domain-up {
-					    font-size:0.95em;
-					    position: relative;
-					    top: 1px;
-					    
-					}
-					
-					.tech-domain-drill{
-						opacity: 0.35;
-					
-					}
-					.tech-domain-up {
-						opacity: 0.75;
-					}
-					
-					.tech-domain-drill:hover {
-						cursor: pointer;
-					}
-					
-					.tech-domain-up:hover {
-						cursor: pointer;
-					}
-					
-					.hidden-ref-model {
-					    opacity: 0;
-					    transform: scale(0.98);
-					    transform-origin: center center;
-					}
-					
-					#techRefModelPanel {
-					    transition: all 100ms ease-in;
-					}
-
-				</style>
+			
 				
 				<xsl:call-template name="refModelStyles"/>
 				
@@ -740,6 +835,7 @@
 								</h1>
 							</div>
 						</div>
+						<xsl:call-template name="RenderDataSetAPIWarning"/>
 						<xsl:call-template name="RenderDashboardBusUnitFilter"/>
 						<xsl:call-template name="techSection"/>
 						
@@ -748,7 +844,30 @@
 						<!--Setup Closing Tags-->
 					</div>
 				</div>
+<script type="text/javascript">
+<xsl:call-template name="RenderViewerAPIJSFunction">
+<xsl:with-param name="viewerAPIPathGetBusinessUnits" select="$apiPathGetBusinessUnits"/>
+<xsl:with-param name="viewerAPIPathGetAllTechProds" select="$apiPathGetAllTechProds"/>
+<xsl:with-param name="viewerAPIPathGetAllTechProdRoles" select="$apiPathGetAllTechProdRoles"/>	
+	
+	<!--	
+	<xsl:with-param name="viewerAPIPath" select="$apiPath"/>
+	<xsl:with-param name="viewerAPIPathAPM" select="$apiPathAPM"/>
+	<xsl:with-param name="viewerAPIPathTRM" select="$apiPathTRM"/>
+	<xsl:with-param name="viewerAPIPathAppStakeholders" select="$apiPathAppStakeholders"/>
+	<xsl:with-param name="viewerAPIPathTechStakeholders" select="$apiPathTechStakeholders"/>
+	<xsl:with-param name="viewerAPIPathAllApps" select="$apiPathAllApps"/>
+	<xsl:with-param name="viewerAPIPathAllTechProds" select="$apiPathAllTechProds"/>
+	<xsl:with-param name="viewerAPIPathAllAppCaps" select="$apiPathAllAppCaps"/>
+	<xsl:with-param name="viewerAPIPathAllTechCaps" select="$apiPathAllTechCaps"/>
+	<xsl:with-param name="viewerAPIPathAllAppProvider" select="$apiPathAllAppProvider"/>
 
+	<xsl:with-param name="viewerAPIPathGetAllTPRs" select="$apiPathGetAllTPRs"/>
+	<xsl:with-param name="viewerAPIPathGetAllBusCapDetail" select="$apiPathGetGetAllBusCapDetail"/>
+	-->
+</xsl:call-template>
+</script>	
+                     
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"/>
 				<script>
@@ -799,6 +918,45 @@
 																						</div>
 																					</div>
 																				{{/if}}
+																				{{#if this.standards}}
+																					<div class="blob-standard"> 
+																						<i class="fa fa-bookmark text-white" data-original-title="" title=""></i>
+																						<div class="hiddenDiv" id="xyz789">
+																						<table class="table table-striped table-small">
+																						<thead><tr>
+																						<th>Status</th>
+																						<th>Geography</th>
+																						<th>Organisations</th>
+																						</tr></thead>
+																						<tbody>
+																						{{#each this.standards}}
+																						<tr><td>
+																						<div><xsl:attribute name="class">stdlabel {{#getCls this.status}}{{/getCls}}</xsl:attribute>{{this.status}}</div>
+																						</td>
+																						<td>{{#if this.scopeGeo}}
+																							{{#each this.scopeGeo}}
+																							<i class="fa fa-caret"></i> {{this.name}}<br/>
+																							{{/each}}
+																							{{else}}
+																								All
+																							{{/if}}
+																						</td>
+																						<td>
+																							{{#if this.scopeOrg}}
+																							{{#each this.scopeOrg}}
+																								<i class="fa fa-caret"></i> {{this.name}}<br/>
+																							{{/each}} 
+																							{{else}}
+																								All
+																							{{/if}}
+																						</td>
+																						</tr>
+																						{{/each}}	
+																						</tbody> 
+																						</table>
+																						</div>
+																					</div>
+																				{{/if}}
 																			</div>
 																		{{/inScopeTechProds}}
 																		<div class="clearfix"></div>
@@ -819,8 +977,6 @@
 			</body>
 		</html>
 	</xsl:template>
-
-
 
 	<xsl:template name="techSection">
 		<!--Top-->
@@ -1091,9 +1247,9 @@
 					</div>
 					<div class="col-xs-6">
 						<div class="pull-right">
-							<div class="keyTitle"><xsl:value-of select="eas:i18n('Overlay')"/></div>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setOverlay()"/><xsl:value-of select="eas:i18n('Footprint')"/></label>
-							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setOverlay()"/><xsl:value-of select="eas:i18n('Duplication')"/></label>
+							<div class="keyTitle">Overlay:</div>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayNone" value="none" checked="checked" onchange="setOverlay()"/>Footprint</label>
+							<label class="radio-inline"><input type="radio" name="techOverlay" id="techOverlayDup" value="duplication" onchange="setOverlay()"/>Duplication</label>
 						</div>
 					</div>
 					<!-- REFERENCE MODEL CONTAINER -->
@@ -1102,68 +1258,7 @@
 			</div>
 		</div>
 	</xsl:template>
-	
-	
-	<xsl:template match="node()" mode="getBusinessUnits">
-		<xsl:variable name="thisBusinessUnitOffice" select="$allBusinessUnitOffices[name = current()/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-		<xsl:variable name="thisBusinessUnitOfficeGeoRegions" select="$allBusinessUnitOfficeGeoRegions[name = $thisBusinessUnitOffice/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
-		<xsl:variable name="thisBusinessUnitOfficeLocations" select="$thisBusinessUnitOfficeGeoRegions[type='Geographic_Location']"/>
-		<xsl:variable name="thisBusinessUnitLocationCountries" select="$allBusinessUnitLocationCountries[own_slot_value[slot_reference = 'gr_locations']/value = $thisBusinessUnitOfficeLocations/name]"/>
-		<xsl:variable name="thisBusinessUnitOfficeCountries" select="$thisBusinessUnitOfficeGeoRegions[type='Geographic_Region']"/>
-		
-		<xsl:variable name="thisBusinessUnitCountry" select="$thisBusinessUnitLocationCountries union $thisBusinessUnitOfficeCountries"/>
 
-		<xsl:variable name="thisTechProdOrgUser2Roles" select="$techOrgUser2Roles[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
-		<xsl:variable name="thisTechProdss" select="$allTechProds[own_slot_value[slot_reference = 'stakeholders']/value = $thisTechProdOrgUser2Roles/name]"/>
-		
-		{
-			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					 <xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
-			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			country: "<xsl:value-of select="$thisBusinessUnitCountry/own_slot_value[slot_reference='gr_region_identifier']/value"/>",
-			techProds: [<xsl:for-each select="$thisTechProdss">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
-			techProda:"debug"
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
-	</xsl:template>
-
-	<xsl:template match="node()" mode="getTechProducts">
-		<xsl:variable name="thisTechOrgUser2Roles" select="$techOrgUser2Roles[name = current()/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-		<xsl:variable name="thsTechUsers" select="$thisTechOrgUser2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']"/>
-		<xsl:variable name="theLifecycleStatus" select="$allLifecycleStatii[name = current()/own_slot_value[slot_reference = 'vendor_product_lifecycle_status']/value]"/>
-		<xsl:variable name="theDeliveryModel" select="$allTechProdDeliveryTypes[name = current()/own_slot_value[slot_reference = 'technology_provider_delivery_model']/value]"/>
-		<xsl:variable name="theStatusScore" select="$theLifecycleStatus/own_slot_value[slot_reference = 'enumeration_score']/value">
-			
-		</xsl:variable>
-
-		{
-			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-			name: "<xsl:call-template name="RenderMultiLangInstanceName">
-					<xsl:with-param name="theSubjectInstance" select="current()"/>
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				</xsl:call-template>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					 <xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
-			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
-			status: "<xsl:value-of select="$theLifecycleStatus/name"/>",
-			statusScore: <xsl:choose><xsl:when test="$theStatusScore > 0"><xsl:value-of select="$theStatusScore"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
-			delivery: "<xsl:value-of select="$theDeliveryModel/name"/>",
-			techOrgUsers: [<xsl:for-each select="$thsTechUsers/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>]
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
-	</xsl:template>
-	
-
-	
 	<!-- TECHNOLOGY REFERENCE MODEL DATA TEMPLATES -->
 	<xsl:template mode="RenderTechDomains" match="node()">
 		<xsl:variable name="techDomainName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
@@ -1182,10 +1277,7 @@
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
                 <xsl:with-param name="isRenderAsJSString" select="true()"/>
             </xsl:call-template>",
-		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				 <xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
+		description: "<xsl:value-of select="eas:renderJSText($techDomainDescription)"/>",
 		link: "<xsl:value-of select="$techDomainLink"/>",
 		refLayer: "<xsl:value-of select="$thisRefLayer/own_slot_value[slot_reference = 'name']/value"/>", 
 		childTechCapIds: [
@@ -1216,10 +1308,7 @@
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					 <xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
+			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 			techComponents: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechCompDetails"/>-->
 				<xsl:for-each select="$techComponents/value">"<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>		
@@ -1246,10 +1335,7 @@
 					<xsl:with-param name="isRenderAsJSString" select="true()"/>
 				</xsl:call-template>",
 			link: "<xsl:value-of select="$techCapLink"/>",
-			description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-					<xsl:with-param name="isRenderAsJSString" select="true()"/>
-					 <xsl:with-param name="theSubjectInstance" select="current()"/>
-				</xsl:call-template>",
+			description: "<xsl:value-of select="eas:renderJSText($techCapDescription)"/>",
 
         techComponentIds: [	
 				<!--<xsl:apply-templates select="$techComponents" mode="RenderTechComponents"/>-->
@@ -1275,44 +1361,23 @@
 				<xsl:variable name="allThisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = $thisTechProdRoles/name]"/>
         <xsl:variable name="thisTechProds" select="$allTechProds[name = $thisTechProdRoles/own_slot_value[slot_reference = 'role_for_technology_provider']/value]"/>
 	-->	 <xsl:variable name="thisTechProdRoles2" select="current()/own_slot_value[slot_reference = 'realised_by_technology_products']"/>
-		{
+		{debug:"test",
 		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		name: "<xsl:call-template name="RenderMultiLangInstanceName">
                 <xsl:with-param name="theSubjectInstance" select="current()"/>
                 <xsl:with-param name="isRenderAsJSString" select="true()"/>
             </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				 <xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
+		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
 	<!--	techProds: [<xsl:for-each select="$thisTechProds">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
 	<!--	techProdRoles: [<xsl:for-each select="$thisTechProdRoles">"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],-->
-        techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="eas:getSafeJSString(.)"/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
+        techProdRoles:[ <xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]  
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 		<!--<xsl:apply-templates select="$thisTechProdRoles" mode="RenderTechProdRoleJSON">
 				<xsl:with-param name="thisTechComp" select="$this"/>
 				<xsl:with-param name="hasStandard" select="count($allThisTechProdStandards) > 0"/>
 			</xsl:apply-templates>-->
-	</xsl:template>
-	
-	
-	<xsl:template match="node()" mode="RenderTechProdRoleJSON">
-		
-		<xsl:variable name="thisTPR" select="current()"/>
-        <xsl:variable name="thisTechCompid" select="$thisTPR/own_slot_value[slot_reference = 'implementing_technology_component']/value"/>
-	 	<xsl:variable name="thisTechProdid" select="current()/own_slot_value[slot_reference = 'role_for_technology_provider']/value"/>		
-		
-		{
-		<!-- ***REQUIRED*** CALL TEMPLATE TO RENDER REQUIRED COMMON AND ROADMAP RELATED JSON PROPERTIES -->
-		<!--<xsl:call-template name="RenderRoadmapJSONProperties"><xsl:with-param name="theRoadmapInstance" select="current()"/><xsl:with-param name="theDisplayInstance" select="$thisTechComp"/><xsl:with-param name="allTheRoadmapInstances" select="$allRoadmapInstances"/></xsl:call-template>,-->
-		id: "<xsl:value-of select="eas:getSafeJSString($thisTPR/name)"/>",
-        techProdid: "<xsl:value-of select="eas:getSafeJSString($thisTechProdid)"/>",
-		techCompid: "<xsl:value-of select="eas:getSafeJSString($thisTechCompid)"/>",
-		standard: "<!--<xsl:value-of select="$standardStyle"/>-->"
-		} <xsl:if test="not(position()=last())">,
-		</xsl:if>
 	</xsl:template>
 	
 	<xsl:template match="node()" mode="RenderTechComponents">
@@ -1331,41 +1396,11 @@
                 <xsl:with-param name="isRenderAsJSString" select="true()"/>
             </xsl:call-template>",
 		link: "<xsl:value-of select="$techCompLink"/>",
-		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				 <xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>",
+		description: "<xsl:value-of select="eas:renderJSText($techCompDescription)"/>",
         techProdRole: [<xsl:for-each select="$thisTechProdRoles2/value"> "<xsl:value-of select="."/>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>]
 		}<xsl:if test="not(position() = last())"><xsl:text>,
 		</xsl:text></xsl:if>
 	</xsl:template>
-	
-	
-	<xsl:template match="node()" mode="TechProdSummary">
-		<xsl:variable name="techProdName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-		<xsl:variable name="techProdDescription" select="current()/own_slot_value[slot_reference = 'description']/value"/>
-		<xsl:variable name="techProdLink">
-			<xsl:call-template name="RenderInstanceLinkForJS">
-				<xsl:with-param name="theSubjectInstance" select="current()"/>
-				<xsl:with-param name="anchorClass">text-white</xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
-
-		{
-		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-		name: "<xsl:call-template name="RenderMultiLangInstanceName">
-                <xsl:with-param name="theSubjectInstance" select="current()"/>
-                <xsl:with-param name="isRenderAsJSString" select="true()"/>
-            </xsl:call-template>",
-		link: "<xsl:value-of select="$techProdLink"/>",
-		description: "<xsl:call-template name="RenderMultiLangInstanceDescription">
-				<xsl:with-param name="isRenderAsJSString" select="true()"/>
-				 <xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>"
-		}<xsl:if test="not(position() = last())"><xsl:text>,
-		</xsl:text></xsl:if>
-	</xsl:template>
-	
 	
 	
 	<xsl:template name="mockup">
@@ -1436,5 +1471,192 @@
 			</div>
 		</div>
 	</xsl:template>
+ 	<xsl:template name="GetViewerAPIPath">
+        <xsl:param name="apiReport"/>
+        
+        <xsl:variable name="dataSetPath">
+            <xsl:call-template name="RenderAPILinkText">
+                <xsl:with-param name="theXSL" select="$apiReport/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <xsl:value-of select="$dataSetPath"/>
 
+        
+    </xsl:template>
+    <xsl:template name="RenderViewerAPIJSFunction">
+		<xsl:param name="viewerAPIPathGetBusinessUnits"/>
+		<xsl:param name="viewerAPIPathGetAllTechProds"/>
+		<xsl:param name="viewerAPIPathGetAllTechProdRoles"/>
+		
+		
+    <!--    <xsl:param name="viewerAPIPath"/>
+        <xsl:param name="viewerAPIPathAPM"/>
+        <xsl:param name="viewerAPIPathTRM"/>
+        <xsl:param name="viewerAPIPathAppStakeholders"/>
+        <xsl:param name="viewerAPIPathTechStakeholders"/>
+        <xsl:param name="viewerAPIPathAllApps"/>
+        <xsl:param name="viewerAPIPathAllTechProds"/>
+        <xsl:param name="viewerAPIPathAllAppCaps"/>
+        <xsl:param name="viewerAPIPathAllTechCaps"/>
+        <xsl:param name="viewerAPIPathAllAppProvider"/>
+	
+		<xsl:param name="viewerAPIPathGetAllTPRs"/>
+		<xsl:param name="viewerAPIPathGetAllBusCapDetail"/>
+		-->
+		
+		
+        //a global variable that holds the data returned by an Viewer API Report
+    <!--    var viewAPIData = '<xsl:value-of select="$viewerAPIPath"/>';
+        var viewAPIDataAPM = '<xsl:value-of select="$viewerAPIPathAPM"/>';
+        var viewAPIDataTRM = '<xsl:value-of select="$viewerAPIPathTRM"/>';
+        var viewAPIDataAppStakeholders = '<xsl:value-of select="$viewerAPIPathAppStakeholders"/>';
+        var viewAPIDataTechStakeholders = '<xsl:value-of select="$viewerAPIPathTechStakeholders"/>';
+        var viewAPIDataAllApps = '<xsl:value-of select="$viewerAPIPathAllApps"/>';
+        var viewAPIDataTechProds = '<xsl:value-of select="$viewerAPIPathAllTechProds"/>';
+        var viewAPIDataAllAppCaps =  '<xsl:value-of select="$viewerAPIPathAllAppCaps"/>';
+        var viewAPIDataAllTechCaps =  '<xsl:value-of select="$viewerAPIPathAllTechCaps"/>';
+        var viewAPIDataAllAppProvider =  '<xsl:value-of select="$viewerAPIPathAllAppProvider"/>';
+		var viewAPIDataGetAllTPRs =  '<xsl:value-of select="$viewerAPIPathGetAllTPRs"/>';
+		var viewAPIDataGGetAllBusCapDetail =  '<xsl:value-of select="$viewerAPIPathGetAllBusCapDetail"/>';-->
+		var viewAPIDataGetBusinessUnits =  '<xsl:value-of select="$viewerAPIPathGetBusinessUnits"/>';
+		var viewAPIDataGetAllTechProds =  '<xsl:value-of select="$viewerAPIPathGetAllTechProds"/>';
+		var viewAPIDataGetAllTechProdRoles =  '<xsl:value-of select="$viewerAPIPathGetAllTechProdRoles"/>';
+
+		
+		
+        //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
+        
+        var promise_loadViewerAPIData = function(apiDataSetURL) {
+            return new Promise(function (resolve, reject) {
+                if (apiDataSetURL != null) {
+                    var xmlhttp = new XMLHttpRequest();
+//console.log(apiDataSetURL);    
+                    xmlhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 &amp;&amp; this.status == 200) {
+//console.log(this.responseText);  
+                            var viewerData = JSON.parse(this.responseText);
+                            resolve(viewerData);
+                            $('#ess-data-gen-alert').hide();
+                        }
+                    };
+                    xmlhttp.onerror = function () {
+                        reject(false);
+                    };
+                    xmlhttp.open("GET", apiDataSetURL, true);
+                    xmlhttp.send();
+                } else {
+                    reject(false);
+                }
+            });
+        };
+        
+        
+        
+        
+        $('document').ready(function () {
+        
+      <!--      //OPTON 1: Call the API request function multiple times (once for each required API Report), then render the view based on the returned data
+            Promise.all([
+                promise_loadViewerAPIData(apiUrl1),
+                promise_loadViewerAPIData(apiUrl2)
+            ])
+            .then(function(responses) {
+                //after the data is retrieved, set the global variable for the dataset and render the view elements from the returned JSON data (e.g. via handlebars templates)
+                viewAPIData = responses[0];
+                //render the view elements from the first API Report
+                anotherAPIData = responses[1];
+                //render the view elements from the second API Report
+            })
+            .catch (function (error) {
+                //display an error somewhere on the page   
+            });
+            
+          -->
+        
+           
+            
+    /*    $('#click').click(function(){
+        
+        promise_loadViewerAPIData(viewAPIDataDM)
+            .then(function(response1) {
+                //after the first data set is retrieved, set a global variable and render the view elements from the returned JSON data (e.g. via handlebars templates)
+                viewAPIData2 = response1;
+                 //DO HTML stuff
+              
+
+            })
+            .catch (function (error) {
+                //display an error somewhere on the page   
+            });
+        }
+       
+        ); */
+        
+        
+        });
+        
+    </xsl:template>
+   <xsl:template name="RenderAPILinkTextTestingNoCache">
+        <xsl:param name="theXML">reportXML.xml</xsl:param>
+        <xsl:param name="theXSL"/>
+        <xsl:param name="theInstanceID"/>
+        <xsl:param name="theHistoryLabel"/>
+        <xsl:param name="theParam2"/>
+        <xsl:param name="theParam3"/>
+        <xsl:param name="theParam4"/>
+        <xsl:param name="theContentType"/>
+        <xsl:param name="theFilename"/>
+        <xsl:param name="theUserParams"/>
+        <xsl:param name="viewScopeTerms" select="()"/>
+ 
+        <xsl:text>report?XML=</xsl:text>
+        <xsl:value-of select="$theXML"/>
+        <xsl:text>&amp;XSL=</xsl:text>
+        <xsl:value-of select="$theXSL"/>
+       
+        <xsl:if test="string-length($theInstanceID) > 0">
+            <xsl:text>&amp;PMA=</xsl:text>
+            <xsl:value-of select="$theInstanceID"/>
+        </xsl:if>
+       
+        <xsl:if test="string-length($theHistoryLabel) > 0">
+            <xsl:text>&amp;LABEL=</xsl:text>
+            <xsl:value-of select="encode-for-uri($theHistoryLabel)"/>
+        </xsl:if>
+        <xsl:if test="string-length($theParam2) > 0">
+            <xsl:text>&amp;PMA2=</xsl:text>
+            <xsl:value-of select="$theParam2"/>
+        </xsl:if>
+        <xsl:if test="string-length($theParam3) > 0">
+            <xsl:text>&amp;PMA3=</xsl:text>
+            <xsl:value-of select="$theParam3"/>
+        </xsl:if>
+        <xsl:if test="string-length($theParam4) > 0">
+            <xsl:text>&amp;PMA4=</xsl:text>
+            <xsl:value-of select="$theParam4"/>
+        </xsl:if>
+        <xsl:if test="(string-length($theContentType) > 0) and (string-length($theFilename) > 0)">
+            <xsl:text>&amp;CT=</xsl:text>
+            <xsl:value-of select="$theContentType"/>
+            <xsl:text>&amp;FILE=</xsl:text>
+            <xsl:value-of select="$theFilename"/>
+        </xsl:if>
+        <xsl:if test="string-length($theUserParams) > 0">
+            <xsl:text>&amp;</xsl:text>
+            <xsl:value-of select="$theUserParams"/>
+        </xsl:if>
+        <xsl:if test="count($viewScopeTerms) > 0">
+            <xsl:text>&amp;viewScopeTermIds=</xsl:text>
+            <xsl:value-of select="eas:queryStringForInstanceIds($viewScopeTerms, '')"/>
+        </xsl:if>
+       
+        <xsl:value-of select="concat('&amp;cl=', $i18n)"/>
+    </xsl:template> 
+	<xsl:template match="node()" mode="stdStrength">
+			{"status":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'enumeration_value']/value"/>",
+			"cls":"<xsl:value-of select="translate(current()/own_slot_value[slot_reference = 'enumeration_value']/value, ' ','-')"/>",
+				"statusColour":"<xsl:value-of select="eas:get_element_style_textcolour(current())"/>",
+				"statusBgColour":"<xsl:value-of select="eas:get_element_style_colour(current())"/>"}<xsl:if test="not(position()=last())">,</xsl:if>
+	</xsl:template>
 </xsl:stylesheet>

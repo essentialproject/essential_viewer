@@ -1839,25 +1839,25 @@
 						$('#busCapValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(aBusCap.valueStreams.length > 0) { 
+						if(aBusCap.valueStreams.length > 0) {
 							var initVS = aBusCap.valueStreams[0];
 							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([aBusCap.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([aBusCap.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(aBusCap.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([aBusCap.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([aBusCap.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(aBusCap.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -1868,24 +1868,24 @@
 						$('#busCapValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#busCapValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#busCapValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#busCapModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							//console.log('Phys Proc Count: ' + physProcsForVSIds.length);
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busCapModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2038,26 +2038,26 @@
 						$('#busProcessValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(aBusProcess.valueStreams.length > 0) { 
+						if(aBusProcess.valueStreams.length > 0) {
 							var initVS = aBusProcess.valueStreams[0];
 							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([aBusProcess.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([aBusProcess.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(aBusProcess.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData)); 
+							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([aBusProcess.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([aBusProcess.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(aBusProcess.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS,
 								thisModal: 'busProcessModal'
 							}
-							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(aBusProcess.valueStageIds, modalHeatmap);
@@ -2067,24 +2067,24 @@
 						$('#busProcessValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#busProcessValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#busProcessValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData)); 
+							$("#busProcessModalPhysProcsTBody").html(physProcsOrgRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS,
 								thisModal: 'busProcessModal'
 							}
-							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#busProcessModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2237,25 +2237,25 @@
 						$('#orgValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anOrg.valueStreams.length > 0) { 
+						if(anOrg.valueStreams.length > 0) {
 							var initVS = anOrg.valueStreams[0];
 							$("#orgValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anOrg.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anOrg.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anOrg.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData)); 
+							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([anOrg.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([anOrg.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(anOrg.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(anOrg.valueStageIds, modalHeatmap);
@@ -2265,23 +2265,23 @@
 						$('#orgValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#orgValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#orgValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#orgValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData)); 
+							$("#orgModalPhysProcsTBody").html(physProcsBusProcessRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#orgModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2449,23 +2449,23 @@
 						$('#appServiceValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anAppService.valueStreams.length > 0) { 
+						if(anAppService.valueStreams.length > 0) {
 							var initVS = anAppService.valueStreams[0];
 							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anAppService.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anAppService.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anAppService.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(anAppService.valueStageIds, modalHeatmap);
 							
 							<!--//set the list of relevant apps for the selectd Value Stream
-							var appProRolesForVSIds = getArrayIntersect([anAppService.appProRoleIds, initVS.appProRoleIds]); 
+							var appProRolesForVSIds = getArrayIntersect([anAppService.appProRoleIds, initVS.appProRoleIds]);
 							var appProRolesForVS = getObjectsByIds(anAppService.appProRoles, "id", appProRolesForVSIds);
 							var appsForVSIds = getObjectIds(appProRolesForVS, "appId");
 							var appsForVS = getObjectsByIds(anAppService.applications, "id", appsForVSIds);-->
@@ -2477,15 +2477,15 @@
 						$('#appServiceValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#appServiceValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#appServiceValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appServiceModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//update the styling of the value stages
 							refreshModalValueStageChevronStyles(elementUnderReview.valueStageIds, modalHeatmap);
@@ -2498,7 +2498,7 @@
 						var appData = {
 							applications: anAppService.applications
 						}
-						$("#appServiceModalServiceTBody").html(appRowTemplate(appData)); 
+						$("#appServiceModalServiceTBody").html(appRowTemplate(appData));
 						
 						
 						$('.modalReviewBtn').on('click', function (evt) {
@@ -2649,25 +2649,25 @@
 						$('#appValueStreamsList').select2({theme: "bootstrap"});
 						
 						//initialise the value stages section
-						if(anApp.valueStreams.length > 0) { 
+						if(anApp.valueStreams.length > 0) {
 							var initVS = anApp.valueStreams[0];
 							$("#appValueStagesContainer").html(modalValueStagesTemplate(initVS));
 							
 							//set the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([anApp.physProcessIds, initVS.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([anApp.physProcessIds, initVS.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(anApp.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([anApp.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([anApp.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(anApp.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -2678,24 +2678,24 @@
 						$('#appValueStreamsList').on('change', function (evt) {
 							var aValStreamId = $("#appValueStreamsList").val();
 							var aValStream = getObjectById(elementUnderReview.valueStreams, "id", aValStreamId);
-							$("#appValueStagesContainer").html(modalValueStagesTemplate(aValStream)); 
+							$("#appValueStagesContainer").html(modalValueStagesTemplate(aValStream));
 							
 							//update the list of relevant physical processes for the selectd Value Stream
-							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]); 
+							var physProcsForVSIds = getArrayIntersect([elementUnderReview.physProcessIds, aValStream.physProcessIds]);
 							var physProcsForVS = getObjectsByIds(elementUnderReview.physProcesses, "id", physProcsForVSIds);
 							var physProcsData = {
 								physProcs: physProcsForVS
 							}
-							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData)); 
+							$("#appModalPhysProcsTBody").html(physProcsRowTemplate(physProcsData));
 							//console.log('Phys Proc Count: ' + physProcsForVSIds.length);
 							
 							//set the list of relevant app services for the selectd Value Stream
-							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]); 
+							var servicesForVSIds = getArrayIntersect([elementUnderReview.appProRoleIds, initVS.appProRoleIds]);
 							var servicesForVS = getObjectsByIds(elementUnderReview.services, "id", servicesForVSIds);
 							var serviceData = {
 								appServices: servicesForVS
 							}
-							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData)); 
+							$("#appModalServiceTBody").html(appServiceRowTemplate(serviceData));
 							//console.log('Phys Proc Count: ' + servicesForVSIds);
 							
 							//update the styling of the value stages
@@ -2878,7 +2878,7 @@
 					<!-- function to render the content for the detail of a strategic plan -->
 					function showStrategicPlanTableDetail ( d ) {
 					    // `d` is the original data object for the row
-						return stratPlanDetailsTemplate(d); 
+						return stratPlanDetailsTemplate(d);
 					}
 					
 					<!-- function to update the contents of the Strategic Plans table -->
@@ -3173,8 +3173,8 @@
 							gantt.config.min_duration = 7*24*60*60*1000;  // 1 week minimum duration
 							gantt.config.date_scale = "%Y";
 							gantt.config.fit_tasks = true;
-							gantt.config.start_date = new Date(2018, 01, 01);
-							gantt.config.end_date = new Date(2021, 12, 31);
+							gantt.config.start_date = new Date(moment().subtract(10, 'years').format("YYYY-MM-DD"));
+							gantt.config.end_date = new Date(moment().add(10, 'years').format("YYYY-MM-DD"));
 							
 							var textEditor = {type: "text", map_to: "text"};
 							gantt.config.columns=[
@@ -6093,12 +6093,12 @@
 			planningActions: [],
 			planningAction: null,
 			editorId: "physProcModal",
-			emotionScore: <xsl:value-of select="$emotionScore"/>, 
-			cxScore: <xsl:value-of select="$custExperienceScore"/>, 
-			kpiScore: <xsl:value-of select="$kpiScore"/>, 
-			emotionStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($emotionScore)"/>", 
+			emotionScore: <xsl:value-of select="$emotionScore"/>,
+			cxScore: <xsl:value-of select="$custExperienceScore"/>,
+			kpiScore: <xsl:value-of select="$kpiScore"/>,
+			emotionStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($emotionScore)"/>",
 			emotionIcon: "<xsl:value-of select="eas:getEmotionScoreIcon($emotionScore)"/>",
-			cxStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($custExperienceScore)"/>", 
+			cxStyleClass: "<xsl:value-of select="eas:getEnumerationScoreStyle($custExperienceScore)"/>",
 			kpiStyleClass: "<xsl:value-of select="eas:getSQVScoreStyle($kpiScore)"/>"
 		}<xsl:if test="not(position()=last())">,</xsl:if> 
 	</xsl:template>
@@ -6466,7 +6466,16 @@
 		<!-- Customer Journey Phases -->
 		<xsl:variable name="thisCustomerJourneyPhases" select="$allCustomerJourneyPhases[own_slot_value[slot_reference = 'cjp_value_stages']/value = $this/name]"/>
 		
-		<xsl:variable name="vsgLabel"><xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template></xsl:variable>
+		<xsl:variable name="vsgLabel">
+			<xsl:choose>
+				<xsl:when test="$this/own_slot_value[slot_reference = 'vsg_display_label']/value">
+					<xsl:value-of select="$this/own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="RenderMultiLangCommentarySlot"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="slotName">vsg_label</xsl:with-param></xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		<!-- measures -->
 		<xsl:variable name="emotionScore" select="eas:getEmotionScoreAverage($thisCustomerJourneyPhases, 0, 0)"/>
@@ -6477,7 +6486,7 @@
 		
 		{
 			id: "<xsl:value-of select="eas:getSafeJSString($this/name)"/>",
-			name: "<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="$this"/></xsl:call-template>",
+			name: "<xsl:value-of select="$vsgLabel"/>",
 			description: "<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="isRenderAsJSString" select="true()"/></xsl:call-template>",
 			link: "<xsl:call-template name="RenderInstanceLinkForJS"><xsl:with-param name="theSubjectInstance" select="$this"/><xsl:with-param name="displayString" select="$vsgLabel"/><xsl:with-param name="anchorClass">text-white</xsl:with-param></xsl:call-template>",
 			customerJourneyPhaseIds: [<xsl:apply-templates mode="RenderElementIDListForJs" select="$thisCustomerJourneyPhases"/>],

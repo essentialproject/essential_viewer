@@ -45,10 +45,12 @@
  	
 	 
 	-->
+	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Landscape']"></xsl:variable>
+	
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="capsListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Capabilities']"></xsl:variable>
-	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = ('Core API: App KPIs','Core: App KPIs')]"></xsl:variable>
+	<xsl:variable name="kpiListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = ('Core API: App KPIs','Core: App KPIs')][1]"></xsl:variable>
 	<xsl:variable name="servicesListData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Application Services']"></xsl:variable>
 
 <!--	<xsl:variable name="scoreData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core: App KPIs']"></xsl:variable>
@@ -97,7 +99,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<script src="js/d3/d3.min.js?release=6.19"></script>
-				<title>Application Landscape</title>
+				<title><xsl:value-of select="eas:i18n('Application Landscape')"/></title>
 				<style>
 						#area {
 						
@@ -323,16 +325,16 @@
 									<div class="modal-content">
 										<div class="modal-header">
 											<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"/></span></button>
-											<h3 class="text-primary"><i class="fa fa-question-circle right-5"/><strong>Help</strong></h3>
+											<h3 class="text-primary"><i class="fa fa-question-circle right-5"/><strong><xsl:value-of select="eas:i18n('Help')"/></strong></h3>
 										</div>
 										<div class="modal-body">
-											<h4 class="strong">Via Process</h4>
-											<p>Business fit can be mapped via business processes, so the application can be good for this process but poor for a different process.  Essential can pick up the mapping either via the service or the direct mapping of the application to the process.  If you look at the model, a single application can have different colours/values in the capability model if you take this approach</p>
-											<h4 class="strong">By Application</h4>
-											<p>If this level doesn't exist then you can also have a simple mapping, i.e. this application is good, and every occurence will be the same colour/value.</p>
+											<h4 class="strong"><xsl:value-of select="eas:i18n('Via Process')"/></h4>
+											<p><xsl:value-of select="eas:i18n('Business fit can be mapped via business processes, so the application can be good for this process but poor for a different process.  Essential can pick up the mapping either via the service or the direct mapping of the application to the process.  If you look at the model, a single application can have different colours/values in the capability model if you take this approach')"/></p>
+											<h4 class="strong"><xsl:value-of select="eas:i18n('By Application')"/></h4>
+											<p><xsl:value-of select="eas:i18n('If this level does not exist then you can also have a simple mapping, i.e. this application is good, and every occurence will be the same colour or value')"/>.</p>
 										</div>
 										<div class="modal-footer">
-											<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+											<button type="button" class="btn btn-danger" data-dismiss="modal"><xsl:value-of select="eas:i18n('Close')"/></button>
 										</div>
 									</div>
 								</div>
@@ -364,10 +366,10 @@
 								<div class="pull-left left-30 " id="simps">
 									<label class="right-10" style="position: relative; top: 2px;"><xsl:value-of select="eas:i18n('Analyse')"/>:</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess"/> <xsl:value-of select="eas:i18n('Via Process')"/>
+										<input class="anRad" type="radio" name="appProcessSwitch" id="viaProcess" value="viaProcess"/> <xsl:value-of select="eas:i18n('Via Process')"/>
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="appProcessSwitch" id="viaApp" value="viaApp" checked="checked"/><xsl:value-of select="eas:i18n('Via Application')"/>
+										<input class="anRad" type="radio" name="appProcessSwitch" id="viaApp" value="viaApp" checked="checked"/><xsl:value-of select="eas:i18n('Via Application')"/>
 									</label>
 									<i class="fa fa-question-circle" style="position: relative; top: 2px;" id="helpMe"></i>
 								</div>
@@ -836,6 +838,9 @@
 		var viewAPIDataSvcs = '<xsl:value-of select="$viewerAPIPathSvcs"/>'; 
 
 		$('#simps').hide();
+
+		let filterExcludes = [<xsl:for-each select="$theReport/own_slot_value[slot_reference='report_filter_excluded_slots']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>];
+	 
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL)
@@ -1074,32 +1079,26 @@
 						}	
 					
 						d.orgUserIds = d.orgUserIds.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
+
+						d.realises_application_capabilities = d.allServices.flatMap(s => s.capabilities);
 				 });
 			appSvcs=responses[4];
 			pmc=responses[3].perfCategory;
 			pms=responses[3].applications;
-			pms.forEach((d)=>{ 
-				if(d.perfMeasures.length&gt;0){
-					d.perfMeasures.forEach((e)=>{
-						if(e.categoryid==''){ 
-							if(e.serviceQuals[0]){
-								e.categoryid=e.serviceQuals[0].categoryId;
-							}
-						}
-					});
+			pms.forEach((d) => {
+				const updateCategoryId = (item) => {
+					if (!item.categoryid &amp;&amp; item.serviceQuals?.[0]) {
+						item.categoryid = item.serviceQuals[0].categoryId;
+					}
 				};
-				if(d.processPerfMeasures.length&gt;0){
-					d.processPerfMeasures.forEach((p)=>{
-						p.scores.forEach((e)=>{
-							if(e.categoryid==''){ 
-								if(e.serviceQuals[0]){
-									e.categoryid=e.serviceQuals[0].categoryId;
-								}
-							}
-						});
-					});
-				};
+			
+				d.perfMeasures?.forEach(updateCategoryId);
+			
+				d.processPerfMeasures?.forEach((p) => {
+					p.scores?.forEach(updateCategoryId);
+				});
 			});
+			
 		 
 			filters=responses[1].filters;
 			capfilters=responses[0].filters;
@@ -1119,23 +1118,22 @@
 				return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 			});
 
-			responses[0].busCaptoAppDetails.forEach((bc)=>{
-				 
-				let capArr=responses[2].businessCapabilities.find((e)=>{
-					return e.id==bc.id;
-				}); 
-				bc["order"]=parseInt(capArr.sequenceNumber);
-				bc.processes.forEach((bp)=>{
-			 
-					bp.physP.forEach((pbp)=>{
-				 
-						processMap.push({"pbpId":pbp,"pr":bp.name, "prId":bp.id});
-
+			responses[0].busCaptoAppDetails.forEach((bc) => {
+				const capArr = responses[2].businessCapabilities.find((e) => e.id === bc.id);
+			
+				if (capArr) {
+					bc.order = parseInt(capArr.sequenceNumber, 10); // Explicit base for parseInt
+				}
+			
+				bc.processes.forEach((bp) => {
+					bp.physP.forEach((pbp) => {
+						processMap.push({ pbpId: pbp, pr: bp.name, prId: bp.id });
 					});
-					appToCap.push({"procId":bp.id,"bc": bc.name, "bcId":bc.id})
+			
+					appToCap.push({ procId: bp.id, bc: bc.name, bcId: bc.id });
 				});
-
 			});
+			
 		
 			appsList.applications.forEach((app)=>{
 			 
@@ -1246,8 +1244,30 @@
 				});
 
 				let allFilters=[...responses[0].filters, ...responses[1].filters];
-			essInitViewScoping(redrawView,['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS', 'ACTOR_TO_ROLE_RELATION','Product_Concept', 'Business_Domain'], allFilters, true);
-		
+
+				filterExcludes.forEach((e)=>{
+					allFilters=allFilters.filter((f)=>{
+						return f.slotName !=e;
+					})
+				 }) 
+ 
+
+				hardClasses=[{"class":"Group_Actor", "slot":"stakeholders"},
+				{"class":"Geographic_Region", "slot":"ap_site_access"},
+				{"class":"SYS_CONTENT_APPROVAL_STATUS", "slot":"system_content_quality_status"},
+				{"class":"Product_Concept", "slot":"product_concept_supported_by_capability"},
+				{"class":"Business_Domain", "slot":"belongs_to_business_domain"},
+				{"class":"ACTOR_TO_ROLE_RELATION", "slot":"act_to_role_to_role"},
+				{"class":"Managed_Service", "slot":"ms_managed_app_elements'"},
+				{"class":"Application_Capability", "slot":"realises_application_capabilities"}]
+
+				hardClasses = hardClasses.filter(item => 
+					!filterExcludes.some(exclude => item.slot.includes(exclude))
+				);
+
+			let classesToShow = hardClasses.map(item => item.class);
+			 
+			essInitViewScoping	(redrawView, classesToShow, allFilters, true);
 			}). catch (function (error)
 			{
 				//display an error somewhere on the page
@@ -1488,17 +1508,19 @@ var redrawView=function(){
 	visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
 	prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
-
+	let a2rDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION');
+	let msDef = new ScopingProperty('ms_managed_app_elements', 'Managed_Service');
+	let acDef = new ScopingProperty('realises_application_capabilities', 'Application_Capability');
+	
 	essResetRMChanges();
 	
 	scopedCaps = essScopeResources(busCapApps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
-    scopedAppsList= essScopeResources(appsList.applications, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), appTypeInfo);
- 
-let scopedApps;
+    scopedAppsList= essScopeResources(appsList.applications, [appOrgScopingDef, geoScopingDef, visibilityDef,a2rDef, msDef, acDef].concat(dynamicAppFilterDefs), appTypeInfo);
 
- let scopedCapsIds=scopedCaps.resourceIds
- lev=thisLevel;
- let thisSelected=$('#enum-selection').val();
+	let scopedApps;
+	let scopedCapsIds=scopedCaps.resourceIds
+	lev=thisLevel;
+	let thisSelected=$('#enum-selection').val();
 
 	if(thisSelected=='None'){
 		//do nothing
@@ -1541,7 +1563,6 @@ $('#enumKey').html(keyTemplate(thisFilter))
         if(lev==0){
             scopedApps =appListScoped
             
-			console.log('scopedApps',scopedApps)
 			scopedApps['resources']=scopedApps
 			thisHLApps=scopedApps.resources; 
 			scopedApps.resources.forEach((d)=>{
@@ -1728,6 +1749,7 @@ $('#enumKey').html(keyTemplate(thisFilter))
 	let keyData=squals.find((sq)=>{
 		return sq.id==selectedMeasure.qualities[0]
 	});
+ 
 	if(keyData){
 	keyData.sqvs.forEach((k)=>{
 		if(k.elementBackgroundColour==''){
@@ -1758,23 +1780,26 @@ $('#enumKey').html(keyTemplate(thisFilter))
 }
    
 	let viaProcess=0;		
-		appsList.applications.forEach((app)=>{
-  
+		appsList.applications.forEach((app)=>{ 
 			let thisPerfMeasures=app.pm?.filter((e)=>{ 
 				return e.categoryid.includes(measure)
 				//return e.categoryid==measure;
-			}); 	  
+			}); 	
+		
+			let processPerfMeasures
 	if(thisPerfMeasures){			
 			thisPerfMeasures.sort((a, b) => (a.date &lt; b.date) ? 1 : -1) 
 			
 			let inScopePMs=[];
+		 
 			if(app.bpm.length&gt;0){
 			app.bpm.forEach((pr)=>{ 
-
-				let processPerfMeasures=pr.scores.filter((e)=>{ 
+			 
+				processPerfMeasures=pr.scores.filter((e)=>{ 
 					return e.categoryid.includes(measure)
 					//return e.categoryid==measure;
 				});
+ 
 				let ppms=[];
 				processPerfMeasures.forEach((p)=>{
 					p['procId']=pr.proid; 
@@ -1783,7 +1808,7 @@ $('#enumKey').html(keyTemplate(thisFilter))
 							return e.physP.includes(pr.proid)
 						}
 					})
-
+ 
 					if(bcMap){ 
 						p['busCapId']=bcMap.id;
 						bcMap.forEach((c)=>{
@@ -1797,17 +1822,21 @@ $('#enumKey').html(keyTemplate(thisFilter))
 						})
 					}
 				})
-			
-				inScopePMs=[...ppms, ...processPerfMeasures];
+ 
+
+				inScopePMs=[...inScopePMs, ...ppms, ...processPerfMeasures];
+				  
 			});
 		}
+
+ 
 let capAppsScores =d3.nest()
 	.key(function(d) { return d.busCapId; }) 
 	.key(function(d) { return d.procId; })
-	.entries(inScopePMs);
- 
-	
+	.entries(inScopePMs); 
+
 capAppsScores.forEach((d,i)=>{
+	 
 <!--	if(i==1){
 		$('#measure-selection').append($('<option>', {
 		value: 1,
@@ -1824,7 +1853,7 @@ capAppsScores.forEach((d,i)=>{
 					qualVals['date']=f.date; 
 			totalScore=[...totalScore, ...qualVals[0].values]
 		});
-	
+	 
 		totalScore.forEach((ts)=>{
 			tot=tot+parseInt(ts.score);
 		}); 
@@ -1834,32 +1863,64 @@ capAppsScores.forEach((d,i)=>{
 	viaProcess=1;
 });
  
-if(viaProcess==1){
-	$('#simps').show(); 
-	$("#switch").show();}
-else{
-	$('#simps').hide();
-	$("#switch").hide();
-	}
 app['capsScore']=capAppsScores;
 			app['score']=0;
-			if(thisPerfMeasures.length&gt;0){
-				let appscore=0
-				thisPerfMeasures[0].serviceQuals.forEach((e)=>{
-					appscore=appscore+parseInt(e.score)
-				});
+
+	var selectedValue = $("input[name='appProcessSwitch']:checked").val();
+
+    // You can print the selected value to verify
+	if(viaProcess==1){
+		$('#simps').show(); 
+		$("#switch").show();
+	}
+	else{
+		$('#simps').hide();
+		$("#switch").hide();
+	}
+ 
+if(selectedValue=='viaProcess'){ 
 	
-			app['score']=appscore / thisPerfMeasures[0].serviceQuals.length;
-			app['thisQuals']=thisPerfMeasures[0].serviceQuals;
-			}
+	if(processPerfMeasures?.length&gt;0){
+		let appscore=0
+		processPerfMeasures[0].serviceQuals.forEach((e)=>{
+			appscore=appscore+parseInt(e.score)
+		});
+
+	app['score']=appscore / processPerfMeasures[0].serviceQuals.length;
+	app['thisQuals']=processPerfMeasures[0].serviceQuals;
+
+	}
+
+}
+else{ 
+ 	
+	if(thisPerfMeasures?.length&gt;0){
+		let appscore=0
+		thisPerfMeasures[0].serviceQuals.forEach((e)=>{
+			appscore=appscore+parseInt(e.score)
+		});
+
+	app['score']=appscore / thisPerfMeasures[0].serviceQuals.length;
+	app['thisQuals']=thisPerfMeasures[0].serviceQuals;
+
+	}
+
+}
+
+
+			
 
 			let thisColours=keyData?.sqvs.find((d)=>{
 				return d.score == Math.round(app.score);
 			});
 		   
 			if ($('#viaProcess').is(':checked')) {
+		
 				if (thisColours) {    
+					
 						app.capsScore.forEach((c) => {
+							if(c.key=='store_55_Class13'){
+							}
 							let cpID = c.key + app.id;
 							$('.app[appcapid="' + cpID + '"]').addClass(thisColours.id)
 						})

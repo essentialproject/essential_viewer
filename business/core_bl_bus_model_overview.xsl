@@ -495,10 +495,17 @@
 				<xsl:sort select="own_slot_value[slot_reference = 'vsg_index']/value"/>
 				<xsl:variable name="thisVStg" select="current()"/>
 				<xsl:variable name="thisLabel">
-					<xsl:call-template name="RenderMultiLangCommentarySlot">
-						<xsl:with-param name="theSubjectInstance" select="$thisVStg"/>
-						<xsl:with-param name="slotName">vsg_label</xsl:with-param>
-					</xsl:call-template>
+					<xsl:choose>
+						<xsl:when test="own_slot_value[slot_reference = 'vsg_display_label']/value">
+							<xsl:value-of select="own_slot_value[slot_reference = 'vsg_display_label']/value"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="RenderMultiLangCommentarySlot">
+								<xsl:with-param name="theSubjectInstance" select="$thisVStg"/>
+								<xsl:with-param name="slotName">vsg_label</xsl:with-param>
+							</xsl:call-template>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:variable>
 				<div class="threeColModel_modalValueChainColumnContainer pull-left">
 					<div class="threeColModel_valueChainObject small bg-purple-20">
