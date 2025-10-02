@@ -227,7 +227,11 @@
             </body>
 
             <script id="name-template" type="text/x-handlebars-template">
-                  {{#essRenderInstanceLink this 'Business_Process'}}{{/essRenderInstanceLink}}   {{#ifEquals this.flow  'Y'}}<i class="fa fa-random"></i>{{/ifEquals}}       
+                  {{#essRenderInstanceLink this 'Business_Process'}}{{/essRenderInstanceLink}}   {{#ifEquals this.flow  'Y'}}
+				  {{#unless this.flowdetails.emptyBPMN}}
+				  <i class="fa fa-random"></i>
+				  {{/unless}}
+				  {{/ifEquals}}       
 			</script>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction">
@@ -476,6 +480,16 @@ showEditorSpinner('Fetching Data...');
 					 
 					})
 			   });
+
+             busProcArray.forEach((proc) => {
+
+            if(proc.flowdetails?.diagramConfigBPMN == 'N')
+			{
+				proc.flowdetails['emptyBPMN'] = true;
+			}
+
+			 });
+
 
 			   meta=responses[0].meta
 		        busProcArray.forEach((d) => { 

@@ -206,7 +206,7 @@
 	</xsl:template>
 	
 	<xsl:template name="edmEditMenu">
-        <xsl:variable name="edmEditURL" select="concat('/app/#/Repo/',$repoID,'/EditInstance/')"/>
+        <xsl:variable name="edmEditURL" select="concat('/workspace-data-management/#/Repo/',$repoID,'/InstanceEditor/')"/>
         function edmEditURL(key,opt){
         	var instanceHref= opt.$trigger.attr("href");
 			//console.log(instanceHref);

@@ -197,6 +197,7 @@
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
 		<xsl:variable name="combinedMap" as="map(*)" select="map{
             'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+			'short_name': string(translate(translate(current()/own_slot_value[slot_reference = ('short_name')]/value,'}',')'),'{',')')),
             'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value,'}',')'),'{',')'))
         }" />
         <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />

@@ -20,7 +20,7 @@
 	<xsl:variable name="theReport" select="/node()/simple_instance[own_slot_value[slot_reference='name']/value='Core: Application Dashboard']"></xsl:variable>
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"></xsl:variable>
-	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider', 'Composite_Application_Provider')"></xsl:variable>
+	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Service', 'Application_Provider', 'Composite_Application_Provider', 'Business_Process')"></xsl:variable>
  
 	 
 	<!-- END GENERIC LINK VARIABLES -->
@@ -809,15 +809,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 												<xsl:attribute name="style">background-color:#6849D0;color:#ffffff</xsl:attribute>
 												<i class="fa fa-exchange right-5"/>{{totalIntegrations}} Integrations ({{inI}} in / {{outI}} out)</div>
 										{{#each this.appFilters}}
+										{{#ifEquals this.value.name 'Not Set'}}
+
+										{{else}}
 										<div class="ess-tag ess-tag-default">
 												<xsl:attribute name="style">background-color:{{this.value.backgroundColor}};color:{{this.value.colour}}</xsl:attribute>
 											<i class="fa fa-circle right-5"/>{{this.value.name}}<span class="fontNormal xsmall"> [{{this.name}}]</span></div>
-								
+										{{/ifEquals}}
 										{{/each}}
 									</div>
 									
 								</div>
-							<!--	<div id="capabilities" class="tab-pane fade">
+								<div id="capabilities" class="tab-pane fade">
 									<p class="strong">This application supports the following Business Capabilities:</p>
 									<div>
 									{{#if capList}} 
@@ -829,13 +832,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 									{{/if}}
 									</div>
                                 </div>
-                            -->     
+                               
 								<div id="processes" class="tab-pane fade">
 									<p class="strong">This application supports the following Business Processes, supporting {{processList.length}} processes:</p>
 									<div>
 									{{#if processes}}
 									{{#each processes}}
-										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this 'Business_Process'}}{{/essRenderInstanceLinkMenuOnly}}</div>
+										<div class="ess-tag ess-tag-default"><xsl:attribute name="style">background-color:#dccdf6;color:#000000</xsl:attribute>{{#essRenderInstanceLinkMenuOnly this.thisProcess 'Business_Process'}}{{/essRenderInstanceLinkMenuOnly}}</div>
 									{{/each}} 
 									{{else}}
 										<p class="text-muted">None Mapped</p>
@@ -1017,24 +1020,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     let lifecycleColour=[];
 	let appArray=[];
     let meta=[];
-    
+    let lifecycleEnumData;
     let busCapAppList=[];
     let thisNewChart;
     let thisDeliveryChart;
     let allCaps=[];
 	let allApps=[]; 
 	let filters=[];
-		var level=0;
-		var rationalisationList=[];
-		let levelArr=[];
-		let workingCapId=0;
-		var partialTemplate, l0capFragment;
+	var level=0;
+	var rationalisationList=[];
+	let levelArr=[];
+	let workingCapId=0;
+	var partialTemplate, l0capFragment;
 	var dynamicAppFilterDefs=[];	
+	const appToCapsMap = Object.create(null); 
 	//	showEditorSpinner('Fetching Data...');
 		$('document').ready(function ()
 		{ 
-             $('#busCaps').select2();
-	 
+            $('#busCaps').select2();
+	 		$('#generate').hide()
              
 			appMiniFragment = $("#appmini-template").html();
 			appMiniTemplate = Handlebars.compile(appMiniFragment);
@@ -1141,7 +1145,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		        }
 		    });
 			
-
+			
 			$('.appPanel').hide();
 	 
 			Promise.all([
@@ -1154,9 +1158,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			
                 meta=responses[1].meta
                 codebases=responses[1].codebase;
+				lifecycleEnumData=responses[1].lifecycles
                 deliveryModels=responses[1].delivery;
                 lifecycleModels=responses[1].lifecycles;
-				 filters=responses[1].filters;
+				filters=responses[1].filters;
 				 
 				 filtersNo.forEach((e)=>{
 					filters=filters.filter((f)=>{
@@ -1167,7 +1172,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				dynamicAppFilterDefs=filters?.map(function(filterdef){
 					return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
 				});
+  
+				for (let i = 0, len = responses[0].busCaptoAppDetails.length; i &lt; len; i++) {
+					const { id: capId, name: capName, thisapps } = responses[0].busCaptoAppDetails[i];
+					if (!thisapps || !thisapps.length) continue;
 
+					const capEntry = { id: capId, name: capName };
+
+					for (let j = 0, jlen = thisapps.length; j &lt; jlen; j++) {
+						const appId = thisapps[j];
+						if (!appToCapsMap[appId]) appToCapsMap[appId] = [];
+						appToCapsMap[appId].push(capEntry);
+					}
+				}
+
+				
 				//$('#filtersHolder').html(filtersTemplate(filters));
  
 				//$('#chartsArea').html(chartTemplate(filters));
@@ -1190,15 +1209,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 					});
 
 					// Use a Set to filter unique processes by processName
-					const seenProcessNames = new Set();
 					const uniqueProcs = [];
-					for (const proc of thisProc) {
-					if (!seenProcessNames.has(proc.processName)) {
-						seenProcessNames.add(proc.processName);
-						uniqueProcs.push(proc);
-					}
-					}
+					const seenProcessNames = new Set(); // ensure this exists before the loop
 
+					for (const proc of thisProc) {
+						if (!seenProcessNames.has(proc.processName)) {
+							seenProcessNames.add(proc.processName);
+
+							proc.thisProcess = {
+								id: proc.processid,
+								name: proc.processName,
+								className: 'Business_Process'
+							};
+
+							uniqueProcs.push(proc);
+						}
+					}
+ 
 					d['processes'] = uniqueProcs;
 
                     let thisCodebase=codebases.find((e)=>{
@@ -1364,11 +1391,11 @@ $(document).on('click', '.appInfoButton',function ()
         let appToShow =allApps.filter((d)=>{
             return d.id==selected;	
         });
- 
+  
         // let thisCaps = appToShow[0].caps.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index);
         // let thisProcesses = appToShow[0].processes.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index);
     				
-        //  appToShow[0]['capList']=thisCaps;
+        appToShow[0]['capList']=appToCapsMap[appToShow[0].id];
         //  appToShow[0]['processList']=thisProcesses;
 
 
@@ -1441,8 +1468,8 @@ var redrawView=function(){
 
 				scopedApps.resources = showApps;
 				}
-		
-				$('#appVal').text(scopedApps.resources.length)
+		//console.log('sa', scopedApps.resources)
+			$('#appVal').text(scopedApps.resources.length)
 				if(settings){
 				
 					filters.forEach((d)=>{
@@ -1455,10 +1482,26 @@ var redrawView=function(){
 							}
 						})
 						filters=filters.sort((a, b) => a.order - b.order);
-				
+
+
+						const excludes = new Set(settings.lifecycleExcludes || []);
+						//console.log('excludes', excludes);
+
+						const ld = lifecycleEnumData
+						.filter(lc => excludes?.has(lc.shortname))
+						.map(lc => lc.id);
+  
+						const excludedIds = new Set(ld);
+
+						scopedApps.resources = scopedApps.resources.filter(app =>
+						!excludedIds.has(app.lifecycle)  
+						);
+
+				 $('#appVal').text(scopedApps.resources.length)
+
 				}
 				
-
+				
 filters=filters.sort((a, b) => a.order - b.order);
 $('#chartsArea').html(chartTemplate(filters));
  
@@ -1532,6 +1575,10 @@ const dValuesMap = new Map(d.values.map(f => [f.id, f]));
 					var COLORS_CHART = ["003f5c", "0077b6", "084c61", "177e89", "3066be", "00a9b5", "58508d", "bc5090", "db3a34", "ff6361", "ffa600"];
 					var COLORS_VIVID = ["ff595e", "F38940", "ffca3a", "8ac926", "1982c4", "5FBDE1", "6a4c93"]; // (R, Y, G, B, P)
 					$('.sendToPP').off().on('click', function(){
+						if ($(this).hasClass('sentToPowerPoint')) {
+							return; // Do nothing if already clicked
+						}
+						$('#generate').show()
 
 						let filt=[]
 						let filterText=' (';
@@ -1718,42 +1765,40 @@ function getApps(capid) {
 function redrawView() {
 	essRefreshScopingValues()
 }
+ 
 
+function openNav()
+{	
+	document.getElementById("appSidenav").style.marginRight = "0px";
+}
 
+function closeNav()
+{
+	workingCapId=0;
+	document.getElementById("appSidenav").style.marginRight = "-352px";
+}
 
+/*Auto resize panel during scroll*/
+$('window').scroll(function() {
+	if ($(this).scrollTop() &gt; 40) {
+		$('#appSidenav').css('position','fixed');
+		$('#appSidenav').css('height','calc(100%)');
+		$('#appSidenav').css('top','0');
+	}
+	if ($(this).scrollTop() &lt; 40) {
+		$('#appSidenav').css('position','fixed');
+		$('#appSidenav').css('height','calc(100% - 40px)');
+		$('#appSidenav').css('top','41px');
+	}
+});
 
-		function openNav()
-		{	
-			document.getElementById("appSidenav").style.marginRight = "0px";
-		}
-		
-		function closeNav()
-		{
-			workingCapId=0;
-			document.getElementById("appSidenav").style.marginRight = "-352px";
-		}
-	
-		/*Auto resize panel during scroll*/
-		$('window').scroll(function() {
-			if ($(this).scrollTop() &gt; 40) {
-				$('#appSidenav').css('position','fixed');
-				$('#appSidenav').css('height','calc(100%)');
-				$('#appSidenav').css('top','0');
-			}
-			if ($(this).scrollTop() &lt; 40) {
-				$('#appSidenav').css('position','fixed');
-				$('#appSidenav').css('height','calc(100% - 40px)');
-				$('#appSidenav').css('top','41px');
-			}
-		});
+$('.closePanel').slideDown();
 
-		$('.closePanel').slideDown();
-		
-		function toggleMiniPanel(element){
-			$(element).parent().parent().nextAll('.mini-details').slideToggle();
-			$(element).toggleClass('fa-caret-right');
-			$(element).toggleClass('fa-caret-down');
-		};
+function toggleMiniPanel(element){
+	$(element).parent().parent().nextAll('.mini-details').slideToggle();
+	$(element).toggleClass('fa-caret-right');
+	$(element).toggleClass('fa-caret-down');
+};
 
 	</xsl:template>
 

@@ -34,6 +34,7 @@
 	<xsl:variable name="targetEditor" select="$utilitiesAllEditors[name = $EDITOR]"/>
 	<xsl:variable name="targetEditorLabel" select="$targetEditor/own_slot_value[slot_reference = 'report_label']/value"/>
 	<xsl:variable name="targetEditorContent" select="$targetEditor/own_slot_value[slot_reference = 'report_xsl_filename']/value"/>
+	<xsl:variable name="targetEditorContent_DEBUG" select="'editors/configurable/framework/core_configurable_editor2.html'"/>
 	
 	<xsl:variable name="configEditorJSLibraries" select="/node()/simple_instance[name = ($configEditorComponents, $targetEditor)/own_slot_value[slot_reference = ('viewer_code_libraries')]/value]"/>
 	<xsl:variable name="configEditorJSLibPaths" select="$configEditorJSLibraries/own_slot_value[slot_reference = 'vcl_included_html_path']/value"/>
@@ -396,7 +397,8 @@
 					<xsl:when test="eas:isUserAuthZ($targetEditor)">
 						<xsl:choose>
 							<xsl:when test="doc-available($targetEditorContent)">
-								<xsl:copy-of select="document($targetEditorContent)"/>
+								<xsl:variable name="editor-uri" select="resolve-uri($targetEditorContent, static-base-uri())"/>
+								<xsl:copy-of select="document($editor-uri)"/>
 							</xsl:when>
 							<xsl:otherwise>			
 								<xsl:copy-of select="document('editors/platform/editor_not_found_error.html')"/>
@@ -542,7 +544,8 @@
 				<xsl:for-each select="$configEditorComponentFragments">
 					<xsl:choose>
 						<xsl:when test="doc-available(.)">
-							<xsl:copy-of select="document(.)"/>
+							<xsl:variable name="editor-comp-uri" select="resolve-uri(., static-base-uri())"/>
+							<xsl:copy-of select="document($editor-comp-uri)"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<span>EDITOR COMPONENT FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>
@@ -553,7 +556,8 @@
 				<xsl:for-each select="$configEditorJSLibPaths">
 					<xsl:choose>
 						<xsl:when test="doc-available(.)">
-							<xsl:copy-of select="document(.)"/>
+							<xsl:variable name="editor-lib-uri" select="resolve-uri(., static-base-uri())"/>
+							<xsl:copy-of select="document($editor-lib-uri)"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<span>JS LIBRARY FRAGMENT NOT FOUND: <xsl:value-of select="."/></span>

@@ -1435,7 +1435,8 @@
 					align-items: flex-start; /* Align to the top */
 					overflow: auto; /* Ensure scrolling */
 					width: 100%;
-					height: 100%;
+					height:100%;
+					min-height: 500px;;
 					position: relative;
 				}
 
@@ -1636,14 +1637,17 @@
 						<div id="kpiSidenav" class="sidenav sidenavkpi">
 							<span class="kpiHandle"><i class="fa fa-line-chart" aria-hidden="true"></i></span>
 							 
-							<h3><xsl:value-of select="eas:i18n('KPIs')"/> <span class="text-primary" id="kpiName"/></h3>
+							<h3><xsl:value-of select="eas:i18n('KPIs')"/><xsl:text> </xsl:text> <span class="text-primary" id="kpiName"/></h3>
 							<xsl:value-of select="eas:i18n('Select KPI')"/>: <select id="kpiSelection"><option><xsl:value-of select="eas:i18n('Choose')"/></option></select>
 							<button type="button" aria-label="Clear Values"  class="btn maturityClr btn-info btn-xs"><xsl:value-of select="eas:i18n('Clear Maturity')"/></button><br/>
-							<xsl:value-of select="eas:i18n('Maturity Key')"/>: <span class="label label-default" style="background-color:#FF8A8A">1</span>
+							<xsl:value-of select="eas:i18n('Maturity Key')"/>: <span id="maturityKey"/>
+							<!-- <span class="label label-default" style="background-color:#FF8A8A">1</span>
 							<span class="label label-default" style="background-color:#F4DEB3; color:#000000">2</span>
 							<span class="label label-default" style="background-color:#F0EAAC; color:#000000">3</span>
 							<span class="label label-default" style="background-color:#CCE0AC; color:#000000">4</span>
-							<span class="label label-default" style="background-color:#85A98F">5</span> <br/>
+							<span class="label label-default" style="background-color:#85A98F">5</span> -->
+							<br/>
+
 							<label class="label label-default"><xsl:value-of select="eas:i18n('KPI Basis')"/></label>
 							<form class="right-10">
 								<label>
@@ -1705,7 +1709,12 @@
                                     <div class="modal-body"> 
                                     <h3><b>BPMN Flow for <span id="processName"/></b></h3>
 									<button type="button" class="btn btn-secondary closeModal" data-dismiss="modal" aria-label="Close modal">   <span aria-hidden="true">Close</span></button> 
-									<div class="pull-right" role="note" style="border: 1px solid #555; border-radius: 6px; padding: 5px; font-size: 0.9em; background-color: #f8f9fa; color: #222;" aria-label="Zoom Instructions"><xsl:value-of select="eas:i18n('Hold CTRL to zoom')"/></div>
+									<div class="pull-right" role="note" style="border: 1px solid #555; border-radius: 6px; padding: 5px; font-size: 0.9em; background-color: #f8f9fa; color: #222;" aria-label="Zoom Instructions"> 
+											<button id="zoomOut"><i class="fa fa-minus"></i></button>
+											<button id="zoomIn"><i class="fa fa-plus"></i></button>
+											<button id="fitToScreen"><i class="fa fa-arrows-alt"></i></button>
+										<span style="margin-left: 10px;"><xsl:value-of select="eas:i18n('Hold CTRL to zoom')"/></span> 
+										</div>
                                         <div id="paper-container"/> 
                                     </div>
                                     <div class="modal-footer" style="border-top:none">
@@ -2115,7 +2124,7 @@
 				<th>{{#essRenderInstanceLinkMenuOnly this 'Business_Capability'}}{{/essRenderInstanceLinkMenuOnly}}</th>
 				<th>{{#getMaturityScoreColour this.score}}{{/getMaturityScoreColour}}</th> 
 				<th>{{#if this.processes}}<span class="label label-info">{{this.process.length}}</span> Processes{{/if}}
-					{{#if this.apps}}<span class="label label-info">{{this.apps.length}}</span> <xsl:value-of select="eas:i18n('Apps')"/>
+					{{#if this.apps}}<span class="label label-info">{{this.apps.length}}</span><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('Apps')"/>
 					<xsl:text> </xsl:text>
 					<i class="fa fa-question-circle maturityCircle"><xsl:attribute name="easid">{{this.id}}</xsl:attribute></i>
 					{{/if}}
@@ -2668,8 +2677,12 @@
 			</div>
 		</div>
 		
+	</script> 
+	<script id="maturityKey-template" type="text/x-handlebars-template">
+		{{#each this}}
+			<span class="label label-default"><xsl:attribute name="style">background-color:{{elementBackgroundColour}}; color:{{elementColour}}</xsl:attribute>{{this.score}}</span>
+		{{/each}}
 	</script>
-	
 	<script id="goalKey-template" type="text/x-handlebars-template">
 		{{#each this}}
 		<!--	<div class="goalCard"><xsl:attribute name="style">color:{{goaltxtColour}};background-color:{{goalColour}}</xsl:attribute>{{this.name}} 
@@ -2781,9 +2794,10 @@
 		$('#goalsCatBox').hide();
 
 		var repoSetting, processCriticalities, processCountMap, processToAppsMap, finalAppCountByPrId;
+		const colourPaletteOriginal=['#FF8A8A','#F4DEB3','#F0EAAC','#CCE0AC','#85A98F']	
+		const colourPaletteTextOriginal=['#ffffff','#000000','#000000','#000000','#ffffff']	
 		var colourPalette=['#FF8A8A','#F4DEB3','#F0EAAC','#CCE0AC','#85A98F']	
 		var colourPaletteText=['#ffffff','#000000','#000000','#000000','#ffffff']	
-
 		if(reportParams.default=='herm'){
 			repoSetting=2
 		}else if(reportParams.default=='bricks'){
@@ -2816,7 +2830,12 @@
 		const busCapTypeInfo = {
 			"className": "Business_Capability",
 			"label": 'Business Capability',
-			"icon": 'fa-landmark'
+			"icon": 'fa-th'
+		}
+		const busProcTypeInfo = {
+			"className": "Business_Process",
+			"label": 'Business Process',
+			"icon": 'fa-tasks'
 		}
 
 	 	function showEditorSpinner(message) {
@@ -2938,38 +2957,7 @@
 // Process flow popup code
  
 	var testBPMN;
-<xsl:if test="$isEIPMode = 'true'">
-	var graph = new joint.dia.Graph({ type: 'bpmn' }, { cellNamespace: joint.shapes });
 
-var windowWidth = $('#processModal').width();
-var windowHeight = $('#processModal').height();;
- 
-
-var paper = new joint.dia.Paper({
-    width: window.innerWidth - 200,
-    height: window.innerHeight - 200,
-    model: graph,
-    gridSize: 5,
-    async: true,
-    sorting: joint.dia.Paper.sorting.APPROX,
-    interactive: { 
-        linkMove: false,
-        elementMove: false, // Enable dragging elements
-        paper: true // Allow interactions with the background
-    },
-    snapLabels: true,
-    cellViewNamespace: joint.shapes,
-    restrictTranslate: false // Allow elements to move freely
-});
-
-
-var paperScroller = new joint.ui.PaperScroller({
-    autoResizePaper: true,
-    padding: 20,
-    paper: paper,
-    scrollWhileDragging: true // Enable scrolling while dragging
-});
-</xsl:if>
 
 	$('.appPanel').hide();
 	$('#kpiSelection').select2({width: '250px'});
@@ -3213,6 +3201,10 @@ function setViewOptions(thisId) {
 			
 			goalKeyFragment = $("#goalKey-template").html();
 			goalKeyTemplate = Handlebars.compile(goalKeyFragment);
+
+			maturityKeyFragment = $("#maturityKey-template").html();
+			maturityKeyTemplate = Handlebars.compile(maturityKeyFragment);
+			
 
 			goalFragment = $("#goal-template").html();
 			goalTemplate = Handlebars.compile(goalFragment);
@@ -3627,6 +3619,7 @@ function setViewOptions(thisId) {
 				
 				myBusKPIs=buskpiData 
 				buskpiData?.perfCategory?.forEach((c)=>{
+
 					let iconClass= 'fa fa-cogs'
 					if (c.classes?.includes('Business_Process')) {
 						iconClass= 'fa fa-random'
@@ -4000,6 +3993,8 @@ sortCaps(workingArray.busCapHierarchy);
 				$('#capjump').select2({'width':'200px'});
 		 
 				 workingArrayAppsCaps=workingArray.busCaptoAppDetails
+
+				// console.log('workingArray.busCaptoAppDetails',workingArray.busCaptoAppDetails)
 				 let appUpdateMod = new Promise(function(resolve, reject) { 
 					resolve(appArray = responses[1]);
 					 reject();
@@ -4102,14 +4097,14 @@ sortCaps(workingArray.busCapHierarchy);
 
 
 				});
-  
+
 				let showInfo = 0;
 				const businessCapabilitiesMap = new Map(
 					responses[2].businessCapabilities?.map(e => [e.id, e.sequenceNumber]) || []
 				);
 
 				// Check if infoConcepts should be shown globally
-				showInfo = workingArray.busCaptoAppDetails.some(bc => bc.infoConcepts.length > 1) ? 1 : 0;
+				showInfo = workingArray.busCaptoAppDetails.some(bc => bc.infoConcepts.length > 0) ? 1 : 0;
 
 				// Iterate over business capabilities efficiently
 				workingArray.busCaptoAppDetails.forEach(bc => {
@@ -4397,7 +4392,7 @@ processCountMap = processMap.reduce((acc, item) => {
 						{"class":"Product_Concept", "slot":"product_concept_supported_by_capability"},
 						{"class":"Business_Domain", "slot":"belongs_to_business_domain"},
 						{"class":"ACTOR_TO_ROLE_RELATION", "slot":"act_to_role_to_role"},
-						{"class":"Managed_Service", "slot":"ms_managed_app_elements'"},
+						{"class":"Managed_Service", "slot":"al_managed_by_services"},
 						{"class":"Application_Capability", "slot":"realises_application_capabilities"}]
 
 						hardClasses = hardClasses.filter(item => 
@@ -4451,17 +4446,18 @@ function getApps(capid){
   
 
 	appsToShow['applications']=scopedApps.resources; 
- 
+
 	let filteredApps = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
 
 	let test = thisCapAppList[0].apps.filter((id) => scopedApps.resourceIds.includes(id));
  
 	let appArrayToShow=[];
+
 	filteredApps.forEach((app)=>{
 		let anApp=appArray.applications.filter((d)=>{
 			return d.id ==app;
 		})
-		
+	
 		appArrayToShow.push(anApp[0]);
 	})
 
@@ -4472,13 +4468,10 @@ function getApps(capid){
 		panelData['capName']=capName[0].name; 
 
 	panelData.apps.forEach((d) => {
+
 		// Remove duplicates using a Set for efficiency
 		d.capsList = [...new Map(d.caps.map(item => [item.id, item])).values()];
 		d.processList = [...new Map(d.processes.map(item => [item.id, item])).values()];
-
-		//if (!app.processes) return; // Skip if processes do not exist
-
-    	
 
 	});
 
@@ -4712,7 +4705,7 @@ function registerEvents(){
 				thisAllServs.sort((a, b) => (a.name > b.name) ? 1 : -1)
 
 				appToShow[0]['allservList']=thisAllServs; 
-  
+
 				$('#appData').html(appTemplate(appToShow[0]));
 				$('.appPanel').show( "blind",  { direction: 'down', mode: 'show' },500 );
 
@@ -5084,61 +5077,77 @@ function refreshDiagram(aDiagram) {
         //Show an error message: error
     });
 }
-function drawBPMN(bpmnData) {
-	<xsl:if test="$eipMode">
-    document.getElementById('paper-container').appendChild(paperScroller.el);
-    const container = document.getElementById('paper-container');
 
-    paperScroller.setCursor('grab'); 
-    graph.fromJSON(bpmnData);
+function drawBPMN(diagramData){
+    console.log('dd', diagramData)
 
-    paper.fitToContent({
-        padding: 5,
-        minWidth: 800,
-        minHeight: 600,
-        allowNewOrigin: 'any'
-    });
+  const graph = new joint.dia.Graph();
 
-    setTimeout(() => {
-        paper.scaleContentToFit({
-            padding: 5, 
-            minScale: 0.1, 
-            maxScale: 1, 
-            preserveAspectRatio: true
-        });
-        paperScroller.center();
-    }, 300);
+  const paper = new joint.dia.Paper({
+    el: document.getElementById('paper-container'),
+    model: graph,
+    width: '100%',
+    height: document.getElementById('paper-container').clientHeight,
+    gridSize: 10,
+    drawGrid: true,
+    background: { color: '#ffffff' },
+	interactive: function(cellView) {
+		if (cellView.model.isLink()) return true;
+		return { elementMove: false }; // 🔒 disable dragging of elements
+	}
+  });
 
-    // Enable paper dragging when clicking on the background
-    paper.on('blank:pointerdown', function(event, x, y) {
-        paperScroller.startPanning(event);
-    });
+  // Drag to pan
+ let isDragging = false;
+let dragOrigin = null;
+let paperOrigin = null;
 
-    // Fix zooming
-    paperScroller.el.addEventListener('wheel', function(event) {
-	
-        event.preventDefault(); // Prevent default scrolling
+paper.on('blank:pointerdown', (evt) => {
+  isDragging = true;
+  dragOrigin = { x: evt.clientX, y: evt.clientY };
+  const { tx, ty } = paper.translate();
+  paperOrigin = { x: tx, y: ty };
+});
 
-        if (event.ctrlKey || event.metaKey) {
-            // Zoom in or out
-            let delta = event.deltaY > 0 ? -0.1 : 0.1;
-            let newScale = Math.max(0.2, Math.min(paperScroller.zoom() + delta, 2));
+paper.on('blank:pointermove', (evt) => {
+  if (!isDragging) return;
+  const dx = evt.clientX - dragOrigin.x;
+  const dy = evt.clientY - dragOrigin.y;
+  paper.translate(paperOrigin.x + dx, paperOrigin.y + dy);
+});
 
-            paperScroller.zoom(newScale, { absolute: true, grid: 0.05 });
-        } else {
-            // Scroll normally if no modifier key is pressed
-            paperScroller.el.scrollBy({
-                top: event.deltaY,
-                left: event.deltaX,
-                behavior: 'smooth'
-            });
-        }
-    });
+paper.on('blank:pointerup', () => {
+  isDragging = false;
+});
 
-    // Fix container scrolling
-    document.getElementById('paper-container').style.overflow = 'auto';
-		</xsl:if>
+
+  // Zoom
+  function setZoom(newScale) {
+    const clamped = Math.max(0.2, Math.min(2.5, newScale));
+    paper.scale(clamped, clamped);
+    currentZoom = clamped;
+  }
+
+  let currentZoom = 1;
+  document.getElementById('zoomIn').onclick = () => setZoom(currentZoom + 0.1);
+  document.getElementById('zoomOut').onclick = () => setZoom(currentZoom - 0.1);
+
+  document.getElementById('paper-container').addEventListener('wheel', function (evt) {
+    evt.preventDefault();
+    const delta = evt.deltaY &lt; 0 ? 0.1 : -0.1;
+    setZoom(currentZoom + delta);
+  }, { passive: false });
+
+  document.getElementById('fitToScreen').onclick = () => {
+    paper.scaleContentToFit({ padding: 20, scaleGrid: 0.05 });
+    currentZoom = paper.scale().sx;
+  };
+ 
+ 
+    graph.clear();
+    graph.fromJSON(diagramData); 
 }
+
 </xsl:if>
 var redrawView=function(){
  
@@ -5193,7 +5202,7 @@ matchedBuscapAndPlanIds = groupedCapsById;
 	let prodConceptDef = new ScopingProperty('prodConIds', 'Product_Concept');
 	let busDomainDef = new ScopingProperty('domainIds', 'Business_Domain');
 	let a2rDef = new ScopingProperty('sA2R', 'ACTOR_TO_ROLE_RELATION');
-	let msDef = new ScopingProperty('ms_managed_app_elements', 'Managed_Service');
+	let msDef = new ScopingProperty('al_managed_by_services', 'Managed_Service');
 	let acDef = new ScopingProperty('realises_application_capabilities', 'Application_Capability');
  
 
@@ -5210,7 +5219,7 @@ matchedBuscapAndPlanIds = groupedCapsById;
 		 }
 	scopedApps = essScopeResources(apps, [appOrgScopingDef, geoScopingDef, visibilityDef,a2rDef, msDef, acDef].concat(dynamicAppFilterDefs), appTypeInfo);
 	scopedCaps = essScopeResources(workingArrayAppsCaps, [appOrgScopingDef, geoScopingDef, visibilityDef,prodConceptDef, busDomainDef].concat(dynamicCapFilterDefs), busCapTypeInfo);
-	scopedProcesses = essScopeResources(uniqueProcesses, [], busCapTypeInfo);
+	scopedProcesses = essScopeResources(uniqueProcesses, [], busProcTypeInfo);
 
 	inScopeCapsApp=scopedCaps.resources; 
    
@@ -5286,30 +5295,39 @@ let workingMatchedBuscapAndProcessIds = Object.fromEntries(idToProcessCountMap);
 		const processMapByPbpId = new Map(
 			processMap.map(php => [php.pbpId, { id: php.prId, name: php.pr }])
 		);
-		const appToCapMap = new Map(
-			appToCap.map(ac => [ac.procId, { id: ac.bcId, name: ac.bc }])
-		);
+		// Corrected creation of appToCapMap
+		// It now maps a process ID to an ARRAY of capabilities
+		const appToCapMap = new Map();
+		appToCap.forEach(ac => { // appToCap is from the outer scope (Promise.all.then)
+			if (!appToCapMap.has(ac.procId)) {
+				appToCapMap.set(ac.procId, []);
+			}
+			// Ensure a className is added if other parts of your code expect it for capability objects
+			appToCapMap.get(ac.procId).push({ id: ac.bcId, name: ac.bc, className: 'Business_Capability' });
+		});
 
-		appsToShow.applications.forEach(d => {
+		appsToShow.applications.forEach(d_app => { // Iterate over resolvedApps (which is appsToShow.applications at this point)
 			const procsForApp = new Set();
 			const capForApp = new Set();
 
-			d.physP.forEach(pp => {
+			d_app.physP.forEach(pp => { // d_app.physP comes from the application object itself
 				const process = processMapByPbpId.get(pp);
 				if (process) {
 					procsForApp.add(JSON.stringify(process));
 
 					// Find capabilities related to this process
-					const cap = appToCapMap.get(process.id);
-					if (cap) {
-						capForApp.add(JSON.stringify(cap));
+					const capsForProcess = appToCapMap.get(process.id); // Get ARRAY of capabilities for this logical process
+					if (capsForProcess) {
+						capsForProcess.forEach(cap => { // Iterate over all capabilities for this process
+							capForApp.add(JSON.stringify(cap));
+						});
 					}
 				}
 			});
 
 			// Convert sets back to arrays and parse the JSON to restore objects
-			d.processes = Array.from(procsForApp).map(proc => JSON.parse(proc));
-			d.caps = Array.from(capForApp).map(cap => JSON.parse(cap));
+			d_app.processes = Array.from(procsForApp).map(proc => JSON.parse(proc));
+			d_app.caps = Array.from(capForApp).map(cap => JSON.parse(cap)); // d_app.caps now holds all related capabilities
 		});
 
 
@@ -5577,11 +5595,37 @@ $('.maturityClr').on('click', function(){
 $('#kpiSelection, input[name="kpiOption"]').off('change').on('change', function(){
 	$(`.buscap`).removeAttr('style');
 		var selectedValue = $('input[name="kpiOption"]:checked').val();
-		//console.log('selectedValue',selectedValue)
- 
-		//console.log('buskpiDataperfCategory',	buskpiData?.perfCategory)
-		// Preserve the original myBusKPIs
+  
 		let allKpis = JSON.parse(JSON.stringify(myBusKPIs)); 
+	 
+	let picked = $('#kpiSelection option:selected')
+
+	let sqs = allKpis.perfCategory.find((f)=>{
+		return f.id == picked.val();
+	})
+ 
+		sqs.sqs[0].sqvs.sort((a, b) => a.score - b.score);
+		colourArray=["#FF8A8A", "#F4DEB3", "#F0EAAC", "#CCE0AC","#85A98F"];
+		
+		if(sqs.sqs){
+			cp=[];
+			cpt=[];
+			sqs.sqs[0].sqvs?.forEach((s)=>{
+				if(!s.elementBackgroundColour || s.elementBackgroundColour ==''){
+					s.elementBackgroundColour=colourPaletteOriginal[s.score-1];
+					s.elementColour=colourPaletteTextOriginal[s.score - 1];
+				}
+
+				cp[s.score-1]=s.elementBackgroundColour
+				cpt[s.score-1]=s.elementColour
+			})
+			colourPalette=cp;
+			colourPaletteText=cpt;
+
+		} 
+
+		$('#maturityKey').html(maturityKeyTemplate(sqs.sqs[0].sqvs))
+
 
 		// Filter applications based on scopedApps
 		allKpis.applications = allKpis.applications.filter(app => 

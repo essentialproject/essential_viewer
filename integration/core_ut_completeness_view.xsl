@@ -31,12 +31,16 @@
 		<xsl:apply-templates select="$thisObject/own_slot_value" mode="seqslots"/>
 	</xsl:variable>
 -->
-	<xsl:variable name="mclasses" select="/node()/class[type = ':ESSENTIAL-CLASS' and own_slot_value[slot_reference = ':ROLE']/value = 'Concrete' and not(contains(name, 'RELATION')) and not(contains(name, ':')) and not(contains(name, '-'))]"/>
+	<xsl:variable name="mclasses" select="/node()/class[type = ':ESSENTIAL-CLASS' and own_slot_value[slot_reference = ':ROLE']/value = 'Concrete' and not(contains(name, 'RELATION')) and not(contains(name, ':')) and not(contains(name, '-'))][not(contains(superclass, ':'))]"/>
 	<xsl:variable name="thisClass" select="/node()/class[type = ':ESSENTIAL-CLASS'][(name = $param1) or (supertype = $param1)]"/>
 	<xsl:variable name="thisClassslots">
 		<xsl:apply-templates select="$thisClass/own_slot_value" mode="seqslots"/>
 	</xsl:variable>
+
+	
+	
 	<xsl:variable name="classInstances" select="/node()/simple_instance[type = $param1]"/>
+<xsl:key name="classInstancesKey" match="$classInstances" use="type"/>
 	<xsl:variable name="classInstanceCount" select="count($classInstances)"/>
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -194,6 +198,7 @@
 						</div>
 						<div class="col-sm-12 col-md-6">
 							<h2 class="text-primary">Slots for Class</h2>
+							<br/>
 							<table id="dt_objects" class="table table-striped table-bordered table-condensed small">
 								<thead>
 									<tr>
@@ -360,7 +365,7 @@
                     {$(ele).removeClass('btn btn-default');$(ele).addClass('btn btn-primary')};
                     }
                     
-				classJSON=[<xsl:apply-templates select="$classInstances" mode="getJSON"/>];
+				classJSON=[<xsl:apply-templates select="key('classInstancesKey', $param1)" mode="getJSON"/>];
 			 
                 alphaJSON=classJSON.sort(function(x, y) {
                                 return d3.ascending(x.name, y.name);
@@ -515,9 +520,15 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="getJSON"> {"name":"<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>",
+	<xsl:template match="node()" mode="getJSON"> {
+		
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 	"link":"<xsl:call-template name="RenderInstanceLinkForJS">
-			<xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>",
+			<xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template>", 
 	"id":"<xsl:value-of select="name"/>","slots":[<xsl:apply-templates select="own_slot_value/slot_reference" mode="slots"/>]}<xsl:if test="not(position() = last())">,</xsl:if></xsl:template>
 
 	<xsl:template match="node()" mode="slots">

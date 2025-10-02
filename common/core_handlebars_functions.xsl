@@ -68,7 +68,7 @@
 				let linkMenuName = essGetMenuName(instance); 
 		        if (targetReport.length &gt; 1) { 
 		            let linkURL = reportURL;
-		            let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
+		            let linkHref = '?XML=reportXML.xml&amp;PMA=' + (instance.legacyId ?? instance.id) + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
 		            let linkId = instance.id + 'Link';
 		            instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
 
@@ -81,7 +81,7 @@
 		            let linkMenuName = essGetMenuName(instance);
 		            let instanceLink = instance.name;
 		            if (linkMenuName != null) {
-		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+		                let linkHref = '?XML=reportXML.xml&amp;PMA=' + (instance.legacyId ?? instance.id) + '&amp;cl=' + essLinkLanguage;
 		                let linkClass = 'context-menu-' + linkMenuName;
 		                let linkId = instance.id + 'Link';
 		                let linkURL = reportURL;

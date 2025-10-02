@@ -56,7 +56,7 @@
 <xsl:key name="BRAKey" match="$busRefArch" use="own_slot_value[slot_reference='business_reference_architecture_elements']/value"/> 
 
 <xsl:variable name="groupActors" select="/node()/simple_instance[type='Group_Actor']"/>
-
+<xsl:key name="groupActors" match="/node()/simple_instance[type='Group_Actor']" use="name"/>
 <xsl:key name="busRefKey" match="$busRefArch" use="name"/>
 <xsl:variable name="BusModelArch" select="/node()/simple_instance[type='Business_Model_Architecture']"/>
 <xsl:key name="BusModArch" match="$BusModelArch" use="own_slot_value[slot_reference='architecture_of_business_model']/value"/>
@@ -377,7 +377,7 @@
 		<!-- bus model info -->
 
 <xsl:template match="node()" mode="busModConfigs">
-    <xsl:variable name="thisActors" select="$groupActors[name=current()/own_slot_value[slot_reference='bmc_org_scope']/value]"/>
+    <xsl:variable name="thisActors" select="key('groupActors',current()/own_slot_value[slot_reference='bmc_org_scope']/value)"/>
     <xsl:variable name="thisBM" select="key('BusModels', current()/own_slot_value[slot_reference='bmc_for_business_model']/value)"/>
 	<!--
     <xsl:variable name="thisBM" select="$BusModels[name=current()/own_slot_value[slot_reference='bmc_for_business_model']/value]"/>-->
@@ -399,7 +399,7 @@
 	 }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 <xsl:template match="node()" mode="ariSheet">
-    <xsl:variable name="thisActors" select="$groupActors[name=current()/own_slot_value[slot_reference='sm_organisational_scope']/value]"/>
+    <xsl:variable name="thisActors" select="key('groupActors', current()/own_slot_value[slot_reference='sm_organisational_scope']/value)"/>
   
 	{  
 	    "id":"<xsl:value-of select="current()/name"/>",

@@ -222,13 +222,64 @@
 			
 // Sample glossary data in JSON format
 var glossaryData=[<xsl:apply-templates select="key('term', 'Business_Term')" mode="term"/>]
-console.log('glossaryData',glossaryData)
+// console.log('glossaryData',glossaryData)
+// --- Diacritics handling helpers ---
+function normalizeForIndex(str) {
+    // Return the string uppercased with diacritics removed
+    if (!str) return '';
+    return str
+        .toString()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+}
+
+// ---- Arabic support helpers ----
+function hasArabic(str){
+    return /[\u0600-\u06FF]/.test(str || '');
+}
+function normalizeArabic(str){
+    if(!str) return '';
+    let s = String(str).trim();
+    // Remove tatweel and Arabic diacritics (tashkeel)
+    s = s.replace(/[\u0640]/g,''); // tatweel
+    s = s.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,''); // vowels and Qur'anic marks
+    // Normalise common initial variants
+    s = s.replace(/[\u0622\u0623\u0625\u0671]/g,'\u0627'); // آ أ إ ٱ → ا
+    s = s.replace(/[\u0624]/g,'\u0648'); // ؤ → و
+    s = s.replace(/[\u0626]/g,'\u064A'); // ئ → ي
+    s = s.replace(/[\u0629]/g,'\u0647'); // ة → ه (index under Haa)
+    // Strip Arabic definite article "ال" at the start when indexing
+    s = s.replace(/^\u0627\u0644/, ''); // ^ال
+    return s;
+}
+function baseFirstLetterArabic(str){
+    const n = normalizeArabic(str);
+    return n ? n.charAt(0) : '';
+}
+
+function baseFirstLetter(str) {
+    // Arabic-aware: use Arabic normalisation if Arabic script is detected; otherwise Latin with diacritics removed
+    if (hasArabic(str)) {
+        return baseFirstLetterArabic(str);
+    }
+    const n = normalizeForIndex(str);
+    return n ? n.charAt(0) : '';
+}
   
-// Function to render letters in the sidebar
 // Function to render letters in the sidebar
 function renderLetters() {
     const lettersContainer = document.getElementById('letters');
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    // Detect if any glossary name contains Arabic characters
+    const arabic = Array.isArray(glossaryData) &amp;&amp; glossaryData.some(it => hasArabic(it &amp;&amp; it.name));
+    const latinAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const arabicAlphabet = ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
+
+    const alphabet = arabic ? arabicAlphabet : latinAlphabet;
+    // Set reading direction for the letters rail
+    lettersContainer.setAttribute('dir', arabic ? 'rtl' : 'ltr');
+
     alphabet.forEach(letter => {
         const letterElement = document.createElement('div');
         letterElement.textContent = letter;
@@ -254,7 +305,7 @@ function handleLetterClick(letter, clickedElement) {
 
     // Set a delay to allow the turn effect to play before updating content
     setTimeout(() => {
-        const filteredData = glossaryData.filter(item => item.name.toUpperCase().startsWith(letter));
+        const filteredData = glossaryData.filter(item => baseFirstLetter(item.name) === letter);
         renderGlossary(filteredData);
         glossaryContainer.classList.remove('turning');
     }, 600); // Duration matches the CSS transition time
@@ -284,7 +335,7 @@ function renderGlossary(data) {
 // Function to programmatically open the relevant letter and scroll to the specific term
 function openLetterAndScrollToTerm(termId, termName) {
     // Find the first letter of the term name
-    const firstLetter = termName.charAt(0).toUpperCase();
+    const firstLetter = baseFirstLetter(termName);
 
     // Trigger the letter click programmatically to open the relevant section
     handleLetterClick(firstLetter);

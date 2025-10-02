@@ -832,12 +832,20 @@
 										<xsl:attribute name="title">{{this.app.name}}</xsl:attribute>
 										<i class="fa fa-caret-right fa-fw right-5 text-white" onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceLinkMenuOnly this.app 'Composite_Application_Provider'}}{{/essRenderInstanceLinkMenuOnly}}
 									</div>
-									<div class="lifecycle pull-right">				
-										 {{#getLifecycle this.app.lifecycle 'app'}}{{/getLifecycle}}
-										 {{#if this.app.tosvcLifecycle}}
-											 {{#getLifecycle this.app.tosvcLifecycle 'svc'}}{{/getLifecycle}} 
-										 {{/if}}
-									</div>
+									{{#if this.app.lifecycle}}
+										<div class="lifecycle pull-right">
+											{{#getLifecycle this.app.lifecycle 'app'}}{{/getLifecycle}}
+											{{#if this.app.tosvcLifecycle}}
+												{{#getLifecycle this.app.tosvcLifecycle 'svc'}}{{/getLifecycle}} 
+											{{/if}}
+										</div>
+									{{else}}
+										{{#if this.app.tosvcLifecycle}}
+											<div class="lifecycle pull-right">
+												{{#getLifecycle this.app.tosvcLifecycle 'svc'}}{{/getLifecycle}} 
+											</div>
+										{{/if}}
+									{{/if}}
 								</div>
 								<div class="clearfix"/>
 								<div class="mini-details">

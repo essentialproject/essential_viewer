@@ -924,6 +924,7 @@
 	                                <span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
 	                                <span class="text-darkgrey"><xsl:value-of select="eas:i18n('Business Capability Summary for')"/> </span>&#160;
 	                            	<span class="text-primary headerName xselectAppClass"><select id="subjectSelection" style="width: 800px;"></select></span>
+									<span id="selectMenu"></span>
 								</h1>
 	                        </div>
 	                    </div>
@@ -1938,6 +1939,11 @@ $(document).ready(function() {
         </div>
     </div>
     </script>
+	<script id="select-template" type="text/x-handlebars-template"> 
+		 
+	<xsl:text> </xsl:text>{{#essRenderInstanceLinkSelect this}}{{/essRenderInstanceLinkSelect}}       
+		
+	</script>
 			</body>
 		</html>
 	</xsl:template>
@@ -2048,6 +2054,9 @@ $('document').ready(function () {
         templateFragment = $("#model-l2cap-template").html();
         l2CapTemplate = Handlebars.compile(templateFragment);
         Handlebars.registerPartial('l2CapTemplate', l2CapTemplate);
+
+		var selectFragment = $("#select-template").html();
+		selectTemplate = Handlebars.compile(selectFragment);
 
 		Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
 			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
@@ -2268,6 +2277,10 @@ redrawView()
 let focusCap = capsArray.businessCapabilities.find((d)=>{
 	return d.id==thisCapId
 })
+
+focusCap['className']='Business_Capability';
+$('#selectMenu').html(selectTemplate(focusCap))
+$('.context-menu-busCapGenMenu').html('<i class="fa fa-bars"></i> Menu');
 
 let capDetail = workingArray.busCaptoAppDetails.find((f)=>{
 	return f.id == thisCapId

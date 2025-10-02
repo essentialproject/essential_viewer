@@ -349,146 +349,36 @@
 		var viewAPIDataMart = '<xsl:value-of select="$viewerAPIPathAppsMart"/>';
 		var viewAPIDataOrgs = '<xsl:value-of select="$viewerAPIPathOrgs"/>';  
 
-		const openDB = () => {
-    return new Promise((resolve, reject) => {
-        let request = indexedDB.open("viewerDataDB", 3);
-
-        request.onupgradeneeded = (event) => {
-            let db = event.target.result;
-            if (!db.objectStoreNames.contains("datasets")) {
-                db.createObjectStore("datasets", { keyPath: "url" });
-            }
-        };
-
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = () => reject("IndexedDB connection failed");
-    });
-};
-
-const cacheData = async (url, data, lastPublished, repoId) => {
-    try {
-        let db = await openDB();
-        let tx = db.transaction("datasets", "readwrite");
-        let store = tx.objectStore("datasets");
-
-        store.put({ url, data, lastPublished, repoId }); // Store repoId and lastPublished timestamp
-
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => reject("Error caching data");
-        });
-    } catch (error) {
-        return Promise.reject("IndexedDB connection failed");
-    }
-};
-
-const getCachedData = async (url) => {
-    try {
-        let db = await openDB();
-        let tx = db.transaction("datasets", "readonly");
-        let store = tx.objectStore("datasets");
-        let getRequest = store.get(url);
-
-        return new Promise((resolve, reject) => {
-            getRequest.onsuccess = () => {
-                if (getRequest.result) {
-                    resolve({
-                        data: getRequest.result.data,
-                        lastPublished: getRequest.result.lastPublished !== undefined ? getRequest.result.lastPublished : null,
-                        repoId: getRequest.result.repoId || null,
-                    });
-                } else {
-                    resolve(null);
-                }
-            };
-            getRequest.onerror = () => reject("Error retrieving cached data");
-        });
-    } catch (error) {
-        return Promise.reject("IndexedDB connection failed");
-    }
-};
-
-const isIndexedDBSupported = () => {
-    return !!window.indexedDB;
-};
-
-const getServerLastPublished = async (url) => {
-    try {
-        let response = await fetch(url, { method: "HEAD" });
-        if (!response.ok) throw new Error("Failed to fetch headers");
-        return response.headers.get("Last-Published") || null;
-    } catch (error) {
-        console.warn("Could not fetch last published timestamp:", error);
-        return null;
-    }
-};
-
-const promise_loadViewerAPIData = async (apiDataSetURL, serverLastPublished, repoId) => {
+ 
+const promise_loadViewerAPIData = async (apiDataSetURL) => {
     if (!apiDataSetURL) return Promise.reject(false);
 
     try {
-        if (isIndexedDBSupported()) {
-            let cachedData = await getCachedData(apiDataSetURL);
-
-            let cachedTimestamp = cachedData ? cachedData.lastPublished : null;
-            let cachedRepoId = cachedData ? cachedData.repoId : null;
-
-            let cachedTimeMillis = cachedTimestamp ? new Date(cachedTimestamp).getTime() : 0;
-            let serverTimeMillis = Number(serverLastPublished);
-
-            //use index if conditions met
-
-            if (cachedData &amp;&amp; cachedRepoId === repoId &amp;&amp; cachedTimeMillis >= serverTimeMillis) {
-                console.log("Using cached data for", apiDataSetURL);
-                return cachedData.data;
-            }
-        } else {
-            console.warn("IndexedDB not supported, falling back to fetch.");
-        }
-
         let response = await fetch(apiDataSetURL);
-        console.log('response', response);
         if (!response.ok) throw new Error("Failed to load data");
-
         let data = await response.json();
-
-        if (isIndexedDBSupported()) {
-            await cacheData(apiDataSetURL, data, serverLastPublished, repoId);
-        }
-
         return data;
     } catch (error) {
-        console.error("Error fetching data:", error);
         return Promise.reject(false);
     }
 };
 
-const timestamp = '<xsl:value-of select="$lastPublishDateTime"/>';
-const repoId = '<xsl:value-of select="$repo"/>';
-
 const apiDataSets = [
-    viewAPIData, 
-	viewAPIDataSvc,
-	viewAPIDataMart,
-	viewAPIDataOrgs
+    viewAPIData,
+    viewAPIDataSvc,
+    viewAPIDataMart,
+    viewAPIDataOrgs
 ];
 
-getServerLastPublished(apiDataSets[0])
-    .then((serverLastPublished) => {
-        if (!serverLastPublished) {
-            serverLastPublished = Date.now();
-        }
-
-        return Promise.all(
-            apiDataSets.map((url) => promise_loadViewerAPIData(url, serverLastPublished, repoId))
-        );
-    })
-    .then(function (responses) {
-        console.log("All data loaded");
-    })
-    .catch(function (error) {
-        console.error("Error loading one or more datasets:", error);
-    });
+Promise.all(
+    apiDataSets.map((url) => promise_loadViewerAPIData(url))
+)
+.then(function (responses) {
+    //console.log("All data loaded");
+})
+.catch(function (error) {
+   // console.error("Error loading one or more datasets:", error);
+});
 
 
 	function showEditorSpinner(message){
@@ -689,7 +579,7 @@ Promise.all([
     filters = responses[0].filters;
     workingArr = responses[0].applications;
     orgsRolesList = responses[3].a2rs;
-    console.log('workingArr',workingArr)
+ //   console.log('workingArr',workingArr)
   showEditorSpinner('Preparing Table for '+ workingArr?.length + ' Applications')
     slotNames = filters.map(obj => ({
         "id": obj.slotName,

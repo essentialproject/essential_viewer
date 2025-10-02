@@ -31,27 +31,17 @@
         });
       
         var promise_loadViewerAPIData = function(apiDataSetURL) {
-            return new Promise(function (resolve, reject) {
-                if (apiDataSetURL != null) {
-                    var xmlhttp = new XMLHttpRequest();
-        
-                    xmlhttp.onreadystatechange = function () {
-                        if (this.readyState === 4) {
-                            if (this.status === 200) {
-                                var viewerData = JSON.parse(this.responseText);
-                                resolve(viewerData);
-                            } else {
-                                reject(new Error('Failed to load: ' + this.status));
+            return new Promise((resolve, reject) => {
+                if (apiDataSetURL) {
+                    fetch(apiDataSetURL)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Failed to load: ${response.status}`);
                             }
-                        }
-                    };
-        
-                    xmlhttp.onerror = function () {
-                        reject(new Error('XMLHttpRequest error'));
-                    };
-        
-                    xmlhttp.open("GET", apiDataSetURL, true);
-                    xmlhttp.send();
+                            return response.json();
+                        })
+                        .then(data => resolve(data))
+                        .catch(error => reject(error));
                 } else {
                     reject(new Error('Invalid URL'));
                 }
@@ -59,11 +49,18 @@
         };
         
         function fetchAndRenderData(apiNames) {
-      
             let promises = apiNames.map(apiName => {
-                let fileToLoad = apiArray[apiName]; 
-               
-                return promise_loadViewerAPIData(fileToLoad).then(response => ({ apiName, response }));
+                let fileToLoad = apiArray[apiName];
+        console.log(`fileToLoad`,fileToLoad);
+                if (!fileToLoad) {
+                    console.warn(`No file path found for API: ${apiName}`);
+                }
+        
+                return promise_loadViewerAPIData(fileToLoad)
+                    .then(response => {
+                        console.log(`Fetched data for ${apiName}`, response);
+                        return { apiName, response };
+                    });
             });
         
             return Promise.all(promises)
@@ -71,18 +68,17 @@
                     let responseObj = {};
                     responses.forEach(({ apiName, response }) => {
                         responseObj[apiName] = response;
-      
-                        // DO HTML stuff for each response if needed
                     });
-                    return responseObj; // Return all responses as an object
+        
+                    return responseObj;
                 })
                 .catch(function(error) {
-                    // Display an error somewhere on the page
                     console.error('Error:', error);
                     displayError(error);
-                    throw error; // Re-throw the error to ensure the promise is rejected
+                    throw error;
                 });
         }
+        
         
         
     </xsl:template>

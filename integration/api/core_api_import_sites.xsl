@@ -7,6 +7,8 @@
 	
     <xsl:variable name="sites" select="/node()/simple_instance[type = 'Site']"/>
     <xsl:variable name="countries" select="/node()/simple_instance[type = 'Geographic_Region']"/>
+	<xsl:key name="location_key" match="/node()/simple_instance[type=('Geographic_Location','Geographic_Region')]" use="name"/>
+	<xsl:key name="geo_key" match="/node()/simple_instance[type=('GeoCode')]" use="name"/>
 	 
 	<!--
 		* Copyright © 2008-2019 Enterprise Architecture Solutions Limited.
@@ -38,9 +40,14 @@
 <xsl:template match="node()" mode="sites">
 	<xsl:variable name="thiscountries" select="$countries[name=current()/own_slot_value[slot_reference='site_geographic_location']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	<xsl:variable name="thisloc" select="key('location_key', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>	
+	<xsl:variable name="thisgeo" select="key('geo_key', $thisloc/own_slot_value[slot_reference = ('gl_geocode','gr_region_centrepoint')]/value)"/>	
 	<xsl:variable name="combinedMap" as="map(*)" select="map{
 		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
-		'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+		'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),	
+		'long': string(translate(translate($thisgeo/own_slot_value[slot_reference = 'geocode_longitude']/value, '}', ')'), '{', ')')),
+		'lat': string(translate(translate($thisgeo/own_slot_value[slot_reference = 'geocode_latitude']/value, '}', ')'), '{', ')'))
+	
 		}" />
 		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>

@@ -3,8 +3,6 @@
 	<xsl:include href="../common/core_common_head_content.xsl"/>
 	<xsl:include href="../common/core_header.xsl"/>
 	<xsl:include href="../common/core_footer.xsl"/>
-	<xsl:include href="../common/core_arch_image.xsl"/>
-	<xsl:include href="../common/core_handlebars_functions.xsl"/>
 	<xsl:include href="../common/core_external_repos_ref.xsl"/>
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
     <xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
@@ -14,11 +12,13 @@
 	<!-- START GENERIC PARAMETERS -->
     <xsl:param name="viewScopeTermIds"/>
     <xsl:variable name="issues" select="/node()/simple_instance[type='Issue']"/>
-	<xsl:key name="issuesByType" match="$issues" use="own_slot_value[slot_reference='strategic_requirement_type']/value"/>
+	<xsl:key name="issuesByType" match="$issues" use="own_slot_value[slot_reference='sr_type']/value"/>
+
+	<xsl:key name="options" match="/node()/simple_instance[type='Idea_Option']" use="name"/>
     <xsl:key name="issueCat" match="/node()/simple_instance[type='Strategic_Requirement_Category']" use="own_slot_value[slot_reference='sr_category_subtypes']/value"/>
 	<xsl:key name="issueType" match="/node()/simple_instance[type='Strategic_Requirement_Type']" use="name"/>
     <xsl:key name="elements" match="/node()/simple_instance[supertype='EA_Class']" use="name"/>
-    <xsl:variable name="catTypes" select="key('issueType', $issues/own_slot_value[slot_reference='strategic_requirement_type']/value)"/>
+    <xsl:variable name="catTypes" select="key('issueType', $issues/own_slot_value[slot_reference='sr_type']/value)"/>
 	<xsl:variable name="cats" select="key('issueCat', $catTypes/name)"/>
     <xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
     <xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
@@ -80,7 +80,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 		<script src="js/pptxgenjs/dist/pptxgen.bundle.js"></script>
-
 		<style>
 			
 			.handle {
@@ -118,7 +117,7 @@
 				border: 1px solid #ddd;
 				border-left: 3px solid red;
 				font-size:1em;
-				width: 250px;
+				width: 290px;
 				margin-bottom: 3px;
 				cursor: pointer;
 				background: #fff;
@@ -518,22 +517,100 @@ display:none;
 .typeName{
 	text-transform: uppercase;
     font-size: 0.7em;
-    bottom: 1px;
+    top: 1px;
     position: absolute;
-    right: 18px;
+    right: 2px;
     background-color: #c388da;
     padding-left: 3px;
     padding-right: 3px;
     color: white;
     border-radius: 0px 6px 6px 0px;
 }
+.rescard-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      max-width: 100%; 
+    }
+    
+    .rescard {
+      width: 200px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      flex-shrink: 0;
+    }
+    
+    .resleft-side {
+      width: 25px;
+      background-color: #ecbd57;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-weight: bold;
+      padding: 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .resright-side {
+      flex: 1;
+      padding: 12px;
+      background-color: white;
+    }
+    
+    .resdebt-name {
+      display: block;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    
+    .resdebt-description {
+      font-size: 11px;
+      color: #666;
+      margin: 0;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    
+    .resdate-container {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #666;
+      border-top: 1px solid #eee;
+      padding-top: 6px;
+    }
+    
+    .resdate {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .resdate-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      color: #999;
+    }
+    
+    .resdate-value {
+      font-weight: bold;
+    }
+    
+  
 
-}
 		</style>
 	</head>
 	<body>
-              <xsl:call-template name="Heading"/>
-              <div data-spy="scroll" data-target="#navbar-side" id="pagetop">	
+	<xsl:call-template name="Heading"/>
+	<div data-spy="scroll" data-target="#navbar-side" id="pagetop">	
 	<!--ADD THE CONTENT-->
 	<div class="container-fluid">
 		<div class="row">
@@ -1432,16 +1509,11 @@ display:none;
 		</div>
 	</div>
 	
-	
-	
-  
-	
-	
+	 
 	<!-- SUPPORTING JS LIBRARIES -->
-	
 	<!-- Editor specific css and javascript -->
 	<link href="editors/enterprise/business-scenario-analyser/core_business_scenario_analyser.css" rel="stylesheet" type="text/css"/>
-	
+	 
 	<!-- Year Picker UI component -->
 	<link rel="stylesheet" href="js/yearpicker/yearpicker.css"/>
 	<script type="text/javascript" src="js/yearpicker/yearpicker.js"/>
@@ -1449,15 +1521,8 @@ display:none;
 	<!-- Slider libraries and styles -->
 	<script type="text/javascript" src="js/bootstrap-slider/bootstrap-slider.min.js"/>
 	<link rel="stylesheet" href="js/bootstrap-slider/bootstrap-slider.min.css"/>
-	
-	
-	<!-- essential api library -->
-	<script type="text/javascript" src="common/js/core_common_api_functions.js"/>
-	
-  
-	<!-- strategic trend radar library -->
-	<!--<script type="text/javascript" src="enterprise/js/ess_strategic_trend_radar.js"></script>-->
 
+	 
 	<!-- Slider UI component 
 	<link rel="stylesheet" href="js/nouislider/nouislider.min.css"/>
 	<script type="text/javascript" src="js/nouislider/nouislider.min.js"/>
@@ -1467,25 +1532,12 @@ display:none;
 	<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
 	<script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
 	-->
-	<!-- Searchable Select Box Libraries and Styles -->
-	<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
-	<link href="js/select2/css/select2-bootstrap.min.css" rel="stylesheet"/>
-	<script src="js/select2/js/select2.full.min.js"/>
+
 
 	<!-- Date formatting library 
 	<script type="text/javascript" src="js/moment/moment.js"/>
 	-->
-	<!-- Add datatables libraries 
-	<link rel="stylesheet" type="text/css" href="js/DataTables/1.13.8/datatables.min.css"></link>
-	<link rel="stylesheet" type="text/css" href="js/DataTables/1.13.8/DataTables-1.13.8/css/dataTables.bootstrap.min.css"></link>
-	<script type="text/javascript" src="js/DataTables/1.13.8/datatables.min.js"></script>
-	<script type="text/javascript" src="js/DataTables/datetime-moment.js"></script>
-	<style type="text/css">div.dataTables_wrapper{margin-top: -5px;}</style>
-	-->
-	<!-- gannt chart library -->
-	<!--<script src="js/dhtmlxgantt/dhtmlxgantt.js"/>
-	<link href="js/dhtmlxgantt/dhtmlxgantt.css" rel="stylesheet"/>
-	<link rel="stylesheet" href="css/dthmlxgantt_eas_skin.css"/>-->
+
 	 
 </div>
  
@@ -1602,15 +1654,49 @@ display:none;
 			<strong><xsl:value-of select="eas:i18n('Resolved By')"/> </strong>
 			</p>
 			{{#if this.resolved_by}}
+			<div class="rescard-container">
 				{{#each this.resolved_by}}
-				<p class="debt-status">
-				<span class="debt-name"><i class="fa fa-calendar"></i> {{name}}</span>
-				<p class="debt-description">{{description}}</p>
-				<b><xsl:value-of select="eas:i18n('Start')"/>:</b> {{start_date}}  <b><xsl:value-of select="eas:i18n('End')"/>:</b> {{end_date}}
-				</p>
+					<div class="rescard">
+						<div class="resleft-side">Plan</div>
+						<div class="resright-side">
+						<span class="resdebt-name"><i class="fa fa-calendar"></i> {{name}}</span> 
+						<div class="resdate-container">
+							{{#if start_date}}
+							<div class="resdate">
+							<span class="resdate-label">Start</span>
+							<span class="resdate-value">{{start_date}}</span>
+							</div>
+							{{/if}}
+							{{#if end_date}}
+							<div class="resdate">
+							<span class="resdate-label">End</span>
+							<span class="resdate-value">{{end_date}}</span>
+							</div>
+							{{/if}}
+						</div>
+						</div>
+					</div>
+				
 				{{/each}}
+				</div>
+			{{else}}
+			{{#if this.ideaOptions}}
+
+			<div class="rescard-container">
+				{{#each this.ideaOptions}}
+					<div class="rescard">
+						<div class="resleft-side">idea</div>
+						<div class="resright-side">
+						<span class="resdebt-name"><i class="fa fa-calendar"></i> {{name}}</span>
+						<p class="resdebt-description">{{description}}</p>
+						
+						</div>
+					</div>
+				{{/each}}
+				</div>
 			{{else}}
 			<i class="fa fa-exclamation-triangle fa-2x" style="color:red"></i> <xsl:value-of select="eas:i18n('No Resolution Planned')"/> 
+			{{/if}}
 			{{/if}}
 		</div>
 	
@@ -1628,6 +1714,7 @@ display:none;
 		<div class="caretButton"><i class="fa fa-chevron-circle-right"></i></div>
 		</div>
 		{{/each}}
+		
 	{{else}}
 		<p><i class="fa fa-warning" style="color:red"></i><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('No Impacts Identified')"/></p>
 	{{/if}}
@@ -1692,8 +1779,8 @@ display:none;
 		<p><xsl:value-of select="eas:i18n('No root cause identified')"/></p>
 	{{/ifEquals}}
 	{{#ifEquals this.length  1}}
-	<!-- Just one cause -->
-		<h4><i class="fa fa-warning"></i> <xsl:value-of select="eas:i18n('CAUSE')"/></h4>
+	
+		<h4><i class="fa fa-warning"></i><xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('CAUSE')"/></h4>
 		<p><xsl:value-of select="eas:i18n('This item is the root cause of the selected technical debt')"/></p>
 		<b><xsl:value-of select="eas:i18n('Name')"/></b>: {{this.0.name}}<br/>
 		<b><xsl:value-of select="eas:i18n('Description')"/></b>: {{this.0.description}}<br/>
@@ -1832,9 +1919,10 @@ display:none;
 			let typeData= [<xsl:apply-templates select="$catTypes" mode="cats"/>]
             let catData = [<xsl:apply-templates select="$cats" mode="cats"/>]
             let issueData = [<xsl:apply-templates select="$issues" mode="data"/>]
+		 
 
-		issueData.filter((issue)=> { return issue.status !== "Resolved"})
-
+	issueData = issueData.filter((issue)=> { return issue.status !== "Resolved"})
+		
 
 			//sum debts by category
 			catData.forEach(category => {
@@ -2187,7 +2275,6 @@ function findInstancesByScopeId(instancesObj, targetId) {
   return result;
 }
 
-
 				// end of impact mapping
             data.category.forEach(type => {
 				if(type.totalCount > 0){
@@ -2218,6 +2305,7 @@ function findInstancesByScopeId(instancesObj, targetId) {
                 let pick=$(this).val();
                 $('#debtType').empty();
                 $('#debtType').append('<option>Choose</option>');
+
                 data.category.find(cat => cat.id == pick).types.forEach(type => {
 					if(type.count > 0){
                     	$('#debtType').append(new Option(type.label, type.id));
@@ -2233,6 +2321,7 @@ function findInstancesByScopeId(instancesObj, targetId) {
 				let matches=data.debts.filter((d)=>{
 						return d.categories.includes(selected)
 					})
+					
 					$('#debtSelect').html('<option>Choose</option>');
 				matches.forEach(debt => {
 						$('#debtSelect').append(new Option(debt.name, debt.id)); 
@@ -2287,16 +2376,26 @@ function findInstancesByScopeId(instancesObj, targetId) {
 		});
   
 function renderTimeline(customStart, customEnd, setInputFields = false) {
-		 
+	 
   const minDate = customStart ? new Date(customStart) : new Date(Math.min(...allDates));
   const maxDate = customEnd ? new Date(customEnd) : new Date(Math.max(...allDates));
   const chartStartDate = new Date(minDate.getFullYear(), 0, 1);
-  let chartEndDate = new Date(maxDate.getFullYear(), 0, 1);
-  
+  let chartEndDate;
+ 
+	// If minDate equals maxDate, set chartEndDate to one year after maxDate
+	if (minDate.getTime() === maxDate.getTime()) {
+	chartEndDate = new Date(maxDate.getFullYear() + 1, 0, 1);
+	} else {
+	chartEndDate = new Date(maxDate.getFullYear(), 0, 1);
+	}
+ 
   if (!setInputFields) { 
 	chartEndDate=new Date(maxDate.getFullYear(), 0, 1);
     // Format as YYYY-MM-DD for input fields
-    const formatInputDate = date => date.toISOString().split("T")[0];
+    const formatInputDate = date => {
+    if (!(date instanceof Date) || isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
     document.getElementById("start-date").value = formatInputDate(chartStartDate);
     document.getElementById("end-date").value = formatInputDate(chartEndDate);
   }
@@ -2326,9 +2425,10 @@ if ($('#catType')[0].selectedIndex !== 0) {
       item.required_by_date = today.toISOString().split("T")[0];
     }
     const y = 60 + index * rowHeight;
+	 
     const requiredByPos = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, item.required_by_date);
-
-    const programmes = item.resolved_by.map(p => {
+ 
+    const programmes = item.resolved_by.map(p => { 
       const endPos = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, p.end_date);
       return endPos >= 250 ? { name: p.name, endPos } : null;
     }).filter(Boolean); // remove nulls
@@ -2362,6 +2462,10 @@ if ($('#catType')[0].selectedIndex !== 0) {
     return result;
   }
 
+  if (chartStartDate.getTime() === chartEndDate.getTime()) {
+	chartEndDate = new Date(chartEndDate.getFullYear() + 1, 0, 1);
+  } 
+ 
   const years = generateYearsAndQuarters(chartStartDate, chartEndDate);
   const svgHeight = 60 + rowHeight * workingData.length + 60;
   const legendY = svgHeight - 30;
@@ -2374,7 +2478,7 @@ if ($('#catType')[0].selectedIndex !== 0) {
     rows,
     legendY
   });
-
+ 
   $("#timeline-container").html(svgHTML);
 
   //manage table content
@@ -2574,7 +2678,7 @@ document.getElementById('export-svg').addEventListener('click', function () {
 
      // charts data
     function renderPieChart(selector, data) {
-	
+
     const ctx = document.querySelector(selector).getContext('2d');
 
     const labels = data.map(d => d.label || `Item ${d.count}`);
@@ -2947,6 +3051,7 @@ function consolidateCategories(data) {
 }
 
 function renderBarChart(selector, data, chartTitle = "Stacked Bar Chart") {
+
     const canvas = document.querySelector(selector);
     if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
         console.error(`Element "${selector}" must be a canvas for Chart.js.`);
@@ -3043,6 +3148,9 @@ function renderLegend(selector, datasets) {
   
             let startDate = new Date(chartStartDate);       
             let endDate = new Date(chartEndDate);
+			if (startDate.getTime() === endDate.getTime()) {
+				endDate.setDate(endDate.getDate() + 1);
+			  }
             let thisDate = new Date(thisDateToShow);
             let pixelsPerMs = chartWidth / (endDate - startDate);
   
@@ -3071,7 +3179,10 @@ function renderLegend(selector, datasets) {
 
             let years = [];
             let currentYear = startDate.getFullYear();
+			if(currentYear === endDate.getFullYear()) {endDate.setFullYear(endDate.getFullYear() + 1);}
+ 
             while (currentYear &lt;= endDate.getFullYear()) {
+			 
                 let yearPos = getPosition(chartStartPoint, chartWidth, startDate, endDate, new Date(currentYear, 0, 1));
                 let quarters = [1, 2, 3, 4].map(q => ({
                     quarter: q,
@@ -3189,18 +3300,29 @@ function renderLegend(selector, datasets) {
 <xsl:variable name="elements" select="key('elements', current()/own_slot_value[slot_reference='sr_requirement_for_elements']/value)"/>
 <xsl:variable name="resolutions" select="key('elements', current()/own_slot_value[slot_reference='resolved_by']/value)"/>
 <xsl:variable name="status" select="key('elements', current()/own_slot_value[slot_reference='requirement_status']/value)"/>
+<xsl:variable name="strategic_lifecycle_status" select="key('elements', current()/own_slot_value[slot_reference='sr_lifecycle_status']/value)"/>
+<xsl:variable name="thisOptions" select="key('options', current()/own_slot_value[slot_reference='sr_ideas']/value)"/>
   {
     id: "<xsl:value-of select="current()/name"/>", 
     value: "<xsl:value-of select="current()/name"/>", 
+	debug: "<xsl:value-of select="$strategic_lifecycle_status/name"/>",
+	debug2: "<xsl:value-of select="current()/own_slot_value[slot_reference='sr_lifecycle_status']/value"/>",
     <xsl:variable name="combinedMap" as="map(*)" select="map{
         'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
         'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')')),
-        'label': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
-		'status':string(translate(translate($status/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
+        'label': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')), 
+		'status': string(
+        translate(
+            translate(
+                (if ($strategic_lifecycle_status) 
+                 then $strategic_lifecycle_status/own_slot_value[slot_reference = 'name']/value 
+                 else $status/own_slot_value[slot_reference = 'name']/value),
+            '}', ')'),
+        '{', ')'))
         }"/>
     <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
     <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
-    categories: [<xsl:for-each select="current()/own_slot_value[slot_reference='strategic_requirement_type']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
+    categories: [<xsl:for-each select="current()/own_slot_value[slot_reference='sr_type']/value">"<xsl:value-of select="."/>"<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
     required_by_date: "<xsl:value-of select="current()/own_slot_value[slot_reference='sr_required_by_date_ISO8601']/value"/>",
     required_from_date: "<xsl:value-of select="current()/own_slot_value[slot_reference='sr_required_from_date_ISO8601']/value"/>",
     resolved_by: [<xsl:for-each select="$resolutions">
@@ -3216,8 +3338,18 @@ function renderLegend(selector, datasets) {
         type: "<xsl:value-of select="current()/name"/>",
         start_date: "<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_from_date_iso_8601']/value"/>",
         end_date: "<xsl:value-of select="current()/own_slot_value[slot_reference='strategic_plan_valid_to_date_iso_8601']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if>
+        </xsl:for-each>], 
+	ideaOptions: [<xsl:for-each select="$thisOptions">
+        {
+        id: "<xsl:value-of select="current()/name"/>",  
+        <xsl:variable name="combinedMap" as="map(*)" select="map{
+                'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
+                'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')'))
+                }"/>
+        <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method': 'json', 'indent': true()})" />
+           <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>
+		}<xsl:if test="position()!=last()">,</xsl:if>
         </xsl:for-each>],
-
     rootCauses: [<xsl:for-each select="key('elements', current()/own_slot_value[slot_reference='sr_root_causes']/value)">{
 					id: "<xsl:value-of select="current()/name"/>", 
 					<xsl:variable name="combinedMap" as="map(*)" select="map{

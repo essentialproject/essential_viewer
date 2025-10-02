@@ -586,6 +586,11 @@
 							 bottom:15px; 
 							 right:3px
 						}
+						#shareLink{
+							top:60px;
+							position: absolute;
+							right:30px;
+						}
 	</style>
 				
 			</head>
@@ -839,7 +844,9 @@
 									<div class="tab-content">	
 										<div class="tab-pane active" id="bcmImpacts"> 
 											<h3 class="text-primary"><i class="fa fa-sitemap right-10"></i><xsl:value-of select="eas:i18n('Business Capability Impacts')"/></h3>
-
+											 
+												<button class="btn btn-xs btn-info shareLink" id="shareLink"><xsl:value-of select="eas:i18n('Share Link')"/></button>
+											
 											<div id="capModel"/>
 										</div>
 										<div class="tab-pane" id="allImpacts"> 
@@ -1410,8 +1417,17 @@ function generateMonthlyCosts(data, startYear, years) {
 }
 
 var currencies, defaultCcy, defaultCcySymbol;
-
+	var filterState = { } ; 
 			$('document').ready(function () {
+
+			
+				let initState = {  
+					"showBusCapImpacts": "false"
+					} ; 
+				essInitViewState(filterState, initState); 
+				
+				console.log('state', filterState)  
+
 				$('#viewpoint-bar').hide();
 				var listFragment = $("#list-template").html();
 				listTemplate = Handlebars.compile(listFragment);
@@ -2312,9 +2328,28 @@ $('#planimpacts').html(listTemplate(pDetail))
 			});
 			
 	panelSet.then(function(response) {
- 
+
+		// Default to Impacts tab if focusID (param1) is present
+		if (filterState.state?.showBusCapImpacts == 'true') {
+			console.log('true')
+			// Deactivate Overview Tab (which is active by default in the template)
+			$('ul.nav-tabs li:has(a[href="#details"])').removeClass('active');
+			$('#details.tab-pane').removeClass('active in');
+
+			// Activate Impacts Tab
+			$('ul.nav-tabs li:has(a[href="#impacts"])').addClass('active');
+			$('#impacts.tab-pane').addClass('active in');
+		} else {
+			// Ensure Overview tab is active if focusID is not present
+			$('ul.nav-tabs li:has(a[href="#details"])').addClass('active');
+			$('#details.tab-pane').addClass('active in');
+			$('ul.nav-tabs li:has(a[href="#impacts"])').removeClass('active');
+			$('#impacts.tab-pane').removeClass('active in');
+		}
 		 
 		$('#capModel').html(capmodelTemplate(bcm))
+
+
 		var table = $('#dt_stakeholders').DataTable();
 
 		// Append a text input to each footer cell for column filtering
@@ -2466,6 +2501,18 @@ $('#planimpacts').html(listTemplate(pDetail))
 				 
 			redrawView();	
 		})
+
+		$('ul.nav-tabs').on('click', 'li:has(a[href="#impacts"])', function() {
+   			filterState.state.showBusCapImpacts = 'true';
+			essUpdateUserSettings() 
+		});
+
+		  // When any other tab is clicked…
+		$('ul.nav-tabs').on('click', 'li:not(:has(a[href="#impacts"]))', function() {
+			console.log('false')
+			filterState.state.showBusCapImpacts = 'false';
+			essUpdateUserSettings();
+		});
  
 	})
  
@@ -2538,6 +2585,56 @@ $('#planimpacts').html(listTemplate(pDetail))
 					  currentX += currentXdynamic; // Move to next circle's center
 					});
  
+
+
+			const originalButtonText = $('.shareLink').text();  
+			const copiedTextFeedback = "Copied!";  
+	console.log('originalButtonText',originalButtonText)
+			$('.shareLink').on('click', function() { 
+				const textToCopy = window.location.href;
+
+				if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(textToCopy)
+						.then(() => {
+							$('.shareLink').text(copiedTextFeedback);
+							setTimeout(() => {
+								$('.shareLink').text(originalButtonText);
+							}, 2000);
+						})
+						.catch(err => {
+							console.error('Failed to copy URL to clipboard: ', err);
+							// Fallback for environments where clipboard API might fail (e.g. insecure contexts)
+							tryToCopyManually(textToCopy, $('.shareLink'), originalButtonText, copiedTextFeedback);
+						});
+				} else {
+					// Fallback for older browsers
+					tryToCopyManually(textToCopy, $('.shareLink'), originalButtonText, copiedTextFeedback);
+				}
+			});
+		
+
+		function tryToCopyManually(textToCopy, buttonElement, originalText, copiedTextFeedback) {
+			try {
+				const textArea = document.createElement('textarea');
+				textArea.value = textToCopy;
+				// Prevent visual disruption and scrolling
+				textArea.style.position = 'fixed'; textArea.style.top = '0'; textArea.style.left = '0';
+				textArea.style.width = '2em'; textArea.style.height = '2em';
+				textArea.style.padding = '0'; textArea.style.border = 'none';
+				textArea.style.outline = 'none'; textArea.style.boxShadow = 'none';
+				textArea.style.background = 'transparent';
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+				const successful = document.execCommand('copy');
+				document.body.removeChild(textArea);
+
+				if (successful) {
+					buttonElement.text(copiedTextFeedback);
+					setTimeout(() => { buttonElement.text(originalText); }, 2000);
+				} else { alert('Failed to copy URL. Please copy it manually.'); }
+			} catch (err) { console.error('Fallback copy method failed: ', err); alert('Failed to copy URL. Please copy it manually.'); }
+		}
 }
  
 

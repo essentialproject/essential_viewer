@@ -128,6 +128,7 @@
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="not(position()=last())">, </xsl:if></xsl:for-each>],
 		 	"comp":[
 			<xsl:for-each select="$thisTPR[own_slot_value[slot_reference = 'implementing_technology_component']/value]">
+                <xsl:variable name="pos" select="position()"/>
 				<!--<xsl:variable name="thisTechProdStandards" select="$allTechProdStandards[own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value = current()/name]"/>-->
 				<xsl:variable name="thisTechProdStandards" select="key('techProdStandardsKey', current()/name)"/>
 				<xsl:variable name="thisStandardStrengths" select="$allStandardStrengths[name = $thisTechProdStandards/own_slot_value[slot_reference = 'sm_standard_strength']/value]"/>
@@ -143,8 +144,8 @@
 					<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 					<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')" />,
 				"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
-				"tprid":"<xsl:value-of select="eas:getSafeJSString($thisTPR[1]/name)"/>",
-				"strategic_lifecycle_status":"<xsl:value-of select="$thisTPR/own_slot_value[slot_reference = ('strategic_lifecycle_status')]/value"/>",
+                "tprid":"<xsl:value-of select="$thisTPR[$pos]/name"/>",
+				"strategic_lifecycle_status":"<xsl:value-of select="$thisTPR[$pos]/own_slot_value[slot_reference = ('strategic_lifecycle_status')]/value"/>",
 				"std":"<xsl:choose><xsl:when test="$thisStandardStrengths"><xsl:value-of select="$thisStandardStrengths/own_slot_value[slot_reference = 'name']/value"/></xsl:when><xsl:otherwise>No Standard Defined</xsl:otherwise></xsl:choose>","stdStyle":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_class']/value"/>",
 				"stdColour":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_colour']/value"/>",
 				"stdTextColour":"<xsl:value-of select="$thisStandardStyles/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>",

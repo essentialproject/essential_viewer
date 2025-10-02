@@ -93,7 +93,14 @@
 				<link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"></link>
 				<script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"></script>
 				<script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"></script>
-
+				
+				<script src="js/lodash/lodash.js"></script> 
+				<script src="js/backbone/backbone.js"></script> 
+ 
+				<script src="js/jointjs/joint.min.js?release=6.19"></script> 
+				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"></script>
+				<script src="js/jstree/jstree.min.js"></script>
+				<script src="js/jointjs/joint.layout.DirectedGraph.min.js"></script>
 				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
 
 				<style type="text/css">
@@ -110,7 +117,7 @@
 					.ess-blob{
 						border: 1px solid #ccc;
 						min-height: 40px;
-						width: 140px;
+						width: 145px;
 						border-radius: 4px;
 						position: relative;
 						text-align: center;
@@ -333,20 +340,24 @@
 					}
 					// new Chart
 
-					.node rect {
-						fill: #fff; /* White background */
-						stroke: steelblue; /* Blue border */
-						stroke-width: 2px;
-						rx: 10; /* Rounded corners */
-						ry: 10;
-					}
+					#orgchart svg {
+						border: 1px solid #ddd;
+					  }
+					  .link {
+						fill: none;
+						stroke: #ccc;
+						stroke-width: 2;
+					  }
+					  .node rect {
+						fill: #fff;
+						stroke: steelblue;
+						stroke-width: 2;
+					  }
+					  .node text {
+						font-size: 10px;
+					  }
 
-					/* Styling for the text inside the nodes */
-			 
-					.node text {
-						font: 11px sans-serif;
-						text-anchor: middle; /* Center the text horizontally */ 
-					}
+					 
 			
 					/* Styling for the connecting lines */
 					.link {
@@ -364,6 +375,55 @@
 						display:inline-block;
 						vertical-align: top;
 					}
+					#paper {
+						width: 1000px;
+						height: 600px;
+						border: 1px solid #ddd;
+						overflow: auto;
+						flex-grow: 1;
+					}
+					.orgheader {
+						padding: 10px;
+						background-color: #f5f5f5;
+						border-bottom: 1px solid #ddd;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+					}
+					.controls {
+						display: flex;
+						gap: 10px;
+					}
+					.org-element text {
+						font-family: Arial, sans-serif;
+						fill: #333;
+						cursor: pointer;
+					}
+					.org-element rect {
+						fill: #E8F0FE;
+						stroke: #4285F4;
+						stroke-width: 2px;
+						rx: 5;
+						ry: 5;
+						cursor: pointer;
+					}
+					.org-element.highlighted rect {
+						fill: #C6DAFC;
+						stroke: #1967D2;
+					}
+					.link-tool .tool-remove circle {
+						fill: #FF5252;
+					}
+					.link-tool .tool-remove path {
+						fill: white;
+					}
+
+					#paper .jstree-node li {
+						list-style: none !important;
+						/* if you still see indentation, you can also add: */
+						margin-left: 0;
+						padding-left: 0;
+						}
 				</style>
 				<script>
 					
@@ -449,15 +509,34 @@
 							mapDataStored.remove();
 							mapSupport.remove();
 						});
+                        
 					});
 				</script>
-				<script src='js/d3/d3.v5.9.7.min.js'></script>
+				<script src='js/d3/d3.v7.9.0.min.js'></script>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 
 				<!--ADD THE CONTENT-->
+			<div class="container-fluid" id="summary-content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="page-header">
+							<h1>
+								<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
+								<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Organisation Summary for')"/> </span><xsl:text> </xsl:text> 
+								<span class="text-primary headerName"><select id="subjectSelection" style="width: 600px;"></select></span>
+								
+							</h1>
+						</div>
+					</div>
+				</div>
+				<div id="APIWarning" class="alert alert-warning" style="display:none">
+					<xsl:value-of select="eas:i18n('WARNING: The API has been updated - No data related to children is showing, please republish to see the child data')"/>.	
+				</div>
+			</div>
+			
 			<span id="mainPanel"/>
 			
 				<!-- ADD THE PAGE FOOTER -->
@@ -482,19 +561,8 @@
                 </script>
 	<script id="panel-template" type="text/x-handlebars-template">
 
-		<div class="container-fluid" id="summary-content">
-			<div class="row">
-				<div class="col-xs-12">
-					<div class="page-header">
-						<h1>
-							<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
-							<span class="text-darkgrey"><xsl:value-of select="eas:i18n('Organisation Summary for')"/> </span><xsl:text> </xsl:text> 
-							<span class="text-primary headerName"><select id="subjectSelection" style="width: 600px;"></select></span>
-							
-						</h1>
-					</div>
-				</div>
-			</div>
+		<div class="container-fluid">
+			
 			<!--Setup Vertical Tabs-->
 			<div class="row">
 				<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 no-print">
@@ -539,15 +607,19 @@
 									<label><xsl:value-of select="eas:i18n('Organisation Name')"/></label>
 									<div class="ess-string">{{this.name}}</div>
 									<div class="clearfix bottom-10"></div>
+									{{#if this.description}}
 									<label><xsl:value-of select="eas:i18n('Description')"/></label>
 									<div class="ess-string">{{{this.description}}}</div>
 									<div class="clearfix bottom-10"></div>
-									<label><xsl:value-of select="eas:i18n('Parent Organisation(s)')"/></label>
-									<ul class="ess-list-tags">
-									{{#each this.parents}}
-										<li>{{this.name}}</li>
-									{{/each}}
-									</ul>
+									{{/if}}
+									{{#if this.parents}}
+										<label><xsl:value-of select="eas:i18n('Parent Organisation(s)')"/></label>
+										<ul class="ess-list-tags">
+										{{#each this.parents}}
+											<li>{{this.name}}</li>
+										{{/each}}
+										</ul>
+									{{/if}}
 									<label><xsl:value-of select="eas:i18n('Direct Child Organisation(s)')"/></label>
 									<ul class="ess-list-tags">
 									{{#each this.childrenOrgs}}
@@ -680,26 +752,28 @@
 						<div class="tab-pane" id="hierarchy">
 							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Hierarchy')"/></h2>
 						 		<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-table right-10"></i><xsl:value-of select="eas:i18n('Organisation Hierarchy')"/></h3><span id="hierarchyInfo"><label class="label label-warning">No hierarchy defined for this organisation</label></span>
+									<h3 class="text-primary"><i class="fa fa-table right-10"></i><xsl:value-of select="eas:i18n('Organisation Hierarchy')"/></h3>
 									<div class="bottom-10"><div class="pull-right"> 
 										<!--<button class="btn btn-sm btn-secondary" id="download-svg"><i class="fa fa-cloud-download"/></button>
 										-->
+                                        <button class="btn btn-sm btn-secondary" id="recenterChartBtn"><i class="fa fa-target"/><xsl:value-of select="eas:i18n('Re-centre')"/></button>
 									</div>
-										<div id="orgchart"/>
-										<div class="chart-container" style=" padding-top:10px; width:100%; height:1800px "> </div>
+								        <div id="paper" style="width: 100%; height: 600px;"></div>
 									</div>
 
 								</div>  
 							 
 						</div>
 						<div class="tab-pane" id="processes">
-							<h2 class="print-only top-30"><i class="fa fa-fw fa-globe right-10"></i>Business Processes</h2>
+							<h2 class="print-only top-30"><i class="fa fa-fw fa-globe right-10"></i><xsl:value-of select="eas:i18n('Business Processes')"/></h2>
 							<div class="parent-superflex">
 								  
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-table right-10"></i>Business Processes</h3>
+									<h3 class="text-primary"><i class="fa fa-table right-10"></i><xsl:value-of select="eas:i18n('Business Processes')"/></h3>
+									<p><xsl:value-of select="eas:i18n('Business processes and their criticality')"/></p>
 									<div class="ess-blobWrapper">
 									 {{#each this.allBusProcs}}
+									  {{#if this.name}}
 										<div class="ess-blob bdr-left-orange" id="someid">
 											<div class="ess-blobLabel">
 												 {{{essRenderInstanceMenuLink this}}} 
@@ -717,6 +791,7 @@
 												</div>
 											</div>
 										</div>
+										{{/if}}
 									{{/each}}	
 									</div>
 								</div>
@@ -725,6 +800,7 @@
 			 			<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-table right-10"></i>Process Implementations</h3>
 									Application Mapping Key: <label class="label   ess-mini-badge" style="background-color: rgb(170, 194, 213);color:#000">Direct to Process</label><xsl:text> </xsl:text><label class="label  ess-mini-badge" style="background-color:rgb(210, 169, 190);color:#000">Via Application Service</label>
+									<p>Processes for this specific organisation, not including children</p>
 									<div class="bottom-10">
 										<table id="dt_supportedprocesses" class="table table-striped table-bordered" >
 											<thead>
@@ -735,9 +811,11 @@
 													<th>
 														<xsl:value-of select="eas:i18n('Capabilities Supporting')"/>
 													</th>
+													<!--
                                                     <th>
 														<xsl:value-of select="eas:i18n('Organisation Performing')"/>
 													</th>
+													-->
 													<th>
 														<xsl:value-of select="eas:i18n('Product')"/>
 													</th>
@@ -751,6 +829,7 @@
 											</thead>
 											<tbody>
 												 {{#each this.physicalProcesses}}
+												 {{#if this.processName}}
 													<tr>
 														<td>
 															{{this.processName}}
@@ -764,12 +843,14 @@
 															</ul> 
 															 
 														</td>
+														<!--
                                                         <td>
 															<ul class="ess-list-tags"> 
 																	<li class="roleBlob" style="background-color: rgb(132, 213, 237)">{{this.org}}</li> 
 															</ul> 
 															
 														</td>
+														-->
 														<td>
 															<ul class="ess-list-tags">
 																{{#each this.product}}
@@ -795,25 +876,27 @@
 															</ul>
 														</td>
 													</tr>
-
+												 {{/if}}
 												{{/each}}
 
 											</tbody>
 											<tfoot>
 												<tr>
-													<th>
+													<th class="procIn">
 														<xsl:value-of select="eas:i18n('Process')"/>
 													</th>
-													<th>
+													<th class="procIn">
 														<xsl:value-of select="eas:i18n('Capabilities Supporting')"/>
 													</th>
+													<!--
 													<th>
 														<xsl:value-of select="eas:i18n('Organisation Performing')"/>
 													</th>
-													<th>
+													-->
+													<th class="procIn">
 														<xsl:value-of select="eas:i18n('Product')"/>
 													</th>
-													<th>
+													<th class="procIn">
 														<xsl:value-of select="eas:i18n('Criticality')"/>
 													</th>
 													<th>
@@ -883,10 +966,6 @@
 									<label><xsl:value-of select="eas:i18n('Strategic Plans List')"/></label>
 								
 									<ul class="ess-list-tags">
-										<li>Public</li>
-										<li>Public</li>
-										<li>Public</li>
-										<li>Public</li>
 									</ul>
 									 
 								</div>
@@ -976,66 +1055,7 @@
 				});
 		
 		let procTable
-		let processSet = new Promise(function(myResolve, myReject) {	 
-			 
-						
-						procTable = $('#dt_supportedprocesses').DataTable({
-						scrollY: "350px",
-						scrollCollapse: true,
-						paging: true,
-						info: false,
-						pageLength: 5,
-						sort: true,
-						responsive: true,
-						columns: [
-							{ "width": "40%" },
-							{ "width": "15%" },
-							{ "width": "15%" }  
-							],
-						dom: 'Bfrtip',
-						buttons: [
-							'copyHtml5', 
-							'excelHtml5',
-							'csvHtml5',
-							'pdfHtml5',
-							'print'
-						]
-						});
-						
-						
-						// Apply the search
-						procTable.columns().every( function () {
-							var thatp = this;
-						
-							$( '.procIn', this.footer() ).on( 'keyup change', function () {
-								if ( thatp.search() !== this.value ) {
-									that
-										.search( this.value )
-										.draw();
-								}
-							} );
-						} );
-
-
-					
-						
-					
-						
-					 
-			myResolve(); // when successful
-			myReject();  // when error
-			});
-		
-			processSet.then(function(response) {  
-						procTable.columns.adjust();
-						
-						$(window).resize( function () {
-							procTable.columns.adjust();
-						});
-						procTable.columns.adjust().draw();
-						 
-
-			})
+ 
 		 
 </script>
 		</html>
@@ -1075,14 +1095,129 @@
 				});
 			};
 		   
-	  var orgData=[];
-	  var appsData=[];
+	  var orgData=[]; 
+      var appsData=[], currentChart; // Added currentChart here
+      var currentOrgIdForChart = null; // To track which org the chart is for
 	  var orgOptions='';
-	  var processLookupObj;
+	  var processLookupObj,orgHierarchy, toShow, orgById, focusOrg;
 	  var focusID="<xsl:value-of select='eas:getSafeJSString($param1)'/>";
 	  var rolesFragment, appsnippetTemplate, appsnippetFragment, appsFragment, processesFragment, sitesFragment, rolesTemplate, appsTemplate, processesTemplate,sitesTemplate ;
-	
-			$('document').ready(function () {
+	  
+	  function findOrgById(horgs, targetId) {  
+		const result = _search(horgs, targetId, []);
+		if (!result) return null;
+	  
+		const { node, ancestors } = result;
+		const children = Array.isArray(node.children) ? node.children : [];
+  		const allApps = _collectApplications(children);
+		return {
+		  org: node,
+		  parents: ancestors,
+		  children,
+		  allApps
+		};
+	  }
+
+	  
+	    function buildSingleHierarchy(orgs, rootId) { 
+				const MAX_DEPTH = 3;
+				const map = new Map();
+
+				for (const { id, parent, name } of orgs) {
+					const parents = Array.isArray(parent)
+					? parent
+					: parent != null
+					? [parent]
+					: [];
+					map.set(id, { id, name, parents, children: [] });
+				}
+
+				
+				for (const node of map.values()) {
+					for (const pid of node.parents) {
+					const p = map.get(pid);
+					if (p) p.children.push(node);
+					}
+				}
+
+				
+				const visited  = new Set();
+				const inStack  = new Set();
+				const cycles   = [];
+
+				function dfs(node, depth) {
+					// Cycle detection
+					if (inStack.has(node.id)) {
+					cycles.push(node.id);
+					return null;
+					}
+					if (visited.has(node.id)) {
+					// Already processed this branch
+					return { id: node.id, name: node.name, children: [] };
+					}
+
+					inStack.add(node.id);
+
+					// Build the result node
+					const result = { id: node.id, name: node.name, children: [] };
+
+					if (depth &lt; MAX_DEPTH) {
+					for (const child of node.children) {
+						const sub = dfs(child, depth + 1);
+						if (sub) result.children.push(sub);
+					}
+					}
+					// else depth === MAX_DEPTH → leave children empty
+
+					inStack.delete(node.id);
+					visited.add(node.id);
+					return result;
+				}
+
+                            const rootNode = map.get(rootId);
+                            if (!rootNode) return null;
+
+                            const subtree = dfs(rootNode, 1);
+
+                            
+
+                            return subtree;
+                            }
+	 
+	  function _search(nodes, targetId, ancestors) {
+		for (const node of nodes) {
+		  if (node.id === targetId) {
+			return { node, ancestors };
+		  }
+		  if (node.children &amp;&amp; node.children.length) {
+			const found = _search(node.children, targetId, [...ancestors, node]);
+			if (found) {
+			  return found;
+			}
+		  }
+		}
+		return null;
+	  }
+
+	  function _collectApplications(nodes) {
+		const appsSet = new Set();
+	  
+		function traverse(list) {
+		  for (const node of list) { 
+			if (Array.isArray(node.applicationsUsedbyProcess)) {
+			  node.applicationsUsedbyProcess.forEach(app => appsSet.add(app));
+			}
+			if (node.children &amp;&amp; node.children.length) {
+			  traverse(node.children);
+			}
+		  }
+		}
+	  
+		traverse(nodes);
+		return Array.from(appsSet);
+	  }
+
+			$(document).ready(function () {
 				
 				$('.selectOrgBox').select2();
 	
@@ -1129,65 +1264,103 @@
 			promise_loadViewerAPIData(viewAPIDataCaps)
 			
 			]).then(function(responses) {
-				let orgRoles=[];		
-				   orgData=responses[0].orgData; 
+ 
+				if(responses[0].version == "616"){ 
+					$('#APIWarning').css('display', 'block');
+				}
+			let orgRoles=[];		
+				orgData=responses[0].orgData; 
+     
+ 
 
+           function mapOrgsToApps(apps) {
+            // Use a Map internally for fastest key lookups
+            const orgMap = new Map();
+
+            for (let i = 0, nApps = apps.length; i &lt; nApps; i++) {
+                const app = apps[i];
+                // extract once per app
+                const entry = { id: app.id };
+                const orgs = app.orgUserIds;
+                for (let j = 0, nOrgs = orgs.length; j &lt; nOrgs; j++) {
+                const org = orgs[j];
+                const arr = orgMap.get(org);
+                if (arr) {
+                    arr.push(entry);
+                } else {
+                    orgMap.set(org, [entry]);
+                }
+                }
+            }
+
+            // Convert Map back to a plain object (if you prefer)
+            const result = Object.create(null);
+            for (const [org, appsList] of orgMap) {
+                result[org] = appsList;
+            }
+            return result;
+            }
+
+ 			const orgToApps = mapOrgsToApps(responses[1].applications);
+            
 				   orgData.forEach((o)=>{
 						orgOptions=orgOptions+'<option value="'+o.id+'">'+o.name+'</option>'
-				   })
-
-				function createOrgChart(org, orgData, visited = new Set()) {
-					// Check if the current organization has already been visited
-					if (visited.has(org.id)) {
-						console.warn(`Cycle detected: Organization with ID ${org.id} has already been processed.`);
-						return null; // or handle as needed (e.g., skip, throw an error, etc.)
+                         
+					if(!o.parent){
+						o['parent']=o.parentOrgs;	
 					}
-				
-					// Mark the current organization as visited
-					visited.add(org.id); 
-				
-					const orgChart = {
-						id: org.id,
-						name: org.name,
-						description: org.description,
-						parentOrgs: org.parentOrgs,
-						childOrgs: [],
-						allChildOrgs: org.allChildOrgs,
-						parents: org.parents
-					};
-					
-					// Recursively process child organizations
-				
-					org.childOrgs.forEach(childId => {
-						const childOrg = orgData.find(item => item.id === childId);
-						if (childOrg) {
-							const childChart = createOrgChart(childOrg, orgData, visited);
-							if (childChart) {
-								orgChart.childOrgs.push(childChart);
-							}
-						} else {
-							console.warn(`Child organization with ID ${childId} not found.`);
-						}
-					});
-				  
-					// Optionally, remove the organization from the visited set if it can appear in multiple branches
-					  visited.delete(org.id);
-				
-					return orgChart;
-				}
-				
-				function createFullHierarchy(orgData) {
-					const hierarchies = {};
-				
-					// Create hierarchy for every org in the array
-					orgData.forEach(org => {
-						hierarchies[org.id] = createOrgChart(org, orgData);
-					});
-				
-					return hierarchies;
-				}
-				const fullHierarchy = createFullHierarchy(orgData); 
+                         
+				   })
+            //orgMap 
+				orgById = orgData.reduce((map, org) => {
+                    map[org.id] = org;
+                    return map;
+                }, {});
+
+				const orgArray = Object.values(orgById).map(org => ({
+				id:   org.id,
+				text: org.name
+				})).sort((a, b) => a.text.localeCompare(b.text));;
+		
+				const count = orgArray.length;
+				const $select = $('#subjectSelection');
 			
+				$select.empty(); 
+				if (count > 1000) {
+				 
+				//  for large lists
+				$select.select2({
+					ajax: {
+					transport: (params, success, failure) => {
+						const term    = (params.data.q || '').toLowerCase();
+						const matches = orgArray
+						.filter(o => o.text.toLowerCase().includes(term))
+						.slice(0, 50);              // only return the first 50
+						success({ results: matches });
+					},
+					processResults: data => data,  // our transport already returned {results: [...]}
+					delay: 150
+					},
+					placeholder:   'Select an Organisation',
+					minimumInputLength: 1,
+					allowClear:    true,
+					width:         '400px'
+				})
+
+				focusText = orgById[focusID].name
+				$('#subjectSelection').append(new Option(focusText, focusID, true, true)); 
+				} else {
+				 
+					const options = orgArray.map(o =>{
+						const isSel = (o.id === focusID); 
+						return new Option(o.text, o.id, false, isSel)
+					});
+					
+					$select.append(options).select2({
+						width: '400px'
+					});
+				}
+ 		 
 				   let busCaps=responses[3].busCaptoAppDetails;
 
 				   const processLookup = new Map();
@@ -1221,160 +1394,126 @@
 				   appData=responses[1];
 				   physProc=responses[2];  
  
+                   const appsAndAPIs = [...appData.applications, ...appData.apis];
+                    const appById = appsAndAPIs.reduce((m, app) => {
+                    m[app.id] = app;
+                    return m;
+                    }, {});
+
 				  let orgProductTypes=[];
-		
-				   products.forEach((prod)=>{
+					// Build a Map for quick id → app lookup
+					const physappById = new Map(
+						physProc.process_to_apps.map(app => [app.id, app])
+						);
+
+						// For each product and each of its process-ids, look up the app in O(1)
+						for (const prod of products) {
+						for (const procId of prod.processes) {
+							const app = physappById.get(procId);
+							if (!app) continue;
+
+							// Initialise the array once, then push
+							app.product = app.product ?? [];
+							app.product.push(prod.name);
+						}
+					}
+
+				   modelData=[]  
 				 
-					   prod.processes.forEach((e)=>{
-						
-							let thisMatch=physProc.process_to_apps.filter((p)=>{
-								return p.id == e;
-							});
-			 
-							if(thisMatch){ 
-								thisMatch.forEach((m)=>{
-									 
-									if(m['product']){
-										m['product'].push(prod.name); 
-									}
-									else
-									{
-										m['product']=[prod.name];	
-									} 
-								})
-							 
-							}
-						 
-					   })
-					   
-				   })
-  
-				   modelData=[] 
-				   orgData.forEach((d)=>{
-				
-					 if(orgRoles.length&gt;0){
-						let thisRoles=orgRoles.find((or)=>{
-							return or.id==d.id;
-						});
-						if(thisRoles){
-							d['orgRoles']=thisRoles.roles;
-						};
-					 };
-					
-					let parent=[];
-					let childrenOrgs=[];
-					d.parentOrgs.forEach((e)=>{
-						let thisParent=orgData.find((f)=>{
-							return f.id == e
-						}); 
-						if(thisParent){
-						parent.push({"name":thisParent.name,"id":thisParent.id})	
-						}
-					})
-					d['parents']=parent; 
-					if(d.childOrgs){
-						d.childOrgs.forEach((e)=>{ 
-							let thisChild=orgData.find((f)=>{
-								return f.id == e
-							});  
-							childrenOrgs.push({"name":thisChild.name,"id":thisChild.id})	
-						})
-					}
-					d['childrenOrgs']=childrenOrgs;
-				
-					   let allAppsUsed=[];
-					   let allBusProcs=[];
-					   let allSubOrgs=[];
-					   let allSites=[];
-					   let allAppsUsedParent=[];
-					   let allBusProcsParent=[];
-					   let allParentOrgs=[];
-					   let allSitesParent=[];
-		
-					   d.applicationsUsedbyOrgUser.forEach((e)=>{
-						 allAppsUsed.push(e)
-					   })
-					   d.applicationsUsedbyProcess.forEach((e)=>{
-						allAppsUsed.push(e)
-					  });
- 		 	 
-					  d.businessProcess?.forEach((e)=>{
-						  e['className']='Business_Process';
-						allBusProcs.push(e)
-					  }); 
-			 	
-					  if(d.site){
-						d.site.forEach((e)=>{
-							allSites.push(e)
-						});
-						}
-						
-					 if(d.parentOrgs?.length&gt;0){
-						
-						d.parentOrgs?.forEach((e)=>{	
-							let thisOrg=orgData.find((f)=>{
-								return f.id == e
-							});
-						
-						 if(thisOrg){
-							allParentOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-							  }
-							
-							getParents(thisOrg, allAppsUsedParent, allBusProcsParent, allParentOrgs, allSitesParent)
-							
-						   });
-						 
-						 } 
-						
-						if(d.childOrgs?.length&gt;0){
-
-					   d.childOrgs.forEach((e)=>{
-					 
-						let thisOrg=orgData.find((f)=>{
-							return f.id == e
-						});
-					 
-						allSubOrgs.push({"id":thisOrg.id, "name":thisOrg.name}) 
-				
-						getChildren(thisOrg, allAppsUsed, allBusProcs, allSubOrgs, allSites)
-					
-					   })
-					   
-					}
-				
-					   allAppsUsed=allAppsUsed.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-					   allAppsUsedParent=allAppsUsedParent.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-
-					   allBusProcs=allBusProcs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-					   allSubOrgs=allSubOrgs.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-					   allSites=allSites.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-					   let appList=[]; 
-					   let parentappList=[]; 
-					   allAppsUsedParent = allAppsUsedParent.filter(x => !allAppsUsed.includes(x)); 
-					   let appsAndAPIs= [...appData.applications, ...appData.apis]; 
-					   allAppsUsed.forEach((ap)=>{ 
-						   let thisApp=appsAndAPIs.find((e)=>{
-							   return e.id == ap.id;
-						   })
-						   appList.push(thisApp)
-					   });
+                        const rolesMap    = new Map(orgRoles   .map(or => [or.id, or.roles]));
+                        const uniqueById  = arr => Array.from(new Map(arr.map(x => [x.id, x])).values());
+                        const appsMap     = orgToApps;              // assume { orgId: [ { id,…}, … ], … }
+                        const nodesById   = orgById;                // assume { id: { id, name, children:[…], … }, … }
+                        const getApps     = id => appsMap[id] || [];
+                        const getNode     = id => nodesById[id] || {};
  
-					   allAppsUsedParent.forEach((ap)=>{ 
-						let thisApp=appData.applications.find((e)=>{
-							return e.id == ap.id;
-						})
-						parentappList.push(thisApp)
-						})
-					
-					   d['allAppsUsedParent']=parentappList;
-					   d['allAppsUsed']=appList;
-					   d['allBusProcs']=allBusProcs;
-					   d['allChildren']=allSubOrgs;
-					   d['allSites']=allSites;
-						 //  $('.selectOrgBox').append('&lt;option value='+d.id+' >'+d.name+'&lt;option>');
+                        for (const d of orgData) {
+
+                        const {
+                            id,
+                            children: childIds = [],
+                            parent:   parentIds = [],
+                            site:     sites     = [],
+                            businessProcess: selfProcsRaw = []
+                        } = d;
+ 
+                        if (rolesMap.has(id)) {
+                            d.orgRoles = rolesMap.get(id);
+							
+                        }
 						 
-					});
-					
+ 						d.orgRoles = [...new Map(d.orgRoles.map(role => [role.name, role])).values()];
+						 
+                        const childrenOrgs = childIds
+                            .map(getNode)
+                            .filter(n => n.id != null);
+
+                        const parents = parentIds
+                            .map(getNode)
+                            .filter(n => n.id != null);
+ 
+                        d.childrenOrgs = childrenOrgs;
+                        d.parents      = parents;
+                        d.orgUserIds   = childrenOrgs.map(c => c.id);
+						d.allSites = [
+						...new Map(childrenOrgs.flatMap(c => c.site?.map(site => [site.id, site])).filter(Boolean)).values()
+						];
+
+                        const ownApps = getApps(id);
+                        d.ownApps = ownApps;
+ 
+                        const childrenApps = childrenOrgs.flatMap(c => {
+                            const procApps = Array.isArray(c.applicationsUsedbyProcess)
+                            ? c.applicationsUsedbyProcess
+                            : [];
+                            return [...getApps(c.id), ...procApps];
+                        });
+
+                     
+                        const childProcs = childrenOrgs.flatMap(c =>
+                            Array.isArray(c.businessProcess) ? c.businessProcess : []
+                        );
+                        const allBusProcs = uniqueById([...selfProcsRaw, ...childProcs])
+                            .map(proc => ({ ...proc, className: 'Business_Process' }));
+                       
+						allBusProcs.sort((a, b) => {
+							const nameA = a.name?.toLowerCase() || '';
+							const nameB = b.name?.toLowerCase() || '';
+							return nameA.localeCompare(nameB);
+							});
+
+						d.allBusProcs = allBusProcs; 
+                        const allAppIds = Array.from(
+                            new Set([...ownApps, ...childrenApps].map(a => a.id))
+                        ).map(id => ({ id }));
+                        d.allAppsUsed = allAppIds;
+
+            
+                        const parentAppsRaw = parents.flatMap(p => {
+                            const procApps = Array.isArray(p.applicationsUsedbyProcess)
+                            ? p.applicationsUsedbyProcess
+                            : [];
+                            return [...getApps(p.id), ...procApps];
+                        });
+                        const allParentAppIds = Array.from(
+                            new Set(parentAppsRaw.map(a => a.id))
+                        ).map(id => ({ id }));
+                        d.allAppsUsedParent = allParentAppIds;
+  
+						d.allSites = d.allSites || [];
+						d.allSites = [...d.allSites, ...d.site];
+
+ 
+                        const allChildren = childrenOrgs.flatMap(c =>
+                            (c.children || []).map(getNode).filter(n => n.id != null)
+                        );
+                        d.allChildren = uniqueById(allChildren);
+ 
+                        d.ownApps = ownApps.map(a => appById[a.id]).filter(Boolean);
+                        d.allAppsUsed= d.allAppsUsed.map(a => appById[a.id]).filter(Boolean);
+                        d.allAppsUsedParent  = d.allAppsUsedParent .map(a => appById[a.id]).filter(Boolean);
+                        }
+ 
 					<!--- HERE   --> 
 					redrawPage(focusID)
  
@@ -1382,232 +1521,328 @@
 				.catch (function (error) {
 					//display an error somewhere on the page   
 				});
-				
-	  
-			});
-
-		
-		 
-				// Function to create hierarchy for selected id
-				
-				
-				// Function to create hierarchy for selected id (handling both parents and children)
-				function createOrgChart(orgId, orgData, visited = new Set(), depth = 0, maxDepth = 10) {
-					if (visited.has(orgId) || depth > maxDepth) {
-						return null; // Prevent infinite recursion or deep stack issues
-					}
-		
-					const org = orgData.find(item => item.id === orgId);
-					if (!org) {
-						return null;
-					}
-		
-					visited.add(orgId); // Mark the node as visited
-		
-					const chart = {
-						id: org.id,
-						name: org.name,
-						description: org.description,
-						parentOrgs: org.parentOrgs,
-						children: org.childOrgs.map(childId => {
-							const childOrg = orgData.find(item => item.id === childId);
-							return createOrgChart(childOrg.id, orgData, visited, depth + 1, maxDepth);
-						}).filter(child => child !== null),
-						parents: org.parentOrgs.map(parentId => {
-							const parentOrg = orgData.find(item => item.id === parentId);
-							return createOrgChart(parentOrg.id, orgData, visited, depth + 1, maxDepth);
-						}).filter(parent => parent !== null)
-					};
-		
-					visited.delete(orgId); // Allow this org to be revisited in other branches
-					return chart;
-				}
-		
-				// Create a visualisation of the org chart using D3.js
-				function drawOrgChart(orgChartData) { 
-					const windowHeight = $(window).innerHeight();
-					const svgContainer = d3.select("#orgchart")
-					.append("svg")
-					.attr("id", "orgChartSvg")
-					.attr("width", "800px")
-					.attr("height", windowHeight - 200);
-	 
-					$('#hierarchyInfo').hide();
-				const g = svgContainer.append("g");
-	
-				const treeLayout = d3.tree().nodeSize([180, 100]); // Adjust spacing here for closer nodes
-	
-				// Generate the hierarchy from the selected org data
-				const root = d3.hierarchy(orgChartData);
-				treeLayout(root);
-	
-				// Get the bounding box for the tree layout (to dynamically resize the SVG)
-				const minX = d3.min(root.descendants(), d => d.x);
-				const maxX = d3.max(root.descendants(), d => d.x);
-				const minY = d3.min(root.descendants(), d => d.y);
-				const maxY = d3.max(root.descendants(), d => d.y);
-	
-				let width = maxX - minX + 200; // Add padding
-				const height = maxY - minY + 200; // Add padding
-
-				const parentWidth = $('#orgchart').parent().width();
-				const screenWidth = $(window).width();
-			 
-				if (width > 1000) { 
-					width = screenWidth - 300; 
-				  }
 				 
-				svgContainer
-					.attr("width", width)
-					.attr("height", height);
-	
-				g.attr("transform", `translate(${(width / 2) - (minX + maxX) / 2}, ${100 - minY})`); // Center the chart
-	
-				// Implement zoom behavior
-				const zoom = d3.zoom()
-					.scaleExtent([0.1, 6]) // Set zoom range (min and max zoom)
-					.on("zoom", function() {
-						g.attr("transform", d3.event.transform); // Update the transform on zoom
-					});
-	
-				// Apply the zoom behavior to the SVG container
-				svgContainer.call(zoom);
-	
-				// Draw links between nodes using right-angle connectors
-				g.selectAll(".link")
-					.data(root.links())
-					.enter()
-					.append("path")
-					.attr("class", "link")
-					.attr("d", d => `
-						M${d.source.x},${d.source.y}
-						V${(d.source.y + d.target.y) / 2}
-						H${d.target.x}
-						V${d.target.y}
-					`)  // Right-angle path generation
-					.attr("fill", "none")
-					.attr("stroke", "#ccc")
-					.attr("stroke-width", 2); // Line styles applied directly
-	
-				// Draw nodes
-				const node = g.selectAll(".node")
-					.data(root.descendants())
-					.enter()
-					.append("g")
-					.attr("class", "node")
-					.attr("transform", d => "translate(" + d.x + "," + d.y + ")");
-	
-				// Add rounded rectangle for each node
-				node.append("rect")
-					.attr("width", 120)
-					.attr("height", 50)
-					.attr("x", -60)  // Center the rect horizontally
-					.attr("y", -25)  // Center the rect vertically
-					.attr("rx", 10)  // Rounded corners for width
-					.attr("ry", 10)  // Rounded corners for height
-					.attr("fill", "#fff")  // White background color
-					.attr("stroke", "steelblue")  // Blue border
-					.attr("stroke-width", 2);  // Stroke width
-	
-node.each(function(d) {
-  const maxWidth = 100; // Ensure it fits inside the 120px node rectangle
-const words = d.data.name.split(/[\s_]+/); // Split text by spaces and underscores
-let line = [];
-let lines = [];
+			});
+			
+			function countItemsByProperty(root, propName, maxDepth = 3) {
+				let total = 0;
 
-// Create a temporary SVG text element **outside the node** for measurement
-const tempSvg = d3.select("body").append("svg").attr("width", 0).attr("height", 0);
-const tempText = tempSvg.append("text").attr("font-size", "10px").attr("text-anchor", "middle");
+				function recurse(obj, currentDepth) {
+					if (
+					currentDepth > maxDepth ||
+					obj === null ||
+					typeof obj !== 'object'
+					) {
+					return;
+					}
 
-let testTspan = tempText.append("tspan").text("");
+					if (Array.isArray(obj[propName])) {
+					total += obj[propName].length;
+					}
 
-words.forEach(word => {
-    let testLine = line.concat(word).join(" ");
-    testTspan.text(testLine);
-
-    // Force a DOM update before measuring width
-    document.body.appendChild(tempSvg.node());
-
-    if (testTspan.node().getComputedTextLength() > maxWidth &amp;&amp; line.length > 0) {
-        lines.push(line.join(" ")); // Save current line
-        line = [word]; // Start a new line
-    } else {
-        line.push(word);
-    }
-});
-
-lines.push(line.join(" ")); // Push the last line
-tempSvg.remove(); // Remove the measurement element
-
-// Set font size based on the number of lines
- 
-const fontSize = lines.length > 3 ? "8px" : "10px";
-const lineSpacing = lines.length > 3 ? "8" : "12";
-const centre = lines.length > 3 ? "3" : "5";
-
-// Now create the actual text inside the node
-const finalTextElement = d3.select(this).append("text")
-    .attr("x", 0)
-    .attr("y", -(lines.length * centre)) // centre text vertically
-    .attr("text-anchor", "middle")
-    .attr("font-size", fontSize);
-
-
-lines.forEach((line, i) => {
-    finalTextElement.append("tspan")
-        .attr("x", 0)
-        .attr("dy", i === 0 ? "3" : lineSpacing) // Proper spacing for each line
-        .text(line)
-		.attr("font-size", fontSize);;
-});
-
-});
-
-
-
-
+					for (const val of Object.values(obj)) {
+					recurse(val, currentDepth + 1);
+					}
 				}
+
+				recurse(root, 1);
+				return total;
+				}
+function drawOrgChart(orgChartData, containerId = 'paper') {
+    let kids = toShow.children;
+    orgChartData.children = kids;
+    let total = countItemsByProperty(toShow, 'children', 2);
+
+    if (total > 21) {
+        // Handle large org chart with jstree (unchanged)
+        selectedOrgChart.org.children = selectedOrgChart.org.children.map(key => {
+            const org = orgById[key];
+            return {
+                id: org.id,
+                text: org.name
+            };
+        });
+
+        const flatTreeData = {
+            id: selectedOrgChart.org.id,       
+            text: selectedOrgChart.org.name,     
+            children: selectedOrgChart.org.children
+        };
+
+        $('#paper').on('select_node.jstree', function (e, data) {
+            const clickedId = data.node.id;  
+            redrawPage(clickedId);
+        }).jstree({
+            core: {
+                data: flatTreeData
+            },
+            plugins: ['types'],
+            types: {
+                'default': {
+                    'icon': 'fa fa-angle-right fa-fw'
+                }
+            }
+        }).on('ready.jstree loaded.jstree', function(e, ctx) {
+            ctx.instance.open_all();  // Keep expanded if desired
+        });
+    } else {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            return null;
+        }
+
+        container.innerHTML = '';
+        const graph = new joint.dia.Graph();
+        const paper = new joint.dia.Paper({
+            el: container,
+            model: graph,
+            width: container.clientWidth || 1000,
+            height: container.clientHeight || 600,
+            gridSize: 1,
+            drawGrid: true,
+            background: { color: '#F8F9FA' },
+            interactive: true,
+            cellViewNamespace: joint.shapes,
+            defaultConnectionPoint: {
+                name: 'rectangle',
+                args: { selector: 'rect', sticky: true }
+            },
+            defaultLink: new joint.shapes.standard.Link({
+                router: { name: 'orthogonal' },
+                connector: { name: 'normal' },
+                connectionPoint: { name: 'rectangle', args: { selector: 'rect' } },
+                attrs: {
+                    '.connection': {
+                        stroke: '#ccc',
+                        strokeWidth: 2
+                    },
+                    '.marker-target': {
+                        d: 'M 10 -5 0 0 10 5 z',
+                        fill: '#ccc',
+                        refX: '100%',
+                        refY: '50%',
+                        markerUnits: 'strokeWidth'
+                    }
+                }
+            })
+        });
+
+        // Attach click event to nodes after paper creation (for small org charts)
+        paper.on('element:pointerclick', function(view) {
+            const modelId = view.model.id;
+            if (modelId) {
+                redrawPage(modelId);
+            }
+        });
+
+        // Define the element type
+        const OrgElement = joint.dia.Element.define('org.Element', {
+            attrs: {
+                rect: {
+                    refWidth: '100%',
+                    refHeight: '100%',
+                    rx: 5,
+                    ry: 5,
+                    strokeWidth: 2,
+                    stroke: '#4285F4',
+                    fill: '#E8F0FE'
+                },
+                text: {
+                    refX: '50%',
+                    refY: '50%',
+                    textAnchor: 'middle',
+                    textVerticalAnchor: 'middle',
+                    fontSize: 18, // Adjust font size
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial, sans-serif',
+                    fill: '#333',
+                    text: ''
+                }
+            }
+        }, {
+            markup: [
+                { tagName: 'rect', selector: 'rect' },
+                { tagName: 'text', selector: 'text' }
+            ]
+        });
+
+        // Helper to wrap text and add the box
+        function makeOrgBox(node, x, y) {
+            if (typeof node == 'string') {
+                node = orgById[node];
+            }
+            const rawName = node?.name || node?.data?.name || 'Unnamed';
+            if (!node) return;
+            const maxWidth = 300;
+            const desiredWidth = Math.min(maxWidth, Math.max(100, rawName.length * 12)); // Dynamic width based on name length
+            const wrapped = joint.util.breakText(rawName, {
+                width: desiredWidth - 40,
+                height: 80
+            });
+
+            const id = node.id ?? node.data?.id ?? _.uniqueId('node_');
+
+            // Create the element
+            const element = new OrgElement({
+                id,
+                position: { x, y },
+                size: { width: desiredWidth, height: 80 },
+                attrs: {
+                    text: { text: wrapped }
+                }
+            }).addTo(graph);
+
+            // Attach click event to the node view (for each node)
+            // (No need, as the paper-level handler is set above)
+
+            return element;
+        }
+
+        const elements = {};
+        elements[orgChartData.id] = makeOrgBox(orgChartData, 300, 50);
+
+        // Recursive function to add children
+        function addChildren(parentData, parentEl, offsetX = 0, level = 1) {
+            const children = parentData.children || [];
+            if (!children.length) return;
+
+            const spacing = 300;
+            const vSpacing = 120;
+            const startX = offsetX - ((children.length - 1) * spacing / 2);
+
+            children.forEach((child, i) => {
+                const x = startX + i * spacing;
+                const y = level * vSpacing;
+                const box = makeOrgBox(child, x, y);
+                if (!box) return;  // Guard against undefined boxes
+                elements[child.id] = box;
+
+                const link = new joint.shapes.standard.Link({
+                    source: { id: parentEl.id, anchor: { name: 'center' } },
+                    target: { id: box.id, anchor: { name: 'center' } },
+                    connectionPoint: { name: 'rectangle', args: { selector: 'rect' } },
+                    router: { name: 'orthogonal' },
+                    connector: { name: 'rounded' },
+                    attrs: {
+                        '.connection': { stroke: '#ccc', strokeWidth: 2 },
+                        '.marker-target': {
+                            d: 'M 10 -5 0 0 10 5 z',
+                            fill: '#ccc',
+                            refX: '100%',
+                            refY: '50%',
+                            markerUnits: 'strokeWidth'
+                        }
+                    }
+                });
+
+                graph.addCell(link);
+
+                addChildren(child, box, x, level + 1);
+            });
+        }
+
+        addChildren(orgChartData, elements[orgChartData.id]);
+
+        // Auto-layout
+        try {
+            joint.layout.DirectedGraph.layout(graph, {
+                rankDir: 'TB', nodeSep: 50, edgeSep: 40, rankSep: 80, marginX: 20, marginY: 20
+            });
+        } catch (err) {
+            console.error('Layout error:', err);
+        }
+
+        // Enable dragging (panning) functionality on paper
+        let isPanning = false;
+        let panStartX, panStartY;
+        let paperTx, paperTy;
+
+        paper.el.addEventListener('mousedown', function(evt) {
+            isPanning = true;
+            panStartX = evt.clientX;
+            panStartY = evt.clientY;
+            const currentTranslate = paper.translate();
+            paperTx = currentTranslate.tx;
+            paperTy = currentTranslate.ty;
+            paper.el.style.cursor = 'grabbing';
+        });
+
+        paper.el.addEventListener('mousemove', function(evt) {
+            if (isPanning) {
+                const dx = evt.clientX - panStartX;
+                const dy = evt.clientY - panStartY;
+                paper.translate(paperTx + dx, paperTy + dy); // Update translation
+            }
+        });
+
+        paper.el.addEventListener('mouseup', function() {
+            isPanning = false;
+            paper.el.style.cursor = 'grab';
+        });
+
+        // Add zoom functionality
+        paper.el.addEventListener('wheel', function(event) {
+            event.preventDefault();
+            const delta = Math.max(-1, Math.min(1, (event.deltaY || -event.detail)));
+            const currentScale = paper.scale().sx;
+            const newScale = currentScale + delta * 0.1;
+
+            // Limit zoom scale
+            const minScale = 0.2;
+            const maxScale = 3;
+            if (newScale &lt;minScale || newScale > maxScale) return;
+
+            const clientX = event.clientX;
+            const clientY = event.clientY;
+            const localMousePoint = paper.clientToLocalPoint(clientX, clientY);
+            paper.scale(newScale, newScale, localMousePoint.x, localMousePoint.y);
+        });
+
+        // Center the chart and adjust for the viewport size
+        paper.scaleContentToFit({ padding: 50 });
+
+        return { graph, paper, elements };
+    }
+}
+
+
+	
 		 
 var selectedOrgChart
 
-function redrawPage(focusOrg){ 
+function redrawPage(focusOrg){   
+	 
+	const focusText = orgById[focusOrg]?.name || focusOrg; 
+ 
+	// selectedOrgChart = findOrgById(orgHierarchy, focusOrg); 
+	let getOrg =buildSingleHierarchy(orgData, focusOrg); 
+ 
+ 
+	selectedOrgChart = {org:{id:getOrg.id, name: getOrg.name, children: getOrg.children}};
 
-	 selectedOrgChart = createOrgChart(focusOrg, orgData); 
-
-	let toShow = orgData.find((e)=>{
+       toShow = orgData.find((e)=>{
 		return e.id == focusOrg;
-		})
-
+		}) 
+		
 		toShow['parentNodeId']=null;
 		  
-		  let appProcMap=[];
-		  orgProductTypes=[]; 
-		 
-		  toShow.allBusProcs.forEach((e)=>{ 
+		  let appProcMap=[]; orgProductTypes=[]; toShow.allBusProcs.forEach((e)=>{ 
 			let thisProcess=physProc.process_to_apps.filter((f)=>{
-				return e.id == f.processid;
-			});
+				return e.id == f.processid; }); 
+				if(thisProcess){ thisProcess.forEach((pr)=>{ 
+					pr['criticality']=e.criticality; 
+					pr['caps']= processLookupObj[pr.processid] || ''; appProcMap.push(pr) 
 
-
-			if(thisProcess){
-				thisProcess.forEach((pr)=>{
-				 
-				pr['criticality']=e.criticality;
-				pr['caps']= processLookupObj[pr.processid] || '';
-				appProcMap.push(pr)
-				if(thisProcess.product){
-				orgProductTypes=[...orgProductTypes, ...pr.product];
-				}
+					if(thisProcess.product){ 
+						orgProductTypes=[...orgProductTypes, ...pr.product];
+					}
 				})
 			}
 
 			appProcMap = appProcMap.filter((ap)=>{
-				return toShow.id == ap.orgid;
-			});
-
-			orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index)
-		 
-			toShow['orgProductTypes']=orgProductTypes
+				return toShow.id == ap.orgid; }); 
+				orgProductTypes=orgProductTypes.filter((elem, index, self) => self.findIndex( (t) => {return (t === elem)}) === index) 
+				toShow['orgProductTypes']=orgProductTypes
 		  }); 
 		
 		let parentProcs = appProcMap.filter((e)=>{
@@ -1621,142 +1856,176 @@ function redrawPage(focusOrg){
 			}));
 			return thisProcs;
 		});
-		
-		toShow['physicalProcesses']=[...parentProcs, ...childProcs, ...appProcMap]
-		toShow.physicalProcesses=toShow.physicalProcesses.filter((elem, index, self) => self.findIndex( (t) => {return (t.id === elem.id)}) === index)
-		
-		toShow.physicalProcesses.sort((a,b) => (a.processName > b.processName) ? 1 : ((b.processName > a.processName) ? -1 : 0))
-		toShow.physicalProcesses.forEach(pp => {
-			pp.appsdirect = pp.appsdirect.map(app => ({ ...app, appName: app.name }));
-		
-			pp.appsviaservice = pp.appsviaservice.map(app => {
-				let thisApp = appData.applications.find(fa => fa.id == app.appid);
-				return thisApp ? { ...app, appName: thisApp.name } : app;
-			});
-		});
-		
- var docSort = d3.nest()
-	 .key(function(d) { return d.index; })
-	 .entries(toShow.documents);
-  toShow.documents=docSort;
-  
+	 
+		// Merge all three lists once, de-dup by id
+		const merged = [...parentProcs, ...childProcs, ...appProcMap];
+			const byId   = new Map();
+			for (const proc of merged) {
+			if (!byId.has(proc.id)) {
+				byId.set(proc.id, proc);
+			}
+		}
+		const phys = Array.from(byId.values());
+
+		// 2) Sort by processName
+		phys.sort((a, b) => a.processName.localeCompare(b.processName));
+
+		// 3) Build an appId → appObject map once
+		const appById = appData.applications.reduce((m, app) => {
+			m[app.id] = app;
+			return m;
+		}, {});
+
+		// 4) Enrich each proc in one pass
+		for (const pr of phys) {
+			// appsdirect: just add the name (no find)
+			for (let i = 0; i&lt; pr.appsdirect.length; i++) {
+				const app = pr.appsdirect[i];
+				pr.appsdirect[i] = { ...app, appName: app.name };
+			}
+
+				// appsviaservice: lookup via our map
+				for (let i = 0; i&lt; pr.appsviaservice.length; i++) {
+					const svc = pr.appsviaservice[i];
+					const app = appById[svc.appid];
+					if (app) {
+					pr.appsviaservice[i] = { ...svc, appName: app.name };
+					}
+					// else leave svc as-is
+				}
+			}
+
+		// 5) Stick it back on toShow
+		toShow.physicalProcesses = phys;
+
+		if (toShow.documents?.length > 0) {
+				// Create a new object to store documents grouped by their index
+				const groupedDocs = {};
+
+				// Iterate over the documents and group by index
+				toShow.documents.forEach(d => {
+					// Ensure index is not empty or null, otherwise group under "no_index"
+					const index = (d.index === "" || d.index == null) ? "no_index" : d.index;
+
+					// Initialize the array if it doesn't exist
+					if (!groupedDocs[index]) {
+						groupedDocs[index] = [];
+					}
+
+					// Push the document to the respective index group
+					groupedDocs[index].push(d);
+				});
+
+				// If you want to filter out "no_index" documents, you can do so here
+				if (groupedDocs["no_index"]) {
+					delete groupedDocs["no_index"]; // Remove the "no_index" group if desired
+				}
+
+				// Convert the grouped object to an array of objects, if needed
+				toShow.documents = Object.keys(groupedDocs).map(key => ({
+					key: key,
+					values: groupedDocs[key]
+				}));
+			}
+ 
+  //console.log('TS:', toShow)
  drawView(toShow, modelData);
 
 }			
-  
-function getChildren(arr, allApp, allBus, allOrgs, allSites){ 
-	if(arr.applicationsUsedbyOrgUser){
-		arr.applicationsUsedbyOrgUser.forEach((f)=>{
-			allApp.push(f)
-	  }) 
-	   }
-	   if(arr.applicationsUsedbyProcess){
-		arr.applicationsUsedbyProcess.forEach((f)=>{
-			allApp.push(f)
-	  })
-	   } 
-	   if(arr.businessProcess){
-		arr.businessProcess.forEach((e)=>{
-		allBus.push(e)
-	  });
-	} 
-	if(arr.site.length&gt;0){
-		arr.site.forEach((e)=>{
-			allSites.push(e)
-		  });
-	}
-	if(arr.childOrgs){ 
-		if(arr.length&gt;0){
-		arr.childOrgs?.forEach((e1)=>{  
-			let thisOrg=orgData.find((f)=>{
-				return f.id == e1
-			}); 
-			allOrgs.push({"id":thisOrg.id, "name":thisOrg.name})
-			getChildren(thisOrg, allApp, allBus, allOrgs, allSites)
-		})
-		}
-	}
-	
-}	
-
-function getParents(arr, allApp, allBus, allOrgs, allSites){ 
- 
- 
-	if(arr.applicationsUsedbyOrgUser){
-		arr.applicationsUsedbyOrgUser.forEach((f)=>{
-			allApp.push(f)
-	  }) 
-	   }
-	 
-	   if(arr.applicationsUsedbyProcess){
-		arr.applicationsUsedbyProcess.forEach((f)=>{
-			allApp.push(f)
-	  })
-	   }
-	     
-	   if(arr.businessProcess){
-		arr.businessProcess.forEach((e)=>{
-		allBus.push(e)
-	  });
-	} 
-	if(arr.site.length&gt;0){
-		arr.site.forEach((e)=>{
-			allSites.push(e)
-		  });
-	}
- 
-	if(arr.childOrgs){ 
- 
-		if(arr.length&gt;0){
-		arr.parentOrgs?.forEach((e1)=>{  
-			let thisOrg=orgData.find((f)=>{
-				return f.id == e1
-			}); 
- 
-			if(thisOrg){
-			allOrgs.push({"id":thisOrg.id, "name":thisOrg.name})
-			}
-			getParents(thisOrg, allApp, allBus, allOrgs, allSites)
-		})
-		 }
-	}
- 
-}			
 			
-function drawView(orgToShowData, modelData){  
+function drawView(orgToShowData, modelData){   
 	$('#mainPanel').html(panelTemplate(orgToShowData))
-	$('#subjectSelection').append(orgOptions); 
-	$('#subjectSelection').select2(); 
- 
-	$('#subjectSelection').val(orgToShowData.id).trigger('change');
- 
-	drawOrgChart(selectedOrgChart);
-/*
-	document.getElementById("download-svg").addEventListener("click", function() {
-		const svg = document.getElementById("orgChartSvg");
-		const serializer = new XMLSerializer();
-		const svgString = serializer.serializeToString(svg);
-
-		const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-		const url = URL.createObjectURL(svgBlob);
-
-		// Create a download link for the SVG
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = "org_chart.svg";
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-
-		URL.revokeObjectURL(url); // Clean up
-	});
-*/
+    //currentChart = drawOrgChart(selectedOrgChart.org);  
 	initPopoverTrigger();
 	initTable(orgToShowData); 
-	$('#subjectSelection').off().on('change', function(){
+	$('#subjectSelection').on('change', function(){
 		modelData=[] 
+          currentOrgIdForChart = null; // Reset to force redraw on tab click for new org
 		redrawPage($(this).val());
-	})
+	});
+
+    $(document).on('click', '#recenterChartBtn', function() {
+        if (currentChart &amp;&amp; currentChart.paper) {
+            const paper = currentChart.paper;
+            const graph = currentChart.graph;
+
+            if (graph) {
+                const currentScale = paper.scale().sx; // Get current zoom level (assuming uniform scaling)
+                const graphBBox = graph.getBBox(); // Get bounding box of all graph elements
+
+                if (graphBBox &amp;&amp; graphBBox.width &amp;&amp; graphBBox.height) { // Ensure bbox is valid
+                    // Calculate the center of the graph's content
+                    const graphContentCenterX = graphBBox.x + graphBBox.width / 2;
+                    const graphContentCenterY = graphBBox.y + graphBBox.height / 2;
+
+                    // Calculate the new translation to center the graph content
+                    // This formula centers the scaled graph content within the paper's viewport
+                    const newTx = (paper.options.width / 2) - (graphContentCenterX * currentScale);
+                    const newTy = (paper.options.height / 2) - (graphContentCenterY * currentScale);
+
+                    paper.translate(newTx, newTy); // Apply the new translation
+                    // The scale (zoom level) remains unchanged
+                }
+            }
+        }
+    });
+
+
+
+    // Detach previous event handlers to avoid multiple bindings
+    $('a[data-toggle="tab"][href="#hierarchy"]').off('shown.bs.tab');
+
+    // Attach event handler for when the hierarchy tab is shown
+	       
+							
+    $('a[data-toggle="tab"][href="#hierarchy"]').on('shown.bs.tab', function (e) {
+ 
+        const paperDiv = document.getElementById('paper');
+
+
+ 
+	  if(selectedOrgChart==null){
+   			let getOrg =buildSingleHierarchy(orgData, toShow.id); 
+			selectedOrgChart = {org:{id:getOrg.id, name: getOrg.name, children: getOrg.children}};
+	  }
+	    
+        if (selectedOrgChart &amp;&amp; selectedOrgChart.org &amp;&amp; paperDiv) {
+
+            // Only draw if it's a new org or chart hasn't been drawn for this org yet
+            if (currentOrgIdForChart !== selectedOrgChart.org.id || !paperDiv.hasChildNodes()) {
+ 
+                currentChart = drawOrgChart(selectedOrgChart.org);
+                currentOrgIdForChart = selectedOrgChart.org.id;
+            } else if (currentChart &amp;&amp; currentChart.paper) {
+                // If chart exists for the current org, just ensure dimensions are correct
+                currentChart.paper.setDimensions(paperDiv.clientWidth, paperDiv.clientHeight);
+                currentChart.paper.scaleContentToFit({ padding: 50 });
+            }
+        } else {
+            // Show message if no data
+            $('#paper').empty(); // Clear paper if no data
+        }
+    });
+
+    // If the hierarchy tab is already active, manually trigger the 'shown.bs.tab' event.
+    if ($('ul.nav-tabs li.active a[href="#hierarchy"]').length > 0) {
+        setTimeout(function() {
+            $('a[data-toggle="tab"][href="#hierarchy"]').trigger('shown.bs.tab');
+        }, 100); 
+    }
+
+    // General tab shown event for DataTables column adjustment
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){ $($.fn.dataTable.tables(true)).DataTable().columns.adjust(); });
+
+    // Window resize handler for the org chart
+    $(window).off('resize.orgchart').on('resize.orgchart', function() {
+        if (currentChart &amp;&amp; currentChart.paper &amp;&amp; $('#paper').is(':visible')) {
+            const $container = $('#paper');
+            currentChart.paper.setDimensions($container.width(), $container.height());
+            currentChart.paper.scaleContentToFit({ padding: 50 });
+        }
+    });
+  
 }
  
 function initTable(dt){
@@ -1767,6 +2036,50 @@ function initTable(dt){
 	
 	});
 
+		procTable = $('#dt_supportedprocesses').DataTable({
+					scrollY: "350px",
+					scrollCollapse: true,
+					paging: true,
+					info: false,
+					pageLength: 25,
+					sort: true,
+					responsive: true,
+					columns: [
+						{ "width": "30%" },
+						{ "width": "30%" },
+						{ "width": "15%" } ,
+						{ "width": "10%" } ,
+						{ "width": "15%" }   
+						],
+					dom: 'Bfrtip',
+					buttons: [
+						'copyHtml5', 
+						'excelHtml5',
+						'csvHtml5',
+						'pdfHtml5',
+						'print'
+					]
+					});
+					
+					
+			// Apply the search
+			procTable.columns().every( function () {
+				var thatp = this;
+			
+				$( '.procIn', this.footer() ).on( 'keyup change', function () {
+					if ( thatp.search() !== this.value ) {
+						thatp
+							.search( this.value )
+							.draw();
+					}
+				} );
+			} );
+			procTable.columns.adjust();
+						
+			$(window).resize( function () {
+				procTable.columns.adjust();
+			});
+			procTable.columns.adjust().draw();
 	$('#dt_stakeholders tfoot th').each( function () {
 		var title = $(this).text();
 		$(this).html( '&lt;input type="text" placeholder="&#xf002; '+title+'" style="font-family: FontAwesome, Source Sans Pro, Arial; font-style: normal" /&gt;' );
@@ -1811,18 +2124,23 @@ function initTable(dt){
  
 	let apps=[];
 	dt.allAppsUsed.forEach((d)=>{
-	
+ 
 	let thisorg=dt.applicationsUsedbyOrgUser.find((e)=>{
 		return e.id==d.id
 	})
 	if(thisorg){thisorg='App Org User'}else{thisorg=''}
+
 	let thisproc=dt.applicationsUsedbyProcess.find((e)=>{
 		return e.id==d.id
 	})
 	if(thisproc){thisproc='Process'}else{thisproc=''}
+
 	if(thisproc =='' &amp;&amp; thisorg==''){thisproc='Indirect'}
+
 	apps.push({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "parent":""})
+	
 	let appHTML
+
 	if(d.class!='Application_Provider_Interface'){
 		 appHTML=appTemplate({"id":d.id,"name":d.name,"description":d.description,"org":thisorg,"proc":thisproc, "className":"Application_Provider"})
 	}else{

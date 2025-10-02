@@ -302,8 +302,15 @@
                                     <div class="parent-superflex">
                                         <div class="superflex">
                                             <h3 class="text-primary"><i class="fa fa-server right-10"></i><xsl:value-of select="eas:i18n('Product Details')"/></h3>
-                                            <label><xsl:value-of select="eas:i18n('Name')"/></label>
+                                                                                       <label><xsl:value-of select="eas:i18n('Name')"/></label>
                                             <div class="ess-string">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+                                            {{#if this.technology_provider_version}}
+                                            <div style="display:inline-block; float:right;">
+                                            <label><xsl:value-of select="eas:i18n('Version')"/></label>
+                                            <br/>
+                                            <div class="ess-string">{{this.technology_provider_version}}</div>
+                                            </div>
+                                              {{/if}}
                                             {{#if this.description}}
                                             <label><xsl:value-of select="eas:i18n('Description')"/></label>
                                             <div class="ess-string">{{{breaklines this.description}}}</div>
@@ -404,7 +411,7 @@
                                             <div class="tech-card-container">
                                             {{#each this.comp}}
                                                 <div class="tech-card">
-                                                    <div class="techlabel"><xsl:attribute name="style">background-color:{{this.stdColour}};color:{{this.stdTextColour}}</xsl:attribute>{{#ifEquals allStandards.length 1}}{{this.std}}{{else}}{{#ifEquals allStandards.length 0}}<xsl:value-of select="eas:i18n('Not Set')"/>{{else}}<xsl:value-of select="eas:i18n('Multiple')"/>{{/ifEquals}}{{/ifEquals}}</div>
+                                                    <div class="techlabel"><xsl:attribute name="style">background-color:{{this.stdColour}};color:{{this.stdTextColour}}</xsl:attribute>{{#ifEquals allStandards.length 1}}{{this.allStandards.0.stdStrength}}{{else}}{{#ifEquals allStandards.length 0}}<xsl:value-of select="eas:i18n('Not Set')"/>{{else}}<xsl:value-of select="eas:i18n('Multiple')"/>{{/ifEquals}}{{/ifEquals}}</div>
                                                     <div class="name">{{this.name}}</div>
                                                     <div class="description">{{this.description}}</div>
                                                     <div class="bottomText">
@@ -558,7 +565,7 @@
                                                 <div class="deployed-card-body">
                                                 <div class="deployed-card-description">
                                                     <span class="deployed-card-label">Node</span> 
-                                                    <span class="deployed-card-performer"><xsl:text> </xsl:text>{{this.node}}</span><xsl:text> </xsl:text>
+                                                    <span class="deployed-card-performer"><xsl:text> </xsl:text> {{#essRenderInstanceMenuLink this.nodeObject}}{{/essRenderInstanceMenuLink}}</span><xsl:text> </xsl:text>
                                                     <span class="deployed-card-label">Status</span> 
                                                     <span class="deployed-card-performer"><xsl:text> </xsl:text><span class="label label-default"><xsl:attribute name="style">{{#styles this.runtime_status 'Deployment_Status'}}{{/styles}}</xsl:attribute>{{this.runtime_status}}</span></span>
                                                     <br/><br/>
@@ -1149,7 +1156,7 @@
                                                 <b>Deployed To</b>
                                                 <ul class="app-card-list">
                                                     {{#each this.nodes}}
-                                                    <li class="app-card-list-item">{{this.name}}</li>
+                                                    <li class="app-card-list-item"> {{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</li>
                                                     {{/each}}
                                                    
                                                 </ul>

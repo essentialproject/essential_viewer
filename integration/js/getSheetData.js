@@ -2441,6 +2441,7 @@ $("document").ready(function () {
             ],
           });
           let jsonEnvironmentData = generateStandardTemplate(allEnvironment);
+        
 		  dataRows.sheets = dataRows.sheets.filter(sheet => sheet.id !== "EnvironmentLookup");
           dataRows.sheets.push({
             name: "EnvironmentLookup",
@@ -3479,11 +3480,12 @@ $("document").ready(function () {
             ],
           });
           jsonEnvironmentData = generateStandardTemplate(allEnvironment);
+      
 		  dataRows.sheets = dataRows.sheets.filter(sheet => sheet.id !== "env2");
           dataRows.sheets.push({
             id: "env2",
             name: "EnvironmentLookup2",
-            description: "List of codebases",
+            description: "List of environments",
             headerRow: 7,
             visible: false,
             headers: [

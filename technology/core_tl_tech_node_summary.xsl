@@ -14,8 +14,8 @@
     <xsl:param name="param1" /> 
     
     <xsl:output method="html" omit-xml-declaration="yes" indent="yes" use-character-maps="c-1replace"/>
-    
-    <xsl:variable name="linkClasses" select="('Technology_Node', 'Application_Provider', 'Geographic_Region', 'Technology_Product', 'Technology_Node_Type', 'Application_Deployment', 'Technology_Instance','Information_Store')" />
+ 
+    <xsl:variable name="linkClasses" select="('Technology_Node', 'Application_Provider', 'Geographic_Region', 'Technology_Product', 'Technology_Node_Type', 'Application_Deployment', 'Technology_Instance','Information_Store', 'Site', 'Individual_Actor', 'Group_Actor')" />
     <xsl:variable name="apiPathNodesRep" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Nodes']"/>
     <xsl:variable name="pageLabel">
         <xsl:value-of select="eas:i18n('Technology Node Summary')" />

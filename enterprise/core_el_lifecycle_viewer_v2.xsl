@@ -19,32 +19,15 @@
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"/>
 	<xsl:variable name="styles" select="/node()/simple_instance[type='Element_Style']"/>
- 
-    <xsl:variable name="lifecycles" select="/node()/simple_instance[type=('Vendor_Lifecycle_Status','Lifecycle_Status','Disposition_Lifecycle_Status')]"/>
-        
-	<xsl:variable name="products" select="/node()/simple_instance[type='Technology_Product']"/>
-	<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
-	<xsl:variable name="allproducts" select="$products union $apps"/>
-    <xsl:variable name="productLifecycles" select="/node()/simple_instance[type=('Lifecycle_Model','Vendor_Lifecycle_Model', 'Disposition_Lifecycle_Model')][own_slot_value[slot_reference='lifecycle_model_subject']/value=$allproducts/name]"/>
-    <xsl:variable name="lifecycleStatusUsages" select="/node()/simple_instance[type=('Lifecycle_Status_Usage','Vendor_Lifecycle_Status_Usage', 'Disposition_Lifecycle_Status_Usage')][own_slot_value[slot_reference='used_in_lifecycle_model']/value=$productLifecycles/name]"/>
-    <xsl:variable name="allSupplier" select="/node()/simple_instance[type = 'Supplier']"/>     
-    <xsl:variable name="allTechstds" select="/node()/simple_instance[type = 'Technology_Provider_Standard_Specification']"/>
-    <xsl:variable name="allTechProdRoles" select="/node()/simple_instance[type='Technology_Product_Role']"/>
-	<xsl:variable name="techProdRoleswithStd" select="$allTechProdRoles[name = $allTechstds/own_slot_value[slot_reference = 'tps_standard_tech_provider_role']/value]"/>
-	<xsl:variable name="techCompwithStd" select="/node()/simple_instance[type='Technology_Component'][name = $techProdRoleswithStd/own_slot_value[slot_reference = 'implementing_technology_component']/value]"/>
-  
-    <xsl:variable name="allTechProvUsage" select="/node()/simple_instance[type = 'Technology_Provider_Usage'][own_slot_value[slot_reference='provider_as_role']/value=$allTechProdRoles/name]"/>
-    <xsl:variable name="allTechBuildArch" select="/node()/simple_instance[type = 'Technology_Build_Architecture'][own_slot_value[slot_reference='contained_architecture_components']/value=$allTechProvUsage/name]"/>
-	<xsl:variable name="prodDeploymentRole" select="/node()/simple_instance[type = 'Technology_Product_Build'][own_slot_value[slot_reference='technology_provider_architecture']/value=$allTechBuildArch/name]"/>
-    <xsl:variable name="appDeployment" select="/node()/simple_instance[type = 'Application_Deployment'][own_slot_value[slot_reference='application_deployment_technical_arch']/value=$prodDeploymentRole/name]"/>
-    <xsl:variable name="actors" select="/node()/simple_instance[type = 'Group_Actor']"/>
-	<xsl:variable name="geos" select="/node()/simple_instance[supertype = 'Geography']"/>
+
    
     
     <xsl:variable name="stdValue" select="/node()/simple_instance[type = 'Standard_Strength']"/>
      <!--  tech for app  -->
 
-	<xsl:variable name="elementStyle" select="/node()/simple_instance[type = ('Element_Style')]"/>
+	<xsl:key name="businessDomains" match="/node()/simple_instance[type = ('Business_Domain')]" use="type"/>
+	<xsl:variable name="businessDomains" select="key('businessDomains','Business_Domain')"/>
+	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
 	<xsl:variable name="appsData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Apps']"></xsl:variable>
 	<xsl:variable name="appCaptoServiceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Application Capabilities 2 Services']"></xsl:variable>
 
@@ -58,6 +41,11 @@
 		<xsl:variable name="apiApps">
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$appsData"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="apiCaps">
+			<xsl:call-template name="GetViewerAPIPath">
+				<xsl:with-param name="apiReport" select="$busCapData"></xsl:with-param>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="apiAppCapSvcs">
@@ -656,6 +644,106 @@
 					transform: scale(1.01);
 					fill: #66bb6a;
 				}
+
+				.node {
+					/* Base appearance */
+					fill: #4a90e2;
+					stroke: #ffffff;
+					stroke-width: 5px;
+					
+					/* Shadow effects */
+					filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5)) blur(0.5px);;
+					
+					/* Hover state preparation */
+					cursor: pointer;
+					
+					/* Smooth transitions */
+					transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+					opacity: 0.95;
+					transform: scale(1);
+				  }
+				  
+				  /* Hover effect */
+				  .node:hover {
+					fill: #66a6ff;
+					filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.25));
+					opacity: 1;
+				  }
+				  
+				  /* Active/clicked state */
+				  .node:active {
+					transform: scale(0.98);
+					filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+					
+				  }
+				  
+				  .node.high-criticality {
+					stroke: #e74c3c;
+					stroke-width: 4px; 
+				  }
+				  
+				  .node.center {
+					fill: #e74c3c;
+				  }
+				  
+				  .node.application {
+					fill: #3498db;
+				  }
+				  
+				  .node.process {
+					fill: #6cd0de;
+				  }
+				  
+				  /* Edge styling */
+				  .link {
+					stroke: #bdc3c7;
+					stroke-opacity: 0.5;
+					stroke-width: 1.5px;
+					transition: all 0.3s ease;
+				  }
+				  
+				  .link:hover, .link.highlighted {
+					stroke: #34495e;
+					stroke-opacity: 0.9;
+					stroke-width: 2.5px;
+				  }
+				  
+				  /* Node labels */
+				  .node-label 
+					font-family: verdana,Helvetica, sans-serif;
+					font-size: 15px;
+					font-weight: 500;
+					fill: #2c3e50;
+					pointer-events: none;
+					text-shadow: 0 1px 2px #fff;
+				  }
+				  /* Tooltip styling */
+				  .tooltip {
+					position: absolute;
+					padding: 8px 12px;
+					background: rgba(44, 62, 80, 0.9);
+					color: #ecf0f1;
+					border-radius: 4px;
+					font-family: 'Helvetica Neue', Arial, sans-serif;
+					font-size: 12px;
+					pointer-events: none;
+					z-index: 10;
+					box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+				  }
+				  
+				  /* Animation for node entrance */
+				  @keyframes fadeInPop {
+					0% {
+					  opacity: 0.7; 
+					}
+					100% {
+					  opacity: 1; 
+					}
+				  }
+				  
+				  .node {
+					animation: fadeInPop 0.6s ease-out;
+				  }
 			</style>		
 			</head>
 			<body class="vls-body">
@@ -681,49 +769,55 @@
 					<aside class="vls-side-bar" role="complementary" aria-labelledby="filterSectionHeading">
 						<div class="vls-main-wrapp">
 							<div class="vls-heading">
-								<h3 id="filterSectionHeading"><span class="vls-text-danger">Filters</span></h3>
+								<h3 id="filterSectionHeading"><span class="vls-text-danger"><xsl:value-of select="eas:i18n('Filters')"/></span></h3>
 							</div>
 
 							<div class="vls-heading">
-								<h6><span class="vls-text-dark">Type</span></h6>
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('Type')"/></span></h6>
 							</div>
-							<label for="typeFilter" class="sr-only">Type Filter</label>
+							<label for="typeFilter" class="sr-only"><xsl:value-of select="eas:i18n('Type Filter')"/></label>
 							<select id="typeFilter" class="vls-type form-control filter" aria-label="Filter by type">
-								<option value="Technology">Technology</option>
-								<option value="Application">Applications</option>
+								<option value="Technology"><xsl:value-of select="eas:i18n('Technology')"/></option>
+								<option value="Application"><xsl:value-of select="eas:i18n('Applications')"/></option>
 							</select>
 
 							<div class="vls-heading vendor">
-								<h6><span class="vls-text-dark">Vendor</span></h6>
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('Vendor')"/></span></h6>
 							</div>
-							<label for="vendorFilter" class="sr-only">Vendor Filter</label>
+							<label for="vendorFilter" class="sr-only"><xsl:value-of select="eas:i18n('Vendor Filter')"/></label>
 							<select id="vendorFilter" class="vls-vendor form-control filter vendor" aria-label="Filter by vendor">
-								<option value="all" selected="true">All</option>
+								<option value="all" selected="true"><xsl:value-of select="eas:i18n('All')"/></option>
 							</select>
 
 							<div class="vls-heading caps">
-								<h6><span class="vls-text-dark">By Capability</span></h6>
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('By Capability')"/></span></h6>
 							</div>
-							<label for="capabilityFilter" class="sr-only">Capability Filter</label>
+							<label for="capabilityFilter" class="sr-only"><xsl:value-of select="eas:i18n('Capability Filter')"/></label>
 							<select id="capabilityFilter" class="vls-caps form-control filter caps" aria-label="Filter by capability">
-								<option value="all" selected="true">All</option>
+								<option value="all" selected="true"><xsl:value-of select="eas:i18n('All')"/></option>
 							</select>
-
-							<div class="vls-heading">
-								<h6><span class="vls-text-dark">Lifecycle Type</span></h6>
+							<div class="vls-heading caps">
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('By Business Domain')"/></span></h6>
 							</div>
-							<label for="lifecycleOptions" class="sr-only">Lifecycle Type Filter</label>
+							<label for="domainFilter" class="sr-only"><xsl:value-of select="eas:i18n('By Business Domain')"/></label>
+							<select id="domainFilter" class="vls-domain form-control filter caps" aria-label="Filter by domain">
+								<option value="all" selected="true"><xsl:value-of select="eas:i18n('All')"/></option>
+							</select>
+							<div class="vls-heading">
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('Lifecycle Type')"/></span></h6>
+							</div>
+							<label for="lifecycleOptions" class="sr-only"><xsl:value-of select="eas:i18n('Lifecycle Type Filter')"/></label>
 							<select id="lifecycleOptions" class="vls-lifecycle form-control filter" aria-label="Filter by lifecycle type"></select>
 
 							<div class="vls-heading">
-								<h6><span class="vls-text-dark">Years</span></h6>
+								<h6><span class="vls-text-dark"><xsl:value-of select="eas:i18n('Years')"/></span></h6>
 							</div>
 							<div class="form-group">
-								<label for="fromYear" class="sr-only">From Year</label>
+								<label for="fromYear" class="sr-only"><xsl:value-of select="eas:i18n('From Year')"/></label>
 								From: 
 								<input class="filter form-control" type="text" id="fromYear" size="4" aria-label="Filter from year" />
 
-								<label for="toYear" class="sr-only">To Year</label>
+								<label for="toYear" class="sr-only"><xsl:value-of select="eas:i18n('To Year')"/></label>
 								To: 
 								<input class="filter form-control" type="text" id="toYear" size="4" aria-label="Filter to year" />
 							</div>
@@ -735,10 +829,10 @@
 					<!-- Main content Start -->
 					<div class="vls-main-content my-main" role="main" aria-labelledby="mainContentHeading">
 						<div class="vls-main-wrapp my-main-wrapp height-100">
-							<h2 id="mainContentHeading" class="sr-only">Main Content</h2>
+							<h2 id="mainContentHeading" class="sr-only"><xsl:value-of select="eas:i18n('Main Content')"/></h2>
 							<svg id="time-chart" height="400" width="100%" role="img" aria-labelledby="timeChartTitle timeChartDesc">
-								<title id="timeChartTitle">Time Chart</title>
-								<desc id="timeChartDesc">A visual representation of time-based data. Adjust the chart settings as needed.</desc>
+								<title id="timeChartTitle"><xsl:value-of select="eas:i18n('Time Chart')"/></title>
+								<desc id="timeChartDesc"><xsl:value-of select="eas:i18n('A visual representation of time-based data. Adjust the chart settings as needed')"/>.</desc>
 							</svg>
 						</div>
 					</div>
@@ -752,7 +846,7 @@
 						</a>
 						<div class="pull-right">
 							<label>
-								<input type="checkbox" id="filterHighCriticality"/> High Criticality Processes Only
+								<input type="checkbox" id="filterHighCriticality"/> <xsl:value-of select="eas:i18n('High Criticality Processes Only')"/>
 							</label>
 						</div>
 						<dic class="clearfix"/>
@@ -970,6 +1064,7 @@
 					<xsl:with-param name="viewerAPIPathAppLife" select="$apiAppLifeData"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathSupplier" select="$apiSupplierData"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathProcess" select="$apiProcess"></xsl:with-param>
+					<xsl:with-param name="viewerAPIPathCaps" select="$apiCaps"></xsl:with-param>
 					
 					   
 				</xsl:call-template>  
@@ -983,7 +1078,8 @@
 		<xsl:param name="viewerAPIPathTechLife"></xsl:param> 
 		<xsl:param name="viewerAPIPathAppLife"></xsl:param> 
 		<xsl:param name="viewerAPIPathSupplier"></xsl:param> 
-		<xsl:param name="viewerAPIPathProcess"></xsl:param> 
+		<xsl:param name="viewerAPIPathProcess"></xsl:param>
+		<xsl:param name="viewerAPIPathCaps"></xsl:param> 
   
 		//a global variable that holds the data returned by an Viewer API Report 
 		var viewAPIDataApps = '<xsl:value-of select="$viewerAPIPathApps"/>'; 
@@ -992,6 +1088,7 @@
 		var viewAPIDataAppLife = '<xsl:value-of select="$viewerAPIPathAppLife"/>'; 
 		var viewAPIDataSupplier = '<xsl:value-of select="$viewerAPIPathSupplier"/>'; 
 		var viewAPIDataProcess = '<xsl:value-of select="$viewerAPIPathProcess"/>'; 
+		var viewAPIDataCaps = '<xsl:value-of select="$viewerAPIPathCaps"/>';
 		//set a variable to a Promise function that calls the API Report using the given path and returns the resulting data
 		
 		var promise_loadViewerAPIData = function (apiDataSetURL)
@@ -1023,6 +1120,8 @@
 				}
 			});
 		}; 
+
+		let busDomains=[<xsl:apply-templates select="$businessDomains" mode="busDoms"><xsl:sort select="own_slot_value[slot_reference='name']/value" order="ascending"/></xsl:apply-templates>];
 
 	 	function showEditorSpinner(message) {
 			$('#editor-spinner-text').text(message);                            
@@ -1139,12 +1238,36 @@
 				promise_loadViewerAPIData(viewAPIDataSupplier),
 				promise_loadViewerAPIData(viewAPIDataAppLife),
 				promise_loadViewerAPIData(viewAPIDataProcess),
-				promise_loadViewerAPIData(viewAPIDataAppCapSvcs)
+				promise_loadViewerAPIData(viewAPIDataAppCapSvcs),
+				promise_loadViewerAPIData(viewAPIDataCaps)
 			]).then(function (responses) {
-		
-			
+				responses[6]=responses[6].busCaptoAppDetails
+ 
 				allTechJSONLifecycles = responses[1].all_lifecycles;
-				allAppJSONLifecycles = responses[3].all_lifecycles;
+				allAppJSONLifecycles = responses[3].all_lifecycles; 
+				// Create a map of appId to a Set of domainIds
+					const appToDomainsMap = {};
+
+					// Step 1: Populate the map
+					responses[6].forEach(capability => {
+					const { domainIds, apps } = capability;
+
+					apps.forEach(appId => {
+						if (!appToDomainsMap[appId]) {
+						appToDomainsMap[appId] = new Set();
+						}
+						domainIds.forEach(domainId => appToDomainsMap[appId].add(domainId));
+					});
+					});
+				
+					// Step 2: Merge into allAppJSONLifecycles
+					allAppJSONLifecycles.forEach(app => {
+					const domains = appToDomainsMap[app.productId];
+						if (domains) {
+							// Convert Set to array
+							app.domainIds = Array.from(domains);
+						}
+					}); 
 
 				responses[0].filters.find((e)=>{return e.valueClass == 'Business_Criticality'}).values.forEach(item => {
 					businessCriticalityMap.set(item.enum_name, {
@@ -1175,7 +1298,7 @@
 						return acc;
 					}, {});
 				};
-		 
+				 
 				if(allTechJSONLifecycles){
 				groupedData = collateDatesByProduct(allTechJSONLifecycles);
 				appGroupedData = collateDatesByProduct(allAppJSONLifecycles); 
@@ -1183,7 +1306,7 @@
 			 
 				// get types based on what data is captured
 				const uniqueTypesMap = new Map();
-mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
+				mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 				for (let i = 0; i &lt; mergedLifecycles.length; i++) {
 					const lifecycle = mergedLifecycles[i];
 					const dates = lifecycle.dates;
@@ -1211,9 +1334,17 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 				standardsJSON = responses[1].standardsJSON;
 				processJSON = responses[4].process_to_apps;
 				appCapsJSON = responses[5];
-
+ 
+				appJSON.forEach(app => {
+					const domains = appToDomainsMap[app.id];
+						if (domains) {
+							// Convert Set to array
+							app.domainIds = Array.from(domains);
+						}
+					});
+				
 				standardsMap = new Map(standardsJSON.map(d => [d.id, d]));
-		
+				 
 				let capToSvs = [];
 				appCapsJSON.application_capabilities_services.forEach((d) => {
 					d.services.forEach((e) => {
@@ -1265,6 +1396,8 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 				$('.vls-vendor').append(listTemplate(suppliers))
  
 				$('.vls-caps').append(listTemplate(capOptions))
+
+				$('#domainFilter').append(listTemplate(busDomains))
 				closeNav();
 				lifeByType = d3.nest()
 					.key(function (d) { return d.type; })
@@ -1273,13 +1406,18 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 				lifeMap = new Map(
 					lifeByType.map(life => [life.key, new Map(life.values.map(val => [val.id, val.backgroundColour]))])
 					);	
-	 
+				
 				setChart();
 	 
 				$('.filter').on('change', function () {
 		
 					setChart();
 				});
+			//	$('.vls-type').select2();
+			//	$('.vls-vendor').select2();
+			//	$('.vls-caps').select2();
+			//	$('#domainFilter').select2();
+				 
  
 				$('.vls-type').on('change', function () {
 					let viewType = $('.vls-type').val();
@@ -1356,11 +1494,13 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 					$('.vendor').show();
 					$('.caps').hide();
 				}
+
 		
 				let startYear = $('#fromYear').val();
 				let endYear = $('#toYear').val();
 				let supplier = $('.vls-vendor').val();
 				let capability = $('.vls-caps').val();
+				let domain= $('#domainFilter').val();
 		
 				chartStartDate = moment(startYear + '-01-01');
 				chartEndDate = moment(endYear + '-01-01');
@@ -1379,6 +1519,16 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 					} else {
 						workingArr = productJSON;
 					}
+
+					if(domain !='all'){
+						workingArr = workingArr.filter((f) => {
+							if (f.domainIds) {
+								return f.domainIds.includes(domain);
+							}
+							return false;
+						});
+					}
+				 
 		
 				}
 				else {
@@ -1390,7 +1540,7 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 						workingArr = productJSON;
 					}
 				}
-				//console.log('workingArr',workingArr)
+				
 				let yearArr = [];
 				for (let i = 0; i &lt; endYear - startYear; i++) {
 					let dt = String((parseInt(startYear) + i) + '-01-01')
@@ -1468,6 +1618,8 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 				}else { 
 					//do nothing, no match
 				}
+
+				
 				d['lifecycles']=lifeStructure; 
 					let thislifeByType = d3.nest()
 						.key(function (d) { return d.type; })
@@ -1538,7 +1690,7 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 		
 				let productsToShow = [];
 				workingArr.forEach((d) => {
-					//console.log('dsd',d)
+					  
 					let showDates = d.lifecycles.filter((d) => {
 						return d.key == thisLife;
 					});
@@ -1553,7 +1705,6 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 						}
 					}
 				});
-		
 		
 				let svgH = (productsToShow.length * 21) + 30;
 				let viewArray = {};
@@ -1632,7 +1783,7 @@ mergedLifecycles = [...allTechJSONLifecycles, ...allAppJSONLifecycles];
 					}
 				 
 					$('#techInfo').html(infoTemplate(focus));
-console.log('1639')
+
 					$(document).on('click', '.expand-btn', function () {
 						const $this = $(this);
 						const appId = $this.data('app-id');
@@ -1737,16 +1888,23 @@ nodes = Array.from(nodeMap.values());
 		g.attr("transform", `translate(${d3.event.transform.x},${d3.event.transform.y}) scale(${d3.event.transform.k})`);
 	}
 
+	nodes.forEach(node => {
+		node.x = width / 2 + (Math.random() - 0.5) * 100;
+		node.y = height / 2 + (Math.random() - 0.5) * 100;
+	  });
+	  
+
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id).distance(50))
-        .force("charge", d3.forceManyBody().strength(-300))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force("link", d3.forceLink(links).id(d => d.id).distance(120))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(30)); // Avoid overlapping nodes
 
     const link = g.append("g")
         .attr("class", "links")
         .selectAll("line")
         .data(links)
-        .enter().append("line")
+        .enter().append("line") 
         .attr("class", "link")
         .style("stroke", "#999")
         .style("stroke-opacity", 0.6);
@@ -1758,7 +1916,14 @@ nodes = Array.from(nodeMap.values());
         .enter().append("circle")
 		.attr("easid", d => {return d.id})
         .attr("r", 15)
-        .attr("fill", d => d.group === "center" ? "red" : (d.group === "application" ? "#579fcfAA" : "#d4ac0dAA"))
+		.attr("class", d => {
+			let base = "node";
+			if (d.group === "center") base += " center";
+			if (d.group === "application") base += " application";
+			if (d.group === "process") base += " process";
+			if (d.criticality &amp;&amp; d.criticality.some(c => c.includes("High"))) base += " high-criticality";
+			return base;
+		  })
 		.attr("stroke", d => {
 			// Check if any process contains "High" in criticality
 			return d.criticality &amp;&amp; d.criticality.some(process => process.includes("High")) 
@@ -1886,6 +2051,8 @@ nodes = Array.from(nodeMap.values());
         d.fy = null;
     }
 }
+
+
 		
 </xsl:template>
 
@@ -1900,5 +2067,13 @@ nodes = Array.from(nodeMap.values());
 
 		<xsl:value-of select="$dataSetPath"></xsl:value-of>
 
+	</xsl:template>
+	<xsl:template match="node()" mode="busDoms">
+		{"id":"<xsl:value-of select="current()/name"/>",
+	<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position() != last()">,</xsl:if>
 	</xsl:template>
 </xsl:stylesheet> 

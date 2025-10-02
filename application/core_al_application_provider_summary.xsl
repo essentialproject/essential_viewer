@@ -11,7 +11,8 @@
 	<xsl:include href="../common/core_external_doc_ref.xsl"/>
 	<xsl:include href="../common/datatables_includes.xsl"/> 
 	<xsl:include href="../common/odt_document_files/wordTemplates.xsl"/>
- 
+	<xsl:include href="core_el_cia_data.xsl"/>
+	<xsl:include href="core_al_costs.xsl"/>
 
 	<!--<xsl:include href="../information/menus/core_data_subject_menu.xsl" />-->
 
@@ -44,8 +45,7 @@
 	<xsl:variable name="allPlansData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Planning Data']"></xsl:variable>
 	<xsl:variable name="techProdData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core View API: TRM Get All Tech Product Roles']"></xsl:variable>
 	<xsl:variable name="busCapData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: BusCap to App Mart Caps']"></xsl:variable>
-	<xsl:variable name="apuData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: App APUs']"></xsl:variable>
-	<xsl:variable name="instanceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Simple Instance']"></xsl:variable>
+	 <xsl:variable name="instanceData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Simple Instance']"></xsl:variable>
 
 	<xsl:variable name="lastPublishDateTime" select="/node()/timestamp"/>
 	<xsl:variable name="repo" select="/node()/repository/repositoryID"/>
@@ -138,12 +138,7 @@
 			<xsl:call-template name="GetViewerAPIPath">
 				<xsl:with-param name="apiReport" select="$busCapData"></xsl:with-param>
 			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="apiAPU">
-			<xsl:call-template name="GetViewerAPIPath">
-				<xsl:with-param name="apiReport" select="$apuData"></xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
+		</xsl:variable> 
 		<xsl:variable name="apiInstance">
 			<xsl:call-template name="GetViewerAPIPathText">
 				<xsl:with-param name="apiReport" select="$instanceData"></xsl:with-param>
@@ -166,9 +161,12 @@
 				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
 				<link href="js/chartjs/Chart.css?release=6.19" type="text/css" rel="stylesheet"></link>
 				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				
+				<script src="js/dagre/dagre.min.js?release=6.19"></script>
 				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script>
 				<script src="js/FileSaver.min.js?release=6.19"></script>
 				<script src="js/jszip/jszip.min.js?release=6.19"></script>
+				<script src="js/jointjs/joint.min.js?release=6.19"></script>
 
 				<script src="application/renderTimelineFunction.js" type="text/javascript"></script>
 				<xsl:if test="$isEIPMode">
@@ -493,6 +491,15 @@
 					}
 					.datacrud{
 					    display: inline-block;
+					}
+					.secBox{
+						border-radius: 14px;
+						padding: 5px 10px 5px 10px;
+						border: 1px solid #e0e0e0;
+						font-size: 12px;
+						font-weight: bold;
+						text-align: center;
+						display: inline-block;
 					}
 					.leadText{
 					    font-weight: bolder;
@@ -907,63 +914,93 @@
 						flex-direction: row;
 					  }
 					  .service-card-container .card {
-						min-width: 190px;
-						width: 190px;
-						text-align: center;
-						margin-right: 1.5rem;
-						margin-bottom: 1.5rem;
-						border-radius: 15px;
-						border: none;
-						-webkit-box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
-						-moz-box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
-						box-shadow: 0px 2px 4px 1px rgba(79, 79, 79, 0.3);
-					  }
-					  .service-card-container .card .c-header {
-						height: 8.5vh;
-						padding: 0.8em;
-						background-color: #f6f6f6;
-						display: flex;
-						justify-content: center;
-						align-items: flex-start;
-						text-align: center;
 						width: 100%;
-						margin: 0 auto;
-						border-radius: 15px 15px 0 0;
-					  }
-					  .service-card-container .card .c-header p {
-						font-weight: 600;
-						font-size: 0.85em;
-						margin-bottom: 0;
-						line-height: 1.5rem;
-					  }
-					  .service-card-container .card .c-body {
-						padding: 0.8rem 0.9rem;
-						font-size: 0.8em;
-						line-height: 1.2em;
-						color: #5c5c5c;
-						height: 10vh;
-						overflow-y: scroll;
-						margin-bottom: 1rem;
-						font-weight: 400; 
-					  }
-					  .service-card-container .card .c-footer {
-						height: 3vh;
-						background-color: #f6f6f6;
-						border-radius: 0 0 15px 15px;
+						max-width: 200px;
+						height: 120px;
+						border-radius: 6px;
+						overflow: hidden;
+						box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+						background-color: #fff;
+						transition: transform 0.3s ease, box-shadow 0.3s ease;
 						display: flex;
-						justify-content: center;
-						align-items: center;
-						 
+						flex-direction: column;
+						position: relative;
+						margin: 3px;
 					  }
-					  .service-card-container .card .c-footer p {
-						font-size: 0.8em;
-						margin-bottom: 0;
+					  .service-card-container .card:hover {
+						transform: translateY(-5px);
+						box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+					  }
+					  
+					  .service-card-container .card .c-header {
+						padding: 8px;
+						background-color: #adb1c2;
+						color: white;
+						position: relative;
+					  }
+				 
+					  .service-card-container .card .header-title-box {
+						display: inline-block;
+						background-color: rgba(0, 0, 0);
+						padding: 2px 6px;
+						border-radius: 4px;
+						margin-bottom: 4px;
+						font-weight: 500;
+						font-size: 10px;
+					  }
+					  .header-title-box a {
+						color: white !important;
 						font-weight: 800;
 					  }
-					  .service-card-container .card .c-footer .footer-badge {
-						font-size: 0.5em;
-						background-color: #69c9ff;
+					  
+					  .service-card-container .card .c-body {
+						padding: 6px;
+						line-height: 1.2;
+						color: #333;
+						font-size: 11px;
+						flex: 1;
+						overflow-y: auto;
+						scrollbar-width: thin;
 					  }
+					  
+					  .service-card-container .card .c-body p {
+						margin-bottom: 4px;
+					  }
+
+					  .service-card-container .c-body p {
+						margin-bottom: 4px;
+					  }
+					  
+					  .service-card-container .c-body::-webkit-scrollbar {
+						width: 4px;
+					  }
+					  
+					  .service-card-container .c-body::-webkit-scrollbar-thumb {
+						background-color: #ddd;
+						border-radius: 4px;
+					  }
+					  
+					  .service-card-container .c-footer {
+						padding: 6px 8px;
+						background-color: #f8f9fa;
+						border-top: 1px solid #e9ecef;
+						display: flex;
+						justify-content: flex-end;
+						align-items: center;
+						font-size: 11px;
+					  }
+
+					  .service-card-pops{
+						display: inline-block;
+						background-color: #dbe0fe;
+						border: 1pt solid #d3d3d3;
+						padding: 2px 6px;
+						border-radius: 4px;
+						margin-bottom: 4px;
+						font-weight: 500;
+						font-size: 10px;
+					  }
+					  
 					  
 					  /** Alternate services styling **/
 					  
@@ -1036,6 +1073,85 @@
 					}
 					
 					.column-header {
+						font-size: 18px;
+						font-weight: 600;
+						margin-bottom: 20px;
+						color: #222;
+						text-align: center;
+						padding-bottom: 10px;
+						border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+					  }
+					  
+					  /* Elegant rounded box for capabilities */
+					  .rounded-box {
+						margin: 16px 0;
+						padding: 0;
+						position: relative;
+						transition: all 0.25s ease;
+						border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+						background-color: #f2f2f2;
+						border-radius: 0px 14px 14px 0px;
+					  }
+					  
+					  /* The actual box styling */
+					  .rounded-box::before {
+						content: '';
+						position: absolute;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						background-color: #ffffff;
+						border-radius: 8px;
+						box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+						z-index: -1;
+						transition: all 0.25s ease;
+					  }
+					  
+					  /* Left accent border */
+					  .rounded-box::after {
+						content: '';
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 4px;
+						height: 100%;
+						background-color: #3d3988;
+						border-top-left-radius: 8px;
+						border-bottom-left-radius: 8px;
+						transition: width 0.25s ease;
+					  }
+					  
+					  /* Hover effects for the box */
+					  .rounded-box:hover::before {
+						box-shadow: 0 6px 16px rgba(61, 57, 136, 0.12);
+						transform: translateY(-2px);
+					  }
+					  
+					  .rounded-box:hover::after {
+						width: 6px;
+					  }
+					  
+					  /* Link styling */
+					  .rounded-box a {
+						display: block;
+						padding: 16px 20px;
+						color: #333;
+						text-decoration: none;
+						transition: color 0.25s ease;
+					  }
+					  
+					  .rounded-box:hover a {
+						color: #3d3988;
+					  }
+					  
+					  /* Strong element styling */
+					  .rounded-box strong {
+						font-weight: 600;
+						letter-spacing: 0.2px;
+					  }
+					
+					.column-header {
 						font-weight: bold;
 						margin-bottom: 15px;
 						text-align: center;
@@ -1044,22 +1160,6 @@
 						color: white;
 						padding: 10px;
 						border-radius: 8px;
-					}
-					
-					.rounded-box {
-						margin: 10px 0;
-						padding: 15px;
-						background-color: #ffffff;
-						border:1pt solid #d3d3d3;
-						border-left: 3px solid #3d3988;
-						border-radius: 5px;
-						box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-						line-height: 1;
-						text-align:center;
-					}
-					
-					.rounded-box:hover {
-						background-color: #c7d2fe;
 					}
 
 					.inline-elements label, .inline-elements .ess-string-inline {
@@ -1089,12 +1189,55 @@
 						border:1pt solid #d3d3d3;
 						text-align:center;
 					}
+
+					.panel-heading-sub{
+						font-size: 1em;
+						font-weight: 600;
+						background-color: #3d3988;
+						color: white;
+						padding: 5px;
+						border-radius: 1px;
+					}
+					.text-red{
+						color: #d9534f;
+					}
+					.text-green{
+						color: #358c4d;
+					}
+					.text-amber{
+						color: #f0ad4e;
+					}
+					.text-blue{
+						color: #3c59a7;
+					}
+					.text-success{
+						color: #358c4d;
+					}
+					.block-success{
+						color: #ffffff;
+						background-color: #358c4d;
+					}
+					.block-danger{
+						color: #ffffff;
+						background-color: #d9534f;
+					}
+					.block-warning{
+						color: #0e0e0e;
+						background-color: #f0ad4e;
+					}
+					.text-danger{
+						color: #d9534f;
+					}
+					.text-warning{
+						color: #f0ad4e;
+					}
 				</style>
 				 
 			</head>
-			<body>
+			<body> 
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template> 
+				<xsl:call-template name="ViewUserScopingUI"/>
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
@@ -1169,8 +1312,7 @@
 					<xsl:with-param name="viewerAPIPathPhysProc" select="$apiPhysProc"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathPlans" select="$apiPlans"></xsl:with-param>
 					<xsl:with-param name="viewerAPIPathTech" select="$apiTech"></xsl:with-param>
-					<xsl:with-param name="viewerAPIPathBusCap" select="$apiBusCap"></xsl:with-param>
-					<xsl:with-param name="viewerAPIPathAPU" select="$apiAPU"></xsl:with-param>	
+					<xsl:with-param name="viewerAPIPathBusCap" select="$apiBusCap"></xsl:with-param> 
 					<xsl:with-param name="viewerAPIPathInstance" select="$apiInstance"></xsl:with-param>
 				</xsl:call-template>  
 			</script>	
@@ -1281,6 +1423,11 @@
 							<a href="#appClassifications" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Classifications')"/></a>
 						</li> 
 						{{/if}}
+						{{#if this.security}}	
+						<li>
+							<a href="#appSecurity" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Application Security')"/></a>
+						</li> 
+						{{/if}}
 						{{#if this.inIList}}
 						<li>
 								<a href="#appIntegration" data-toggle="tab" id="appIntTab"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></a>
@@ -1339,7 +1486,7 @@
 						</li>
 						{{/if}}
 						{{#if this.eipmode}}
-						<li> 
+						<li id="diagramli"> 
 							<a href="#diagrams" data-toggle="tab"><i class="fa fa-fw fa-tag right-10"></i ><xsl:value-of select="eas:i18n('Diagrams')"/></a>
 						</li> 
 						{{/if}}
@@ -1458,7 +1605,7 @@
 								{{#if this.children}}
 								<div class="col-xs-12"/>
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-sites right-10"></i><xsl:value-of select="eas:i18n('Contained Applications')"/></h3>
+									<h3 class="text-primary"><i class="fa fa-sitemap right-10"></i><xsl:value-of select="eas:i18n('Contained Applications')"/></h3>
 									{{#each this.children}}
 									<span class="label label-eas" style="border-bottom:2pt solid #0078ff59">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
 									{{/each}}
@@ -1468,7 +1615,7 @@
 								<div class="col-xs-12"/>
 								{{#if this.classifications}}
 								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-list right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
+									<h3 class="text-primary"><i class="fa fa-list right-10" ></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 									<div>
 										<b><xsl:value-of select="eas:i18n('Mapped via Data Objects')"/>:</b>
 										{{#each this.classifications}} 
@@ -1498,7 +1645,7 @@
 								{{else}}
 									{{#if this.regulations}}
 									<div class="superflex">
-										<h3 class="text-primary"><i class="fa fa-list right-10" style="background-color: #476ecc"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
+										<h3 class="text-primary"><i class="fa fa-list right-10"></i><xsl:value-of select="eas:i18n('Relevant Regulations')"/></h3>
 										{{#each this.regulations}}
 											<span class="label label-info right-5">{{this.name}}</span>
 										{{/each}}
@@ -1647,17 +1794,276 @@
 							
 						</div>
 						</div>	 
+						{{#if this.security}}	
+						 
+						<div class="tab-pane svgTab" id="appSecurity">
+							<div class="parent-superflex">
+								<div class="superflex">
+									<div>
+										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Application Security')"/></h3>
+										<p><xsl:value-of select="eas:i18n('Current security posture for the application')"/><xsl:text> </xsl:text> </p>
+										<div class="row">
+											<!-- Left Column -->
+											<div class="col-sm-6">
+											  <!-- Security Ratings Dashboard -->
+											  <div class="panel panel-default">
+												<div class="panel-heading"><h4 class="panel-title"><xsl:value-of select="eas:i18n('Security Ratings')"/></h4></div>
+												<div class="panel-body">
+												  <div class="row">
+													<!-- Confidentiality Card -->
+													<div class="col-xs-12">
+													  <div class="panel panel-default">
+														<div class="panel-heading-sub clearfix">
+														  <h5 class="panel-title pull-left"><xsl:value-of select="eas:i18n('Confidentiality')"/></h5>
+														  <i data="lock" class="pull-right"></i>
+														</div>
+														<div class="panel-body">
+														  <div class="row">
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Rating')"/>:<xsl:text> </xsl:text> 
+																<span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_confidentiality_rating_style.colour}};background-color:{{this.security.sec_profile_confidentiality_rating_style.backgroundColour}};border-color:{{this.security.sec_profile_confidentiality_rating_style.backgroundColour}}E6</xsl:attribute>{{this.security.sec_profile_confidentiality_rating}}</span>
+																</p>
+															</div>
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Risk Impact')"/>:<xsl:text> </xsl:text>
+															  	<span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_confidentiality_risk_impact_style.colour}};background-color:{{this.security.sec_profile_confidentiality_risk_impact_style.backgroundColour}};border-color:{{this.security.sec_profile_confidentiality_risk_impact_style.backgroundColour}}E6</xsl:attribute>{{this.security.sec_profile_confidentiality_risk_impact}}</span>
+															  </p>
+															</div>
+														  </div>
+														</div>
+													  </div>
+													</div>
+									  
+													<!-- Integrity Card -->
+													<div class="col-xs-12">
+													  <div class="panel panel-default">
+														<div class="panel-heading-sub clearfix">
+														  <h5 class="panel-title pull-left"><xsl:value-of select="eas:i18n('Integrity')"/></h5>
+														  <i data="shield" class="pull-right"></i>
+														</div>
+														<div class="panel-body">
+														  <div class="row">
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Rating')"/>:<xsl:text> </xsl:text>
+															  	<span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_integrity_rating_style.colour}};background-color:{{this.security.sec_profile_integrity_rating_style.backgroundColour}};border-color:{{this.security.sec_profile_integrity_rating_style.backgroundColour}}E6</xsl:attribute>{{this.security.sec_profile_integrity_rating}}</span>
+															  </p>
+															</div>
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Risk Impact')"/>:<xsl:text> </xsl:text>
+																<span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_integrity_risk_impact_style.colour}};background-color:{{this.security.sec_profile_integrity_risk_impact_style.backgroundColour}};border-color:{{this.security.sec_profile_integrity_risk_impact_style.backgroundColour}}E6</xsl:attribute>{{this.security.sec_profile_integrity_risk_impact}}
+																</span>
+															 </p>
+															</div>
+														  </div>
+														</div>
+													  </div>
+													</div>
+									  
+													<!-- Availability Card -->
+													<div class="col-xs-12">
+													  <div class="panel panel-default">
+														<div class="panel-heading-sub clearfix">
+														  <h5 class="panel-title pull-left"><xsl:value-of select="eas:i18n('Availability')"/></h5>
+														  <i data="refresh-cw" class="pull-right"></i>
+														</div>
+														<div class="panel-body">
+														  <div class="row">
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Rating')"/>:<xsl:text> </xsl:text>
+															  <span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_availability_rating_style.colour}};background-color:{{this.security.sec_profile_availability_rating_style.backgroundColour}};border-color:{{this.security.sec_profile_availability_rating_style.backgroundColour}}E6</xsl:attribute><xsl:value-of select="eas:i18n('Rating')"/><xsl:text> </xsl:text>{{this.security.sec_profile_availability_rating}}
+															</span>
+															</p>
+															</div>
+															<div class="col-xs-6">
+															  <p class="text-muted"><xsl:value-of select="eas:i18n('Risk Impact')"/>:<xsl:text> </xsl:text>
+																<span class="lead secBox"><xsl:attribute name="style">color:{{this.security.sec_profile_availability_risk_impact_style.colour}};background-color:{{this.security.sec_profile_availability_risk_impact_style.backgroundColour}};border-color:{{this.security.sec_profile_availability_risk_impact_style.backgroundColour}}E6</xsl:attribute>{{this.security.sec_profile_availability_risk_impact}}</span>
+																</p>
+															</div>
+														  </div>
+														</div>
+													  </div>
+													</div>
+												  </div>
+												</div>
+											  </div>
+									  
+											  <!-- Additional Details Section -->
+											  <div id="detailsSection" class="panel panel-default">
+												<div class="panel-heading"><h4 class="panel-title"><xsl:value-of select="eas:i18n('Authentication Details')"/></h4></div>
+												<div class="panel-body">
+												  <p>
+													{{#if this.security.authentication_methods}}
+													{{#each this.security.authentication_methods}}
+														<span class="label label-default">{{this.name}}</span>
+													{{/each}}
+													{{else}}
+														<xsl:value-of select="eas:i18n('No authentication methods defined')"/>
+													{{/if}}
+												  </p>
+												</div>
+											  </div>
+											</div>
+									  
+											<!-- Right Column -->
+											<div class="col-sm-6">
+											  <!-- Security Measures -->
+											  <div class="panel panel-default">
+												<div class="panel-heading"><h4 class="panel-title"><xsl:value-of select="eas:i18n('Security Measures')"/></h4></div>
+												<div class="panel-body">
+												  <ul class="list-group">
+													<li class="list-group-item">
+													  {{#if (eq this.security.sec_profile_is_data_encrypted_at_rest "true")}}
+														<i class="fa fa-check-circle text-success"></i>
+													  {{else}}
+														<i class="fa fa-times-circle text-danger"></i>
+													  {{/if}}
+													  <strong><xsl:value-of select="eas:i18n('Data Encryption at Rest')"/>:</strong> {{#if (eq this.security.sec_profile_is_data_encrypted_at_rest "true")}}<xsl:text> </xsl:text>
+													  <span class="secBox"><xsl:attribute name="style">color:#ffffff; background-color: green</xsl:attribute><xsl:value-of select="eas:i18n('Implemented')"/></span>{{else}}<xsl:text> </xsl:text>
+													  <span class="lead secBox"><xsl:attribute name="style">color:#ffffff; background-color: red</xsl:attribute><xsl:value-of select="eas:i18n('Not Implemented')"/></span>{{/if}}
+													</li>
+									  
+													<li class="list-group-item">
+														{{#if (eq this.security.sec_profile_sso_usage "Implemented")}}
+														<i class="fa fa-check-circle text-success"></i><xsl:text> </xsl:text> 
+													  {{else if (eq this.security.sec_profile_sso_usage "Not Supported")}}
+														<i class="fa fa-times-circle text-danger"></i><xsl:text> </xsl:text> 
+													  {{else}}
+														<i class="fa fa-warning text-warning"></i><xsl:text> </xsl:text> 
+													  {{/if}}
+														<strong><xsl:value-of select="eas:i18n('Single Sign-On (SSO)')"/>:</strong>
+													  {{#if (eq this.security.sec_profile_sso_usage "Implemented")}}
+														 <xsl:text> </xsl:text>
+														<span class="secBox block-success"> {{this.security.sec_profile_sso_usage}}</span>
+													  {{else if (eq this.security.sec_profile_sso_usage "Not Supported")}}
+														 <xsl:text> </xsl:text>
+														<span class="secBox block-danger"> {{this.security.sec_profile_sso_usage}}</span>
+													  {{else}}
+														 <xsl:text> </xsl:text>
+														<span class="secBox block-warning"> {{this.security.sec_profile_sso_usage}}</span>
+													  {{/if}}
+													  
+													  
+													</li>
+									  
+													<li class="list-group-item">
+													  {{#if (eq this.security.sec_profile_mfa_usage "Implemented")}}
+														<i data="fa fa-check-circle text-success  "></i>
+													  {{else if (eq this.security.sec_profile_mfa_usage "Not Supported")}}
+														<i class="fa fa-times-circle text-danger"></i>
+													  {{else}}
+														<i class="fa fa-warning text-warning"></i>
+													  {{/if}}
+													  <strong><xsl:value-of select="eas:i18n('Multi-Factor Authentication')"/>:</strong> 
+													  
+													  {{#if (eq this.security.sec_profile_mfa_usage "Implemented")}}
+													  <span class="secBox block-success"> {{this.security.sec_profile_mfa_usage}}</span>
+														{{else if (eq this.security.sec_profile_mfa_usage "Not Supported")}}
+														<span class="secBox block-danger"> {{this.security.sec_profile_mfa_usage}}</span>
+														{{else}}
+														<span class="secBox block-warning"> {{this.security.sec_profile_mfa_usage}}</span>
+														{{/if}} 
+													</li>
+									  
+													<li class="list-group-item">
+													  {{#if (eq this.security.sec_profile_rbac_usage "Implemented")}}
+														<i class="fa fa-check-circle text-success "></i>
+													  {{else if (eq this.security.sec_profile_rbac_usage "Not Supported")}}
+														<i class="fa fa-times-circle text-danger"></i>
+													  {{else}}
+														<i class="fa fa-warning text-warning"></i>
+													  {{/if}}
+													  <strong><xsl:value-of select="eas:i18n('Role-Based Access Control')"/>:</strong> 
+													  
+													  {{#if (eq this.security.sec_profile_rbac_usage "Implemented")}}
+													  	<span class="secBox block-success"> {{this.security.sec_profile_rbac_usage}}</span>
+														{{else if (eq this.security.sec_profile_rbac_usage "Not Supported")}} 
+														<span class="secBox block-danger"> {{this.security.sec_profile_rbac_usage}}</span>
+														{{else}} 
+														<span class="secBox block-warning"> {{this.security.sec_profile_rbac_usage}}</span>
+														{{/if}}
+													  
+													</li>
+									  
+													<li class="list-group-item">
+													  <i class="fa fa-calendar"></i><xsl:text> </xsl:text>
+													  <strong><xsl:value-of select="eas:i18n('Access Review Frequency')"/>:</strong> 
+													  <span class="secBox">{{this.security.sec_profile_user_access_review_frequency}}</span>
+													</li>
+									  
+													<li class="list-group-item">
+													  <div class="lucide-icon">
+														{{#if (eq this.security.sec_profile_is_internal_facing "true")}}
+														  <i class="fa fa-eye"></i>
+														{{/if}}
+														{{#if (eq sec_profile_is_external_facing "true")}}
+														  <i class="fa fa-slash"></i>
+														{{/if}}
+													  
+													  <strong><xsl:value-of select="eas:i18n('Visibility')"/>:</strong>
+													  {{#if (eq this.security.sec_profile_is_internal_facing "true")}}<span class="secBox block-success">Internal</span>{{/if}}
+													  {{#if (and (eq this.security.sec_profile_is_internal_facing "true") (eq this.security.sec_profile_is_external_facing "true"))}} &amp; {{/if}}
+													  {{#if (eq this.security.sec_profile_is_external_facing "true")}}<span class="secBox block-warning">External</span>{{/if}}
+													  {{#unless (or (eq this.security.sec_profile_is_internal_facing "true") (eq this.security.sec_profile_is_external_facing "true"))}}
+														<span class="secBox block-muted"><xsl:value-of select="eas:i18n('Not Known')"/></span>
+														{{/unless}}
+													</div>
+													</li>
+												  </ul>
+												</div>
+											  </div>
+									  
+											  <!-- Security Overview -->
+											  <div class="panel panel-default">
+												<div class="panel-heading"><h4 class="panel-title"><xsl:value-of select="eas:i18n('Security Summary')"/></h4></div>
+												<div class="panel-body">
+												  {{#with (calculateSecurityRating this.security.sec_profile_confidentiality_rating sec_profile_integrity_rating this.security.sec_profile_availability_rating)}}
+													<p style="font-size:1.3em">
+													  <span><xsl:attribute name="class">glyphicon glyphicon-record text-{{color}}</xsl:attribute></span><xsl:text> </xsl:text>
+													  <strong><xsl:value-of select="eas:i18n('Overall Security Status')"/>:</strong>
+													  <xsl:text> </xsl:text>
+													  <span><xsl:attribute name="class">secBox text-{{color}}</xsl:attribute><b>{{status}}</b></span>
+													</p>
+												  {{/with}} 
+												</div>
+											  </div>
+											</div>
+										  </div>
+									</div>	
+														 
+									 
+								</div>
+							</div>
+						</div>
+						{{/if}}
 						<div class="tab-pane svgTab" id="appIntegration">
 							<div class="parent-superflex">
 								<div class="superflex">
 									<div>
 										<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Integrations')"/></h3>
-										<p><xsl:value-of select="eas:i18n('High-level integration view of')"/><xsl:text> </xsl:text> <u><xsl:value-of select="eas:i18n('application-level')"/></u> <xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('integrations.  See detailed view for a higher level of granularity, including APIs and data flow information.')"/></p>
+										<p><xsl:value-of select="eas:i18n('High-level integration view of')"/><xsl:text> </xsl:text> <u><xsl:value-of select="eas:i18n('application-level')"/></u> <xsl:text> </xsl:text> <xsl:value-of select="eas:i18n('integrations.  See detailed view with data flow information.')"/></p>
 										<div class="pull-right"><button class="btn btn-success interfaceButton"><xsl:attribute name="easid">{{this.id}}</xsl:attribute><xsl:value-of select="eas:i18n('View Integration Detail')"/></button></div>
-									</div>						 
-									<div id="svgBox">
+									</div>		
+									
+									<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#simpleTab" id="simpleTabLink"><xsl:value-of select="eas:i18n('Simple')"/></a></li> 
+									<li><a data-toggle="tab" href="#detailedTab" id="detailedTabLink"><xsl:value-of select="eas:i18n('Detailed')"/></a></li>
+									</ul>
+
+									<div class="tab-content"> 
+									<div id="simpleTab" class="tab-pane fade in active">
+										<p><xsl:value-of select="eas:i18n('Excluding APIs')"/></p>
+										<div id="svgBox" >
 										<svg width="800px" height="600px"/>
 									</div>
+									</div>
+									<div id="detailedTab" class="tab-pane fade">
+										<p><xsl:value-of select="eas:i18n('Including APIs')"/></p>
+										<div id="appIntegrationDiagram"></div>
+									</div>
+									</div>
+									
+
+									
 								</div>
 							</div>
 						</div>
@@ -1877,6 +2283,7 @@
 									</thead>
 									<tbody>
 									{{#each this.processInfo}}
+									{{#if this.name}}
 										<tr>
 											<td>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</td>
 											<td><span class="label labelOrg">{{this.org}}</span></td>
@@ -1888,6 +2295,7 @@
 													<span class="label label-info">{{this.direction}}</span>
 												{{/ifEquals}}</td>
 										</tr>
+										{{/if}}
 									{{/each}}
 									</tbody>
 									<tfoot>
@@ -1986,6 +2394,45 @@
 									</div>
 								</div>
 								{{/if}}
+								{{#if this.prodApplicationTechnology}}
+									<div class="superflex">
+										<table class="table table-striped table condensed">
+											<thead>
+												<tr>
+												<th><xsl:value-of select="eas:i18n('Production')"/><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Component')"/></th>
+												<th><xsl:value-of select="eas:i18n('Product')"/></th>
+												<th><xsl:value-of select="eas:i18n('lifecycle')"/></th>
+												<th><xsl:value-of select="eas:i18n('Status')"/></th>
+												</tr>
+											</thead>
+											<tbody>
+											{{#each prodApplicationTechnology}}
+												{{#each this}}
+													<tr>
+													{{!-- only on the first product, render the component-name cell with the proper rowspan --}}
+													{{#if @first}}
+														<td><xsl:attribute name="rowspan">{{../this.length}}</xsl:attribute>{{compname}}</td>
+													{{/if}}
+													<td>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</td>
+													<td>
+														<div class="service-container-badge badge rounded-pill"><xsl:attribute name="style">color:#000000;background-color:#ffffff; border: 2pt solid #d3d3d3;</xsl:attribute><xsl:attribute name="id">prodLifeId{{id}}</xsl:attribute></div>
+													</td>
+													<td>
+														
+														{{#if standards.length}}
+														{{#each standards}}
+															<div class="service-container-badge badge rounded-pill"><xsl:attribute name="style">color:#000000;background-color:#ffffff; border: 2pt solid {{this.statusBgColour}};</xsl:attribute>{{status}}</div>
+														{{/each}}
+														{{/if}}
+													</td>
+													</tr>
+												{{/each}}
+												{{/each}}
+											</tbody>
+											</table>
+
+									</div>
+								{{/if}}
 							</div>
 
 						</div>
@@ -2049,7 +2496,7 @@
 								</div>
 							</div>	
 						</div>
-						{{/if}}
+						{{/if}} 
 						{{#if this.allServices.0.serviceName}}
 						<div class="tab-pane" id="appservices">
 							<div class="summary-container">
@@ -2077,7 +2524,8 @@
 									{{#each this.allServices}}
 									<div class="card">
 									  <div class="c-header"><xsl:attribute name="style">{{#getLifeColour this.lifecycleId 'Lifecycle_Status'}}{{/getLifeColour}}</xsl:attribute>
-										<p>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</p>
+										<div class="header-title-box" style="color:white !important">{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}
+										</div>
 									  </div>
 									  <div class="c-body">
 										{{this.description}}
@@ -2085,7 +2533,7 @@
 									  <div class="c-footer">
 										<p>
 										  {{#if this.functions}}
-											<div style="font-size:0.8em">
+											<div  class="service-card-pops">
 												<small>
 												{{this.functions.length}}
 												{{#ifEquals this.functions.length 1}}
@@ -2105,7 +2553,7 @@
 											</div> 
 										{{/if}}
 										{{#if this.processes}}
-											<div style="margin-left:5px; font-size:0.8em">
+											<div class="service-card-pops" style="margin-left:5px;">
 												<small>
 												{{this.processes.length}} 
 												{{#ifEquals this.processes.length 1}}
@@ -2146,7 +2594,7 @@
 									{{#each this.allServices}}
 									<div class="card">
 									  <div class="c-header">
-										<p>{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</p>
+										<div class="header-title-box" style="color:white !important">{{#essRenderInstanceLinkOnly this.linkDetails 'Application_Service'}}{{/essRenderInstanceLinkOnly}}</div>
 									  </div>
 									  <div class="c-body">
 										<ul class="fa-ul">
@@ -2164,7 +2612,7 @@
 								</div>
 							  </div>
 							
-							</div>
+							</div> 
 						{{/if}}
 						{{#if this.lifecycles}}	
 						<div class="tab-pane" id="appLifecycle">
@@ -3016,8 +3464,7 @@
 			<xsl:param name="viewerAPIPathPhysProc"></xsl:param>
 			<xsl:param name="viewerAPIPathPlans"></xsl:param>
 			<xsl:param name="viewerAPIPathTech"></xsl:param>
-			<xsl:param name="viewerAPIPathBusCap"></xsl:param>
-			<xsl:param name="viewerAPIPathAPU"></xsl:param>
+			<xsl:param name="viewerAPIPathBusCap"></xsl:param> 
 			<xsl:param name="viewerAPIPathInstance"></xsl:param> 
 			
 			<xsl:call-template name="RenderHandlebarsUtilityFunctions"/>		
@@ -3031,129 +3478,38 @@
 			var viewAPIDataPhysProcs = '<xsl:value-of select="$viewerAPIPathPhysProc"/>';
 			var viewAPIDataPlans = '<xsl:value-of select="$viewerAPIPathPlans"/>';
 			var viewAPIDataTech = '<xsl:value-of select="$viewerAPIPathTech"/>';
-			var viewAPIDataCapMart = '<xsl:value-of select="$viewerAPIPathBusCap"/>';
-			var viewAPIDataAPU = '<xsl:value-of select="$viewerAPIPathAPU"/>';
+			var viewAPIDataCapMart = '<xsl:value-of select="$viewerAPIPathBusCap"/>'; 
 			
-			const openDB = () => {
-    return new Promise((resolve, reject) => {
-        let request = indexedDB.open("viewerDataDB", 3);
+		
 
-        request.onupgradeneeded = (event) => {
-            let db = event.target.result;
-            if (!db.objectStoreNames.contains("datasets")) {
-                db.createObjectStore("datasets", { keyPath: "url" });
-            }
-        };
-
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = () => reject("IndexedDB connection failed");
-    });
-};
-
-const cacheData = async (url, data, lastPublished, repoId) => {
-    try {
-        let db = await openDB();
-        let tx = db.transaction("datasets", "readwrite");
-        let store = tx.objectStore("datasets");
-
-        store.put({ url, data, lastPublished, repoId }); // Store repoId andlastPublished timestamp
-
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => reject("Error caching data");
-        });
-    } catch (error) {
-        return Promise.reject("IndexedDB connection failed");
-    }
-};
-
-const getCachedData = async (url) => {
-    try {
-        let db = await openDB();
-        let tx = db.transaction("datasets", "readonly");
-        let store = tx.objectStore("datasets");
-        let getRequest = store.get(url);
-
-        return new Promise((resolve, reject) => {
-            getRequest.onsuccess = () => {
-                if (getRequest.result) {
-                    resolve({
-                        data: getRequest.result.data,
-                        lastPublished: getRequest.result.lastPublished || null,
-                        repoId: getRequest.result.repoId || null,
-                    });
-                } else {
-                    resolve(null);
-                }
-            };
-            getRequest.onerror = () => reject("Error retrieving cached data");
-        });
-    } catch (error) {
-        return Promise.reject("IndexedDB connection failed");
-    }
-};
+<xsl:call-template name="ciaData"/>
+<xsl:call-template name="applicationCostData"/>
 var rid="<xsl:value-of select="$overallCurrencyDefault/own_slot_value[slot_reference='report_constant_ea_elements']/value"/>"
-console.log('rid', rid)
+ 
 var rcCcyId= {ccyCode: "<xsl:value-of select="$currency/own_slot_value[slot_reference='currency_code']/value"/>", ccySymbol: "<xsl:value-of select="$currency/own_slot_value[slot_reference='currency_symbol']/value"/>", ccyName: "<xsl:value-of select="$currency/own_slot_value[slot_reference='name']/value"/>", ccyId: "<xsl:value-of select="$currency/name"/>"};
+var dynamicAppFilterDefs=[];
 if(rcCcyId.ccyCode==''){
 	rcCcyId= {ccyCode: "USD", ccySymbol: "$", ccyName: "Dollar"}
 
 }
 var defaultCurrency    
-const isIndexedDBSupported = () => {
-    return !!window.indexedDB;
-};
-
-const getServerLastPublished = async (url) => {
-    try {
-        let response = await fetch(url, { method: "HEAD" });
-        if (!response.ok) throw new Error("Failed to fetch headers");
-
-        return response.headers.get("Last-Published") || null;
-    } catch (error) {
-        console.warn("Could not fetch last published timestamp:", error);
-        return null;
-    }
-};
-
-const promise_loadViewerAPIData = async (apiDataSetURL, serverLastPublished, repoId) => {
+ 
+const promise_loadViewerAPIData = async (apiDataSetURL) => {
     if (!apiDataSetURL) return Promise.reject(false);
-
     try {
-        if (isIndexedDBSupported()) {
-            let cachedData = await getCachedData(apiDataSetURL);
-
-            let cachedTimestamp = cachedData ? cachedData.lastPublished : null;
-            let cachedRepoId = cachedData ? cachedData.repoId : null;
-
-            let cachedTimeMillis = cachedTimestamp ? new Date(cachedTimestamp).getTime() : 0;
-            let serverTimeMillis = Number(serverLastPublished);
-
-            if (cachedData &amp;&amp; cachedRepoId === repoId &amp;&amp; cachedTimeMillis >= serverTimeMillis) {
-                return cachedData.data;
-            }
-        } else {
-            console.warn("IndexedDB not supported, falling back to fetch.");
-        }
-
-        let response = await fetch(apiDataSetURL);
+        const response = await fetch(apiDataSetURL);
         if (!response.ok) throw new Error("Failed to load data");
-
-        let data = await response.json();
-
-        if (isIndexedDBSupported()) {
-            await cacheData(apiDataSetURL, data, serverLastPublished, repoId);
-        }
-
-        return data;
+        return await response.json();
     } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Fetch error:", error);
         return Promise.reject(false);
     }
 };
-
-const timestamp = '<xsl:value-of select="$lastPublishDateTime"/>';
-const repoId = '<xsl:value-of select="$repo"/>';
+ 
+const appCostIndex = new Map();
+for (const app of costData) {
+    appCostIndex.set(app.id, app.costs || []);
+}
 
 const apiDataSets = [
     viewAPIDataDO,
@@ -3167,23 +3523,7 @@ const apiDataSets = [
     viewAPIDataTech,
     viewAPIDataCapMart
 ];
-
-getServerLastPublished(apiDataSets[0])
-    .then((serverLastPublished) => {
-        if (!serverLastPublished) {
-            serverLastPublished = Date.now();
-        }
-
-        return Promise.all(
-            apiDataSets.map((url) => promise_loadViewerAPIData(url, serverLastPublished, repoId))
-        );
-    })
-    .then(function (responses) {
-        console.log("All data loaded");
-    })
-    .catch(function (error) {
-        console.error("Error loading one or more datasets:", error);
-    });
+ 
   
 			function showEditorSpinner(message) {
 				$('#editor-spinner-text').text(message);                            
@@ -3199,10 +3539,10 @@ getServerLastPublished(apiDataSets[0])
 			var focusAppId='<xsl:value-of select="$param1"/>'
 			var allDO=[];
 			var appList=[];
-			var byPerfName, defaultCcy, ccy; 
+			var byPerfName, defaultCcy, ccy, focusApp; 
 			var stakeholdertable, interfaceReport;
 			var stakeholdertable2, costTotalTemplate; 
-			var pmc, procServices,table, costtable, appServiceList;
+			var pmc, procServices,table, costtable, appServiceList, scopedApps;
 			var projectElementMap=[];
 			var planElementMap=[];
 			var today=new Date();
@@ -3315,6 +3655,55 @@ var paperScroller = new joint.ui.PaperScroller({
 			$('document').ready(function (){ 
 				<xsl:call-template name="wordHandlebarsJS"/>
 
+
+				Handlebars.registerHelper('toLowerCase', function(str) {
+					return str.toLowerCase();
+				  });
+				  
+				  Handlebars.registerHelper('eq', function(a, b) {
+					return a === b;
+				  });
+				  
+				  Handlebars.registerHelper('and', function(a, b) {
+					return a &amp;&amp; b;
+				  });
+				  
+				  Handlebars.registerHelper('or', function(a, b) {
+					return a || b;
+				  });
+				  
+				  Handlebars.registerHelper('calculateSecurityRating', function(confidentiality, integrity, availability) {
+					// Simple algorithm to determine overall security rating
+					const ratings = {
+					  'High': 3,
+					  'Medium': 2,
+					  'Low': 1
+					};
+					
+					const score = (ratings[confidentiality] || 0) + 
+								  (ratings[integrity] || 0) + 
+								  (ratings[availability] || 0);
+					
+					let status, color;
+					
+					if (score >= 8) {
+					  status = 'High';
+					  color = 'green';
+					} else if (score >= 5) {
+					  status = 'Medium';
+					  color = 'amber';
+					} else {
+					  status = 'Low';
+					  color = 'red';
+					}
+					
+					return { status, color };
+				  });
+				  
+				  Handlebars.registerHelper('formatDate', function(date) {
+					const options = { year: 'numeric', month: 'long', day: 'numeric' };
+					return new Date(date).toLocaleDateString(undefined, options);
+				  });
 				
 				Handlebars.registerHelper('getCapLevel', function(arg1) {			 
 					return  Number(arg1) +1;
@@ -3386,10 +3775,10 @@ var paperScroller = new joint.ui.PaperScroller({
 					})
 
 					if(itemVals){
-					return 'border-bottom: 3px solid '+itemVals.backgroundColor
+					return 'border-bottom: 6px solid '+itemVals.backgroundColor
 					}
 					else{
-						return 'border-bottom: 3px solid none';
+						return 'border-bottom: 6px solid none';
 					}
 
 				});
@@ -3441,7 +3830,7 @@ var paperScroller = new joint.ui.PaperScroller({
 					DOList=responses[0] ; 
 					DRList=responses[0].data_representation ; 
 					appList=responses[1]; 
-				 
+				  
 					orgsRolesList=responses[2].a2rs
 					allActors=[...responses[2].indivData, ...responses[2].orgData]
 					const ownerMap = new WeakMap();
@@ -3449,6 +3838,8 @@ var paperScroller = new joint.ui.PaperScroller({
 						ownerMap.set(owner, owner.id);  // Stores only while the owner object exists
 					});
 					appMart=responses[3];
+				 
+					apus=responses[3].apus;
 					ccy=responses[3].ccy
 					allPerfMeasures=responses[5]
 					appLifecycles=responses[4];
@@ -3521,7 +3912,7 @@ var paperScroller = new joint.ui.PaperScroller({
 					appMart.application_capabilities=[];
 					appMart.capability_hieararchy=[]; 
 					interfaceReport=appList.reports.filter((d)=>{return d.name=='appInterface'});
-					let thefocusApp=appList.applications.find((e)=>{return e.id==focusAppId});
+					focusApp=appList.applications.find((e)=>{return e.id==focusAppId});
 			
  
 					let appDataMap=[]; 
@@ -3529,7 +3920,7 @@ var paperScroller = new joint.ui.PaperScroller({
 	 
 					<!-- create project pairs for speed -->
 					
-					plans.allProject.forEach((p)=>{
+					plans.allProject?.forEach((p)=>{
 					 
 						p.p2e?.forEach((pe)=>{
 							pe['projectName']=p.name;
@@ -3551,7 +3942,7 @@ var paperScroller = new joint.ui.PaperScroller({
 					});
 
 					<!-- get any plans where no project exists but the app is mapped -->
-					plans.allPlans.forEach((p)=>{
+					plans.allPlans?.forEach((p)=>{
 						p.planP2E?.forEach((pe)=>{
 							pe['name']=p.name;
 							pe['id']=p.id;
@@ -3970,2016 +4361,2058 @@ const collatedAppsMap = new Map(collatedApps.map(app => [app.id, app]));
 					    return new Handlebars.SafeString(html);
 					});
 										
-					$('#selectMenu').html(selectTemplate(thefocusApp))
+					$('#selectMenu').html(selectTemplate(focusApp))
 					$('.context-menu-appProviderGenMenu').html('<i class="fa fa-bars"></i> Menu');
-					redrawPage(thefocusApp)
-			 
+					 
+					essInitViewScoping(redrawPage, ['Group_Actor', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS'], "",true);
+
 	});
 
-function redrawPage(focusApp){   
-console.log('redraw')
-	if (focusApp &amp;&amp; focusApp.children) {
-		focusApp.children = focusApp.children.map(d => appList.applications.find(f => d === f.id)).filter(Boolean);
-	}
- 
-	focusApp['caps']=appToCapabilityObj[focusApp.id] || null;
 
-	const groupedAndSorted = focusApp.caps?.reduce((acc, item) => {
-		if (item.level !== undefined) { // Skip items that don't have a level
-			const level = item.level;
-			if (!acc[level]) {
-				acc[level] = [];
-			}
-			acc[level].push(item);
-		}
-		return acc;
-	}, {});
-	
-	if(groupedAndSorted){
-		// Sort each group by name
-		Object.keys(groupedAndSorted).forEach(level => {
-			groupedAndSorted[level].sort((a, b) => a.name.localeCompare(b.name));
-		});
-		focusApp.caps=groupedAndSorted
-	}
 
-let panelSet = new Promise(function(myResolve, myReject) {
- 
-let filterenumerationValues=[];
-let focusKeys = focusApp ? Object.keys(focusApp) : [];
- 
-let appEnums=[]
-appList.filters.forEach((d)=>{
+});
 
-	let inFilters=focusKeys.find((e)=>{
-		return d.slotName==e
-	}) 
-	
-	if(inFilters){
-		let thisFilter=appList.filters.find((e)=>{
-			return e.slotName ==inFilters
-		})
-		
-		let thisSelected=thisFilter.values.find((f)=>{
-			return f.id==focusApp[inFilters]
-		})
-		if(thisSelected){ 
-		thisSelected['class']=thisFilter.valueClass;
-		thisSelected['classNm']=thisFilter.name;
-		appEnums.push(thisSelected)
-		}
+function mapSecurityProfilesToApps(focusApp, securityProfile) {
+	 
+  // Step 1: Build a Map for quick security profile lookup by sec_profile_of_element
+  const securityMap = new Map();
+  securityProfile.forEach(profile => {
+	if (profile.sec_profile_of_element) {
+	  securityMap.set(profile.sec_profile_of_element, profile);
 	}
-})
-let itemsToRemove=[{'class': 'Lifecycle_Status'},{'class': 'Disposition_Lifecycle_Status'},{'class': 'Codebase_Status'},{'class': 'Application_Purpose'},{'class': 'Application_Delivery_Model'},{'class': 'SYS_CONTENT_VISIBILITY'},{'class': 'SYS_CONTENT_QUALITY_STATUS'},{'class': 'SYS_CONTENT_APPROVAL_STATUS'},{'class':'system_is_published'}, {'class': 'Business_Criticality'}];
- 
-const clsToRemove = itemsToRemove.map(item => item.class);
-const filteredArray = appEnums.filter(item => !clsToRemove.includes(item.class))
+  });
+  // Step 2: Append matching security profile to each application
   
-if(filteredArray &amp;&amp; focusApp){
-	focusApp['otherEnums']=filteredArray
+	const matchedSecurity = securityMap.get(focusApp.id);
+	if (matchedSecurity) {
+		focusApp.security = matchedSecurity;
+	}
 }
-let allProcsforApps=[];
-let allProjforApps=[];
-if(focusApp){
-	let thisTech=appMart.application_technology?.find((d)=>{
-		return d.id==focusApp.id
+
+var redrawPage = function () { 
+	mapSecurityProfilesToApps(focusApp, securityProfile);
+ let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
+ let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region'); 
+ let visibilityDef = new ScopingProperty('visId', 'SYS_CONTENT_APPROVAL_STATUS');
+ let domainScopingDef = new ScopingProperty('domainIds', 'Business_Domain');
+
+ essResetRMChanges();
+ let typeInfo = {
+	"className": "Application_Provider",
+	"label": 'Application',
+	"icon": 'fa-desktop'
+}
+
+ scopedApps = essScopeResources( appList.applications, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
+ scopedAppMartApps = essScopeResources(appMart.applications, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
+ scopedAPUs = essScopeResources( apus, [appOrgScopingDef, geoScopingDef, visibilityDef].concat(dynamicAppFilterDefs), typeInfo);
+ 
+var allowed = scopedApps.resourceIds;
+// If Select2, destroy it:
+$('#subjectSelection').off();
+if ( $('#subjectSelection').hasClass('select2-hidden-accessible') ) {
+	$('#subjectSelection').select2('destroy');
+}
+ 
+
+$('#subjectSelection').select2({
+  matcher: function(params, data) {
+    if (!data.id) return null;
+
+    const inAllowedList = allowed.includes(data.id);
+    const searchTerm = (params.term || '').toLowerCase();
+    const textMatch = data.text.toLowerCase().includes(searchTerm);
+
+    return inAllowedList &amp;&amp; textMatch ? data : null;
+  }
+});
+ 
+		if (focusApp &amp;&amp; focusApp.children) {
+			focusApp.children = focusApp.children.map(d => scopedApps.resources.find(f => d === f.id)).filter(Boolean);
+		}
+	 
+		focusApp['caps']=appToCapabilityObj[focusApp.id] || null;
+	
+		const groupedAndSorted = focusApp.caps?.reduce((acc, item) => {
+			if (item.level !== undefined) { // Skip items that don't have a level
+				const level = item.level;
+				if (!acc[level]) {
+					acc[level] = [];
+				}
+				acc[level].push(item);
+			}
+			return acc;
+		}, {});
+		
+		if(groupedAndSorted){
+			// Sort each group by name
+			Object.keys(groupedAndSorted).forEach(level => {
+				groupedAndSorted[level].sort((a, b) => a.name.localeCompare(b.name));
+			});
+			focusApp.caps=groupedAndSorted
+		}
+	
+	let panelSet = new Promise(function(myResolve, myReject) {
+	 
+	let filterenumerationValues=[];
+	let focusKeys = focusApp ? Object.keys(focusApp) : [];
+	 
+	let appEnums=[]
+	appList.filters.forEach((d)=>{
+	
+		let inFilters=focusKeys.find((e)=>{
+			return d.slotName==e
+		}) 
+		
+		if(inFilters){
+			let thisFilter=appList.filters.find((e)=>{
+				return e.slotName ==inFilters
+			})
+			
+			let thisSelected=thisFilter.values.find((f)=>{
+				return f.id==focusApp[inFilters]
+			})
+			if(thisSelected){ 
+			thisSelected['class']=thisFilter.valueClass;
+			thisSelected['classNm']=thisFilter.name;
+			appEnums.push(thisSelected)
+			}
+		}
+	})
+	let itemsToRemove=[{'class': 'Lifecycle_Status'},{'class': 'Disposition_Lifecycle_Status'},{'class': 'Codebase_Status'},{'class': 'Application_Purpose'},{'class': 'Application_Delivery_Model'},{'class': 'SYS_CONTENT_VISIBILITY'},{'class': 'SYS_CONTENT_QUALITY_STATUS'},{'class': 'SYS_CONTENT_APPROVAL_STATUS'},{'class':'system_is_published'}, {'class': 'Business_Criticality'}];
+	 
+	const clsToRemove = itemsToRemove.map(item => item.class);
+	const filteredArray = appEnums.filter(item => !clsToRemove.includes(item.class))
+	  
+	if(filteredArray &amp;&amp; focusApp){
+		focusApp['otherEnums']=filteredArray
+	}
+	let allProcsforApps=[];
+	let allProjforApps=[];
+	if(focusApp){
+		let thisTech=appMart.application_technology?.find((d)=>{
+			return d.id==focusApp.id
+		}) 
+	
+		//console.log('thisTech',thisTech)
+		let key=[];
+		thisTech?.environments?.forEach((e)=>{
+			e.products=e.products?.filter((elem, index, self) => self.findIndex( (t) =>{return (t.tpr === elem.tpr)})=== index)
+	
+			e.products.forEach((t)=>{
+				t['className']='Technology_Product';
+				let thistechProds=techProds.techProdRoles?.find((p)=>{
+					return p.id==t.tpr;
+				}); 
+				 t['id']=t.prod;
+				 t['name']=t.prodname;
+				if(thistechProds){
+					
+					t['standards']=thistechProds.standard
+					t.standards?.forEach((d)=>{
+						key.push({"id":d.id, "name":d.status,"colour":d.statusBgColour, "colourText":d.statusColour})
+					})
+				}
+			})
+	
+			e.nodes.forEach(node => {
+				node.className = 'Technology_Node';
+			  });
+	
+		}); 
+	 
+		key=key.filter((elem, index, self) => self.findIndex( (t) =>{return (t.name === elem.name)})=== index)
+	 
+		focusApp['stdkey']=key;
+		focusApp['applicationTechnology']=thisTech;
+
+		const groupedByCompname = thisTech.environments 
+		.filter(env => env.role === 'Production') 
+		.flatMap(env => env.products) 
+		.reduce((acc, product) => {
+			const key = product.compname;
+			if (!acc[key]) acc[key] = [];
+			acc[key].push(product);
+			return acc;
+		}, {});
+	 
+		Object.entries(groupedByCompname).forEach(([componentName, products]) => {	 
+			products.forEach(e => {
+			
+			let prodMatch='<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+e.id; 
+			promise_loadViewerAPIData(prodMatch)
+				.then(function(response) {   
+							 let match=response.instance.find((v)=>{return v.name == 'vendor_product_lifecycle_status'})
+							 	 if(match?.values){
+									e['life']=match.values[0].name	
+
+									$('#prodLifeId'+e.id+' ').text(e.life)
+								 }
+							})
+					})  
+
+		})
+
+		focusApp['prodApplicationTechnology']=groupedByCompname;
+ 
+	
+		allDO.app_infoRep_Pairs = allDO.app_infoRep_Pairs?.map(item => ({
+			...item,
+			className: 'Information_Representation'
+		}));
+	
+		
+		let thisDB=allDO.app_infoRep_Pairs?.filter((ap)=>{
+			return ap.appId==focusApp.id &amp;&amp; ap.persisted=='true';
+		})
+	 
+		focusApp['db']=thisDB;
+	
+	<!-- this application direct -->
+		let thisElements=projectElementMap.filter((p)=>{
+			return p.impactedElement == focusApp.id
+		})
+	 
+		let thisPlanElementMap
+		thisElements.forEach((e)=>{
+			 thisPlanElementMap=planElementMap.filter((d)=>{
+				return d.id!=e.id;
+			})
+			e['planInfo']={"id":e.planid, "name":e.plan, "className":"Enterprise_Strategic_Plan"};
+			e['projectInfo']={"id":e.projectID, "name":e.projectName, "className":"Project"}
+		})
+	 
+		let thisPlanElements=planElementMap.filter((p)=>{
+			return p.impactedElement == focusApp.id
+		})
+	 
+		let thisProj=[];
+		let thisPlan=[]; 
+		thisPlanElements.forEach((d)=>{
+			thisPlan.push(d)
+		})
+	
+		thisElements.forEach((d)=>{
+			let thisProjDetail=plans.allProject?.find((p)=>{
+				return d.projectID==p.id
+			})
+			thisProj.push(thisProjDetail);
+			if(thisProjDetail.proposedStartDate){
+				d['projForeStart']=thisProjDetail.proposedStartDate;
+				d['projActStart']=thisProjDetail.actualStartDate;
+				d['projForeEnd']=thisProjDetail.forecastEndDate;
+				d['projTargEnd']=thisProjDetail.targetEndDate;
+			}
+			let thisPlans=plans.allPlans?.find((p)=>{
+				return d.planid==p.id
+			})
+			
+			thisPlan.push(thisPlans)
+		})
+	
+		<!-- indirect via service -->
+		let thisaprProj=[];
+		let thisaprPlan=[]; 
+		focusApp.allServices.forEach((f)=>{
+		let thisaprElements=projectElementMap?.filter((p)=>{
+			return p.impactedElement == f.id
+		})
+	 
+		let thisPlanElementMap
+		thisaprElements?.forEach((e)=>{
+			 thisPlanElementMap=planElementMap.filter((d)=>{
+				return d.id!=e.id;
+			})
+		})
+		  
+		let thisaprPlanElements=thisPlanElementMap?.filter((p)=>{
+			return p.impactedElement == f.id
+		})
+		  
+		thisaprPlanElements?.forEach((d)=>{
+			thisaprPlan.push(d)
+		})
+	
+		thisaprElements?.forEach((d)=>{
+			let thisProjDetail=plans.allProject?.find((p)=>{
+				return d.projectID==p.id
+			})
+			d['planInfo']={"id":d.planid, "name":d.plan, "className":"Enterprise_Strategic_Plan"};
+			d['projectInfo']={"id":d.projectID, "name":d.projectName, "className":"Project"}
+			 
+			thisProjDetail['plan']=d.plan;
+			thisProjDetail['planId']=d.planid;
+			thisProjDetail['apraction']=d.action;
+			if(thisProjDetail){
+				thisaprProj.push(thisProjDetail);
+			}
+			if(thisProjDetail.proposedStartDate){
+				d['projForeStart']=thisProjDetail.proposedStartDate;
+				d['projActStart']=thisProjDetail.actualStartDate;
+				d['projForeEnd']=thisProjDetail.forecastEndDate;
+				d['projTargEnd']=thisProjDetail.targetEndDate;
+			}
+			let thisaprPlans=plans.allPlans?.find((p)=>{
+				return d.planid==p.id
+			})
+			if(thisaprPlans){
+				 
+				thisaprPlan.push(thisaprPlans)
+			}
+		})
 	}) 
-
-	//console.log('thisTech',thisTech)
-	let key=[];
-	thisTech?.environments?.forEach((e)=>{
-		e.products=e.products?.filter((elem, index, self) => self.findIndex( (t) =>{return (t.tpr === elem.tpr)})=== index)
-
-		e.products.forEach((t)=>{
-			t['className']='Technology_Product';
-			let thistechProds=techProds.techProdRoles?.find((p)=>{
-				return p.id==t.tpr;
-			}); 
-			 t['id']=t.prod;
-			 t['name']=t.prodname;
-			if(thistechProds){
-				
-				t['standards']=thistechProds.standard
-				t.standards?.forEach((d)=>{
-					key.push({"id":d.id, "name":d.status,"colour":d.statusBgColour, "colourText":d.statusColour})
+	
+	let resApr = {};
+	 
+	
+	thisaprPlan?.forEach(a => resApr[a.id] = {...resApr[a.id], ...a});
+	thisaprPlan = Object.values(resApr);
+	 
+	focusApp['aprplans']=thisaprPlan;
+	focusApp['aprprojects']=thisaprProj;
+	
+	focusApp['aprprojectElements']=thisaprProj;
+	<!-- merge objects -->
+	
+	let res = {};
+	if(thisPlan){
+		thisPlan.forEach(a => {
+			if (a) {
+			  res[a.id] = { ...res[a.id], ...a };
+			}
+		  });
+		  
+		thisPlan = Object.values(res);
+	}else{
+		thisPlan=[]
+	}
+	  
+		focusApp['plans']=thisPlan;
+		focusApp['projects']=thisProj;
+	 
+		if(focusApp.projects){
+			focusApp.projects.forEach((p)=>{
+				p['programmeName'] = plans.programmes?.find((s) => {
+					return p?.programme ? p.programme === s.id : false;
+				})?.name ?? null;
 				})
 			}
-		})
-
-		e.nodes.forEach(node => {
-			node.className = 'Technology_Node';
-		  });
-
-	}); 
- 
-	key=key.filter((elem, index, self) => self.findIndex( (t) =>{return (t.name === elem.name)})=== index)
- 
-	focusApp['stdkey']=key;
-	focusApp['applicationTechnology']=thisTech;
-
-	allDO.app_infoRep_Pairs = allDO.app_infoRep_Pairs?.map(item => ({
-		...item,
-		className: 'Information_Representation'
-	}));
-
 	
-	let thisDB=allDO.app_infoRep_Pairs?.filter((ap)=>{
-		return ap.appId==focusApp.id &amp;&amp; ap.persisted=='true';
-	})
- 
-	focusApp['db']=thisDB;
-
-<!-- this application direct -->
-	let thisElements=projectElementMap.filter((p)=>{
-		return p.impactedElement == focusApp.id
-	})
- 
-	let thisPlanElementMap
-	thisElements.forEach((e)=>{
-		 thisPlanElementMap=planElementMap.filter((d)=>{
-			return d.id!=e.id;
-		})
-		e['planInfo']={"id":e.planid, "name":e.plan, "className":"Enterprise_Strategic_Plan"};
-		e['projectInfo']={"id":e.projectID, "name":e.projectName, "className":"Project"}
-	})
- 
-	let thisPlanElements=planElementMap.filter((p)=>{
-		return p.impactedElement == focusApp.id
-	})
- 
-	let thisProj=[];
-	let thisPlan=[]; 
-	thisPlanElements.forEach((d)=>{
-		thisPlan.push(d)
-	})
-
-	thisElements.forEach((d)=>{
-		let thisProjDetail=plans.allProject.find((p)=>{
-			return d.projectID==p.id
-		})
-		thisProj.push(thisProjDetail);
-		if(thisProjDetail.proposedStartDate){
-			d['projForeStart']=thisProjDetail.proposedStartDate;
-			d['projActStart']=thisProjDetail.actualStartDate;
-			d['projForeEnd']=thisProjDetail.forecastEndDate;
-			d['projTargEnd']=thisProjDetail.targetEndDate;
-		}
-		let thisPlans=plans.allPlans.find((p)=>{
-			return d.planid==p.id
-		})
-		
-		thisPlan.push(thisPlans)
-	})
-
-	<!-- indirect via service -->
-	let thisaprProj=[];
-	let thisaprPlan=[]; 
-	focusApp.allServices.forEach((f)=>{
-	let thisaprElements=projectElementMap?.filter((p)=>{
-		return p.impactedElement == f.id
-	})
- 
-	let thisPlanElementMap
-	thisaprElements?.forEach((e)=>{
-		 thisPlanElementMap=planElementMap.filter((d)=>{
-			return d.id!=e.id;
-		})
-	})
-	  
-	let thisaprPlanElements=thisPlanElementMap?.filter((p)=>{
-		return p.impactedElement == f.id
-	})
-	  
-	thisaprPlanElements?.forEach((d)=>{
-		thisaprPlan.push(d)
-	})
-
-	thisaprElements?.forEach((d)=>{
-		let thisProjDetail=plans.allProject.find((p)=>{
-			return d.projectID==p.id
-		})
-		d['planInfo']={"id":d.planid, "name":d.plan, "className":"Enterprise_Strategic_Plan"};
-		d['projectInfo']={"id":d.projectID, "name":d.projectName, "className":"Project"}
-		 
-		thisProjDetail['plan']=d.plan;
-		thisProjDetail['planId']=d.planid;
-		thisProjDetail['apraction']=d.action;
-		if(thisProjDetail){
-			thisaprProj.push(thisProjDetail);
-		}
-		if(thisProjDetail.proposedStartDate){
-			d['projForeStart']=thisProjDetail.proposedStartDate;
-			d['projActStart']=thisProjDetail.actualStartDate;
-			d['projForeEnd']=thisProjDetail.forecastEndDate;
-			d['projTargEnd']=thisProjDetail.targetEndDate;
-		}
-		let thisaprPlans=plans.allPlans.find((p)=>{
-			return d.planid==p.id
-		})
-		if(thisaprPlans){
+	 
+		focusApp['projectElements']=thisElements;  
+	 
+	if(focusApp.physP){
+		focusApp.physP.forEach((d)=>{
 			 
-			thisaprPlan.push(thisaprPlans)
-		}
-	})
-}) 
-
-let resApr = {};
- 
-
-thisaprPlan?.forEach(a => resApr[a.id] = {...resApr[a.id], ...a});
-thisaprPlan = Object.values(resApr);
- 
-focusApp['aprplans']=thisaprPlan;
-focusApp['aprprojects']=thisaprProj;
-
-focusApp['aprprojectElements']=thisaprProj;
-<!-- merge objects -->
-
-let res = {};
-if(thisPlan){
-	thisPlan.forEach(a => {
-		if (a) {
-		  res[a.id] = { ...res[a.id], ...a };
-		}
-	  });
-	  
-	thisPlan = Object.values(res);
-}else{
-	thisPlan=[]
-}
-  
-	focusApp['plans']=thisPlan;
-	focusApp['projects']=thisProj;
- 
-	if(focusApp.projects){
-		focusApp.projects.forEach((p)=>{
-			p['programmeName'] = plans.programmes?.find((s) => {
-				return p?.programme ? p.programme === s.id : false;
-			})?.name ?? null;
+			let thisProcess=physProc.process_to_apps.find((e)=>{
+				return e.id==d;
 			})
-		}
-
- 
-	focusApp['projectElements']=thisElements;  
- 
-if(focusApp.physP){
-	focusApp.physP.forEach((d)=>{
 		 
-		let thisProcess=physProc.process_to_apps.find((e)=>{
-			return e.id==d;
-		})
-	 
-		let mappedSvc= thisProcess.appsviaservice.filter((s)=>{
-			return s.appid == focusApp.id
-		})
- 
-		if(mappedSvc.length&gt;0){
-			mappedSvc.forEach((sv)=>{
-			let thisAppSvc=focusApp.allServices.find((e)=>{
-				return e.id==sv.id;
+			let mappedSvc= thisProcess.appsviaservice.filter((s)=>{
+				return s.appid == focusApp.id
 			})
-	 	
-			allProcsforApps.push({"id":thisProcess.processid,"name":thisProcess.processName, "className": "Business_Process", "orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
-		})
-
-		}else{
 	 
-			allProcsforApps.push({"id":thisProcess.id,"name":thisProcess.processName,"orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":"", "svcName":"", "direction":"Direct"})
-		}
-	})
-}
-
- procServices = d3.nest()
-  .key(function(d) { return d.svcid})
-  .entries(allProcsforApps);
- 
-
-focusApp['processInfo']=allProcsforApps;
-
-} 
-let stakeholdersList=[]; 
-if(focusApp &amp;&amp; focusApp.stakeholders){
-stakeholdersList = d3.nest()
-  .key(function(d) { return d.actor; })
-  .entries(focusApp.stakeholders);
-
-  stakeholdersList?.forEach((d)=>{
-	let sid = focusApp.stakeholders.find((s)=>{
-		return s.actor==d.key
-	})
-	d['id']=sid.actorid;
-	d['name']=d.key;
-})
-}
-
-if(focusApp){
-  focusApp['stakeholdersList']=stakeholdersList;
-
-  focusApp.lifecycles?.forEach((e,i)=>{
-	  
-	let thisL=appLifecycles.lifecycleJSON.find((l)=>{
-		return e.id==l.id
-	})
+			if(mappedSvc.length&gt;0){
+				mappedSvc.forEach((sv)=>{
+				let thisAppSvc=focusApp.allServices.find((e)=>{
+					return e.id==sv.id;
+				})
+			 
+				allProcsforApps.push({"id":thisProcess.processid,"name":thisProcess.processName, "className": "Business_Process", "orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":thisAppSvc.id, "svcName":thisAppSvc.serviceName, "direction":"via Service"})
+			})
 	
-	if(thisL?.colour){
-	e['enumname']=thisL.name;
-	e['colour']=thisL.colour;
-	e['backgroundColour']=thisL.backgroundColour;
-	}else{
-		e['colour']='#000000';
-		e['backgroundColour']='#d3d3d3';
-	}
-	if(thisL?.seq){
-	e['seq']=thisL?.seq;
-	}
-	else{
-		e['seq']=i
-	}
-  })
-   
-let orgStakeholdersList = d3.nest()
-.key(function(d) { return d.actor; })
-.entries(focusApp.orgstakeholders);
- 
-orgStakeholdersList.forEach((d)=>{
-	let sid = focusApp.orgstakeholders.find((s)=>{
-		return s.actor==d.key
-	})
-	d['id']=sid.actorid;
-	d['name']=d.key;
-})
-focusApp['orgStakeholdersList']=orgStakeholdersList;
-
-let appDetail=appMart.applications.find((d)=>{
-	return d.id==focusApp.id
-});
- 
-	if(appDetail.documents){
-		let docsCategory = d3.nest()
-		.key(function(d) { return d.type; })
-		.entries(appDetail.documents);
-		
-		focusApp['documents']=docsCategory;
-	}
-	if(appDetail.short_name !=""){
-		focusApp['short_name']=appDetail.short_name;
-	}
-	if(appDetail.synonyms?.length&gt;0){ 
-		focusApp['synonyms']=appDetail.synonyms;
-	}
- 
-	//let defaultCurrency = ccy.find(ccy => ccy.default === "true");
- 
- console.log('defaultCurrency:', defaultCurrency)
-
-if (!defaultCurrency || Object.keys(defaultCurrency).length === 0) {
-	console.log('changing')
-    defaultCurrency = rcCcyId || {};
-}
-
-  
-const calculateDefaultCosts = (costArray, currencyArray) => {
-   
-    let defaultExchangeRate = defaultCurrency ? parseFloat(defaultCurrency.exchangeRate) : 1;
-  
-      if(isNaN(defaultExchangeRate)){defaultExchangeRate=1} 
-    return costArray?.map(cost => {
-        const matchingCurrency = currencyArray.find(ccy => ccy.ccySymbol === cost.component_currency);
-        let exchangeRate = matchingCurrency ? parseFloat(matchingCurrency.exchangeRate) : 1;
-        if(isNaN(exchangeRate)){exchangeRate=1}
-        const defaultCost = parseFloat(cost.cost) * (exchangeRate / defaultExchangeRate); 
-        return {
-            ...cost,
-            defaultCost: defaultCost.toFixed(2)
-        };
-    });
-};
-
-const updatedCosts = calculateDefaultCosts(appDetail.costs, ccy);
- appDetail.costs=updatedCosts
-
-let costByCategory=[];
-let costByType=[];
-let costByFreq =[];
-if(appDetail.costs){
-	focusApp['costs']=appDetail.costs;
-	costByCategory = d3.nest()
-		.key(function(d) { return d.costCategory; })
-		.rollup(function(v) { return {
-	total: d3.sum(v, function(d) { return d.cost; })
-}})
-.entries(appDetail.costs);
-
-costByType = d3.nest()
-.key(function(d) { return d.name; })
-.rollup(function(v) { return {
-	total: d3.sum(v, function(d) { return d.cost; })
-}})
-.entries(appDetail.costs);
-
-costByFreq = d3.nest()
-.key(function(d) { return d.costType; })
-.rollup(function(v) { return {
-	total: d3.sum(v, function(d) { return d.cost; })
-}})
-.entries(appDetail.costs);
-}
-let costDivider;
-let fromDateArray = [];
-let toDateArray = [];
-let totalAnnualCost = 0;
-let totalMonthlyCost = 0;
-let monthsActive = 0;
-let today = new Date();
-let nextMonth = new Date();
-nextMonth.setMonth(today.getMonth() + 1);
-
-if (appDetail.costs) {
-    appDetail.costs.forEach((d) => {
-
-        let numericCost = parseFloat(d.cost); // Convert string to number
- 
-        let costDivider = 1; // Default: 1 (full cost)
- 
-        // Determine how to distribute costs
-        if (d.costType === "Adhoc_Cost_Component") {
-            return; // Skip Adhoc costs in monthly and annual calculations
-        } else if (d.costType === "Annual_Cost_Component") {
-            costDivider = 12; // Spread annual cost over 12 months
-        } else if (d.costType === "Quarterly_Cost_Component") {
-            costDivider = 1; // Apply cost every 3 months
-        } else if (d.costType === "Monthly_Cost_Component") {
-            costDivider = 1; // Already a monthly cost
-        }
-
-        d.monthlyAmount = numericCost / costDivider; // Base calculation
- 
-		// **Guard code** to handle NaN for monthlyAmount
-        if (isNaN(d.monthlyAmount)) {
-            d.monthlyAmount = 0; // Set to 0 if NaN
-        }
-
-        let fromDate = d.fromDate ? new Date(d.fromDate) : today;
-        let toDate = d.toDate ? new Date(d.toDate) : nextMonth;
-
-		// If toDate is not set, make it 12 months from fromDate, assumes no date so just a recurring cost
-		if (!d.toDate) {
-			toDate.setFullYear(toDate.getFullYear() + 1);
-		}
- 
-        // **Keep monthsActive for other calculations**
-        monthsActive = (toDate.getFullYear() - fromDate.getFullYear()) * 12 + (toDate.getMonth() - fromDate.getMonth()) + 1; 
-
-        // **Condition for Annual Cost**
-        if (d.costType === "Annual_Cost_Component") {
-            totalAnnualCost += numericCost; // Add the full cost for the year
-        } else if (d.costType === "Quarterly_Cost_Component") {
-            for (let i = 0; i &lt; 12; i++) {
-                if (i % 3 === 0) { // Apply cost every 3 months
-                    totalAnnualCost += d.monthlyAmount
- 
-                }
-            }
-        } else if (d.costType === "Monthly_Cost_Component") {
-	 
-            totalAnnualCost += d.monthlyAmount * 12; // Monthly cost components
-        }
+			}else{
 		 
-    });
-}
- 
-// **Fix totalMonthlyCost Calculation**
-// If the period is less than 12 months, calculate based on the actual period
- 
-if (monthsActive &lt; 12) {
-	if(monthsActive==0){
-		monthsActive=1;
+				allProcsforApps.push({"id":thisProcess.id,"name":thisProcess.processName,"orgid":thisProcess.orgid, "org":thisProcess.org, "svcid":"", "svcName":"", "direction":"Direct"})
+			}
+		})
 	}
-
-    totalMonthlyCost = totalAnnualCost / monthsActive;
-} else {
-    totalMonthlyCost = totalAnnualCost / 12; // Spread across 12 months if the period is full-year or more
-}
- 
-// Format cost output
-let costNumbers = {};
- 
- console.log('defaultCurrency',defaultCurrency)
-let formatter = new Intl.NumberFormat(undefined, { style: "currency", currency: defaultCurrency.ccyCode  });
-if (isNaN(totalMonthlyCost)) {
-    totalMonthlyCost = 0; // Set to 0 if NaN
-}
-
-costNumbers['annualCost'] = formatter.format(Math.round(totalAnnualCost));
-costNumbers['monthlyCost'] = formatter.format(Math.round(totalMonthlyCost));
- 
- 
-if (appDetail.costs) {
-    appDetail.costs.forEach((d) => {
-        if (d.fromDate) fromDateArray.push(d.fromDate);
-        if (d.toDate) toDateArray.push(d.toDate);
-    });
-}
-
-// **Fix sorting issue**
-fromDateArray.sort((a, b) => new Date(a) - new Date(b));
-toDateArray.sort((a, b) => new Date(a) - new Date(b));
-
-let momentStartFinYear = moment(fromDateArray[0]);
-let momentEndFinYear = moment(toDateArray[toDateArray.length - 1]);
-
-if (momentEndFinYear.isBefore(moment())) {
-    momentEndFinYear = moment();
-}
-
-let costChartRowList = [];
-let costCurrency;
-
-// **Iterate over each cost component**
-appDetail.costs?.forEach(function (aCost) {
-    let numericCost = parseFloat(aCost.cost); // Ensure cost is a number
-
-    // **Ensure numericCost is valid**
-    if (isNaN(numericCost)) {
-        console.error(`Invalid cost for:`, aCost);
-        numericCost = 0; // Default to zero to avoid NaN propagation
-    }
-
-    // **Fix cost validity period**
-	let thisFromDate = aCost.fromDate ? new Date(aCost.fromDate) : today;
-	let thisToDate = aCost.toDate ? new Date(aCost.toDate) : nextMonth;
-    let thisStart = moment(thisFromDate, 'YYYY-MM-DD', true);
-    let thisEnd = moment(thisToDate, 'YYYY-MM-DD', true);
-
-    // **Ensure valid dates before proceeding**
-    if (!thisStart.isValid() || !thisEnd.isValid()) {
-        console.error(`Invalid date range for:`, aCost);
-        return; // Skip this cost entry
-    }
-
-    thisStart = moment.max(thisStart, momentStartFinYear);
-    thisEnd = moment.min(thisEnd, momentEndFinYear);
-
-    // **Fix month count calculation (ensure inclusive of both start and end months)**
-    let monthCount = thisEnd.diff(thisStart, 'months') + 1;
-
-    // **Ensure monthCount is valid**
-	if(monthCount==0){monthCount=1}
-
-    if (isNaN(monthCount) || monthCount &lt;= 0) {
-        console.error(`Invalid monthCount for:`, aCost, `Calculated monthCount:`, monthCount);
-        monthCount = 1; // Ensure at least 1 month
-    }
-    aCost['monthCount'] = Math.ceil(monthCount);
-
-    // **Fix monthStart calculation**
-    let monthStart = thisStart.diff(momentStartFinYear, 'months');
-    if (isNaN(monthStart) || monthStart &lt; 0) {
-        console.error(`Invalid monthStart for:`, aCost, `Calculated monthStart:`, monthStart);
-        monthStart = 0; // Ensure valid 0-based index
-    }
-    aCost['monthStart'] = Math.floor(monthStart);
-
-    // **Ensure correct cost distribution**
-    if (aCost.costType === "Adhoc_Cost_Component") {  
-        aCost.monthlyAmount = numericCost / aCost.monthCount;
-    } else if (aCost.costType === "Annual_Cost_Component") {
-        aCost.monthlyAmount = numericCost / 12;
-    } else if (aCost.costType === "Quarterly_Cost_Component") {
-        aCost.monthlyAmount = numericCost; // Keep full amount but apply only every 3 months
-    } else {
-        aCost.monthlyAmount = numericCost;
-    }
-
-    // Assign currency dynamically
-    costCurrency = aCost.ccy_code; 
-    // **Fix missing dates dynamically**
-    if (!aCost.toDate) aCost['toDate'] = momentEndFinYear.format('YYYY-MM-DD');
-    if (!aCost.fromDate || aCost.fromDate === '') aCost['fromDate'] = momentStartFinYear.format('YYYY-MM-DD');
-
-    // **Fix total amount for valid months**
-    aCost['inScopeAmount'] = Math.round(aCost['monthlyAmount'] * aCost['monthCount']);
-
-    // **Fix costChartRow creation**
-    let costChartRow = new Array(aCost.monthStart).fill(0); // Fill with zeros for inactive months
-
-    if (aCost.costType === "Quarterly_Cost_Component") {
-        for (let i = 0; i &lt; aCost.monthCount; i++) {
-            if ((i + aCost.monthStart) % 3 === 0) { // Apply cost every 3rd month
-                costChartRow.push(aCost.monthlyAmount);
-            } else {
-                costChartRow.push(0); // Keep zero in other months
-            }
-        }
-    } else {
-        for (let i = 0; i &lt; aCost.monthCount; i++) {
-            costChartRow.push(aCost.monthlyAmount);
-        }
-    } 
-    costChartRowList.push(costChartRow);
-});
-
-// **Fix month-by-month cost distribution**
-let monthsListCount = momentEndFinYear.diff(momentStartFinYear, 'months') + 1;
-let monthsList = [];
-let sumsList = Array(monthsListCount).fill(0);
-
-for (let i = 0; i &lt; monthsListCount; i++) {
-    monthsList.push(moment(momentStartFinYear).add(i, 'months').format('MM/YYYY'));
-
-    let monthlyTotal = 0;
-    costChartRowList.forEach((row) => {
-        if (row[i]) {
-            monthlyTotal += row[i];
-        }
-    });
-
-    sumsList[i] = monthlyTotal;
-}
-
-cbcLabels=[];
-cbcVals=[];
- 
-cbtLabels=[];
-cbtVals=[];
-
-cbfLabels=[];
-cbfVals=[]; 
-costByCategory.forEach((f)=>{ 
-if(f.key=='undefined'){ 
-f['key']='Run Cost'
-} 
-	cbcLabels.push(f.key);
-	cbcVals.push(f.value.total);
-})
-
-costByType.forEach((f)=>{
-	cbtLabels.push(f.key);
-	cbtVals.push(f.value.total);
-})
-
-let totalCost=0;
-costByFreq.forEach((f)=>{
-	cbfLabels.push(f.key);
-	cbfVals.push(f.value.total);
-})
- 
- 
-focusApp['supplier']=appDetail?.supplier;
-
-focusApp.allServices.forEach((p)=>{
-	let svcs= appMart.application_services.find((s)=>{
-		return s.id==p.serviceId;
+	
+	 procServices = d3.nest()
+	  .key(function(d) { return d.svcid})
+	  .entries(allProcsforApps);
+	 
+	
+	focusApp['processInfo']=allProcsforApps;
+	
+	} 
+	let stakeholdersList=[]; 
+	if(focusApp &amp;&amp; focusApp.stakeholders){
+	stakeholdersList = d3.nest()
+	  .key(function(d) { return d.actor; })
+	  .entries(focusApp.stakeholders);
+	
+	  stakeholdersList?.forEach((d)=>{
+		let sid = focusApp.stakeholders.find((s)=>{
+			return s.actor==d.key
+		})
+		d['id']=sid.actorid;
+		d['name']=d.key;
+	})
+	}
+	
+	if(focusApp){
+	  focusApp['stakeholdersList']=stakeholdersList;
+	
+	  focusApp.lifecycles?.forEach((e,i)=>{
+		  
+		let thisL=appLifecycles.lifecycleJSON.find((l)=>{
+			return e.id==l.id
+		})
+		
+		if(thisL?.colour){
+		e['enumname']=thisL.name;
+		e['colour']=thisL.colour;
+		e['backgroundColour']=thisL.backgroundColour;
+		}else{
+			e['colour']='#000000';
+			e['backgroundColour']='#d3d3d3';
+		}
+		if(thisL?.seq){
+		e['seq']=thisL?.seq;
+		}
+		else{
+			e['seq']=i
+		}
+	  })
+	   
+	let orgStakeholdersList = d3.nest()
+	.key(function(d) { return d.actor; })
+	.entries(focusApp.orgstakeholders);
+	 
+	orgStakeholdersList.forEach((d)=>{
+		let sid = focusApp.orgstakeholders.find((s)=>{
+			return s.actor==d.key
+		})
+		d['id']=sid.actorid;
+		d['name']=d.key;
+	})
+	focusApp['orgStakeholdersList']=orgStakeholdersList;
+	
+	let appDetail=appMart.applications.find((d)=>{
+		return d.id==focusApp.id
 	});
+
+	appDetail.costs = appCostIndex.get(appDetail.id) || [];
  
-	let processesMapped=procServices.find((e)=>{
-		return e.key==p.id;
-	})
+		if(appDetail.documents){
+			let docsCategory = d3.nest()
+			.key(function(d) { return d.type; })
+			.entries(appDetail.documents);
+			
+			focusApp['documents']=docsCategory;
+		}
+		if(appDetail.short_name !=""){
+			focusApp['short_name']=appDetail.short_name;
+		}
+		if(appDetail.synonyms?.length&gt;0){ 
+			focusApp['synonyms']=appDetail.synonyms;
+		}
+	 
+		//let defaultCurrency = ccy.find(ccy => ccy.default === "true");
+	  
+	
+	if (!defaultCurrency || Object.keys(defaultCurrency).length === 0) {
  
-	let otherAppsProviding=appServiceList.find((e)=>{
-		return e.key==p.serviceId;
-	})
- 
-	if(otherAppsProviding){
-		otherAppsProviding.values = otherAppsProviding.values.map(app => {
+		defaultCurrency = rcCcyId || {};
+	}
+	
+	  
+	const calculateDefaultCosts = (costArray, currencyArray) => {
+	   
+		let defaultExchangeRate = defaultCurrency ? parseFloat(defaultCurrency.exchangeRate) : 1;
+	  
+		  if(isNaN(defaultExchangeRate)){defaultExchangeRate=1} 
+		return costArray?.map(cost => {
+			const matchingCurrency = currencyArray.find(ccy => ccy.ccySymbol === cost.component_currency);
+			let exchangeRate = matchingCurrency ? parseFloat(matchingCurrency.exchangeRate) : 1;
+			if(isNaN(exchangeRate)){exchangeRate=1}
+			const defaultCost = parseFloat(cost.cost) * (exchangeRate / defaultExchangeRate); 
 			return {
-				...app,
-				id: app.appid
+				...cost,
+				defaultCost: defaultCost.toFixed(2)
 			};
 		});
-		p['otherAppsProviding']=otherAppsProviding.values;
-	}
-  
-	let thisFunc=[]; 
-	if(svcs){
-		svcs.functions?.forEach((f)=>{
-			let func=appMart.application_functions.find((s)=>{
-				return s.id==f
-			});
-			thisFunc.push(func)
-		})
-		p['functions']=thisFunc;
+	};
 	
-		p['description']=svcs?.description;
-
-
-let match = svcs.APRs.filter((s)=>{
-	return  s.appId == focusApp.id;
-})
- 
-p['std']=match[0].stds
-
+	const updatedCosts = calculateDefaultCosts(appDetail.costs, ccy);
+	 appDetail.costs=updatedCosts
+	
+	let costByCategory=[];
+	let costByType=[];
+	let costByFreq =[];
+	if(appDetail.costs){
+		focusApp['costs']=appDetail.costs;
+		costByCategory = d3.nest()
+			.key(function(d) { return d.costCategory; })
+			.rollup(function(v) { return {
+		total: d3.sum(v, function(d) { return d.cost; })
+	}})
+	.entries(appDetail.costs);
+	
+	costByType = d3.nest()
+	.key(function(d) { return d.name; })
+	.rollup(function(v) { return {
+		total: d3.sum(v, function(d) { return d.cost; })
+	}})
+	.entries(appDetail.costs);
+	
+	costByFreq = d3.nest()
+	.key(function(d) { return d.costType; })
+	.rollup(function(v) { return {
+		total: d3.sum(v, function(d) { return d.cost; })
+	}})
+	.entries(appDetail.costs);
 	}
-	if(processesMapped){
-		p['processes']=processesMapped.values;
-	}
-
-
-})
- 
-if(focusApp.pm){
-byPerfName = d3.nest()
-	.key(function(d) { return d.categoryid })
-	.entries(focusApp.pm) 
-  
-	byPerfName.forEach((v)=>{
-		v.values.sort((a, b) => b.date.localeCompare(a.order))
-	})
- 
-byPerfName=byPerfName.filter((d)=>{
-	return d.key!="";
-});
-focusApp['perfsGrp']=byPerfName
-}
-focusApp['lifecyclesKey']=appList.lifecycles
- 
-<xsl:if test="$isEIPMode='true'">focusApp.eipmode=true</xsl:if>
-console.log('fa', focusApp)
-$('#mainPanel').html(panelTemplate(focusApp))
-
-$('[data-toggle="collapse"]').on('click', function() {
+	let costDivider;
+	let fromDateArray = [];
+	let toDateArray = [];
+	let totalAnnualCost = 0;
+	let totalMonthlyCost = 0;
+	let monthsActive = 0;
+	let today = new Date();
+	let nextMonth = new Date();
+	nextMonth.setMonth(today.getMonth() + 1);
+	
+	if (appDetail.costs) {
+		appDetail.costs.forEach((d) => {
+	
+			let numericCost = parseFloat(d.cost); // Convert string to number
 	 
-					var button = $(this).find('.toggle-btn');
-					if (button.text().trim() === 'More Information') {
-						button.text('Less Information');
-					} else {
-						button.text('More Information');
+			let costDivider = 1; // Default: 1 (full cost)
+	 
+			// Determine how to distribute costs
+			if (d.costType === "Adhoc_Cost_Component") {
+				return; // Skip Adhoc costs in monthly and annual calculations
+			} else if (d.costType === "Annual_Cost_Component") {
+				costDivider = 12; // Spread annual cost over 12 months
+			} else if (d.costType === "Quarterly_Cost_Component") {
+				costDivider = 1; // Apply cost every 3 months
+			} else if (d.costType === "Monthly_Cost_Component") {
+				costDivider = 1; // Already a monthly cost
+			}
+	
+			d.monthlyAmount = numericCost / costDivider; // Base calculation
+	 
+			// **Guard code** to handle NaN for monthlyAmount
+			if (isNaN(d.monthlyAmount)) {
+				d.monthlyAmount = 0; // Set to 0 if NaN
+			}
+	
+			let fromDate = d.fromDate ? new Date(d.fromDate) : today;
+			let toDate = d.toDate ? new Date(d.toDate) : nextMonth;
+	
+			// If toDate is not set, make it 12 months from fromDate, assumes no date so just a recurring cost
+			if (!d.toDate) {
+				toDate.setFullYear(toDate.getFullYear() + 1);
+			}
+	 
+			// **Keep monthsActive for other calculations**
+			monthsActive = (toDate.getFullYear() - fromDate.getFullYear()) * 12 + (toDate.getMonth() - fromDate.getMonth()) + 1; 
+	
+			// **Condition for Annual Cost**
+			if (d.costType === "Annual_Cost_Component") {
+				totalAnnualCost += numericCost; // Add the full cost for the year
+			} else if (d.costType === "Quarterly_Cost_Component") {
+				for (let i = 0; i &lt; 12; i++) {
+					if (i % 3 === 0) { // Apply cost every 3 months
+						totalAnnualCost += d.monthlyAmount
+	 
 					}
+				}
+			} else if (d.costType === "Monthly_Cost_Component") {
+		 
+				totalAnnualCost += d.monthlyAmount * 12; // Monthly cost components
+			}
+			 
+		});
+	}
+	 
+	// **Fix totalMonthlyCost Calculation**
+	// If the period is less than 12 months, calculate based on the actual period
+	 
+	if (monthsActive &lt; 12) {
+		if(monthsActive==0){
+			monthsActive=1;
+		}
+	
+		totalMonthlyCost = totalAnnualCost / monthsActive;
+	} else {
+		totalMonthlyCost = totalAnnualCost / 12; // Spread across 12 months if the period is full-year or more
+	}
+	 
+	// Format cost output
+	let costNumbers = {}; 
+
+	let formatter = new Intl.NumberFormat(undefined, { style: "currency", currency: defaultCurrency.ccyCode  });
+	if (isNaN(totalMonthlyCost)) {
+		totalMonthlyCost = 0; // Set to 0 if NaN
+	}
+	
+	costNumbers['annualCost'] = formatter.format(Math.round(totalAnnualCost));
+	costNumbers['monthlyCost'] = formatter.format(Math.round(totalMonthlyCost));
+	 
+	 
+	if (appDetail.costs) {
+		appDetail.costs.forEach((d) => {
+			if (d.fromDate) fromDateArray.push(d.fromDate);
+			if (d.toDate) toDateArray.push(d.toDate);
+		});
+	}
+	
+	// **Fix sorting issue**
+	fromDateArray.sort((a, b) => new Date(a) - new Date(b));
+	toDateArray.sort((a, b) => new Date(a) - new Date(b));
+	
+	let momentStartFinYear = moment(fromDateArray[0]);
+	let momentEndFinYear = moment(toDateArray[toDateArray.length - 1]);
+	
+	if (momentEndFinYear.isBefore(moment())) {
+		momentEndFinYear = moment();
+	}
+	
+	let costChartRowList = [];
+	let costCurrency;
+	
+	// **Iterate over each cost component**
+	appDetail.costs?.forEach(function (aCost) {
+		let numericCost = parseFloat(aCost.cost); // Ensure cost is a number
+	
+		// **Ensure numericCost is valid**
+		if (isNaN(numericCost)) { 
+			numericCost = 0; // Default to zero to avoid NaN propagation
+		}
+	
+		// **Fix cost validity period**
+		let thisFromDate = aCost.fromDate ? new Date(aCost.fromDate) : today;
+		let thisToDate = aCost.toDate ? new Date(aCost.toDate) : nextMonth;
+		let thisStart = moment(thisFromDate, 'YYYY-MM-DD', true);
+		let thisEnd = moment(thisToDate, 'YYYY-MM-DD', true);
+	
+		// **Ensure valid dates before proceeding**
+		if (!thisStart.isValid() || !thisEnd.isValid()) {
+			console.error(`Invalid date range for:`, aCost);
+			return; // Skip this cost entry
+		}
+	
+		thisStart = moment.max(thisStart, momentStartFinYear);
+		thisEnd = moment.min(thisEnd, momentEndFinYear);
+	
+		// **Fix month count calculation (ensure inclusive of both start and end months)**
+		let monthCount = thisEnd.diff(thisStart, 'months') + 1;
+	
+		// **Ensure monthCount is valid**
+		if(monthCount==0){monthCount=1}
+	
+		if (isNaN(monthCount) || monthCount &lt;= 0) {
+			console.error(`Invalid monthCount for:`, aCost, `Calculated monthCount:`, monthCount);
+			monthCount = 1; // Ensure at least 1 month
+		}
+		aCost['monthCount'] = Math.ceil(monthCount);
+	
+		// **Fix monthStart calculation**
+		let monthStart = thisStart.diff(momentStartFinYear, 'months');
+		if (isNaN(monthStart) || monthStart &lt; 0) {
+			console.error(`Invalid monthStart for:`, aCost, `Calculated monthStart:`, monthStart);
+			monthStart = 0; // Ensure valid 0-based index
+		}
+		aCost['monthStart'] = Math.floor(monthStart);
+	
+		// **Ensure correct cost distribution**
+		if (aCost.costType === "Adhoc_Cost_Component") {  
+			aCost.monthlyAmount = numericCost / aCost.monthCount;
+		} else if (aCost.costType === "Annual_Cost_Component") {
+			aCost.monthlyAmount = numericCost / 12;
+		} else if (aCost.costType === "Quarterly_Cost_Component") {
+			aCost.monthlyAmount = numericCost; // Keep full amount but apply only every 3 months
+		} else {
+			aCost.monthlyAmount = numericCost;
+		}
+	
+		// Assign currency dynamically
+		costCurrency = aCost.ccy_code; 
+		// **Fix missing dates dynamically**
+		if (!aCost.toDate) aCost['toDate'] = momentEndFinYear.format('YYYY-MM-DD');
+		if (!aCost.fromDate || aCost.fromDate === '') aCost['fromDate'] = momentStartFinYear.format('YYYY-MM-DD');
+	
+		// **Fix total amount for valid months**
+		aCost['inScopeAmount'] = Math.round(aCost['monthlyAmount'] * aCost['monthCount']);
+	
+		// **Fix costChartRow creation**
+		let costChartRow = new Array(aCost.monthStart).fill(0); // Fill with zeros for inactive months
+	
+		if (aCost.costType === "Quarterly_Cost_Component") {
+			for (let i = 0; i &lt; aCost.monthCount; i++) {
+				if ((i + aCost.monthStart) % 3 === 0) { // Apply cost every 3rd month
+					costChartRow.push(aCost.monthlyAmount);
+				} else {
+					costChartRow.push(0); // Keep zero in other months
+				}
+			}
+		} else {
+			for (let i = 0; i &lt; aCost.monthCount; i++) {
+				costChartRow.push(aCost.monthlyAmount);
+			}
+		} 
+		costChartRowList.push(costChartRow);
+	});
+	
+	// **Fix month-by-month cost distribution**
+	let monthsListCount = momentEndFinYear.diff(momentStartFinYear, 'months') + 1;
+	let monthsList = [];
+	let sumsList = Array(monthsListCount).fill(0);
+	
+	for (let i = 0; i &lt; monthsListCount; i++) {
+		monthsList.push(moment(momentStartFinYear).add(i, 'months').format('MM/YYYY'));
+	
+		let monthlyTotal = 0;
+		costChartRowList.forEach((row) => {
+			if (row[i]) {
+				monthlyTotal += row[i];
+			}
+		});
+	
+		sumsList[i] = monthlyTotal;
+	}
+	
+	cbcLabels=[];
+	cbcVals=[];
+	 
+	cbtLabels=[];
+	cbtVals=[];
+	
+	cbfLabels=[];
+	cbfVals=[]; 
+	costByCategory.forEach((f)=>{ 
+	if(f.key=='undefined'){ 
+	f['key']='Run Cost'
+	} 
+		cbcLabels.push(f.key);
+		cbcVals.push(f.value.total);
+	})
+	
+	costByType.forEach((f)=>{
+		cbtLabels.push(f.key);
+		cbtVals.push(f.value.total);
+	})
+	
+	let totalCost=0;
+	costByFreq.forEach((f)=>{
+		cbfLabels.push(f.key);
+		cbfVals.push(f.value.total);
+	})
+	 
+	 
+	focusApp['supplier']=appDetail?.supplier;
+	
+	focusApp.allServices.forEach((p)=>{
+		let svcs= appMart.application_services.find((s)=>{
+			return s.id==p.serviceId;
+		});
+	 
+		let processesMapped=procServices.find((e)=>{
+			return e.key==p.id;
+		})
+	 
+		let otherAppsProviding=appServiceList.find((e)=>{
+			return e.key==p.serviceId;
+		})
+	 
+		if(otherAppsProviding){
+			otherAppsProviding.values = otherAppsProviding.values.map(app => {
+				return {
+					...app,
+					id: app.appid
+				};
+			});
+			p['otherAppsProviding']=otherAppsProviding.values;
+		}
+	  
+		let thisFunc=[]; 
+		if(svcs){
+			svcs.functions?.forEach((f)=>{
+				let func=appMart.application_functions.find((s)=>{
+					return s.id==f
 				});
-//get width for svg;
-$('.interfaceButton').off().on('click', function(){
-	let appId=$(this).attr('easid')
-	location.href='report?XML=reportXML.xml&amp;XSL='+interfaceReport[0].link+'&amp;PMA='+appId
-})
-
-$('.costTotal-container').html(costTotalTemplate(costNumbers))
-
-function renderLifecycleTimeline(containerId, lifecycleData) {
-      const $container = $('#' + containerId);
-
-      if ($container.length === 0) {
-        console.error('Container not found: ' + containerId);
-        return;
-      }
-
-      $container.html(`
-        <div class="controls">
-          <div class="control-group">
-            <div class="date-display">Start Date</div>
-            <div class="button-group"> 
-              <button id="startDateBackSmall"><i class="fa fa-caret-left"></i></button>
-              <button id="startDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
-            </div>
-          </div>
-          <div class="control-group">
-            <div class="date-display">End Date</div>
-            <div class="button-group"> 
-              <button id="endDateBackSmall"><i class="fa fa-caret-left"></i></button>
-              <button id="endDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
-            </div>
-          </div>
-          <div class="control-group">
-            <button id="zoomIn">Zoom In</button>
-            <button id="zoomOut">Zoom Out</button>
-            <button id="resetView" class="reset-button">Reset View</button>
-			<button id="exportPNG">Export as PNG</button>
-          </div>
-        </div>
-        <div id="timeline"></div>
-        <div class="legend" id="legend"></div>
-        <div class="tooltip" id="tooltip"></div>
-      `);
+				thisFunc.push(func)
+			})
+			p['functions']=thisFunc;
+		
+			p['description']=svcs?.description;
+	
+	
+	let match = svcs.APRs.filter((s)=>{
+		return  s.appId == focusApp.id;
+	})
+	 
+	p['std']=match[0].stds
+	
+		}
+		if(processesMapped){
+			p['processes']=processesMapped.values;
+		}
+	
+	
+	})
+	 
+	if(focusApp.pm){
+	byPerfName = d3.nest()
+		.key(function(d) { return d.categoryid })
+		.entries(focusApp.pm) 
+	  
+		byPerfName.forEach((v)=>{
+			v.values.sort((a, b) => b.date.localeCompare(a.order))
+		})
+	 
+	byPerfName=byPerfName.filter((d)=>{
+		return d.key!="";
+	});
+	focusApp['perfsGrp']=byPerfName
+	}
+	focusApp['lifecyclesKey']=appList.lifecycles
+	 
+	<xsl:if test="$isEIPMode='true'">focusApp.eipmode=true</xsl:if>
  
-      lifecycleData.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
-
-      // Constants for SVG dimensions and styling
-      const tlwidth = 1100;
-      const tlheight = 400;
-      const margin = { top: 50, right: 50, bottom: 120, left: 50 };
-      const innerWidth = tlwidth - margin.left - margin.right;
-      const innerHeight = tlheight - margin.top - margin.bottom;
-      const nodeRadius = 15;
-      const lineHeight = 6;
-
-      // Process dates
-      const dates = lifecycleData.map(d => new Date(d.dateOf));
-      const actualMinDate = new Date(Math.min(...dates));
-      const actualMaxDate = new Date(Math.max(...dates));
-      
-      // Add default buffers
-      let currentMinDate = new Date(actualMinDate);
-      let currentMaxDate = new Date(actualMaxDate);
-      currentMinDate.setMonth(currentMinDate.getMonth() - 3);
-      currentMaxDate.setMonth(currentMaxDate.getMonth() + 3);
-
-      // Initialize timeline variables
-      let svg, tooltipEl;
-
-      // Format date for display
-      function formatDateForDisplay(date) {
-          return date.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-          });
-      }
- 
-
-      // Create and draw the timeline
-      function drawTimeline() {
-          // Clear previous timeline
-          const timelineContainer = document.getElementById('timeline');
-          timelineContainer.innerHTML = '';
-          
-          // Create SVG element
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("width", tlwidth);
-          svg.setAttribute("height", tlheight);
- 		  svg.setAttribute("viewBox", "0 0 " + tlwidth + " " + tlheight);
-          svg.setAttribute("style", "max-width: 100%; height: auto;");
-
-          // Create a background for the timeline
-          const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-          background.setAttribute("x", margin.left);
-          background.setAttribute("y", margin.top);
-          background.setAttribute("width", innerWidth);
-          background.setAttribute("height", innerHeight);
-          background.setAttribute("fill", "#f9f9f9");
-          background.setAttribute("rx", "8");
-          svg.appendChild(background);
-
-          // Function to map date to x position
-          const getX = (date) => {
-              const totalDays = (currentMaxDate - currentMinDate) / (1000 * 60 * 60 * 24);
-              const currentDays = (new Date(date) - currentMinDate) / (1000 * 60 * 60 * 24);
-              return margin.left + (currentDays / totalDays) * innerWidth;
-          }
-
-          // Create timeline line
-          const timeline = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          timeline.setAttribute("x1", margin.left);
-          timeline.setAttribute("y1", margin.top + innerHeight / 2);
-          timeline.setAttribute("x2", margin.left + innerWidth);
-          timeline.setAttribute("y2", margin.top + innerHeight / 2);
-          timeline.setAttribute("stroke", "#ccc");
-          timeline.setAttribute("stroke-width", lineHeight);
-          timeline.setAttribute("stroke-linecap", "round");
-          svg.appendChild(timeline);
-
-          // Get visible items
-          const visibleItems = lifecycleData.filter(item => {
-              const itemDate = new Date(item.dateOf);
-              return itemDate >= currentMinDate &amp;&amp; itemDate &lt;= currentMaxDate;
-          });
-
-          // Create markers for each visible status
-          tooltipEl = document.getElementById('tooltip');
-          let lastLabelY = 0;
-          let labelYDirection = 1;
-
-          visibleItems.forEach((item, index) => {
-              const x = getX(item.dateOf);
-              const y = margin.top + innerHeight / 2;
-              
-              // Create a circle for the milestone
-              const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-              circle.setAttribute("cx", x);
-              circle.setAttribute("cy", y);
-              circle.setAttribute("r", nodeRadius);
-              circle.setAttribute("fill", item.backgroundColour);
-              circle.setAttribute("stroke", "#fff");
-              circle.setAttribute("stroke-width", "2");
-              circle.setAttribute("class", "milestone");
-              circle.setAttribute("data-id", item.id);
-              svg.appendChild(circle);
- 
-              // Create a line connecting the circle to the label
-              // Alternate above and below the timeline
-              const labelY = y + (labelYDirection * (nodeRadius + 40));
-              labelYDirection *= -1;
-              lastLabelY = labelY;
-
-              const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-              line.setAttribute("x1", x);
-              line.setAttribute("y1", y + (labelY > y ? nodeRadius : -nodeRadius));
-              line.setAttribute("x2", x);
-              line.setAttribute("y2", labelY - (labelY > y ? 20 : -20));
-              line.setAttribute("stroke", item.backgroundColour);
-              line.setAttribute("stroke-width", "2");
-              line.setAttribute("stroke-dasharray", "3,3");
-              svg.appendChild(line);
-
-              // Create a text label for the milestone
-              const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              label.setAttribute("x", x);
-              label.setAttribute("y", labelY);
-              label.setAttribute("text-anchor", "middle");
-              label.setAttribute("fill", "#333");
-              label.setAttribute("font-size", "12px");
-              label.textContent = item.enumname;
-              svg.appendChild(label);
-
-              // Create a smaller date label
-              const dateLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              dateLabel.setAttribute("x", x);
-              dateLabel.setAttribute("y", labelY + (labelY > y ? 20 : -20));
-              dateLabel.setAttribute("text-anchor", "middle");
-              dateLabel.setAttribute("fill", "#777");
-              dateLabel.setAttribute("font-size", "11px");
-              dateLabel.textContent = formatDateForDisplay(new Date(item.dateOf));
-              svg.appendChild(dateLabel);
-
-              // Add event listeners for tooltip
-              circle.addEventListener('mouseover', (e) => {
-                 tooltipEl.innerHTML = `
-					<div style="font-weight: bold; margin-bottom: 5px;">${item.enumname}</div>
-					<div>Date: ${new Date(item.dateOf).toLocaleDateString('en-US', {
-						year: 'numeric',
-						month: 'long',
-						day: 'numeric'
-					})}</div>
-					<div>Sequence: ${item.seq}</div>
-					`;
-                  tooltipEl.style.opacity = '1';
-                  tooltipEl.style.left = (e.pageX + 10) + 'px';
-                  tooltipEl.style.top = (e.pageY + 10) + 'px';
-              });
-
-              circle.addEventListener('mouseout', () => {
-                  tooltipEl.style.opacity = '0';
-              });
-
-              circle.addEventListener('mousemove', (e) => {
-                  tooltipEl.style.left = (e.pageX + 10) + 'px';
-                  tooltipEl.style.top = (e.pageY + 10) + 'px';
-              });
-          });
-
-          // Add subtle grid lines
-          const numGridLines = 6;
-          for (let i = 0; i &lt;= numGridLines; i++) {
-              const x = margin.left + (i * innerWidth / numGridLines);
-              const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-              gridLine.setAttribute("x1", x);
-              gridLine.setAttribute("y1", margin.top);
-              gridLine.setAttribute("x2", x);
-              gridLine.setAttribute("y2", margin.top + innerHeight);
-              gridLine.setAttribute("stroke", "#ddd");
-              gridLine.setAttribute("stroke-width", "1");
-              gridLine.setAttribute("stroke-dasharray", "3,3");
-              svg.appendChild(gridLine);
-
-              // Add date labels on the grid lines
-              const dateOffset = i / numGridLines;
-              const date = new Date(currentMinDate.getTime() + dateOffset * (currentMaxDate.getTime() - currentMinDate.getTime()));
-              const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              dateText.setAttribute("x", x);
-              dateText.setAttribute("y", margin.top + innerHeight + 20);
-              dateText.setAttribute("text-anchor", "middle");
-              dateText.setAttribute("fill", "#555");
-              dateText.setAttribute("font-size", "11px");
-              dateText.textContent = date.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short'
-              });
-              svg.appendChild(dateText);
-          }
-   
-          // Append the SVG to the container
-          timelineContainer.appendChild(svg);
-      }
-
-      // Create the legend for all items (not just visible ones)
-      function createLegend() {
-          const legendContainer = document.getElementById('legend');
-          legendContainer.innerHTML = '';
-          
-          lifecycleData.forEach(item => {
-              const legendItem = document.createElement('div');
-              legendItem.className = 'legend-item';
-              
-              const colorBox = document.createElement('div');
-              colorBox.className = 'legend-color';
-              colorBox.style.backgroundColor = item.backgroundColour;
-              
-              const label = document.createElement('span');
-             label.textContent = `${item.seq}. ${item.enumname}`;
-              
-              legendItem.appendChild(colorBox);
-              legendItem.appendChild(label);
-              legendContainer.appendChild(legendItem);
-          });
-      }
-
-      // Date manipulation functions
-		function moveStartDate(years) {
-				const newDate = new Date(currentMinDate);
+	$('#mainPanel').html(panelTemplate(focusApp))
+	
+	$('[data-toggle="collapse"]').on('click', function() {
+		 
+						var button = $(this).find('.toggle-btn');
+						if (button.text().trim() === 'More Information') {
+							button.text('Less Information');
+						} else {
+							button.text('More Information');
+						}
+					});
+	//get width for svg;
+	$('.interfaceButton').off('click.interface').on('click', function(){
+		let appId=$(this).attr('easid')
+		location.href='report?XML=reportXML.xml&amp;XSL='+interfaceReport[0].link+'&amp;PMA='+appId
+	})
+	
+	$('.costTotal-container').html(costTotalTemplate(costNumbers))
+	
+	function renderLifecycleTimeline(containerId, lifecycleData) {
+		  const $container = $('#' + containerId);
+	
+		  if ($container.length === 0) {
+			console.error('Container not found: ' + containerId);
+			return;
+		  }
+	
+		  $container.html(`
+			<div class="controls">
+			  <div class="control-group">
+				<div class="date-display">Start Date</div>
+				<div class="button-group"> 
+				  <button id="startDateBackSmall"><i class="fa fa-caret-left"></i></button>
+				  <button id="startDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
+				</div>
+			  </div>
+			  <div class="control-group">
+				<div class="date-display">End Date</div>
+				<div class="button-group"> 
+				  <button id="endDateBackSmall"><i class="fa fa-caret-left"></i></button>
+				  <button id="endDateForwardSmall"><i class="fa fa-caret-right"></i></button> 
+				</div>
+			  </div>
+			  <div class="control-group">
+				<button id="zoomIn">Zoom In</button>
+				<button id="zoomOut">Zoom Out</button>
+				<button id="resetView" class="reset-button">Reset View</button>
+				<button id="exportPNG">Export as PNG</button>
+			  </div>
+			</div>
+			<div id="timeline"></div>
+			<div class="legend" id="legend"></div>
+			<div class="tooltip" id="tooltip"></div>
+		  `);
+	 
+		  lifecycleData.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
+	
+		  // Constants for SVG dimensions and styling
+		  const tlwidth = 1100;
+		  const tlheight = 400;
+		  const margin = { top: 50, right: 50, bottom: 120, left: 50 };
+		  const innerWidth = tlwidth - margin.left - margin.right;
+		  const innerHeight = tlheight - margin.top - margin.bottom;
+		  const nodeRadius = 15;
+		  const lineHeight = 6;
+	
+		  // Process dates
+		  const dates = lifecycleData.map(d => new Date(d.dateOf));
+		  const actualMinDate = new Date(Math.min(...dates));
+		  const actualMaxDate = new Date(Math.max(...dates));
+		  
+		  // Add default buffers
+		  let currentMinDate = new Date(actualMinDate);
+		  let currentMaxDate = new Date(actualMaxDate);
+		  currentMinDate.setMonth(currentMinDate.getMonth() - 3);
+		  currentMaxDate.setMonth(currentMaxDate.getMonth() + 3);
+	
+		  // Initialize timeline variables
+		  let svg, tooltipEl;
+	
+		  // Format date for display
+		  function formatDateForDisplay(date) {
+			  return date.toLocaleDateString('en-US', {
+				  year: 'numeric',
+				  month: 'short',
+				  day: 'numeric'
+			  });
+		  }
+	 
+	
+		  // Create and draw the timeline
+		  function drawTimeline() {
+			  // Clear previous timeline
+			  const timelineContainer = document.getElementById('timeline');
+			  timelineContainer.innerHTML = '';
+			  
+			  // Create SVG element
+			  svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			  svg.setAttribute("width", tlwidth);
+			  svg.setAttribute("height", tlheight);
+			   svg.setAttribute("viewBox", "0 0 " + tlwidth + " " + tlheight);
+			  svg.setAttribute("style", "max-width: 100%; height: auto;");
+	
+			  // Create a background for the timeline
+			  const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+			  background.setAttribute("x", margin.left);
+			  background.setAttribute("y", margin.top);
+			  background.setAttribute("width", innerWidth);
+			  background.setAttribute("height", innerHeight);
+			  background.setAttribute("fill", "#f9f9f9");
+			  background.setAttribute("rx", "8");
+			  svg.appendChild(background);
+	
+			  // Function to map date to x position
+			  const getX = (date) => {
+				  const totalDays = (currentMaxDate - currentMinDate) / (1000 * 60 * 60 * 24);
+				  const currentDays = (new Date(date) - currentMinDate) / (1000 * 60 * 60 * 24);
+				  return margin.left + (currentDays / totalDays) * innerWidth;
+			  }
+	
+			  // Create timeline line
+			  const timeline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			  timeline.setAttribute("x1", margin.left);
+			  timeline.setAttribute("y1", margin.top + innerHeight / 2);
+			  timeline.setAttribute("x2", margin.left + innerWidth);
+			  timeline.setAttribute("y2", margin.top + innerHeight / 2);
+			  timeline.setAttribute("stroke", "#ccc");
+			  timeline.setAttribute("stroke-width", lineHeight);
+			  timeline.setAttribute("stroke-linecap", "round");
+			  svg.appendChild(timeline);
+	
+			  // Get visible items
+			  const visibleItems = lifecycleData.filter(item => {
+				  const itemDate = new Date(item.dateOf);
+				  return itemDate >= currentMinDate &amp;&amp; itemDate &lt;= currentMaxDate;
+			  });
+	
+			  // Create markers for each visible status
+			  tooltipEl = document.getElementById('tooltip');
+			  let lastLabelY = 0;
+			  let labelYDirection = 1;
+	
+			  visibleItems.forEach((item, index) => {
+				  const x = getX(item.dateOf);
+				  const y = margin.top + innerHeight / 2;
+				  
+				  // Create a circle for the milestone
+				  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+				  circle.setAttribute("cx", x);
+				  circle.setAttribute("cy", y);
+				  circle.setAttribute("r", nodeRadius);
+				  circle.setAttribute("fill", item.backgroundColour);
+				  circle.setAttribute("stroke", "#fff");
+				  circle.setAttribute("stroke-width", "2");
+				  circle.setAttribute("class", "milestone");
+				  circle.setAttribute("data-id", item.id);
+				  svg.appendChild(circle);
+	 
+				  // Create a line connecting the circle to the label
+				  // Alternate above and below the timeline
+				  const labelY = y + (labelYDirection * (nodeRadius + 40));
+				  labelYDirection *= -1;
+				  lastLabelY = labelY;
+	
+				  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+				  line.setAttribute("x1", x);
+				  line.setAttribute("y1", y + (labelY > y ? nodeRadius : -nodeRadius));
+				  line.setAttribute("x2", x);
+				  line.setAttribute("y2", labelY - (labelY > y ? 20 : -20));
+				  line.setAttribute("stroke", item.backgroundColour);
+				  line.setAttribute("stroke-width", "2");
+				  line.setAttribute("stroke-dasharray", "3,3");
+				  svg.appendChild(line);
+	
+				  // Create a text label for the milestone
+				  const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+				  label.setAttribute("x", x);
+				  label.setAttribute("y", labelY);
+				  label.setAttribute("text-anchor", "middle");
+				  label.setAttribute("fill", "#333");
+				  label.setAttribute("font-size", "12px");
+				  label.textContent = item.enumname;
+				  svg.appendChild(label);
+	
+				  // Create a smaller date label
+				  const dateLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+				  dateLabel.setAttribute("x", x);
+				  dateLabel.setAttribute("y", labelY + (labelY > y ? 20 : -20));
+				  dateLabel.setAttribute("text-anchor", "middle");
+				  dateLabel.setAttribute("fill", "#777");
+				  dateLabel.setAttribute("font-size", "11px");
+				  dateLabel.textContent = formatDateForDisplay(new Date(item.dateOf));
+				  svg.appendChild(dateLabel);
+	
+				  // Add event listeners for tooltip
+				  circle.addEventListener('mouseover', (e) => {
+					 tooltipEl.innerHTML = `
+						<div style="font-weight: bold; margin-bottom: 5px;">${item.enumname}</div>
+						<div>Date: ${new Date(item.dateOf).toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						})}</div>
+						<div>Sequence: ${item.seq}</div>
+						`;
+					  tooltipEl.style.opacity = '1';
+					  tooltipEl.style.left = (e.pageX + 10) + 'px';
+					  tooltipEl.style.top = (e.pageY + 10) + 'px';
+				  });
+	
+				  circle.addEventListener('mouseout', () => {
+					  tooltipEl.style.opacity = '0';
+				  });
+	
+				  circle.addEventListener('mousemove', (e) => {
+					  tooltipEl.style.left = (e.pageX + 10) + 'px';
+					  tooltipEl.style.top = (e.pageY + 10) + 'px';
+				  });
+			  });
+	
+			  // Add subtle grid lines
+			  const numGridLines = 6;
+			  for (let i = 0; i &lt;= numGridLines; i++) {
+				  const x = margin.left + (i * innerWidth / numGridLines);
+				  const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+				  gridLine.setAttribute("x1", x);
+				  gridLine.setAttribute("y1", margin.top);
+				  gridLine.setAttribute("x2", x);
+				  gridLine.setAttribute("y2", margin.top + innerHeight);
+				  gridLine.setAttribute("stroke", "#ddd");
+				  gridLine.setAttribute("stroke-width", "1");
+				  gridLine.setAttribute("stroke-dasharray", "3,3");
+				  svg.appendChild(gridLine);
+	
+				  // Add date labels on the grid lines
+				  const dateOffset = i / numGridLines;
+				  const date = new Date(currentMinDate.getTime() + dateOffset * (currentMaxDate.getTime() - currentMinDate.getTime()));
+				  const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+				  dateText.setAttribute("x", x);
+				  dateText.setAttribute("y", margin.top + innerHeight + 20);
+				  dateText.setAttribute("text-anchor", "middle");
+				  dateText.setAttribute("fill", "#555");
+				  dateText.setAttribute("font-size", "11px");
+				  dateText.textContent = date.toLocaleDateString('en-US', {
+					  year: 'numeric',
+					  month: 'short'
+				  });
+				  svg.appendChild(dateText);
+			  }
+	   
+			  // Append the SVG to the container
+			  timelineContainer.appendChild(svg);
+		  }
+	
+		  // Create the legend for all items (not just visible ones)
+		  function createLegend() {
+			  const legendContainer = document.getElementById('legend');
+			  legendContainer.innerHTML = '';
+			  
+			  lifecycleData.forEach(item => {
+				  const legendItem = document.createElement('div');
+				  legendItem.className = 'legend-item';
+				  
+				  const colorBox = document.createElement('div');
+				  colorBox.className = 'legend-color';
+				  colorBox.style.backgroundColor = item.backgroundColour;
+				  
+				  const label = document.createElement('span');
+				 label.textContent = `${item.seq}. ${item.enumname}`;
+				  
+				  legendItem.appendChild(colorBox);
+				  legendItem.appendChild(label);
+				  legendContainer.appendChild(legendItem);
+			  });
+		  }
+	
+		  // Date manipulation functions
+			function moveStartDate(years) {
+					const newDate = new Date(currentMinDate);
+					newDate.setFullYear(newDate.getFullYear() + years);
+	
+					const minEndDate = new Date(currentMaxDate);
+					minEndDate.setFullYear(minEndDate.getFullYear() - 1);
+	
+					if (newDate &lt; minEndDate) {
+						currentMinDate = newDate; 
+						drawTimeline();
+					}
+			}
+	
+		  function moveEndDate(years) {
+				const newDate = new Date(currentMaxDate);
 				newDate.setFullYear(newDate.getFullYear() + years);
-
-				const minEndDate = new Date(currentMaxDate);
-				minEndDate.setFullYear(minEndDate.getFullYear() - 1);
-
-				if (newDate &lt; minEndDate) {
-					currentMinDate = newDate; 
+	
+				const maxStartDate = new Date(currentMinDate);
+				maxStartDate.setFullYear(maxStartDate.getFullYear() + 1);
+	
+				if (newDate > maxStartDate) {
+					currentMaxDate = newDate; 
 					drawTimeline();
 				}
-		}
-
-      function moveEndDate(years) {
-			const newDate = new Date(currentMaxDate);
-			newDate.setFullYear(newDate.getFullYear() + years);
-
-			const maxStartDate = new Date(currentMinDate);
-			maxStartDate.setFullYear(maxStartDate.getFullYear() + 1);
-
-			if (newDate > maxStartDate) {
-				currentMaxDate = newDate; 
-				drawTimeline();
 			}
+	
+		  // Reset to original view with buffer
+		  function resetView() {
+			  currentMinDate = new Date(actualMinDate);
+			  currentMaxDate = new Date(actualMaxDate);
+			  currentMinDate.setMonth(currentMinDate.getMonth() - 3);
+			  currentMaxDate.setMonth(currentMaxDate.getMonth() + 3); 
+			  drawTimeline();
+		  }
+	
+		  // Zoom functions
+		  function zoomIn() {
+			  // Zoom in by reducing the range by 25% from both sides
+			  const currentRange = currentMaxDate - currentMinDate;
+			  const adjustment = currentRange * 0.125; // 12.5% from each side
+			  
+			  const newMinDate = new Date(currentMinDate.getTime() + adjustment);
+			  const newMaxDate = new Date(currentMaxDate.getTime() - adjustment);
+			  
+			  // Ensure there's still a reasonable range
+			  if (newMaxDate - newMinDate >= 30 * 24 * 60 * 60 * 1000) { // At least 30 days
+				  currentMinDate = newMinDate;
+				  currentMaxDate = newMaxDate; 
+				  drawTimeline();
+			  }
+		  }
+	
+		  function zoomOut() {
+			  // Zoom out by increasing the range by 50% from both sides
+			  const currentRange = currentMaxDate - currentMinDate;
+			  const adjustment = currentRange * 0.25; // 25% to each side
+			  
+			  currentMinDate = new Date(currentMinDate.getTime() - adjustment);
+			  currentMaxDate = new Date(currentMaxDate.getTime() + adjustment); 
+			  drawTimeline();
+		  }
+	
+		  // Initialize the visualization
+		  function initialize() { 
+			  drawTimeline();
+			  //createLegend();
+			  
+			  // Set up event listeners for controls 
+			  $('#startDateBackSmall').off('click.dateNav').on('click', () => moveStartDate(-1));
+			   $('#startDateForwardSmall').off('click.dateNav').on('click', () => moveStartDate(1)); 
+			   
+			   $('#endDateBackSmall').off('click.dateNav').on('click', () => moveEndDate(-1));
+			   $('#endDateForwardSmall').off('click.dateNav').on('click', () => moveEndDate(1)); 
+			  
+			  $('#zoomIn').off('click.viewCtrl').on('click', zoomIn);
+			  $('#zoomOut').off('click.viewCtrl').on('click', zoomOut);
+			  $('#resetView').off('click.viewCtrl').on('click', resetView);
+			  $('#exportPNG').off('click.viewCtrl').on('click', function () {
+					const svgElement = document.querySelector('#timeline svg');
+					if (!svgElement) return;
+	
+					const svgData = new XMLSerializer().serializeToString(svgElement);
+					const canvas = document.createElement('canvas');
+					canvas.width = svgElement.viewBox.baseVal.width;
+					canvas.height = svgElement.viewBox.baseVal.height;
+					const ctx = canvas.getContext('2d');
+	
+					const img = new Image();
+					const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+					const url = URL.createObjectURL(svgBlob);
+	
+					img.onload = function () {
+						ctx.drawImage(img, 0, 0);
+						URL.revokeObjectURL(url);
+	
+						const pngData = canvas.toDataURL('image/png');
+						const downloadLink = document.createElement('a');
+						downloadLink.href = pngData;
+						downloadLink.download = 'lifecycle_timeline.png';
+						document.body.appendChild(downloadLink);
+						downloadLink.click();
+						document.body.removeChild(downloadLink);
+					};
+	
+					img.src = url;
+				});
+	
+	
+		  }
+	
+		  // Start the visualization
+		  initialize();
+	
+		  // The rest of your original JS can follow here —
+		  // just replace `document.getElementById(...)` with `$('#...')` where appropriate
+		  // and set up event handlers using jQuery: e.g., `$('#zoomIn').on('click', ...)`
+	
+		  // Example:
+		  // $('#zoomIn').on('click', function () { zoomIn(); });
+		  // or use jQuery equivalents for manipulating SVG if needed
+	
+		  // After setup:
+		  initialize(); // if you wrap the internal logic as an `initialize()` function inside
 		}
-
-      // Reset to original view with buffer
-      function resetView() {
-          currentMinDate = new Date(actualMinDate);
-          currentMaxDate = new Date(actualMaxDate);
-          currentMinDate.setMonth(currentMinDate.getMonth() - 3);
-          currentMaxDate.setMonth(currentMaxDate.getMonth() + 3); 
-          drawTimeline();
-      }
-
-      // Zoom functions
-      function zoomIn() {
-          // Zoom in by reducing the range by 25% from both sides
-          const currentRange = currentMaxDate - currentMinDate;
-          const adjustment = currentRange * 0.125; // 12.5% from each side
-          
-          const newMinDate = new Date(currentMinDate.getTime() + adjustment);
-          const newMaxDate = new Date(currentMaxDate.getTime() - adjustment);
-          
-          // Ensure there's still a reasonable range
-          if (newMaxDate - newMinDate >= 30 * 24 * 60 * 60 * 1000) { // At least 30 days
-              currentMinDate = newMinDate;
-              currentMaxDate = newMaxDate; 
-              drawTimeline();
-          }
-      }
-
-      function zoomOut() {
-          // Zoom out by increasing the range by 50% from both sides
-          const currentRange = currentMaxDate - currentMinDate;
-          const adjustment = currentRange * 0.25; // 25% to each side
-          
-          currentMinDate = new Date(currentMinDate.getTime() - adjustment);
-          currentMaxDate = new Date(currentMaxDate.getTime() + adjustment); 
-          drawTimeline();
-      }
-
-      // Initialize the visualization
-      function initialize() { 
-          drawTimeline();
-          //createLegend();
-          
-          // Set up event listeners for controls 
-          $('#startDateBackSmall').off().on('click', () => moveStartDate(-1));
-           $('#startDateForwardSmall').off().on('click', () => moveStartDate(1)); 
-           
-           $('#endDateBackSmall').off().on('click', () => moveEndDate(-1));
-           $('#endDateForwardSmall').off().on('click', () => moveEndDate(1)); 
-          
-          $('#zoomIn').off().on('click', zoomIn);
-          $('#zoomOut').off().on('click', zoomOut);
-          $('#resetView').off().on('click', resetView);
-		  $('#exportPNG').off().on('click', function () {
-				const svgElement = document.querySelector('#timeline svg');
-				if (!svgElement) return;
-
-				const svgData = new XMLSerializer().serializeToString(svgElement);
-				const canvas = document.createElement('canvas');
-				canvas.width = svgElement.viewBox.baseVal.width;
-				canvas.height = svgElement.viewBox.baseVal.height;
-				const ctx = canvas.getContext('2d');
-
-				const img = new Image();
-				const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-				const url = URL.createObjectURL(svgBlob);
-
-				img.onload = function () {
-					ctx.drawImage(img, 0, 0);
-					URL.revokeObjectURL(url);
-
-					const pngData = canvas.toDataURL('image/png');
-					const downloadLink = document.createElement('a');
-					downloadLink.href = pngData;
-					downloadLink.download = 'lifecycle_timeline.png';
-					document.body.appendChild(downloadLink);
-					downloadLink.click();
-					document.body.removeChild(downloadLink);
-				};
-
-				img.src = url;
-			});
-
-
-      }
-
-      // Start the visualization
-      initialize();
-
-      // The rest of your original JS can follow here —
-      // just replace `document.getElementById(...)` with `$('#...')` where appropriate
-      // and set up event handlers using jQuery: e.g., `$('#zoomIn').on('click', ...)`
-
-      // Example:
-      // $('#zoomIn').on('click', function () { zoomIn(); });
-      // or use jQuery equivalents for manipulating SVG if needed
-
-      // After setup:
-      initialize(); // if you wrap the internal logic as an `initialize()` function inside
-    }
-
-renderLifecycleTimeline('TimelinePanel', focusApp.lifecycles)
- <!--
-svgWidth=$('#lifecyclePanel').parent().parent().parent().parent().width()-30;
-focusApp['svgwidth']=svgWidth;
-
-function getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, thisDatetoShow){
- 
-    startDate=new Date(chartStartDate);       
-    endDate= new Date(chartEndDate);
-    thisDate= new Date(thisDatetoShow);
-    pixels= chartWidth/(endDate-startDate);
-   
-	return ((thisDate-startDate)*pixels)+chartStartPoint;
+	if(focusApp.lifecycles.length>0){
+		renderLifecycleTimeline('TimelinePanel', focusApp.lifecycles)
 	}
-
-	function getYearDiff(date1, date2) {
-		return Math.abs(date2.getFullYear() - date1.getFullYear());
-	  }
-  
-	focusApp.lifecycles.forEach((d)=>{
-		d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
-	 })
-
-function getYears(sd,ed){	
-	yearsArray=[]; 
-	 let getYears = getYearDiff(sd,ed)+1; 
+	 <!--
+	svgWidth=$('#lifecyclePanel').parent().parent().parent().parent().width()-30;
+	focusApp['svgwidth']=svgWidth;
 	
-	 for(i=0; i&lt;getYears+1; i++){
-		 let yr=sd.getFullYear()+i
-		
-		yearsArray.push({"year":yr, "pos":getPosition(20, svgWidth,  sd, ed, yr+'-01-01')})
-	 }
-	
-	 focusApp['years']=yearsArray;
-}
-	 getYears(svgStartDate,svgEndDate) 
-$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
- 
-$('#lifecycleUp').off().on("click", function(){
- 
-	focusApp.years.shift();
- 
-	svgStartDate=new Date (svgStartDate.setFullYear(svgStartDate.getFullYear() + 1));
- 
-	focusApp.lifecycles.forEach((d)=>{
-		d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
-	 })
-	 getYears(svgStartDate,svgEndDate)
-  
-	 $('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
-})
-
-$('#lifecycleEndUp').off().on("click", function(){ 
-
-	svgEndDate=new Date (svgEndDate.setFullYear(svgEndDate.getFullYear() + 1));
- 
-	focusApp.lifecycles.forEach((d)=>{
-		d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
-	 })
-	 getYears(svgStartDate,svgEndDate) 
-	 $('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
-})
- 
-$('#lifecycleEndDown').off().on("click", function(){
-	focusApp.years.pop();
-	svgEndDate=new Date (svgEndDate.setFullYear(svgEndDate.getFullYear() -1 ));
- 
-	focusApp.lifecycles.forEach((d)=>{
-		d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
-	 })
- 
-	 getYears(svgStartDate,svgEndDate) 
-	$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
-})
-$('#lifecycleDown').off().on("click", function(){
+	function getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, thisDatetoShow){
 	 
-	svgStartDate=new Date (svgStartDate.setFullYear(svgStartDate.getFullYear() - 1));
- 
-	focusApp.lifecycles.forEach((d)=>{
-		d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
+		startDate=new Date(chartStartDate);       
+		endDate= new Date(chartEndDate);
+		thisDate= new Date(thisDatetoShow);
+		pixels= chartWidth/(endDate-startDate);
+	   
+		return ((thisDate-startDate)*pixels)+chartStartPoint;
+		}
+	
+		function getYearDiff(date1, date2) {
+			return Math.abs(date2.getFullYear() - date1.getFullYear());
+		  }
+	  
+		focusApp.lifecycles.forEach((d)=>{
+			d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
+		 })
+	
+	function getYears(sd,ed){	
+		yearsArray=[]; 
+		 let getYears = getYearDiff(sd,ed)+1; 
+		
+		 for(i=0; i&lt;getYears+1; i++){
+			 let yr=sd.getFullYear()+i
+			
+			yearsArray.push({"year":yr, "pos":getPosition(20, svgWidth,  sd, ed, yr+'-01-01')})
+		 }
+		
+		 focusApp['years']=yearsArray;
+	}
+		 getYears(svgStartDate,svgEndDate) 
+	$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
+	 
+	$('#lifecycleUp').off().on("click", function(){
+	 
+		focusApp.years.shift();
+	 
+		svgStartDate=new Date (svgStartDate.setFullYear(svgStartDate.getFullYear() + 1));
+	 
+		focusApp.lifecycles.forEach((d)=>{
+			d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
+		 })
+		 getYears(svgStartDate,svgEndDate)
+	  
+		 $('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
 	})
-	getYears(svgStartDate,svgEndDate)
- 
-	$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
-}) 
--->
-ccy.forEach((c)=>{
-	$('#ccySelect').append('&lt;option value="'+c.id+'">'+c.ccyCode+'&lt;/option>');
-})
-
-$('#ccySelect').select2({
-  width:'100px'
-});
-
-$('#ccySelect').on('change', function() {
-  const currency = $(this).val();
-  updateCharts(currency);
-});
-
-if(cbfLabels.length&gt;0){
-const chartCostByFrequency = new Chart(document.getElementById("costByFrequency-chart"), {
-  type: 'doughnut',
-  data: {
-    labels: cbfLabels,
-    datasets: [
-      {
-        label: "Frequency",
-        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-        data: cbfVals
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      text: 'Cost By Frequency'
-    },
-    legend: {
-      position: "bottom",
-      align: "middle"
-    }
-  }
-});
-
-// Repeat for other charts
-const chartCostByCategory = new Chart(document.getElementById("costByCategory-chart"), {
-  type: 'doughnut',
-  data: {
-    labels: cbcLabels,
-    datasets: [
-      {
-        label: "Type",
-        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-        data: cbcVals
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      text: 'Cost By Category'
-    },
-    legend: {
-      position: "bottom",
-      align: "middle"
-    }
-  }
-});
-
-const chartCostByType = new Chart(document.getElementById("costByType-chart"), {
-  type: 'doughnut',
-  data: {
-    labels: cbtLabels,
-    datasets: [
-      {
-        label: "Type",
-        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-        data: cbtVals
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      text: 'Cost By Type'
-    },
-    legend: {
-      position: "right",
-      align: "middle"
-    }
-  }
-});
-
-const locale = navigator.language || 'en-US';
-
-const chartCostByMonth = new Chart(document.getElementById("costByMonth-chart"), {
-  type: 'bar',
-  data: {
-    labels: monthsList,
-    datasets: [
-      {
-        label: "Cost Per Month",
-        backgroundColor: "#f5aa42",
-        data: sumsList
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true,
-          callback: function(value) {
-            return new Intl.NumberFormat(locale, { style: 'currency', currency: defaultCurrency.ccyCode}).format(value); // Change to the selected currency
-          }
-        }
-      }]
-    },
-    plugins: {
-      labels: false
-    }
-  }
-});
-
-
-
-function updateCharts(currency) {
-	 
-	let ccySelected=ccy.find(d => d.id == currency)
- 	let rate = ccySelected.exchangeRate;
-	let ccyCd = ccySelected.ccyCode;
 	
-  // Convert the rate to a float
-  rate = parseFloat(rate); 
-
-  if (isNaN(rate)) {
-    rate = 1;
-  } 
-  // Remove the currency symbol and commas, then convert the string to a float
-  let annualCostValue = parseFloat(costNumbers.annualCost.replace(/[^\d.-]/g, ''));
-  let monthlyCostValue = parseFloat(costNumbers.monthlyCost.replace(/[^\d.-]/g, ''));
-
-  // Multiply the costs by the exchange rate
-  annualCostValue *= rate;
-  monthlyCostValue *= rate;
-
-	$('#regAnnual').text(new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: ccyCd 
-    }).format(annualCostValue));
-
-	$('#regMonthly').text(new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: ccyCd 
-    }).format(monthlyCostValue));
-
-  // Multiply the values by the exchange rate
-  const updatedCbfVals = cbfVals.map(value => value * rate);
-  const updatedCbcVals = cbcVals.map(value => value * rate);
-  const updatedCbtVals = cbtVals.map(value => value * rate);
-  const updatedSumsList = sumsList.map(value => value * rate);
-
-    // Update the Y-axis label with the selected currency symbol
-  chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: ccyCd 
-    }).format(value);
-  };
-
-  // Update each chart
-  chartCostByFrequency.data.datasets[0].data = updatedCbfVals;
-  chartCostByCategory.data.datasets[0].data = updatedCbcVals;
-  chartCostByType.data.datasets[0].data = updatedCbtVals;
-  chartCostByMonth.data.datasets[0].data = updatedSumsList;
-
-  // Re-render the charts
-  chartCostByFrequency.update();
-  chartCostByCategory.update();
-  chartCostByType.update();
-  chartCostByMonth.update();
-}
-
-}
-}
-
-
-$(".ess-flat-card-title").matchHeight();
-// Info Circle Popovers
-
-
-$('.popover-trigger').popover({
-	container: 'body',
-	html: true,
-	trigger: 'focus',
-	placement: 'auto',
-	sanitize:false,
-	content: function(){
-	return $(this).next().html();
-	}
-});
-
-let classSelectData=[];
-let doSelectData=[];
-let irSelectData=[];
-if(focusApp &amp;&amp; focusApp.thisAppArray){
-	focusApp.thisAppArray.forEach((d)=>{
-		d.classifications.forEach((c)=>{
-			classSelectData.push(c)
+	$('#lifecycleEndUp').off().on("click", function(){ 
+	
+		svgEndDate=new Date (svgEndDate.setFullYear(svgEndDate.getFullYear() + 1));
+	 
+		focusApp.lifecycles.forEach((d)=>{
+			d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
+		 })
+		 getYears(svgStartDate,svgEndDate) 
+		 $('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
+	})
+	 
+	$('#lifecycleEndDown').off().on("click", function(){
+		focusApp.years.pop();
+		svgEndDate=new Date (svgEndDate.setFullYear(svgEndDate.getFullYear() -1 ));
+	 
+		focusApp.lifecycles.forEach((d)=>{
+			d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
+		 })
+	 
+		 getYears(svgStartDate,svgEndDate) 
+		$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
+	})
+	$('#lifecycleDown').off().on("click", function(){
+		 
+		svgStartDate=new Date (svgStartDate.setFullYear(svgStartDate.getFullYear() - 1));
+	 
+		focusApp.lifecycles.forEach((d)=>{
+			d['svgPos']=getPosition(20, svgWidth,  svgStartDate, svgEndDate, d.dateOf)
 		})
-		
-		doSelectData.push({"name": d.dataObject, "id": d.dataObjectId})
-		
-		d.values.forEach((ir)=>{
-			ir['irInfo']={"name": ir.nameirep, "id": ir.idirep, "className":"Information_Representation"};
-			irSelectData.push({"name": ir.nameirep, "id": ir.idirep}) 
-		})
+		getYears(svgStartDate,svgEndDate)
+	 
+		$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
+	}) 
+	-->
+	ccy.forEach((c)=>{
+		$('#ccySelect').append('&lt;option value="'+c.id+'">'+c.ccyCode+'&lt;/option>');
+	})
+	
+	$('#ccySelect').select2({
+	  width:'100px'
 	});
+	
+	$('#ccySelect').on('change', function() {
+	  const currency = $(this).val();
+	  updateCharts(currency);
+	});
+	
+	if(cbfLabels.length&gt;0){
+	const chartCostByFrequency = new Chart(document.getElementById("costByFrequency-chart"), {
+	  type: 'doughnut',
+	  data: {
+		labels: cbfLabels,
+		datasets: [
+		  {
+			label: "Frequency",
+			backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+			data: cbfVals
+		  }
+		]
+	  },
+	  options: {
+		responsive: true,
+		title: {
+		  display: true,
+		  text: 'Cost By Frequency'
+		},
+		legend: {
+		  position: "bottom",
+		  align: "middle"
+		}
+	  }
+	});
+	
+	// Repeat for other charts
+	const chartCostByCategory = new Chart(document.getElementById("costByCategory-chart"), {
+	  type: 'doughnut',
+	  data: {
+		labels: cbcLabels,
+		datasets: [
+		  {
+			label: "Type",
+			backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+			data: cbcVals
+		  }
+		]
+	  },
+	  options: {
+		responsive: true,
+		title: {
+		  display: true,
+		  text: 'Cost By Category'
+		},
+		legend: {
+		  position: "bottom",
+		  align: "middle"
+		}
+	  }
+	});
+	
+	const chartCostByType = new Chart(document.getElementById("costByType-chart"), {
+	  type: 'doughnut',
+	  data: {
+		labels: cbtLabels,
+		datasets: [
+		  {
+			label: "Type",
+			backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+			data: cbtVals
+		  }
+		]
+	  },
+	  options: {
+		responsive: true,
+		title: {
+		  display: true,
+		  text: 'Cost By Type'
+		},
+		legend: {
+		  position: "right",
+		  align: "middle"
+		}
+	  }
+	});
+	
+	const locale = navigator.language || 'en-US';
+	
+	const chartCostByMonth = new Chart(document.getElementById("costByMonth-chart"), {
+	  type: 'bar',
+	  data: {
+		labels: monthsList,
+		datasets: [
+		  {
+			label: "Cost Per Month",
+			backgroundColor: "#f5aa42",
+			data: sumsList
+		  }
+		]
+	  },
+	  options: {
+		responsive: true,
+		scales: {
+		  yAxes: [{
+			ticks: {
+			  beginAtZero: true,
+			  callback: function(value) {
+				return new Intl.NumberFormat(locale, { style: 'currency', currency: defaultCurrency.ccyCode}).format(value); // Change to the selected currency
+			  }
+			}
+		  }]
+		},
+		plugins: {
+		  labels: false
+		}
+	  }
+	});
+	
+	
+	
+	function updateCharts(currency) {
+		 
+		let ccySelected=ccy.find(d => d.id == currency)
+		 let rate = ccySelected.exchangeRate;
+		let ccyCd = ccySelected.ccyCode;
+		
+	  // Convert the rate to a float
+	  rate = parseFloat(rate); 
+	
+	  if (isNaN(rate)) {
+		rate = 1;
+	  } 
+	  // Remove the currency symbol and commas, then convert the string to a float
+	  let annualCostValue = parseFloat(costNumbers.annualCost.replace(/[^\d.-]/g, ''));
+	  let monthlyCostValue = parseFloat(costNumbers.monthlyCost.replace(/[^\d.-]/g, ''));
+	
+	  // Multiply the costs by the exchange rate
+	  annualCostValue *= rate;
+	  monthlyCostValue *= rate;
+	
+		$('#regAnnual').text(new Intl.NumberFormat('en-US', { 
+		  style: 'currency', 
+		  currency: ccyCd 
+		}).format(annualCostValue));
+	
+		$('#regMonthly').text(new Intl.NumberFormat('en-US', { 
+		  style: 'currency', 
+		  currency: ccyCd 
+		}).format(monthlyCostValue));
+	
+	  // Multiply the values by the exchange rate
+	  const updatedCbfVals = cbfVals.map(value => value * rate);
+	  const updatedCbcVals = cbcVals.map(value => value * rate);
+	  const updatedCbtVals = cbtVals.map(value => value * rate);
+	  const updatedSumsList = sumsList.map(value => value * rate);
+	
+		// Update the Y-axis label with the selected currency symbol
+	  chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
+		return new Intl.NumberFormat('en-US', { 
+		  style: 'currency', 
+		  currency: ccyCd 
+		}).format(value);
+	  };
+	
+	  // Update each chart
+	  chartCostByFrequency.data.datasets[0].data = updatedCbfVals;
+	  chartCostByCategory.data.datasets[0].data = updatedCbcVals;
+	  chartCostByType.data.datasets[0].data = updatedCbtVals;
+	  chartCostByMonth.data.datasets[0].data = updatedSumsList;
+	
+	  // Re-render the charts
+	  chartCostByFrequency.update();
+	  chartCostByCategory.update();
+	  chartCostByType.update();
+	  chartCostByMonth.update();
+	}
+	
+	}
+	}
+	
+	
+	$(".ess-flat-card-title").matchHeight();
+	// Info Circle Popovers
+	
+	
+	$('.popover-trigger').popover({
+		container: 'body',
+		html: true,
+		trigger: 'focus',
+		placement: 'auto',
+		sanitize:false,
+		content: function(){
+		return $(this).next().html();
+		}
+	});
+	
+	let classSelectData=[];
+	let doSelectData=[];
+	let irSelectData=[];
+	if(focusApp &amp;&amp; focusApp.thisAppArray){
+		focusApp.thisAppArray.forEach((d)=>{
+			d.classifications.forEach((c)=>{
+				classSelectData.push(c)
+			})
+			
+			doSelectData.push({"name": d.dataObject, "id": d.dataObjectId})
+			
+			d.values.forEach((ir)=>{
+				ir['irInfo']={"name": ir.nameirep, "id": ir.idirep, "className":"Information_Representation"};
+				irSelectData.push({"name": ir.nameirep, "id": ir.idirep}) 
+			})
+		});
+		 
+	}
 	 
-}
- 
-irSelectData=irSelectData.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
-if(classSelectData.length&gt;0){
-classSelectData=classSelectData.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
-classSelectData.forEach((c)=>{
-	var option = new Option(c.name, c.id); 
-	$('#classificationFilter').append($(option)); 
-})
-} 
-
-
-doSelectData.forEach((c)=>{
-	var option = new Option(c.name, c.id); 
-$('#doFilter').append($(option)); 
-})
-irSelectData.forEach((c)=>{
-	var option = new Option(c.name, c.id); 
-	$('#irFilter').append($(option)); 
-})
-
- 
-$('#classificationFilter').select2({width:"200px"});
-$('#doFilter').select2({width:"200px"}); 
-$('#irFilter').select2({width:"200px"}); 
-if(focusApp &amp;&amp; focusApp.thisAppArray){
-	$('.classificationFilter').hide();
- 
-	let showCheck=0;
-	focusApp.thisAppArray.forEach((a)=>{
-	 
-		if(a.classifications.length&gt;0){
-			showCheck=showCheck+1
-			} 
+	irSelectData=irSelectData.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+	if(classSelectData.length&gt;0){
+	classSelectData=classSelectData.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id)}) === index)
+	classSelectData.forEach((c)=>{
+		var option = new Option(c.name, c.id); 
+		$('#classificationFilter').append($(option)); 
 	})
-	if(showCheck&gt;0){
-		$('.classificationFilter').show();
+	} 
+	
+	
+	doSelectData.forEach((c)=>{
+		var option = new Option(c.name, c.id); 
+	$('#doFilter').append($(option)); 
+	})
+	irSelectData.forEach((c)=>{
+		var option = new Option(c.name, c.id); 
+		$('#irFilter').append($(option)); 
+	})
+	
+	 
+	$('#classificationFilter').select2({width:"200px"});
+	$('#doFilter').select2({width:"200px"}); 
+	$('#irFilter').select2({width:"200px"}); 
+	if(focusApp &amp;&amp; focusApp.thisAppArray){
+		$('.classificationFilter').hide();
+	 
+		let showCheck=0;
+		focusApp.thisAppArray.forEach((a)=>{
+		 
+			if(a.classifications.length&gt;0){
+				showCheck=showCheck+1
+				} 
+		})
+		if(showCheck&gt;0){
+			$('.classificationFilter').show();
+		}
+		else{
+			$('.classificationFilter').hide();
+		}
+	}
+	
+	$('.filters').on('change',function(){
+	let doId=$('#doFilter').val(); 
+	let irId=$('#irFilter').val(); 
+	let classId=$('#classificationFilter').val(); 
+	
+	$('.dataCard').hide()
+	if(classId=='all'){ 
+		$('.dataCard').show()
 	}
 	else{
-		$('.classificationFilter').hide();
-	}
-}
-
-$('.filters').on('change',function(){
-let doId=$('#doFilter').val(); 
-let irId=$('#irFilter').val(); 
-let classId=$('#classificationFilter').val(); 
-
-$('.dataCard').hide()
-if(classId=='all'){ 
-	$('.dataCard').show()
-}
-else{
- 
-	$('[classifid='+classId+']').show()
-}
- 
-if(doId=='all'){ 
-}
-else{
-	$('.dataCard[doid!='+doId+']').hide()
-}
-<!--
-$('.appCard2').show();
-if(irId=='all'){ 
-}
-else{
-	$('.appCard2[irid!='+irId+']').hide()
-}
--->
- 
-
-});
-
-myResolve(); // when successful
-myReject(); // when error
-});
-
-panelSet.then(function(response) {
-
-	//get diagrams - only works on Cloud/Docker
-	<xsl:if test="$isEIPMode">
-let viewAPIDiagramInfo= '<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+focusApp.id; 
-		 			promise_loadViewerAPIData(viewAPIDiagramInfo)
-						.then(function(response) { 
-
-							console.log('instance', response.instance)
-								 const instance = response.instance.find(inst => inst.name === "ea_diagrams");
-					 
-									if (instance &amp;&amp; instance.values.length > 0) { 
-										$('#appDiagrams').empty();
-										$('#appDiagrams').append('<option>Choose</option>')
-										instance.values.forEach((s)=>{
-										 
-											$('#appDiagrams').append('<option value="'+s.id+'">'+s.name+'</option>')
-											console.log('r', response) 
-										})
-										$('#appDiagrams').select2({width:"200px"});
-
-										$('#appDiagrams').off().on('change', function(){  
-											let selectedDiagram=$(this).val()
-			
-											let diagramtoShow={"id": selectedDiagram}
-												
-											refreshDiagram(diagramtoShow)  
-										})
-									}else{
-											
-									}  
-						})
-						
-		</xsl:if>
-<!-- set word -->
- $('#getWord').off().on('click',function(){
-  <xsl:call-template name="RenderOfficetUtilityFunctions"/>
- 
- getWord(focusApp)
-})
-
-
-var getXML = function promise_getExcelXML(excelXML_URL) {
-    return new Promise(
-    function (resolve, reject) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4 &amp;&amp; this.status == 200) {
-                //console.log(prefixString);
-                resolve(this.responseText);
-            }
-        };
-        xmlhttp.onerror = function () {
-            reject(false);
-        };
-        xmlhttp.open("GET", excelXML_URL, true);
-        xmlhttp.send();
-    });
-};
- 
-function getWord(applicationToReport){ 
- <!-- calls to get the ODT structure which the content needs -->
-let  stylesXML, metaXML, manifestXML, mimetypeXML, settingsXML;
-
- byPerfName?.forEach((d)=>{
- let thisPM= pmc.find((p)=>{
-	return p.id == d.key
-})
-if(thisPM){
-	d['name']=thisPM.name
-}
-})
- 
-getXML('common/odt_document_files/styles.xml').then(function(response){ 
-	stylesXML=response; 
-}).then(function(response){  
-
-	getXML('common/odt_document_files/meta.xml').then(function(response){ 
-	metaXML=response; 
-}).then(function(response){  
-
-	getXML('common/odt_document_files/META-INF/manifest.xml').then(function(response){ 
-		manifestXML=response; 
-}).then(function(response){  
-
-	getXML('common/odt_document_files/mimetype').then(function(response){ 
-		mimetypeXML=response; 
-}).then(function(response){  
-    getXML('common/odt_document_files/settings.xml').then(function(response){ 
-		settingsXML=response; 
-}).then(function(response){  
-  
-var zip = new JSZip();
- 
-let services=[];
-applicationToReport.allServices.forEach((e)=>{
-    services.push(e.serviceName)
-});
-let family=[]
-applicationToReport.family.forEach((e)=>{
-    let tableInfo=[];
-    tableInfo.push(e.id);
-    tableInfo.push(e.name);
-    family.push(tableInfo)
-});
-<!-- structure content  header then type, prep the data before sending to the template 
-types = paragraph, 
-        bullets - send an array of values, 
-        table - provide headings as array, array per row, 
-        image - just sends prompt to paste in
-
-Level - not used yet
-***** Paragraph Format *****
-"content":["text1", "text2", "text3"]
-
-***** Bullet Format *****
-"content":["Bullet 1", "Bullet 2", "Bullet 3"]
-
-***** Table Format *****
- "headings":["Col1", "Col2", "Col3"]
- "content":[{"row1":"a1","row2":"a2","row3":"a3"},
-            {"row1":"b1","row2":"b2","row3":"b3"},
-            {"row1":"c1","row2":"c2","row3":"c3"}
-			]
-			
-leave a blank header if don't want one between elements, allows multiple elements to be stacked in words  			
--->
-let appKeys=Object.keys(applicationToReport)
- 
-let enumerationValues=[];
-appKeys.forEach((d)=>{
- 
-	let inFilters=appList.filters.find((e)=>{
-		return e.slotName==d
-	}) 
 	 
-	if(inFilters){
-	  
-		let itemVals=inFilters.values.find((f)=>{
-			return f.id==applicationToReport[d];
-		})
-	 
-		if(itemVals){
-			enumerationValues.push(inFilters.name+': '+itemVals.name)
-		}
+		$('[classifid='+classId+']').show()
 	}
-})
-
-<!-- format data for word document -->
-let familyString='Application Family: ';
-applicationToReport.family.forEach((d,i)=>{ 
-		familyString=familyString+d.name+', ' 
-})
-
-let textContent=[familyString.slice(0, -2)];
-
-textContent=[...textContent,...enumerationValues]
-
-let stakeholderWord=[]
-applicationToReport.stakeholders.forEach((e)=>{
-	stakeholderWord.push([e.actor, e.role])
-})
- 
-let orgStakeholderWord=[]
-applicationToReport.orgstakeholders.forEach((e)=>{
-	orgStakeholderWord.push([e.actor, e.role])
-});
-
-let regulations=[]
-applicationToReport.classifications.forEach((e)=>{
-	regulations.push([e.shortName])
-})
-
-let processInfoWord=[]
-applicationToReport.processInfo.forEach((e)=>{
-	processInfoWord.push([e.name, e.org, e.direction, e.svcName])
-})
-
-let integrationsWord=[]
-let inboundString='Inbound: ';
-applicationToReport.inIList.forEach((e)=>{
-	inboundString=inboundString+e.name+', ' 
-})
-
-integrationsWord.push([inboundString.slice(0, -2)])
-
-let outboundString='Outbound: ';
-applicationToReport.outIList.forEach((e)=>{
-	outboundString=outboundString+e.name+', ' 
-})
-
-integrationsWord.push([outboundString.slice(0, -2)])
-
-integrationsWord.push(['Paste image here'])
- 
-let techJSON = {}
-techJSON=techWordTemplate(applicationToReport.applicationTechnology)
- 
-techJSON=JSON.parse(techJSON);
-
-let kpiJSON = {}
-kpiJSON=kpiWordTemplate(applicationToReport);
-kpiJSON=JSON.parse(kpiJSON);
- 
- 
-
-let costInfoWord=[];
-applicationToReport.costs?.forEach((e)=>{
-	costInfoWord.push([e.name, e.cost, e.costType.replace(/_/g,' ').replace('Cost Component',''), e.fromDate, e.toDate]) 
-})
-
-let dataObjInfoWord=[];
-applicationToReport.dataObj?.forEach((e)=>{
-	dataObjInfoWord.push(e.name) 
-})
-
-let lifecyclesInfoWord=[];
-applicationToReport.lifecycles?.forEach((e)=>{
-	lifecyclesInfoWord.push([e.enumname, e.dateOf]) 
-})
- 
-docContent={"name":applicationToReport.name,            
-            "sections":[
-            {"header":"Description",
-                        "level":1,
-                        "type":"paragraph",
-						"content":[applicationToReport.description]},
-			{"header":"Key Information","level":1,"intro":"Key information related to this application","type":"paragraph","content":textContent}, 
-            {"header":"Services Provided",
-						"level":1,
-						"intro":"Application services provided by this application and used by business processes",
-                        "type":"bullets",
-                        "content":services},
-            {"header":"Stakeholders",
-						"level":1,
-						"intro":"Business stakeholders for this application",
-                        "type":"table",
-                        "headings":["Name","Role"],
-						"content":stakeholderWord},
-			{"header":"Organisations &amp; Roles",
-						"level":1,
-						"intro":"Organisational stakeholders for this application",
-                        "type":"table",
-                        "headings":["Name","Role"],
-						"content":orgStakeholderWord},
-			{"header":"Regulations Impacting",
-                        "level":1,
-						"intro":"Regulations impacting this application",
-                        "type":"bullets",
-						"content":regulations},							
-			{"header":"Architecture",
-						"intro":"Technology used by this application",
-                        "level":1,
-                        "type":"image",
-                        "content":"Please paste image here"},							
-			{"header":"Test",
-						"intro":"Technology used by this application",
-						"level":1,
-						"type":"image",
-						"content":[]},
-			{"header":"Process Support",
-						"level":1,
-						"intro":"Processes supported by this application and whether mapped via a service or directly",
-                        "type":"table",
-                        "headings":["Process", "Organisation", "Type", "Service"],
-						"content":processInfoWord},
-			{"header":"Integrations",
-						"level":1,
-						"intro":"Application integrations into an out of the application",
-                        "type":"paragraph", 
-						"content":integrationsWord},
-						<!-- techJSON -->			
-			{"header":"Application Costs",
-						"level":1,
-						"intro":"Costs of the application",
-						"type":"table",
-                        "headings":["Cost Type", "Value", "Type", "From Date", "To Date"],
-						"content":costInfoWord},	
-			{"header":"Data Objects",
-                        "level":1,
-						"intro":"Data Objects used by this application",
-                        "type":"bullets",
-						"content":dataObjInfoWord},	
-			{"header":"Lifecycle Dates",
-						"level":1,
-						"intro":"Lifecycle dates for the application",
-						"type":"table",
-                        "headings":["Stage", "Date From"],
-						"content":lifecyclesInfoWord},
-							
-			]};
-
-techJSON.forEach((d)=>{ 
-	docContent.sections?.push(d)
-
-});
-kpiJSON.forEach((d)=>{
- 
-	docContent.sections.push(d)
-
-});
-            <xsl:call-template name="wordKeyVariablesJS"/>
-            let contentBody=wordTemplate(docContent);
-			
-			let content= contentHead+contentBody+contentFoot;
- 
-
-            generateWordZip(content, manifestXML,metaXML,mimetypeXML,settingsXML,stylesXML,'appSummaryExport')
-
-})
-})
-})
-}) 
-}) 
-};  
-
-// end of word set-up
+	 
+	if(doId=='all'){ 
+	}
+	else{
+		$('.dataCard[doid!='+doId+']').hide()
+	}
+	<!--
+	$('.appCard2').show();
+	if(irId=='all'){ 
+	}
+	else{
+		$('.appCard2[irid!='+irId+']').hide()
+	}
+	-->
+	 
 	
-
-<!--	setGraph(); -->
- 
- 
-	$('#decisionsTable').DataTable() 
- 
-if(stakeholdertable){
-$('#dt_stakeholders').DataTable().destroy()
-
-stakeholdertable=null;
-}
-
-$('#dt_stakeholders tfoot th').each( function () {
-let stakeholdertitle = $(this).text();
-$(this).html( '&lt;input type="text" placeholder="Search '+stakeholdertitle+'" /&gt;' );
-});
-
-
-stakeholdertable = $('#dt_stakeholders').DataTable({
-scrollY: "350px",
-scrollCollapse: true,
-paging: false,
-info: false,
-sort: true,
-responsive: true,
-columns: [
-{ "width": "30%" },
-{ "width": "30%" }
-],
-dom: 'Bfrtip',
-buttons: [
-'copyHtml5',
-'excelHtml5',
-'csvHtml5',
-'pdfHtml5',
-'print'
-]
-});
-
-// Apply the search
-stakeholdertable.columns().every( function () {
-let thatst1 = this;
-
-$( 'input', this.footer() ).on( 'keyup change', function () {
-if ( thatst1.search() !== this.value ) {
-thatst1
-.search( this.value )
-.draw();
-}
-});
-});
-
-
-if(stakeholdertable2) {
-stakeholdertable2
-.rows()
-.invalidate()
-.destroy();
-}
-
-
-$('#dt_stakeholders2 tfoot th').each( function () {
-let stakeholdertitle2 = $(this).text();
-$(this).html( '&lt;input type="text" placeholder="Search '+stakeholdertitle2+'" /&gt;' );
-} );
-
-
-stakeholdertable2 = $('#dt_stakeholders2').DataTable({
-scrollY: "350px",
-scrollCollapse: true,
-paging: false,
-info: false,
-sort: true,
-responsive: true,
-columns: [
-{ "width": "30%" },
-{ "width": "30%" }
-],
-dom: 'Bfrtip',
-buttons: [
-'copyHtml5',
-'excelHtml5',
-'csvHtml5',
-'pdfHtml5',
-'print'
-]
-});
-// Apply the search
-stakeholdertable2.columns().every( function () {
-let thatst2 = this;
-
-$( 'input', this.footer() ).on( 'keyup change', function () {
-if ( thatst2.search() !== this.value ) {
-thatst2
-.search( this.value )
-.draw();
-}
-} );
-});
-stakeholdertable2.columns.adjust();
-stakeholdertable.columns.adjust();
-if(table){
-table=null;
-$('#dt_dobjecttable').DataTable().destroy();
-
-}
-$('#dt_dobjecttable tfoot th').each( function () {
-let title = $(this).text();
-$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
-} );
-
-
-table = $('#dt_dobjecttable').DataTable({
-scrollY: "350px",
-scrollCollapse: true,
-paging: false,
-info: false,
-sort: true,
-responsive: true,
-columns: [
-{ "width": "30%" } ,
-{ "width": "50%" } ,
-{ "width": "20%" }
-],
-dom: 'Bfrtip',
-buttons: [
-'copyHtml5',
-'excelHtml5',
-'csvHtml5',
-'pdfHtml5',
-'print'
-]
-});
-
-
-// Apply the search
-table.columns().every( function () {
-let that = this;
-
-$( 'input', this.footer() ).on( 'keyup change', function () {
-if ( that.search() !== this.value ) {
-that
-.search( this.value )
-.draw();
-}
-} );
-});
-table.columns.adjust();
-
-
-// $('#mainPanel').html(panelTemplate(focusDO))
-
-$('#dt_costs tfoot th').each( function () {
-	let titleCost = $(this).text();
-	$(this).html( '&lt;input type="text" placeholder="Search '+titleCost+'" /&gt;' );
-	} );
-
-costtable = $('#dt_costs').DataTable({ 
+	});
+	
+	myResolve(); // when successful
+	myReject(); // when error
+	});
+	
+	panelSet.then(function(response) {
+	
+		//get diagrams - only works on Cloud/Docker
+		<xsl:if test="$isEIPMode">
+	let viewAPIDiagramInfo= '<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+focusApp.id; 
+						 promise_loadViewerAPIData(viewAPIDiagramInfo)
+							.then(function(response) { 
+	 
+									 const instance = response.instance.find(inst => inst.name === "ea_diagrams");
+						 console.log('diagram',instance);
+						 			if(!instance){$('#diagramli').hide();}else{
+										 $('#diagramli').show();
+									 }
+										if (instance &amp;&amp; instance.values.length > 0) { 
+											$('#appDiagrams').empty();
+											$('#appDiagrams').append('<option>Choose</option>')
+											instance.values.forEach((s)=>{
+											 
+												$('#appDiagrams').append('<option value="'+s.id+'">'+s.name+'</option>') 
+											})
+											$('#appDiagrams').select2({width:"200px"});
+	
+											$('#appDiagrams').off().on('change', function(){  
+												let selectedDiagram=$(this).val()
+				
+												let diagramtoShow={"id": selectedDiagram}
+													
+												refreshDiagram(diagramtoShow)  
+											})
+										}else{
+												
+										}  
+							})
+							
+			</xsl:if>
+	<!-- set word -->
+	 $('#getWord').off().on('click',function(){
+	  <xsl:call-template name="RenderOfficetUtilityFunctions"/>
+	 
+	 getWord(focusApp)
+	})
+	
+	
+	var getXML = function promise_getExcelXML(excelXML_URL) {
+		return new Promise(
+		function (resolve, reject) {
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function () {
+				if (this.readyState == 4 &amp;&amp; this.status == 200) {
+					//console.log(prefixString);
+					resolve(this.responseText);
+				}
+			};
+			xmlhttp.onerror = function () {
+				reject(false);
+			};
+			xmlhttp.open("GET", excelXML_URL, true);
+			xmlhttp.send();
+		});
+	};
+	 
+	function getWord(applicationToReport){ 
+	 <!-- calls to get the ODT structure which the content needs -->
+	let  stylesXML, metaXML, manifestXML, mimetypeXML, settingsXML;
+	
+	 byPerfName?.forEach((d)=>{
+	 let thisPM= pmc.find((p)=>{
+		return p.id == d.key
+	})
+	if(thisPM){
+		d['name']=thisPM.name
+	}
+	})
+	 
+	getXML('common/odt_document_files/styles.xml').then(function(response){ 
+		stylesXML=response; 
+	}).then(function(response){  
+	
+		getXML('common/odt_document_files/meta.xml').then(function(response){ 
+		metaXML=response; 
+	}).then(function(response){  
+	
+		getXML('common/odt_document_files/META-INF/manifest.xml').then(function(response){ 
+			manifestXML=response; 
+	}).then(function(response){  
+	
+		getXML('common/odt_document_files/mimetype').then(function(response){ 
+			mimetypeXML=response; 
+	}).then(function(response){  
+		getXML('common/odt_document_files/settings.xml').then(function(response){ 
+			settingsXML=response; 
+	}).then(function(response){  
+	  
+	var zip = new JSZip();
+	 
+	let services=[];
+	applicationToReport.allServices.forEach((e)=>{
+		services.push(e.serviceName)
+	});
+	let family=[]
+	applicationToReport.family.forEach((e)=>{
+		let tableInfo=[];
+		tableInfo.push(e.id);
+		tableInfo.push(e.name);
+		family.push(tableInfo)
+	});
+	<!-- structure content  header then type, prep the data before sending to the template 
+	types = paragraph, 
+			bullets - send an array of values, 
+			table - provide headings as array, array per row, 
+			image - just sends prompt to paste in
+	
+	Level - not used yet
+	***** Paragraph Format *****
+	"content":["text1", "text2", "text3"]
+	
+	***** Bullet Format *****
+	"content":["Bullet 1", "Bullet 2", "Bullet 3"]
+	
+	***** Table Format *****
+	 "headings":["Col1", "Col2", "Col3"]
+	 "content":[{"row1":"a1","row2":"a2","row3":"a3"},
+				{"row1":"b1","row2":"b2","row3":"b3"},
+				{"row1":"c1","row2":"c2","row3":"c3"}
+				]
+				
+	leave a blank header if don't want one between elements, allows multiple elements to be stacked in words  			
+	-->
+	let appKeys=Object.keys(applicationToReport)
+	 
+	let enumerationValues=[];
+	appKeys.forEach((d)=>{
+	 
+		let inFilters=appList.filters.find((e)=>{
+			return e.slotName==d
+		}) 
+		 
+		if(inFilters){
+		  
+			let itemVals=inFilters.values.find((f)=>{
+				return f.id==applicationToReport[d];
+			})
+		 
+			if(itemVals){
+				enumerationValues.push(inFilters.name+': '+itemVals.name)
+			}
+		}
+	})
+	
+	<!-- format data for word document -->
+	let familyString='Application Family: ';
+	applicationToReport.family.forEach((d,i)=>{ 
+			familyString=familyString+d.name+', ' 
+	})
+	
+	let textContent=[familyString.slice(0, -2)];
+	
+	textContent=[...textContent,...enumerationValues]
+	
+	let stakeholderWord=[]
+	applicationToReport.stakeholders.forEach((e)=>{
+		stakeholderWord.push([e.actor, e.role])
+	})
+	 
+	let orgStakeholderWord=[]
+	applicationToReport.orgstakeholders.forEach((e)=>{
+		orgStakeholderWord.push([e.actor, e.role])
+	});
+	
+	let regulations=[]
+	applicationToReport.classifications.forEach((e)=>{
+		regulations.push([e.shortName])
+	})
+	
+	let processInfoWord=[]
+	applicationToReport.processInfo.forEach((e)=>{
+		processInfoWord.push([e.name, e.org, e.direction, e.svcName])
+	})
+	
+	let integrationsWord=[]
+	let inboundString='Inbound: ';
+	applicationToReport.inIList.forEach((e)=>{
+		inboundString=inboundString+e.name+', ' 
+	})
+	
+	integrationsWord.push([inboundString.slice(0, -2)])
+	
+	let outboundString='Outbound: ';
+	applicationToReport.outIList.forEach((e)=>{
+		outboundString=outboundString+e.name+', ' 
+	})
+	
+	integrationsWord.push([outboundString.slice(0, -2)])
+	
+	integrationsWord.push(['Paste image here'])
+	 
+	let techJSON = {}
+	techJSON=techWordTemplate(applicationToReport.applicationTechnology)
+	 
+	techJSON=JSON.parse(techJSON);
+	
+	let kpiJSON = {}
+	kpiJSON=kpiWordTemplate(applicationToReport);
+	kpiJSON=JSON.parse(kpiJSON);
+	 
+	 
+	
+	let costInfoWord=[];
+	applicationToReport.costs?.forEach((e)=>{
+		costInfoWord.push([e.name, e.cost, e.costType.replace(/_/g,' ').replace('Cost Component',''), e.fromDate, e.toDate]) 
+	})
+	
+	let dataObjInfoWord=[];
+	applicationToReport.dataObj?.forEach((e)=>{
+		dataObjInfoWord.push(e.name) 
+	})
+	
+	let lifecyclesInfoWord=[];
+	applicationToReport.lifecycles?.forEach((e)=>{
+		lifecyclesInfoWord.push([e.enumname, e.dateOf]) 
+	})
+	 
+	docContent={"name":applicationToReport.name,            
+				"sections":[
+				{"header":"Description",
+							"level":1,
+							"type":"paragraph",
+							"content":[applicationToReport.description]},
+				{"header":"Key Information","level":1,"intro":"Key information related to this application","type":"paragraph","content":textContent}, 
+				{"header":"Services Provided",
+							"level":1,
+							"intro":"Application services provided by this application and used by business processes",
+							"type":"bullets",
+							"content":services},
+				{"header":"Stakeholders",
+							"level":1,
+							"intro":"Business stakeholders for this application",
+							"type":"table",
+							"headings":["Name","Role"],
+							"content":stakeholderWord},
+				{"header":"Organisations &amp; Roles",
+							"level":1,
+							"intro":"Organisational stakeholders for this application",
+							"type":"table",
+							"headings":["Name","Role"],
+							"content":orgStakeholderWord},
+				{"header":"Regulations Impacting",
+							"level":1,
+							"intro":"Regulations impacting this application",
+							"type":"bullets",
+							"content":regulations},							
+				{"header":"Architecture",
+							"intro":"Technology used by this application",
+							"level":1,
+							"type":"image",
+							"content":"Please paste image here"},							
+				{"header":"Test",
+							"intro":"Technology used by this application",
+							"level":1,
+							"type":"image",
+							"content":[]},
+				{"header":"Process Support",
+							"level":1,
+							"intro":"Processes supported by this application and whether mapped via a service or directly",
+							"type":"table",
+							"headings":["Process", "Organisation", "Type", "Service"],
+							"content":processInfoWord},
+				{"header":"Integrations",
+							"level":1,
+							"intro":"Application integrations into an out of the application",
+							"type":"paragraph", 
+							"content":integrationsWord},
+							<!-- techJSON -->			
+				{"header":"Application Costs",
+							"level":1,
+							"intro":"Costs of the application",
+							"type":"table",
+							"headings":["Cost Type", "Value", "Type", "From Date", "To Date"],
+							"content":costInfoWord},	
+				{"header":"Data Objects",
+							"level":1,
+							"intro":"Data Objects used by this application",
+							"type":"bullets",
+							"content":dataObjInfoWord},	
+				{"header":"Lifecycle Dates",
+							"level":1,
+							"intro":"Lifecycle dates for the application",
+							"type":"table",
+							"headings":["Stage", "Date From"],
+							"content":lifecyclesInfoWord},
+								
+				]};
+	
+	techJSON.forEach((d)=>{ 
+		docContent.sections?.push(d)
+	
+	});
+	kpiJSON.forEach((d)=>{
+	 
+		docContent.sections.push(d)
+	
+	});
+				<xsl:call-template name="wordKeyVariablesJS"/>
+				let contentBody=wordTemplate(docContent);
+				
+				let content= contentHead+contentBody+contentFoot;
+	 
+	
+				generateWordZip(content, manifestXML,metaXML,mimetypeXML,settingsXML,stylesXML,'appSummaryExport')
+	
+	})
+	})
+	})
+	}) 
+	}) 
+	};  
+	
+	// end of word set-up
+		
+	
+	<!--	setGraph(); -->
+	 
+	 
+		$('#decisionsTable').DataTable() 
+	 
+	if(stakeholdertable){
+	$('#dt_stakeholders').DataTable().destroy()
+	
+	stakeholdertable=null;
+	}
+	
+	$('#dt_stakeholders tfoot th').each( function () {
+	let stakeholdertitle = $(this).text();
+	$(this).html( '&lt;input type="text" placeholder="Search '+stakeholdertitle+'" /&gt;' );
+	});
+	
+	
+	stakeholdertable = $('#dt_stakeholders').DataTable({
+	scrollY: "350px",
+	scrollCollapse: true,
 	paging: false,
-deferRender:    true,
-scrollY:        350,
-scrollCollapse: true,
-info: true,
-sort: true, 
-responsive: false,
-columns: [
-    { "width": "20%" },
-    { "width": "10%" },
-    { "width": "25%" },
-    { "width": "15%" },
-    { "width": "15%" },
-    { "width": "15%" }
-  ],
-dom: 'Bfrtip',
-buttons: [
-    'copyHtml5', 
-    'excelHtml5',
-    'csvHtml5',
-    'pdfHtml5',
-    'print'
-]
-});
-
-costtable.columns().every( function () {
+	info: false,
+	sort: true,
+	responsive: true,
+	columns: [
+	{ "width": "30%" },
+	{ "width": "30%" }
+	],
+	dom: 'Bfrtip',
+	buttons: [
+	'copyHtml5',
+	'excelHtml5',
+	'csvHtml5',
+	'pdfHtml5',
+	'print'
+	]
+	});
+	
+	// Apply the search
+	stakeholdertable.columns().every( function () {
+	let thatst1 = this;
+	
+	$( 'input', this.footer() ).on( 'keyup change', function () {
+	if ( thatst1.search() !== this.value ) {
+	thatst1
+	.search( this.value )
+	.draw();
+	}
+	});
+	});
+	
+	
+	if(stakeholdertable2) {
+	stakeholdertable2
+	.rows()
+	.invalidate()
+	.destroy();
+	}
+	
+	
+	$('#dt_stakeholders2 tfoot th').each( function () {
+	let stakeholdertitle2 = $(this).text();
+	$(this).html( '&lt;input type="text" placeholder="Search '+stakeholdertitle2+'" /&gt;' );
+	} );
+	
+	
+	stakeholdertable2 = $('#dt_stakeholders2').DataTable({
+	scrollY: "350px",
+	scrollCollapse: true,
+	paging: false,
+	info: false,
+	sort: true,
+	responsive: true,
+	columns: [
+	{ "width": "30%" },
+	{ "width": "30%" }
+	],
+	dom: 'Bfrtip',
+	buttons: [
+	'copyHtml5',
+	'excelHtml5',
+	'csvHtml5',
+	'pdfHtml5',
+	'print'
+	]
+	});
+	// Apply the search
+	stakeholdertable2.columns().every( function () {
+	let thatst2 = this;
+	
+	$( 'input', this.footer() ).on( 'keyup change', function () {
+	if ( thatst2.search() !== this.value ) {
+	thatst2
+	.search( this.value )
+	.draw();
+	}
+	} );
+	});
+	stakeholdertable2.columns.adjust();
+	stakeholdertable.columns.adjust();
+	if(table){
+	table=null;
+	$('#dt_dobjecttable').DataTable().destroy();
+	
+	}
+	$('#dt_dobjecttable tfoot th').each( function () {
+	let title = $(this).text();
+	$(this).html( '&lt;input type="text" placeholder="Search '+title+'" /&gt;' );
+	} );
+	
+	
+	table = $('#dt_dobjecttable').DataTable({
+	scrollY: "350px",
+	scrollCollapse: true,
+	paging: false,
+	info: false,
+	sort: true,
+	responsive: true,
+	columns: [
+	{ "width": "30%" } ,
+	{ "width": "50%" } ,
+	{ "width": "20%" }
+	],
+	dom: 'Bfrtip',
+	buttons: [
+	'copyHtml5',
+	'excelHtml5',
+	'csvHtml5',
+	'pdfHtml5',
+	'print'
+	]
+	});
+	
+	
+	// Apply the search
+	table.columns().every( function () {
 	let that = this;
 	
 	$( 'input', this.footer() ).on( 'keyup change', function () {
@@ -5990,149 +6423,540 @@ costtable.columns().every( function () {
 	}
 	} );
 	});
-	costtable.columns.adjust()
+	table.columns.adjust();
+	
+	
+	// $('#mainPanel').html(panelTemplate(focusDO))
 
-<!-- process table -->	
-
-$('#dt_processtable tfoot th').each( function () {
-	let titleProcess = $(this).text();
-	$(this).html( '&lt;input type="text" placeholder="Search '+titleProcess+'" /&gt;' );
-	} );
-
-var windowHeight = $(window).innerHeight();
-
-procstable = $('#dt_processtable').DataTable({ 
-	paging: false,
+	if ($.fn.DataTable.isDataTable('#dt_costs')) {
+		$('#dt_costs').DataTable().clear().destroy();
+	}
+	
+	$('#dt_costs tfoot th').each( function () {
+		let titleCost = $(this).text();
+		$(this).html( '&lt;input type="text" placeholder="Search '+titleCost+'" /&gt;' );
+		} );
+	
+	costtable = $('#dt_costs').DataTable({ 
+		paging: false,
 	deferRender:    true,
-	scrollY:        windowHeight-450,
+	scrollY:        350,
 	scrollCollapse: true,
 	info: true,
 	sort: true, 
 	responsive: false,
 	columns: [
-	    { "width": "20%" },
-	    { "width": "20%" },
-	    { "width": "20%" },
-	    { "width": "20%" }
+		{ "width": "20%" },
+		{ "width": "10%" },
+		{ "width": "25%" },
+		{ "width": "15%" },
+		{ "width": "15%" },
+		{ "width": "15%" }
 	  ],
 	dom: 'Bfrtip',
 	buttons: [
-	    'copyHtml5', 
-	    'excelHtml5',
-	    'csvHtml5',
-	    'pdfHtml5',
-	    'print'
+		'copyHtml5', 
+		'excelHtml5',
+		'csvHtml5',
+		'pdfHtml5',
+		'print'
 	]
 	});
-
-procstable.columns().every( function () {
-	let that = this;
 	
-	$( 'input', this.footer() ).on( 'keyup change', function () {
-	if ( that.search() !== this.value ) {
-	that
-	.search( this.value )
-	.draw();
-	}
-	} );
-	});
+	costtable.columns().every( function () {
+		let that = this;
+		
+		$( 'input', this.footer() ).on( 'keyup change', function () {
+		if ( that.search() !== this.value ) {
+		that
+		.search( this.value )
+		.draw();
+		}
+		} );
+		});
+		costtable.columns.adjust()
+	
+	<!-- process table -->	
+	
+	$('#dt_processtable tfoot th').each( function () {
+		let titleProcess = $(this).text();
+		$(this).html( '&lt;input type="text" placeholder="Search '+titleProcess+'" /&gt;' );
+		} );
+	
+	var windowHeight = $(window).innerHeight();
+	
+	procstable = $('#dt_processtable').DataTable({ 
+		paging: false,
+		deferRender:    true,
+		scrollY:        windowHeight-450,
+		scrollCollapse: true,
+		info: true,
+		sort: true, 
+		responsive: false,
+		columns: [
+			{ "width": "20%" },
+			{ "width": "20%" },
+			{ "width": "20%" },
+			{ "width": "20%" }
+		  ],
+		dom: 'Bfrtip',
+		buttons: [
+			'copyHtml5', 
+			'excelHtml5',
+			'csvHtml5',
+			'pdfHtml5',
+			'print'
+		]
+		});
+	
+	procstable.columns().every( function () {
+		let that = this;
+		
+		$( 'input', this.footer() ).on( 'keyup change', function () {
+		if ( that.search() !== this.value ) {
+		that
+		.search( this.value )
+		.draw();
+		}
+		} );
+		});
+	
+	procstable.columns.adjust()
+	
+	<!-- end setGraph -->
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	
+		if(e.target.id=='appIntTab'){ 
+			createSVGIntegration(focusApp);
+		}
+		if(e.target.id=='detailedTabLink'){ 
+			createSVGIntegration(focusApp);
+		}
+		if(e.target.id=='detailedTabLink'){ 
+			createSVGIntegration(focusApp);
+		}
+		if(e.target.id=='simpleTabLink'){ 
+			createSVGIntegration(focusApp);
+		}
+		
+		e.target // newly activated tab
+		e.relatedTarget // previous active tab
+		$(".ess-flat-card-title").matchHeight();
+	  });
+	 
+	  function getRelatedApus(apus, focusApp) {
+		// Step 1: Find initial set
+		let related = apus.filter(apu => 
+		  apu.fromAppId === focusApp.id || apu.toAppId === focusApp.id
+		);
+	  
+		// Step 2: Check for Application_Provider_Interface
+		let additionalIds = [];
+	  
+		related.forEach(apu => {
+		  if (apu.fromtype === "Application_Provider_Interface") {
+			additionalIds.push(apu.fromAppId);
+		  }
+		  if (apu.totype === "Application_Provider_Interface") {
+			additionalIds.push(apu.toAppId);
+		  }
+		});
+	  
+		// Step 3: Find apus related to those Interface IDs
+		additionalIds.forEach(interfaceId => {
+		  const moreRelated = apus.filter(apu => 
+			apu.fromAppId === interfaceId || apu.toAppId === interfaceId
+		  );
+		  related.push(...moreRelated);
+		});
+	  
+		// Optional: Remove duplicates
+		const uniqueRelated = [];
+		const seen = new Set();
+	  
+		related.forEach(apu => {
+		  if (!seen.has(apu.id)) {
+			seen.add(apu.id);
+			uniqueRelated.push(apu);
+		  }
+		});
+	  
+		return uniqueRelated;
+	  }  
 
-procstable.columns.adjust()
+	  function createGraphFromApus(relatedApus) {
+		const nodesMap = new Map();
+		let edges = [];
+	    const fromCounts = {};
+		const toCounts = {};
 
-<!-- end setGraph -->
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
-	if(e.target.id=='appIntTab'){ 
-		createSVGIntegration(focusApp);
-	}
-	e.target // newly activated tab
-	e.relatedTarget // previous active tab
-	$(".ess-flat-card-title").matchHeight();
-  });
+		relatedApus.forEach(apu => {
+		  // Only process if both fromAppId and toAppId are in scopedAppMart
+		  if (!(scopedAppMartApps.resourceIds.includes(apu.fromAppId) &amp;&amp; scopedAppMartApps.resourceIds.includes(apu.toAppId))) {
+			return;
+		  }
  
+			fromCounts[apu.fromAppId] = (fromCounts[apu.fromAppId] || 0) + 1;
+			toCounts[apu.toAppId] = (toCounts[apu.toAppId] || 0) + 1;
+		
+		  // Add 'from' node
+		  if (!nodesMap.has(apu.fromAppId)) {
+			nodesMap.set(apu.fromAppId, {
+			  id: apu.fromAppId,
+			  label: apu.fromApp || apu.fromAppId, // fallback if no name
+			  type: apu.fromtype
+			});
+		  }
+	  
+		  // Add 'to' node
+		  if (!nodesMap.has(apu.toAppId)) {
+			nodesMap.set(apu.toAppId, {
+			  id: apu.toAppId,
+			  label: apu.toApp || apu.toAppId,
+			  type: apu.totype
+			});
+		  }
+	  
+		  // Add edge
+		  let labelInfo = ''
+		  apu.info.forEach((d)=>{})
+		  edges.push({
+			id: apu.id,
+			source: apu.toAppId,
+			target: apu.fromAppId,
+			label: apu.info || "", // optional: name the edge
+			type: apu.infoData?.[0]?.type || "" // optional: could show type of connection
+		  });
+		}); 
+
+		const keys1 = Object.keys(fromCounts);
+		const keys2 = Object.keys(toCounts);
+		const onlyIn1 = keys1.filter(k => !toCounts.hasOwnProperty(k));
+		const onlyIn2 = keys2.filter(k => !fromCounts.hasOwnProperty(k));
+		let leftOver = [...onlyIn1, ...onlyIn2];
+  
+		const diffSet = new Set(leftOver); 
+		const apisInDiff = leftOver.filter(id => {
+			const node = nodesMap.get(id);
+			return node?.type === 'Application_Provider_Interface';
+		});
+
+		
+		// Convert nodesMap to array
+		var nodes = Array.from(nodesMap.values());
+
+		const toRemove = new Set(apisInDiff);
+ 
+		// Filter out unwanted nodes
+		const filteredNodes = nodes.filter(node => !toRemove.has(node.id));
+ 
+		// Filter out any edge that touches a removed node
+		const filteredEdges = edges.filter(edge =>
+			!toRemove.has(edge.source) &amp;&amp; !toRemove.has(edge.target)
+			);
+	
+		nodes=filteredNodes;
+		edges=filteredEdges;
+		return { nodes, edges };
+	  }
+	
+	
+	  // Auto-calculate x, y if missing in nodes
+	  function autoPositionNodes(nodes) {
+		const spacingX = 150;
+		const spacingY = 100;
+		let currentX = 50;
+		let currentY = 50;
+		let rowCount = 0;
+		const maxPerRow = 5;
+	  
+		nodes.forEach(node => {
+		  if (node.x == null || node.y == null) {
+			node.x = currentX;
+			node.y = currentY;
+			rowCount++;
+			if (rowCount >= maxPerRow) {
+			  currentX = 50;
+			  currentY += spacingY;
+			  rowCount = 0;
+			} else {
+			  currentX += spacingX;
+			}
+		  }
+		});
+	  }  
+
 
 function createSVGIntegration(data){ 
-// Create the input graph
-var g = new dagreD3.graphlib.Graph()
-  .setGraph({})
-  .setDefaultEdgeLabel(function() { return {}; });
-  
-let appList =[...focusApp.inIList, ...focusApp.outIList];
-appList.push({"name":focusApp.name, "id":focusApp.id})
-
-appList=appList.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id &amp;&amp; t.name === elem.name)})=== index) 
+	// Create the input graph
+	var g = new dagreD3.graphlib.Graph()
+	  .setGraph({})
+	  .setDefaultEdgeLabel(function() { return {}; });
+	  
+	const relatedApus = getRelatedApus(scopedAPUs.resources, focusApp);
  
-appList.forEach((d)=>{
-	g.setNode(d.id, {label:d.name});
-})
- 
+  	const { nodes, edges } = createGraphFromApus(relatedApus);
+	autoPositionNodes(nodes);
+	  
+	let appList =[...focusApp.inIList, ...focusApp.outIList];
+	appList.push({"name":focusApp.name, "id":focusApp.id})
+	
+	appList=appList.filter((elem, index, self) => self.findIndex( (t) =>{return (t.id === elem.id &amp;&amp; t.name === elem.name)})=== index) 
+	 
+	appList.forEach((d)=>{
+		g.setNode(d.id, {label:d.name});
+	})
+	 
+	
+	g.nodes().forEach(function(v) {
+	  var node = g.node(v);
+	  // Round the corners of the nodes
+	  node.rx = node.ry = 5;
+	});
+	//set edges
+	focusApp.inIList?.forEach((e)=>{
+		g.setEdge(e.id, focusApp.id, {curve: d3.curveBasis})
+	});
+	focusApp.outIList?.forEach((e)=>{
+		g.setEdge(focusApp.id, e.id, {curve: d3.curveBasis})
+	});
+	 
+	// Create the renderer
+	var render = new dagreD3.render();
+	
+	// Set up an SVG group so that we can translate the final graph.
+	g.graph().rankDir = 'LR';
+	g.graph().nodesep = 20;
+	g.graph().acyclicer='greedy'
+	var svg = d3.select("#svgBox").select("svg"),
+		svgGroup = svg.append("g");
+	
+	// Run the renderer. This is what draws the final graph.
+	 render(d3.select("svg g"), g);
+	 var inner = svg.select("g");
+	 var zoom = d3.zoom().on("zoom", function() {
+		inner.attr("transform", d3.event.transform);
+	});
+	svg.call(zoom);
+	//setTimeout(renderSVG,2000);
+	
+	// Center the graph
+	var xCenterOffset = g.graph().width / 2;
+	 
+	svgGroup.attr("transform", "translate(20, 20)");
 
-g.nodes().forEach(function(v) {
-  var node = g.node(v);
-  // Round the corners of the nodes
-  node.rx = node.ry = 5;
-});
-//set edges
-focusApp.inIList?.forEach((e)=>{
-	g.setEdge(e.id, focusApp.id, {curve: d3.curveBasis})
-});
-focusApp.outIList?.forEach((e)=>{
-	g.setEdge(focusApp.id, e.id, {curve: d3.curveBasis})
-});
- 
-// Create the renderer
-var render = new dagreD3.render();
+// Initialize JointJS graph and paper
+        const appgraph = new joint.dia.Graph();
+        const apppaper = new joint.dia.Paper({
+            el: document.getElementById('appIntegrationDiagram'),
+            model: appgraph,
+            width: 800,
+            height: 500,
+            gridSize: 10,
+            drawGrid: true,
+            background: {
+                color: 'rgba(0, 0, 0, 0.05)'
+            }
+        });
 
-// Set up an SVG group so that we can translate the final graph.
-g.graph().rankDir = 'LR';
-g.graph().nodesep = 20;
-g.graph().acyclicer='greedy'
-var svg = d3.select("#svgBox").select("svg"),
-    svgGroup = svg.append("g");
+        // Function to render diagram from JSON
+		function renderDiagram(diagramJson) {
+    appgraph.clear();
 
-// Run the renderer. This is what draws the final graph.
- render(d3.select("svg g"), g);
- var inner = svg.select("g");
- var zoom = d3.zoom().on("zoom", function() {
-	inner.attr("transform", d3.event.transform);
-});
-svg.call(zoom);
-//setTimeout(renderSVG,2000);
+    var g = new dagre.graphlib.Graph()
+        .setGraph({
+            rankdir: 'LR',
+            nodesep: 50,
+            ranksep: 100,
+            marginx: 10,
+            marginy: 10,
+            edgesep: 20,
+            ranker: 'longest-path',
+            acyclicer: 'greedy'
+        })
+        .setDefaultEdgeLabel(function () { return {}; });
 
-// Center the graph
-var xCenterOffset = g.graph().width / 2;
- 
-svgGroup.attr("transform", "translate(20, 20)");
- 
+    diagramJson.nodes.forEach(node => {
+        g.setNode(node.id, {
+            label: node.label || node.id,
+            width: 80,
+            height: 60,
+            style: node.type === 'Application_Provider_interface'
+                ? 'fill: grey;'
+                : ''
+        });
+    });
+
+    diagramJson.edges.forEach(edge => {
+        g.setEdge(edge.source, edge.target);
+    });
+
+    dagre.layout(g);
+
+    const nodeMap = {};
+    g.nodes().forEach(nodeId => {
+        const n = g.node(nodeId);
+
+        // 1. Text splitter function
+        const wrapText = (text, maxCharsPerLine) => {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length &lt;= maxCharsPerLine) {
+                    currentLine += word + ' ';
+                } else {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                }
+            });
+
+            if (currentLine.length > 0) {
+                lines.push(currentLine.trim());
+            }
+
+            return lines.join('\n');
+        };
+
+        const wrappedLabel = wrapText(n.label || nodeId, 15);
+
+        let nd = diagramJson.nodes.find((n) => {
+            return n.id == nodeId;
+        });
+
+        const isInterface = nd.type === 'Application_Provider_Interface';
+
+        const fillColor = isInterface ? '#000000' : '#4285f4';
+        const strokeColor = isInterface ? '#d3d3d3' : '#2a67c7';
+
+        // Determine the size of the node based on the wrapped text
+        const nodeWidth = Math.max(100, wrappedLabel.length * 5);  // Dynamic width based on text
+        const nodeHeight = Math.max(50, wrappedLabel.split('\n').length * 18); // Dynamic height based on number of lines
+
+        const rect = new joint.shapes.standard.Rectangle({
+            id: nodeId,
+            position: { x: n.x, y: n.y },
+            size: { width: nodeWidth, height: nodeHeight },  // Adjusted size
+            attrs: {
+                body: {
+                    fill: fillColor,
+                    stroke: strokeColor,
+                    strokeWidth: 2,
+                    rx: 5,
+                    ry: 5
+                },
+                label: {
+                    text: wrappedLabel,
+                    style: {
+                        fill: 'white',
+                        fontFamily: 'Arial, sans-serif',
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        fontSize: Math.max(10, 15 - wrappedLabel.split('\n').length)  // Shrink text if it's long
+                    }
+                }
+            }
+        });
+
+        appgraph.addCell(rect);
+        nodeMap[nodeId] = rect;
+    });
+
+    diagramJson.edges.forEach(edge => {
+        if (nodeMap[edge.source] &amp;&amp; nodeMap[edge.target]) {
+            const link = new joint.shapes.standard.Link({
+                source: { id: nodeMap[edge.source].id },
+                target: { id: nodeMap[edge.target].id },
+                router: { name: 'manhattan' },
+                connector: { name: 'rounded' },
+                attrs: {
+                    line: {
+                        stroke: '#333333',
+                        strokeWidth: 1,
+                        targetMarker: {
+                            type: 'path',
+                            d: 'M 10 -5 0 0 10 5 z'
+                        }
+                    }
+                },
+                labels: [
+                    {
+                        position: 0.5,
+                        attrs: {
+                            text: {
+                                text: '',  // Add edge labels if needed
+                                style: {
+                                    fill: 'black',
+                                    fontSize: 8,
+                                    fontFamily: 'Arial, sans-serif'
+                                }
+                            },
+                            rect: {
+                                fill: 'none'
+                            }
+                        }
+                    }
+                ]
+            });
+            appgraph.addCell(link);
+        }
+    });
+
+    // 🛠 Now that ALL nodes and edges are added — do fit and scale
+    apppaper.fitToContent({
+        padding: 20,
+        allowNewOrigin: 'any',
+        useModelGeometry: true
+    });
+
+    apppaper.scaleContentToFit({
+        padding: 20,
+        preserveAspectRatio: true,
+        minScale: 0.5,
+        maxScale: 2
+    });
 }
 
 
 
-}).then(function(){
-$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-$($.fn.dataTable.tables(true)).DataTable()
-.columns.adjust();
-});
-
-
-})
-
-$('#subjectSelection').one('change',function(){
-let selected=$(this).val(); 
-
-let focusApp=appList.applications.find((f)=>{
-	return f.id==selected;
-});
-
-$('#selectMenu').html(selectTemplate(focusApp))
-
-$('.context-menu-appProviderGenMenu').html('<i class="fa fa-bars"></i> Menu');
-  
-redrawPage(focusApp);
-});
-}
-
-});
+		const exampleDiagram = {
+			nodes: nodes,
+			edges: edges
+		};
+		
+		renderDiagram(exampleDiagram);
+ 
+	}
+	
+	}).then(function(){
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+	$($.fn.dataTable.tables(true)).DataTable()
+	.columns.adjust();
+	});
+	
+	
+	})
+	
+	$('#subjectSelection').off().on('change',function(){
+ 
+	let selected=$(this).val(); 
+	
+	let newfocusApp=scopedApps.resources.find((f)=>{
+		return f.id==selected;
+	});
+ 
+	focusApp=newfocusApp;  
+	$('#selectMenu').html(selectTemplate(focusApp))
+	
+	$('.context-menu-appProviderGenMenu').html('<i class="fa fa-bars"></i> Menu');
+	  
+	redrawPage(focusApp);
+	});
+	}
+var redrawView = function () {
+	// Move your existing logic here that builds column headers, DataTables config, etc.
+  };
 	</xsl:template>
 	
 	<xsl:template name="GetViewerAPIPath">

@@ -33,7 +33,17 @@
 	<xsl:variable name="currentInfoObject" select="/node()/simple_instance[name = $param1]"/>
 	<xsl:variable name="viewAttributes" select="/node()/simple_instance[type='Information_View_Attribute'][name = $currentInfoObject/own_slot_value[slot_reference = 'contained_view_attributes']/value]"/>
 	<xsl:key name="viewAttributesKey" match="/node()/simple_instance[type='Information_View_Attribute']" use="own_slot_value[slot_reference = 'contained_view_attributes']/value"/> 
-	<xsl:variable name="infoObjectName" select="$currentInfoObject/own_slot_value[slot_reference = 'view_label']/value"/>
+	<xsl:variable name="infoObjectNameViewLabel" select="$currentInfoObject/own_slot_value[slot_reference = 'view_label']/value"/>
+	<xsl:variable name="infoObjectName">
+		<xsl:choose>
+			<xsl:when test="string-length($infoObjectNameViewLabel) &gt; 1">
+				<xsl:value-of select="$infoObjectNameViewLabel"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$currentInfoObject/own_slot_value[slot_reference = 'name']/value"></xsl:value-of>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 	<xsl:variable name="implementingInfoReps" select="/node()/simple_instance[own_slot_value[slot_reference = 'implements_information_views']/value = $currentInfoObject/name]"/>
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"/>
 	<xsl:variable name="allAppInforepRels" select="/node()/simple_instance[own_slot_value[slot_reference = 'app_pro_to_inforep_to_inforep']/value = $implementingInfoReps/name]"/>

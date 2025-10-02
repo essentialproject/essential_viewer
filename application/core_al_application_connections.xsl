@@ -914,14 +914,14 @@ $(window).scroll(function() {
 			let appCaps=responses[2].application_capabilities;
 			let appSvcs=responses[2].application_services;
 
-			const servicesWithAppIds = appSvcs.map(service => ({
+			const servicesWithAppIds = appSvcs?.map(service => ({
 				id: service.id,
 				apps: service.APRs.map(apr => apr.appId)
 			}));
 			
-			appCaps.forEach(cap => {
+			appCaps?.forEach(cap => {
 				cap['thisApps']=[];
-				  cap.supportingServices.map(supportingServiceId => {
+				  cap.supportingServices?.map(supportingServiceId => {
 					const matchingService = servicesWithAppIds.find(service => service.id === supportingServiceId);
 					
 					if (matchingService.apps) { 

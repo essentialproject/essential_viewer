@@ -1358,12 +1358,11 @@
       <div class="appCard_TopRight">
         <div class="appCard_Label alignCentre">
           {{#switch}}
-            <!-- Converted clickable icon into a button for better accessibility -->
-            <button type="button"
-                    onclick="selectApp('{{this.id}}');getAllApps();$('#application').val('{{this.id}}').prop('selected', true).change();"
-                    aria-label="Select Application {{this.name}}">
+            <button type="button" style="background:none;border:none;padding:0;margin:0;">
+              <xsl:attribute name="aria-label">Select Application {{this.name}}</xsl:attribute>
+              <xsl:attribute name="onclick">selectApp('{{this.id}}');getAllApps();$('#application').val('{{this.id}}').prop('selected', true).change();</xsl:attribute>
               <i class="fa fa-exchange textBlue left-5" aria-hidden="true"></i>
-            </button>
+            </button> 
           {{/switch}}
         </div>
       </div>

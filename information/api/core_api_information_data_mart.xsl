@@ -67,8 +67,8 @@
   <xsl:key name="dataRepDO_key" match="/node()/simple_instance[type=('Data_Representation')]" use="own_slot_value[slot_reference = 'implemented_data_object']/value"/>
   <xsl:key name="dataRepCRUDDO_key" match="/node()/simple_instance[type=('APP_PRO_TO_INFOREP_TO_DATAREP_RELATION')]" use="own_slot_value[slot_reference = 'app_pro_use_of_data_rep']/value"/>
   <xsl:key name="dataReptoAPIDP_key" match="/node()/simple_instance[type=('APP_PRO_TO_INFOREP_TO_DATAREP_RELATION')]" use="own_slot_value[slot_reference = 'apppro_to_inforep_to_datarep_to_datarep']/value"/>
-  
- 
+
+
 <!--  <xsl:variable name="actors" select="/node()/simple_instance[type=('Group_Actor')]"/>
   <xsl:variable name="individual" select="/node()/simple_instance[type=('Individual_Actor')]"/>	
 	
@@ -107,10 +107,30 @@
 		"information_concepts":[<xsl:apply-templates select="$allInfoConcepts" mode="infoConceptList"/>],
 		"app_infoRep_Pairs":[<xsl:apply-templates select="$dataAppProInfoReps" mode="appPairs"></xsl:apply-templates>],
 		"info_domains":[<xsl:apply-templates select="$allInfoDomains" mode="infDomains"></xsl:apply-templates>],
+		"info_rep_categories":[<xsl:apply-templates select="$infoRepresentationCategory" mode="infRepCats"></xsl:apply-templates>],
 		"version":"615"
 		}
 	</xsl:template>
 
+
+ <xsl:template match="node()" mode="infRepCats">
+ <xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference='synonyms']/value)"/>
+     {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+   <xsl:variable name="combinedMap" as="map(*)" select="map{
+	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
+	'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+	'enumeration_value': string(translate(translate(current()/own_slot_value[slot_reference = ('enumeration_value')]/value,'}',')'),'{',')'))  
+}" />
+<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
+	"synonyms":[<xsl:for-each select="$syns">{<xsl:variable name="combinedMap" as="map(*)" select="map{
+		'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+	}" />
+	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
+
+
+</xsl:template>
 	 
  <xsl:template match="node()" mode="dataObjects">
 	 <xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference='synonyms']/value)"/>
@@ -381,8 +401,9 @@
 		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"id":"<xsl:value-of select="eas:getSafeJSString($thisapps/name)"/>","create":"<xsl:value-of select="current()/own_slot_value[slot_reference='app_pro_creates_info_rep']/value"/>","read":"<xsl:value-of select="current()/own_slot_value[slot_reference='app_pro_reads_info_rep']/value"/>", "update":"<xsl:value-of select="current()/own_slot_value[slot_reference='app_pro_updates_info_rep']/value"/>","delete":"<xsl:value-of select="current()/own_slot_value[slot_reference='app_pro_deletes_info_rep']/value"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>], 
 	"technicalName":"<xsl:value-of select="current()/own_slot_value[slot_reference='dr_technical_name']/value"/>"} <xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template>
+<!-- start information_representation -->
  <xsl:template match="node()" mode="infoRepresentations">
-	<xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference='synonyms']/value)"/>
+ 	<xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference='synonyms']/value)"/>
 	<!--<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
 	<xsl:variable name="thisStakeholders" select="key('actor2RoleKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
 	
@@ -393,7 +414,11 @@
    {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
    <xsl:variable name="combinedMap" as="map(*)" select="map{
 	'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
-	'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
+	'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
+	'short_name': string(translate(translate(current()/own_slot_value[slot_reference = ('short_name')]/value,'}',')'),'{',')')),
+	'representation_label': string(translate(translate(current()/own_slot_value[slot_reference = ('representation_label')]/value,'}',')'),'{',')')),
+	'ea_reference': string(translate(translate(current()/own_slot_value[slot_reference = ('ea_reference')]/value,'}',')'),'{',')')),
+	'ea_notes': string(translate(translate(current()/own_slot_value[slot_reference = ('ea_notes')]/value,'}',')'),'{',')'))
 }" />
 <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
@@ -403,10 +428,16 @@
 	}" />
 	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+	"valueClass": "<xsl:value-of select="current()/type"/>",
+	"inforep_category":[<xsl:for-each select="current()/own_slot_value[slot_reference='inforep_category']/value">"<xsl:value-of select="."></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>], 
+	"il_managed_by_services":[<xsl:for-each select="current()/own_slot_value[slot_reference='il_managed_by_services']/value">"<xsl:value-of select="."></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>], 
+	"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
+	"sA2R":[<xsl:for-each select="$thisStakeholders">"<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>"<xsl:if test="not(position() = last())"><xsl:text>,</xsl:text></xsl:if></xsl:for-each>],
 	"infoViews":[<xsl:for-each select="$thisInfoViews">{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-	 "dataReps":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_data_representations']/value">{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
+	"dataReps":[<xsl:for-each select="current()/own_slot_value[slot_reference='supporting_data_representations']/value">{"id":"<xsl:value-of select="eas:getSafeJSString(.)"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>
 } <xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template>
+<!-- end information_representation -->
  <xsl:template match="node()" mode="infoViews2">
 	<xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference='synonyms']/value)"/>
 <!--	<xsl:variable name="thisStakeholders" select="$actor2Role[name=current()/own_slot_value[slot_reference='stakeholders']/value]"/>-->
@@ -429,6 +460,7 @@
 	<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 	<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>"}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],<xsl:call-template name="RenderSecurityClassificationsJSONForInstance"><xsl:with-param name="theInstance" select="current()"/></xsl:call-template>} <xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template> 
+
  <xsl:template match="node()" mode="appPairs">
 		<xsl:variable name="infoRep" select="key('appInfoRep_key', current()/name)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
@@ -440,6 +472,7 @@
 		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,"id":"<xsl:value-of select="$infoRep/name"/>"},
 		"appId":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='app_pro_to_inforep_from_app']/value)"/>"}<xsl:if test="position()!=last()">,</xsl:if>
  </xsl:template>
+
  <xsl:template match="node()" mode="infoConceptList">
 	<xsl:variable name="infoViews" select="key('allInfoViewsKey',current()/name)"/>
 	 	
@@ -455,6 +488,7 @@
 		"infoViews":[<xsl:apply-templates select="$infoViews" mode="infoViews"/>]}<xsl:if test="not(position() = last())">,</xsl:if>
 
 </xsl:template>
+
 <xsl:template match="node()" mode="infoViews">
 		<xsl:variable name="thisa2r" select="key('a2rKey', current()/own_slot_value[slot_reference='stakeholders']/value)"/>
 		<xsl:variable name="instanceName"><xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="isForJSONAPI" select="true()"/><xsl:with-param name="theSubjectInstance" select="current()"/></xsl:call-template></xsl:variable>

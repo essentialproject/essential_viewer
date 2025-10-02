@@ -253,6 +253,25 @@ function essPromise_getSystemAPIElements(apiUri, resourcePath, resourceTypeLabel
 };
 
 
+function essPromise_createSystemAPIElements(apiUri, resources, resourcePath, resourceTypeLabel) {
+	return new Promise(
+	function (resolve, reject) {
+		var resourceJSONString = JSON.stringify(resources);
+		let url = essBuildSystemApiPath(apiUri) + resourcePath;
+		let xhr = essCreateCORSRequest('POST', url);
+		if (! xhr) {
+			corsError = new Error('CORS not supported by browser. Unable to create ' + resourceTypeLabel + ' data');
+			reject(corsError);
+		} else {
+			// Response handlers.
+			let errorMessageVerb = 'creating';
+			xhr.onload = essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb);
+			xhr.onerror = essOnXhrError(reject, resourceTypeLabel, errorMessageVerb);
+			xhr.send(resourceJSONString);
+		}
+	});
+};
+
 /********************************************************
 CORE API FUNCTIONS
 *********************************************************/
@@ -387,6 +406,62 @@ function essPromise_deleteAPIElement(apiUri, resourceId, resourcePath, resourceT
 			}
 		}
 	);
+};
+
+
+/********************************************************
+GENERIC API FUNCTIONS
+*********************************************************/
+
+// create a given resource with resource data passed as form url encoded data
+function essPromise_createGenericURLEncodedElement(apiURL, urlEncodedResource, customHeaders = [], resourcePath, resourceTypeLabel) {
+    return new Promise(
+        function (resolve, reject) {	
+            let url = essBuildRefApiPath(apiURL) + resourcePath;
+            //console.log('Create Ref URL: ' + url);
+            var xhr = essCreateRefCORSRequest('POST', url);
+			customHeaders?.forEach(hdr => {
+				xhr.setRequestHeader(hdr.key,hdr.value);
+			});
+            if (!xhr) {
+                corsError = new Error('CORS not supported by browser. Unable to create ' + resourceTypeLabel + ' data');
+                reject(corsError);
+            } else {
+                // Response handlers.
+                //xhr.setRequestHeader('Content-type','multipart/form-data');
+                var errorMessageVerb = 'creating';
+                xhr.onload = essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb);
+                xhr.onerror = essOnXhrError(reject, resourceTypeLabel, errorMessageVerb);
+                xhr.send(urlEncodedResource);
+            }
+        }
+    );
+};
+
+// create a given resource with resource data passed as form url encoded data
+function essPromise_createGenericElement(apiURL, resourceJSON, customHeaders = [], resourcePath, resourceTypeLabel) {
+    return new Promise(
+        function (resolve, reject) {	
+			let resourceString = JSON.stringify(resourceJSON);
+            let url = essBuildRefApiPath(apiURL) + resourcePath;
+            //console.log('Create Ref URL: ' + url);
+            var xhr = essCreateRefCORSRequest('POST', url);
+			customHeaders?.forEach(hdr => {
+				xhr.setRequestHeader(hdr.key,hdr.value);
+			});
+            if (!xhr) {
+                corsError = new Error('CORS not supported by browser. Unable to create ' + resourceTypeLabel + ' data');
+                reject(corsError);
+            } else {
+                // Response handlers.
+                //xhr.setRequestHeader('Content-type','multipart/form-data');
+                var errorMessageVerb = 'creating';
+                xhr.onload = essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb);
+                xhr.onerror = essOnXhrError(reject, resourceTypeLabel, errorMessageVerb);
+                xhr.send(resourceString);
+            }
+        }
+    );
 };
 
 

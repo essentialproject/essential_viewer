@@ -39,6 +39,7 @@
 <xsl:template mode="techCapabilities" match="node()">
 	<xsl:variable name="parent" select="$techDomain[name=current()/own_slot_value[slot_reference='belongs_to_technology_domain']/value]"/>
 	{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+	"legacyId":"<xsl:value-of select="current()/name"/>",
 	"type":"<xsl:value-of select="current()/type"/>",
 	"className":"<xsl:value-of select="current()/type"/>",
 	<xsl:variable name="combinedMap" as="map(*)" select="map{

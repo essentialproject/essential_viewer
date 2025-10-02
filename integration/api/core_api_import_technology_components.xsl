@@ -35,6 +35,7 @@
        <xsl:template mode="techComponents" match="node()">
        <xsl:variable name="techCaps" select="key('techCapabilities', current()/own_slot_value[slot_reference='realisation_of_technology_capability']/value)"/>
 		{"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		"legacyId":"<xsl:value-of select="current()/name"/>",
 		<xsl:variable name="combinedMap" as="map(*)" select="map{
 			'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
 			'description': string(translate(translate(current()/own_slot_value[slot_reference = 'description']/value, '}', ')'), '{', ')'))

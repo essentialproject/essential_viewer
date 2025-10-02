@@ -1870,7 +1870,7 @@
       {
          "name":"Play3",
          "description":"Build Simple Governance, Anchored Around Applications Then Technology",
-         "link":"https://enterprise-architecture.org/ea_play_3/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-3/",
          "steps":[
             {
                "name":"A1.1",
@@ -1931,7 +1931,7 @@
       {
          "name":"Play4",
          "description":"Anchor On Technology And Build The Architecture Out From There",
-         "link":"https://enterprise-architecture.org/ea_play_4/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-4/",
          "steps":[
             {
                "name":"T1.2",
@@ -1980,7 +1980,7 @@
       {
          "name":"Play5",
          "description":"Get Data In Shape",
-         "link":"https://enterprise-architecture.org/ea_play_5/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-5/",
          "steps":[
             {
                "name":"D1.1",
@@ -2008,7 +2008,7 @@
       {
          "name":"Play6",
          "description":"Bring In Standards For Technology, Anchored Around Applications",
-         "link":"https://enterprise-architecture.org/ea_play_6/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-6/",
          "steps":[
             {
                "name":"A1.1",
@@ -2050,7 +2050,7 @@
       {
          "name":"Play7",
          "description":"Map Applications To Projects For Impact Analysis",
-         "link":"https://enterprise-architecture.org/ea_play_7/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-7/",
          "steps":[
             {
                "name":"A1.1",
@@ -2078,7 +2078,7 @@
       {
          "name":"Play8",
          "description":"Create Your Roadmaps",
-         "link":"https://enterprise-architecture.org/ea_play_8/",
+         "link":"https://enterprise-architecture.org/resources/essential-playbook/essential-playbook-8/",
          "steps":[
             {
                "name":"A1.1",

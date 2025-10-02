@@ -25,13 +25,15 @@ function essGetLocalEssentialInstanceSettings(className) {
     return instanceSettings;
 }
 
-
 function essSaveLocalEssentialInstanceSettings(className, settings) {
     let instanceSettingsKey = ESS_LOCAL_INSTANCE_SETTINGS_KEY + '.' + essUserSettingsRepoId + '.' + className;
-    if(settings != null) {
+    
+    if (settings != null) {
         let settingsString = JSON.stringify(settings);
-        localStorage.setItem(instanceSettingsKey, settingsString);         
+        localStorage.setItem(instanceSettingsKey, settingsString);
+  
     }
+
     return settings;
 }
 
@@ -102,6 +104,7 @@ var essFilterLabelList = '';
 var essRMApiData = {};
 var essRoadmapEnabled = false;
 var essRMEndDate = moment().format('yyyy-mm-dd');
+var dropdownList = [];
 
 const CHANGE_TYPE_INFO = [
     {
@@ -155,7 +158,7 @@ class PlannedChange {
 }
 
 //Function call by Views/Editors to initialise the scoping capability and then call the callback function
-function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRMEnabled) {
+async function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRMEnabled) {
    // console.log('initfilterClassList',initfilterClassList)
     // console.log('isRMEnabled',isRMEnabled)
     scopeInitialised = true;
@@ -231,14 +234,14 @@ function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRM
     
     //Get the scoping lists from local storage for the current repo
     //Check the view url for a url parameter
-    essUserScopeSettings = getLocalEssentialScopeSettings();  
+    essUserScopeSettings = await getLocalEssentialScopeSettings();  
+    essUserScope = essUserScopeSettings.userScope || [];
     if(essWindowParams.has(essViewScopeParam)) {
         let scopeStringVal = essWindowParams.get(essViewScopeParam);
         essUserScopeSettings.userScope = essDeserializeUrlParam(scopeStringVal);   
         essUpdateUserSettings();
     }
-    essUserScope = essUserScopeSettings.userScope;
-    
+    essUserScope = essUserScopeSettings.userScope || [];
 
     //if the timestamp is earlier than the latest publish, call the common scoping API and replace local storage scoping lists
     if(essUserScopeSettings.timestamp && essUserScopeSettings.timestamp >= essUserSettingsPublishTimestamp) {
@@ -246,6 +249,7 @@ function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRM
         //If roadmap enablement is enabled, initalise the capability
         if(essRoadmapEnabled) {
             Promise.all([
+
                 promise_loadViewerAPIScopeData(essPlannedChangesAPIURL),
                 promise_loadViewerAPIScopeData(essScopeViewAPIURL),
                 promise_loadViewerAPIScopeData(essRoadmapsPlansProjectsAPIURL)
@@ -286,8 +290,9 @@ function essInitViewScoping(callback, initfilterClassList,  dynamicFilters, isRM
 
                 initRoadmapEnUI();
             }
-            essUserScopeSettings.scopingLists = responses[0].scopingLists;
-            essScopingLists = essUserScopeSettings.scopingLists;
+            dropdownList=responses[0].scopingLists;
+            essUserScopeSettings.scopingLists = [] // responses[0].scopingLists;
+            essScopingLists = dropdownList // essUserScopeSettings.scopingLists;
             // console.log('Returned scoping list:');
             // console.log(essScopingLists);
 
@@ -405,6 +410,9 @@ function addScopingEventListeners() {
             let valObj = essCurrentScopingCat.values.find(val => val.id == selectedValId);
             if(valObj != null) {
                 let newScopingObj = new ScopingValue(essCurrentScopingCat, valObj, false);
+                if (!essUserScope) {
+                    essUserScope = [];
+                }
                 essUserScope.push(newScopingObj);
                 essSetScopeButtonStatuses();
                 essRefreshScopingValues();
@@ -431,8 +439,8 @@ function addScopingEventListeners() {
 function essSetScopeButtonStatuses() {
     let selectedVal = $('#ess-scoping-value-list').val();
     if(selectedVal != null) {
-        let userScopeIds = essUserScope.map(val => val.id);
-        if(!userScopeIds.includes(selectedVal)) {
+        let userScopeIds = essUserScope?.map(val => val.id);
+        if(!userScopeIds?.includes(selectedVal)) {
             $('#ess-add-scoping-value-btn').prop('disabled', false);
             $('#ess-add-exl-scoping-value-btn').prop('disabled', false);
         } else {
@@ -446,13 +454,13 @@ function essSetScopeButtonStatuses() {
 }
 
 function essRefreshScopingValues() {
-    var scopeCount = essUserScope.length;
+    var scopeCount = essUserScope?.length;
     $('#scope-filter-count').text(scopeCount);
     $('#ess-scoping-scope').html(essScopeValuesTemplate(essUserScope)).promise().done(function(){
         $('.ess-remove-scope-btn').on('click', function(event) {
             let thisValId = $(this).attr('eas-id');
             if(thisValId) {
-                let thisVal = essUserScope.find(aVal => aVal.id == thisValId);
+                let thisVal = essUserScope?.find(aVal => aVal.id == thisValId);
                 if(thisVal) {
                     let valIdx = essUserScope.indexOf(thisVal);
                     essUserScope.splice(valIdx, 1);
@@ -474,7 +482,7 @@ function essRefreshScopingValues() {
 function essRefreshScopeSummary() {
 
     let summaryString = '';
-    if(essUserScope.length > 0) {
+    if(essUserScope?.length > 0) {
         essUserScope.forEach(function(aVal, idx) {
             let operand = '';
             if(idx > 0) {
@@ -495,19 +503,19 @@ function essRefreshScopeSummary() {
 //function to retrieve the current list of scoping objects of a given class - including flattening scoping groups - returns a Set object containing id values
 function essGetScopeForMetaClass(aClass) {
     let scopeForMetaClass = {};
-    let includesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && !scope.isExcludes);
+    let includesScopeForClass = essUserScope?.filter(scope => scope.valueClass == aClass && !scope.isExcludes);
     let includesScopeValues = [];
 
-    includesScopeForClass.forEach(function(scopeVal) {
+    includesScopeForClass?.forEach(function(scopeVal) {
         
-        if(scopeVal.isGroup) {
+        if(scopeVal?.isGroup) {
             includesScopeValues=includesScopeValues.concat(scopeVal.group);
         } else {
             includesScopeValues.push(scopeVal);
         }
     });
  
-    if(includesScopeValues.length > 0) {
+    if(includesScopeValues?.length > 0) {
         let includesScopeValueIds = includesScopeValues.map(val => val.id); 
         scopeForMetaClass['includes'] = new Set(includesScopeValueIds);
     } else {
@@ -515,16 +523,16 @@ function essGetScopeForMetaClass(aClass) {
     } 
 
 
-    let excludesScopeForClass = essUserScope.filter(scope => scope.valueClass == aClass && scope.isExcludes);
+    let excludesScopeForClass = essUserScope?.filter(scope => scope.valueClass == aClass && scope.isExcludes);
     let excludesScopeValues = [];
-    excludesScopeForClass.forEach(function(scopeVal) {
+    excludesScopeForClass?.forEach(function(scopeVal) {
         if(scopeVal.isGroup) {
             excludesScopeValues=excludesScopeValues.concat(scopeVal.group);
         } else {
             excludesScopeValues.push(scopeVal);
         }
     });
-    if(excludesScopeValues.length > 0) { 
+    if(excludesScopeValues?.length > 0) { 
         let excludesScopeValueIds = excludesScopeValues.map(val => val.id);
         scopeForMetaClass['excludes'] = new Set(excludesScopeValueIds);
     } else {
@@ -539,22 +547,43 @@ function essGetScopeForMetaClass(aClass) {
 //Assumes that each resource has a property containing a list of essential instance ids (e.g. Group_Actor ids)
  
 function essFilterResources(scopedResources, scopeForProperty, scopingProperty) {
+
     let filteredResources = scopedResources.filter(function(aRes) {
         let inScope = true;
         let isIncludeInScope = true;
+
+if(aRes){
  //console.log('aRes',aRes)
 /*
 function essFilterResources(scopedResources, scopeForProperty, scopingProperty) {
     return scopedResources.filter(function(aRes) {
         let isIncludeInScope = true;
 */
-let resScope
+            let resScope = new Set(); // Default to empty set
+            const propValue = aRes[scopingProperty];
+            // console.log('Property "'+ scopingProperty +'" value for instance "' + (aRes ? aRes.name : 'undefined') + '":', propValue);
 
-if(!Array.isArray(aRes[scopingProperty])){
-    resScope= new Set([aRes[scopingProperty].id]);
-}else{
-    resScope= new Set(aRes[scopingProperty]);
-}  
+            if (propValue != null) { // Check for null or undefined
+                if (!Array.isArray(propValue)) {
+                    // propValue is a single item. It could be an object with an .id or a primitive ID.
+                    if (typeof propValue === 'object' && propValue.id != null) {
+                        resScope.add(propValue.id);
+                    } else if (typeof propValue !== 'object') { // It's a primitive ID
+                        resScope.add(propValue);
+                    }
+                    // If it's an object without an .id, resScope remains empty.
+                } else {
+                    // propValue is an array.
+                    propValue.forEach(item => {
+                        if (typeof item === 'object' && item != null && item.id != null) {
+                            resScope.add(item.id);
+                        } else if (item != null && typeof item !== 'object') { // It's a primitive ID in an array
+                            resScope.add(item);
+                        }
+                    });
+                }
+            }
+            // console.log('rescope for "'+ scopingProperty +'" on instance "' + (aRes ? aRes.name : 'undefined') + '":', resScope);
 
         if(scopeForProperty.includes) {
      
@@ -578,10 +607,13 @@ if(!Array.isArray(aRes[scopingProperty])){
         //console.log('In Scope for Exclude?', isExcludeInScope);
         //console.log('In Scope for Include?', isIncludeInScope);
         return isIncludeInScope && isExcludeInScope;
+        }
+
     });
-   // console.log('filteredResources',filteredResources)
+
     return filteredResources;
-}
+    }
+
 
 function essResetRMChanges() {
     essRMInScopeChanges = [];
@@ -612,13 +644,13 @@ function essScopeResources(resourceList, scopingPropertyList, typeInfo) {
 //set a variable to a Promise function that calls the API Report using the given path and returns the resulting data   
 var promise_loadViewerAPIScopeData = function(dataSetURL) {   
     return new Promise(function (resolve, reject) {
-      //  console.log('Loading Scoping Lists');
+        //console.log('Loading Scoping Lists');
         if (dataSetURL != null) {
             let xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     let viewerData = JSON.parse(this.responseText);
-                 //   console.log(viewerData);
+                    //console.log(viewerData);
                     resolve(viewerData);
                 }
             };
@@ -637,35 +669,98 @@ var promise_loadViewerAPIScopeData = function(dataSetURL) {
 
 function getLocalEssentialScopeSettings() {
     let scopeSettingsKey = ESS_LOCAL_VIEW_SCOPE_SETTINGS_KEY + '.' + essUserSettingsRepoId;
-    let scopeSettingsString = localStorage.getItem(scopeSettingsKey);
-    let scopeSettings;
-    if(!scopeSettingsString) {
-        scopeSettings = {
-            "userScope": []
+
+    // Try to get from IndexedDB first
+    return essGetFromIndexedDBStore("UserSettingsDB", "scopeSettings", scopeSettingsKey)
+        .then((scopeSettings) => {
+            if (scopeSettings) {
+                return scopeSettings;
+            } else {
+                // If not found in IndexedDB, fallback to localStorage
+                return getScopeSettingsFromLocalStorage(scopeSettingsKey);
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching from IndexedDB, falling back to localStorage:", error);
+            return getScopeSettingsFromLocalStorage(scopeSettingsKey);
+        });
+}
+
+// Function to get data from IndexedDB
+function essGetFromIndexedDBStore(dbName, storeName, key) {
+    return new Promise((resolve, reject) => {
+        // Increment DB version to ensure onupgradeneeded fires for schema changes
+        let request = indexedDB.open(dbName, 2);
+
+        request.onupgradeneeded = function(event) {
+            let db = event.target.result;
+            // Ensure all known stores are created
+            if (!db.objectStoreNames.contains("settings")) {
+                db.createObjectStore("settings", { keyPath: "id" });
+            }
+            if (!db.objectStoreNames.contains("scopeSettings")) {
+                db.createObjectStore("scopeSettings", { keyPath: "id" });
+            }
+            if (!db.objectStoreNames.contains("viewState")) {
+                db.createObjectStore("viewState", { keyPath: "id" });
+            }
         };
-        // scopeSettingsString = JSON.stringify(scopeSettings);
-        // localStorage.setItem(scopeSettingsKey, scopeSettingsString);         
-    } else {       
+
+        request.onsuccess = function(event) {
+            let db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                // If store doesn't exist after open/upgrade, means no data and no schema for it yet.
+                resolve(null); 
+                return;
+            }
+            let transaction = db.transaction(storeName, "readonly");
+            let store = transaction.objectStore(storeName);
+            let getRequest = store.get(key);
+
+            getRequest.onsuccess = function() {
+                let result = getRequest.result;
+                resolve(result ? JSON.parse(result.settings) : null);
+            };
+            getRequest.onerror = () => reject(`Error fetching data from ${storeName} in IndexedDB`);
+        };
+        request.onerror = () => reject(`Error opening IndexedDB "${dbName}"`);
+    });
+}
+
+// Function to get data from localStorage
+function getScopeSettingsFromLocalStorage(key) {
+    let scopeSettingsString = localStorage.getItem(key);
+
+    let scopeSettings;
+    if (scopeSettingsString) {
         try {
             scopeSettings = JSON.parse(scopeSettingsString);
-        }
-        catch(e) {
-            console.log('Exception when loading scope settings');
+        } catch (e) {
+            console.log('Exception when loading scope settings from localStorage');
             console.log(e);
+            scopeSettings = { "userScope": [] }; // Return a default object in case of error
         }
+    } else {
+        scopeSettings = { "userScope": [] }; // Default to an empty object if nothing in localStorage
     }
+
     return scopeSettings;
 }
+
 
 
 function saveLocalEssentialScopeSettings(scopeSettings) {
     let scopeSettingsKey = ESS_LOCAL_VIEW_SCOPE_SETTINGS_KEY + '.' + essUserSettingsRepoId;
-    if(scopeSettings != null) {
+
+    if (scopeSettings != null) {
         let settingsString = JSON.stringify(scopeSettings);
-        localStorage.setItem(scopeSettingsKey, settingsString);         
+        localStorage.setItem(scopeSettingsKey, settingsString);
+    
     }
     return scopeSettings;
 }
+
+
 
 
 /****************************************
@@ -682,58 +777,85 @@ var essCurrentViewState;
 
 //window.onpopstate = essRevertViewState;
 
-function essInitViewState(stateObj, defaultViewState) {
+async function essInitViewState(stateObj, defaultViewState) {
 
     essCurrentViewState = stateObj;
-    let stateVal;
-    let thisState;
+    let resolvedState;
     
 
     //Check the view url for a url parameter
     if(essWindowParams.has(essViewStateParam)) {
-        stateVal = essWindowParams.get(essViewStateParam);
-        thisState = essDeserializeUrlParam(stateVal);
+        const stateVal = essWindowParams.get(essViewStateParam);
+        resolvedState = essDeserializeUrlParam(stateVal);
     } else {
         //if the url parameter is empty, see if there is anything in local storage
-        thisState = essGetLocalEssentialViewState(essUserSettingsRepoId);
+        try {
+            resolvedState = await essGetLocalEssentialViewState(); // Await the promise
+        } catch (error) {
+            console.error("Error getting local view state during init:", error);
+            resolvedState = null; 
+        }
     }
 
-    //if a state value was found, deserialize it into a JSON object
-    if(!thisState) {
-        thisState = defaultViewState;
+    // If resolvedState is still null/undefined (e.g., from URL parsing error or DB error, or simply no stored state)
+    // or if it's an empty object from a fresh load without stored state.
+    if (resolvedState == null || (typeof resolvedState === 'object' && Object.keys(resolvedState).length === 0)) {
+        resolvedState = defaultViewState;
+    } else {
+        // If we got a stored state, merge it with defaultViewState,
+        // ensuring defaults are applied if the stored state is partial.
+        resolvedState = { ...defaultViewState, ...resolvedState };
     }
 
-    essCurrentViewState['state'] = thisState;
+    essCurrentViewState['state'] = resolvedState; // Assign the resolved plain object
     essUpdateUserSettings();
-    //return thisState;
 }
 
 
 function essGetLocalEssentialViewState() {
     let viewStateKey = ESS_LOCAL_VIEW_STATE_SETTINGS_KEY + '.' + essUserSettingsRepoId + '.' + essViewId;
-    let viewStateString = localStorage.getItem(viewStateKey);
-    //console.log('Locally stored encoded state: ' + viewStateString);
-    let viewState;
-    if(viewStateString) {     
+
+    return essGetFromIndexedDBStore("UserSettingsDB", "viewState", viewStateKey)
+        .then((viewState) => {
+            if (viewState) {
+                return viewState;
+            } else {
+                return getViewStateFromLocalStorage(viewStateKey);
+            }
+        })
+        .catch((error) => {
+            // If IndexedDB fails, log the error and fallback to localStorage
+            console.error("Error fetching from IndexedDB, falling back to localStorage:", error);
+            return getViewStateFromLocalStorage(viewStateKey);
+        });
+}
+
+// Function to get data from localStorage
+function getViewStateFromLocalStorage(key) {
+    let viewStateString = localStorage.getItem(key);
+
+    if (viewStateString) {
+        let viewState;
         try {
             viewState = JSON.parse(viewStateString);
-        }
-        catch(e) {
-            console.log('Exception when loading scope settings');
+        } catch (e) {
+            console.log("Exception when loading view state from localStorage");
             console.log(e);
         }
+        return viewState || null;
     }
-    return viewState;
+
+    return null; // No data found in localStorage
 }
+
 
 
 function essSaveLocalEssentialViewState(viewState) {
     let viewStateKey = ESS_LOCAL_VIEW_STATE_SETTINGS_KEY + '.' + essUserSettingsRepoId + '.' + essViewId;
-    if(viewState != null) {
-     //   console.log('Saving View State');
-     //   console.log(viewState);
+    if (viewState != null) {
         let settingsString = JSON.stringify(viewState);
-        localStorage.setItem(viewStateKey, settingsString);         
+        localStorage.setItem(viewStateKey, settingsString);
+      
     }
     return viewState;
 }
@@ -1593,4 +1715,3 @@ function formatDateforLocale(datestring, locale){
     }).format(date);
 
 }
-

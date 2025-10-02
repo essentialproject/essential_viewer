@@ -404,6 +404,12 @@ $('document').ready(function () {
                         if (!productToApplications.has(productId)) {
                             productToApplications.set(productId, []);
                         }
+                    if (Array.isArray(env?.nodes)) {
+                        env.nodes.forEach(node => {
+                            node.className = 'Technology_Node';
+                        });
+                        }
+
                         productToApplications.get(productId).push({ id: appId, name: appName, className: "Application_Provider", environment: env.role, nodes: env.nodes, colour: env.colour, backgroundColour:env.backgroundColour, usage: product.compname  });
                     });
                 });
@@ -434,6 +440,7 @@ $('document').ready(function () {
 
             var products = productsList.map(product => {
                 const matchingApps = techresult.find(item => item.productId === product.id);
+                
                 return {
                     ...product,
                     applications: matchingApps ? matchingApps.apps : []
@@ -534,16 +541,29 @@ products.forEach(product => {
         let maxDate = null;
 
         lifecycle.dates.forEach(dateEntry => {
-          if(dateEntry.type == 'Lifecycle_Status'){delete product.technology_provider_lifecycle_status}
-          if(dateEntry.type == 'Vendor_Lifecycle_Status'){delete product.vendor_product_lifecycle_status}
-          dateEntry['backgroundColour']= lifecycleStyleMap.get(dateEntry.id).backgroundColour
-          dateEntry['colour']= lifecycleStyleMap.get(dateEntry.id).colour
+            if (dateEntry.type === 'Lifecycle_Status') {
+              delete product.technology_provider_lifecycle_status;
+            }
+            if (dateEntry.type === 'Vendor_Lifecycle_Status') {
+              delete product.vendor_product_lifecycle_status;
+            }
+          
+            const styleEntry = lifecycleStyleMap.has(dateEntry.id) ? lifecycleStyleMap.get(dateEntry.id) : null;
+          
+            if (styleEntry && styleEntry.backgroundColour && styleEntry.colour) {
+              dateEntry['backgroundColour'] = styleEntry.backgroundColour;
+              dateEntry['colour'] = styleEntry.colour;
+            } else {
+              dateEntry['backgroundColour'] = '#d3d3d3'; // safe default
+              dateEntry['colour'] = '#000000'; // safe default
+            }
+          
             const date = new Date(dateEntry.dateOf);
             if (date <= currentDate && (!maxDate || date > maxDate)) {
-                maxDate = date;
-                activeDate = dateEntry;
+              maxDate = date;
+              activeDate = dateEntry;
             }
-        });
+          });
 
         lifecycle.activeDate = activeDate;
     });
@@ -557,9 +577,9 @@ $('#subjectSelection').append(fragment);
  
             focusProduct = products.find((e)=>{return e.id == focusProductId})
 
-           
+           console.log('fp1', focusProduct)
 
-            drawView(focusProduct)
+       //     drawView(focusProduct)
             $('#subjectSelection').off('change').on('change', function () {
                 let selected = $(this).val();
                  
@@ -598,7 +618,7 @@ const collatedInfoStores = focusProduct.instances?.reduce((acc, instance) => {
 }, []);
 
 focusProduct['infoStores']=collatedInfoStores;
-
+console.log('fp', focusProduct)
 $('#mainPanel').html(panelTemplate(focusProduct))
 
 calculateCosts(focusProduct)

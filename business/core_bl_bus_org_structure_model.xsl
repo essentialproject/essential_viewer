@@ -74,7 +74,15 @@
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="processManagerRole" select="/node()/simple_instance[(type = 'Individual_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Process Manager')]"/>
 	<xsl:variable name="processManagerStakeholders" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $processManagerRole/name]"/>
-	<xsl:variable name="maxDepth" select="6"/>
+	<xsl:key name="allA2R" match="/node()/simple_instance[(type = 'ACTOR_TO_ROLE_RELATION')]" use="own_slot_value[slot_reference = 'act_to_role_to_role']/value" />
+	
+	<xsl:variable name="processManagerStakeholders2" select="key('allA2R',  $processManagerRole/name)"/>
+	<xsl:key name="allPhysProcs" match="/node()/simple_instance[(type = 'Physical_Process')]" use="name" />
+	<xsl:key name="allSites" match="/node()/simple_instance[(type = 'Site')]" use="name" />
+	<xsl:key name="allLocations" match="/node()/simple_instance[(type = 'Geographic_Region')]" use="name" />
+	<xsl:key name="allActors" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="name" />
+	<xsl:key name="allActorsType" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="type" />
+	<xsl:variable name="maxDepth" select="5"/>
 
 	<xsl:variable name="rootOrgID">
 		<xsl:choose>
@@ -93,7 +101,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="parentActor" select="/node()/simple_instance[name = $rootOrgID]"/>
-	<xsl:variable name="relevantActors" select="$allActors"/>
+	<xsl:variable name="relevantActors" select="key('allActorsType', ('Group_Actor', 'Individual_Actor'))"/>
 	<xsl:variable name="parentActorName" select="$parentActor/own_slot_value[slot_reference = 'name']/value"/>
 
 	<!--
@@ -169,7 +177,7 @@
 				<title>
 					<xsl:value-of select="$pageLabel"/>
 				</title>
-
+ 
 				<!--CSS and JS links to Support InfoVis SpaceTree-->
 				<style>
 					.text{
@@ -646,7 +654,7 @@
 								<ul>
 									<xsl:for-each select="$actorSite">
 										<xsl:variable name="actorSiteName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="siteLocation" select="$allLocations[name = current()/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+										<xsl:variable name="siteLocation" select="key('allLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 										<xsl:variable name="siteLabel">
 											<xsl:choose>
 												<xsl:when test="count($siteLocation) > 0">
@@ -709,11 +717,11 @@
 						<xsl:variable name="physProc" select="$physProcs[name = current()/own_slot_value[slot_reference = 'product_implemented_by_process']/value]"/>
 
 						<xsl:variable name="physProcManagerActor2Role" select="$processManagerStakeholders[name = $physProc/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-						<xsl:variable name="physProcManagerFromRole" select="$allActors[name = $physProcManagerActor2Role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
-						<xsl:variable name="physProcManagerDEPRECATED" select="$allActors[name = $physProc/own_slot_value[slot_reference = 'process_manager']/value]"/>
+						<xsl:variable name="physProcManagerFromRole" select="key('allActors', $physProcManagerActor2Role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value)"/>
+						<xsl:variable name="physProcManagerDEPRECATED" select="key('allActors',  $physProc/own_slot_value[slot_reference = 'process_manager']/value)"/>
 						<xsl:variable name="physProcManager" select="$physProcManagerFromRole union $physProcManagerDEPRECATED"/>
 						<!--<xsl:variable name="physProcManagerName" select="$physProcManager/own_slot_value[slot_reference = 'name']/value"/>-->
-						<xsl:variable name="sites" select="$allSites[name = $physProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value]"/>
+						<xsl:variable name="sites" select="key('allSites', $physProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value)"/>
 
 						<!-- Print out the name of the actor that manages the process that produces the product -->
 						<td>
@@ -728,9 +736,9 @@
 						<xsl:choose>
 							<!-- If there is no site associated with the physical process, print out the location of the base site for the manager of the process -->
 							<xsl:when test="count($sites) = 0">
-								<xsl:variable name="actorSite" select="$allSites[name = $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
+								<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
 								<xsl:variable name="actorSiteName" select="$actorSite/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="siteLocation" select="$allLocations[name = $actorSite/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+								<xsl:variable name="siteLocation" select="key('allLocations',$actorSite/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 								<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 								<!-- Print out the name of the location where the actor is based -->
 								<td>
@@ -751,8 +759,8 @@
 
 							<!-- If there is only one site associated with the physical process, print out the location of the this site -->
 							<xsl:when test="count($sites) = 1">
-								<xsl:variable name="actorSite" select="$allSites[name = $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-								<xsl:variable name="siteLocation" select="$allLocations[name = $sites/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+								<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
+								<xsl:variable name="siteLocation" select="key('allLocations', $sites/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 								<xsl:variable name="actorSiteName" select="$sites/own_slot_value[slot_reference = 'name']/value"/>
 								<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 								<!-- Print out the name of the location where the actor is based -->
@@ -777,8 +785,8 @@
 								<td>
 									<ul>
 										<xsl:for-each select="$sites">
-											<xsl:variable name="actorSite" select="$allSites[name = $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
-											<xsl:variable name="siteLocation" select="$allLocations[name = current()/own_slot_value[slot_reference = 'site_geographic_location']/value]"/>
+											<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
+											<xsl:variable name="siteLocation" select="key('allLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 											<xsl:variable name="actorSiteName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
 											<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 											<li>

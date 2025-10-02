@@ -356,6 +356,7 @@
 					"<xsl:value-of select="eas:getSafeJSString($thisActors/name)"/>"<xsl:if test="position()!=last()">,</xsl:if>
 			</xsl:for-each>],  
 			"programme":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'contained_in_programme']/value"/>",
+			"visId":["<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='system_content_lifecycle_status']/value)"/>"],
 			"budget":[<xsl:for-each select="$thisBudgetElements">{
 						"recurrence":"<xsl:value-of select="current()/type"/>",
 					<!--	"ccy":"<xsl:value-of select="$currency[name=current()/own_slot_value[slot_reference='cc_cost_currency']/value]/name"/>",-->

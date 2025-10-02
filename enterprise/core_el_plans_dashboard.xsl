@@ -77,7 +77,7 @@
 	<xsl:variable name="allPlan" select="key('plans_key',$allP2E/name)"/>
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Service', 'Application_Provider_Interface', 'Application_Provider', 'Business_Process', 'Application_Strategic_Plan', 'Site', 'Group_Actor', 'Technology_Component', 'Technology_Product', 'Infrastructure_Software_Instance', 'Hardware_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Technology_Node', 'Individual_Actor', 'Application_Function', 'Application_Function_Implementation', 'Enterprise_Strategic_Plan', 'Information_Representation','Programme','Enterprise_Strategic_Plan','Project','Roadmap')"/>
+	<xsl:variable name="linkClasses" select="('Application_Service', 'Composite_Application_Service', 'Application_Provider_Interface', 'Application_Provider', 'Composite_Application_Provider', 'Application_Provider_Interface', 'Business_Capability', 'Business_Process', 'Application_Strategic_Plan', 'Site', 'Group_Actor', 'Technology_Component', 'Technology_Product', 'Infrastructure_Software_Instance', 'Hardware_Instance', 'Application_Software_Instance', 'Information_Store_Instance', 'Technology_Node', 'Individual_Actor', 'Application_Function', 'Application_Function_Implementation', 'Enterprise_Strategic_Plan', 'Information_Representation','Programme','Enterprise_Strategic_Plan','Project','Roadmap')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	<xsl:variable name="appsTechData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Applications to Technology']"/>
 	<xsl:variable name="processData" select="$utilitiesAllDataSetAPIs[own_slot_value[slot_reference = 'name']/value = 'Core API: Import Business Processes']"></xsl:variable>
@@ -752,6 +752,101 @@
 						border: 1px solid black;
 						border-radius: 10px 0px 10px 0px;
 					}
+ .service-card-container {
+						display: flex;
+						align-items: center;
+						flex-wrap: wrap;
+						flex-direction: row;
+					  }
+					  .service-card-container .card {
+						width: 100%;
+						max-width: 200px;
+						height: 120px;
+						border-radius: 6px;
+						overflow: hidden;
+						box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+						background-color: #fff;
+						transition: transform 0.3s ease, box-shadow 0.3s ease;
+						display: flex;
+						flex-direction: column;
+						position: relative;
+						margin: 3px;
+					  }
+					  .service-card-container .card:hover {
+						transform: translateY(-5px);
+						box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+					  }
+					  
+					  .service-card-container .card .c-header {
+						padding: 8px;
+						background-color: #91d7c9;
+						color: white;
+						position: relative;
+					  }
+				 
+					  .service-card-container .card .header-title-box {
+						display: inline-block;
+						background-color: rgba(0, 0, 0);
+						padding: 2px 6px;
+						border-radius: 4px;
+						margin-bottom: 4px;
+						font-weight: 500;
+						font-size: 10px;
+					  }
+					  .header-title-box a {
+						color: white !important;
+						font-weight: 800;
+					  }
+					  
+					  .service-card-container .card .c-body {
+						padding: 6px;
+						line-height: 1.2;
+						color: #333;
+						font-size: 12px;
+						flex: 1;
+						overflow-y: auto;
+						scrollbar-width: thin;
+					  }
+					  
+					  .service-card-container .card .c-body p {
+						margin-bottom: 4px;
+					  }
+
+					  .service-card-container .c-body p {
+						margin-bottom: 4px;
+					  }
+					  
+					  .service-card-container .c-body::-webkit-scrollbar {
+						width: 4px;
+					  }
+					  
+					  .service-card-container .c-body::-webkit-scrollbar-thumb {
+						background-color: #ddd;
+						border-radius: 4px;
+					  }
+					  
+					  .service-card-container .c-footer {
+						padding: 6px 8px;
+						background-color: #f8f9fa;
+						border-top: 1px solid #e9ecef;
+						display: flex;
+						justify-content: flex-end;
+						align-items: center;
+						font-size: 11px;
+					  }
+
+					  .service-card-pops{
+						display: inline-block;
+						background-color: #7e968f;
+						color:#fff;
+						font-weight:bold;
+						border: 1pt solid #d3d3d3;
+						padding: 2px 6px;
+						border-radius: 4px;
+						margin-bottom: 4px;
+						font-weight: 500;
+						font-size: 10px;
+					  }
 					
 				 
 				</style>
@@ -762,6 +857,8 @@
 			<body>
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
+
+				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
 			<!--
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
 			-->
@@ -843,6 +940,7 @@
 			</body>
 			<script>
                     $(document).ready(function(){
+					$('#viewpoint-bar').hide();
                         var windowHeight = $(window).height();
 						var windowWidth = $(window).width();
                         $('.simple-scroller').scrollLeft(windowWidth/2);
@@ -886,7 +984,7 @@
 					{{/if}}
 				</div>
 				<div class="plan-attr-wrapper top-10" style="display: flex; gap:10px;">
-					<div class="infoBlock" style="background-color: var(--yellow);">{{this.p2e.length}}<span><xsl:value-of select="eas:i18n('Impacts')"/></span>
+					<div class="infoBlock" style="background-color: var(--yellow);"><span><xsl:value-of select="eas:i18n('Impacts')"/></span>
 					<i class="fa fa-info-circle impactsInfo left-5"><xsl:attribute name="impactid">{{this.id}}</xsl:attribute></i>
 
 					</div>
@@ -1259,7 +1357,30 @@
 	
 <script id="impacts-template" type="text/x-handlebars-template">
 	<h3><xsl:value-of select="eas:i18n('Impacts')"/></h3>
+ <div class="service-card-container">
+		{{#each this.p2e}}
+		<div class="card">
+			<div class="c-header">
+			<div class="header-title-box" style="color:white !important"><b>{{this.eletype}}</b>
+			</div>
+			</div>
+			<div class="c-body">
+			<b>{{#essRenderInstanceMenuLink this.instance}}{{/essRenderInstanceMenuLink}}</b>
+			</div>
+			<div class="c-footer">
+			<p> 
+				<div  class="service-card-pops">
+					<b>
+					{{this.action}}
+					</b> 
+				</div>  
+			</p>
+			</div>
+		</div>
+		{{/each}}
 
+</div>
+<!--
 	<div class="monopoly-card-container">
 	{{#each this.p2e}}
 		<div class="monopoly-card">
@@ -1269,6 +1390,7 @@
 		</div>  
 	{{/each}}
 	</div>
+-->
 </script>	 
 <script id="life-template" type="text/x-handlebars-template">
 Project Status:
@@ -1877,7 +1999,7 @@ var redrawView = function () {
     newProjectToShow['posCount'] = projectToShow.posCount;
 
     // Draw view with new resources
-    drawView(newPlanToShow, newProjectToShow, newRoadmapsToShow)
+    drawView(newPlanToShow, newProjectToShow, roadmaps)
 }
 
 // Draw view by filtering out plans without any projects and creating dataset
@@ -2278,7 +2400,7 @@ thisPlans.forEach((d) => {
 
 	cleanRoadmap.splice(index+1, 0, ...plansToUse);
 	cleanRoadmap['years']=thisRoadmaps.years
- 
+ //console.log('cleanRoadmap', cleanRoadmap)
 	$('#roadmapsSvg').attr('height', (cleanRoadmap.length + 1) * 48);
 	$('#roadmapsSvg').html(roadmapsvgwithPlansTemplate(cleanRoadmap)) 
 	focusRM['selected']='';
@@ -2339,7 +2461,14 @@ thisPlans.forEach((d) => {
 	$('.impactsInfo').on('click' , function(){
 			let thisId=$(this).attr('impactid')
 			let focusPlan=planMatch.projects.find((e)=>{return e.id==thisId});
-	 
+	//	console.log('focusPlan', focusPlan)
+		focusPlan.p2e.forEach((imp)=>{
+			imp['className']=imp.eletype.replace(/ /g, '_');
+		})
+ 
+		focusPlan.p2e.forEach((imp)=>{
+			imp['instance']={"id": imp.impactedElement, "name": imp.name, "className": imp.className};
+		})
 			$('#slideUpData').html(impactsTemplate(focusPlan));
 			$('#appPanel').show( "blind",  { direction: 'down', mode: 'show' },200 );
 			
@@ -2806,6 +2935,7 @@ return dataObject;  // Optionally return the modified object for further use
 			"actionid":"<xsl:value-of select="eas:getSafeJSString($thisAction/name)"/>",
 			"impactedElement":"<xsl:value-of select="eas:getSafeJSString($ele/name)"/>",
 			"eletype":"<xsl:value-of select="translate($ele/type,'_',' ')"/>",
+			"className":"<xsl:value-of select="$ele/type"/>",
 			"type":"<xsl:value-of select="$ele/supertype"/>",
 			"planid":"<xsl:value-of select="eas:getSafeJSString($thisPlan/name)"/>",
 			<xsl:variable name="combinedMap" as="map(*)" select="map{
@@ -2837,6 +2967,7 @@ return dataObject;  // Optionally return the modified object for further use
 		}
      
 		function essGetMenuName(instance) { 
+		
 			let menuName = null;
 			if(instance.meta?.anchorClass) {
 				menuName = esslinkMenuNames[instance.meta.anchorClass];
@@ -2847,6 +2978,7 @@ return dataObject;  // Optionally return the modified object for further use
 		}
 		
 		Handlebars.registerHelper('essRenderInstanceMenuLink', function(instance){
+			
 			if(instance != null) {
                 let linkMenuName = essGetMenuName(instance); 
 				let instanceLink = instance.name;   

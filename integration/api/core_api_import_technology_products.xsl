@@ -180,6 +180,11 @@
           }"></xsl:variable>
           <xsl:variable name="result" select="serialize($combinedMap, map{'method':'json', 'indent':true()})"/>
           <xsl:value-of select="substring-before(substring-after($result, '{'), '}')"/>,
+           <xsl:variable name="nodeMap" as="map(*)" select="map{
+            'name': string(translate(translate($node/own_slot_value[slot_reference = ('name')]/value, '}', ')'), '{', ')'))
+          }"></xsl:variable>
+          <xsl:variable name="nodeResult" select="serialize($nodeMap, map{'method':'json', 'indent':true()})"/>
+          "nodeObject":{"id":"<xsl:value-of select="eas:getSafeJSString($node/name)"/>", <xsl:value-of select="substring-before(substring-after($nodeResult, '{'), '}')"/>, "className":"<xsl:value-of select="$node/type"/>"},
           "infoStores":[<xsl:for-each select="$infoStoreInstances">
             <xsl:variable name="runtime" select="$deployments[name=current()/own_slot_value[slot_reference = ('technology_instance_deployment_status')]/value]"/>  
             <xsl:variable name="infoStore" select="key('info_store', current()/own_slot_value[slot_reference = ('instance_of_information_store')]/value)"/>

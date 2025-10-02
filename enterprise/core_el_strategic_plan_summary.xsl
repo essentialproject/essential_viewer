@@ -1567,8 +1567,9 @@ document.querySelectorAll('.objcard').forEach(card => {
     </xsl:call-template>
 -->
 <xsl:variable name="elementName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'name']/value"/>
-<xsl:variable name="elementRelationName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_name']/value"/>
-<xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'description']/value"/>  
+<xsl:variable name="elementRelationName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_name']/value"/> 
+<!-- <xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'description']/value"/>  -->
+<xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_description']/value"/>
 <xsl:choose>
 	<xsl:when test="count($action)>1">
 		<xsl:variable name="main" select="current()"/>
@@ -1593,7 +1594,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 		{
 			"id":"<xsl:value-of select="current()/name"/>",
 			<xsl:variable name="temp" as="map(*)" select="map{
-				'description': string(translate(translate(current()/own_slot_value[slot_reference = ('relation_description')]/value, '}', ')'), '{', ')')),
+				'description': string(translate(translate($elementDesc, '}', ')'), '{', ')')),
 				'name': string(current()/own_slot_value[slot_reference = 'name']/value)
 			}"></xsl:variable>
 			<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  

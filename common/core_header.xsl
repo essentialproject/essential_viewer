@@ -72,7 +72,7 @@
 	<xsl:key name="utilitiesAllPDFConfigs_key" match="$utilitiesAllPDFConfigs" use="own_slot_value[slot_reference = 'report_pdf_config_is_default']/value"/>
 	
 	<xsl:variable name="dynQueryInstance" select="$utilitiesAllEditors[(own_slot_value[slot_reference='name']/value = 'SYS: DYNAMIC QUERY TOOL')]"/>
- 
+ 	<xsl:variable name="headerThisReportId" select="key('utilitiesAllReports_key',$theCurrentXSL)"/> 
 	<xsl:variable name="homeHref">
 		<xsl:choose>
 			<xsl:when test="count($portalConstant) &gt; 0">
@@ -181,13 +181,13 @@
 			</noscript>
 		</xsl:if>
 		<!-- End Piwik Code -->
-		<nav class="{$headerStyle}" id="mainHeader">
+		<nav class="{$headerStyle}" id="mainHeader" role="navigation" aria-label="Main navigation">
 			<div class="container-fluid">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
-					<a class="navbar-brand" onclick="location.href='{$homeHref}';">
+					<a class="navbar-brand" onclick="location.href='{$homeHref}';" role="button" tabindex="0" aria-label="Go to home page">
 						<div class="tenant-logo">
-							<img alt="tenant logo">
+							<img>
 								<xsl:variable name="allViewerStyles" select="/node()/simple_instance[type = 'Viewer_Styling']"/>
 								<xsl:variable name="activeViewerStyle" select="$allViewerStyles[own_slot_value[slot_reference = 'style_is_active']/value = 'true'][1]"/>
 								<xsl:choose>
@@ -198,10 +198,11 @@
 										<xsl:attribute name="src">images/eas_logo_2014_white.png</xsl:attribute>
 									</xsl:otherwise>
 								</xsl:choose>
+								<xsl:attribute name="alt">Tenant logo</xsl:attribute>
 							</img>
 						</div>
 					</a>
-					<button class="pull-right navbar-toggle collapsed">
+					<button class="pull-right navbar-toggle collapsed" aria-label="Toggle navigation" aria-controls="nav-collapse" aria-expanded="false">
 						<span class="sr-only"><xsl:value-of select="eas:i18n('Toggle navigation')"/></span>
 						<i class="fa fa-bars collapsed text-white" style="font-size:28px;" data-toggle="collapse" data-target="#nav-collapse"/>
 					</button>
@@ -210,12 +211,12 @@
 
 				<div class="row">
 					<!-- Collect the nav links, forms, and other content for toggling -->
-					<div class="collapse navbar-collapse" id="nav-collapse">
+					<div class="collapse navbar-collapse" id="nav-collapse" role="navigation" aria-label="Primary navigation">
 
 						<ul class="nav navbar-nav navbar-right">
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Share')"/>
-								<a href="#" id="shareLink">
+								<a href="#" id="shareLink" role="button" tabindex="0" aria-label="Share this page">
 									<i class="fa fa-share-alt"/>
 								</a>
 								<div class="popover">
@@ -227,7 +228,7 @@
 							</li>
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Search')"/>
-								<a href="#" id="searchLink">
+								<a href="#" id="searchLink" role="button" tabindex="0" aria-label="Search">
 									<i class="fa fa-search"/>
 								</a>
 							</li>
@@ -235,17 +236,16 @@
 							<xsl:if test="($eipMode = 'true') and $dynQueryInstance">
 								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 									<xsl:attribute name="title" select="eas:i18n('Query')"/>
-									<a id="queryLink" target="_blank">
+									<a id="queryLink" target="_blank" role="button" tabindex="0" aria-label="Open query tool">
 										<xsl:attribute name="href" select="concat('report?XML=reportXML.xml&amp;PMA=&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Dynamic%20Query%20Tool&amp;SECTION=&amp;EDITOR=',$dynQueryInstance/name)"/>
 										<i class="fa fa-table"/>
 									</a>
-									
 								</li>
 							</xsl:if>
 							<xsl:if test="($eipMode = 'true') and eas:compareVersionNumbers($thisRepoVersion, '6.6')">
 								<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 									<xsl:attribute name="title" select="eas:i18n('Comments')"/>
-									<a href="#" id="commentLink" onclick="toggleComments();setTimeout(initCommentJS,500);">
+									<a href="#" id="commentLink" onclick="toggleComments();setTimeout(initCommentJS,500);" role="button" tabindex="0" aria-label="Show comments">
 										<i class="fa fa-comment-o"/>
 										<span id="comments-badge" class="badge"/>
 									</a>
@@ -253,14 +253,14 @@
 								<xsl:if test="$sysIdeationIsOn">
 									<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 										<xsl:attribute name="title" select="eas:i18n('Ideas')"/>
-										<a href="#" id="ideaLink" onclick="toggleIdeas();setTimeout(initIdeasJS,600);">
+										<a href="#" id="ideaLink" onclick="toggleIdeas();setTimeout(initIdeasJS,600);" role="button" tabindex="0" aria-label="Show ideas">
 											<i class="fa fa-lightbulb-o"/>
 											<span id="ideas-badge" class="badge"/>
 										</a>
 									</li>
 									<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 										<xsl:attribute name="title" select="eas:i18n('Approvals')"/>
-										<a href="#" id="approvalLink">
+										<a href="#" id="approvalLink" role="button" tabindex="0" aria-label="Show approvals">
 											<xsl:call-template name="RenderLinkHref">
 												<xsl:with-param name="theXSL" select="'enterprise/core_el_approvals_dashboard.xsl'"/>
 											</xsl:call-template>
@@ -272,37 +272,37 @@
 							</xsl:if>
 							<li class="disabled" data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Roadmaps')"/>
-								<a href="#" id="ess-roadmap-widget-toggle">
+								<a href="#" id="ess-roadmap-widget-toggle" role="button" tabindex="0" aria-label="Show roadmaps">
 									<i class="fa fa-road" style="position: relative; top: 1px;"/>
 								</a>
 							</li>
 							<li>
 								<xsl:attribute name="title" select="eas:i18n('Print')"/>
-								<a href="#" onclick="window.print();">
+								<a href="#" onclick="window.print();" role="button" tabindex="0" aria-label="Print this page">
 									<i class="fa fa-print" style="position:relative; top: 1px;"/>
 								</a>
 							</li>
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Feedback')"/>
-								<a href="#" id="feedbackLink">
+								<a href="#" id="feedbackLink" role="button" tabindex="0" aria-label="Send feedback">
 									<i class="fa fa-envelope"/>
 								</a>
 							</li>
 							<li data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('History')"/>
-								<a href="#" id="historyLink">
+								<a href="#" id="historyLink" role="button" tabindex="0" aria-label="Show history">
 									<i class="fa fa-history"/>
 								</a>
 							</li>
 							<li class="dropdown" data-toggle="tooltip" data-placement="bottom" data-container="body">
 								<xsl:attribute name="title" select="eas:i18n('Utilities')"/>
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button" tabindex="0" aria-label="Utilities">
 									<!--Utilities&#160;<span class="caret"/>-->
 									<i class="fa fa-gear"/>
 								</a>
 								<ul class="dropdown-menu" role="menu">
 									<li>
-										<a>
+										<a role="menuitem" tabindex="0">
 											<xsl:call-template name="CommonRenderLinkHref">
 												<xsl:with-param name="theXSL">view_manual/view_manual_catalogue.xsl</xsl:with-param>
 											</xsl:call-template>
@@ -398,9 +398,17 @@
 										<style>#language_select > a {min-width:30px;min-height:15px;}#language_select > a > img {width:30px;height:15px;background-repeat:no-repeat;background-position:center;vertical-align:baseline;background-image:url("<xsl:value-of select="$flagFileImage"/>");}</style>
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown"><xsl:value-of select="$userData//user:firstname"/>&#160;<xsl:value-of select="$userData//user:lastname"/>&#160;<span class="caret"/></a>
 										<ul class="dropdown-menu" role="menu">
-											<li id="language_select">
-												<a class="text-primary right-5" href="#"><xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="flag"/></a>
-											</li>
+									<li id="language_select">
+										<a class="text-primary right-5" href="#" role="button" tabindex="0" aria-label="Select language">
+											<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>&#160;&#160;
+											<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+												<xsl:attribute name="alt">
+													<xsl:text>Flag for </xsl:text>
+													<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>
+												</xsl:attribute>
+											</img>
+										</a>
+									</li>
 											<li class="divider"/>
 											<li>
 												<a href="logout">Logout</a>
@@ -410,7 +418,7 @@
 								</xsl:when>
 								<xsl:otherwise>
 									<li id="language_select">
-										<a class="text-primary" href="#">
+										<a class="text-primary" href="#" role="button" tabindex="0" aria-label="Select language">
 											<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference = 'lang_native_name']/value"/>
 										</a>
 									</li>
@@ -427,10 +435,10 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<div id="searchOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc; display: none;">
-					<i class="fa fa-times closeHeaderOverlay"/>
+				<div id="searchOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc; display: none;" role="dialog" aria-modal="true" aria-labelledby="searchOverlayLabel">
+					<i class="fa fa-times closeHeaderOverlay" role="button" tabindex="0" aria-label="Close search overlay"/>
 					<div class="verticalSpacer_20px"/>
-					<form action="report" method="get" class="-navbar-form navbar-left">
+					<form action="report" method="get" class="-navbar-form navbar-left" aria-label="Site search form">
 						<div class="form-group">
 							<input type="hidden" name="XSL" value="common/core_search_results.xsl"/>
 							<input type="hidden" name="XML">
@@ -441,20 +449,20 @@
 								<span class="input-group-addon">
 									<i class="fa fa-search"/>
 								</span>
-								<input type="search" id="SearchQuery" name="SearchQuery" class="form-control" placeholder="Search" style="width: 98%"/>
+								<label for="SearchQuery" class="sr-only"><xsl:value-of select="eas:i18n('Search')"/></label>
+								<input type="search" id="SearchQuery" name="SearchQuery" class="form-control" placeholder="Search" style="width: 98%" aria-label="Search"/>
 							</div>
 						</div>
 						<!--<button type="submit" class="btn btn-default back-green">Search</button>-->
 					</form>
-
 				</div>
 				
 				<xsl:variable name="headerThisReport" select="key('utilitiesAllReports_key',$theCurrentXSL)"/> 
 				
-				<div id="historyOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;">
-					<i class="fa fa-times closeHeaderOverlay"/>
+				<div id="historyOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;" role="dialog" aria-modal="true" aria-labelledby="historyOverlayLabel">
+					<i class="fa fa-times closeHeaderOverlay" role="button" tabindex="0" aria-label="Close history overlay"/>
 					<div class="verticalSpacer_20px"/>
-					<h2>
+					<h2 id="historyOverlayLabel">
 						<xsl:value-of select="eas:i18n('Essential Viewer History')"/>
 					</h2>
 					<p><xsl:value-of select="eas:i18n('Below is a list of the most recent pages viewed in Essential Viewer')"/>.</p>
@@ -464,21 +472,21 @@
 					</div>
 				</div>
 
-				<div id="feedbackOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;">
-					<i class="fa fa-times closeHeaderOverlay"/>
+				<div id="feedbackOverlay" class="col-xs-12 bg-offwhite headerOverlay" style="border-bottom:1px solid #ccc;display: none;" role="dialog" aria-modal="true" aria-labelledby="feedbackOverlayLabel">
+					<i class="fa fa-times closeHeaderOverlay" role="button" tabindex="0" aria-label="Close feedback overlay"/>
 					<div class="verticalSpacer_20px"/>
-					<h2>
+					<h2 id="feedbackOverlayLabel">
 						<xsl:value-of select="eas:i18n('Get In Touch')"/>
 					</h2>
-					<form action="#" method="post" enctype="multipart/form-data" id="EmailFeedbackForm" name="EmailFeedbackForm">
-						<strong><xsl:value-of select="eas:i18n('Name')"/>:</strong>
+					<form action="#" method="post" enctype="multipart/form-data" id="EmailFeedbackForm" name="EmailFeedbackForm" aria-label="Feedback form">
+						<strong><label for="FeedbackFormNameBox"><xsl:value-of select="eas:i18n('Name')"/>:</label></strong>
 						<br/>
-						<input id="FeedbackFormNameBox" type="text" name="VisitorName" style="width:100%"/>
+						<input id="FeedbackFormNameBox" type="text" name="VisitorName" style="width:100%" aria-label="Your name"/>
 						<br/>
 						<br/>
-						<strong><xsl:value-of select="eas:i18n('Feedback Type')"/>:</strong>
+						<strong><label for="FeedbackFormList"><xsl:value-of select="eas:i18n('Feedback Type')"/>:</label></strong>
 						<br/>
-						<select id="FeedbackFormList" name="feedbacktype">
+						<select id="FeedbackFormList" name="feedbacktype" aria-label="Feedback type">
 							<option value="Choose from the List">
 								<xsl:value-of select="eas:i18n('Select an Option')"/>
 							</option>
@@ -497,9 +505,9 @@
 						</select>
 						<br/>
 						<br/>
-						<strong><xsl:value-of select="eas:i18n('Your Comment')"/>:</strong>
+						<strong><label for="FeedbackFormCommentBox"><xsl:value-of select="eas:i18n('Your Comment')"/>:</label></strong>
 						<br/>
-						<textarea id="FeedbackFormCommentBox" name="VisitorComment" rows="9" style="width:100%"/>
+						<textarea id="FeedbackFormCommentBox" name="VisitorComment" rows="9" style="width:100%" aria-label="Your comment"/>
 						<br/>
 						<br/>
 						<!-- Set global or specific content owner email addresses as the recipients of the feedback form -->
@@ -522,7 +530,7 @@
 						</input>
 						<!-- Set the hidden field value to the URI of the current page -->
 						<input type="hidden" name="pageLink" id="feedbackPageLink"/>
-						<input type="button" value="Email This Form" onclick="emailForm()"/>
+						<input type="button" value="Email This Form" onclick="emailForm()" aria-label="Send feedback"/>
 					</form>
 					<div class="verticalSpacer_20px"/>
 				</div>

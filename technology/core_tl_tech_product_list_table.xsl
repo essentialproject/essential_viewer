@@ -203,7 +203,7 @@
  
 						<div class="clearfix bottom-10"/>	
                         <div class="col-xs-12"> 
-                            <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" id="dt_Capabilities">
+                            <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" id="dt_tech_prod_table">
 								<thead>
 									<tr id="headerRow">
 										<!-- Headers will be appended here -->
@@ -684,7 +684,7 @@
 					$('#footerRow').append('<th>' + d.title + '</th>');
 				})
          
-				$('#dt_Capabilities tfoot th').each(function () {
+				$('#dt_tech_prod_table tfoot th').each(function () {
 		            var title = $(this).text();
 					var titleid=title.replace(/ /g, "_");
 				 
@@ -692,7 +692,7 @@
 		        });
 	 
 				// Initialize DataTable with dynamic columns
-			 table = $("#dt_Capabilities").DataTable({
+			 table = $("#dt_tech_prod_table").DataTable({
 				"paging": false,
 				"deferRender": true,
 				"scrollY": 350,

@@ -25,6 +25,8 @@
 	 <xsl:variable name="relevantActor2Roles" select="$allActor2Roles[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $relevantRoles/name]"/>
 	 <xsl:variable name="relevantActors" select="/node()/simple_instance[supertype='Actor'][name = $relevantActor2Roles/own_slot_value[slot_reference = 'act_to_role_from_actor']/value]"/>
 	 <xsl:variable name="contentStatus" select="/node()/simple_instance[type='SYS_CONTENT_APPROVAL_STATUS']"/>
+	 <xsl:variable name="srLifecycleStatus" select="/node()/simple_instance[type='Strategic_Requirement_Lifecycle_Status']"/>
+	 
 	 <xsl:variable name="maxDepth" select="6"/>
  
 	<!--
@@ -132,6 +134,20 @@
 					"color":"hsla(300, 76%, 72%, 1)",
 					"values": [
 						<xsl:apply-templates mode="RenderBasicScopeJSONEnum" select="$contentStatus">
+							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
+						</xsl:apply-templates>
+					]
+				},
+				{
+					"id": "Strategic_Requirement_Lifecycle_Status",
+					"name": "Strategic Requirement Lifecycle Status",
+					"valueClass": "Strategic_Requirement_Lifecycle_Status",
+					"description": "The strategic lifecycles status of the item",
+					"isGroup": false,
+					"icon": "fa-time",
+					"color":"hsla(31, 100%, 50%, 1)",
+					"values": [
+						<xsl:apply-templates mode="RenderBasicScopeJSONEnum" select="$srLifecycleStatus">
 							<xsl:sort select="own_slot_value[slot_reference='name']/value"/>
 						</xsl:apply-templates>
 					]
