@@ -85,8 +85,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Application Footprint Comparison')"/></title>
-				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js"/>
 				
 				<xsl:call-template name="refModelLegendInclude"/>
 				<xsl:call-template name="appRefModelComparisonInclude"/>

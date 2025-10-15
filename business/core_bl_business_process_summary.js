@@ -158,7 +158,8 @@ $('document').ready(function () {
     var dataTemplateFragment = $("#dataTable-template").html();
     dataTemplate = Handlebars.compile(dataTemplateFragment);
  
-  
+    var appTableTemplateFragment = $("#appTable-template").html();
+    appTemplate = Handlebars.compile(appTableTemplateFragment);
 
     Promise.all([
         promise_loadViewerAPIData(viewAPIDataProcess),
@@ -1040,6 +1041,10 @@ paper.on('blank:pointerup', () => {
  
     graph.clear();
     graph.fromJSON(diagramData);
+    //Start on load fit to screen
+	paper.scaleContentToFit({ padding: 20, scaleGrid: 0.05 });
+    currentZoom = paper.scale().sx;
+    //End on load fit to screen
     generateStepTable(diagramData)
 }
 
@@ -1076,7 +1081,7 @@ function generateStepTable(jsonData){
 
         // --- Setup and Parsing (runs once) ---
         function initializeBPMNData(jsonData) {
-            console.log('jsonD', jsonData)
+      
             // Reset global stores
             nodes = {};
             adj = {};
@@ -1123,8 +1128,8 @@ function generateStepTable(jsonData){
 
                          
                         const apps = (processToAppsByActivityId[processoractityId] ?? processToAppsByProcessId[processoractityId]);
-                        console.log('apps for', processoractityId, apps);
-                        //add apps logic here
+                    
+                        cell['apps']= apps;
                     }
                 });
 
@@ -1132,7 +1137,7 @@ function generateStepTable(jsonData){
                 }
  
                 const enriched  = enrichDataAssociations(jsonData);
-                console.log('enriched', enriched.cells);
+             //   console.log('enriched', enriched.cells);
 
             const cells = enriched.cells;
             const tempFlows = []; // Temporary for building adj list
@@ -1144,6 +1149,7 @@ function generateStepTable(jsonData){
                 if (nodeTypes.includes(cell.type)) {
                     nodes[cell.id] = {
                         id: cell.id,
+                        apps: cell.apps,
                         data: cell.data,
                         essid: cell.usageId,
                         name: cell.attrs.label ? cell.attrs.label.text : 'Unnamed',
@@ -1353,7 +1359,10 @@ function generateStepTable(jsonData){
 
                 const cellRow = row.insertCell();
                 cellRow.textContent = step.rowName;
-                
+
+                const cellApps = row.insertCell();
+                cellApps.innerHTML = appTemplate(step.apps);
+            
                 const cellData = row.insertCell();
                 cellData.innerHTML = dataTemplate(step.data);
 

@@ -129,10 +129,10 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
 				<link rel="stylesheet" href="js/jstree/themes/default/style.min.css" />
-				<script src="js/jstree/jstree.min.js?release=6.19"/>
-				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"/>
-                <script src="js/dagre/dagre.min.js?release=6.19"></script>
-				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script> 
+				<script src="js/jstree/jstree.min.js"/>
+				<script src="js/d3/d3.v5.9.7.min.js"/>
+                <script src="js/dagre/dagre.min.js"></script>
+				<script src="js/dagre/dagre-d3.min.js"></script> 
  
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

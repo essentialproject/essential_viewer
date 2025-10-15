@@ -319,10 +319,10 @@
             </xsl:for-each>
             <title>Essential Assistant</title>
             <!--	<script type="text/javascript"
-                 src="js/json-rules-engine/dist/json-rules-engine.js?release=6.19">  
+                 src="js/json-rules-engine/dist/json-rules-engine.js">  
                  </script>	 -->
-            <script src="js/exceljs/exceljs.min.js?release=6.19"></script>		     
-            <script src="js/FileSaver.min.js?release=6.19"></script>   
+            <script src="js/exceljs/exceljs.min.js"></script>		     
+            <script src="js/FileSaver.min.js"></script>   
 <style>
                .minText{
                font-size: 0.8em;

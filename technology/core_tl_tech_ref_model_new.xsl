@@ -250,7 +250,7 @@
 					}
 					
 					.techRefModel-blob a {
-						color: white;
+						color: black;
 					}
 					
 					.refModel-l1-title a {

@@ -97,7 +97,7 @@
 		<script src="js/jquery.matchHeight.js?release=6.18" type="text/javascript"/>
 		<script src="js/select2/js/select2.full.min.js?release=6.18"/>
 		<!-- Handlebars templating library -->
-		<script src="js/handlebars/handlebars.min.js?release=6.19"/>
+		<script src="js/handlebars/handlebars.min.js"/>
 		<!-- Date formatting library -->
 		<script src="js/moment/moment.js?release=6.18"/>
 		<!--Help text and tour library-->

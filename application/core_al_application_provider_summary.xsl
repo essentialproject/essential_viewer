@@ -156,22 +156,22 @@
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Application Summary')"/></title>
 
-				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
-				<script src="js/chartjs/Chart.min.js?release=6.19"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
-				<link href="js/chartjs/Chart.css?release=6.19" type="text/css" rel="stylesheet"></link>
-				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
+				<script src="js/chartjs/Chart.min.js"></script>
+				<link href="js/chartjs/Chart.css" type="text/css" rel="stylesheet"></link>
+				<script src="js/d3/d3.v5.9.7.min.js"></script>
 				
-				<script src="js/dagre/dagre.min.js?release=6.19"></script>
-				<script src="js/dagre/dagre-d3.min.js?release=6.19"></script>
-				<script src="js/FileSaver.min.js?release=6.19"></script>
-				<script src="js/jszip/jszip.min.js?release=6.19"></script>
-				<script src="js/jointjs/joint.min.js?release=6.19"></script>
-
+				<script src="js/dagre/dagre.min.js"></script>
+				<script src="js/dagre/dagre-d3.min.js"></script>
+				<script src="js/FileSaver.min.js"></script>
+				<script src="js/jszip/jszip.min.js"></script>
+				<script src="js/jointjs/lodash.min.js"></script>
+				<script src="js/jointjs/backbone-min.js"></script>
+				<script src="js/jointjs/joint.min.js"></script>
 				<script src="application/renderTimelineFunction.js" type="text/javascript"></script>
-				<xsl:if test="$isEIPMode">
-				<script type="text/javascript" src="editors/assets/js/joint-plus/package/joint-plus.js"></script>
-				<script src="editors/configurable/sketch-diagram-tab/jointjs-sketch/js/shapes/links.js"></script> 
+				<xsl:if test="$isEIPMode='true'">
+					<script type="text/javascript" src="editors/assets/js/joint-plus/package/joint-plus.js"></script>
+					<script src="editors/configurable/sketch-diagram-tab/jointjs-sketch/js/shapes/links.js"></script> 
 				</xsl:if>
 				<style type="text/css">
 					.v-line {
@@ -332,6 +332,9 @@
 					    padding: 10px;
 					    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 					    flex-grow: 1;
+						border-radius: 18px;
+						padding: 1.2rem 1.4rem;
+						box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
 					}
 					
 					.ess-list-tags{
@@ -1231,6 +1234,16 @@
 					.text-warning{
 						color: #f0ad4e;
 					}
+/* Force sane sizing for the cost-by-type chart */
+.cost-analytics-card { position: relative; }
+
+// #costByType-chart { width: 100% !important; height: 220px !important; max-height: 220px !important; }
+.cost-analytics-empty { position: absolute; left: 0; right: 0; top: 48px; text-align: center; color: #777; font-style: italic; }
+
+/* Extra guards to prevent squashing / flex collapse */
+.cost-analytics-card { min-height: 260px; }
+.full-width-chart-container { min-height: 220px; }
+#appcosts .full-width-chart-container, #appcosts #costByType-chart { display: block; }
 				</style>
 				 
 			</head>
@@ -1300,6 +1313,341 @@
 				<xsl:call-template name="Footer"></xsl:call-template>
 
 			</body>
+			<script>
+((function () {
+  // Render guards and debug toggle (IIFE scope)
+  var _isRendering = false;
+  var _lastRenderAt = 0;
+  var _pendingChain = false;
+  var _lastSignature = '';
+  window.__debugCostChart = window.__debugCostChart || false; // set true in console if you want logs
+
+  function ready(fn){
+    if(document.readyState !== 'loading'){ fn(); } else { document.addEventListener('DOMContentLoaded', fn); }
+  }
+
+  // ---- Debounce helper so we don't spam Chart.js on DOM mutations
+  var _renderTimer = null;
+  function scheduleRender(delay){
+    if (delay == null) delay = 60; // small but noticeable; enough to coalesce rapid changes
+    if (_renderTimer) { clearTimeout(_renderTimer); }
+    _renderTimer = setTimeout(function(){
+      try { renderChart(); } catch(e){ console.error('Cost chart render failed:', e); }
+    }, delay);
+  }
+
+  // Chain a few renders over ~2s to catch async panel rebuilds (e.g., after currency/app change)
+function scheduleRenderChain(){
+  if (_pendingChain) return;
+  _pendingChain = true;
+  var kicks = [0, 200, 700, 1500, 2300];
+  kicks.forEach(function(ms, idx){
+    setTimeout(function(){
+      scheduleRender(idx === 0 ? 0 : 60);
+      if (idx === kicks.length - 1) _pendingChain = false;
+    }, ms);
+  });
+}
+
+  function ensureCanvas(){
+    // Prefer existing canvas in the cost analytics card
+    var existingById = document.getElementById('costByType-chart');
+    if (existingById) {
+      try { var p = existingById.parentElement; if (p) { p.style.minHeight = '220px'; } } catch(e){}
+      return existingById;
+    }
+
+    // Fallback: try the appcosts tab and create one if needed
+    var tab = document.getElementById('appcosts');
+    if(!tab) return null;
+    var existing = tab.querySelector('#costByTypeChart');
+    if(existing) return existing;
+    var wrap = document.createElement('div');
+    wrap.className = 'full-width-chart-container';
+    var canvas = document.createElement('canvas');
+    canvas.id = 'costByTypeChart';
+    wrap.appendChild(canvas);
+    tab.insertBefore(wrap, tab.firstChild);
+    return canvas;
+  }
+
+  function groupCostsByType(model){
+    function toNumber(x){
+      if (x == null) return null;
+      if (typeof x === 'number' &amp;&amp; isFinite(x)) return x;
+      if (typeof x === 'string'){
+        // remove currency symbols/commas e.g. "£1,234.56" or "1 234,56"
+        var s = x.replace(/[^0-9.,-]/g,'').trim();
+        if(s.indexOf(',') > -1 &amp;&amp; s.indexOf('.') > -1){ s = s.replace(/,/g,''); }
+        else if(s.indexOf(',') > -1 &amp;&amp; s.indexOf('.') === -1){ s = s.replace(',', '.'); }
+        var n = parseFloat(s);
+        return isFinite(n) ? n : null;
+      }
+      return null;
+    }
+
+    function pickAmount(c){
+      var cand = [c.annual_total,c.annualTotal,c.annual,c.amount_annual,c.amountAnnual,c.normalised_annual,c.normalized_annual,c.normalisedAnnual,c.normalizedAnnual,c.value_annual,c.valueAnnual,c.total_annual,c.totalAnnual,c.amount,c.value,c.cost,c.price];
+      for(var i=0;i&lt;cand.length;i++){ var n = toNumber(cand[i]); if(n!=null) return {n:n, src: 'direct'}; }
+      return null;
+    }
+
+    function pickFrequency(c){
+      var f = (c.frequency||c.cost_frequency||c.period||c.freq||c.billing_period||'').toString().toLowerCase();
+      if(!f) return null;
+      if(f.indexOf('month')>-1 || f==='m' || f==='monthly') return 12;
+      if(f.indexOf('quarter')>-1 || f==='q' || f==='quarterly') return 4;
+      if(f.indexOf('year')>-1 || f.indexOf('ann')>-1 || f==='y' || f==='annual' || f==='yearly') return 1;
+      if(f.indexOf('week')>-1) return 52;
+      if(f.indexOf('day')>-1) return 365;
+      if(f.indexOf('adhoc')>-1 || f==='ad-hoc') return 0; // treat as zero unless an annualised rule is defined elsewhere
+      return null;
+    }
+
+    function computeAnnual(c){
+      var direct = pickAmount(c);
+      if(direct){ return direct.n; }
+      // Derive from amount * frequency
+      var amount = toNumber(c.amount||c.value||c.cost||c.price);
+      var mult = pickFrequency(c);
+      if(amount!=null &amp;&amp; mult!=null){ return amount * mult; }
+      // Try nested fields
+      if(c.values &amp;&amp; typeof c.values==='object'){
+        var amount2 = toNumber(c.values.amount||c.values.value);
+        var mult2 = pickFrequency(c.values)||mult;
+        if(amount2!=null &amp;&amp; (mult2!=null)) return amount2 * (mult2||1);
+      }
+      return 0; // unknown
+    }
+
+    var out = {};
+    if(!model || !model.costs) return out;
+
+    model.costs.forEach(function(c){
+      if(!c) return;
+      var t = (c.costType || c.cost_type || c.category || 'Unclassified');
+      var v = computeAnnual(c);
+      if(!out[t]) out[t] = 0;
+      out[t] += (isFinite(v) ? v : 0);
+    });
+    return out;
+  }
+
+  function locateCostsModel(){
+    var cands = [];
+    var g1 = window.__lastAppSummaryModel; if (g1 &amp;&amp; g1.costs) cands.push(g1);
+    var g2 = window.__appModel;            if (g2 &amp;&amp; g2.costs) cands.push(g2);
+
+    try {
+      var el = document.getElementById('costByTypeData');
+      if (el &amp;&amp; el.textContent) {
+        var parsed = JSON.parse(el.textContent.trim());
+        if (parsed &amp;&amp; parsed.costs) cands.push(parsed);
+      }
+    } catch(e){}
+
+    try {
+      Object.keys(window).forEach(function(k){
+        var v = window[k];
+        if (v &amp;&amp; typeof v === 'object') {
+          if (Array.isArray(v.costs)) cands.push(v);
+          else if (Array.isArray(v) &amp;&amp; v.length &amp;&amp; typeof v[0] === 'object') {
+            var rec = v[0];
+            if ((('type' in rec) || ('category' in rec) || ('cost_type' in rec)) &amp;&amp;
+                (('amount' in rec) || ('annual' in rec) || ('annual_total' in rec))) {
+              cands.push({ costs: v });
+            }
+          }
+        }
+      });
+    } catch(e){}
+
+    var best = null, bestScore = -1;
+    cands.forEach(function(m){
+      var grouped = groupCostsByType(m);
+      var sum = Object.keys(grouped).reduce(function(a,k){ return a + (isFinite(grouped[k]) ? grouped[k] : 0); }, 0);
+      if (sum > bestScore) { bestScore = sum; best = m; }
+    });
+    return best || {};
+  }
+
+  function clearEmptyMsg(){
+    var msg = document.getElementById('costByType-empty-msg');
+    if (msg &amp;&amp; msg.parentElement) { try { msg.parentElement.removeChild(msg); } catch(e){} }
+  }
+
+  function renderChart(){
+	var now = Date.now();
+	if (now - _lastRenderAt &lt; 250) { return; }
+	if (_isRendering) { return; }
+	_isRendering = true;
+
+    if(!window.Chart) { console.warn('Chart.js not loaded; cannot render Cost by Type chart'); return; }
+
+    var model = locateCostsModel();
+    try { if(!model.costs &amp;&amp; window.__appSummaryJSON) model = JSON.parse(window.__appSummaryJSON); } catch(e){}
+
+    var grouped = groupCostsByType(model);
+    var labels = Object.keys(grouped);
+    var values = labels.map(function(k){ return Math.round((grouped[k] + Number.EPSILON) * 100) / 100; });
+
+	var signature = JSON.stringify({ l: labels, v: values });
+	var hasCanvas = document.getElementById('costByType-chart') || document.getElementById('costByTypeChart');
+	if (signature === _lastSignature &amp;&amp; hasCanvas){
+	_lastRenderAt = now;
+	_isRendering = false;
+	return;
+	}
+_lastSignature = signature;
+
+    // Remove any prior empty-state message
+    clearEmptyMsg();
+
+    var allZero = values.length &amp;&amp; values.every(function(v){ return !v || v===0; });
+    if(allZero){
+      console.warn('Cost by Type: all values are zero. Check amount/frequency fields in your API payload.');
+      var c2 = document.getElementById('costByType-chart') || ensureCanvas();
+      if (c2) {
+        var msg = document.getElementById('costByType-empty-msg');
+        if(!msg){
+          msg = document.createElement('div');
+          msg.id = 'costByType-empty-msg';
+          msg.className = 'cost-analytics-empty';
+          msg.textContent = 'No annualised cost amounts to chart';
+          (c2.parentElement || document.body).appendChild(msg);
+        }
+      }
+      return;
+    }
+
+    var canvas = ensureCanvas() || document.getElementById('costByType-chart');
+    if(!canvas){ console.warn('Cost canvas not found; cannot place chart'); return; }
+
+    // Clamp canvas size to avoid runaway height
+    try {
+      canvas.style.width = '100%';
+      canvas.style.height = '220px';
+      canvas.style.maxHeight = '220px';
+    } catch(e){}
+
+    // If canvas is hidden or has zero size, try to size it and retry shortly
+    try {
+      if ((canvas.offsetWidth || 0) === 0) {
+        var pw = (canvas.parentElement &amp;&amp; canvas.parentElement.offsetWidth) ? canvas.parentElement.offsetWidth : 300;
+        canvas.style.width = pw + 'px';
+      }
+    } catch(e){}
+
+    // Destroy any existing chart instance to avoid duplicates
+    try {
+      if(canvas.__chart &amp;&amp; typeof canvas.__chart.destroy === 'function') { canvas.__chart.destroy(); }
+    } catch(e) {}
+
+    if (window.__debugCostChart) console.log('Rendering CostByType on', canvas.id, { labels: labels, values: values });
+    var ctx = canvas.getContext('2d');
+    canvas.__chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Annual Cost by Type',
+          data: values
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutoutPercentage: 55,
+        animation: { duration: 0 },
+        legend:   { display: labels.length &lt;= 12, position: 'bottom' },
+        tooltips: { enabled: true }
+      }
+    });
+    try { if (canvas.__chart &amp;&amp; typeof canvas.__chart.resize === 'function') { canvas.__chart.resize(); } } catch(e){}
+    // One more resize shortly after to catch late CSS/layout
+    setTimeout(function(){ try { if (canvas.__chart &amp;&amp; canvas.isConnected) canvas.__chart.resize(); } catch(e){} }, 100);
+    try { canvas.height = 220; } catch(e){}
+
+	_lastRenderAt = Date.now();
+	_isRendering = false;
+  }
+
+  // Re-render when the costs tab becomes visible
+  function hookTab(){
+    var link = document.querySelector('a[href="#appcosts"]');
+    if(!link) return;
+    link.addEventListener('shown.bs.tab', function(){ 
+		if (isCostsTabActive()) scheduleRenderChain();
+		 });
+  }
+
+function isCostsTabActive(){
+  var pane = document.getElementById('appcosts');
+  if (!pane) return true; // render at least once
+  return /\bactive\b/.test(pane.className || '');
+}
+
+  // Re-render when application or currency changes
+  function hookInputs(){
+    // Application select (Select2-backed)
+    document.addEventListener('change', function(ev){
+      var t = ev.target;
+      if (!t) return;
+      var id = (t.id||'').toLowerCase();
+      var name = (t.name||'').toLowerCase();
+      if (id === 'subjectselection' || id.indexOf('application') > -1) scheduleRenderChain();
+      if (id.indexOf('currency')>-1 || name.indexOf('currency')>-1 || (t.getAttribute &amp;&amp; t.getAttribute('data-role')==='currency')) scheduleRenderChain();
+    }, true);
+
+    // Generic currency toggles/buttons
+    document.addEventListener('click', function(ev){
+      var el = ev.target;
+      if (!el) return;
+      if (el.matches &amp;&amp; (el.matches('[data-currency]') || el.matches('.currency-toggle'))) 
+	  if (isCostsTabActive()) scheduleRenderChain();
+    }, true);
+
+    // Custom events some pages fire
+    window.addEventListener('currency-changed', function(){ if (isCostsTabActive()) scheduleRenderChain();});
+    window.addEventListener('app-summary-model-changed', function(){ if (isCostsTabActive()) scheduleRenderChain(); });
+  }
+
+  // Observe DOM for lazily-inserted/replaced chart containers (e.g., when switching application)
+function hookObserver(){
+  try {
+    var costsPane = document.getElementById('appcosts');
+    var target = costsPane || document.getElementById('mainPanel') || document.body;
+    var mo = new MutationObserver(function(mutations){
+      var needs = false;
+      for (var i=0;i&lt;mutations.length;i++){
+        var m = mutations[i];
+        if (m.type === 'childList'){
+          // ignore mutations inside the chart’s own container
+          var node = (m.target &amp;&amp; m.target.closest) ? m.target.closest('#costByType-chart, .full-width-chart-container') : null;
+          if (node) continue;
+          if ((m.addedNodes &amp;&amp; m.addedNodes.length) || (m.removedNodes &amp;&amp; m.removedNodes.length)){
+            needs = true; break;
+          }
+        }
+      }
+      if (needs &amp;&amp; isCostsTabActive()) scheduleRenderChain();
+    });
+    mo.observe(target, { childList: true, subtree: true });
+  } catch(e) { console.warn('MutationObserver not available', e); }
+}
+
+  ready(function(){
+    try { hookTab(); } catch(e) { console.warn('Tab hook failed', e); }
+    try { hookInputs(); } catch(e) { console.warn('Input hook failed', e); }
+    try { hookObserver(); } catch(e) { console.warn('Observer hook failed', e); }
+    // Initial attempt(s)
+    scheduleRenderChain();
+  });
+
+  // Allow other scripts to force a stable redraw if needed
+  window.triggerCostByTypeRedraw = scheduleRenderChain;
+})());
+</script>
 			<script>			
 				<xsl:call-template name="RenderViewerAPIJSFunction"> 
 					<xsl:with-param name="viewerAPIPathApps" select="$apiApps"></xsl:with-param> 
@@ -2440,45 +2788,11 @@
 						{{#if this.costs}}
 						<div class="tab-pane" id="appcosts">
 							<h2 class="print-only top-30"><i class="fa fa-fw fa-tag right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h2>
-							<div class="parent-superflex">
-								<div class="superflex">
-								<div class="pull-right"><b>Currency</b>: <select id="ccySelect"><option>Choose</option></select></div>
-									<div class="costTotal-container">
-										 
-									</div>
-								</div>
-								<div class="col-xs-12"/>
-								<div class="superflex">
-								 
-									<div class="chart-container" >
-										<canvas id="costByType-chart"  ></canvas>
-									</div>
-							 
-							</div>
-
-								<div class="superflex">
-									<div class="chart-container">
-										<canvas id="costByCategory-chart" ></canvas>
-									</div>
-								</div>
-								
-								<div class="col-xs-12"/>
-								<div class="superflex">
-									<div class="chart-container" style="margin-bottom: 70px;">
-										<canvas id="costByMonth-chart"></canvas>
-									</div> 
-								</div>
-								<div class="superflex">
-								  
-										<div class="chart-container">
-											<canvas id="costByFrequency-chart" ></canvas>
-										</div> 
-								</div>
-								
-								<div class="col-xs-12"/> 
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Costs')"/></h3>
-									<p><xsl:value-of select="eas:i18n('Costs related to this application')"/></p>
+							<div class="cost-dashboard">
+								<div class="costTotal-container"></div>
+								<div class="cost-table-card">
+									<h3 class="text-primary"><i class="fa fa-desktop right-10"></i><xsl:value-of select="eas:i18n('Detailed Costs')"/></h3>
+									<p class="text-muted"><xsl:value-of select="eas:i18n('All captured cost components for this application in their native values')"/></p>
 									<table class="table table-striped table-bordered display compact" id="dt_costs">
 										<thead><tr><th><xsl:value-of select="eas:i18n('Cost')"/></th><th><xsl:value-of select="eas:i18n('Type')"/></th><th><xsl:value-of select="eas:i18n('Description')"/></th><th><xsl:value-of select="eas:i18n('Value')"/></th><th><xsl:value-of select="eas:i18n('From Date')"/></th><th><xsl:value-of select="eas:i18n('To Date')"/></th></tr></thead>
 										{{#each this.costs}}
@@ -3408,11 +3722,287 @@
 
 	</script>	
 	<script id="costTotal-template" type="text/x-handlebars-template">
-		<h3 class="text-primary"><i class="fa fa-money right-10"></i><b><xsl:value-of select="eas:i18n('Costs')"/></b></h3>
-		
-		<h3><b><xsl:value-of select="eas:i18n('Regular Annual Cost')"/></b>: <span id="regAnnual">{{this.annualCost}}</span></h3>
-		<h3><b><xsl:value-of select="eas:i18n('Regular Monthly Cost')"/></b>: <span id="regMonthly">{{this.monthlyCost}}</span></h3>
+		<div class="cost-dashboard-header">
+			<div class="cost-header-info">
+				<h3 class="cost-heading"><i class="fa fa-money right-10"></i><xsl:value-of select="eas:i18n('Cost Overview')"/></h3>
+				<p class="cost-subheading">
+					<xsl:value-of select="eas:i18n('Converted to')"/> <span id="costCurrencyLabel" class="cost-pill">{{this.currency}}</span>
+					<xsl:text> · </xsl:text>
+					<span id="costPeriodLabel">{{this.period}}</span>
+				</p>
+			</div>
+			<div class="cost-controls">
+				<label class="cost-control-label" for="ccySelect"><xsl:value-of select="eas:i18n('Currency')"/></label>
+				<select id="ccySelect" class="cost-currency-select">
+					<option value=""><xsl:value-of select="eas:i18n('Select')"/></option>
+				</select>
+			</div>
+		</div>
+
+		<div class="cost-summary-grid">
+			<div class="cost-summary-card accent">
+				<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Regular Annual Cost')"/></div>
+				<div class="cost-summary-value" id="regAnnual">{{this.annualCost}}</div>
+			</div>
+			<div class="cost-summary-card accent">
+				<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Regular Monthly Cost')"/></div>
+				<div class="cost-summary-value" id="regMonthly">{{this.monthlyCost}}</div>
+				<div class="cost-summary-meta">
+					<!--
+					<span id="costLatestMonthly">{{this.latestMonthly}}</span>
+					<span id="costTrend" class="cost-trend {{#if this.trend}}{{this.trend.direction}}{{else}}hidden{{/if}}">
+						<i id="costTrendIcon" class="fa {{#if this.trend}}{{this.trend.icon}}{{else}}fa-minus{{/if}}"></i>
+						<span id="costTrendLabel">{{#if this.trend}}{{this.trend.label}}{{/if}}</span>
+					</span>
+					-->
+				</div>
+			</div>
+			{{#if this.adhocCost}}
+			<div class="cost-summary-card subtle" id="costAdhocCard">
+				<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Adhoc Spend in Period')"/></div>
+				<div class="cost-summary-value" id="costAdhoc">{{this.adhocCost}}</div>
+				<div class="cost-summary-meta"><xsl:value-of select="eas:i18n('One-off items included')"/></div>
+			</div>
+			{{/if}}
+		</div>
+
+		<div class="cost-analytics-grid">
+			<div class="cost-analytics-card wide">
+				<div class="cost-card-head"><xsl:value-of select="eas:i18n('Monthly Trend')"/></div>
+				<canvas id="costByMonth-chart"></canvas>
+			</div>
+			<div class="cost-analytics-card">
+				<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Category')"/></div>
+				<canvas id="costByCategory-chart"></canvas>
+			</div> 
+			<div class="cost-analytics-card">
+				<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Type')"/></div>
+				<canvas id="costByType-chart"></canvas>
+			</div>
+			<div class="cost-analytics-card">
+				<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Frequency')"/></div>
+				<canvas id="costByFrequency-chart"></canvas>
+			</div>
+			<div class="cost-analytics-card">
+				<div class="cost-card-head"><xsl:value-of select="eas:i18n('Top Cost Drivers')"/></div>
+				<ul class="cost-top-list" id="costTopList">
+					{{#if this.topCosts.length}}
+						{{#each this.topCosts}}
+							<li>
+								<div class="cost-top-line">
+									<span class="cost-top-name">{{this.label}}</span>
+									<span class="cost-top-value">{{this.annual}}</span>
+								</div>
+								<div class="cost-top-sub">
+									{{this.monthly}} <xsl:value-of select="eas:i18n('per month')"/>
+								</div>
+							</li>
+						{{/each}}
+					{{else}}
+						<li class="cost-top-empty"><xsl:value-of select="eas:i18n('No cost drivers captured yet')"/></li>
+					{{/if}}
+				</ul>
+			</div>
+		</div>
 	</script>
+	<style type="text/css" id="cost-dashboard-styles">
+		.cost-dashboard {
+			display: flex;
+			flex-direction: column;
+			gap: 2.5rem;
+		}
+		.cost-dashboard-header {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: flex-end;
+			gap: 1.5rem;
+			margin-bottom: 1.5rem;
+		}
+		.cost-heading {
+			margin: 0;
+			font-weight: 600;
+			font-size: 1.6rem;
+		}
+		.cost-subheading {
+			margin: 0.25rem 0 0;
+			color: #6c757d;
+			font-size: 0.95rem;
+		}
+		.cost-pill {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.2rem 0.6rem;
+			background: #f1f4ff;
+			border-radius: 999px;
+			font-weight: 600;
+			color: #2f54eb;
+		}
+		.cost-controls {
+			display: flex;
+			flex-direction: column;
+			gap: 0.35rem;
+			min-width: 200px;
+		}
+		.cost-controls .select2-container {
+			width: 100% !important;
+		}
+		.cost-control-label {
+			font-size: 0.85rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: #6c757d;
+			margin: 0;
+		}
+		.cost-currency-select {
+			width: 100%;
+			border-radius: 10px;
+			border: 1px solid #d9dee7;
+			padding: 0.55rem 0.75rem;
+		}
+		.cost-summary-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 1.25rem;
+			margin-bottom: 2rem;
+		}
+		.cost-summary-card {
+			background: #ffffff;
+			border-radius: 16px;
+			padding: 1.4rem 1.6rem;
+			box-shadow: 0 20px 40px rgba(28, 51, 84, 0.08);
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
+			position: relative;
+			overflow: hidden;
+		}
+		.cost-summary-card.accent::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(135deg, rgba(47, 84, 235, 0.08), rgba(111, 207, 151, 0.08));
+			z-index: 0;
+		}
+		.cost-summary-card.subtle {
+			background: linear-gradient(135deg, rgba(255, 245, 233, 0.65), rgba(255, 255, 255, 0.9));
+		}
+		.cost-summary-card > * {
+			position: relative;
+			z-index: 1;
+		}
+		.cost-summary-label {
+			font-size: 0.85rem;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			color: #6c757d;
+		}
+		.cost-summary-value {
+			font-size: 2rem;
+			font-weight: 700;
+			color: #1c3354;
+		}
+		.cost-summary-meta {
+			font-size: 0.85rem;
+			color: #6c757d;
+			display: flex;
+			align-items: center;
+			gap: 0.65rem;
+		}
+		.cost-trend {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+			padding: 0.2rem 0.55rem;
+			border-radius: 999px;
+			font-weight: 600;
+		}
+		.cost-trend.hidden {
+			display: none;
+		}
+		.cost-trend.up {
+			background: rgba(47, 197, 123, 0.12);
+			color: #16803c;
+		}
+		.cost-trend.down {
+			background: rgba(240, 71, 71, 0.12);
+			color: #a32020;
+		}
+		.cost-analytics-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 1.5rem;
+			margin-bottom: 2rem;
+		}
+		.cost-analytics-card {
+			background: #ffffff;
+			border-radius: 18px;
+			padding: 1.2rem 1.4rem;
+			box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+		.cost-analytics-card canvas {
+			width: 100% !important;
+			height: 260px !important;
+		}
+		.cost-analytics-card.wide {
+			grid-column: span 2;
+		}
+		@media (max-width: 992px) {
+			.cost-analytics-card.wide {
+				grid-column: span 1;
+			}
+		}
+		.cost-card-head {
+			font-size: 0.95rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: #6c757d;
+		}
+		.cost-top-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 0.8rem;
+		}
+		.cost-top-line {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-weight: 600;
+			color: #1c3354;
+		}
+		.cost-top-name {
+			flex: 1;
+			margin-right: 1rem;
+		}
+		.cost-top-value {
+			font-variant-numeric: tabular-nums;
+		}
+		.cost-top-sub {
+			font-size: 0.8rem;
+			color: #6c757d;
+		}
+		.cost-top-empty {
+			color: #9aa5b1;
+			font-style: italic;
+		}
+		.cost-table-card {
+			background: #ffffff;
+			border-radius: 18px;
+			padding: 1.5rem;
+			box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+		}
+		.cost-table-card h3 {
+			margin-top: 0;
+			font-weight: 600;
+		}
+	</style>
 	<script id="kpiWord-template" type="text/x-handlebars-template">
 		[{{#each this.perfsGrp}} 
 			{{#each this.values}} 
@@ -3493,6 +4083,481 @@ if(rcCcyId.ccyCode==''){
 
 }
 var defaultCurrency    
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const BASE_CURRENCY_FALLBACK = 'GBP';
+const COST_FREQUENCY_MAP = {
+	'Annual_Cost_Component': 'annual',
+	'Quarterly_Cost_Component': 'quarterly',
+	'Monthly_Cost_Component': 'monthly',
+	'Adhoc_Cost_Component': 'adhoc'
+};
+const FREQUENCY_LABELS = {
+	annual: 'Annual',
+	quarterly: 'Quarterly',
+	monthly: 'Monthly',
+	adhoc: 'Adhoc'
+};
+
+const toNumber = (value) => {
+	if (value === null || value === undefined) return 0;
+	if (typeof value === 'number') {
+		return Number.isFinite(value) ? value : 0;
+	}
+	const parsed = parseFloat(value);
+	return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const toMinorUnits = (value) => Math.round(toNumber(value) * 100);
+const minorToNumber = (minor) => minor / 100;
+
+function round2(value) {
+	return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+}
+
+function parseExchangeRate(value) {
+	if (value === null || value === undefined || value === '') {
+		return NaN;
+	}
+	if (typeof value === 'number') {
+		return Number.isFinite(value) ? value : NaN;
+	}
+	let normalised = String(value).trim();
+	if (!normalised) {
+		return NaN;
+	}
+	normalised = normalised.replace(/\s+/g, '');
+	if (normalised.includes(',') &amp;&amp; !normalised.includes('.')) {
+		normalised = normalised.replace(',', '.');
+	} else {
+		normalised = normalised.replace(/,/g, '');
+	}
+	const parsed = parseFloat(normalised);
+	return Number.isFinite(parsed) ? parsed : NaN;
+}
+
+function parseISODateUtc(value) {
+	if (!value) {
+		return null;
+	}
+	if (value instanceof Date &amp;&amp; !Number.isNaN(value.getTime())) {
+		return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+	}
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) {
+		return null;
+	}
+	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+const isValidDate = (date) => date instanceof Date &amp;&amp; !Number.isNaN(date.getTime());
+
+function daysBetweenInclusive(start, end) {
+	if (!isValidDate(start) || !isValidDate(end) || end &lt; start) {
+		return 0;
+	}
+	return Math.floor((end.getTime() - start.getTime()) / MS_PER_DAY) + 1;
+}
+
+function calculateOverlapDays(startA, endA, startB, endB) {
+	if (!isValidDate(startA) || !isValidDate(endA) || !isValidDate(startB) || !isValidDate(endB)) {
+		return 0;
+	}
+	const effectiveStart = startA > startB ? startA : startB;
+	const effectiveEnd = endA &lt; endB ? endA : endB;
+	return daysBetweenInclusive(effectiveStart, effectiveEnd);
+}
+
+function getCurrentYearPeriod() {
+	const today = new Date();
+	const year = today.getUTCFullYear();
+	const start = new Date(Date.UTC(year, 0, 1));
+	const end = new Date(Date.UTC(year, 11, 31));
+	return { start, end };
+}
+
+function formatIsoDate(date) {
+	return isValidDate(date) ? date.toISOString().slice(0, 10) : undefined;
+}
+
+function getProrationDetails(start, end, periodStart, periodEnd) {
+	const startDate = parseISODateUtc(start);
+	const endDate = parseISODateUtc(end);
+	const periodDays = daysBetweenInclusive(periodStart, periodEnd);
+	if (!periodDays) {
+		return {
+			factor: 0,
+			overlapDays: 0,
+			periodDays: 0,
+			effectiveStart: null,
+			effectiveEnd: null
+		};
+	}
+	if (startDate &amp;&amp; endDate &amp;&amp; endDate &lt; startDate) {
+		return {
+			factor: 0,
+			overlapDays: 0,
+			periodDays,
+			effectiveStart: null,
+			effectiveEnd: null
+		};
+	}
+	const effectiveStart = (startDate &amp;&amp; startDate > periodStart) ? startDate : periodStart;
+	const effectiveEndCandidate = (endDate &amp;&amp; endDate &lt; periodEnd) ? endDate : periodEnd;
+	if (effectiveEndCandidate &lt; effectiveStart) {
+		return {
+			factor: 0,
+			overlapDays: 0,
+			periodDays,
+			effectiveStart: null,
+			effectiveEnd: null
+		};
+	}
+	const effectiveEnd = effectiveEndCandidate;
+	const overlapDays = daysBetweenInclusive(effectiveStart, effectiveEnd);
+	return {
+		factor: overlapDays / periodDays,
+		overlapDays,
+		periodDays,
+		effectiveStart,
+		effectiveEnd
+	};
+}
+
+function getProrationFactor(start, end, periodStart, periodEnd) {
+	return getProrationDetails(start, end, periodStart, periodEnd).factor;
+}
+
+function normaliseAnnualMinor(amountMinor, frequency) {
+	switch (frequency) {
+		case 'annual':
+			return amountMinor;
+		case 'quarterly':
+			return amountMinor * 4;
+		case 'monthly':
+			return amountMinor * 12;
+		case 'adhoc':
+			return 0;
+		default:
+			throw new Error(`Unknown frequency '${frequency}'`);
+	}
+}
+
+function convertMinorCurrency(amountMinor, fromCurrency, toCurrency, exchangeRates, baseCurrency) {
+	const from = fromCurrency || baseCurrency;
+	const to = toCurrency || baseCurrency;
+	if (from === to) {
+		return amountMinor;
+	}
+	const fromRate = exchangeRates[from];
+	const toRate = exchangeRates[to];
+	if (!Number.isFinite(fromRate) || fromRate &lt;= 0 || !Number.isFinite(toRate) || toRate &lt;= 0) {
+		const missing = [];
+		if (!Number.isFinite(fromRate) || fromRate &lt;= 0) missing.push(from);
+		if (!Number.isFinite(toRate) || toRate &lt;= 0) missing.push(to);
+		throw new Error(`Missing exchange rate(s): ${missing.join(', ')}`);
+	}
+	const amountInBase = (amountMinor / 100) / fromRate;
+	const amountInTarget = amountInBase * toRate;
+	return Math.round(amountInTarget * 100);
+}
+
+function validateExchangeRates(costs, exchangeRates, baseCurrency, targetCurrency) {
+	const required = new Set([baseCurrency, targetCurrency]);
+	costs.forEach((cost) => {
+		if (cost &amp;&amp; cost.currency) {
+			required.add(cost.currency);
+		}
+	});
+	const missing = [];
+	required.forEach((code) => {
+		const rate = exchangeRates[code];
+		if (!Number.isFinite(rate) || rate &lt;= 0) {
+			missing.push(code);
+		}
+	});
+	if (missing.length > 0) {
+		throw new Error(`Missing exchange rate(s): ${missing.join(', ')}`);
+	}
+}
+
+function mapCostComponent(cost, fallbackCurrency) {
+	if (!cost) {
+		return null;
+	}
+	const frequency = COST_FREQUENCY_MAP[cost.costType];
+	if (!frequency) {
+		const identifier = cost.id || cost.name || 'unknown';
+		throw new Error(`Unknown frequency '${cost.costType}' for cost '${identifier}'`);
+	}
+	const currency = cost.this_currency_code || cost.ccy_code || fallbackCurrency || BASE_CURRENCY_FALLBACK;
+	return {
+		id: cost.id || cost.name,
+		amount: toNumber(cost.cost),
+		frequency,
+		currency,
+		startDate: cost.fromDate || undefined,
+		endDate: cost.toDate || undefined,
+		meta: {
+			category: cost.costCategory || 'Run Cost',
+			typeLabel: cost.name || FREQUENCY_LABELS[frequency] || frequency,
+			frequencyKey: cost.costType,
+			raw: cost
+		}
+	};
+}
+
+function computeCostContribution(cost, config) {
+	if (!cost) {
+		return null;
+	}
+	const {
+		exchangeRates,
+		targetCurrency,
+		baseCurrency,
+		periodStart,
+		periodEnd,
+		includeAdhoc = false
+	} = config;
+	const amountMinor = toMinorUnits(cost.amount);
+	const proration = getProrationDetails(cost.startDate, cost.endDate, periodStart, periodEnd);
+	const overlaps = proration.overlapDays > 0;
+	const isRecurring = cost.frequency !== 'adhoc';
+	let annualMinorTarget = 0;
+	let monthlyMinorTarget = 0;
+	let adhocMinorTarget = 0;
+	let included = false;
+
+	if (isRecurring &amp;&amp; overlaps &amp;&amp; proration.periodDays > 0) {
+		const annualMinor = normaliseAnnualMinor(amountMinor, cost.frequency);
+		if (annualMinor !== 0) {
+			const proratedMinor = Math.round(annualMinor * proration.factor);
+			annualMinorTarget = convertMinorCurrency(proratedMinor, cost.currency, targetCurrency, exchangeRates, baseCurrency);
+			monthlyMinorTarget = Math.round(annualMinorTarget / 12);
+		} else {
+			annualMinorTarget = 0;
+			monthlyMinorTarget = 0;
+		}
+		included = true;
+	}
+
+	if (!isRecurring) {
+		if (includeAdhoc &amp;&amp; overlaps) {
+			adhocMinorTarget = convertMinorCurrency(amountMinor, cost.currency, targetCurrency, exchangeRates, baseCurrency);
+			included = true;
+		} else {
+			included = false;
+		}
+	}
+
+	return {
+		id: cost.id,
+		frequency: cost.frequency,
+		currency: cost.currency,
+		annualMinorTarget,
+		monthlyMinorTarget,
+		adhocMinorTarget,
+		included,
+		overlaps,
+		prorationFactor: proration.factor,
+		overlapDays: proration.overlapDays,
+		periodDays: proration.periodDays,
+		effectiveStart: proration.effectiveStart,
+		effectiveEnd: proration.effectiveEnd,
+		meta: cost.meta
+	};
+}
+
+function summariseCosts(costs, exchangeRates, options = {}) {
+	const {
+		targetCurrency,
+		periodStart,
+		periodEnd,
+		includeAdhoc = false,
+		baseCurrency: providedBaseCurrency
+	} = options;
+	const baseCurrency = providedBaseCurrency || BASE_CURRENCY_FALLBACK;
+	const rates = Object.assign({}, exchangeRates);
+	if (!Number.isFinite(rates[baseCurrency]) || rates[baseCurrency] &lt;= 0) {
+		rates[baseCurrency] = 1;
+	}
+	const resolvedPeriod = (() => {
+		const defaults = getCurrentYearPeriod();
+		const start = periodStart ? parseISODateUtc(periodStart) : defaults.start;
+		const end = periodEnd ? parseISODateUtc(periodEnd) : defaults.end;
+		if (!isValidDate(start) || !isValidDate(end) || end &lt; start) {
+			throw new Error('Invalid reporting period');
+		}
+		return { start, end };
+	})();
+	const target = targetCurrency || baseCurrency;
+
+	validateExchangeRates(costs, rates, baseCurrency, target);
+
+	const config = {
+		exchangeRates: rates,
+		targetCurrency: target,
+		baseCurrency,
+		periodStart: resolvedPeriod.start,
+		periodEnd: resolvedPeriod.end,
+		includeAdhoc
+	};
+
+	let totalAnnualMinor = 0;
+	let totalAdhocMinor = 0;
+	const breakdown = [];
+
+	costs.forEach((cost) => {
+		const contribution = computeCostContribution(cost, config);
+		if (!contribution) {
+			return;
+		}
+		if (contribution.frequency !== 'adhoc' &amp;&amp; contribution.included) {
+			totalAnnualMinor += contribution.annualMinorTarget;
+		}
+		if (contribution.adhocMinorTarget) {
+			totalAdhocMinor += contribution.adhocMinorTarget;
+		}
+		const monthlyMinor = (contribution.frequency !== 'adhoc')
+			? Math.round(contribution.annualMinorTarget / 12)
+			: 0;
+		breakdown.push({
+			id: contribution.id,
+			annual: round2(minorToNumber(contribution.annualMinorTarget)),
+			monthly: round2(minorToNumber(monthlyMinor)),
+			included: contribution.frequency === 'adhoc'
+				? (includeAdhoc &amp;&amp; contribution.adhocMinorTarget > 0)
+				: contribution.included
+		});
+	});
+
+	const totals = {
+		annual: round2(minorToNumber(totalAnnualMinor)),
+		monthly: round2(minorToNumber(Math.round(totalAnnualMinor / 12)))
+	};
+	if (includeAdhoc) {
+		totals.adhoc = round2(minorToNumber(totalAdhocMinor));
+	}
+
+	return {
+		currency: target,
+		totals,
+		breakdown
+	};
+}
+
+function distributeMinorByOverlap(totalMinor, overlaps) {
+	const allocations = new Array(overlaps.length).fill(0);
+	if (!totalMinor) {
+		return allocations;
+	}
+	const positiveDays = overlaps.map((days) => (days > 0 ? days : 0));
+	const totalDays = positiveDays.reduce((sum, days) => sum + days, 0);
+	if (!totalDays) {
+		allocations[0] = totalMinor;
+		return allocations;
+	}
+	const fractional = [];
+	let assigned = 0;
+	positiveDays.forEach((days, idx) => {
+		if (!days) {
+			fractional.push({ idx, remainder: 0 });
+			return;
+		}
+		const exact = (totalMinor * days) / totalDays;
+		const floored = Math.floor(exact);
+		allocations[idx] = floored;
+		assigned += floored;
+		fractional.push({ idx, remainder: exact - floored });
+	});
+	let remainder = totalMinor - assigned;
+	if (remainder > 0) {
+		fractional.sort((a, b) => b.remainder - a.remainder);
+		for (let i = 0; i &lt; fractional.length &amp;&amp; remainder > 0; i += 1) {
+			const targetIndex = fractional[i].idx;
+			if (positiveDays[targetIndex] > 0) {
+				allocations[targetIndex] += 1;
+				remainder -= 1;
+			}
+		}
+	}
+	return allocations;
+}
+
+function buildMonthlySeries(contributions, periodStart, periodEnd) {
+	if (!isValidDate(periodStart) || !isValidDate(periodEnd) || periodEnd &lt; periodStart) {
+		return { labels: [], minors: [], values: [] };
+	}
+	const months = [];
+	const startCursor = new Date(Date.UTC(periodStart.getUTCFullYear(), periodStart.getUTCMonth(), 1));
+	const endCursor = new Date(Date.UTC(periodEnd.getUTCFullYear(), periodEnd.getUTCMonth(), 1));
+	for (let cursor = new Date(startCursor); cursor &lt;= endCursor; cursor = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 1))) {
+		const monthStart = new Date(cursor);
+		const monthEnd = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 0));
+		const effectiveStart = monthStart &lt; periodStart ? periodStart : monthStart;
+		const effectiveEnd = monthEnd > periodEnd ? periodEnd : monthEnd;
+		const label = (typeof moment !== 'undefined')
+			? moment.utc(monthStart).format('MM/YYYY')
+			: `${String(monthStart.getUTCMonth() + 1).padStart(2, '0')}/${monthStart.getUTCFullYear()}`;
+		months.push({
+			label,
+			start: new Date(effectiveStart.getTime()),
+			end: new Date(effectiveEnd.getTime())
+		});
+	}
+
+	const monthlyMinors = new Array(months.length).fill(0);
+	contributions.forEach((contribution) => {
+		if (!contribution || !contribution.included || contribution.frequency === 'adhoc' || contribution.overlapDays &lt;= 0) {
+			return;
+		}
+		const overlaps = months.map((month) => calculateOverlapDays(
+			contribution.effectiveStart,
+			contribution.effectiveEnd,
+			month.start,
+			month.end
+		));
+		const allocations = distributeMinorByOverlap(contribution.annualMinorTarget, overlaps);
+		allocations.forEach((minor, idx) => {
+			monthlyMinors[idx] += minor;
+		});
+	});
+
+	return {
+		labels: months.map((month) => month.label),
+		minors: monthlyMinors,
+		values: monthlyMinors.map((minor) => round2(minorToNumber(minor)))
+	};
+}
+
+function aggregateCostBy(costs, contributionMap, labelSelector) {
+	const totals = new Map();
+	costs.forEach((cost) => {
+		if (!cost || !cost.id) {
+			return;
+		}
+		const contribution = contributionMap.get(cost.id);
+		if (!contribution || !contribution.included || contribution.frequency === 'adhoc') {
+			return;
+		}
+		const label = labelSelector(cost);
+		const key = label || 'Uncategorised';
+		const current = totals.get(key) || 0;
+		totals.set(key, current + contribution.annualMinorTarget);
+	});
+	const labels = Array.from(totals.keys());
+	const minors = labels.map((label) => totals.get(label));
+	return {
+		labels,
+		minors,
+		values: minors.map((minor) => round2(minorToNumber(minor)))
+	};
+}
+
+if (typeof window !== 'undefined') {
+	window.summariseCosts = summariseCosts;
+}
+
  
 const promise_loadViewerAPIData = async (apiDataSetURL) => {
     if (!apiDataSetURL) return Promise.reject(false);
@@ -3552,7 +4617,7 @@ const apiDataSets = [
 			var svgWidth=1000;
 			var appToCapabilityObj;
 			var decisions = [<xsl:apply-templates select="$decisions" mode="decisions"/>]; 
-<xsl:if test="$isEIPMode">
+<xsl:if test="$isEIPMode='true'">
 function refreshDiagram(aDiagram) {
  
     showEditorSpinner('Loading diagram...');
@@ -3701,8 +4766,15 @@ var paperScroller = new joint.ui.PaperScroller({
 				  });
 				  
 				  Handlebars.registerHelper('formatDate', function(date) {
+					if (!date) {
+						return '';
+					}
+					const parsed = new Date(date);
+					if (Number.isNaN(parsed.getTime())) {
+						return '';
+					}
 					const options = { year: 'numeric', month: 'long', day: 'numeric' };
-					return new Date(date).toLocaleDateString(undefined, options);
+					return parsed.toLocaleDateString(undefined, options);
 				  });
 				
 				Handlebars.registerHelper('getCapLevel', function(arg1) {			 
@@ -3789,7 +4861,14 @@ var paperScroller = new joint.ui.PaperScroller({
 				}
 
 				Handlebars.registerHelper('formatDate', function(arg1) {
-					return formatDateforLocale(arg1, currentLang)
+					if (!arg1) {
+						return '';
+					}
+					const parsed = new Date(arg1);
+					if (Number.isNaN(parsed.getTime())) {
+						return '';
+					}
+					return formatDateforLocale(parsed.toISOString(), currentLang)
 				})			
 
 				
@@ -4808,300 +5887,279 @@ $('#subjectSelection').select2({
 		if(appDetail.synonyms?.length&gt;0){ 
 			focusApp['synonyms']=appDetail.synonyms;
 		}
-	 
-		//let defaultCurrency = ccy.find(ccy => ccy.default === "true");
-	  
-	
 	if (!defaultCurrency || Object.keys(defaultCurrency).length === 0) {
- 
 		defaultCurrency = rcCcyId || {};
 	}
-	
-	  
-	const calculateDefaultCosts = (costArray, currencyArray) => {
-	   
-		let defaultExchangeRate = defaultCurrency ? parseFloat(defaultCurrency.exchangeRate) : 1;
-	  
-		  if(isNaN(defaultExchangeRate)){defaultExchangeRate=1} 
-		return costArray?.map(cost => {
-			const matchingCurrency = currencyArray.find(ccy => ccy.ccySymbol === cost.component_currency);
-			let exchangeRate = matchingCurrency ? parseFloat(matchingCurrency.exchangeRate) : 1;
-			if(isNaN(exchangeRate)){exchangeRate=1}
-			const defaultCost = parseFloat(cost.cost) * (exchangeRate / defaultExchangeRate); 
-			return {
-				...cost,
-				defaultCost: defaultCost.toFixed(2)
-			};
+
+	const baseCurrency = defaultCurrency.ccyCode || rcCcyId.ccyCode || BASE_CURRENCY_FALLBACK;
+
+	const buildExchangeRateMap = (overrideCode, overrideRate) => {
+		const map = {};
+		if (Array.isArray(ccy)) {
+			ccy.forEach((currency) => {
+				if (!currency || !currency.ccyCode) {
+					return;
+				}
+				const rate = parseExchangeRate(currency.exchangeRate);
+				map[currency.ccyCode] = (Number.isFinite(rate) &amp;&amp; rate &gt; 0) ? rate : 1;
+			});
+		}
+		const baseFallback = parseExchangeRate(defaultCurrency.exchangeRate);
+		if (!Number.isFinite(map[baseCurrency]) || map[baseCurrency] &lt;= 0) {
+			map[baseCurrency] = (Number.isFinite(baseFallback) &amp;&amp; baseFallback &gt; 0) ? baseFallback : 1;
+		}
+		if (overrideCode) {
+			if (Number.isFinite(overrideRate) &amp;&amp; overrideRate &gt; 0) {
+				map[overrideCode] = overrideRate;
+			} else if (!Number.isFinite(map[overrideCode]) || map[overrideCode] &lt;= 0) {
+				map[overrideCode] = 1;
+			}
+		}
+		return map;
+	};
+
+	const periodBounds = getCurrentYearPeriod();
+	const periodStartIso = formatIsoDate(periodBounds.start);
+	const periodEndIso = formatIsoDate(periodBounds.end);
+
+	const costInputs = (appDetail.costs || []).map((cost) => mapCostComponent(cost, baseCurrency)).filter(Boolean);
+	focusApp['costs']=appDetail.costs;
+
+	const locale = navigator.language || 'en-US';
+	const formatCurrencyValue = (value, currencyCode) => new Intl.NumberFormat(locale, { style: 'currency', currency: currencyCode }).format(value);
+	const trendSuffix = "<xsl:value-of select="eas:i18n('vs previous month')"/>";
+	const trendNewLabel = "<xsl:value-of select="eas:i18n('New month of spend')"/>";
+	const noDriversLabel = "<xsl:value-of select="eas:i18n('No cost drivers captured yet')"/>";
+	const perMonthLabel = "<xsl:value-of select="eas:i18n('per month')"/>";
+
+	const formatDisplayDate = (date) => {
+		try {
+			return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+		} catch (error) {
+			return date.toISOString().slice(0, 10);
+		}
+	};
+
+	const costMetaMap = new Map();
+	costInputs.forEach((cost) => {
+		costMetaMap.set(cost.id, cost.meta || {});
+	});
+
+	const buildCostNumbers = (state) => {
+		const periodLabel = `${formatDisplayDate(periodBounds.start)} – ${formatDisplayDate(periodBounds.end)}`;
+		const defaults = {
+			numbers: {
+				annualCost: '—',
+				monthlyCost: '—',
+				currency: currentTargetCurrencyCode,
+				period: periodLabel,
+				latestMonthly: '—',
+				trend: null,
+				topCosts: [],
+				adhocCost: null
+			},
+			raw: {
+				annual: 0,
+				monthly: 0,
+				currency: currentTargetCurrencyCode
+			}
+		};
+		if (!state || costSummaryError) {
+			return defaults;
+		}
+
+		const annual = state.summary.totals.annual;
+		const monthly = state.summary.totals.monthly;
+		const currency = state.summary.currency;
+		const latestMonthlyValue = state.monthly.values.length ? state.monthly.values[state.monthly.values.length - 1] : 0;
+		const previousMonthlyValue = state.monthly.values.length > 1 ? state.monthly.values[state.monthly.values.length - 2] : null;
+
+		let trend = null;
+		if (previousMonthlyValue !== null) {
+			const delta = latestMonthlyValue - previousMonthlyValue;
+			if (Math.abs(previousMonthlyValue) > 0.00001) {
+				const percent = (delta / Math.abs(previousMonthlyValue)) * 100;
+				const rounded = round2(percent);
+				const precision = Math.abs(rounded) >= 10 ? rounded.toFixed(0) : rounded.toFixed(1);
+				trend = {
+					direction: delta >= 0 ? 'up' : 'down',
+					label: `${delta >= 0 ? '+' : ''}${precision}% ${trendSuffix}`,
+					icon: delta >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'
+				};
+			} else if (Math.abs(delta) > 0.00001) {
+				trend = {
+					direction: 'up',
+					label: trendNewLabel,
+					icon: 'fa-star'
+				};
+			}
+		}
+
+		const formattedTopCosts = (state.summary.breakdown || [])
+			.filter((item) => item.included &amp;&amp; Math.abs(item.annual) > 0)
+			.sort((a, b) => Math.abs(b.annual) - Math.abs(a.annual))
+			.slice(0, 3)
+			.map((item) => {
+				const meta = costMetaMap.get(item.id) || {};
+				const label = meta.typeLabel || meta.category || item.id;
+				return {
+					id: item.id,
+					label,
+					annual: formatCurrencyValue(item.annual, currency),
+					monthly: formatCurrencyValue(item.monthly, currency)
+				};
+			});
+
+		const adhocValue = state.summary.totals.adhoc;
+
+		return {
+			numbers: {
+				annualCost: formatCurrencyValue(annual, currency),
+				monthlyCost: formatCurrencyValue(monthly, currency),
+				currency,
+				period: periodLabel,
+				latestMonthly: formatCurrencyValue(latestMonthlyValue, currency),
+				trend,
+				topCosts: formattedTopCosts,
+				adhocCost: adhocValue ? formatCurrencyValue(adhocValue, currency) : null
+			},
+			raw: {
+				annual,
+				monthly,
+				currency
+			}
+		};
+	};
+
+	const renderTopCostList = (items) => {
+		const listEl = $('#costTopList');
+		if (!listEl.length) {
+			return;
+		}
+		listEl.empty();
+		if (!items || !items.length) {
+			listEl.append('<li class="cost-top-empty">' + noDriversLabel + '</li>');
+			return;
+		}
+		items.forEach((item) => {
+			listEl.append(
+				'<li>' +
+					'<div class="cost-top-line">' +
+						'<span class="cost-top-name">' + item.label + '</span>' +
+						'<span class="cost-top-value">' + item.annual + '</span>' +
+					'</div>' +
+					'<div class="cost-top-sub">' + item.monthly + ' ' + perMonthLabel + '</div>' +
+				'</li>'
+			);
 		});
 	};
-	
-	const updatedCosts = calculateDefaultCosts(appDetail.costs, ccy);
-	 appDetail.costs=updatedCosts
-	
-	let costByCategory=[];
-	let costByType=[];
-	let costByFreq =[];
-	if(appDetail.costs){
-		focusApp['costs']=appDetail.costs;
-		costByCategory = d3.nest()
-			.key(function(d) { return d.costCategory; })
-			.rollup(function(v) { return {
-		total: d3.sum(v, function(d) { return d.cost; })
-	}})
-	.entries(appDetail.costs);
-	
-	costByType = d3.nest()
-	.key(function(d) { return d.name; })
-	.rollup(function(v) { return {
-		total: d3.sum(v, function(d) { return d.cost; })
-	}})
-	.entries(appDetail.costs);
-	
-	costByFreq = d3.nest()
-	.key(function(d) { return d.costType; })
-	.rollup(function(v) { return {
-		total: d3.sum(v, function(d) { return d.cost; })
-	}})
-	.entries(appDetail.costs);
-	}
-	let costDivider;
-	let fromDateArray = [];
-	let toDateArray = [];
-	let totalAnnualCost = 0;
-	let totalMonthlyCost = 0;
-	let monthsActive = 0;
-	let today = new Date();
-	let nextMonth = new Date();
-	nextMonth.setMonth(today.getMonth() + 1);
-	
-	if (appDetail.costs) {
-		appDetail.costs.forEach((d) => {
-	
-			let numericCost = parseFloat(d.cost); // Convert string to number
-	 
-			let costDivider = 1; // Default: 1 (full cost)
-	 
-			// Determine how to distribute costs
-			if (d.costType === "Adhoc_Cost_Component") {
-				return; // Skip Adhoc costs in monthly and annual calculations
-			} else if (d.costType === "Annual_Cost_Component") {
-				costDivider = 12; // Spread annual cost over 12 months
-			} else if (d.costType === "Quarterly_Cost_Component") {
-				costDivider = 1; // Apply cost every 3 months
-			} else if (d.costType === "Monthly_Cost_Component") {
-				costDivider = 1; // Already a monthly cost
-			}
-	
-			d.monthlyAmount = numericCost / costDivider; // Base calculation
-	 
-			// **Guard code** to handle NaN for monthlyAmount
-			if (isNaN(d.monthlyAmount)) {
-				d.monthlyAmount = 0; // Set to 0 if NaN
-			}
-	
-			let fromDate = d.fromDate ? new Date(d.fromDate) : today;
-			let toDate = d.toDate ? new Date(d.toDate) : nextMonth;
-	
-			// If toDate is not set, make it 12 months from fromDate, assumes no date so just a recurring cost
-			if (!d.toDate) {
-				toDate.setFullYear(toDate.getFullYear() + 1);
-			}
-	 
-			// **Keep monthsActive for other calculations**
-			monthsActive = (toDate.getFullYear() - fromDate.getFullYear()) * 12 + (toDate.getMonth() - fromDate.getMonth()) + 1; 
-	
-			// **Condition for Annual Cost**
-			if (d.costType === "Annual_Cost_Component") {
-				totalAnnualCost += numericCost; // Add the full cost for the year
-			} else if (d.costType === "Quarterly_Cost_Component") {
-				for (let i = 0; i &lt; 12; i++) {
-					if (i % 3 === 0) { // Apply cost every 3 months
-						totalAnnualCost += d.monthlyAmount
-	 
-					}
-				}
-			} else if (d.costType === "Monthly_Cost_Component") {
-		 
-				totalAnnualCost += d.monthlyAmount * 12; // Monthly cost components
-			}
-			 
-		});
-	}
-	 
-	// **Fix totalMonthlyCost Calculation**
-	// If the period is less than 12 months, calculate based on the actual period
-	 
-	if (monthsActive &lt; 12) {
-		if(monthsActive==0){
-			monthsActive=1;
-		}
-	
-		totalMonthlyCost = totalAnnualCost / monthsActive;
-	} else {
-		totalMonthlyCost = totalAnnualCost / 12; // Spread across 12 months if the period is full-year or more
-	}
-	 
-	// Format cost output
-	let costNumbers = {}; 
 
-	let formatter = new Intl.NumberFormat(undefined, { style: "currency", currency: defaultCurrency.ccyCode  });
-	if (isNaN(totalMonthlyCost)) {
-		totalMonthlyCost = 0; // Set to 0 if NaN
-	}
-	
-	costNumbers['annualCost'] = formatter.format(Math.round(totalAnnualCost));
-	costNumbers['monthlyCost'] = formatter.format(Math.round(totalMonthlyCost));
-	 
-	 
-	if (appDetail.costs) {
-		appDetail.costs.forEach((d) => {
-			if (d.fromDate) fromDateArray.push(d.fromDate);
-			if (d.toDate) toDateArray.push(d.toDate);
+	const initialiseCurrencySelector = () => {
+		const selectEl = $('#ccySelect');
+		if (!selectEl.length) {
+			return;
+		}
+
+		const currentSelection = ccy.find((currency) => currency.ccyCode === currentTargetCurrencyCode);
+
+		const defaultOption = '<option value="">' + "<xsl:value-of select="eas:i18n('Select')"/>" + '</option>';
+		selectEl.empty().append(defaultOption);
+		ccy.forEach((currency) => {
+			selectEl.append('<option value="' + currency.id + '">' + currency.ccyCode + '</option>');
 		});
-	}
-	
-	// **Fix sorting issue**
-	fromDateArray.sort((a, b) => new Date(a) - new Date(b));
-	toDateArray.sort((a, b) => new Date(a) - new Date(b));
-	
-	let momentStartFinYear = moment(fromDateArray[0]);
-	let momentEndFinYear = moment(toDateArray[toDateArray.length - 1]);
-	
-	if (momentEndFinYear.isBefore(moment())) {
-		momentEndFinYear = moment();
-	}
-	
-	let costChartRowList = [];
-	let costCurrency;
-	
-	// **Iterate over each cost component**
-	appDetail.costs?.forEach(function (aCost) {
-		let numericCost = parseFloat(aCost.cost); // Ensure cost is a number
-	
-		// **Ensure numericCost is valid**
-		if (isNaN(numericCost)) { 
-			numericCost = 0; // Default to zero to avoid NaN propagation
+
+		if (selectEl.data('select2')) {
+			selectEl.off('change').select2('destroy');
 		}
-	
-		// **Fix cost validity period**
-		let thisFromDate = aCost.fromDate ? new Date(aCost.fromDate) : today;
-		let thisToDate = aCost.toDate ? new Date(aCost.toDate) : nextMonth;
-		let thisStart = moment(thisFromDate, 'YYYY-MM-DD', true);
-		let thisEnd = moment(thisToDate, 'YYYY-MM-DD', true);
-	
-		// **Ensure valid dates before proceeding**
-		if (!thisStart.isValid() || !thisEnd.isValid()) {
-			console.error(`Invalid date range for:`, aCost);
-			return; // Skip this cost entry
+
+		selectEl.select2({
+			width: '100%'
+		});
+
+		if (currentSelection) {
+			selectEl.val(currentSelection.id).trigger('change.select2');
 		}
-	
-		thisStart = moment.max(thisStart, momentStartFinYear);
-		thisEnd = moment.min(thisEnd, momentEndFinYear);
-	
-		// **Fix month count calculation (ensure inclusive of both start and end months)**
-		let monthCount = thisEnd.diff(thisStart, 'months') + 1;
-	
-		// **Ensure monthCount is valid**
-		if(monthCount==0){monthCount=1}
-	
-		if (isNaN(monthCount) || monthCount &lt;= 0) {
-			console.error(`Invalid monthCount for:`, aCost, `Calculated monthCount:`, monthCount);
-			monthCount = 1; // Ensure at least 1 month
-		}
-		aCost['monthCount'] = Math.ceil(monthCount);
-	
-		// **Fix monthStart calculation**
-		let monthStart = thisStart.diff(momentStartFinYear, 'months');
-		if (isNaN(monthStart) || monthStart &lt; 0) {
-			console.error(`Invalid monthStart for:`, aCost, `Calculated monthStart:`, monthStart);
-			monthStart = 0; // Ensure valid 0-based index
-		}
-		aCost['monthStart'] = Math.floor(monthStart);
-	
-		// **Ensure correct cost distribution**
-		if (aCost.costType === "Adhoc_Cost_Component") {  
-			aCost.monthlyAmount = numericCost / aCost.monthCount;
-		} else if (aCost.costType === "Annual_Cost_Component") {
-			aCost.monthlyAmount = numericCost / 12;
-		} else if (aCost.costType === "Quarterly_Cost_Component") {
-			aCost.monthlyAmount = numericCost; // Keep full amount but apply only every 3 months
-		} else {
-			aCost.monthlyAmount = numericCost;
-		}
-	
-		// Assign currency dynamically
-		costCurrency = aCost.ccy_code; 
-		// **Fix missing dates dynamically**
-		if (!aCost.toDate) aCost['toDate'] = momentEndFinYear.format('YYYY-MM-DD');
-		if (!aCost.fromDate || aCost.fromDate === '') aCost['fromDate'] = momentStartFinYear.format('YYYY-MM-DD');
-	
-		// **Fix total amount for valid months**
-		aCost['inScopeAmount'] = Math.round(aCost['monthlyAmount'] * aCost['monthCount']);
-	
-		// **Fix costChartRow creation**
-		let costChartRow = new Array(aCost.monthStart).fill(0); // Fill with zeros for inactive months
-	
-		if (aCost.costType === "Quarterly_Cost_Component") {
-			for (let i = 0; i &lt; aCost.monthCount; i++) {
-				if ((i + aCost.monthStart) % 3 === 0) { // Apply cost every 3rd month
-					costChartRow.push(aCost.monthlyAmount);
-				} else {
-					costChartRow.push(0); // Keep zero in other months
-				}
-			}
-		} else {
-			for (let i = 0; i &lt; aCost.monthCount; i++) {
-				costChartRow.push(aCost.monthlyAmount);
-			}
-		} 
-		costChartRowList.push(costChartRow);
-	});
-	
-	// **Fix month-by-month cost distribution**
-	let monthsListCount = momentEndFinYear.diff(momentStartFinYear, 'months') + 1;
-	let monthsList = [];
-	let sumsList = Array(monthsListCount).fill(0);
-	
-	for (let i = 0; i &lt; monthsListCount; i++) {
-		monthsList.push(moment(momentStartFinYear).add(i, 'months').format('MM/YYYY'));
-	
-		let monthlyTotal = 0;
-		costChartRowList.forEach((row) => {
-			if (row[i]) {
-				monthlyTotal += row[i];
+
+		selectEl.off('change').on('change', function() {
+			const currency = $(this).val();
+			updateCharts(currency);
+		});
+	};
+
+	const computeCostSummaryForCurrency = (targetCurrencyCode, overrideRate) => {
+		const effectiveRates = buildExchangeRateMap(targetCurrencyCode, overrideRate);
+		const summary = summariseCosts(costInputs, effectiveRates, {
+			targetCurrency: targetCurrencyCode,
+			periodStart: periodStartIso,
+			periodEnd: periodEndIso,
+			includeAdhoc: false,
+			baseCurrency
+		});
+		const contributions = costInputs.map((cost) => computeCostContribution(cost, {
+			exchangeRates: effectiveRates,
+			targetCurrency: targetCurrencyCode,
+			baseCurrency,
+			periodStart: periodBounds.start,
+			periodEnd: periodBounds.end,
+			includeAdhoc: false
+		}));
+		const contributionMap = new Map();
+		contributions.forEach((item) => {
+			if (item &amp;&amp; item.id) {
+				contributionMap.set(item.id, item);
 			}
 		});
-	
-		sumsList[i] = monthlyTotal;
+		const categoryAggregate = aggregateCostBy(costInputs, contributionMap, (cost) => cost.meta?.category);
+		const typeAggregate = aggregateCostBy(costInputs, contributionMap, (cost) => cost.meta?.typeLabel);
+		const frequencyAggregate = aggregateCostBy(costInputs, contributionMap, (cost) => FREQUENCY_LABELS[cost.frequency] || cost.meta?.frequencyKey || cost.frequency);
+		const monthlySeries = buildMonthlySeries(contributions, periodBounds.start, periodBounds.end);
+		return {
+			summary,
+			contributions,
+			contributionMap,
+			aggregates: {
+				category: categoryAggregate,
+				type: typeAggregate,
+				frequency: frequencyAggregate
+			},
+			monthly: monthlySeries
+		};
+	};
+
+	let currentTargetCurrencyCode = defaultCurrency.ccyCode || baseCurrency;
+	let costSummaryState = null;
+	let costSummaryError = null;
+	try {
+		costSummaryState = computeCostSummaryForCurrency(currentTargetCurrencyCode);
+	} catch (error) {
+		console.error('Cost summary error:', error);
+		costSummaryError = error;
 	}
-	
-	cbcLabels=[];
-	cbcVals=[];
-	 
-	cbtLabels=[];
-	cbtVals=[];
-	
-	cbfLabels=[];
-	cbfVals=[]; 
-	costByCategory.forEach((f)=>{ 
-	if(f.key=='undefined'){ 
-	f['key']='Run Cost'
-	} 
-		cbcLabels.push(f.key);
-		cbcVals.push(f.value.total);
-	})
-	
-	costByType.forEach((f)=>{
-		cbtLabels.push(f.key);
-		cbtVals.push(f.value.total);
-	})
-	
-	let totalCost=0;
-	costByFreq.forEach((f)=>{
-		cbfLabels.push(f.key);
-		cbfVals.push(f.value.total);
-	})
-	 
+
+	let costNumbersPresentation = buildCostNumbers(costSummaryState);
+	let costNumbers = costNumbersPresentation.numbers;
+	let costNumbersRaw = costNumbersPresentation.raw;
+	let cbcLabels=[];
+	let cbcVals=[];
+	let cbtLabels=[];
+	let cbtVals=[];
+	let cbfLabels=[];
+	let cbfVals=[];
+	let monthsList=[];
+	let sumsList=[];
+
+	if (costSummaryState &amp;&amp; !costSummaryError) {
+		cbcLabels = costSummaryState.aggregates.category.labels;
+		cbcVals = costSummaryState.aggregates.category.values;
+		cbtLabels = costSummaryState.aggregates.type.labels;
+		cbtVals = costSummaryState.aggregates.type.values;
+		cbfLabels = costSummaryState.aggregates.frequency.labels;
+		cbfVals = costSummaryState.aggregates.frequency.values;
+		monthsList = costSummaryState.monthly.labels;
+		sumsList = costSummaryState.monthly.values;
+	} else if (costSummaryError) {
+		$('.costTotal-container').html('<div class="alert alert-danger">' + costSummaryError.message + '</div>');
+	}
 	 
 	focusApp['supplier']=appDetail?.supplier;
 	
@@ -5190,7 +6248,8 @@ $('#subjectSelection').select2({
 		location.href='report?XML=reportXML.xml&amp;XSL='+interfaceReport[0].link+'&amp;PMA='+appId
 	})
 	
-	$('.costTotal-container').html(costTotalTemplate(costNumbers))
+	$('.costTotal-container').html(costTotalTemplate(costNumbers));
+	renderTopCostList(costNumbers.topCosts);
 	
 	function renderLifecycleTimeline(containerId, lifecycleData) {
 		  const $container = $('#' + containerId);
@@ -5662,21 +6721,14 @@ $('#subjectSelection').select2({
 		$('#lifecyclePanel').html(lifecycleTemplate(focusApp)) 
 	}) 
 	-->
-	ccy.forEach((c)=>{
-		$('#ccySelect').append('&lt;option value="'+c.id+'">'+c.ccyCode+'&lt;/option>');
-	})
+	initialiseCurrencySelector();
 	
-	$('#ccySelect').select2({
-	  width:'100px'
-	});
-	
-	$('#ccySelect').on('change', function() {
-	  const currency = $(this).val();
-	  updateCharts(currency);
-	});
-	
+	let chartCostByFrequency;
+	let chartCostByCategory;
+	let chartCostByType;
+	let chartCostByMonth;
 	if(cbfLabels.length&gt;0){
-	const chartCostByFrequency = new Chart(document.getElementById("costByFrequency-chart"), {
+	chartCostByFrequency = new Chart(document.getElementById("costByFrequency-chart"), {
 	  type: 'doughnut',
 	  data: {
 		labels: cbfLabels,
@@ -5688,21 +6740,22 @@ $('#subjectSelection').select2({
 		  }
 		]
 	  },
-	  options: {
-		responsive: true,
-		title: {
-		  display: true,
-		  text: 'Cost By Frequency'
-		},
-		legend: {
-		  position: "bottom",
-		  align: "middle"
-		}
-	  }
+  options: {
+	responsive: true,
+	maintainAspectRatio: false,
+	title: {
+	  display: true,
+	  text: 'Cost By Frequency'
+	},
+	legend: {
+	  position: "bottom",
+	  align: "middle"
+	}
+  }
 	});
 	
 	// Repeat for other charts
-	const chartCostByCategory = new Chart(document.getElementById("costByCategory-chart"), {
+	chartCostByCategory = new Chart(document.getElementById("costByCategory-chart"), {
 	  type: 'doughnut',
 	  data: {
 		labels: cbcLabels,
@@ -5714,20 +6767,20 @@ $('#subjectSelection').select2({
 		  }
 		]
 	  },
-	  options: {
-		responsive: true,
-		title: {
-		  display: true,
-		  text: 'Cost By Category'
-		},
-		legend: {
-		  position: "bottom",
-		  align: "middle"
-		}
-	  }
+  options: {
+	responsive: true,
+	maintainAspectRatio: false,
+	title: {
+	  display: false,
+	  text: 'Cost By Category'
+	},
+	legend: {
+	  position: "bottom",
+	  align: "middle"
+	}
+  }
 	});
-	
-	const chartCostByType = new Chart(document.getElementById("costByType-chart"), {
+	chartCostByType = new Chart(document.getElementById("costByType-chart"), {
 	  type: 'doughnut',
 	  data: {
 		labels: cbtLabels,
@@ -5739,22 +6792,21 @@ $('#subjectSelection').select2({
 		  }
 		]
 	  },
-	  options: {
-		responsive: true,
-		title: {
-		  display: true,
-		  text: 'Cost By Type'
-		},
-		legend: {
-		  position: "right",
-		  align: "middle"
-		}
-	  }
+  options: {
+	responsive: true,
+	maintainAspectRatio: false,
+	title: {
+	  display: true,
+	  text: 'Cost By Type'
+	},
+	legend: {
+	  position: "bottom",
+	  align: "middle"
+	}
+  }
 	});
 	
-	const locale = navigator.language || 'en-US';
-	
-	const chartCostByMonth = new Chart(document.getElementById("costByMonth-chart"), {
+	chartCostByMonth = new Chart(document.getElementById("costByMonth-chart"), {
 	  type: 'bar',
 	  data: {
 		labels: monthsList,
@@ -5766,81 +6818,116 @@ $('#subjectSelection').select2({
 		  }
 		]
 	  },
-	  options: {
-		responsive: true,
-		scales: {
-		  yAxes: [{
-			ticks: {
-			  beginAtZero: true,
-			  callback: function(value) {
-				return new Intl.NumberFormat(locale, { style: 'currency', currency: defaultCurrency.ccyCode}).format(value); // Change to the selected currency
-			  }
-			}
-		  }]
-		},
-		plugins: {
-		  labels: false
+  options: {
+	responsive: true,
+	maintainAspectRatio: false,
+	scales: {
+	  yAxes: [{
+		ticks: {
+		  beginAtZero: true,
+		  callback: function(value) {
+			return formatCurrencyValue(value, costNumbersRaw.currency);
+		  }
 		}
-	  }
+	  }]
+	},
+	plugins: {
+	  labels: false
+	}
+  }
 	});
 	
 	
 	
 	function updateCharts(currency) {
-		 
-		let ccySelected=ccy.find(d => d.id == currency)
-		 let rate = ccySelected.exchangeRate;
-		let ccyCd = ccySelected.ccyCode;
-		
-	  // Convert the rate to a float
-	  rate = parseFloat(rate); 
-	
-	  if (isNaN(rate)) {
-		rate = 1;
-	  } 
-	  // Remove the currency symbol and commas, then convert the string to a float
-	  let annualCostValue = parseFloat(costNumbers.annualCost.replace(/[^\d.-]/g, ''));
-	  let monthlyCostValue = parseFloat(costNumbers.monthlyCost.replace(/[^\d.-]/g, ''));
-	
-	  // Multiply the costs by the exchange rate
-	  annualCostValue *= rate;
-	  monthlyCostValue *= rate;
-	
-		$('#regAnnual').text(new Intl.NumberFormat('en-US', { 
-		  style: 'currency', 
-		  currency: ccyCd 
-		}).format(annualCostValue));
-	
-		$('#regMonthly').text(new Intl.NumberFormat('en-US', { 
-		  style: 'currency', 
-		  currency: ccyCd 
-		}).format(monthlyCostValue));
-	
-	  // Multiply the values by the exchange rate
-	  const updatedCbfVals = cbfVals.map(value => value * rate);
-	  const updatedCbcVals = cbcVals.map(value => value * rate);
-	  const updatedCbtVals = cbtVals.map(value => value * rate);
-	  const updatedSumsList = sumsList.map(value => value * rate);
-	
-		// Update the Y-axis label with the selected currency symbol
-	  chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
-		return new Intl.NumberFormat('en-US', { 
-		  style: 'currency', 
-		  currency: ccyCd 
-		}).format(value);
-	  };
-	
-	  // Update each chart
-	  chartCostByFrequency.data.datasets[0].data = updatedCbfVals;
-	  chartCostByCategory.data.datasets[0].data = updatedCbcVals;
-	  chartCostByType.data.datasets[0].data = updatedCbtVals;
-	  chartCostByMonth.data.datasets[0].data = updatedSumsList;
-	
-	  // Re-render the charts
-	  chartCostByFrequency.update();
-	  chartCostByCategory.update();
-	  chartCostByType.update();
-	  chartCostByMonth.update();
+		const ccySelected = ccy.find(d => d.id == currency);
+		if (!ccySelected) {
+			return;
+		}
+		currentTargetCurrencyCode = ccySelected.ccyCode || baseCurrency;
+		const selectedRate = parseExchangeRate(ccySelected.exchangeRate);
+		try {
+			costSummaryState = computeCostSummaryForCurrency(
+				currentTargetCurrencyCode,
+				(Number.isFinite(selectedRate) &amp;&amp; selectedRate &gt; 0) ? selectedRate : undefined
+			);
+			costSummaryError = null;
+		} catch (error) {
+			console.error('Cost summary error:', error);
+			costSummaryError = error;
+			$('.costTotal-container').html('<div class="alert alert-danger">' + error.message + '</div>');
+			return;
+		}
+
+		const presentation = buildCostNumbers(costSummaryState);
+		costNumbers = presentation.numbers;
+		costNumbersRaw = presentation.raw;
+
+		if ($('.costTotal-container').find('#regAnnual').length === 0) {
+			$('.costTotal-container').html(costTotalTemplate(costNumbers));
+			initialiseCurrencySelector();
+		}
+
+		$('#regAnnual').text(costNumbers.annualCost);
+		$('#regMonthly').text(costNumbers.monthlyCost);
+		$('#costCurrencyLabel').text(costNumbers.currency);
+		$('#costPeriodLabel').text(costNumbers.period);
+		$('#costLatestMonthly').text(costNumbers.latestMonthly);
+
+		const trendElement = $('#costTrend');
+		if (trendElement.length) {
+			trendElement.removeClass('up down hidden');
+			if (costNumbers.trend) {
+				trendElement.addClass(costNumbers.trend.direction);
+			//	$('#costTrendIcon').attr('class', 'fa ' + costNumbers.trend.icon);
+			//$('#costTrendLabel').text(costNumbers.trend.label);
+			} else {
+				trendElement.addClass('hidden');
+			//	$('#costTrendLabel').text('');
+			}
+		}
+
+		const adhocCard = $('#costAdhocCard');
+		if (adhocCard.length) {
+			if (costNumbers.adhocCost) {
+				$('#costAdhoc').text(costNumbers.adhocCost);
+				adhocCard.show();
+			} else {
+				adhocCard.hide();
+			}
+		}
+
+		renderTopCostList(costNumbers.topCosts);
+
+		cbfLabels = costSummaryState.aggregates.frequency.labels;
+		cbfVals = costSummaryState.aggregates.frequency.values;
+		cbcLabels = costSummaryState.aggregates.category.labels;
+		cbcVals = costSummaryState.aggregates.category.values;
+		cbtLabels = costSummaryState.aggregates.type.labels;
+		cbtVals = costSummaryState.aggregates.type.values;
+		monthsList = costSummaryState.monthly.labels;
+		sumsList = costSummaryState.monthly.values;
+
+		if (!chartCostByFrequency || !chartCostByCategory || !chartCostByType || !chartCostByMonth) {
+			return;
+		}
+
+		chartCostByFrequency.data.labels = cbfLabels;
+		chartCostByFrequency.data.datasets[0].data = cbfVals;
+		chartCostByCategory.data.labels = cbcLabels;
+		chartCostByCategory.data.datasets[0].data = cbcVals;
+		chartCostByType.data.labels = cbtLabels;
+		chartCostByType.data.datasets[0].data = cbtVals;
+		chartCostByMonth.data.labels = monthsList;
+		chartCostByMonth.data.datasets[0].data = sumsList;
+		chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
+			return formatCurrencyValue(value, costNumbersRaw.currency);
+		};
+
+		chartCostByFrequency.update();
+		chartCostByCategory.update();
+		chartCostByType.update();
+		chartCostByMonth.update();
 	}
 	
 	}
@@ -5960,7 +7047,7 @@ $('#subjectSelection').select2({
 	panelSet.then(function(response) {
 	
 		//get diagrams - only works on Cloud/Docker
-		<xsl:if test="$isEIPMode">
+		<xsl:if test="$isEIPMode='true'">
 	let viewAPIDiagramInfo= '<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+focusApp.id; 
 						 promise_loadViewerAPIData(viewAPIDiagramInfo)
 							.then(function(response) { 

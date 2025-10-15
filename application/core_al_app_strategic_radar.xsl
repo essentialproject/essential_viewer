@@ -120,8 +120,8 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-               <script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
-               <script src="js/generic-radar/radar.js?release=6.19"></script>
+               <script src="js/d3/d3.v5.9.7.min.js"></script>
+               <script src="js/generic-radar/radar.js"></script>
 
 				<title>Application Strategic Radar</title>
                 <xsl:call-template name="dataTablesLibrary"/>

@@ -134,8 +134,8 @@
 				<script src='js/d3/d3.v5.9.7.min.js'></script> 
 				<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 				<script src='common/js/pre_set_echarts.js'></script> 
-				<script src="js/vis/vis.min.js?release=6.19" type="application/javascript"/>
-                <link href="js/vis/vis.min.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/vis/vis.min.js" type="application/javascript"/>
+                <link href="js/vis/vis.min.css" media="screen" rel="stylesheet" type="text/css"/>
 				<style type="text/css">
 					.tooltip {
 						position: absolute;

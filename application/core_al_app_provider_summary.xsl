@@ -179,15 +179,15 @@
 					<xsl:value-of select="eas:i18n('Application Summary')"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css?release=6.19"/>
-				<script src="js/lodash/index.js?release=6.19"/>
-				<script src="js/backbone/backbone.js?release=6.19"/>
-				<script src="js/graphlib/graphlib.core.js?release=6.19"/>
-				<script src="js/dagre/dagre.core.js?release=6.19"/>
-				<script src="js/jointjs/joint.min.js?release=6.19"/>
-				<script src="js/jointjs/ga.js?release=6.19" async="" type="text/javascript"/>
-				<script src="js/jointjs/joint_002.js?release=6.19"/>
-				<script src="js/jointjs/joint.layout.DirectedGraph.js?release=6.19"/>
+				<link rel="stylesheet" type="text/css" href="js/jointjs/joint.min.css"/>
+				<script src="js/lodash/index.js"/>
+				<script src="js/backbone/backbone.js"/>
+				<script src="js/graphlib/graphlib.core.js"/>
+				<script src="js/dagre/dagre.core.js"/>
+				<script src="js/jointjs/joint.min.js"/>
+				<script src="js/jointjs/ga.js" async="" type="text/javascript"/>
+				<script src="js/jointjs/joint_002.js"/>
+				<script src="js/jointjs/joint.layout.DirectedGraph.js"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

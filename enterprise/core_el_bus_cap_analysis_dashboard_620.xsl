@@ -120,7 +120,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				
-				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<script src="js/d3/d3.v5.9.7.min.js"></script>
 				<title>Business Capability Model</title>
 				<style>
 					<!-- old style -->

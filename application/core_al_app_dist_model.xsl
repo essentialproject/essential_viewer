@@ -68,7 +68,7 @@
 				<title>
 					<xsl:value-of select="$pageTitle"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.zoomable.js?release=6.19"/>
+				<script type="text/javascript" src="js/jquery.zoomable.js"/>
 			</head>
 			<body>
 

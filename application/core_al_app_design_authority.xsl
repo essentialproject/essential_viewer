@@ -77,7 +77,7 @@
 		<xsl:call-template name="docType"/>
 		<html>
 			<head>
-                <script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
+                <script src="js/d3/d3_4-11/d3.min.js"/>
 				<xsl:call-template name="commonHeadContent"/>
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -86,7 +86,7 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title><xsl:value-of select="eas:i18n('Design Authority')"/></title>
-				<script src="js/FileSaver.min.js?release=6.19"/>
+				<script src="js/FileSaver.min.js"/>
                 <style>
                 	 .fade-in {
                             opacity: 1;

@@ -450,7 +450,7 @@ Promise.all(
 							let linkClass = 'context-menu-' + linkMenuName;
 							let linkId = instance.id + 'Link';
 							let linkURL = reportURL;
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 aa"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
 			
 						} else if (instanceLink != null) {
 							let linkURL = reportURL;
@@ -459,7 +459,7 @@ Promise.all(
 
 							let linkId = instance.id + 'Link';
 						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 bb" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 			
 							
 		
@@ -482,7 +482,7 @@ Promise.all(
 		                let linkClass = 'context-menu-' + linkMenuName;
 		                let linkId = instance.id + 'Link';
 		                let linkURL = reportURL; 
-						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 cc' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
 			
 		                return instanceLink;
 		            }

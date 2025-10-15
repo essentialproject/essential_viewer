@@ -140,9 +140,9 @@
 								});
 							</script>
 
-				<script language="javascript" src="js/jit-yc.js?release=6.19" type="text/javascript"/>
-				<script language="javascript" src="js/org_tree.js?release=6.19" type="text/javascript"/>
-				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js?release=6.19"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
+				<script language="javascript" src="js/jit-yc.js" type="text/javascript"/>
+				<script language="javascript" src="js/org_tree.js" type="text/javascript"/>
+				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<style>
 					.text{
 						margin: 7px;

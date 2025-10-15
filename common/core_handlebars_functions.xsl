@@ -228,7 +228,7 @@
 		            let linkURL = reportURL;
 		            let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
 		            let linkId = instance.id + 'Link';
-		        	instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="window.location.href=&quot;' + linkHref + '&quot;"  id="' + linkId +'"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+		        	instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 
 		            return instanceLink;
 		        } else {

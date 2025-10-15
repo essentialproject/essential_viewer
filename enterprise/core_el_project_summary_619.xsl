@@ -215,15 +215,15 @@
 		<html>
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
-                <script src="js/d3/d3.v2.min.js?release=6.19" type="application/javascript"/>
-				<script src="js/d3/timeknots.js?release=6.19" type="application/javascript"/>
+                <script src="js/d3/d3.v2.min.js" type="application/javascript"/>
+				<script src="js/d3/timeknots.js" type="application/javascript"/>
                 
-				<script src="js/vis/vis.min.js?release=6.19" type="application/javascript"/>
-                <link href="js/vis/vis.min.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/vis/vis.min.js" type="application/javascript"/>
+                <link href="js/vis/vis.min.css" media="screen" rel="stylesheet" type="text/css"/>
 
 				<!-- Add bootstrap datepicker libraries -->
-				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js?release=6.19"/>
-				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css?release=6.19"/>
+				<script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
 
 				<script type="text/javascript">
 				$('document').ready(function(){

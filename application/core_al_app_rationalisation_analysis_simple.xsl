@@ -71,11 +71,11 @@
         
 		<html>
 			<head>
-              <script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
+              <script src="js/d3/d3_4-11/d3.min.js"/>
 				<xsl:call-template name="commonHeadContent"/>
                 <xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>
-                <script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js?release=6.19"/>
-				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css?release=6.19"/>
+                <script type="text/javascript" src="js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"/>
+				<link rel="stylesheet" type="text/css" href="js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"/>
 
                 <xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
@@ -596,8 +596,8 @@
                             }
 
                       </style>
-                <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js?release=6.19"/>
+                <link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js"/>
                 <script>
                         var appCardTemplate;
                         var svgwidth 

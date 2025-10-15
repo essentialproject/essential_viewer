@@ -71,8 +71,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Roadmap Timeline</title>
-				<script src="js/vis/vis.js?release=6.19"/>
-				<link href="js/vis/vis.css?release=6.19" rel="stylesheet" type="text/css"/>
+				<script src="js/vis/vis.js"/>
+				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"/>
 				<script>
 					$(document).ready(function(){
 						$('#lifecycleLegend').show();

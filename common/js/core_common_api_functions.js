@@ -464,6 +464,32 @@ function essPromise_createGenericElement(apiURL, resourceJSON, customHeaders = [
     );
 };
 
+// create a given resource with resource data passed as form url encoded data
+function essPromise_deleteGenericElement(apiURL, customHeaders = [], resourcePath, resourceId, resourceTypeLabel) {
+    return new Promise(
+        function (resolve, reject) {	
+			let resourceString = JSON.stringify(resourceJSON);
+            let url = essBuildRefApiPath(apiURL) + resourcePath + '/' + resourceId;
+            //console.log('Create Ref URL: ' + url);
+            var xhr = essCreateRefCORSRequest('DELETE', url);
+			customHeaders?.forEach(hdr => {
+				xhr.setRequestHeader(hdr.key,hdr.value);
+			});
+            if (!xhr) {
+                corsError = new Error('CORS not supported by browser. Unable to create ' + resourceTypeLabel + ' data');
+                reject(corsError);
+            } else {
+                // Response handlers.
+                //xhr.setRequestHeader('Content-type','multipart/form-data');
+                var errorMessageVerb = 'deleting';
+                xhr.onload = essOnXhrLoad(xhr, resolve, reject, resourceTypeLabel, errorMessageVerb);
+                xhr.onerror = essOnXhrError(reject, resourceTypeLabel, errorMessageVerb);
+                xhr.send();
+            }
+        }
+    );
+};
+
 
 /********************************************************
 REFERENCE API FUNCTIONS

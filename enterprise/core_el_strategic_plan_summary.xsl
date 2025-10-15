@@ -169,8 +169,8 @@
 						<xsl:with-param name="targetMenu" select="()"/>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.v2.min.js?release=6.19" type="application/javascript"/>
-				<script src="js/d3/timeknots.js?release=6.19" type="application/javascript"/>
+				<script src="js/d3/d3.v2.min.js" type="application/javascript"/>
+				<script src="js/d3/timeknots.js" type="application/javascript"/>
                 <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
 				<script src='js/d3/d3.v5.9.7.min.js'></script> 
                 <link rel="stylesheet" href="css/ess-summary.css"/>

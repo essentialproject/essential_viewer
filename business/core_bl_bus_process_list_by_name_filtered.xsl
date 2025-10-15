@@ -291,7 +291,7 @@
 
 							let linkId = instance.id + 'Link';
 						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" onclick="location.href=&quot;' + linkHref + '&quot;" id="' + linkId+'"><i class="text-success fa fa-check-circle right-5"></i>Select2</button>'
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 			
 							
 		

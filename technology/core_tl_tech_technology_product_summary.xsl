@@ -77,17 +77,17 @@
                     </xsl:call-template>
                 </xsl:for-each>
                 
-                <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
+                <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
                 <link href="technology/technology_summary.css" type="text/css" rel="stylesheet"></link>
                 
                 <title>
                     <xsl:value-of select="$pageLabel" />
                 </title>
                 
-                <script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
-                <script src="js/chartjs/Chart.min.js?release=6.19"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
-				<link href="js/chartjs/Chart.css?release=6.19" type="text/css" rel="stylesheet"></link>
+                <script src="js/d3/d3.v5.9.7.min.js"></script>
+                <script src="js/chartjs/Chart.min.js"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
+				<link href="js/chartjs/Chart.css" type="text/css" rel="stylesheet"></link>
                 <style>
                        svg {
                         border: 1px solid #ccc;

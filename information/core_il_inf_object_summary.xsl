@@ -89,7 +89,7 @@
 				<title>
 					<xsl:value-of select="eas:i18n('Information View Summary')"/>
 				</title>
-				<script type="text/javascript" src="js/jquery.columnizer.js?release=6.19"/>
+				<script type="text/javascript" src="js/jquery.columnizer.js"/>
 				<script>
 					$(function(){
 						$('#impactedOrgs').columnize({columns: 2});		

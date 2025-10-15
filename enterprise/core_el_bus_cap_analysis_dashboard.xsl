@@ -138,8 +138,118 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				
-				<script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
+				<script src="js/d3/d3.v5.9.7.min.js"></script>
 				<script src="js/kpi_structure.js"/>
+				<script type="text/javascript"><![CDATA[
+				// Inline all-orgs computation 
+				(function(){
+				function computeAllOrgsMap(nodes){
+					// Build lookups
+					var idToNode = new Map();
+					for (var i=0;i<nodes.length;i++){
+					var n = nodes[i];
+					idToNode.set(n.id, { id: n.id, children: Array.isArray(n.children) ? n.children : [] });
+					}
+
+					var nCount = nodes.length;
+					var idToIdx = new Map();
+					var idxToId = new Array(nCount);
+					for (var j=0;j<nodes.length;j++){
+					var n0 = nodes[j];
+					idToIdx.set(n0.id, j);
+					idxToId[j] = n0.id;
+					}
+
+					var stamp = new Uint32Array(nCount);
+					var stampId = 1;
+					var memo = new Map(); // id -> array of descendants incl self
+
+					function computeFor(id){
+					if (memo.has(id)) return memo.get(id);
+					var stack = [{ id: id, ci: 0 }];
+					var inStack = new Set([id]);
+					var post = [];
+
+					while (stack.length){
+						var frame = stack[stack.length - 1];
+						var node = idToNode.get(frame.id);
+						var children = node ? node.children : [];
+						if (frame.ci < children.length){
+						var childId = children[frame.ci++];
+						if (!idToNode.has(childId)) continue; // skip missing
+						if (!memo.has(childId) && !inStack.has(childId)){
+							stack.push({ id: childId, ci: 0 });
+							inStack.add(childId);
+						}
+						} else {
+						post.push(frame.id);
+						inStack.delete(frame.id);
+						stack.pop();
+						}
+					}
+
+					for (var p=0;p<post.length;p++){
+						var nid = post[p];
+						var nodeP = idToNode.get(nid);
+						var childrenP = nodeP ? nodeP.children : [];
+						var sid = stampId++;
+						var acc = [];
+						var selfIdx = idToIdx.get(nid);
+						if (selfIdx !== undefined){
+						stamp[selfIdx] = sid;
+						acc.push(nid);
+						}
+						for (var c=0;c<childrenP.length;c++){
+						var cId = childrenP[c];
+						var childList = memo.get(cId) || [cId];
+						for (var k=0;k<childList.length;k++){
+							var cid = childList[k];
+							var idx = idToIdx.get(cid);
+							if (idx !== undefined && stamp[idx] !== sid){
+							stamp[idx] = sid;
+							acc.push(cid);
+							}
+						}
+						}
+						memo.set(nid, acc);
+					}
+					return memo.get(id);
+					}
+
+					var result = Object.create(null);
+					for (var r=0;r<nodes.length;r++){
+					result[nodes[r].id] = computeFor(nodes[r].id);
+					}
+					return result;
+				}
+
+				// Replace/define prepareAllOrgsInScope to run on main thread (no workers)
+				var replace = function(){
+					var prev = window.prepareAllOrgsInScope;
+					window.prepareAllOrgsInScope = function(orgNodes /*, opts */){
+					try {
+						var map = computeAllOrgsMap(orgNodes || []);
+						// Annotate nodes with allOrgsInScope to preserve downstream expectations
+						var annotated = (orgNodes || []).map(function(n){
+						var clone = (typeof structuredClone === 'function') ? structuredClone(n) : Object.assign({}, n);
+						clone.allOrgsInScope = map[n.id] || [n.id];
+						return clone;
+						});
+						return Promise.resolve(annotated);
+					} catch (e) {
+						console.error('prepareAllOrgsInScope (inline) failed:', e);
+						return Promise.resolve(orgNodes || []);
+					}
+					};
+				};
+
+				if (document.readyState === 'complete' || document.readyState === 'interactive'){
+					replace();
+				} else {
+					document.addEventListener('DOMContentLoaded', replace, { once: true });
+				}
+				})();
+				]]></script>
 				<xsl:if test="$eipMode">
 				<script type="text/javascript" src="editors/assets/js/joint-plus/package/joint-plus.js">
 				</script>
@@ -2717,6 +2827,7 @@
 			{{/each}} 
 			
 	</script>
+	<script src="enterprise/all-orgs.js"></script>
 </body>
 		<script>			
 			<xsl:call-template name="RenderViewerAPIJSFunction">
@@ -3552,17 +3663,49 @@ function setViewOptions(thisId) {
 			 //	console.log('viewAPIDataCaps',responses[2]);
 			//	console.log('viewAPIDataSvcs',responses[3]);
 			//	console.log('viewAPIDataActos',responses[4]);
-			 
-				responses[4].orgData.forEach((d)=>{
-					relevantOrgData.push({"id":d.id,"name":d.name, "allOrgsInScope": d.allChildOrgs})
-				});
-				responses[4]=[]; 
-				if(relevantOrgData.length&gt;0){
+			  
+				const orgsRaw = responses[4]?.orgData ?? [];
+
+				const orgNodes = orgsRaw.map(d => ({ id: d.id, name: d.name, children: d.children || [] }));
+
+				window.prepareAllOrgsInScope(orgNodes, { workerUrl: 'enterprise/workers/all-orgs.worker.js' })
+				.then(annotated => {
+					relevantOrgData.length = 0;
+					for (const n of annotated) {
+					relevantOrgData.push({ id: n.id, name: n.name, allOrgsInScope: n.allOrgsInScope });
+					}
+					
+					document.dispatchEvent(new CustomEvent('org-scope-ready'));
+				}).catch(console.error);
+
+				$(document).on('org-scope-ready', (e) => {
+					const detail = e.originalEvent?.detail;
+					relevantOrgData = relevantOrgData.sort((a, b) => {
+						return a.name.localeCompare(b.name);
+					});
+						
+					if(relevantOrgData.length&gt;0){
 						$('#viewOption').append($('&lt;option>', {
 								value: 'compare',
 								text: '<xsl:value-of select="eas:i18n('Compare')"/>'
 							})); 
-				}
+						}
+
+						relevantOrgData.forEach((org)=>{
+							$('#leftOrgList').append($('&lt;option>', {
+								value: org.id,
+								text: org.name
+							}));
+							$('#rightOrgList').append($('&lt;option>', {
+								value: org.id,
+								text: org.name
+							}));
+						})
+						$('#leftOrgList').select2();
+						$('#rightOrgList').select2();
+					});
+				responses[4]=[]; 
+				
 				let workingArray = responses[0];
 				workingArrayBusCapHierarchy=workingArray.busCapHierarchy
  
@@ -4410,19 +4553,7 @@ processCountMap = processMap.reduce((acc, item) => {
 			   $('.appIncapBoxWrapper').hide();
 			})
 
-			relevantOrgData.forEach((org)=>{
-				$('#leftOrgList').append($('&lt;option>', {
-					value: org.id,
-					text: org.name
-				}));
-				$('#rightOrgList').append($('&lt;option>', {
-					value: org.id,
-					text: org.name
-				}));
-			})
-			$('#leftOrgList').select2();
-			$('#rightOrgList').select2();
-		
+			 
 
 			}). catch (function (error)
 			{
@@ -4745,7 +4876,8 @@ function registerEvents(){
 		let workLeft=relevantOrgData.find((e)=>{ return e.id==leftOrg})
 		let workRight=relevantOrgData.find((e)=>{ return e.id==rightOrg})
 		let capid=$(this).attr('easidcompare');	
-   
+		  console.log('relevantOrgData', relevantOrgData)
+   console.log('workLeft', workLeft)
 		let thisCapAppList = inScopeCapsApp.filter(function (d)
 			{
 				return d.id == capid;
@@ -5439,11 +5571,12 @@ let workingMatchedBuscapAndProcessIds = Object.fromEntries(idToProcessCountMap);
 
 			// Resolve the apps for this filteredApps array
 			const thisAppArray = d.filteredApps.map(appId => appMap.get(appId)).filter(Boolean);
-
+ 
 			if (workLeft) {
 				const orgsInScopeSet = new Set(workLeft.allOrgsInScope); // Use a Set for faster lookup
 				const capMatch = new Set(); // Use a Set to avoid duplicate matches
-
+//console.log('left orgsInScopeSet',orgsInScopeSet)
+//console.log('capMatch',capMatch)	
 				thisAppArray.forEach(app => {
 					app.orgUserIds.forEach(orgId => {
 						if (orgsInScopeSet.has(orgId)) {
@@ -5457,7 +5590,8 @@ let workingMatchedBuscapAndProcessIds = Object.fromEntries(idToProcessCountMap);
 			if (workRight) {
 				const orgsInScopeSet = new Set(workRight.allOrgsInScope); // Use a Set for faster lookup
 				const capMatch = new Set();
-
+//console.log('right orgsInScopeSet',orgsInScopeSet)
+//console.log('capMatch',capMatch)	
 				thisAppArray.forEach(app => {
 					app.orgUserIds.forEach(orgId => {
 						if (orgsInScopeSet.has(orgId)) {

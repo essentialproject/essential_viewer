@@ -98,7 +98,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<script src="js/d3/d3.min.js?release=6.19"></script>
+				<script src="js/d3/d3.min.js"></script>
 				<title><xsl:value-of select="eas:i18n('Application Landscape')"/></title>
 				<style>
 						#area {

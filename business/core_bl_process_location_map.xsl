@@ -97,10 +97,10 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Process Dashboard</title>
-                    <link href="js/jvectormap/jquery-jvectormap-2.0.3.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
-                    <script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js?release=6.19" type="text/javascript"/>
-                    <script src="js/jvectormap/jquery-jvectormap-world-mill.js?release=6.19" type="text/javascript"/>
-              <!--  <script src="user/jquery-jvectormap-dk-mill.js?release=6.19" type="text/javascript"/>-->
+                    <link href="js/jvectormap/jquery-jvectormap-2.0.3.css" media="screen" rel="stylesheet" type="text/css"/>
+                    <script src="js/jvectormap/jquery-jvectormap-2.0.3.min.js" type="text/javascript"/>
+                    <script src="js/jvectormap/jquery-jvectormap-world-mill.js" type="text/javascript"/>
+              <!--  <script src="user/jquery-jvectormap-dk-mill.js" type="text/javascript"/>-->
                     <style>
                       .tile-stats{
                       transition: all 300ms ease-in-out;

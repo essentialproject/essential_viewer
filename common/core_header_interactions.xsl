@@ -210,10 +210,10 @@
 		</script>
 		
 		<!-- Call the JS script to load the CSRF token -->
-		<script defer="defer" src="common/js/ess-csrf.js?release=6.19"></script>
+		<script defer="defer" src="common/js/ess-csrf.js"></script>
 		
 		<!--Include library containing common API platform functions for retrieving and updating repository data-->
-		<script type="text/javascript" src="common/js/core_common_api_functions.js?release=6.19"/>
+		<script type="text/javascript" src="common/js/core_common_api_functions.js"/>
 	</xsl:template>
 	
 	<xsl:template name="RenderInteractiveHeaderBars">

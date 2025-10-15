@@ -73,8 +73,8 @@
             <xsl:call-template name="RenderModalReportContent">
                 <xsl:with-param name="essModalClassNames" select="$linkClasses" />
             </xsl:call-template>
-            <link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet" />
-            <script src="js/select2/js/select2.min.js?release=6.19" />
+            <link href="js/select2/css/select2.min.css" rel="stylesheet" />
+            <script src="js/select2/js/select2.min.js" />
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">
 						<xsl:with-param name="instanceClassName" select="current()"/>

@@ -297,7 +297,7 @@
 		                let linkClass = 'context-menu-' + linkMenuName;
 		                let linkId = instance.id + 'Link';
 		                let linkURL = reportURL;
-						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 						console.log(instanceLink)
 		                return instanceLink;
 		            }

@@ -73,7 +73,7 @@
                      text { font: 10px sans-serif; pointer-events: none; }
 
                     </style>
-				<script src="js/d3/d3.v5.7.0.min.js?release=6.19"/>
+				<script src="js/d3/d3.v5.7.0.min.js"/>
 			</head>
 			<body>
 	

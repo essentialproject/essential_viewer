@@ -84,7 +84,7 @@
 						stroke: #ccc;
 						stroke-width: 2px;
 					}</style>
-				<script src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
+				<script src="js/d3/d3_4-11/d3.min.js"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

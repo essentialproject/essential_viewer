@@ -128,15 +128,15 @@
 			<head>
 				<xsl:call-template name="commonHeadContent"/>
                 <!--<xsl:call-template name="RenderModalReportContent"><xsl:with-param name="essModalClassNames" select="$linkClasses"/></xsl:call-template>-->
-                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js?release=6.19"/>
+                <script type="text/javascript" src="js/d3/d3_4-11/d3.min.js"/>
 				<!-- Searchable Select Box Libraries and Styles -->
-				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js"/>
 				<!-- Bootstrap integer spinner -->
-				<script type="text/javascript" src="js/bootstrap-input-spinner.js?release=6.19"/>
+				<script type="text/javascript" src="js/bootstrap-input-spinner.js"/>
 				<!-- Year Picker UI component -->
-				<link rel="stylesheet" href="js/yearpicker/yearpicker.css?release=6.19"/>
-				<script type="text/javascript" src="js/yearpicker/yearpicker.js?release=6.19"/>
+				<link rel="stylesheet" href="js/yearpicker/yearpicker.css"/>
+				<script type="text/javascript" src="js/yearpicker/yearpicker.js"/>
 				
 				<xsl:for-each select="$linkClasses">
 					<xsl:call-template name="RenderInstanceLinkJavascript">

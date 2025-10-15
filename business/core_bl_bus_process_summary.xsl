@@ -71,18 +71,18 @@
                     </xsl:call-template>
                 </xsl:for-each>
                 
-                <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css?release=6.19" type="text/css" rel="stylesheet"></link>
-                <script src="js/chartjs/Chart.min.js?release=6.19"></script>
-				<script src="js/chartjs/chartjs-plugin-labels.min.js?release=6.19"></script>
-				<link href="js/chartjs/Chart.css?release=6.19" type="text/css" rel="stylesheet"></link>
+                <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
+                <script src="js/chartjs/Chart.min.js"></script>
+				<script src="js/chartjs/chartjs-plugin-labels.min.js"></script>
+				<link href="js/chartjs/Chart.css" type="text/css" rel="stylesheet"></link>
                 <link href="business/core_bl_bus_process_summary.css" type="text/css" rel="stylesheet"></link>
                 
                 <title>
                     <xsl:value-of select="$pageLabel" />
                 </title>
                 
-                <script src="js/d3/d3.v5.9.7.min.js?release=6.19"></script>
-                <xsl:if test="$isEIPMode">
+                <script src="js/d3/d3.v5.9.7.min.js"></script>
+                <xsl:if test="$isEIPMode='true'">
 				<script type="text/javascript" src="editors/assets/js/joint-plus/package/joint-plus.js"></script>
 				<script src="editors/configurable/sketch-diagram-tab/jointjs-sketch/js/shapes/links.js"></script> 
 				</xsl:if>
@@ -818,6 +818,7 @@
                                                     <th>Name</th>
                                                     <th>Type</th>
                                                     <th>Swimlane</th>
+                                                    <th>Applications</th>
                                                     <th>Information Views</th>
                                                     <th class="hide-id">ID</th>
                                                     <th>Branch Identifier</th>
@@ -912,6 +913,21 @@
   <ul>
     {{#each this}}
     <li>{{this.label.text}} {{#if this.dataTypeIcon.iconType}}({{this.dataTypeIcon.iconType}}){{/if}}</li>
+    {{/each}}
+  </ul> 
+</script>
+<script id="appTable-template" type="text/x-handlebars-template">
+   
+  <ul>
+    {{#each this}}
+        <b>Direct</b><br/>
+        {{#each this.appsdirect}}
+            <li>{{this.name}}</li>
+        {{/each}}
+        <b>Via Service</b>
+        {{#each this.appsviaservice}}
+            <li>{{this.appName}} <small>({{this.name}})</small></li>
+        {{/each}}
     {{/each}}
   </ul> 
 </script>

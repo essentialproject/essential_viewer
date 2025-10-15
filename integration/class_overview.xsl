@@ -64,8 +64,8 @@
 					</xsl:call-template>
 				</xsl:for-each>
 				<title>Instance Overview</title>
-				<link href="js/select2/css/select2.min.css?release=6.19" rel="stylesheet"/>
-				<script src="js/select2/js/select2.min.js?release=6.19"/>
+				<link href="js/select2/css/select2.min.css" rel="stylesheet"/>
+				<script src="js/select2/js/select2.min.js"/>
 				<script>
 					$(document).ready(function(){
 						$('select').select2({theme: "bootstrap"});

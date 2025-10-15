@@ -112,9 +112,9 @@
 					<xsl:value-of select="$appName"/>
 				</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<link href="js/jvectormap/jquery-jvectormap-2.0.2.css?release=6.19" media="screen" rel="stylesheet" type="text/css"/>
-				<script src="js/jquery.vector-map.js?release=6.19" type="text/javascript"/>
-				<script src="js/world-en.js?release=6.19" type="text/javascript"/>
+				<link href="js/jvectormap/jquery-jvectormap-2.0.2.css" media="screen" rel="stylesheet" type="text/css"/>
+				<script src="js/jquery.vector-map.js" type="text/javascript"/>
+				<script src="js/world-en.js" type="text/javascript"/>
 			</head>
 			<body>
 				<!-- ADD THE PAGE HEADING -->

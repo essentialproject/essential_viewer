@@ -74,7 +74,7 @@
 				</xsl:for-each>
 				<title>Data Duplication Dashboard</title>
 				<xsl:call-template name="dataTablesLibrary"/>
-				<script src="js/fuse.min.js?release=6.19"/>
+				<script src="js/fuse.min.js"/>
 				<style>
 					.score{
 						width: 70px;
