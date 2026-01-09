@@ -21,8 +21,9 @@
 	<xsl:variable name="linkClasses" select="('Business_Capability', 'Application_Provider')"></xsl:variable>
 	<!-- END GENERIC LINK VARIABLES -->
 
-	<xsl:variable name="timeVals" select="/node()/simple_instance[type = ('Disposition_Lifecycle_Status')]"></xsl:variable>
-    <!--<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_disposition_lifecycle_status']/value = $timeVals/name]"></xsl:variable>
+	<!-- Changed to Payment Models instead of Disposition Lifecycle Status -->
+	<xsl:variable name="timeVals" select="/node()/simple_instance[type = ('Revenue_Model', 'Charging_Model')]"></xsl:variable>
+    <!--<xsl:variable name="apps" select="/node()/simple_instance[type = ('Application_Provider', 'Composite_Application_Provider')][own_slot_value[slot_reference = 'ap_revenue_model']/value = $timeVals/name]"></xsl:variable>
     -->
 	<xsl:variable name="styles" select="/node()/simple_instance[type = ('Element_Style')]"></xsl:variable>
 	<!-- ***REQUIRED*** DETERMINE IF ANY RELEVANT INSTANCES ARE ROADMAP ENABLED -->
@@ -70,7 +71,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>Application Disposition Model</title>
+				<title>Application Payment Model</title>
 	 			<style>
                     .ess-tag-dotted {
                     	border: 2px dashed #222;
@@ -164,7 +165,7 @@
 								<h1>
 									<span class="text-primary"><xsl:value-of select="eas:i18n('View')"></xsl:value-of>: </span>
 									<span class="text-darkgrey">
-										<xsl:value-of select="eas:i18n('Application Disposition Model')"></xsl:value-of>
+										<xsl:value-of select="eas:i18n('Application Payment Model')"></xsl:value-of>
 									</span>
 								</h1>
 							</div>
@@ -241,7 +242,7 @@
 				<!-- ADD THE PAGE FOOTER -->
 				<xsl:call-template name="Footer"></xsl:call-template>
 			</body>
-			<script id="disposition-template" type="text/x-handlebars-template"></script>
+			<script id="paymentmodel-template" type="text/x-handlebars-template"></script>
 			<script>
                 var timeJSON = [<xsl:apply-templates select="$timeVals" mode="timeJSON"><xsl:sort select="current()/own_slot_value[slot_reference='enumeration_sequence_number']/value" order="ascending"/></xsl:apply-templates>];
                 var applications;
@@ -362,17 +363,17 @@
                         return new ScopingProperty(filterdef.slotName, filterdef.valueClass)
                     });
  
-                    var dispostionFragment = $("#disposition-template").html();
-                    var dispostionTemplate = Handlebars.compile(dispostionFragment);
+                    var paymentModelFragment = $("#paymentmodel-template").html();
+                    var paymentModelTemplate = Handlebars.compile(paymentModelFragment);
                     applications=workingArray;
                   
                     timeJSON.forEach((d)=>{
                         let appList = applications.applications.filter((e)=>{
-                            return d.id == e.dispositionId;
-                        }); 
+                            return d.id == e.paymentModelId;
+                        });
                         let currentCol= d.colour;
-                        appList.forEach((e)=>{ 
-                            e['colour']=currentCol; 
+                        appList.forEach((e)=>{
+                            e['colour']=currentCol;
                         })
 
                         d['apps']=appList;
@@ -442,11 +443,11 @@
         console.log('sa', scopedApps.resources)
                      timeJSON.forEach((d)=>{
                         let appList = scopedApps.resources.filter((e)=>{
-                            return d.id == e.dispositionId;
+                            return d.id == e.paymentModelId;
                         });
                         let currentCol= d.colour;
-                        appList.forEach((e)=>{ 
-                            e['colour']=currentCol; 
+                        appList.forEach((e)=>{
+                            e['colour']=currentCol;
                         })
 
                         d['apps']=appList;
