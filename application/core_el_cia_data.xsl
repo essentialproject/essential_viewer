@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="2.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview">
+<xsl:stylesheet version="3.0" xpath-default-namespace="http://protege.stanford.edu/xml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pro="http://protege.stanford.edu/xml" xmlns:eas="http://www.enterprise-architecture.org/essential" xmlns:functx="http://www.functx.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ess="http://www.enterprise-architecture.org/essential/errorview" xmlns:map="http://www.w3.org/2005/xpath-functions/map">
     
 	<xsl:import href="../common/core_js_functions.xsl"/>  
 
@@ -11,7 +11,11 @@
 	 <xsl:key name="appSecurityProfile" match="/node()/simple_instance[type='Application_Provider_Security_Profile']" use="type"/>
 	 <xsl:key name="appSecurityEnumerations" match="/node()/simple_instance[supertype=('Enumeration')]" use="name"/>
 	 <xsl:key name="appStyles" match="/node()/simple_instance[type=('Element_Style')]" use="name"/>
-	<!--
+	   <xsl:variable name="isAuthzForClasses" select="eas:isUserAuthZClasses(('Security_Profile','Application_Provider_Security_Profile'))"/> 
+  	<xsl:variable name="isAuthzForInstances" select="eas:isUserAuthZInstances(key('appSecurityProfile', 'Application_Provider_Security_Profile'))"/>
+   
+	
+	 <!--
 		* Copyright © 2008-2025 Enterprise Architecture Solutions Limited.
 	 	* This file is part of Essential Architecture Manager, 
 	 	* the Essential Architecture Meta Model and The Essential Project.
@@ -66,9 +70,12 @@
 	<xsl:variable name="frequencyStyle" select="key('appStyles', $frequency/own_slot_value[slot_reference = 'element_styling_classes']/value)"/>
 
 	
-		{ 
-			"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
-			"sec_profile_of_element": "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='sec_profile_of_element']/value)"></xsl:value-of>", 
+		{<xsl:choose>
+			<xsl:when test="not($isAuthzForClasses) or not($isAuthzForInstances)"></xsl:when> 
+			<xsl:otherwise> 
+	
+			"id": "<xsl:value-of select="current()/name"></xsl:value-of>", 
+			"sec_profile_of_element": "<xsl:value-of select="current()/own_slot_value[slot_reference='sec_profile_of_element']/value"></xsl:value-of>", 
 			<xsl:variable name="combinedMap" as="map(*)" select="map{
 				'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
 				'sec_profile_availability_rating': string(translate(translate($spar/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')')),
@@ -90,7 +97,7 @@
 			<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
 			"authentication_methods": [<xsl:for-each select="$authentication">
 				{
-					"id": "<xsl:value-of select="eas:getSafeJSString(current()/name)"></xsl:value-of>", 
+					"id": "<xsl:value-of select="current()/name"></xsl:value-of>", 
 					<xsl:variable name="combinedMap" as="map(*)" select="map{
 						'name': string(translate(translate(current()/own_slot_value[slot_reference = 'name']/value, '}', ')'), '{', ')'))
 						}"/>
@@ -108,6 +115,9 @@
 			"sec_profile_mfa_usage_style": {"backgroundColour":"<xsl:value-of select="$mfaStyle[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>","colour":"<xsl:value-of select="$mfaStyle[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>"},
 			"sec_profile_sso_usage_style": {"backgroundColour":"<xsl:value-of select="$ssoStyle[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>","colour":"<xsl:value-of select="$ssoStyle[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>"},
 			"sec_profile_user_access_review_frequency_style": {"backgroundColour":"<xsl:value-of select="$frequencyStyle[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>","colour":"<xsl:value-of select="$frequencyStyle[1]/own_slot_value[slot_reference = 'element_style_text_colour']/value"/>"}
+			</xsl:otherwise>
+		</xsl:choose>
+		
 			}
 
 		<xsl:if test="position() != last()">,</xsl:if>

@@ -26,9 +26,7 @@
 	<!-- 03.09.2019 JP  Created	 -->
    
 <xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"/>    
-<xsl:variable name="techOrgUserRole" select="/node()/simple_instance[(type = 'Group_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Technology Organisation User')]"/>
-<xsl:key name="a2r" match="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference = 'act_to_role_to_role']/value"/>
-<xsl:variable name="techOrgUser2Roles" select="key('a2r', $techOrgUserRole/name)"/>
+<xsl:variable name="techOrgUser2Roles" select="/node()/simple_instance[type='ACTOR_TO_ROLE_RELATION']"/>
 <xsl:key name="techOrgUser2RolesKey" match="$techOrgUser2Roles" use="name"/>
 <xsl:variable name="allTechProdDeliveryTypes" select="/node()/simple_instance[type = 'Technology_Delivery_Model']"/>
 <xsl:variable name="allLifecycleStatii" select="/node()/simple_instance[type = 'Vendor_Lifecycle_Status']"/>    

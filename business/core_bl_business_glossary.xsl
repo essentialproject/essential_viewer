@@ -355,7 +355,7 @@ function openLetterAndScrollToTerm(termId, termName) {
 
 // Initial render of letters and default display of 'A' terms
 renderLetters();
-handleLetterClick('A'); // Default open on letter A
+renderGlossary(glossaryData); // Default open with all terms
 
 
 
@@ -368,42 +368,39 @@ handleLetterClick('A'); // Default open on letter A
     <xsl:variable name="syns" select="key('synonyms', current()/own_slot_value[slot_reference = ('synonyms')]/value)"/>
     <xsl:variable name="related" select="key('termName', current()/own_slot_value[slot_reference = ('business_term_related_terms')]/value)"/>
     {
-        "id":"<xsl:value-of select="current()/name"/>", 
-	   <xsl:variable name="combinedMap" as="map(*)" select="map{
-	   'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')), 
-	   'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')')),
-       'business_term_example': string(translate(translate(current()/own_slot_value[slot_reference = ('business_term_examples')]/value,'}',')'),'{',')'))
-	 }" />
-	 <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-	 <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>,
-
-     "synonyms": [<xsl:for-each select="$syns"> {
-        "id":"<xsl:value-of select="current()/name"/>", 
-        <xsl:variable name="combinedMap" as="map(*)" select="map{
-        'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
-        }" />
-	    <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-	    <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+        "id": "<xsl:value-of select="current()/name"/>",
+        "name": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'name']/value, '&quot;', '\\&quot;')"/>",
+        "description": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'description']/value, '&quot;', '\\&quot;')"/>",
+        "business_term_example": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'business_term_examples']/value, '&quot;', '\\&quot;')"/>",
         
-    "related_terms": [<xsl:for-each select="$related"> {
-    "id":"<xsl:value-of select="current()/name"/>", 
-    <xsl:variable name="combinedMap" as="map(*)" select="map{
-    'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
-    }" />
-    <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-    <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
+        "synonyms": [
+            <xsl:for-each select="$syns">
+                {
+                    "id": "<xsl:value-of select="current()/name"/>",
+                    "name": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'name']/value, '&quot;', '\\&quot;')"/>"
+                }<xsl:if test="position()!=last()">,</xsl:if>
+            </xsl:for-each>
+        ],
+        
+        "related_terms": [
+            <xsl:for-each select="$related">
+                {
+                    "id": "<xsl:value-of select="current()/name"/>",
+                    "name": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'name']/value, '&quot;', '\\&quot;')"/>"
+                }<xsl:if test="position()!=last()">,</xsl:if>
+            </xsl:for-each>
+        ],
 
-    "external_reference_links": [<xsl:for-each select="$relatedExternalLinks"> {
-    "id":"<xsl:value-of select="current()/name"/>", 
-    <xsl:variable name="combinedMap" as="map(*)" select="map{
-    'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
-    'url': string(translate(translate(current()/own_slot_value[slot_reference = ('external_reference_url')]/value,'}',')'),'{',')')),
-    'description': string(translate(translate(current()/own_slot_value[slot_reference = ('description')]/value,'}',')'),'{',')'))
-    }" />
-    <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
-    <xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
-         
-         
-}<xsl:if test="position()!=last()">,</xsl:if>
+        "external_reference_links": [
+            <xsl:for-each select="$relatedExternalLinks">
+                {
+                    "id": "<xsl:value-of select="current()/name"/>",
+                    "name": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'name']/value, '&quot;', '\\&quot;')"/>",
+                    "url": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'external_reference_url']/value, '&quot;', '\\&quot;')"/>",
+                    "description": "<xsl:value-of select="replace(current()/own_slot_value[slot_reference = 'description']/value, '&quot;', '\\&quot;')"/>"
+                }<xsl:if test="position()!=last()">,</xsl:if>
+            </xsl:for-each>
+        ]
+    }<xsl:if test="position()!=last()">,</xsl:if>
 </xsl:template>
 	</xsl:stylesheet>

@@ -1462,17 +1462,18 @@ $("document").ready(function () {
             let frequencyTypesJson = generateStandardTemplate(frequencyTypes);
             let jsonDataAPIJson = generateStandardTemplate(acquisitionTypes);
 
-            dataRows.sheets.push({ id: "frequency", name: "Frequency", description: "Frequency list", notes: " ", headerRow: 7, headers: headers, visible: false, data: frequencyTypesJson, lookup: [] });
+
+            dataRows.sheets.push({ id: "applications", name: "Applications", description: "Captures information about the Applications used within the organisation", notes: "Use this sheet for Composite Application Providers", headerRow: 7, headers: headers,  visible: true, data: jsonData, lookup: [] });
+
+            dataRows.sheets.push({ id: "frequency", name: "Information Service Quality Val", description: "Frequency list", notes: " ", headerRow: 7, headers: headers, visible: false, data: frequencyTypesJson, lookup: [] });
 
             dataRows.sheets.push({ id: "acquisition", name: "Acquisition", description: "Acquisition list", notes: " ", headerRow: 7, headers: headers, visible: false, data: jsonDataAPIJson, lookup: [] });
 
-            dataRows.sheets.push({ id: "applications", name: "Applications", description: "Captures information about the Applications used within the organisation", notes: "Use this sheet for Composite Application Providers", headerRow: 7, headers: headers, data: jsonData, lookup: [] });
+            dataRows.sheets.push({ id: "applicationmodules", name: "Application Modules", description: "Captures information about the Application Modules used within the organisation", notes: "Use this sheet for Application Providers", headerRow: 7, headers: headers,  visible: true, data: jsonDataAP, lookup: [] });
 
-            dataRows.sheets.push({ id: "applicationmodules", name: "Application Modules", description: "Captures information about the Application Modules used within the organisation", notes: "Use this sheet for Application Providers", headerRow: 7, headers: headers, data: jsonDataAP, lookup: [] });
+            dataRows.sheets.push({ id: "infoExchange", name: "Information Exchanged", description: "Captures information for info exchnage between applications", notes: " ", headerRow: 7, headers: headers,  visible: true,data: jsonDataInfoEx, lookup: [] });
 
-            dataRows.sheets.push({ id: "infoExchange", name: "Information Exchanged", description: "Captures information for info exchnage between applications", notes: " ", headerRow: 7, headers: headers, data: jsonDataInfoEx, lookup: [] });
-
-            dataRows.sheets.push({ id: "apis", name: "App Pro Interface", description: "Captures information for APIs", notes: " ", headerRow: 7, headers: headers, data: jsonDataAPI, lookup: [] });
+            dataRows.sheets.push({ id: "apis", name: "App Pro Interface", description: "Captures information for APIs", notes: " ", headerRow: 7, headers: headers,  visible: true,data: jsonDataAPI, lookup: [] });
 
             function updateInfoArray(dataArray) {
                 return dataArray.map(data => {
@@ -1687,7 +1688,7 @@ $("document").ready(function () {
                         { column: "C", values: "C", start: 8, end: 400, worksheet: "Information Exchanged" },
                         { column: "D", values: "C", start: 8, end: 2011, worksheet: "Applications" },
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "Application Dependencies CAAP") {
                     lookups = [
@@ -1695,7 +1696,7 @@ $("document").ready(function () {
                         { column: "C", values: "C", start: 8, end: 400, worksheet: "Information Exchanged" },
                         { column: "D", values: "C", start: 8, end: 2011, worksheet: "Application Modules" },
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "Application Dependencies APCA") {
                     lookups = [
@@ -1703,7 +1704,7 @@ $("document").ready(function () {
                         { column: "C", values: "C", start: 8, end: 400, worksheet: "Information Exchanged" },
                         { column: "D", values: "C", start: 8, end: 2011, worksheet: "Applications" },
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "Application Dependencies APAP") {
                     lookups = [
@@ -1711,7 +1712,7 @@ $("document").ready(function () {
                         { column: "C", values: "C", start: 8, end: 400, worksheet: "Information Exchanged" },
                         { column: "D", values: "C", start: 8, end: 2011, worksheet: "Application Modules" },
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "F", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "App Interface Dependencies CACA") {
                     lookups = [
@@ -1721,7 +1722,7 @@ $("document").ready(function () {
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Information Exchanged" },
                         { column: "F", values: "C", start: 8, end: 2011, worksheet: "Applications" },
                         { column: "G", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "App Interface Dependencies CAAP") {
                     lookups = [
@@ -1731,7 +1732,7 @@ $("document").ready(function () {
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Information Exchanged" },
                         { column: "F", values: "C", start: 8, end: 2011, worksheet: "Application Modules" },
                         { column: "G", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "App Interface Dependencies APCA") {
                     lookups = [
@@ -1741,7 +1742,7 @@ $("document").ready(function () {
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Information Exchanged" },
                         { column: "F", values: "C", start: 8, end: 2011, worksheet: "Applications" },
                         { column: "G", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 } else if (sheetName == "App Interface Dependencies APAP") {
                     lookups = [
@@ -1751,7 +1752,7 @@ $("document").ready(function () {
                         { column: "E", values: "C", start: 8, end: 2011, worksheet: "Information Exchanged" },
                         { column: "F", values: "C", start: 8, end: 2011, worksheet: "Application Modules" },
                         { column: "G", values: "C", start: 8, end: 2011, worksheet: "Acquisition" },
-                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Frequency" },
+                        { column: "H", values: "C", start: 8, end: 2011, worksheet: "Information Service Quality Val" },
                     ];
                 }
 
@@ -1768,7 +1769,7 @@ $("document").ready(function () {
                             { name: "Information Exchanged", width: 40 },
                             { name: "Target Application", width: 20 },
                             { name: "Acquisition Method", width: 10 },
-                            { name: "Frequency", width: 30 },
+                            { name: "Information Service Quality Value", width: 30 },
                         ],
                         data: JSON.parse(jsonData),
                         lookup: lookups,
@@ -1784,7 +1785,7 @@ $("document").ready(function () {
                             { name: "Information Exchanged", width: 40 },
                             { name: "Target Application", width: 20 },
                             { name: "Acquisition Method", width: 10 },
-                            { name: "Frequency", width: 30 },
+                            { name: "Information Service Quality Value", width: 30 },
                         ],
                         data: JSON.parse(jsonData),
                         lookup: lookups,

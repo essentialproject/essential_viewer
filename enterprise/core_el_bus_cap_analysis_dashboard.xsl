@@ -1670,10 +1670,7 @@
 									<select name="viewOption" id="viewOption"/>
 									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Jump To')"/>:</strong>
 									<select name="capjump" id="capjump"/> 
-									
-								<!--	<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Root Capability')"/>:</strong>
-									<select name="subrootcap" id="subrootcap"/>-->
-									
+									 
 									<div class="busCriticality">
 									<strong class="left-30 right-5"><xsl:value-of select="eas:i18n('Criticalities')"/>:</strong>
 									 <select id="busCriticalitiesSelect"><option value=''><xsl:value-of select="eas:i18n('Not Set')"/></option></select>
@@ -1774,7 +1771,8 @@
 								  <input type="radio" name="kpiOption" value="applications"/>
 								   <xsl:value-of select="eas:i18n('Application')"/>
 								</label>
-							  </form>
+							  </form> 
+					
 							  <div id="maturityTable"/>
 						</div>
 						<div id="infoSidepanel" class="sidepanel">
@@ -2679,7 +2677,7 @@
 				<div class="appBoxSummary">
 					<div class="projectBoxTitle pull-left strong">
 						<xsl:attribute name="title">{{this.name}}</xsl:attribute><!--onclick="toggleMiniPanel(this)"-->
-						<i class="fa fa-caret-right fa-fw right-5 text-white"  onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceMenuLinkLight this}}{{/essRenderInstanceMenuLinkLight}}
+						<i class="fa fa-caret-right fa-fw right-5 text-white"  onclick="toggleMiniPanel(this)"/>{{#essRenderInstanceMenuLinkLight this 'Business_Process'}}{{/essRenderInstanceMenuLinkLight}}
 					</div>
 					<div class="lifecycle pull-right">
 							<xsl:attribute name="style">background-color:{{this.backgroundColor}};color:{{this.colour}}</xsl:attribute>
@@ -2693,7 +2691,7 @@
 						<div class="left-5 bottom-5"><i class="fa fa-random right-5"></i>Applications Used: {{this.appCount}}</div> 
 							
 					</div>
-					<xsl:if test="$isEIPMode='true'">
+					<xsl:if test="$eipMode">
 					<button type="button" aria-label="Show Process Flow"  class="btn btn-default btn-xs processInfoButton pull-right"><xsl:attribute name="easidProcessButton">{{id}}</xsl:attribute><xsl:attribute name="processname">{{this.name}}</xsl:attribute><xsl:value-of select="eas:i18n('Show Flow')"/></button>
 					</xsl:if>
 				</div>
@@ -3135,6 +3133,15 @@ function setViewOptions(thisId) {
             elements.projCircle.show();
             elements.keyHolder.slideDown();
             elements.goalbox.show();
+            elements.buscap.addClass("off-cap");
+
+			// Batch removing "off-cap" from matching elements
+            elements.projCircle.each(function() {
+                if ($(this).text() !== '0') {
+                     var capId = $(this).attr('easidproj');
+                     $('*[eascapid="' + capId + '"]').removeClass("off-cap");
+                }
+            });
             break;
 
         case 'compare':
@@ -3216,6 +3223,15 @@ function setViewOptions(thisId) {
             elements.projCircle.show();
             elements.keyHolder.slideDown();
             elements.goalbox.show();
+            elements.buscap.addClass("off-cap");
+
+			// Batch removing "off-cap" from matching elements
+            elements.projCircle.each(function() {
+                if ($(this).text() !== '0') {
+                     var capId = $(this).attr('easidproj');
+                     $('*[eascapid="' + capId + '"]').removeClass("off-cap");
+                }
+            });
             break;
 
         case 'compare':
@@ -3580,6 +3596,28 @@ function setViewOptions(thisId) {
 				return instanceLink;
 			}
 		});
+
+		Handlebars.registerHelper('essRenderInstanceMenuLinkLight', function(instance, type){
+			if(instance != null) {
+				if (type) {
+					let thisMeta = meta.filter((d) => {
+						return d.classes.includes(type)
+					});
+					instance['meta'] = thisMeta[0]
+				}
+				let linkMenuName = essGetMenuName(instance); 
+				let instanceLink = instance.name;    
+				if(linkMenuName) {
+					let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage;
+					let linkClass = 'context-menu-' + linkMenuName;
+					let linkId = instance.id + 'Link';
+					instanceLink = '<a href="' + linkHref + '" class="' + linkClass + '" id="' + linkId + '">' + instance.name + '</a>';
+				} 
+				return instanceLink;
+			} else {
+				return '';
+			}
+		});
 			
 		let selectCapStyle=localStorage.getItem("essentialhideCaps");
 		if(selectCapStyle){
@@ -3646,6 +3684,48 @@ function setViewOptions(thisId) {
 		setViewOptions(thisId);
 	});
 
+	 var allKpiOptions = null;
+
+	function cacheKpiOptionsIfNeeded() {
+		if (!allKpiOptions &amp;&amp; $('#kpiSelection').length) {
+		allKpiOptions = $('#kpiSelection option').clone();
+		}
+	}
+
+	function filterKpiSelection() {
+		cacheKpiOptionsIfNeeded();
+		if (!allKpiOptions) {
+		return; // Nothing to do yet
+		}
+
+		var basis = $('input[name="kpiOption"]:checked').val();
+		console.log('basis', basis)
+		var typeMap = {
+		businessCapabilities: 'capability',
+		processes: 'process',
+		applications: 'application'
+		};
+
+		var wantedType = typeMap[basis];
+		if (!wantedType) {
+		return;
+		}
+
+		var $select = $('#kpiSelection'); 
+		var $filtered = allKpiOptions.filter(function () {
+				 
+			var ct = $(this).attr('classtype'); 
+			// Keep the placeholder (no classtype) and options with the matching classtype
+			return !ct || ct === wantedType;
+		});
+
+		$select.empty().append($filtered);
+
+	
+	}
+
+							   
+
    
 		
 			Promise.all([
@@ -3708,12 +3788,24 @@ function setViewOptions(thisId) {
 				
 				let workingArray = responses[0];
 				workingArrayBusCapHierarchy=workingArray.busCapHierarchy
+
+				// Build options
+				const $subrootcap = $('#subrootcap');
+				$subrootcap.empty();                          // make sure it’s clean
+
+				$subrootcap.append('<option value="All">All</option>');
+				workingArrayBusCapHierarchy.forEach(c => {
+					$subrootcap.append(
+						'<option value="' + c.id + '">' + c.name + '</option>'
+					);
+				});
+
+				// Initialise Select2 *once* here
+				$subrootcap.select2({
+					width: '200px' // or whatever you want
+				});
  
-				$('#subrootcap').append('<option value='All'>All</option>')
-				workingArrayBusCapHierarchy.forEach((c)=>{
-				 	$('#subrootcap').append('<option value="'+c.id+'">'+c.name+'</option>')
-				})
-				$('#subrootcap').select2();
+		 
 				svsArray = responses[3]
 				//meta = responses[1].meta; 
 			 
@@ -3762,15 +3854,31 @@ function setViewOptions(thisId) {
 				
 				myBusKPIs=buskpiData 
 				buskpiData?.perfCategory?.forEach((c)=>{
-
-					let iconClass= 'fa fa-cogs'
+					let classType= 'application';
+					let iconClass= 'fa fa-cogs';
 					if (c.classes?.includes('Business_Process')) {
-						iconClass= 'fa fa-random'
+						iconClass= 'fa fa-random';
+						classType= 'process';
 					}else if (c.classes?.includes('Business_Capability')) {
-						iconClass= 'fa fa-sitemap'
+						iconClass= 'fa fa-sitemap';
+						classType= 'capability';
 					}    
-						$('#kpiSelection').append('<option value="'+c.id+'" data-icon="${iconClass}">'+c.name+ '</option>'); 
+						$('#kpiSelection').append('<option value="'+c.id+'"><xsl:attribute name="classType">'+classType+'</xsl:attribute><xsl:attribute name="data-icon">'+iconClass+'</xsl:attribute>'+c.name+ '</option>'); 
 				})
+
+				   filterKpiSelection();
+
+				// Re-filter whenever the KPI basis changes
+				$(document).on('change', 'input[name="kpiOption"]', function () {
+						filterKpiSelection();
+
+						var $select = $('#kpiSelection');
+						var $first = $select.find('option:first');
+						
+						if ($first.length) {
+							$select.val($first.val()).trigger('change.select2');
+						}
+				});
 			 
 				// Process both busKPIs and appKPIs to add categories to data
 				processKPIs(buskpiData, 'businessCapabilities');
@@ -3889,7 +3997,7 @@ function setViewOptions(thisId) {
 										d['width']=5
 										$('#grcmgmt').html(capsTemplate(d))		
 									} 
-									else if(d.name=='Library Administration'){
+									else if(d.name=='Library Administration' || d.name=='Library Management'){ //Library Management from HERM v3.2.0
 										d['width']=1
 										$('#librarymgmt').html(capsTemplate(d))
 									} 
@@ -3905,7 +4013,7 @@ function setViewOptions(thisId) {
 										d['width']=3
 										$('#engagementmgmt').html(capsTemplate(d))
 									} 
-									else if(d.name=='Legal Services'){
+									else if(d.name=='Legal Services' || d.name=='Legal Affairs'){ //Legal Affairs from HERM v3.2.0
 										d['width']=2
 										$('#legalmgmt').html(capsTemplate(d))
 									} 
@@ -3929,7 +4037,7 @@ function setViewOptions(thisId) {
 										d['width']=3
 										$('#facilitiesmmgmt').html(capsTemplate(d))
 									} 
-									else if(d.name=='Supporting Services'){
+									else if(d.name=='Supporting Services' || d.name=='Auxiliary Capabilities'){ //Auxiliary Capabilities from HERM v3.2.0
 										d['width']=5
 										$('#supportingmmgmt').html(capsTemplate(d))
 									} 
@@ -4265,14 +4373,6 @@ sortCaps(workingArray.busCapHierarchy);
 							prId: bp.id
 						}))
 					));
-					// Use flatMap for process mapping to reduce nesting
-					processMap.push(...bc.processes.flatMap(bp => 
-						bp.physP.map(pbp => ({
-							pbpId: pbp,
-							pr: bp.name,
-							prId: bp.id
-						}))
-					));
 
 					// Map app-to-cap relationships
 					appToCap.push(...bc.processes.map(bp => ({
@@ -4431,7 +4531,7 @@ processCountMap = processMap.reduce((acc, item) => {
                                     d['width']=5
                                     $('#grcmgmt').html(capsTemplate(d))		
                                 } 
-                                else if(d.name=='Library Administration'){
+                                else if(d.name=='Library Administration' || d.name=='Library Management'){ //Library Management from HERM v3.2.0
                                     d['width']=1
                                     $('#librarymgmt').html(capsTemplate(d))
                                 } 
@@ -4447,7 +4547,7 @@ processCountMap = processMap.reduce((acc, item) => {
                                     d['width']=3
                                     $('#engagementmgmt').html(capsTemplate(d))
                                 } 
-                                else if(d.name=='Legal Services'){
+                                else if(d.name=='Legal Services' || d.name=='Legal Affairs'){ //Legal Affairs from HERM v3.2.0
                                     d['width']=2
                                     $('#legalmgmt').html(capsTemplate(d))
                                 } 
@@ -4471,7 +4571,7 @@ processCountMap = processMap.reduce((acc, item) => {
                                     d['width']=3
                                     $('#facilitiesmmgmt').html(capsTemplate(d))
                                 } 
-                                else if(d.name=='Supporting Services'){
+                                else if(d.name=='Supporting Services' || d.name=='Auxiliary Capabilities'){ //Auxiliary Capabilities from HERM v3.2.0
                                     d['width']=5
                                     $('#supportingmmgmt').html(capsTemplate(d))
                                 } 
@@ -5129,7 +5229,7 @@ function registerEvents(){
 				
 				s.colour = match.colour || '#ffffff'; // Default to white if no match
 				s.backgroundColor = match.backgroundColor || 'grey'; // Default to grey if no match
-				 <xsl:if test="$isEIPMode='true'">
+				 <xsl:if test="$eipMode">
 					let viewAPIProcessInfo= '<xsl:value-of select="$viewerAPIPathInstance"/>&amp;PMA='+s.id; 
 		 			promise_loadViewerAPIData(viewAPIProcessInfo)
 						.then(function(response) { 
@@ -5187,7 +5287,7 @@ function registerEvents(){
 	});
 
 }
-<xsl:if test="$isEIPMode = 'true'">
+<xsl:if test="$eipMode">
 function refreshDiagram(aDiagram) {
  
     showEditorSpinner('Loading diagram...');
@@ -5502,7 +5602,15 @@ let workingMatchedBuscapAndProcessIds = Object.fromEntries(idToProcessCountMap);
 	<!-- filter when root changes-->
  
 	$('#subrootcap').off().on('change', function(){
-		
+ 		const $select = $(this);
+    	const selectedVal  = $select.val();
+    	const selectedText = $select.find('option:selected').text();
+		 
+		// 🔧 Explicitly sync the Select2 display
+		$('#select2-subrootcap-container')
+			.text(selectedText || 'All')
+			.attr('title', selectedText || 'All');
+
 		updateCapabilitiesWithAppCounts(workingArrayBusCapHierarchy, idToAppsCountMap);
 		let selected=$(this).val(); 
 		if(selected =='All'){
@@ -5738,7 +5846,7 @@ $('#kpiSelection, input[name="kpiOption"]').off('change').on('change', function(
 		return f.id == picked.val();
 	})
  
-		sqs.sqs[0].sqvs.sort((a, b) => a.score - b.score);
+		sqs?.sqs[0].sqvs.sort((a, b) => a.score - b.score);
 		colourArray=["#FF8A8A", "#F4DEB3", "#F0EAAC", "#CCE0AC","#85A98F"];
 		
 		if(sqs.sqs){
@@ -5812,30 +5920,68 @@ $('#kpiSelection, input[name="kpiOption"]').off('change').on('change', function(
 						// Calculate the average score
 						const averageScore = totalScore / closestDate.serviceQuals.length;
 						closestDate['averageScore']=averageScore;
-						
-						let colour=sqvsMap.get(closestDate.serviceQuals[0].id);
-						let cat=alSQ.find((c)=>{
-							return c.id==closestDate.serviceQuals[0].service_quality_type;
-						})
-					
-						const matchingSqv = cat.sqvs.find((d) => {
-							return Number(d.score) === Math.round(averageScore);
-						});
-						
-						if(matchingSqv){
-							closestDate['colour']=matchingSqv.elementColour ?? '#00000';;
-							closestDate['bgColour']=matchingSqv.elementBackgroundColour  ?? '#d3d3d3';;
+						 
+						// sensible defaults (tweak as you like)
+						const DEFAULT_COLOUR = "#cccccc";
+						const DEFAULT_CAT = null; // or { id: null, name: "Unknown" }
+
+						// normalise inputs just in case
+						const _alSQ = Array.isArray(alSQ) ? alSQ : [];
+						const sq = closestDate?.serviceQuals?.[0];           // first serviceQual, if present
+						const sqId = sq?.id ?? null;
+						const sqType = sq?.service_quality_type ?? null;
+
+						// guard when reading from the map
+						const colour = sqId &amp;&amp; sqvsMap?.get
+						? (sqvsMap.get(sqId) ?? DEFAULT_COLOUR)
+						: DEFAULT_COLOUR;
+
+						// guard when searching the array
+						const cat = sqType
+						? (_alSQ.find(c => c?.id === sqType) ?? DEFAULT_CAT)
+						: DEFAULT_CAT;
+
+						// --- sensible defaults ---
+						const DEFAULT_FG = "#000000";
+						const DEFAULT_BG = "#d3d3d3";
+
+						// --- normalise averageScore and palette index ---
+						const avg = Number.isFinite(averageScore) ? averageScore : 0;
+						const rounded = Math.round(avg);
+						const idxRaw = rounded - 1;
+
+						// ensure palettes are arrays and clamp the index safely
+						const palettesOK = Array.isArray(colourPalette) &amp;&amp; Array.isArray(colourPaletteText) &amp;&amp;
+										colourPalette.length > 0 &amp;&amp; colourPaletteText.length > 0;
+						const maxIdx = palettesOK ? Math.min(colourPalette.length, colourPaletteText.length) - 1 : 0;
+						const idx = Math.max(0, Math.min(idxRaw, maxIdx));
+
+						// --- try to find a matching SQV safely ---
+						const sqvs = Array.isArray(cat?.sqvs) ? cat.sqvs : [];
+						const matchingSqv = sqvs.find(d => Number(d?.score) === rounded);
+
+						// apply SQV colours if available
+						if (matchingSqv) {
+						if (matchingSqv.elementBackgroundColour != null &amp;&amp; matchingSqv.elementBackgroundColour !== "") {
+							closestDate.bgColour = matchingSqv.elementBackgroundColour;
+						}
+						if (matchingSqv.elementColour != null &amp;&amp; matchingSqv.elementColour !== "") {
+							closestDate.colour = matchingSqv.elementColour;
+						}
 						}
 
-						if (!closestDate['bgColour']) {  // Check if closestDate['colour'] is empty
-							closestDate['bgColour'] = colourPalette[(Math.round(averageScore)-1)];
-							closestDate['colour'] = colourPaletteText[(Math.round(averageScore)-1)];
-							
-						} 
-						<!-- override colours for now-->
-						closestDate['bgColour'] = colourPalette[(Math.round(averageScore)-1)];
-						closestDate['colour'] = colourPaletteText[(Math.round(averageScore)-1)];
-					
+						// --- palette fallback (only if still missing) ---
+						if (!closestDate.bgColour || !closestDate.colour) {
+						if (palettesOK) {
+							closestDate.bgColour = closestDate.bgColour ?? colourPalette[idx] ?? DEFAULT_BG;
+							closestDate.colour   = closestDate.colour   ?? colourPaletteText[idx] ?? DEFAULT_FG;
+						} else {
+							// final hard defaults
+							closestDate.bgColour = closestDate.bgColour ?? DEFAULT_BG;
+							closestDate.colour   = closestDate.colour   ?? DEFAULT_FG;
+						}
+						}
+
 						$(`.buscap[eascapid="${e}"]`).css({'background-color':closestDate.bgColour, 'color':closestDate.colour});
 						
 						tableData.push({"id": match.id, "name": match.name, "score": Math.round(averageScore)})
@@ -6299,8 +6445,8 @@ function updateChart(apps) {
     const disposition = dispositionLifecycleStatus.get(d.ap_disposition_lifecycle_status[0]);
     const sequence = disposition?.sequence || 0;
     const techScore = scores?.weightedTechScore !== undefined ? scores.weightedTechScore : sequence;
-    const busScore = scores?.weightedBusScore !== undefined ? scores.weightedBusScore : sequence;
-    
+   const busScore = scores?.weightedBusScore !== undefined ? scores.weightedBusScore : sequence;
+   
     return { 
         name: d.name, 
         id: d.id, 
@@ -6308,9 +6454,10 @@ function updateChart(apps) {
         busScore, 
         quadrant: sequence, 
         disposition: disposition?.backgroundColor,
-        basedOnDisposition: scores?.techScore === undefined || scores?.busScore === undefined
+        hasDisposition: !!disposition,
+        basedOnDisposition: selectedServices.length === 0 || scores?.techScore === undefined || scores?.busScore === undefined
     };
-}).filter(d => d.techScore !== undefined &amp;&amp; d.busScore !== undefined);
+}).filter(d => d.techScore !== undefined &amp;&amp; d.busScore !== undefined &amp;&amp; d.hasDisposition);
  
  
 if(timeAvailable == 1 || timeAvailable==0){

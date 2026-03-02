@@ -6,7 +6,7 @@
 	<xsl:key name="allOrgs" match="simple_instance[type='Group_Actor']" use="type"/>   
 	<xsl:key name="allIndivActorsType_key" match="simple_instance[type='Individual_Actor']" use="type"/>
 	<xsl:key name="allIndivActors_key" match="simple_instance[type='Individual_Actor']" use="name"/>
-	<xsl:key name="allactor_key" match="simple_instance[type=('Group_Actor','Individual_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+	<xsl:key name="allactor_key" match="simple_instance[type=('Group_Actor','Individual_Actor','Job_Position')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
 	<xsl:key name="regtoSubject_key" match="simple_instance[type = 'REGULATED_COMPONENT_RELATION']" use="own_slot_value[slot_reference = 'regulated_component_to_element']/value"/> 
 	<xsl:key name="regs_key" match="simple_instance[type = 'Regulation']" use="name"/> 
 	<xsl:key name="allDocs_key" match="simple_instance[type = 'External_Reference_Link']" use="own_slot_value[slot_reference = 'referenced_ea_instance']/value"/> 
@@ -16,7 +16,8 @@
    <xsl:key name="allRoles_key" match="simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
    <xsl:key name="allroleType_key" match="simple_instance[(type = 'Group_Business_Role') or (type = 'Individual_Business_Role')]" use="type"/>
    <xsl:key name="allsite_key" match="simple_instance[(type = 'Site')]" use="name"/>
-
+	<xsl:key name="jobPosition_key" match="simple_instance[(type = 'Job_Position')]" use="name"/>
+	<xsl:key name="a2j_key" match="simple_instance[(type = 'ACTOR_TO_JOB_RELATION')]" use="name"/>
 <!-- Process-->
 <xsl:key name="allphysProc_key" match="simple_instance[(type = 'Physical_Process')]" use="own_slot_value[slot_reference='process_performed_by_actor_role']/value"/>
 <xsl:key name="allbusProc_key" match="/node()/simple_instance[(type = 'Business_Process')]" use="name"/>	
@@ -222,12 +223,22 @@
 	  <xsl:template mode="getIndivduals" match="node()">	
 		  <xsl:variable name="thisEmployeeA2Rs" select="key('allActor2RoleRelationsviaActor_key',current()/name)"/>	
 		  <xsl:variable name="thisEmployeeRoles" select="key('allRoles_key',$thisEmployeeA2Rs/name)"/>	
+		  <xsl:variable name="thisA2J" select="key('a2j_key',current()/own_slot_value[slot_reference='actor_has_jobs']/value)"/>
+		  
 	  {<xsl:variable name="combinedMap" as="map(*)" select="map{
 		  'name': string(translate(translate(current()/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
 	  }" />
 	  <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>, 
 	  "id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",  
+	  "positions":[<xsl:for-each select="$thisA2J">
+		<xsl:variable name="thisJobPosition" select="key('jobPosition_key',$thisA2J/own_slot_value[slot_reference='actor_to_job_to_job']/value)"/>
+		  {"id":"<xsl:value-of select="eas:getSafeJSString($thisJobPosition/name)"/>", 
+		  <xsl:variable name="combinedMap" as="map(*)" select="map{
+			  'name': string(translate(translate($thisJobPosition/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+		  }" />
+		  <xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
+		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>}<xsl:if test="position()!=last()">,</xsl:if></xsl:for-each>],
 	  "roles":[<xsl:for-each select="$thisEmployeeA2Rs">
 			  <xsl:variable name="thissubEmployeeRoles" select="key('allRoles_key',current()/name)"/>
 			  {"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",

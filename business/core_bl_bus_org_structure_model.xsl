@@ -74,14 +74,20 @@
 	<xsl:variable name="allBusProcs" select="/node()/simple_instance[type = 'Business_Process']"/>
 	<xsl:variable name="processManagerRole" select="/node()/simple_instance[(type = 'Individual_Business_Role') and (own_slot_value[slot_reference = 'name']/value = 'Process Manager')]"/>
 	<xsl:variable name="processManagerStakeholders" select="/node()/simple_instance[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $processManagerRole/name]"/>
-	<xsl:key name="allA2R" match="/node()/simple_instance[(type = 'ACTOR_TO_ROLE_RELATION')]" use="own_slot_value[slot_reference = 'act_to_role_to_role']/value" />
+
 	
-	<xsl:variable name="processManagerStakeholders2" select="key('allA2R',  $processManagerRole/name)"/>
-	<xsl:key name="allPhysProcs" match="/node()/simple_instance[(type = 'Physical_Process')]" use="name" />
-	<xsl:key name="allSites" match="/node()/simple_instance[(type = 'Site')]" use="name" />
-	<xsl:key name="allLocations" match="/node()/simple_instance[(type = 'Geographic_Region')]" use="name" />
-	<xsl:key name="allActors" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="name" />
-	<xsl:key name="allActorsType" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="type" />
+	<!-- OPTIMISATION KEYS -->
+	<xsl:key name="actorsByRoleFrom" match="simple_instance[type='ACTOR_TO_ROLE_RELATION']" use="own_slot_value[slot_reference='act_to_role_from_actor']/value"/>
+	<xsl:key name="physProcsByRole" match="simple_instance[type='Physical_Process']" use="own_slot_value[slot_reference='process_performed_by_actor_role']/value"/>
+	<xsl:key name="productsByProcess" match="simple_instance[type='Product']" use="own_slot_value[slot_reference='product_implemented_by_process']/value"/>
+	<xsl:key name="relationById" match="simple_instance[type='ACTOR_TO_ROLE_RELATION']" use="name"/>
+
+
+	<xsl:key name="keyPhysProcs" match="/node()/simple_instance[(type = 'Physical_Process')]" use="name" />
+	<xsl:key name="keySites" match="/node()/simple_instance[(type = 'Site')]" use="name" />
+	<xsl:key name="keyLocations" match="/node()/simple_instance[(type = 'Geographic_Region')]" use="name" />
+	<xsl:key name="keyActors" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="name" />
+	<xsl:key name="keyActorsType" match="/node()/simple_instance[(type = 'Group_Actor') or (type = 'Individual_Actor')]" use="type" />
 	<xsl:variable name="maxDepth" select="5"/>
 
 	<xsl:variable name="rootOrgID">
@@ -101,8 +107,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="parentActor" select="/node()/simple_instance[name = $rootOrgID]"/>
-	<xsl:variable name="relevantActors" select="key('allActorsType', ('Group_Actor', 'Individual_Actor'))"/>
-	<xsl:variable name="parentActorName" select="$parentActor/own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:variable name="relevantActors" select="key('keyActorsType', ('Group_Actor', 'Individual_Actor'))"/>
 
 	<!--
 		* Copyright © 2008-2017 Enterprise Architecture Solutions Limited.
@@ -197,8 +202,77 @@
 						overflow: hidden;
 						margin: 0 auto;
 					}
-					/*TOOLTIPS*/
 					
+					/* Style for canvas to enable rounded corners effect */
+					#infovis canvas {
+						position: absolute;
+					}
+					
+					/* Style for node labels to appear above canvas */
+					#infovis .node {
+						position: absolute;
+						z-index: 10;
+						pointer-events: all;
+					}
+					
+					#infovis .node a,
+					#infovis .node a:visited,
+					#infovis .node a:hover,
+					#infovis .node a:focus {
+						color: inherit;
+						text-decoration: none;
+						font: inherit;
+						line-height: inherit;
+					}
+					
+					#infovis .node a {
+						display: block;
+						width: 100%;
+					}
+					
+					/* Modern Toggle Controls */
+					.actor-type-toggle {
+						margin: 20px 0;
+						display: flex;
+						align-items: center;
+						gap: 15px;
+					}
+					
+					.actor-type-toggle label {
+						font-weight: 600;
+						color: #333;
+						margin-right: 10px;
+					}
+					
+					.toggle-btn-group {
+						display: inline-flex;
+						border-radius: 8px;
+						overflow: hidden;
+						box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+					}
+					
+					.toggle-btn {
+						padding: 10px 24px;
+						background: #f8f9fa;
+						border: none;
+						color: #666;
+						font-weight: 500;
+						cursor: pointer;
+						transition: all 0.3s ease;
+						font-size: 14px;
+					}
+					
+					.toggle-btn:hover {
+						background: #e9ecef;
+					}
+					
+					.toggle-btn.active {
+						background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+						color: white;
+						box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+					}
+					
+					/*TOOLTIPS*/
 					.tip{
 						color: #111;
 						width: 139px;
@@ -209,9 +283,7 @@
 						-o-box-shadow: #555 2px 2px 8px;
 						box-shadow: #555 2px 2px 8px;
 						opacity: 0.9;
-						filter: alpha(opacity=90)
-					
-					;
+						filter: alpha(opacity=90);
 						font-size: 10px;
 						font-family: Helvetica, Arial, sans-serif;
 						padding: 7px;
@@ -221,12 +293,123 @@
 				<!--<script language="javascript" type="text/javascript" src="js/excanvas.js" />-->
 				<xsl:text disable-output-escaping="yes">&lt;!--[if IE]&gt;&lt;script language="javascript" type="text/javascript" src="js/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;</xsl:text>
 				<script type="text/javascript">
-					<xsl:text>function tree(){
+					<xsl:text>
+					// Global variables for filtering
+					var originalJson = null;
+					var currentFilter = 'Group_Actor';
+					var stInstance = null;
+					
+					// Helper function to get node type from JSON
+					function getNodeType(nodeId, jsonNode) {
+						if (jsonNode.id === nodeId) {
+							return jsonNode.type;
+						}
+						if (jsonNode.children &amp;&amp; jsonNode.children.length &gt; 0) {
+							for (var i = 0; i &lt; jsonNode.children.length; i++) {
+								var result = getNodeType(nodeId, jsonNode.children[i]);
+								if (result) return result;
+							}
+						}
+						return null;
+					}
+										
+					function filterByActorType(filterType) {
+						currentFilter = filterType;
+						
+						// Update button states
+						document.querySelectorAll('.toggle-btn').forEach(btn => {
+							btn.classList.remove('active');
+						});
+						event.target.classList.add('active');
+						
+						// Destroy existing tree and recreate with filtered data
+						if (stInstance) {
+							// Clear the container
+							var container = document.getElementById('infovis');
+							container.innerHTML = '';
+							
+							// Recreate the tree with filtered data
+							var filteredJson = filterTreeData(originalJson, filterType);
+							
+							// Reinitialize the tree (call tree() function again would be complex)
+							// Instead, create new instance
+							stInstance = createTreeInstance();
+							stInstance.loadJSON(filteredJson);
+							stInstance.compute();
+							stInstance.geom.translate(new $jit.Complex(-200, 0), "current");
+							stInstance.onClick(stInstance.root);
+						}
+					}
+					
+					function filterTreeData(node, filterType) {
+						if (filterType === 'all') {
+							return node;
+						}
+						
+						// Create a copy of the node
+						var filteredNode = {
+							id: node.id,
+							name: node.name,
+							data: node.data || {},
+							type: node.type,
+							children: []
+						};
+						
+						// Filter children recursively
+						if (node.children &amp;&amp; node.children.length &gt; 0) {
+							node.children.forEach(function(child) {
+								// Include child if it matches the filter OR if it has matching descendants
+								if (child.type === filterType || hasMatchingDescendants(child, filterType)) {
+									filteredNode.children.push(filterTreeData(child, filterType));
+								}
+							});
+						}
+						
+						return filteredNode;
+					}
+					
+					function hasMatchingDescendants(node, filterType) {
+						if (node.type === filterType) {
+							return true;
+						}
+						if (node.children &amp;&amp; node.children.length &gt; 0) {
+							return node.children.some(function(child) {
+								return hasMatchingDescendants(child, filterType);
+							});
+						}
+						return false;
+					}
+					
+					function tree(){
 					 
 						//initialise the data
 						var json=</xsl:text><xsl:call-template name="PrintActorTreeDataNamed"><xsl:with-param name="parentNode" select="$parentActor"/><xsl:with-param name="inScopeActors" select="$inScopeActors"/><xsl:with-param name="level" select="1"/></xsl:call-template><xsl:text>; //end data</xsl:text>
-					 
+					 console.log(json);
 					<xsl:text disable-output-escaping="yes">
+						// Store original data
+						originalJson = json;
+						
+						// Create tree instance
+						stInstance = createTreeInstance();
+						
+						// Apply default filter (Group_Actor)
+						var filteredJson = filterTreeData(json, currentFilter);
+						
+						//load json data
+						stInstance.loadJSON(filteredJson);
+						//compute node positions and layout
+						stInstance.compute();
+						//optional: make a translation of the tree
+						stInstance.geom.translate(new $jit.Complex(-200, 0), "current");
+						//emulate a click on the root node.
+						stInstance.onClick(stInstance.root);
+						//end
+
+						
+						}
+						
+						// Function to create a new tree instance with all the configuration
+						function createTreeInstance() {
 						//init OrgTree
 						//Create a new ST instance
 						var st = new $jit.ST({
@@ -253,21 +436,26 @@
 						//nodes or edges
 						Node: {
 						height: 80,
-						width: 80,
+						width: 120,
 						type: 'rectangle',
-						color: '#eeeeee', // When switching between nodes this highlights the previous node temporarily. This is the default style if overrideable - below - is set to false
-						overridable: true
+						color: '#f0f0f0',
+						overridable: true,
+						CanvasStyles: {
+							shadowBlur: 8,
+							shadowColor: 'rgba(0,0,0,0.15)'
+						}
 						},
 						
 						Edge: {
 						type: 'bezier',
+						color: '#cbd5e0',
+						lineWidth: 2,
 						overridable: true
 						},
 						
 						//	onBeforeCompute: function(node){
 						//	Log.write("loading " + node.name);
 						//	},
-						
 						//	onAfterCompute: function(){
 						//	Log.write("done");
 						//	},
@@ -283,13 +471,29 @@
 							};
 							//set label styles
 							var style = label.style;
-							style.width = 80 + 'px';
+							style.width = 120 + 'px';
 							style.height = 80 + 'px';            
 							style.cursor = 'pointer';
-							style.color = '#333';
-							style.fontSize = '0.8em';
+							style.color = 'black';
+							style.fontSize = '0.75em';
+							style.fontWeight = '600';
 							style.textAlign= 'center';
-							style.paddingTop = '5px';
+							style.display = 'flex';
+							style.alignItems = 'center';
+							style.justifyContent = 'center';
+							style.borderRadius = '12px';
+							style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+							style.transition = 'all 0.3s ease';
+							style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+							style.padding = '8px';
+							style.lineHeight = '1.2';
+							style.wordWrap = 'break-word';
+							style.overflow = 'hidden';
+							
+							// Apply background color - will be updated in onBeforePlotNode
+							if (node.data.labelColor) {
+								style.backgroundColor = node.data.labelColor;
+							}
 							},
 							
 							//This method is called right before plotting
@@ -298,22 +502,31 @@
 							//The data properties prefixed with a dollar
 							//sign will override the global node style properties.
 							onBeforePlotNode: function(node){
-							//add some color to the nodes in the path between the
-							//root node and the selected node.
+							// Make canvas rectangles transparent - we'll use styled HTML labels instead
+							node.data.$color = "rgba(255,255,255,0.01)";
+							
+							// Apply background color to the HTML label instead
+							var labelColor = "#a8edea"; // default
+							
 							if (node.selected) {
-							node.data.$color = "#f2b035"; // Colour for root and selected nodes
+								labelColor = "#a8b4ea";
+							} else if (node._depth === 0) {
+								labelColor = "#a8b4ea";
+							} else if (originalJson &amp;&amp; getNodeType(node.id, originalJson) === 'Group_Actor') {
+								labelColor = "#a8b4ea";
+							} else if (originalJson &amp;&amp; getNodeType(node.id, originalJson) === 'Individual_Actor') {
+								labelColor = "#cdb6d0";
 							}
-							else {
-							delete node.data.$color;
-							//if the node belongs to the last plotted level
-							if(!node.anySubnode("exist")) {
-							//count children number
-							var count = 0;
-							node.eachSubnode(function(n) { count++; });
-							//assign a node color based on
-							//how many children it has
-							//node.data.$color = ['#eee', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb', '#bbb' ][count];     // By setting all to fixed colour this removes intensity. first one as Pale Grey highlights no children               
-							}
+							
+							// Store color for label styling
+							node.data.labelColor = labelColor;
+							},
+							
+							//This method is called when placing labels
+							//Use it to update label styles after node data is set
+							onPlaceLabel: function(domElement, node){
+							if (node.data.labelColor) {
+								domElement.style.backgroundColor = node.data.labelColor;
 							}
 							},
 							
@@ -324,7 +537,7 @@
 							//override the Edge global style properties.
 							onBeforePlotLine: function(adj){
 							if (adj.nodeFrom.selected &amp;&amp; adj.nodeTo.selected) {
-							adj.data.$color = "#666666"; // Dark Grey to trace the path of chosen nodes
+							adj.data.$color = "#4a5568";
 							adj.data.$lineWidth = 3;
 							}
 							else {
@@ -333,19 +546,10 @@
 							}
 							}
 							});
-							//load json data
-							 
-							st.loadJSON(json);
-							//compute node positions and layout
-							st.compute();
-							//optional: make a translation of the tree
-							st.geom.translate(new $jit.Complex(-200, 0), "current");
-							//emulate a click on the root node.
-							st.onClick(st.root);
-							//end
-
 							
-							}
+							// Return the tree instance
+							return st;
+						}
 						</xsl:text>
 				</script>
 				<xsl:call-template name="dataTablesLibrary"/>
@@ -391,7 +595,24 @@
 									<xsl:value-of select="eas:i18n('Organisation Hierarchy')"/>
 								</h2>
 							</div>
-							<p><xsl:value-of select="eas:i18n('The following diagram shows the organisational hierarchy for the')"/>&#160;<xsl:value-of select="$parentActorName"/>&#160; <xsl:value-of select="eas:i18n('as the root organisation')"/>.</p>
+							<p><xsl:value-of select="eas:i18n('The following diagram shows the organisational hierarchy for the')"/>&#160;<xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$parentActor"/><xsl:with-param name="theXML" select="$reposXML"/><xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/></xsl:call-template>&#160; <xsl:value-of select="eas:i18n('as the root organisation')"/>.</p>
+							
+							<!-- Actor Type Toggle Controls -->
+							<div class="actor-type-toggle">
+								<label><xsl:value-of select="eas:i18n('Filter by Actor Type')"/>:</label>
+								<div class="toggle-btn-group">
+									<button class="toggle-btn" data-filter="all" onclick="filterByActorType('all')">
+										<xsl:value-of select="eas:i18n('All')"/>
+									</button>
+									<button class="toggle-btn active" data-filter="Group_Actor" onclick="filterByActorType('Group_Actor')">
+										<xsl:value-of select="eas:i18n('Organisations')"/>
+									</button>
+									<button class="toggle-btn" data-filter="Individual_Actor" onclick="filterByActorType('Individual_Actor')">
+										<xsl:value-of select="eas:i18n('Individual Actors')"/>
+									</button>
+								</div>
+							</div>
+							
 							<div class="content-section">
 								<xsl:call-template name="infoVis"/>
 							</div>
@@ -409,7 +630,7 @@
 									<xsl:value-of select="eas:i18n('Organisation Service Catalogue')"/>
 								</h2>
 							</div>
-							<p><xsl:value-of select="eas:i18n('The following table lists the Business Services that are produced by the organisation units within the')"/>&#160; <xsl:value-of select="$parentActorName"/>&#160; <xsl:value-of select="eas:i18n('organisation')"/>.</p>
+							<p><xsl:value-of select="eas:i18n('The following table lists the Business Services that are produced by the organisation units within the')"/>&#160; <xsl:call-template name="RenderInstanceLink"><xsl:with-param name="theSubjectInstance" select="$parentActor"/><xsl:with-param name="theXML" select="$reposXML"/><xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/></xsl:call-template>&#160; <xsl:value-of select="eas:i18n('organisation')"/>.</p>
 							<xsl:call-template name="OrganisationCatalogue">
 								<!--<xsl:with-param name="inScopeOrgs" select="$inScopeActors" />-->
 								<xsl:with-param name="inScopeOrgs" select="eas:get_org_descendants($parentActor, $inScopeActors, 0)"/>
@@ -455,15 +676,24 @@
 		<xsl:param name="inScopeActors"/>
 		<xsl:param name="level"/>
 
-		<xsl:variable name="parentName" select="$parentNode/own_slot_value[slot_reference = 'name']/value"/>
 		<xsl:text>{id: "</xsl:text>
 		<xsl:value-of select="$parentNode/name"/>
 		<xsl:text>",name: "</xsl:text>
-		<xsl:value-of select="$parentName"/>
-		<xsl:text>",data:{}, children:[</xsl:text>
+		<xsl:call-template name="RenderInstanceLinkForJS">
+			<xsl:with-param name="theSubjectInstance" select="$parentNode"/>
+			<xsl:with-param name="theXML" select="$reposXML"/>
+			<xsl:with-param name="viewScopeTerms" select="$viewScopeTerms"/>
+			<xsl:with-param name="targetMenu" select="()"/>
+		</xsl:call-template>
+		<xsl:text>",data:{}, 
+		type: "</xsl:text>
+		<xsl:value-of select="$parentNode/type"/>
+		<xsl:text>",	
+		children:[</xsl:text>
 
 		<xsl:if test="$level &lt; 5">
-			<xsl:variable name="childActors" select="$inScopeActors[name = $parentNode/own_slot_value[slot_reference = 'contained_sub_actors']/value]" as="node()*"/>
+			<xsl:variable name="allChildActors" select="key('keyActors', $parentNode/own_slot_value[slot_reference = 'contained_sub_actors']/value, root($parentNode))"/>
+			<xsl:variable name="childActors" select="$allChildActors intersect $inScopeActors" as="node()*"/>
 			<xsl:for-each select="$childActors">
 				<xsl:call-template name="PrintActorTreeDataNamed">
 					<xsl:with-param name="parentNode" select="current()"/>
@@ -609,9 +839,10 @@
 		<xsl:variable name="orgName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
 		<xsl:variable name="currentOrg" select="current()"/>
 
-		<xsl:variable name="actor2Roles" select="$allActor2Roles[own_slot_value[slot_reference = 'act_to_role_from_actor']/value = current()/name]"/>
-		<xsl:variable name="physProcs" select="$allPhysProcs[own_slot_value[slot_reference = 'process_performed_by_actor_role']/value = $actor2Roles/name]"/>
-		<xsl:variable name="products" select="$allProducts[own_slot_value[slot_reference = 'product_implemented_by_process']/value = $physProcs/name]"/>
+		<!-- OPTIMISED LOOKUPS -->
+		<xsl:variable name="actor2Roles" select="key('actorsByRoleFrom', current()/name)"/>
+		<xsl:variable name="physProcs" select="key('physProcsByRole', $actor2Roles/name)"/>
+		<xsl:variable name="products" select="key('productsByProcess', $physProcs/name)"/>
 
 		<xsl:choose>
 			<xsl:when test="count($products) = 0">
@@ -639,7 +870,7 @@
 					</td>
 
 					<!-- Print out the name of the location where the organisation is based -->
-					<xsl:variable name="actorSite" select="$allSites[name = $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value]"/>
+					<xsl:variable name="actorSite" select="key('keySites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
 
 					<xsl:choose>
 						<xsl:when test="count($actorSite) = 0">
@@ -654,7 +885,7 @@
 								<ul>
 									<xsl:for-each select="$actorSite">
 										<xsl:variable name="actorSiteName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
-										<xsl:variable name="siteLocation" select="key('allLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
+										<xsl:variable name="siteLocation" select="key('keyLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 										<xsl:variable name="siteLabel">
 											<xsl:choose>
 												<xsl:when test="count($siteLocation) > 0">
@@ -716,12 +947,14 @@
 
 						<xsl:variable name="physProc" select="$physProcs[name = current()/own_slot_value[slot_reference = 'product_implemented_by_process']/value]"/>
 
-						<xsl:variable name="physProcManagerActor2Role" select="$processManagerStakeholders[name = $physProc/own_slot_value[slot_reference = 'stakeholders']/value]"/>
-						<xsl:variable name="physProcManagerFromRole" select="key('allActors', $physProcManagerActor2Role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value)"/>
-						<xsl:variable name="physProcManagerDEPRECATED" select="key('allActors',  $physProc/own_slot_value[slot_reference = 'process_manager']/value)"/>
+						<!-- OPTIMISED STAKEHOLDER LOOKUP -->
+						<xsl:variable name="physProcStakeholders" select="key('relationById', $physProc/own_slot_value[slot_reference = 'stakeholders']/value)"/>
+						<xsl:variable name="physProcManagerActor2Role" select="$physProcStakeholders[own_slot_value[slot_reference = 'act_to_role_to_role']/value = $processManagerRole/name]"/>
+						<xsl:variable name="physProcManagerFromRole" select="key('keyActors', $physProcManagerActor2Role/own_slot_value[slot_reference = 'act_to_role_from_actor']/value)"/>
+						<xsl:variable name="physProcManagerDEPRECATED" select="key('keyActors',  $physProc/own_slot_value[slot_reference = 'process_manager']/value)"/>
 						<xsl:variable name="physProcManager" select="$physProcManagerFromRole union $physProcManagerDEPRECATED"/>
 						<!--<xsl:variable name="physProcManagerName" select="$physProcManager/own_slot_value[slot_reference = 'name']/value"/>-->
-						<xsl:variable name="sites" select="key('allSites', $physProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value)"/>
+						<xsl:variable name="sites" select="key('keySites', $physProc/own_slot_value[slot_reference = 'process_performed_at_sites']/value)"/>
 
 						<!-- Print out the name of the actor that manages the process that produces the product -->
 						<td>
@@ -736,9 +969,9 @@
 						<xsl:choose>
 							<!-- If there is no site associated with the physical process, print out the location of the base site for the manager of the process -->
 							<xsl:when test="count($sites) = 0">
-								<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
+								<xsl:variable name="actorSite" select="key('keySites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
 								<xsl:variable name="actorSiteName" select="$actorSite/own_slot_value[slot_reference = 'name']/value"/>
-								<xsl:variable name="siteLocation" select="key('allLocations',$actorSite/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
+								<xsl:variable name="siteLocation" select="key('keyLocations',$actorSite/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 								<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 								<!-- Print out the name of the location where the actor is based -->
 								<td>
@@ -759,8 +992,8 @@
 
 							<!-- If there is only one site associated with the physical process, print out the location of the this site -->
 							<xsl:when test="count($sites) = 1">
-								<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
-								<xsl:variable name="siteLocation" select="key('allLocations', $sites/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
+								<xsl:variable name="actorSite" select="key('keySites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
+								<xsl:variable name="siteLocation" select="key('keyLocations', $sites/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 								<xsl:variable name="actorSiteName" select="$sites/own_slot_value[slot_reference = 'name']/value"/>
 								<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 								<!-- Print out the name of the location where the actor is based -->
@@ -785,8 +1018,8 @@
 								<td>
 									<ul>
 										<xsl:for-each select="$sites">
-											<xsl:variable name="actorSite" select="key('allSites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
-											<xsl:variable name="siteLocation" select="key('allLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
+											<xsl:variable name="actorSite" select="key('keySites', $currentOrg/own_slot_value[slot_reference = 'actor_based_at_site']/value)"/>
+											<xsl:variable name="siteLocation" select="key('keyLocations', current()/own_slot_value[slot_reference = 'site_geographic_location']/value)"/>
 											<xsl:variable name="actorSiteName" select="current()/own_slot_value[slot_reference = 'name']/value"/>
 											<xsl:variable name="siteLocationName" select="$siteLocation/own_slot_value[slot_reference = 'name']/value"/>
 											<li>
@@ -844,11 +1077,12 @@
 		<xsl:param name="inScopeOrgs"/>
 		<xsl:param name="level"/>
 
-		<xsl:copy-of select="$parentNode"/>
+		<xsl:sequence select="$parentNode"/>
 		<xsl:if test="$level &lt; $maxDepth">
-			<xsl:variable name="childOrgs" select="$inScopeOrgs[name = $parentNode/own_slot_value[slot_reference = 'contained_sub_actors']/value]" as="node()*"/>
+			<xsl:variable name="allChildOrgs" select="key('keyActors', $parentNode/own_slot_value[slot_reference = 'contained_sub_actors']/value, root($parentNode))"/>
+			<xsl:variable name="childOrgs" select="$allChildOrgs intersect $inScopeOrgs" as="node()*"/>
 			<xsl:for-each select="$childOrgs">
-				<xsl:copy-of select="eas:get_org_descendants(current(), $inScopeOrgs, $level + 1)"/>
+				<xsl:sequence select="eas:get_org_descendants(current(), $inScopeOrgs, $level + 1)"/>
 			</xsl:for-each>
 		</xsl:if>
 	</xsl:function>

@@ -128,42 +128,49 @@
 						},
 					</xsl:if>
 					<xsl:variable name="techInstances" select="/node()/simple_instance[supertype='Technology_Instance'][name=current()/own_slot_value[slot_reference='contained_technology_instances']/value]"/>
-					"instances": [
-					<xsl:for-each select="$techInstances">
-						<xsl:variable name="thisAppDeployment" select="$allAppDeployments[name=current()/own_slot_value[slot_reference='instance_of_application_deployment']/value]"/>
-						<xsl:variable name="thisInfraInstance" select="$allTechnologyProducts[name=current()/own_slot_value[slot_reference='technology_instance_of']/value]"/>
-						<xsl:if test="$thisAppDeployment">
-							<xsl:variable name="thisApp" select="$allApps[name=$thisAppDeployment/own_slot_value[slot_reference='application_provider_deployed']/value]" />
-							{
-							"id": "<xsl:value-of select="current()/name" />",
-							"className": "<xsl:value-of select="current()/type" />",
-							"app": {
-							"id": "<xsl:value-of select="$thisApp/name" />",
-							"name": "<xsl:value-of select="$thisApp/own_slot_value[slot_reference='name']/value" />",
-							"className": "<xsl:value-of select="$thisApp/type" />",
-							"deployment": {
-							"id": "<xsl:value-of select="$thisAppDeployment/name" />",
-							"name": "<xsl:value-of select="$thisAppDeployment/own_slot_value[slot_reference='name']/value" />",
-							"className": "<xsl:value-of select="$thisAppDeployment/type" />"
-							}
-							}
-							
-							}
-						</xsl:if>
-						<xsl:if test="$thisInfraInstance">
-							{
-							"id": "<xsl:value-of select="current()/name" />",
-							"className": "<xsl:value-of select="current()/type" />",
-							"tech": {
-							"id": "<xsl:value-of select="$thisInfraInstance/name" />",
-							"name": "<xsl:value-of select="$thisInfraInstance/own_slot_value[slot_reference='name']/value" />",
-							"className": "<xsl:value-of select="$thisInfraInstance/type" />"
-							}
-							}
-						</xsl:if>
-						<xsl:if test="position()!=last()">,</xsl:if>
-					</xsl:for-each>
-					],
+  
+  <!-- Only include instances that resolve to either an app deployment or an infra product, to avoid empty loop iterations that create stray commas -->
+  <xsl:variable name="renderableTechInstances"
+                select="$techInstances[
+                  exists($allAppDeployments[name = own_slot_value[slot_reference='instance_of_application_deployment']/value])
+                  or
+                  exists($allTechnologyProducts[name = own_slot_value[slot_reference='technology_instance_of']/value])
+                ]"/>
+
+  "instances": [
+  <xsl:for-each select="$renderableTechInstances">
+    <xsl:variable name="thisAppDeployment" select="$allAppDeployments[name=current()/own_slot_value[slot_reference='instance_of_application_deployment']/value]"/>
+    <xsl:variable name="thisInfraInstance" select="$allTechnologyProducts[name=current()/own_slot_value[slot_reference='technology_instance_of']/value]"/>
+
+    {
+      "id": "<xsl:value-of select="current()/name" />",
+      "className": "<xsl:value-of select="current()/type" />"
+      <xsl:if test="$thisAppDeployment">
+        <xsl:variable name="thisApp" select="$allApps[name=$thisAppDeployment/own_slot_value[slot_reference='application_provider_deployed']/value]" />
+        ,
+        "app": {
+          "id": "<xsl:value-of select="$thisApp/name" />",
+          "name": "<xsl:value-of select="$thisApp/own_slot_value[slot_reference='name']/value" />",
+          "className": "<xsl:value-of select="$thisApp/type" />",
+          "deployment": {
+            "id": "<xsl:value-of select="$thisAppDeployment/name" />",
+            "name": "<xsl:value-of select="$thisAppDeployment/own_slot_value[slot_reference='name']/value" />",
+            "className": "<xsl:value-of select="$thisAppDeployment/type" />"
+          }
+        }
+      </xsl:if>
+      <xsl:if test="$thisInfraInstance">
+        ,
+        "tech": {
+          "id": "<xsl:value-of select="$thisInfraInstance/name" />",
+          "name": "<xsl:value-of select="$thisInfraInstance/own_slot_value[slot_reference='name']/value" />",
+          "className": "<xsl:value-of select="$thisInfraInstance/type" />"
+        }
+      </xsl:if>
+    }
+    <xsl:if test="position()!=last()">,</xsl:if>
+  </xsl:for-each>
+  ],
 					"stakeholders":[
 					<xsl:for-each select="$thisStakeholders">
 						{

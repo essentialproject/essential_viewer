@@ -417,7 +417,7 @@
 				<link href="js/lightbox-master/ekko-lightbox.min.css" rel="stylesheet" type="text/css"/>
 				
 				<!-- Lodash utility functions -->
-				<script type="text/javascript" src="js/lodash.js"/>
+				<script type="text/javascript" src="js/lodash/lodash.js"/>
 
 				<!-- Handlebars template for the contents of the CONFIRM ACTION Modal -->
 				<script id="ess-confirm-modal-template" type="text/x-handlebars-template">

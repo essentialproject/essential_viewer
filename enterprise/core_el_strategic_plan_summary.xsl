@@ -45,45 +45,65 @@
 	<xsl:param name="viewScopeTermIds"/>
 
 	<!-- END GENERIC PARAMETERS -->
+	<xsl:key name="a2rByName" match="/node()/simple_instance[type = 'ACTOR_TO_ROLE_RELATION']" use="name"/>
+	<xsl:key name="actorByPlaysRole" match="/node()/simple_instance[type = ('Individual_Actor', 'Group_Actor')]" use="own_slot_value[slot_reference = 'actor_plays_role']/value"/>
+	<xsl:key name="roleByPlayedByActor" match="/node()/simple_instance[type = ('Individual_Business_Role', 'Group_Business_Role')]" use="own_slot_value[slot_reference = 'bus_role_played_by_actor']/value"/>
+	<xsl:key name="perfMeasureByName" match="/node()/simple_instance[supertype = 'Performance_Measure']" use="name"/>
+	<xsl:key name="perfMeasureByMeasuredElement" match="/node()/simple_instance[supertype = 'Performance_Measure']" use="own_slot_value[slot_reference = 'pm_measured_element']/value"/>
+	<xsl:key name="sqValueByName" match="/node()/simple_instance[supertype = 'Service_Quality_Value']" use="name"/>
+	<xsl:key name="sqByName" match="/node()/simple_instance[supertype = 'Service_Quality']" use="name"/>
+	<xsl:key name="costByElement" match="/node()/simple_instance[type = 'Cost']" use="own_slot_value[slot_reference = 'cost_for_elements']/value"/>
+	<xsl:key name="costComponentByCost" match="/node()/simple_instance[supertype = 'Cost_Component']" use="own_slot_value[slot_reference = 'cc_cost_component_of_cost']/value"/>
+	<xsl:key name="costByName" match="/node()/simple_instance[type = 'Cost']" use="name"/>
+	<xsl:key name="currencyByName" match="/node()/simple_instance[type = 'Currency']" use="name"/>
+	<xsl:key name="costComponentTypeByName" match="/node()/simple_instance[type = 'Cost_Component_Type']" use="name"/>
+	<xsl:key name="costCategoryByName" match="/node()/simple_instance[type = 'Cost_Category']" use="name"/>
+	<xsl:key name="impactActionByName" match="/node()/simple_instance[type = 'Planning_Action']" use="name"/>
+	<xsl:key name="dateByName" match="/node()/simple_instance[type = ('Year', 'Quarter', 'Gregorian')]" use="name"/>
+	<xsl:key name="planToElementRelByName" match="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']" use="name"/>
+	<xsl:key name="businessDriverByName" match="/node()/simple_instance[type = 'Business_Driver']" use="name"/>
+	<xsl:key name="reportConstantByName" match="/node()/simple_instance[type = 'Report_Constant']" use="own_slot_value[slot_reference = 'name']/value"/>
+	<xsl:key name="instanceByName" match="/node()/simple_instance" use="name"/>
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
 	<!--<xsl:variable name="linkClasses" select="('Information_Concept', 'Data_Subject', 'Information_Representation', 'Data_Representation', 'Information_View', 'Data_Object', 'Information_Store', 'Physical_Data_Object','Business_Driver', 'Group_Actor','Individual_Actor','Business_Capability','Business_Objective', 'Business_Process', 'Individual_Business_Role', 'Group_Business_Role', 'Product_Type', 'Site', 'Data_Object', 'Information_View', 'Application_Provider', 'Application_Service', 'Technology_Component', 'Business_Strategic_Plan', 'Information_Strategic_Plan', 'Application_Strategic_Plan', 'Technology_Strategic_Plan', 'Security_Strategic_Plan','Technology_Composite', 'Technology_Product', 'Technology_Product_Build','Project','Business_Objective','Information_Architecture_Objective','Application_Architecture_Objectives','Technology_Architecture_Objectives', 'Application_Deployment','Application_Software_Instance','Infrastructure_Software_Instance','Information_Store_Instance', 'Technology_Node')"/>-->
 	<!-- END GENERIC LINK VARIABLES -->
 
-
-	<xsl:variable name="allStratPlanToElementRelations" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']"/>
-	<xsl:variable name="impactActions" select="/node()/simple_instance[type = 'Planning_Action']"/>
-	<xsl:variable name="allImpactActionStyles" select="/node()/simple_instance[name = $impactActions/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
-
-	<xsl:variable name="currentPlan" select="/node()/simple_instance[name = $param1]"/>
+	<xsl:variable name="currentPlan" select="key('instanceByName', $param1)[1]"/>
 	<xsl:variable name="currentPlanName" select="$currentPlan/own_slot_value[slot_reference = 'name']/value"/>
 	<xsl:variable name="currentPlanDesc" select="$currentPlan/own_slot_value[slot_reference = 'description']/value"/>
 	<xsl:variable name="currentPlanComments" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_comments']/value"/>
+	<xsl:variable name="currentPlanStakeholders" select="key('a2rByName', $currentPlan/own_slot_value[slot_reference = 'stakeholders']/value)"/>
 	<!--<xsl:variable name="impactedElements" select="/node()/simple_instance[name=$currentPlan/own_slot_value[slot_reference='strategic_plan_for_element']/value]"/>-->
-	<xsl:variable name="currentPlanAction" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
-	<xsl:variable name="currentPlanStatus" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'strategic_plan_status']/value]"/>
-	<xsl:variable name="dependentPlans" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'depends_on_strategic_plans']/value]"/>
-	<xsl:variable name="supportingPlans" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'supports_strategic_plan']/value]"/>
-	<xsl:variable name="supportedObjectives" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value]"/>
-	<xsl:variable name="supportingProjects" select="/node()/simple_instance[name = $currentPlan/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value]"/>
-
-	<xsl:variable name="relevantServiceQualityValues" select="/node()/simple_instance[name = $supportedObjectives/own_slot_value[slot_reference = 'bo_measures']/value]"/>
-	<xsl:variable name="relevantServiceQualities" select="/node()/simple_instance[name = $relevantServiceQualityValues/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+	<xsl:variable name="currentPlanAction" select="key('impactActionByName', $currentPlan/own_slot_value[slot_reference = 'strategic_planning_action']/value)"/>
+	<xsl:variable name="currentPlanStatus" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'strategic_plan_status']/value)"/>
+	<xsl:variable name="dependentPlans" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'depends_on_strategic_plans']/value)"/>
+	<xsl:variable name="supportingPlans" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'supports_strategic_plan']/value)"/>
+	<xsl:variable name="supportedObjectives" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'strategic_plan_supports_objective']/value)"/>
+	<xsl:variable name="supportingProjects" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'strategic_plan_supported_by_projects']/value)"/>
+	<xsl:variable name="currentPlanPerformanceMeasuresBySlot" select="key('perfMeasureByName', $currentPlan/own_slot_value[slot_reference = 'performance_measures']/value)"/>
+	<xsl:variable name="currentPlanPerformanceMeasuresByElement" select="key('perfMeasureByMeasuredElement', $currentPlan/name)"/>
+	<xsl:variable name="currentPlanPerformanceMeasures" select="$currentPlanPerformanceMeasuresBySlot union $currentPlanPerformanceMeasuresByElement"/>
+	<xsl:variable name="allCurrencies" select="/node()/simple_instance[type = 'Currency']"/>
+	<xsl:variable name="currentPlanCosts" select="key('costByElement', $currentPlan/name)"/>
+	<xsl:variable name="currentPlanCostComponents" select="key('costComponentByCost', $currentPlanCosts/name)"/>
+	<xsl:variable name="defaultCurrencyConstant" select="key('reportConstantByName', 'Default Currency')[1]"/>
+	<xsl:variable name="defaultCurrency" select="key('currencyByName', $defaultCurrencyConstant/own_slot_value[slot_reference = 'report_constant_ea_elements']/value)"/>
 
 	<xsl:variable name="endColour">#FF386A</xsl:variable>
 	<xsl:variable name="startColour">#A9D18E</xsl:variable>
 	<xsl:variable name="noStyleImpact">#666</xsl:variable>
 
-	<xsl:variable name="directStrategicPlanImpactedElements" select="/node()/simple_instance[not((type = 'PLAN_TO_ELEMENT_RELATION')) and (name = $currentPlan/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)]"/>
-	<xsl:variable name="directPlanImpact" select="$impactActions[name = $currentPlan/own_slot_value[slot_reference = 'strategic_planning_action']/value]"/>
+	<xsl:variable name="directStrategicPlanImpactedElements" select="key('instanceByName', $currentPlan/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)[not(type = 'PLAN_TO_ELEMENT_RELATION')]"/>
+	<xsl:variable name="directPlanImpact" select="key('impactActionByName', $currentPlan/own_slot_value[slot_reference = 'strategic_planning_action']/value)"/>
 
-	<xsl:variable name="deprectatedStrategicPlanRelations" select="$allStratPlanToElementRelations[(name = $currentPlan/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)]"/>
-	<xsl:variable name="impactedElementViaDeprectedStrategicPlansRels" select="/node()/simple_instance[name = $deprectatedStrategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+	<xsl:variable name="deprectatedStrategicPlanRelations" select="key('planToElementRelByName', $currentPlan/own_slot_value[slot_reference = 'strategic_plan_for_element']/value)"/>
+	<xsl:variable name="impactedElementViaDeprectedStrategicPlansRels" select="key('instanceByName', $deprectatedStrategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)"/>
 
-	<xsl:variable name="strategicPlanRelations" select="$allStratPlanToElementRelations[(name = $currentPlan/own_slot_value[slot_reference = ('strategic_plan_for_elements', 'strategic_plan_for_element')]/value)]"/>
-	<xsl:variable name="impactedElementViaStrategicPlansRels" select="/node()/simple_instance[name = $strategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
-	<xsl:variable name="supportingProjectsViaStrategicPlansRels" select="/node()/simple_instance[name = $strategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value]"/>
+	<xsl:variable name="strategicPlanRelations" select="key('planToElementRelByName', $currentPlan/own_slot_value[slot_reference = ('strategic_plan_for_elements', 'strategic_plan_for_element')]/value)"/>
+	<xsl:variable name="impactedElementViaStrategicPlansRels" select="key('instanceByName', $strategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)"/>
+	<xsl:variable name="supportingProjectsViaStrategicPlansRels" select="key('instanceByName', $strategicPlanRelations/own_slot_value[slot_reference = 'plan_to_element_change_activity']/value)"/>
 
 	<xsl:variable name="allSupportingProjects" select="$supportingProjects union $supportingProjectsViaStrategicPlansRels"/>
 
@@ -107,8 +127,6 @@
 	<xsl:variable name="impactedElementClasses" select="($currentPlan union $impactedElements union $dependentPlans union $supportingPlans union $supportedObjectives)/type"/>
 	<xsl:variable name="linkClasses" select="($impactedElementClasses, 'Project', 'Programme')"/>
 
-	<xsl:variable name="allDates" select="/node()/simple_instance[(type = 'Year') or (type = 'Quarter') or (type = 'Gregorian')]"/>
-
 	<xsl:variable name="planISOStartDate" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value"/>
 	<xsl:variable name="planEssStartDateId" select="$currentPlan/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value"/>
 	<xsl:variable name="jsPlanStartDate">
@@ -117,7 +135,7 @@
 				<xsl:value-of select="xs:date($planISOStartDate)"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:variable name="planStartDate" select="$allDates[name = $planEssStartDateId]"/>
+				<xsl:variable name="planStartDate" select="key('dateByName', $planEssStartDateId)"/>
 				<xsl:value-of select="eas:get_start_date_for_essential_time($planStartDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -133,7 +151,7 @@
 				<xsl:value-of select="xs:date($planISOEndDate)"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:variable name="planEndDate" select="$allDates[name = $planEssEndDateId]"/>
+				<xsl:variable name="planEndDate" select="key('dateByName', $planEssEndDateId)"/>
 				<xsl:value-of select="eas:get_end_date_for_essential_time($planEndDate)"/>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -149,11 +167,6 @@
 		<xsl:value-of select="eas:i18n('Strategic Plan Summary')"/>
 	</xsl:variable>
 	<xsl:variable name="pageLabel" select="concat($genericPageLabel, ' - ', $currentPlanName)"/>
-	<xsl:variable name="allDrivers" select="/node()/simple_instance[type = 'Business_Driver']"/>
-
-	<xsl:variable name="DEBUG" select="count($supportingProjectsViaStrategicPlansRels)"/>
-
-
 	<xsl:template match="knowledge_base">
 		<xsl:call-template name="docType"/>
 		<html>
@@ -173,6 +186,8 @@
 				<script src="js/d3/timeknots.js" type="application/javascript"/>
                 <link href="js/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css" type="text/css" rel="stylesheet"></link>
 				<script src='js/d3/d3.v5.9.7.min.js'></script> 
+				<script src="js/chartjs/Chart.min.js"></script>
+				<link href="js/chartjs/Chart.css" type="text/css" rel="stylesheet"></link>
                 <link rel="stylesheet" href="css/ess-summary.css"/>
 				<style>
 					.typeBox{
@@ -182,6 +197,188 @@
 						border:1pt solid #d3d3d3;
 						border-radius:5px;
 					}
+					.cost-dashboard {
+						display: flex;
+						flex-direction: column;
+						gap: 18px;
+					}
+					.cost-dashboard-header {
+						display: flex;
+						flex-wrap: wrap;
+						justify-content: space-between;
+						align-items: flex-end;
+						gap: 16px;
+					}
+					.cost-heading {
+						margin: 0;
+						font-size: 22px;
+						font-weight: 600;
+						color: #1d2f5f;
+					}
+					.cost-subheading {
+						margin: 6px 0 0;
+						color: #5f6b84;
+					}
+					.cost-rate-info {
+						display: inline-block;
+						margin-left: 8px;
+						font-size: 12px;
+						color: #66738d;
+					}
+					.cost-pill {
+						display: inline-block;
+						padding: 2px 10px;
+						border-radius: 12px;
+						background: #e8eefb;
+						color: #274690;
+						font-weight: 600;
+					}
+					.cost-controls {
+						min-width: 220px;
+					}
+					.cost-control-label {
+						display: block;
+						font-size: 12px;
+						font-weight: 600;
+						margin-bottom: 4px;
+						color: #5f6b84;
+						text-transform: uppercase;
+					}
+					.cost-currency-select {
+						width: 100%;
+						height: 34px;
+					}
+					.cost-summary-grid {
+						display: grid;
+						grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+						gap: 12px;
+					}
+					.cost-summary-card {
+						background: #f7f9fe;
+						border: 1px solid #d8e0f4;
+						border-radius: 10px;
+						padding: 12px 14px;
+					}
+					.cost-summary-label {
+						font-size: 12px;
+						color: #5f6b84;
+						text-transform: uppercase;
+					}
+					.cost-summary-value {
+						font-size: 24px;
+						font-weight: 700;
+						color: #1d2f5f;
+						margin-top: 5px;
+					}
+					.cost-analytics-grid {
+						display: grid;
+						grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+						gap: 14px;
+					}
+					.cost-analytics-card {
+						background: #fff;
+						border: 1px solid #d8e0f4;
+						border-radius: 10px;
+						padding: 10px 12px 12px;
+					}
+					.cost-analytics-card.wide {
+						grid-column: span 2;
+					}
+					@media (max-width: 991px) {
+						.cost-analytics-card.wide {
+							grid-column: span 1;
+						}
+					}
+					.cost-card-head {
+						font-size: 13px;
+						font-weight: 600;
+						color: #1d2f5f;
+						margin-bottom: 8px;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+					}
+					.cost-analytics-card canvas {
+						width: 100%;
+						height: 240px;
+						max-height: 240px;
+					}
+					.in-scope-toggle {
+						display: flex;
+						align-items: center;
+						gap: 7px;
+						font-size: 11px;
+						font-weight: 500;
+						color: #666;
+					}
+					.switch {
+						position: relative;
+						display: inline-block;
+						width: 34px;
+						height: 18px;
+					}
+					.switch input {
+						opacity: 0;
+						width: 0;
+						height: 0;
+					}
+					.slider {
+						position: absolute;
+						cursor: pointer;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						background-color: #c5cce0;
+						transition: .2s;
+						border-radius: 20px;
+					}
+					.slider:before {
+						position: absolute;
+						content: "";
+						height: 14px;
+						width: 14px;
+						left: 2px;
+						bottom: 2px;
+						background-color: white;
+						transition: .2s;
+						border-radius: 50%;
+					}
+					input:checked + .slider {
+						background-color: #4c78d2;
+					}
+					input:checked + .slider:before {
+						transform: translateX(16px);
+					}
+					.cost-table-card {
+						border: 1px solid #d8e0f4;
+						border-radius: 10px;
+						padding: 12px;
+						background: #fff;
+					}
+					.performance-dashboard {
+						display: flex;
+						flex-direction: column;
+						gap: 12px;
+						width: 100%;
+					}
+					.performance-chart-card {
+						border: 1px solid #d8e0f4;
+						border-radius: 10px;
+						padding: 12px;
+						background: #fff;
+						min-height: 340px;
+					}
+					.performance-chart-card canvas {
+						width: 100%;
+						height: 300px;
+						max-height: 300px;
+					}
+					.performance-empty-msg {
+						color: #5f6b84;
+						font-size: 12px;
+						font-style: italic;
+					}
 				</style>
 
 			</head>
@@ -190,8 +387,7 @@
 				<xsl:call-template name="Heading">
 					<xsl:with-param name="contentID" select="$param1"/>
 				</xsl:call-template> 
-            <xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-		 
+            <xsl:call-template name="ViewUserScopingUI"></xsl:call-template> 
 				<!--ADD THE CONTENT-->
 				<a id="top"/>
 				<div class="container-fluid">
@@ -224,10 +420,17 @@
 									<xsl:value-of select="eas:i18n('Impacts')"/>
 									</a>
 								</li>
+
 								<li role="presentation">
 									<a href="#projects" id="tab-projects" role="tab" aria-controls="projects" aria-selected="false" tabindex="-1" data-toggle="tab">
 									<i class="fa fa-fw fa-wrench right-10" aria-hidden="true"></i>
 									<xsl:value-of select="eas:i18n('Projects')"/>
+									</a>
+								</li>
+								<li role="presentation">
+									<a href="#costs" id="tab-costs" role="tab" aria-controls="costs" aria-selected="false" tabindex="-1" data-toggle="tab">
+									<i class="fa fa-fw fa-money right-10" aria-hidden="true"></i>
+									<xsl:value-of select="eas:i18n('Costs')"/>
 									</a>
 								</li>
 								<li role="presentation">
@@ -318,6 +521,16 @@
 											</div>
 										</div>
 
+										<div class="superflex" style="width: 100%;">
+											<h2 class="text-primary" id="stakeholders-heading">
+												<i class="fa fa-users right-10" aria-hidden="true"></i>
+												<xsl:value-of select="eas:i18n('Stakeholders')"/>
+											</h2>
+											<div role="region" aria-labelledby="stakeholders-heading">
+												<xsl:call-template name="PlanStakeholders"/>
+											</div>
+										</div>
+
 										<div class="superflex">
 											<h2 class="text-primary" id="objectives-heading">
 												<i class="fa fa-paper-plane right-10" aria-hidden="true"></i>
@@ -328,8 +541,8 @@
 													<xsl:variable name="currentObj" select="current()"/>
 													<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
 													<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
-													<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-													<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+													<xsl:variable name="relatedDrivers" select="key('businessDriverByName', current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value)"/>
+													<xsl:variable name="measureValues" select="key('sqValueByName', $currentObj/own_slot_value[slot_reference = 'bo_measures']/value)"/>
 
 													<div class="objcard">
 														<div class="objcontent">
@@ -360,7 +573,7 @@
 															<xsl:choose>
 																<xsl:when test="count($measureValues) > 0">
 																	<xsl:for-each select="$measureValues">
-																		<xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+																		<xsl:variable name="measureType" select="key('sqByName', current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value)[1]"/>
 																		<i class="fa fa-caret-right text-primary right-5" aria-hidden="true"></i>
 																		<xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - 
 																		<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
@@ -385,6 +598,16 @@
 														</div>
 													</div>
 												</xsl:for-each>    
+											</div>
+										</div>
+
+										<div class="superflex" style="width: 100%;">
+											<h2 class="text-primary" id="performance-heading">
+												<i class="fa fa-line-chart right-10" aria-hidden="true"></i>
+												<xsl:value-of select="eas:i18n('Performance Measures')"/>
+											</h2>
+											<div role="region" aria-labelledby="performance-heading">
+												<xsl:call-template name="PlanPerformanceMeasures"/>
 											</div>
 										</div>
 
@@ -423,14 +646,38 @@
 								</div>
 
 							<div class="tab-pane" id="impacts" role="tabpanel" aria-labelledby="tab-impacts">
-								<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Plan Impacts')"/></h2>-->
 								<div class="parent-superflex">
 									<div class="superflex">
-										<h3 class="text-primary" id="impacts-heading">
-											<i class="fa fa-random right-10" aria-hidden="true"></i>
-											<xsl:value-of select="eas:i18n('Plan Impacts')"/>
-										</h3>
-										<div id="impactsTable" role="region" aria-labelledby="impacts-heading"/>
+										<ul class="nav nav-tabs tabs-top" role="tablist">
+											<li class="active" role="presentation">
+												<a href="#planImpacts" aria-controls="planImpacts" role="tab" data-toggle="tab">
+													<i class="fa fa-fw fa-random right-10" aria-hidden="true"></i>
+													<xsl:value-of select="eas:i18n('Plan Impacts')"/>
+												</a>
+											</li>
+											<li role="presentation">
+												<a href="#impactsTableTab" aria-controls="impactsTableTab" role="tab" data-toggle="tab">
+													<i class="fa fa-fw fa-table right-10" aria-hidden="true"></i>
+													<xsl:value-of select="eas:i18n('Impacts Table')"/>
+												</a>
+											</li>
+										</ul>
+										<div class="tab-content">
+											<div class="tab-pane active" id="planImpacts" role="tabpanel">
+												<h3 class="text-primary" id="impacts-heading">
+													<i class="fa fa-random right-10" aria-hidden="true"></i>
+													<xsl:value-of select="eas:i18n('Plan Impacts')"/>
+												</h3>
+												<div id="impactsTable" role="region" aria-labelledby="impacts-heading"/>
+											</div>
+											<div class="tab-pane" id="impactsTableTab" role="tabpanel">
+												<h3 class="text-primary" id="impacts-table-heading">
+													<i class="fa fa-table right-10" aria-hidden="true"></i>
+													<xsl:value-of select="eas:i18n('Impacts Table')"/>
+												</h3>
+												<div id="impactsTableContainer" role="region" aria-labelledby="impacts-table-heading"/>
+											</div>
+										</div>
 									</div>
 								</div> 
 							</div> 
@@ -451,6 +698,21 @@
 								</div> 
 							</div> 
 
+							<div class="tab-pane" id="costs" role="tabpanel" aria-labelledby="tab-costs">
+								<div class="parent-superflex">
+									<div class="superflex">
+										<h2 class="text-primary" id="costs-heading">
+											<i class="fa fa-money right-10" aria-hidden="true"></i>
+											<xsl:value-of select="eas:i18n('Costs')"/>
+										</h2>
+										<p><xsl:value-of select="eas:i18n('Costs captured for this strategic plan')"/></p>
+										<div role="region" aria-labelledby="costs-heading">
+											<xsl:call-template name="PlanCosts"/>
+										</div>
+									</div>
+								</div>
+							</div>
+
 							<div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="tab-documents">
 	<!-- <h2 class="print-only"><i class="fa fa-fw fa-users right-10"></i><xsl:value-of select="eas:i18n('Documents')"/></h2> -->
 								<div class="parent-superflex">
@@ -461,8 +723,8 @@
 										</h2>
 
 										<div role="region" aria-labelledby="documents-heading">
-											<xsl:variable name="currentInstance" select="/node()/simple_instance[name=$param1]"/>
-											<xsl:variable name="anExternalDocRefList" select="/node()/simple_instance[name = $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value]"/>
+											<xsl:variable name="currentInstance" select="key('instanceByName', $param1)[1]"/>
+											<xsl:variable name="anExternalDocRefList" select="key('instanceByName', $currentInstance/own_slot_value[slot_reference = 'external_reference_links']/value)"/>
 											
 											<xsl:call-template name="RenderExternalDocRefList">
 												<xsl:with-param name="extDocRefs" select="$anExternalDocRefList"/>
@@ -546,6 +808,28 @@
 					</table>
 
             </script>
+			<script id="impacts-table-template" type="text/x-handlebars-template">
+				<table id="impactsDataTable" class="table table-striped table-bordered" style="width:100%">
+					<thead>
+						<tr>
+							<th>Type</th>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each this}}
+						<tr>
+							<td>{{type}}</td>
+							<td>{{name}}</td>
+							<td>{{description}}</td>
+							<td>{{action}}</td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</script>
             <script id="tertiary-template" type="text/x-handlebars-template">
 				{{#if this}}
 				{{#isNotEmpty this}}
@@ -601,6 +885,546 @@
  
 var impactTemplate;
 var thisId='<xsl:value-of select="$param1"/>';
+var strategicPlanCostData = [
+<xsl:for-each select="$currentPlanCostComponents">
+	<xsl:variable name="parentCost" select="key('costByName', current()/own_slot_value[slot_reference = 'cc_cost_component_of_cost']/value)[1]"/>
+							<xsl:variable name="costType" select="key('costComponentTypeByName', current()/own_slot_value[slot_reference = 'cc_cost_component_type']/value)[1]"/>
+							<xsl:variable name="costCategory" select="key('costCategoryByName', $parentCost/own_slot_value[slot_reference = 'cost_category']/value)[1]"/>
+							<xsl:variable name="costCurrencyDirect" select="key('currencyByName', current()/own_slot_value[slot_reference = 'cc_cost_currency']/value)[1]"/>
+							<xsl:variable name="costCurrencyParent" select="key('currencyByName', $parentCost/own_slot_value[slot_reference = 'cost_currency']/value)[1]"/>
+	<xsl:variable name="costCurrency" select="($costCurrencyDirect, $costCurrencyParent, $defaultCurrency)[1]"/>
+	<xsl:variable name="costTypeLabel">
+		<xsl:choose>
+			<xsl:when test="count($costType) > 0">
+				<xsl:value-of select="$costType/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="translate(current()/type, '_', ' ')"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:variable name="costCategoryLabel">
+		<xsl:choose>
+			<xsl:when test="count($costCategory) > 0">
+				<xsl:value-of select="$costCategory/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+			</xsl:when>
+			<xsl:otherwise>Unclassified</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+		{
+			id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			amount: <xsl:choose><xsl:when test="string-length(current()/own_slot_value[slot_reference = 'cc_cost_amount']/value[1]) > 0"><xsl:value-of select="current()/own_slot_value[slot_reference = 'cc_cost_amount']/value[1]"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>,
+			currencyCode: "<xsl:value-of select="eas:getSafeJSString(($costCurrency/own_slot_value[slot_reference = 'currency_code']/value, $costCurrency/name)[1])"/>",
+			costType: "<xsl:value-of select="eas:getSafeJSString(current()/type)"/>",
+			typeLabel: "<xsl:value-of select="eas:getSafeJSString(normalize-space($costTypeLabel))"/>",
+			category: "<xsl:value-of select="eas:getSafeJSString(normalize-space($costCategoryLabel))"/>",
+		fromDate: "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='cc_cost_start_date_iso_8601']/value[1])"/>",
+		toDate: "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference='cc_cost_end_date_iso_8601']/value[1])"/>"
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:for-each>
+];
+
+var strategicPlanPerformanceData = [
+<xsl:for-each select="$currentPlanPerformanceMeasures">
+	<xsl:variable name="perfMeasureValue" select="key('sqValueByName', current()/own_slot_value[slot_reference = 'pm_performance_value']/value)[1]"/>
+	{
+		id: "<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+		name: "<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference = 'name']/value)"/>",
+		scoreRaw: "<xsl:value-of select="eas:getSafeJSString($perfMeasureValue/own_slot_value[slot_reference = 'service_quality_value_score']/value[1])"/>"
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:for-each>
+];
+
+var strategicPlanCurrencies = [
+<xsl:for-each select="$allCurrencies">
+	{
+		id: "<xsl:value-of select="eas:getSafeJSString(name)"/>",
+		ccyCode: "<xsl:value-of select="eas:getSafeJSString(own_slot_value[slot_reference='currency_code']/value)"/>",
+		ccySymbol: "<xsl:value-of select="eas:getSafeJSString(own_slot_value[slot_reference='currency_symbol']/value)"/>",
+		exchangeRate: "<xsl:value-of select="eas:getSafeJSString(own_slot_value[slot_reference='currency_exchange_rate']/value)"/>",
+		isDefault: "<xsl:value-of select="eas:getSafeJSString(own_slot_value[slot_reference='currency_is_default']/value)"/>"
+	}<xsl:if test="position()!=last()">,</xsl:if>
+</xsl:for-each>
+];
+var strategicPlanDefaultCurrencyCode = "<xsl:value-of select="eas:getSafeJSString($defaultCurrency/own_slot_value[slot_reference='currency_code']/value)"/>";
+var strategicPlanDefaultCurrencyId = "<xsl:value-of select="eas:getSafeJSString($defaultCurrency/name)"/>";
+var planCurrentCurrency = strategicPlanDefaultCurrencyCode || strategicPlanDefaultCurrencyId || (strategicPlanCurrencies[0] ? (strategicPlanCurrencies[0].ccyCode || strategicPlanCurrencies[0].id) : 'USD');
+var planCostCharts = { month: null, type: null, category: null, frequency: null };
+var planPerformanceChart = null;
+var planInScopeOnly = true;
+
+function normalizeCurrencyCode(code) {
+	if (!code) {
+		return '';
+	}
+	return String(code).trim().toUpperCase();
+}
+
+planCurrentCurrency = normalizeCurrencyCode(planCurrentCurrency) || 'USD';
+
+function toNumber(value) {
+	if (value === null || value === undefined || value === '') {
+		return 0;
+	}
+	var parsed = parseFloat(value);
+	return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseExchangeRate(value) {
+	if (value === null || value === undefined || value === '') {
+		return NaN;
+	}
+	var normalised = String(value).trim();
+	if (!normalised) {
+		return NaN;
+	}
+	normalised = normalised.replace(/\s+/g, '');
+	if (normalised.indexOf('_') > -1) {
+		if (normalised.indexOf('.') === -1 &amp;&amp; normalised.indexOf(',') === -1) {
+			normalised = normalised.replace('_', '.');
+		} else {
+			normalised = normalised.replace(/_/g, '');
+		}
+	}
+	if (normalised.indexOf(',') > -1 &amp;&amp; normalised.indexOf('.') === -1) {
+		normalised = normalised.replace(',', '.');
+	} else {
+		normalised = normalised.replace(/,/g, '');
+	}
+	var parsed = parseFloat(normalised);
+	return Number.isFinite(parsed) ? parsed : NaN;
+}
+
+function buildExchangeRateMap() {
+	var rateMap = {};
+	var baseCode = normalizeCurrencyCode(strategicPlanDefaultCurrencyCode) || normalizeCurrencyCode(strategicPlanDefaultCurrencyId) || normalizeCurrencyCode(planCurrentCurrency);
+	strategicPlanCurrencies.forEach(function(currency) {
+		var code = normalizeCurrencyCode(currency &amp;&amp; currency.ccyCode);
+		var id = normalizeCurrencyCode(currency &amp;&amp; currency.id);
+		var rate = parseExchangeRate(currency.exchangeRate);
+		if (Number.isFinite(rate) &amp;&amp; rate > 0) {
+			if (code) {
+				rateMap[code] = rate;
+			}
+			if (id) {
+				rateMap[id] = rate;
+			}
+		}
+	});
+	if (baseCode &amp;&amp; !rateMap[baseCode]) {
+		rateMap[baseCode] = 1;
+	}
+	var currentCode = normalizeCurrencyCode(planCurrentCurrency);
+	if (currentCode &amp;&amp; !rateMap[currentCode]) {
+		rateMap[currentCode] = rateMap[baseCode] || 1;
+	}
+	return rateMap;
+}
+
+function convertAmount(amount, fromCurrency, toCurrency, rates) {
+	var value = toNumber(amount);
+	if (!value) {
+		return 0;
+	}
+	var baseCode = normalizeCurrencyCode(strategicPlanDefaultCurrencyCode) || normalizeCurrencyCode(strategicPlanDefaultCurrencyId) || normalizeCurrencyCode(planCurrentCurrency);
+	var fromCode = normalizeCurrencyCode(fromCurrency) || normalizeCurrencyCode(toCurrency) || normalizeCurrencyCode(planCurrentCurrency) || baseCode;
+	var toCode = normalizeCurrencyCode(toCurrency) || normalizeCurrencyCode(planCurrentCurrency) || fromCode;
+	var fromRate = rates[fromCode];
+	var toRate = rates[toCode];
+	if (!Number.isFinite(fromRate) || fromRate &lt;= 0) {
+		fromRate = rates[baseCode] || 1;
+	}
+	if (!Number.isFinite(toRate) || toRate &lt;= 0) {
+		toRate = rates[baseCode] || 1;
+	}
+	if (fromCode === toCode) {
+		return value;
+	}
+	return (value / fromRate) * toRate;
+}
+
+function costFrequency(costType) {
+	if (costType === 'Annual_Cost_Component') {
+		return 'annual';
+	}
+	if (costType === 'Quarterly_Cost_Component') {
+		return 'quarterly';
+	}
+	if (costType === 'Monthly_Cost_Component') {
+		return 'monthly';
+	}
+	if (costType === 'Adhoc_Cost_Component') {
+		return 'adhoc';
+	}
+	return 'annual';
+}
+
+function annualiseCost(amount, frequency) {
+	var numericAmount = toNumber(amount);
+	if (frequency === 'monthly') {
+		return numericAmount * 12;
+	}
+	if (frequency === 'quarterly') {
+		return numericAmount * 4;
+	}
+	return numericAmount;
+}
+
+function getCurrentYearPeriod() {
+	var now = new Date();
+	var year = now.getFullYear();
+	return {
+		year: year,
+		start: new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0)),
+		end: new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999))
+	};
+}
+
+function parseISODate(value) {
+	if (!value) {
+		return null;
+	}
+	var date = new Date(value);
+	if (Number.isNaN(date.getTime())) {
+		return null;
+	}
+	return date;
+}
+
+function daysBetweenInclusive(startDate, endDate) {
+	var startUtc = Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
+	var endUtc = Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate());
+	return Math.floor((endUtc - startUtc) / (24 * 60 * 60 * 1000)) + 1;
+}
+
+function getOverlapFactor(costStart, costEnd, periodStart, periodEnd) {
+	var effectiveStart = costStart || periodStart;
+	var effectiveEnd = costEnd || periodEnd;
+	if (effectiveEnd &lt; periodStart || effectiveStart > periodEnd) {
+		return 0;
+	}
+	var overlapStart = effectiveStart > periodStart ? effectiveStart : periodStart;
+	var overlapEnd = effectiveEnd &lt; periodEnd ? effectiveEnd : periodEnd;
+	var overlapDays = daysBetweenInclusive(overlapStart, overlapEnd);
+	var periodDays = daysBetweenInclusive(periodStart, periodEnd);
+	if (!periodDays) {
+		return 0;
+	}
+	return overlapDays / periodDays;
+}
+
+function buildMonthWindows(year) {
+	var windows = [];
+	for (var i = 0; i &lt; 12; i += 1) {
+		var start = new Date(Date.UTC(year, i, 1, 0, 0, 0, 0));
+		var end = new Date(Date.UTC(year, i + 1, 0, 23, 59, 59, 999));
+		windows.push({
+			label: start.toLocaleString('en-GB', { month: 'short' }),
+			start: start,
+			end: end
+		});
+	}
+	return windows;
+}
+
+function formatCurrencyValue(value, currencyCode) {
+	try {
+		return new Intl.NumberFormat(navigator.language || 'en-US', {
+			style: 'currency',
+			currency: currencyCode
+		}).format(toNumber(value));
+	} catch (error) {
+		return currencyCode + ' ' + toNumber(value).toFixed(2);
+	}
+}
+
+function aggregateCostsForCurrency(targetCurrencyCode, inScopeOnly) {
+	var rates = buildExchangeRateMap();
+	var period = getCurrentYearPeriod();
+	var monthWindows = buildMonthWindows(period.year);
+	var totals = {
+		annual: 0,
+		monthly: 0,
+		adhoc: 0,
+		byType: {},
+		byCategory: {},
+		byFrequency: {},
+		monthLabels: monthWindows.map(function(m) { return m.label; }),
+		monthValues: monthWindows.map(function() { return 0; }),
+		rates: rates
+	};
+
+	strategicPlanCostData.forEach(function(cost) {
+		var frequency = costFrequency(cost.costType);
+		var fromCode = normalizeCurrencyCode(cost.currencyCode) || normalizeCurrencyCode(strategicPlanDefaultCurrencyCode) || targetCurrencyCode;
+		var convertedAmount = convertAmount(cost.amount, fromCode, targetCurrencyCode, rates);
+		var annualised = annualiseCost(cost.amount, frequency);
+		var convertedAnnualised = convertAmount(annualised, fromCode, targetCurrencyCode, rates);
+		var frequencyLabel = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+		var costStart = parseISODate(cost.fromDate);
+		var costEnd = parseISODate(cost.toDate);
+		var overlapWithPeriod = getOverlapFactor(costStart, costEnd, period.start, period.end);
+		var regularAnnualValue = inScopeOnly ? (convertedAnnualised * overlapWithPeriod) : convertedAnnualised;
+
+		if (frequency === 'adhoc') {
+			var includeAdhoc = !inScopeOnly || (!costStart &amp;&amp; !costEnd) || (overlapWithPeriod > 0);
+			if (includeAdhoc) {
+				totals.adhoc += convertedAmount;
+			}
+		} else {
+			totals.annual += regularAnnualValue;
+
+			var byTypeKey = cost.typeLabel || frequencyLabel;
+			var byCategoryKey = cost.category || 'Unclassified';
+			totals.byType[byTypeKey] = (totals.byType[byTypeKey] || 0) + regularAnnualValue;
+			totals.byCategory[byCategoryKey] = (totals.byCategory[byCategoryKey] || 0) + regularAnnualValue;
+			totals.byFrequency[frequencyLabel] = (totals.byFrequency[frequencyLabel] || 0) + regularAnnualValue;
+
+			var monthlyBase = convertedAnnualised / 12;
+			monthWindows.forEach(function(monthWindow, monthIndex) {
+				if (!inScopeOnly) {
+					totals.monthValues[monthIndex] += monthlyBase;
+				} else {
+					var monthFactor = getOverlapFactor(costStart, costEnd, monthWindow.start, monthWindow.end);
+					totals.monthValues[monthIndex] += monthlyBase * monthFactor;
+				}
+			});
+		}
+	});
+
+	totals.monthly = totals.annual / 12;
+	return totals;
+}
+
+function toSeries(aggregateObject) {
+	var labels = [];
+	var values = [];
+	Object.keys(aggregateObject || {}).forEach(function(key) {
+		labels.push(key);
+		values.push(aggregateObject[key]);
+	});
+	return { labels: labels, values: values };
+}
+
+function chartColours(count) {
+	var palette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#9467bd', '#d62728', '#8c564b', '#17becf', '#bcbd22', '#7f7f7f', '#aec7e8'];
+	var colours = [];
+	for (var i = 0; i &lt; count; i += 1) {
+		colours.push(palette[i % palette.length]);
+	}
+	return colours;
+}
+
+function renderPerformanceChart() {
+	var canvas = document.getElementById('planPerformanceChart');
+	var emptyLabel = document.getElementById('planPerformanceChartEmpty');
+	if (!canvas || !window.Chart) {
+		return;
+	}
+
+	if (planPerformanceChart) {
+		planPerformanceChart.destroy();
+		planPerformanceChart = null;
+	}
+
+	if (!strategicPlanPerformanceData || !strategicPlanPerformanceData.length) {
+		if (emptyLabel) {
+			emptyLabel.textContent = "<xsl:value-of select="eas:i18n('No performance measures defined for this Strategic Plan')"/>";
+		}
+		return;
+	}
+
+	var scoreLabels = [];
+	var scoreValues = [];
+
+	strategicPlanPerformanceData.forEach(function(item) {
+		var score = parseExchangeRate(item.scoreRaw);
+		if (Number.isFinite(score)) {
+			scoreLabels.push(item.name || 'Measure');
+			scoreValues.push(score);
+		}
+	});
+
+	if (!scoreLabels.length) {
+		if (emptyLabel) {
+			emptyLabel.textContent = "<xsl:value-of select="eas:i18n('No numeric score values defined for this Strategic Plan')"/>";
+		}
+		return;
+	}
+
+	planPerformanceChart = new Chart(canvas, {
+		type: 'horizontalBar',
+		data: {
+			labels: scoreLabels,
+			datasets: [{
+				label: "<xsl:value-of select="eas:i18n('Score')"/>",
+				data: scoreValues,
+				backgroundColor: 'rgba(255, 127, 14, 0.75)',
+				borderColor: '#ff7f0e',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			legend: { display: false },
+			scales: {
+				xAxes: [{ ticks: { beginAtZero: true } }]
+			}
+		}
+	});
+
+	if (emptyLabel) {
+		emptyLabel.textContent = '';
+	}
+}
+
+function renderOrUpdateChart(chartKey, canvasId, chartType, label, series) {
+	var canvas = document.getElementById(canvasId);
+	if (!canvas || !window.Chart) {
+		return;
+	}
+
+	if (planCostCharts[chartKey]) {
+		planCostCharts[chartKey].destroy();
+	}
+
+	var labels = series.labels.length ? series.labels : ['No Data'];
+	var values = series.values.length ? series.values : [0];
+	var options = {
+		responsive: true,
+		maintainAspectRatio: false
+	};
+
+	if (chartType === 'bar' || chartType === 'line') {
+		options.legend = { display: false };
+		options.scales = {
+			yAxes: [{ ticks: { beginAtZero: true } }]
+		};
+	}
+
+	var dataset = {
+		label: label,
+		data: values,
+		backgroundColor: chartColours(labels.length),
+		borderWidth: chartType === 'bar' ? 1 : 0
+	};
+
+	if (chartType === 'line') {
+		dataset = {
+			label: label,
+			data: values,
+			borderColor: '#1f77b4',
+			backgroundColor: 'rgba(31, 119, 180, 0.15)',
+			borderWidth: 2,
+			fill: true,
+			tension: 0.25,
+			pointRadius: 3
+		};
+	}
+
+	planCostCharts[chartKey] = new Chart(canvas, {
+		type: chartType,
+		data: {
+			labels: labels,
+			datasets: [dataset]
+		},
+		options: options
+	});
+}
+
+function updateConvertedCostCells(targetCurrencyCode, rates) {
+	$('#dt_costs tbody tr').each(function() {
+		var nativeCell = $(this).find('.js-native-cost');
+		var convertedCell = $(this).find('.js-converted-cost');
+		if (!nativeCell.length || !convertedCell.length) {
+			return;
+		}
+		var amount = toNumber(nativeCell.data('amount'));
+		var fromCode = normalizeCurrencyCode(nativeCell.data('currency-code')) || normalizeCurrencyCode(strategicPlanDefaultCurrencyCode) || targetCurrencyCode;
+		var converted = convertAmount(amount, fromCode, targetCurrencyCode, rates);
+		convertedCell.text(formatCurrencyValue(converted, targetCurrencyCode));
+	});
+}
+
+function renderPlanCostDashboard() {
+	if (!$('#planCostDashboard').length) {
+		return;
+	}
+
+	var summary = aggregateCostsForCurrency(planCurrentCurrency, planInScopeOnly);
+	var baseCode = normalizeCurrencyCode(strategicPlanDefaultCurrencyCode) || normalizeCurrencyCode(strategicPlanDefaultCurrencyId) || planCurrentCurrency;
+	var selectedRate = summary.rates[planCurrentCurrency];
+	if (!Number.isFinite(selectedRate) || selectedRate &lt;= 0) {
+		selectedRate = summary.rates[baseCode] || 1;
+	}
+	var annualLabel = planInScopeOnly
+		? "<xsl:value-of select="eas:i18n('Actual Regular Annual Cost')"/>"
+		: "<xsl:value-of select="eas:i18n('Annualised Regular Annual Cost')"/>";
+	var monthlyLabel = planInScopeOnly
+		? "<xsl:value-of select="eas:i18n('Actual Regular Monthly Cost')"/>"
+		: "<xsl:value-of select="eas:i18n('Annualised Regular Monthly Cost')"/>";
+
+	$('#planCostCurrencyLabel').text(planCurrentCurrency);
+	$('#planExchangeRateInfo').text('Rate: ' + selectedRate + ' (' + baseCode + '=1)');
+	$('#planAnnualLabel').text(annualLabel);
+	$('#planMonthlyLabel').text(monthlyLabel);
+	$('#planRegAnnual').text(formatCurrencyValue(summary.annual, planCurrentCurrency));
+	$('#planRegMonthly').text(formatCurrencyValue(summary.monthly, planCurrentCurrency));
+	$('#planAdhoc').text(formatCurrencyValue(summary.adhoc, planCurrentCurrency));
+
+	updateConvertedCostCells(planCurrentCurrency, summary.rates);
+
+	renderOrUpdateChart('month', 'planCostByMonthChart', 'line', "<xsl:value-of select="eas:i18n('Cost Per Month')"/>", { labels: summary.monthLabels, values: summary.monthValues });
+	renderOrUpdateChart('type', 'planCostByTypeChart', 'bar', "<xsl:value-of select="eas:i18n('Cost by Type')"/>", toSeries(summary.byType));
+	renderOrUpdateChart('category', 'planCostByCategoryChart', 'pie', "<xsl:value-of select="eas:i18n('Cost by Category')"/>", toSeries(summary.byCategory));
+	renderOrUpdateChart('frequency', 'planCostByFrequencyChart', 'doughnut', "<xsl:value-of select="eas:i18n('Cost by Frequency')"/>", toSeries(summary.byFrequency));
+}
+
+function initCostsDashboard() {
+	if (!$('#planCostDashboard').length) {
+		return;
+	}
+
+	var selectEl = $('#planCcySelect');
+	selectEl.empty();
+	var seenCodes = {};
+	strategicPlanCurrencies.forEach(function(currency) {
+		var code = normalizeCurrencyCode(currency &amp;&amp; currency.ccyCode);
+		var key = code || normalizeCurrencyCode(currency &amp;&amp; currency.id);
+		if (!key || seenCodes[key]) {
+			return;
+		}
+		seenCodes[key] = true;
+		var rate = parseExchangeRate(currency.exchangeRate);
+		var rateLabel = (Number.isFinite(rate) &amp;&amp; rate > 0) ? rate : '1';
+		selectEl.append('<option value="' + key + '">' + key + '</option>');
+	});
+
+	if (!selectEl.find('option').length) {
+		selectEl.append('<option value="' + planCurrentCurrency + '">' + planCurrentCurrency + '</option>');
+	}
+
+	if (selectEl.find('option[value="' + planCurrentCurrency + '"]').length === 0) {
+		selectEl.val(selectEl.find('option:first').val());
+		planCurrentCurrency = selectEl.val();
+	} else {
+		selectEl.val(planCurrentCurrency);
+	}
+
+	selectEl.off('change').on('change', function() {
+		planCurrentCurrency = $(this).val() || planCurrentCurrency;
+		renderPlanCostDashboard();
+	});
+
+	$(document).off('change', '#planInScopeToggle').on('change', '#planInScopeToggle', function() {
+		planInScopeOnly = $(this).is(':checked');
+		renderPlanCostDashboard();
+	});
+
+	$('#planInScopeToggle').prop('checked', planInScopeOnly);
+	renderPlanCostDashboard();
+}
  
 $(document).ready(function(){
     var impactsFragment = $("#impacts-template").html();
@@ -661,69 +1485,128 @@ $(document).ready(function(){
                 //create svg timeline
                 const svgNamespace = "http://www.w3.org/2000/svg";
 					const svgElement = document.querySelector('#svgdates');
+					if (svgElement) {
+						let currentX = 30; // Start at the center of the first loop
+						// Get the parent element of the SVG
+						const parentElement = svgElement.parentNode.parentNode;
+	              
+						// Retrieve the client width of the parent element
+						let svgWidth = parentElement.clientWidth;// Calculate total width needed based on number of data items
 					 
-					let currentX = 30; // Start at the center of the first loop
-					// Get the parent element of the SVG
-					const parentElement = svgElement.parentNode.parentNode;
-              
-					// Retrieve the client width of the parent element
-					let svgWidth = parentElement.clientWidth;// Calculate total width needed based on number of data items
-				 
-					let currentXdynamic = (svgWidth)/timelineData.length;
-					let lineWidth = currentXdynamic-80;
-					 
-					svgElement.setAttribute('width', svgWidth.toString()); // Set dynamic width based on calculated width
-					
-					timelineData.forEach((item, index) => {
-					  // Create each circle with its specific color
-					  const circle = document.createElementNS(svgNamespace, 'path');
-					  circle.setAttribute('d', `M${currentX},60 a10,10 0 1,0 80,0 a10,10 0 1,0 -80,0`);
-					  circle.setAttribute('stroke', item.color);
-					  circle.classList.add('animated-path');
-					  circle.style.animationDelay = `${index * 0.1}s`;
-					  svgElement.appendChild(circle);
-					
-					  if (index &lt; timelineData.length - 1) {
-						if (index == 0) {
-						// Draw connecting line in default color
-						const line = document.createElementNS(svgNamespace, 'path');
-						line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80 + lineWidth},60`);
-						line.setAttribute('stroke', '#2980b9');
-						line.classList.add('connect-line');
-						line.setAttribute('stroke-width', '2');
-						line.style.animationDelay = `${index * 2}s`;
-						svgElement.appendChild(line);
-					  }else{
-						const line = document.createElementNS(svgNamespace, 'path');
-						line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80+ lineWidth},60`);
-						line.setAttribute('stroke', '#2980b9');
-						line.classList.add('connect-line');
-						line.setAttribute('stroke-width', '2');
-						line.style.animationDelay = `${index * 0.3}s`;
-						svgElement.appendChild(line);
-					  }
+						let currentXdynamic = (svgWidth)/timelineData.length;
+						let lineWidth = currentXdynamic-80;
+						 
+						svgElement.setAttribute('width', svgWidth.toString()); // Set dynamic width based on calculated width
+						
+						timelineData.forEach((item, index) => {
+						  // Create each circle with its specific color
+						  const circle = document.createElementNS(svgNamespace, 'path');
+						  circle.setAttribute('d', `M${currentX},60 a10,10 0 1,0 80,0 a10,10 0 1,0 -80,0`);
+						  circle.setAttribute('stroke', item.color);
+						  circle.classList.add('animated-path');
+						  circle.style.animationDelay = `${index * 0.1}s`;
+						  svgElement.appendChild(circle);
+						
+						  if (index &lt; timelineData.length - 1) {
+							if (index == 0) {
+							// Draw connecting line in default color
+							const line = document.createElementNS(svgNamespace, 'path');
+							line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80 + lineWidth},60`);
+							line.setAttribute('stroke', '#2980b9');
+							line.classList.add('connect-line');
+							line.setAttribute('stroke-width', '2');
+							line.style.animationDelay = `${index * 2}s`;
+							svgElement.appendChild(line);
+						  }else{
+							const line = document.createElementNS(svgNamespace, 'path');
+							line.setAttribute('d', `M${currentX + 80},60 L${currentX + 80+ lineWidth},60`);
+							line.setAttribute('stroke', '#2980b9');
+							line.classList.add('connect-line');
+							line.setAttribute('stroke-width', '2');
+							line.style.animationDelay = `${index * 0.3}s`;
+							svgElement.appendChild(line);
+						  }
+						}
+						  
+						  // Add name and date text
+						  const nameText = document.createElementNS(svgNamespace, 'text');
+						  nameText.setAttribute('class', 'name-text');
+						  nameText.setAttribute('x', currentX + 40);
+						  nameText.setAttribute('y', '65');
+						  nameText.textContent = item.name;
+						  svgElement.appendChild(nameText);
+						
+						  const dateText = document.createElementNS(svgNamespace, 'text');
+						  dateText.setAttribute('class', 'date-text');
+						  dateText.setAttribute('x', currentX + 40);
+						  dateText.setAttribute('y', '115');
+						  dateText.textContent = item.newDate;
+	                      dateText.setAttribute('style', 'font-weight: bold;');
+						  svgElement.appendChild(dateText);
+						
+						  currentX += currentXdynamic; // Move to next circle's center
+						});
 					}
-					  
-					  // Add name and date text
-					  const nameText = document.createElementNS(svgNamespace, 'text');
-					  nameText.setAttribute('class', 'name-text');
-					  nameText.setAttribute('x', currentX + 40);
-					  nameText.setAttribute('y', '65');
-					  nameText.textContent = item.name;
-					  svgElement.appendChild(nameText);
-					
-					  const dateText = document.createElementNS(svgNamespace, 'text');
-					  dateText.setAttribute('class', 'date-text');
-					  dateText.setAttribute('x', currentX + 40);
-					  dateText.setAttribute('y', '115');
-					  dateText.textContent = item.newDate;
-                      dateText.setAttribute('style', 'font-weight: bold;');
-					  svgElement.appendChild(dateText);
-					
-					  currentX += currentXdynamic; // Move to next circle's center
+
+					initCostsTable();
+					initCostsDashboard();
+					renderPerformanceChart();
+
+					$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+						if ($.fn.dataTable) {
+							$($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+						}
+						var targetTab = $(e.target).attr('href');
+						if (targetTab === '#costs') {
+							setTimeout(function() {
+								renderPlanCostDashboard();
+							}, 20);
+						}
+						if (targetTab === '#details') {
+							setTimeout(function() {
+								renderPerformanceChart();
+							}, 20);
+						}
 					});
-		 
+
 })
+
+function initCostsTable() {
+	if (!$('#dt_costs').length || !$.fn.DataTable) {
+		return;
+	}
+
+	if ($.fn.DataTable.isDataTable('#dt_costs')) {
+		return;
+	}
+
+	$('#dt_costs tfoot th').each(function() {
+		var title = $(this).text();
+		$(this).html('&lt;input type="text" placeholder="Search ' + title + '" /&gt;');
+	});
+
+	var costTable = $('#dt_costs').DataTable({
+		scrollY: "350px",
+		scrollCollapse: true,
+		paging: false,
+		info: false,
+		sort: true,
+		responsive: true,
+		dom: 'Bfrtip',
+		buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+	});
+
+	costTable.columns().every(function() {
+		var that = this;
+		$('input', this.footer()).on('keyup change', function() {
+			if (that.search() !== this.value) {
+				that.search(this.value).draw();
+			}
+		});
+	});
+
+	costTable.columns.adjust();
+}
 
 
 var redrawView=function(){
@@ -731,14 +1614,10 @@ var redrawView=function(){
  
  
 		projectsArray=essRMApiData.rpp?.changeActivities ? essRMApiData.rpp?.changeActivities : [];
- console.log('essRMApiData',essRMApiData)
 		let data=essRMApiData?.plans
         let plans= essRMApiData?.rpp?.strategicPlans;
 		instance2planArray = {};
  
-        console.log('projectsArray',projectsArray)
-        console.log('plans',plans) 
-
         const groupByInstId = (data) => {
             return data.reduce((acc, item) => {
                 // Check if the instId key already exists in the accumulator
@@ -806,8 +1685,6 @@ impactedElements.forEach((e)=>{
         type: item.type.replace(/_/g, ' ')
     }));
 
-    console.log('impactedElements',impactedElements)
- 
     const groupedPlans = {};
 
     tertiaryImpacts.forEach(element => {
@@ -823,10 +1700,21 @@ impactedElements.forEach((e)=>{
         });
     });
     
-    console.log('gps', groupedPlans);
- 
 $('#impactsTable').html(impactTemplate(impactedElements));
 $('#tertiaryImpacts').html(tertiaryImpactsTemplate(groupedPlans))
+
+		// Render table
+		var impactsTableFragment = $("#impacts-table-template").html();
+		var impactsTableTemplate = Handlebars.compile(impactsTableFragment);
+		$('#impactsTableContainer').html(impactsTableTemplate(impactedElements));
+
+		// Initialize DataTable with Buttons
+		$('#impactsDataTable').DataTable({
+			dom: 'Bfrtip',
+			buttons: [
+				'copy', 'csv', 'excel', 'pdf', 'print'
+			]
+		});
 
 }
 
@@ -918,6 +1806,332 @@ document.querySelectorAll('.objcard').forEach(card => {
 		</xsl:choose>
 	</xsl:template>-->
 
+	<xsl:template name="PlanStakeholders">
+		<xsl:choose>
+			<xsl:when test="count($currentPlanStakeholders) > 0">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th class="cellWidth-50pc">
+								<xsl:value-of select="eas:i18n('Stakeholder')"/>
+							</th>
+							<th class="cellWidth-50pc">
+								<xsl:value-of select="eas:i18n('Role')"/>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<xsl:for-each select="$currentPlanStakeholders">
+							<xsl:variable name="stakeholderActor" select="key('actorByPlaysRole', current()/name)[1]"/>
+							<xsl:variable name="stakeholderRole" select="key('roleByPlayedByActor', current()/name)[1]"/>
+							<tr>
+								<td>
+									<xsl:choose>
+										<xsl:when test="count($stakeholderActor) > 0">
+											<xsl:value-of select="$stakeholderActor/own_slot_value[slot_reference = 'name']/value"/>
+										</xsl:when>
+										<xsl:otherwise>-</xsl:otherwise>
+									</xsl:choose>
+								</td>
+								<td>
+									<xsl:choose>
+										<xsl:when test="count($stakeholderRole) > 0">
+											<xsl:value-of select="$stakeholderRole/own_slot_value[slot_reference = 'name']/value"/>
+										</xsl:when>
+										<xsl:otherwise>-</xsl:otherwise>
+									</xsl:choose>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</tbody>
+				</table>
+			</xsl:when>
+			<xsl:otherwise>
+				<em>
+					<xsl:value-of select="eas:i18n('No stakeholders defined for this Strategic Plan')"/>
+				</em>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="PlanPerformanceMeasures">
+		<xsl:choose>
+			<xsl:when test="count($currentPlanPerformanceMeasures) > 0">
+				<div class="performance-dashboard" id="planPerformanceDashboard">
+					<div class="performance-chart-card">
+						<canvas id="planPerformanceChart" aria-label="Performance measures chart"></canvas>
+					</div>
+					<div id="planPerformanceChartEmpty" class="performance-empty-msg"></div>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th class="cellWidth-30pc">
+									<xsl:value-of select="eas:i18n('Performance Measure')"/>
+								</th>
+								<th class="cellWidth-20pc">
+									<xsl:value-of select="eas:i18n('Service Quality')"/>
+								</th>
+								<th class="cellWidth-20pc">
+									<xsl:value-of select="eas:i18n('Value')"/>
+								</th>
+								<th class="cellWidth-15pc">
+									<xsl:value-of select="eas:i18n('Score')"/>
+								</th>
+								<th class="cellWidth-15pc">
+									<xsl:value-of select="eas:i18n('Measure Date')"/>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<xsl:for-each select="$currentPlanPerformanceMeasures">
+								<xsl:variable name="perfMeasureValue" select="key('sqValueByName', current()/own_slot_value[slot_reference = 'pm_performance_value']/value)[1]"/>
+								<xsl:variable name="perfMeasureQuality" select="key('sqByName', $perfMeasureValue/own_slot_value[slot_reference = 'usage_of_service_quality']/value)[1]"/>
+								<tr>
+									<td>
+										<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
+									</td>
+									<td>
+										<xsl:choose>
+											<xsl:when test="count($perfMeasureQuality) > 0">
+												<xsl:value-of select="$perfMeasureQuality/own_slot_value[slot_reference = 'name']/value"/>
+											</xsl:when>
+											<xsl:otherwise>-</xsl:otherwise>
+										</xsl:choose>
+									</td>
+									<td>
+										<xsl:choose>
+											<xsl:when test="string-length($perfMeasureValue/own_slot_value[slot_reference = 'service_quality_value_value']/value[1]) > 0">
+												<xsl:value-of select="$perfMeasureValue/own_slot_value[slot_reference = 'service_quality_value_value']/value[1]"/>
+											</xsl:when>
+											<xsl:when test="count($perfMeasureValue) > 0">
+												<xsl:value-of select="$perfMeasureValue/own_slot_value[slot_reference = 'name']/value"/>
+											</xsl:when>
+											<xsl:otherwise>-</xsl:otherwise>
+										</xsl:choose>
+									</td>
+									<td>
+										<xsl:choose>
+											<xsl:when test="string-length($perfMeasureValue/own_slot_value[slot_reference = 'service_quality_value_score']/value[1]) > 0">
+												<xsl:value-of select="$perfMeasureValue/own_slot_value[slot_reference = 'service_quality_value_score']/value[1]"/>
+											</xsl:when>
+											<xsl:otherwise>-</xsl:otherwise>
+										</xsl:choose>
+									</td>
+									<td>
+										<xsl:choose>
+											<xsl:when test="string-length(own_slot_value[slot_reference = 'pm_measure_date_iso_8601']/value[1]) > 0">
+												<xsl:value-of select="own_slot_value[slot_reference = 'pm_measure_date_iso_8601']/value[1]"/>
+											</xsl:when>
+											<xsl:otherwise>-</xsl:otherwise>
+										</xsl:choose>
+									</td>
+								</tr>
+							</xsl:for-each>
+						</tbody>
+					</table>
+				</div>
+			</xsl:when>
+			<xsl:otherwise>
+				<em>
+					<xsl:value-of select="eas:i18n('No performance measures defined for this Strategic Plan')"/>
+				</em>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="PlanCosts">
+		<xsl:choose>
+			<xsl:when test="count($currentPlanCostComponents) > 0">
+				<div class="cost-dashboard" id="planCostDashboard">
+					<div class="cost-dashboard-header">
+						<div>
+							<h3 class="cost-heading"><i class="fa fa-money right-10"></i><xsl:value-of select="eas:i18n('Cost Overview')"/></h3>
+							<p class="cost-subheading">
+								<xsl:value-of select="eas:i18n('Converted to')"/>
+								<xsl:text> </xsl:text>
+								<span id="planCostCurrencyLabel" class="cost-pill">-</span>
+								<span id="planExchangeRateInfo" class="cost-rate-info"></span>
+							</p>
+						</div>
+						<div class="cost-controls">
+							<label class="cost-control-label" for="planCcySelect"><xsl:value-of select="eas:i18n('Currency')"/></label>
+							<select id="planCcySelect" class="cost-currency-select"></select>
+						</div>
+					</div>
+
+					<div class="cost-summary-grid">
+						<div class="cost-summary-card">
+							<div class="cost-summary-label" id="planAnnualLabel"><xsl:value-of select="eas:i18n('Actual Regular Annual Cost')"/></div>
+							<div class="cost-summary-value" id="planRegAnnual">-</div>
+						</div>
+						<div class="cost-summary-card">
+							<div class="cost-summary-label" id="planMonthlyLabel"><xsl:value-of select="eas:i18n('Actual Regular Monthly Cost')"/></div>
+							<div class="cost-summary-value" id="planRegMonthly">-</div>
+						</div>
+						<div class="cost-summary-card">
+							<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Adhoc Spend')"/></div>
+							<div class="cost-summary-value" id="planAdhoc">-</div>
+						</div>
+					</div>
+
+					<div class="cost-analytics-grid">
+						<div class="cost-analytics-card wide">
+							<div class="cost-card-head">
+								<span><xsl:value-of select="eas:i18n('Monthly Trend')"/></span>
+								<div class="in-scope-toggle">
+									<span><xsl:value-of select="eas:i18n('Annual/Actual Mode')"/></span>
+									<label class="switch">
+										<input type="checkbox" id="planInScopeToggle" checked="checked"/>
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
+							<canvas id="planCostByMonthChart"></canvas>
+						</div>
+						<div class="cost-analytics-card">
+							<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Type')"/></div>
+							<canvas id="planCostByTypeChart"></canvas>
+						</div>
+						<div class="cost-analytics-card">
+							<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Category')"/></div>
+							<canvas id="planCostByCategoryChart"></canvas>
+						</div>
+						<div class="cost-analytics-card">
+							<div class="cost-card-head"><xsl:value-of select="eas:i18n('By Frequency')"/></div>
+							<canvas id="planCostByFrequencyChart"></canvas>
+						</div>
+					</div>
+
+					<div class="cost-table-card">
+						<table class="table table-striped table-bordered display compact" id="dt_costs">
+							<thead>
+								<tr>
+									<th>
+										<xsl:value-of select="eas:i18n('Cost')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('Type')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('Description')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('Value')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('Converted Value (Using Exchange Rate)')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('From Date')"/>
+									</th>
+									<th>
+										<xsl:value-of select="eas:i18n('To Date')"/>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:for-each select="$currentPlanCostComponents">
+									<xsl:sort select="own_slot_value[slot_reference = 'name']/value"/>
+									<xsl:variable name="parentCost" select="key('costByName', current()/own_slot_value[slot_reference = 'cc_cost_component_of_cost']/value)[1]"/>
+									<xsl:variable name="costType" select="key('costComponentTypeByName', current()/own_slot_value[slot_reference = 'cc_cost_component_type']/value)[1]"/>
+									<xsl:variable name="costCategory" select="key('costCategoryByName', $parentCost/own_slot_value[slot_reference = 'cost_category']/value)[1]"/>
+									<xsl:variable name="costCurrencyDirect" select="key('currencyByName', current()/own_slot_value[slot_reference = 'cc_cost_currency']/value)[1]"/>
+									<xsl:variable name="costCurrencyParent" select="key('currencyByName', $parentCost/own_slot_value[slot_reference = 'cost_currency']/value)[1]"/>
+									<xsl:variable name="costCurrency" select="($costCurrencyDirect, $costCurrencyParent, $defaultCurrency)[1]"/>
+									<xsl:variable name="costAmount" select="own_slot_value[slot_reference = 'cc_cost_amount']/value[1]"/>
+									<xsl:variable name="costTypeLabel">
+										<xsl:choose>
+											<xsl:when test="count($costType) > 0">
+												<xsl:value-of select="$costType/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="translate(current()/type, '_', ' ')"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:variable>
+									<xsl:variable name="costCategoryLabel">
+										<xsl:choose>
+											<xsl:when test="count($costCategory) > 0">
+												<xsl:value-of select="$costCategory/own_slot_value[slot_reference = 'enumeration_value']/value"/>
+											</xsl:when>
+											<xsl:otherwise>Unclassified</xsl:otherwise>
+										</xsl:choose>
+									</xsl:variable>
+									<tr>
+										<td>
+											<xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/>
+										</td>
+										<td>
+											<xsl:value-of select="$costTypeLabel"/>
+										</td>
+										<td>
+											<xsl:choose>
+												<xsl:when test="string-length(own_slot_value[slot_reference = 'short_description']/value[1]) > 0">
+													<xsl:value-of select="own_slot_value[slot_reference = 'short_description']/value[1]"/>
+												</xsl:when>
+												<xsl:when test="string-length(own_slot_value[slot_reference = 'description']/value[1]) > 0">
+													<xsl:value-of select="own_slot_value[slot_reference = 'description']/value[1]"/>
+												</xsl:when>
+												<xsl:otherwise>-</xsl:otherwise>
+											</xsl:choose>
+										</td>
+										<td class="js-native-cost">
+											<xsl:attribute name="data-amount"><xsl:value-of select="$costAmount"/></xsl:attribute>
+											<xsl:attribute name="data-currency-code"><xsl:value-of select="($costCurrency/own_slot_value[slot_reference = 'currency_code']/value, $costCurrency/name)[1]"/></xsl:attribute>
+											<xsl:attribute name="data-cost-type"><xsl:value-of select="current()/type"/></xsl:attribute>
+											<xsl:attribute name="data-type-label"><xsl:value-of select="$costTypeLabel"/></xsl:attribute>
+											<xsl:attribute name="data-category"><xsl:value-of select="$costCategoryLabel"/></xsl:attribute>
+											<xsl:choose>
+												<xsl:when test="string-length($costAmount) > 0">
+													<xsl:value-of select="$costCurrency/own_slot_value[slot_reference = 'currency_symbol']/value"/>
+													<xsl:value-of select="$costAmount"/>
+												</xsl:when>
+												<xsl:otherwise>-</xsl:otherwise>
+											</xsl:choose>
+										</td>
+										<td class="js-converted-cost">-</td>
+										<td>
+											<xsl:choose>
+												<xsl:when test="string-length(own_slot_value[slot_reference = 'cc_cost_start_date_iso_8601']/value[1]) > 0">
+													<xsl:value-of select="own_slot_value[slot_reference = 'cc_cost_start_date_iso_8601']/value[1]"/>
+												</xsl:when>
+												<xsl:otherwise>-</xsl:otherwise>
+											</xsl:choose>
+										</td>
+										<td>
+											<xsl:choose>
+												<xsl:when test="string-length(own_slot_value[slot_reference = 'cc_cost_end_date_iso_8601']/value[1]) > 0">
+													<xsl:value-of select="own_slot_value[slot_reference = 'cc_cost_end_date_iso_8601']/value[1]"/>
+												</xsl:when>
+												<xsl:otherwise>-</xsl:otherwise>
+											</xsl:choose>
+										</td>
+									</tr>
+								</xsl:for-each>
+							</tbody>
+							<tfoot>
+								<tr>
+									<th><xsl:value-of select="eas:i18n('Cost')"/></th>
+									<th><xsl:value-of select="eas:i18n('Type')"/></th>
+									<th><xsl:value-of select="eas:i18n('Description')"/></th>
+									<th><xsl:value-of select="eas:i18n('Value')"/></th>
+									<th><xsl:value-of select="eas:i18n('Converted Value (Using Exchange Rate)')"/></th>
+									<th><xsl:value-of select="eas:i18n('From Date')"/></th>
+									<th><xsl:value-of select="eas:i18n('To Date')"/></th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+			</xsl:when>
+			<xsl:otherwise>
+				<em>
+					<xsl:value-of select="eas:i18n('No costs defined for this Strategic Plan')"/>
+				</em>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<xsl:template name="Objectives">
 		<!--I've put a simple xsl:choose in here but you''ll need to set the test properly-->
 		<xsl:choose>
@@ -944,8 +2158,8 @@ document.querySelectorAll('.objcard').forEach(card => {
 							<xsl:variable name="currentObj" select="current()"/>
 							<xsl:variable name="objectiveName" select="own_slot_value[slot_reference = 'name']/value"/>
 							<xsl:variable name="objectiveDesc" select="own_slot_value[slot_reference = 'description']/value"/>
-							<xsl:variable name="relatedDrivers" select="$allDrivers[name = current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value]"/>
-							<xsl:variable name="measureValues" select="$relevantServiceQualityValues[name = $currentObj/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+							<xsl:variable name="relatedDrivers" select="key('businessDriverByName', current()/own_slot_value[slot_reference = 'bo_motivated_by_driver']/value)"/>
+							<xsl:variable name="measureValues" select="key('sqValueByName', $currentObj/own_slot_value[slot_reference = 'bo_measures']/value)"/>
 							<tr>
 								<td>
 									<div class="objectiveBox">
@@ -969,7 +2183,7 @@ document.querySelectorAll('.objcard').forEach(card => {
                                             <xsl:when test="count($measureValues) > 0">
                                                 <div class="objectiveBoxDataList"> 
                                                         <xsl:for-each select="$measureValues">
-                                                            <xsl:variable name="measureType" select="$relevantServiceQualities[name = current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value]"/>
+                                                            <xsl:variable name="measureType" select="key('sqByName', current()/own_slot_value[slot_reference = 'usage_of_service_quality']/value)[1]"/>
                                                            - <xsl:value-of select="$measureType/own_slot_value[slot_reference = 'name']/value"/> - <xsl:value-of select="own_slot_value[slot_reference = 'name']/value"/><br/>
                                                         </xsl:for-each> 
                                                 </div>
@@ -1034,11 +2248,6 @@ document.querySelectorAll('.objcard').forEach(card => {
 							<xsl:variable name="projectName" select="own_slot_value[slot_reference = 'name']/value"/>
 							<xsl:variable name="projectDesc" select="own_slot_value[slot_reference = 'description']/value"/>
 
-							<xsl:variable name="projectStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
-							<xsl:variable name="projectActualStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
-							<xsl:variable name="projectEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_target_end_date']/value]"/>
-							<xsl:variable name="projectForecastEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_forecast_end_date']/value]"/>
-
 
 							<xsl:variable name="plannedISOStartDate" select="$project/own_slot_value[slot_reference = 'ca_proposed_start_date_iso_8601']/value"/>
 							<xsl:variable name="jsPlannedStartDate">
@@ -1047,7 +2256,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 										<xsl:value-of select="xs:date($plannedISOStartDate)"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:variable name="projectPlannedStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value]"/>
+										<xsl:variable name="projectPlannedStartDate" select="key('dateByName', $project/own_slot_value[slot_reference = 'ca_proposed_start_date']/value)"/>
 										<xsl:value-of select="eas:get_start_date_for_essential_time($projectPlannedStartDate)"/>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -1061,7 +2270,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 										<xsl:value-of select="xs:date($actualISOStartDate)"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:variable name="projectActualStartDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_actual_start_date']/value]"/>
+										<xsl:variable name="projectActualStartDate" select="key('dateByName', $project/own_slot_value[slot_reference = 'ca_actual_start_date']/value)"/>
 										<xsl:value-of select="eas:get_start_date_for_essential_time($projectActualStartDate)"/>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -1076,7 +2285,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 										<xsl:value-of select="xs:date($targetEndISOStartDate)"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:variable name="projectTargetEndDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_target_end_date']/value]"/>
+										<xsl:variable name="projectTargetEndDate" select="key('dateByName', $project/own_slot_value[slot_reference = 'ca_target_end_date']/value)"/>
 										<xsl:value-of select="eas:get_end_date_for_essential_time($projectTargetEndDate)"/>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -1090,7 +2299,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 										<xsl:value-of select="xs:date($forecastEndISOStartDate)"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:variable name="projectForecastEndDate" select="$allDates[name = $project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value]"/>
+										<xsl:variable name="projectForecastEndDate" select="key('dateByName', $project/own_slot_value[slot_reference = 'ca_forecast_end_date']/value)"/>
 										<xsl:value-of select="eas:get_end_date_for_essential_time($projectForecastEndDate)"/>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -1098,7 +2307,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 
 
 							<!--<xsl:variable name="projectFormatOLD">
-								<xsl:variable name="projectTargetEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'ca_target_end_date']/value]"/>
+								<xsl:variable name="projectTargetEndDate" select="key('dateByName', current()/own_slot_value[slot_reference = 'ca_target_end_date']/value)"/>
 								<xsl:if test="(count($projectTargetEndDate) > 0) and (count($planEndDate) > 0)">
 									<xsl:variable name="projectEndDate" select="eas:get_end_date_for_essential_time($projectTargetEndDate)"/>
 									<xsl:variable name="planEndDate" select="eas:get_end_date_for_essential_time($planEndDate)"/>
@@ -1291,8 +2500,8 @@ document.querySelectorAll('.objcard').forEach(card => {
 		<xsl:if test="count($relations) > 0">
 			<xsl:variable name="nextRelation" select="$relations[1]"/>
 			<xsl:if test="not(($nextRelation/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $usedRelations/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and ($nextRelation/own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $usedRelations/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))">
-				<xsl:variable name="relatedElement" select="$layerElements[name = $nextRelation/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
-				<xsl:variable name="relatedImpact" select="$impactActions[name = $nextRelation/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>
+				<xsl:variable name="relatedElement" select="key('instanceByName', $nextRelation/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)[type = $layerClasses][1]"/>
+				<xsl:variable name="relatedImpact" select="key('impactActionByName', $nextRelation/own_slot_value[slot_reference = 'plan_to_element_change_action']/value)"/>
 				<xsl:call-template name="RenderElementImpactRow">
 					<xsl:with-param name="element" select="$relatedElement"/>
 					<xsl:with-param name="elementImpact" select="$relatedImpact"/>
@@ -1388,13 +2597,13 @@ document.querySelectorAll('.objcard').forEach(card => {
 	<xsl:function name="eas:get_planning_action_colour" as="xs:string">
 		<xsl:param name="planningAction"/>
 
-		<xsl:variable name="style" select="$allImpactActionStyles[name = $planningAction/own_slot_value[slot_reference = 'element_styling_classes']/value]"/>
+		<xsl:variable name="style" select="key('instanceByName', $planningAction/own_slot_value[slot_reference = 'element_styling_classes']/value)[1]"/>
 		<xsl:choose>
 			<xsl:when test="count($style) = 0">
 				<xsl:value-of select="$noStyleImpact"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:variable name="styleColour" select="$style[1]/own_slot_value[slot_reference = 'element_style_colour']/value"/>
+				<xsl:variable name="styleColour" select="$style/own_slot_value[slot_reference = 'element_style_colour']/value"/>
 				<xsl:choose>
 					<xsl:when test="string-length($styleColour) = 0">
 						<xsl:value-of select="$noStyleImpact"/>
@@ -1457,7 +2666,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 					<xsl:value-of select="xs:date($thisPlanISOStartDate)"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:variable name="planStartDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value]"/>
+					<xsl:variable name="planStartDate" select="key('dateByName', current()/own_slot_value[slot_reference = 'strategic_plan_valid_from_date']/value)"/>
 					<xsl:value-of select="eas:get_start_date_for_essential_time($planStartDate)"/>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -1472,7 +2681,7 @@ document.querySelectorAll('.objcard').forEach(card => {
 					<xsl:value-of select="xs:date($thisPlanISOEndDate)"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:variable name="planEndDate" select="$allDates[name = current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value]"/>
+					<xsl:variable name="planEndDate" select="key('dateByName', current()/own_slot_value[slot_reference = 'strategic_plan_valid_to_date']/value)"/>
 					<xsl:value-of select="eas:get_end_date_for_essential_time($planEndDate)"/>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -1487,10 +2696,18 @@ document.querySelectorAll('.objcard').forEach(card => {
                 </div>
 			</td>
 			<td>
+                <xsl:variable name="thisPlanShortDesc" select="normalize-space(current()/own_slot_value[slot_reference = 'short_description']/value[1])"/>
                 <div class="planBoxDescription">
-                    <xsl:call-template name="RenderMultiLangInstanceDescription">
-                        <xsl:with-param name="theSubjectInstance" select="current()"/>
-                    </xsl:call-template>
+                    <xsl:choose>
+                        <xsl:when test="string-length($thisPlanShortDesc) > 0">
+                            <xsl:value-of select="$thisPlanShortDesc"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="RenderMultiLangInstanceDescription">
+                                <xsl:with-param name="theSubjectInstance" select="current()"/>
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </div>
 			</td>
 			<td>
@@ -1554,8 +2771,8 @@ document.querySelectorAll('.objcard').forEach(card => {
     <xsl:variable name="thisFilteredDeprectatedStrategicPlanRels" select="$thisAllDeprectatedStrategicPlanRels[not(own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $directStrategicPlanImpactedElements/name)]"/>
     <xsl:variable name="thisDeprectatedStrategicPlanRels" select="$thisFilteredDeprectatedStrategicPlanRels[not((own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value) and (own_slot_value[slot_reference = 'plan_to_element_change_action']/value = $thisStrategicPlanRels/own_slot_value[slot_reference = 'plan_to_element_change_action']/value))]"/>
 
-    <xsl:variable name="action" select="$impactActions[name=$thisStrategicPlanRels/own_slot_value[slot_reference='plan_to_element_change_action']/value]"/>
-    <xsl:variable name="actionOld" select="$impactActions[name=$thisDeprectatedStrategicPlanRels/own_slot_value[slot_reference='strategic_planning_action']/value]"/>
+    <xsl:variable name="action" select="key('impactActionByName', $thisStrategicPlanRels/own_slot_value[slot_reference='plan_to_element_change_action']/value)"/>
+    <xsl:variable name="actionOld" select="key('impactActionByName', $thisDeprectatedStrategicPlanRels/own_slot_value[slot_reference='strategic_planning_action']/value)"/>
    <xsl:variable name="action" select="$action union $actionOld"/>
     <!--
     <xsl:call-template name="RenderPlan2ElementsRelations">
@@ -1566,43 +2783,38 @@ document.querySelectorAll('.objcard').forEach(card => {
         <xsl:with-param name="layerLabels" select="$layerLabels"/>
     </xsl:call-template>
 -->
-<xsl:variable name="elementName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'name']/value"/>
-<xsl:variable name="elementRelationName" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_name']/value"/> 
-<!-- <xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'description']/value"/>  -->
 <xsl:variable name="elementDesc" select="$thisStrategicPlanRels/own_slot_value[slot_reference = 'relation_description']/value"/>
 <xsl:choose>
 	<xsl:when test="count($action)>1">
 		<xsl:variable name="main" select="current()"/>
 		<xsl:for-each select="$action">
-		{
-			"id":"<xsl:value-of select="$main/name"/>",
-			<xsl:variable name="temp" as="map(*)" select="map{
-				'description': string(translate(translate($main/own_slot_value[slot_reference = ('relation_description')]/value, '}', ')'), '{', ')')),
-				'name': string($main/own_slot_value[slot_reference = 'name']/value)
-			}"></xsl:variable>
-			<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-			<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"></xsl:value-of>,
-			"type":"<xsl:value-of select="$main/type"/>",
-		    "action":"<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:variable name="actionLabel">
+			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="current()"/>
-			</xsl:call-template>" 
+			</xsl:call-template>
+		</xsl:variable>
+		{
+			"id":"<xsl:value-of select="eas:getSafeJSString($main/name)"/>",
+			"description":"<xsl:value-of select="eas:getSafeJSString(translate(translate($main/own_slot_value[slot_reference = 'relation_description']/value, '}', ')'), '{', ')'))"/>",
+			"name":"<xsl:value-of select="eas:getSafeJSString($main/own_slot_value[slot_reference = 'name']/value)"/>",
+			"type":"<xsl:value-of select="eas:getSafeJSString($main/type)"/>",
+		    "action":"<xsl:value-of select="eas:getSafeJSString(normalize-space($actionLabel))"/>" 
 		
 		}<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>
 	</xsl:when>
 	<xsl:otherwise>
-		{
-			"id":"<xsl:value-of select="current()/name"/>",
-			<xsl:variable name="temp" as="map(*)" select="map{
-				'description': string(translate(translate($elementDesc, '}', ')'), '{', ')')),
-				'name': string(current()/own_slot_value[slot_reference = 'name']/value)
-			}"></xsl:variable>
-			<xsl:variable name="result" select="serialize($temp, map{'method':'json', 'indent':true()})"/>  
-			<xsl:value-of select="substring-before(substring-after($result, '{'), '}')"></xsl:value-of>,
-			"type":"<xsl:value-of select="current()/type"/>",
-		    "action":"<xsl:call-template name="RenderMultiLangInstanceName">
+		<xsl:variable name="actionLabel">
+			<xsl:call-template name="RenderMultiLangInstanceName">
 				<xsl:with-param name="theSubjectInstance" select="$action"/>
-			</xsl:call-template>" 
+			</xsl:call-template>
+		</xsl:variable>
+		{
+			"id":"<xsl:value-of select="eas:getSafeJSString(current()/name)"/>",
+			"description":"<xsl:value-of select="eas:getSafeJSString(translate(translate($elementDesc, '}', ')'), '{', ')'))"/>",
+			"name":"<xsl:value-of select="eas:getSafeJSString(current()/own_slot_value[slot_reference = 'name']/value)"/>",
+			"type":"<xsl:value-of select="eas:getSafeJSString(current()/type)"/>",
+		    "action":"<xsl:value-of select="eas:getSafeJSString(normalize-space($actionLabel))"/>" 
 		
 		} 
 	</xsl:otherwise>

@@ -414,7 +414,7 @@
                      })	
 
                     // essInitViewScoping(redrawView, ['Group_Actor'], '', true); 
-                   essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept'],'',true);
+                   essInitViewScoping(redrawView, ['Group_Actor', 'Business_Domain', 'Geographic_Region', 'SYS_CONTENT_APPROVAL_STATUS','Product_Concept'],responses[0].filters,true);
 
                 });
 

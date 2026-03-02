@@ -20,9 +20,11 @@
 
 	<!-- END GENERIC CATALOGUE PARAMETERS -->
     <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
-
+    <xsl:variable name="thisReport" select="node()/simple_instance[type='Report'][own_slot_value[slot_reference='name']/value=('Core: Application Provider Catalogue as Table')]"></xsl:variable>
+	
 	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
+	<xsl:variable name="reportConfig" select="$thisReport/own_slot_value[slot_reference='report_supporting_config']/value"/>
 
 	<!-- END GENERIC PARAMETERS -->
 
@@ -201,7 +203,7 @@
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				 	 
+	 	 	 
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -405,6 +407,8 @@ Promise.all(
 		var table;
 		var dynamicAppFilterDefs=[];	 
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+		var jsonConfig = '<xsl:value-of select="eas:renderJSText($reportConfig)"/>';
+		var colSettings;
 		var catalogueTable
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
@@ -450,16 +454,16 @@ Promise.all(
 							let linkClass = 'context-menu-' + linkMenuName;
 							let linkId = instance.id + 'Link';
 							let linkURL = reportURL;
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 aa"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
 			
 						} else if (instanceLink != null) {
 							let linkURL = reportURL;
 							let linkHref = '?XML=reportXML.xml&amp;PMA=' + instance.id + '&amp;cl=' + essLinkLanguage + '&amp;XSL=' + linkURL;
-							let linkClass = 'context-menu-' + linkMenuName;
+							let linkClass = ' context-menu-' + linkMenuName;
 
 							let linkId = instance.id + 'Link';
 						//	instanceLink = '<a href="' + linkHref + '" id="' + linkId + '">' + instance.name + '</a>';
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 bb" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 			
 							
 		
@@ -482,7 +486,7 @@ Promise.all(
 		                let linkClass = 'context-menu-' + linkMenuName;
 		                let linkId = instance.id + 'Link';
 		                let linkURL = reportURL; 
-						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 cc' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
 			
 		                return instanceLink;
 		            }
@@ -567,7 +571,6 @@ let allAppArr = [];
 let workingArr = [];
 let svcArr = [];
 let lifecycleArr = [];
-var colSettings = [];
   showEditorSpinner('Fetching Data')
 Promise.all([
     promise_loadViewerAPIData(viewAPIData),
@@ -648,6 +651,24 @@ Promise.all([
             "visible": false
         })
     })
+
+	// Apply JSON configuration for column visibility
+	var config = {};
+	try {
+		if (jsonConfig &amp;&amp; jsonConfig !== '') {
+			config = JSON.parse(jsonConfig);
+		}
+	} catch (e) {
+		console.error("Error parsing jsonConfig", e);
+	}
+
+	if (config.tableConfig) {
+		colSettings.forEach(function(col) {
+			if (config.tableConfig.hasOwnProperty(col.data)) {
+				col.visible = config.tableConfig[col.data];
+			}
+		});
+	}
 
     lifecycleArr = responses[0].lifecycles;
     workingArr = [...workingArr, ...responses[0].apis];

@@ -131,8 +131,7 @@
       <message><name>Application Reference Model</name><value>Modelo de Referencia de Aplicación</value></message>
       <message><name>Application risk is determined by the security compliance level of the applications managing the GDPR data in scope and the CIA risk of the data.</name><value>El riesgo de la aplicación está determinado por el nivel de cumplimiento de seguridad de las aplicaciones que administran los datos del RGPD dentro del alcance y el riesgo de los datos por parte de la CIA.</value></message>
       <message><name>Application Roadmap</name><value>Hoja de Ruta de Aplicación</value></message>
-      <message><name>Applications</name><value>Aplicaciones</value></message>
-      <message><name>Applications by Lifecycle Status</name><value>Aplicaciones por estado del ciclo de vida</value></message>
+       <message><name>Applications by Lifecycle Status</name><value>Aplicaciones por estado del ciclo de vida</value></message>
       <message><name>Application Service</name><value>Servicio de Aplicación</value></message>
       <message><name>Application Service Catalogue by Name</name><value>Catálogo de Servicios de Aplicación por nombre</value></message>
       <message><name>Application Services</name><value>Servicios de Aplicación</value></message>
@@ -779,7 +778,6 @@
       <message><name>My Approvals Dashboard</name><value>Mi panel de aprobaciones</value></message>
       <message><name>My Items Submitted for Approval</name><value>Mis artículos enviados para aprobación</value></message>
       <message><name>N</name><value>norte</value></message>
-      <message><name>Name</name><value>value</value></message>
       <message><name>Negative</name><value>Negativo</value></message>
       <message><name>Network Model</name><value>Modelo de red</value></message>
       <message><name>Neutral</name><value>Neutral</value></message>
@@ -1194,7 +1192,6 @@
       <message><name>Relevant Technology Principles</name><value>Principios tecnológicos relevantes</value></message>
       <message><name>Removed</name><value>Eliminado</value></message>
       <message><name>Remove Widget</name><value>Eliminar widget</value></message>
-      <message><name>Renewal Date</name><value>Fecha de renovación</value></message>
       <message><name>Replace</name><value>Sustituido</value></message>
       <message><name>Report an Error</name><value>Informa de un Error</value></message>
       <message><name>Report Name</name><value>Nombre de Informa</value></message>
@@ -1215,7 +1212,6 @@
       <message><name>Retention Schedule</name><value>Calendario de retención</value></message>
       <message><name>Revenues</name><value>Ingresos</value></message>
       <message><name>Revenue Targets</name><value>Objetivos de ingresos</value></message>
-      <message><name>Review Date</name><value>Fecha de revisión</value></message>
       <message><name>Rights Available to Individuals</name><value>Derechos disponibles para los individuos</value></message>
       <message><name>Roadmap Catalogue by Layer</name><value>Catálogo de Hojas de Ruta por Niveles</value></message>
       <message><name>Roadmap Catalogue by Name</name><value>Catálogo de hoja de ruta por nombre</value></message>
@@ -1360,7 +1356,6 @@
       <message><name>Supplier Filter</name><value>Filtro de proveedores</value></message>
       <message><name>Supplier Impact</name><value>Impacto del proveedor</value></message>
       <message><name>Supplier License Management</name><value>Gestión de licencias de proveedores</value></message>
-      <message><name>Suppliers</name><value>Proveedores</value></message>
       <message><name>Support</name><value>Soporte</value></message>
       <message><name>Supported Applications</name><value>Aplicaciones compatibles</value></message>
       <message><name>Supported Business Capabilities</name><value>Capacidades comerciales admitidas</value></message>
@@ -2195,8 +2190,7 @@
       <message><name>APIs</name><value>API</value></message>
       <message><name>Application Capabilities</name><value>Capacidades de aplicación</value></message>
       <message><name>Application Service</name><value>Servicio de Aplicación</value></message>
-      <message><name>Applications</name><value>Aplicaciones</value></message>
-      <message><name>as they are used by a physical business process supporting the capability, but are not mapped as required for the process</name><value>ya que son utilizados por un proceso de negocio físico que respalda la capacidad, pero no están mapeados como se requiere para el proceso</value></message>
+       <message><name>as they are used by a physical business process supporting the capability, but are not mapped as required for the process</name><value>ya que son utilizados por un proceso de negocio físico que respalda la capacidad, pero no están mapeados como se requiere para el proceso</value></message>
       <message><name>Business Capabilities</name><value>Capacidades comerciales</value></message>
       <message><name>Business Processes</name><value>Procesos de Negocio</value></message>
       <message><name>Business Roles</name><value>Roles comerciales</value></message>
@@ -2358,7 +2352,6 @@
       <message><name>Contained Applications</name><value>Aplicaciones contenidas</value></message>
       <message><name>Contract Renewal</name><value>Renovación del contrato</value></message>
       <message><name>Contract Suppliers</name><value>Proveedores por contrato</value></message>
-      <message><name>Contract Suppliers/Resellers</name><value>Proveedores/revendedores por contrato</value></message>
       <message><name>Control Frameworks</name><value>Marcos de control</value></message>
       <message><name>Controls</name><value>Controles</value></message>
       <message><name>Cost Saving</name><value>Ahorro de costos</value></message>
@@ -2630,7 +2623,6 @@
       <message><name>Processes Impacted</name><value>Procesos impactados</value></message>
       <message><name>Processes Requiring</name><value>Procesos que requieren</value></message>
       <message><name>Product Details</name><value>Detalles del producto</value></message>
-      <message><name>Product/Service Suppliers</name><value>Proveedores de productos/servicios</value></message>
       <message><name>Products supported in</name><value>Productos soportados en</value></message>
       <message><name>Project Business Priority</name><value>Prioridad empresarial del proyecto</value></message>
       <message><name>Project KPI Tracker</name><value>Seguimiento de KPI del proyecto</value></message>
@@ -2702,7 +2694,6 @@
       <message><name>Site</name><value>Sitio</value></message>
       <message><name>Size</name><value>Tamaño</value></message>
       <message><name>Software Dependencies</name><value>Dependencias de software</value></message>
-      <message><name>Solutions</name><value>Soluciones</value></message>
       <message><name>Spend</name><value>Gastar</value></message>
       <message><name>Stakeholder(s)</name><value>Partes interesadas)</value></message>
       <message><name>Stakeholders for the</name><value>Stakeholders para la</value></message>
@@ -2827,8 +2818,7 @@
       <message><name>You must define a name for this import, if you are re-importing then reuse the original name, which could be that used in the import utility, otherwise create a new name</name><value>Debe definir un nombre para esta importación; si está volviendo a importar, reutilice el nombre original, que podría ser el utilizado en la utilidad de importación; de lo contrario, cree un nombre nuevo.</value></message>
       <message><name>Your search resulted in more than</name><value>Su búsqueda resultó en más de</value></message>
       <message><name>View Library</name><value>Ver biblioteca</value></message>
-      <message><name>Applications</name><value>Aplicaciones</value></message>
-      <message><name>Support</name><value>Soporte</value></message>
+       <message><name>Support</name><value>Soporte</value></message>
       <message><name>Technology</name><value>Tecnología</value></message>
       <message><name>Business</name><value>Negocio</value></message>
       <message><name>Deprecated</name><value>En desuso</value></message>
@@ -2928,5 +2918,47 @@
       <message><name>Supports</name><value>Soportes</value></message>
       <message><name>Strategic Alignment Legend</name><value>Leyenda de alineación estratégica</value></message>
       <message><name>Data Standard Owner</name><value>Propietario del estándar de datos</value></message>
+      <message><name>Supplier License Management</name><value>Gestión de Licencias de Proveedores</value></message>
+      <message><name>Suppliers</name><value>Proveedores</value></message>
+      <message><name>Contract Renewal Outlook</name><value>Vista de Renovación de Contrato</value></message>
+      <message><name>Contract Suppliers/Resellers</name><value>Proveedores/Resellers de Contratos</value></message>
+      <message><name>Product/Service Suppliers</name><value>Proveedores de Productos/Servicios</value></message>
+      <message><name>Filter Suppliers</name><value>Filtrar Proveedores</value></message>
+      <message><name>Filter Contracts</name><value>Filtrar Contratos</value></message>
+      <message><name>From Year</name><value>Desde año</value></message>
+      <message><name>Outlook</name><value>Perspectiva</value></message>
+      <message><name>years</name><value>años</value></message>
+      <message><name>Sort By</name><value>Ordenar por</value></message>
+      <message><name>Name</name><value>Nombre</value></message>
+      <message><name>Review Date</name><value>Fecha de Revisión</value></message>
+      <message><name>Cancellation Deadline</name><value>Fecha Límite de Cancelación</value></message>
+      <message><name>Renewal Date</name><value>Fecha de Renovación</value></message>
+      <message><name>Contract Review Period</name><value>Período de Revisión del Contrato</value></message>
+      <message><name>Beyond Cancellation Date</name><value>Después de la fecha de cancelación</value></message>
+      <message><name>Contract Renewal Date</name><value>Fecha de renovación de contrato</value></message>
+      <message><name>Supplier</name><value>Proveedor</value></message>
+      <message><name>No description available</name><value>Sin descripción disponible</value></message>
+      <message><name>Total Contract Value</name><value>Valor total del contrato</value></message>
+      <message><name>Show Breakdown</name><value>Mostrar Desglose</value></message>
+      <message><name>Active Contracts</name><value>Contratos activos</value></message>
+      <message><name>Business Processes</name><value>Procesos de negocios</value></message>
+      <message><name>Applications</name><value>Aplicaciones</value></message>
+      <message><name>Technology Products</name><value>Productos tecnológicos</value></message>
+      <message><name>Solutions</name><value>Soluciones</value></message>
+      <message><name>Products, applications and technologies in scope</name><value>Productos, aplicaciones y tecnologías incluidas en alcance</value></message>
+      <message><name>Status unknown</name><value>Estado desconocido</value></message>
+      <message><name>Contracts</name><value>Contratos</value></message>
+      <message><name>Commercial agreements and their coverage</name><value>Acuerdos comerciales y su cobertura</value></message>
+      <message><name>Total Cost</name><value>Costo Total</value></message>
+      <message><name># of Licenses</name><value># de Licencias</value></message>
+      <message><name>Contract Type</name><value>Tipo de contrato</value></message>
+      <message><name>Renewal Model</name><value>Modelo de Renovación</value></message>
+      <message><name>days notice</name><value>Días de aviso</value></message>
+      <message><name>Supplier unavailable</name><value>Proveedor no disponible</value></message>
+      <message><name>Potential Saving</name><value>Ahorro Potencial</value></message>
+      <message><name>Technologies</name><value>Tecnologías</value></message>
+      <message><name>Discard</name><value>Descartar</value></message>
+      <message><name>Last Cancellation Date</name><value>Última fecha de cancelación</value></message>
+
    </strings>
 </language>

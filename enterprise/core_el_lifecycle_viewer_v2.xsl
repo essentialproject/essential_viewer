@@ -301,15 +301,15 @@
 				}
 				/*------ Content Box ------*/
 				.vls-side-bar{
-					position: relative;
+					position: fixed;
 					width: 225px;
-					top:0;
+					top:160px;
 					left:0;
 					z-index: 999;
 					background: #fff;
 					overflow:hidden;
 					overflow-y: auto;
-					height:100%;
+					height: calc(100% - 160px);
 					z-index: 999;
 					-webkit-transition: ease all 0.vls-7s;
 					-o-transition: ease all 0.vls-7s;
@@ -636,12 +636,12 @@
 				 }
 				 rect {
 					transition: transform 0.3s ease, fill 0.3s ease;
-				}
-				rect {
+					transform-box: fill-box;
+					transform-origin: center;
 					filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
 				}
 				rect:hover {
-					transform: scale(1.01);
+					transform: scale(1.05);
 					fill: #66bb6a;
 				}
 
@@ -827,13 +827,19 @@
 					<!-- Side Bar Ends -->
 				
 					<!-- Main content Start -->
-					<div class="vls-main-content my-main" role="main" aria-labelledby="mainContentHeading">
-						<div class="vls-main-wrapp my-main-wrapp height-100">
+					<div class="vls-main-content my-main" role="main" aria-labelledby="mainContentHeading" style="position: fixed; top: 160px; bottom: 10px; left: 240px; right: 20px; width: auto; margin: 0; overflow: hidden;">
+						<div class="vls-main-wrapp my-main-wrapp height-100" style="display: flex; flex-direction: column; overflow: hidden; height: 100%;">
 							<h2 id="mainContentHeading" class="sr-only"><xsl:value-of select="eas:i18n('Main Content')"/></h2>
-							<svg id="time-chart" height="400" width="100%" role="img" aria-labelledby="timeChartTitle timeChartDesc">
-								<title id="timeChartTitle"><xsl:value-of select="eas:i18n('Time Chart')"/></title>
-								<desc id="timeChartDesc"><xsl:value-of select="eas:i18n('A visual representation of time-based data. Adjust the chart settings as needed')"/>.</desc>
-							</svg>
+							<div id="timeline-header" style="flex: 0 0 30px; overflow: hidden; background: #fff; z-index: 10;">
+								<svg id="time-chart-header" height="30" width="100%" role="img" aria-labelledby="timeChartTitle">
+									<title id="timeChartTitle"><xsl:value-of select="eas:i18n('Time Chart Header')"/></title>
+								</svg>
+							</div>
+							<div id="timeline-body" style="flex: 1; overflow-y: auto;">
+								<svg id="time-chart-body" height="400" width="100%" role="img" aria-labelledby="timeChartDesc">
+									<desc id="timeChartDesc"><xsl:value-of select="eas:i18n('A visual representation of time-based data. Adjust the chart settings as needed')"/>.</desc>
+								</svg>
+							</div>
 						</div>
 					</div>
 
@@ -1022,11 +1028,12 @@
 						<div class="keyItem"><xsl:attribute name="style">background-color:{{this.backgroundColour}};color:{{this.colour}}</xsl:attribute>{{this.name}}</div>
 					{{/each}}
 				</script>
-				<script id="product-template" type="text/x-handlebars-template">
+				<script id="timeline-header-template" type="text/x-handlebars-template">
 					{{#each this.years}}
-						<text y="10" fill="black"><xsl:attribute name="x">{{this.pos}}</xsl:attribute>{{this.yr}}</text>
- 
+						<text y="20" fill="black"><xsl:attribute name="x">{{this.pos}}</xsl:attribute>{{this.yr}}</text>
 					{{/each}}
+				</script>
+				<script id="product-template" type="text/x-handlebars-template">
 					{{#each this.products}} 
 						{{#each this.showDates}}
 							<rect height="16" rx="4" ry="0">  
@@ -1139,6 +1146,9 @@
 		$('document').ready(function () {
 			productFragment = $("#product-template").html();
 			productTemplate = Handlebars.compile(productFragment);
+
+			headerFragment = $("#timeline-header-template").html();
+			headerTemplate = Handlebars.compile(headerFragment);
 		
 			standardFragment = $("#standard-template").html();
 			standardTemplate = Handlebars.compile(standardFragment);
@@ -1192,7 +1202,7 @@
 			});
 		
 			Handlebars.registerHelper("yearLines", function () {
-				let cheight = $('#time-chart').height();
+				let cheight = $('#time-chart-body').height();
 				return cheight + 30;
 			});
 		
@@ -1342,7 +1352,7 @@
 							app.domainIds = Array.from(domains);
 						}
 					});
-				
+				//console.log('appJSON',appJSON)
 				standardsMap = new Map(standardsJSON.map(d => [d.id, d]));
 				 
 				let capToSvs = [];
@@ -1388,7 +1398,7 @@
 		
 				capOptions = capOptions.filter((elem, index, self) => self.findIndex((t) => { return (t.id === elem.id) }) === index)
 				capOptions.sort((a, b) => (a.name > b.name) ? 1 : -1)
-		 
+		 //console.log('lt', lifecycleTypes)
 				$('#lifecycleOptions').html(lifeListTemplate(lifecycleTypes))
 		 		if(lifecycleTypes.some(option => option.id === "vendor_Lifecycle_status")){
 					$('#lifecycleOptions').val('Vendor_Lifecycle_Status').change()
@@ -1396,7 +1406,7 @@
 				$('.vls-vendor').append(listTemplate(suppliers))
  
 				$('.vls-caps').append(listTemplate(capOptions))
-
+ 
 				$('#domainFilter').append(listTemplate(busDomains))
 				closeNav();
 				lifeByType = d3.nest()
@@ -1406,9 +1416,9 @@
 				lifeMap = new Map(
 					lifeByType.map(life => [life.key, new Map(life.values.map(val => [val.id, val.backgroundColour]))])
 					);	
-				
+	 			
 				setChart();
-	 
+	  	
 				$('.filter').on('change', function () {
 		
 					setChart();
@@ -1421,16 +1431,17 @@
  
 				$('.vls-type').on('change', function () {
 					let viewType = $('.vls-type').val();
-					if (viewType == 'Application') { 
-						 $('#lifecycleOptions option[value="Vendor_Lifecycle_Status"]').hide();
+					 
+					if (viewType == 'Application') {  
 						$('#lifecycleOptions').val('Lifecycle_Status').change()
 						productJSON = appJSON;
-					} else {
-						 $('#lifecycleOptions option[value="Vendor_Lifecycle_Status"]').show();
+					} else { 
 						$('#lifecycleOptions').val('Vendor_Lifecycle_Status').change()
 						productJSON = techJSON;
 					}
+				 
 					setChart();
+		 
 				});
 		
 				$('.closebtn').on('click', function () {
@@ -1486,6 +1497,8 @@
 			}
 		
 			function setChart() {
+				groupedData = groupedData || {};
+				appGroupedData = appGroupedData || {};
 				if (productJSON == appJSON) {
 		
 					$('.vendor').hide();
@@ -1498,7 +1511,7 @@
 		
 				let startYear = $('#fromYear').val();
 				let endYear = $('#toYear').val();
-				let supplier = $('.vls-vendor').val();
+				let supplier = $('.vls-vendor').val()?.replace(/\./g, '_');
 				let capability = $('.vls-caps').val();
 				let domain= $('#domainFilter').val();
 		
@@ -1509,12 +1522,10 @@
 	 
 				if (productJSON == appJSON) {
 					if (capability != 'all') {
-						productJSON.forEach((f) => {
-							if (f.caps) {
-								f.caps.forEach((g) => {
-									if (g.id == capability) { workingArr.push(f) }
-								});
-							};
+						productJSON?.forEach((f) => {
+							if (f.caps &amp;&amp; f.caps.some(g => g.id == capability)) {
+								workingArr.push(f);
+							}
 						});
 					} else {
 						workingArr = productJSON;
@@ -1533,33 +1544,45 @@
 				}
 				else {
 					if (supplier != 'all') {
-						productJSON.forEach((f) => {
+						productJSON?.forEach((f) => {
 							if (f.supplierId == supplier) { workingArr.push(f) }
 						});
 					} else {
 						workingArr = productJSON;
 					}
 				}
-				
+	 
 				let yearArr = [];
 				for (let i = 0; i &lt; endYear - startYear; i++) {
 					let dt = String((parseInt(startYear) + i) + '-01-01')
 					let dy = moment(dt).format('YYYY-MM-DD');
 					yearArr.push({ "yr": parseInt(startYear) + i, "date": dy, "pos": getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, dy) });
 				}
-		
+	 
 				let validLifes = []
 				let validLifes2=[]
+
+				function isValidISODateString(s) {
+					if (!s || typeof s !== "string") return false;
+					const d = new Date(s);
+					return !Number.isNaN(d.getTime());
+				}
+
 				workingArr.forEach((d) => {
  
 				let lifeStructure=[];
-				if (groupedData[d.id] &amp;&amp; groupedData[d.id].datesByType) {
+				if (groupedData[d.id] &amp;&amp; groupedData[d.id].datesByType) { 
+
 					Object.keys(groupedData[d.id].datesByType).forEach((typeKey) => {
-						const lifeGroup = groupedData[d.id].datesByType[typeKey]; // Array of life objects under each type
+  
+						const lifeGroup = (groupedData[d.id].datesByType[typeKey] || [])
+  									.filter(l => isValidISODateString(l.dateOf));
+ 
 						d[typeKey]=lifeGroup;
 					
 						lifeGroup.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
 						// Iterate over each life entry in the current type group
+						 
 						lifeGroup.forEach((life, index) => {
 							if (index &lt; lifeGroup.length - 1) {
 								// If not the last entry, use the next date as `endDate`
@@ -1570,12 +1593,13 @@
 								lastDate.setDate(lastDate.getDate() + 10);
 								life.endDate = lastDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 							}
+							 
 							life.startPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.dateOf);
 							life.endPos = getPosition(startDatePoint, dateWidth, chartStartDate, chartEndDate, life.endDate)
 
 							// Add each ID to validLifes2
 							validLifes2.push(life.id);
-
+ 
 							// Find the sequence in lifecycleJSON and add it to the current life object
 							const sequ = lifecycleJSON.find((lf) => lf.id === life.id);
 							if (sequ) {
@@ -1585,8 +1609,10 @@
 						lifeStructure.push({"key":typeKey,"values":lifeGroup})
 					});
 				} else if(appGroupedData[d.id] &amp;&amp; appGroupedData[d.id].datesByType) {
+				 
 					Object.keys(appGroupedData[d.id].datesByType).forEach((typeKey) => {
-						const lifeGroup = appGroupedData[d.id].datesByType[typeKey]; // Array of life objects under each type
+						const lifeGroup = (appGroupedData[d.id].datesByType[typeKey] || [])
+  									.filter(l => isValidISODateString(l.dateOf));
 						d[typeKey]=lifeGroup 
 					
 						lifeGroup.sort((a, b) => new Date(a.dateOf) - new Date(b.dateOf));
@@ -1618,8 +1644,7 @@
 				}else { 
 					//do nothing, no match
 				}
-
-				
+ 
 				d['lifecycles']=lifeStructure; 
 					let thislifeByType = d3.nest()
 						.key(function (d) { return d.type; })
@@ -1663,38 +1688,43 @@
 					}else{
 						d['lifecycles2'] = thislifeByType;
 					}
+			 
 				});
-	 
+	  
 				let thisLife = $('#lifecycleOptions').val();
  
 				let lifeType = lifeByType.filter((d) => {
 					return d.key == thisLife;
 				});
+
+ 
 				if(validLifes2.length > 0){
 					validLifes=validLifes2
 				}
-				
+		 
 				uniqueArray = [...new Set(validLifes)];
-			
+					 
 				let keys = []
-				 
+				 	 
 				uniqueArray.forEach((e) => {
-					let match = lifeType[0].values.find((f) => {
+					 
+					if(lifeType.length==0){ return}
+					let match = lifeType[0].values?.find((f) => {
 						return f.id == e
 					}) 
 					if (match) { keys.push(match) }
-				}) 
+				})  
 				keys = keys.sort((a, b) => (a.seq > b.seq) ? 1 : -1)
 				let keyInfo = { "values": keys } 
 				$('#key').html(keyTemplate(keyInfo)); 
-		
+	 
 				let productsToShow = [];
 				workingArr.forEach((d) => {
 					  
 					let showDates = d.lifecycles.filter((d) => {
 						return d.key == thisLife;
 					});
-					//console.log('showDates',showDates)
+				 
 					if (typeof showDates != 'undefined') {
 		
 						if (showDates.length &gt; 0) {
@@ -1710,10 +1740,11 @@
 				let viewArray = {};
 				productsToShow = productsToShow.sort((a, b) => a.name.localeCompare(b.name))
 				viewArray['products'] = productsToShow;
-		
+			 
 				viewArray['years'] = yearArr;
-				$('#time-chart').attr({ 'height': svgH + 'px' });
-				$('#time-chart').html(productTemplate(viewArray)); 
+				$('#time-chart-body').attr({ 'height': svgH + 'px' });
+				$('#time-chart-body').html(productTemplate(viewArray)); 
+				$('#time-chart-header').html(headerTemplate(viewArray)); 
 				function getProcesses(appObject) {
 					const thisAppProcesses = Array.from(
 						new Set(

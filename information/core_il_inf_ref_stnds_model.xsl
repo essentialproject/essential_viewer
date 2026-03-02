@@ -163,11 +163,11 @@
                     }
                     
                     .concept {
-                        padding: 5px 5px 30px 5px;
+                        padding: 5px 5px 5px 5px;
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         position:relative;
-                        min-height:80px;
+                        min-height:40px;
                         min-width: 200px;
                         max-width: 400px;
                         background-color: hsla(130, 50%, 90%, 1);
@@ -184,11 +184,11 @@
                         position: relative;
                     }
                     .infoview{
-                        padding: 5px 5px 30px 5px;
+                        padding: 5px 5px 5px 5px;
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         position:relative;
-                        min-height:80px;
+                        min-height:40px;
                         background-color: #fff;
                         min-width: 160px;
                         max-width: 160px;
@@ -214,17 +214,18 @@
                     }
                     .conceptheadName, .viewheadName, .dataObjBoxHeader{
                         font-size: 10px;    
-                        position: absolute;
-                        bottom: 5px;
-                        left: 5px;
+                        position: relative;
+                        bottom: auto;
+                        left: auto;
                         color:#aaa;
                     }
                     .conceptheadNameCol, .viewheadNameCol, .dataObjBoxHeaderCol{
                         
                         font-size: 10px;    
-                        position: absolute;
-                        top: 20px;
-                        left: 5px;
+                        position: relative;
+                        top: auto;
+                        bottom: auto;
+                        left: auto;
                         color:#aaa;
                     }
                     #infoPanel {
@@ -294,6 +295,7 @@
                         border-left: 1px solid #d3d3d3;
                         margin-bottom: 5px;
                     }
+                    .bottom-10 { margin-bottom: 0px !important; }
                 </style>
 			</head>
 			<body>
@@ -468,7 +470,6 @@
                                     <div class="infoview-wrapper">
                                     {{#each this.infoViews}}
                                         <div class="infoview">
-                                            <div class="viewheadName">Information View</div>
                                             <div class="bottom-10">
                                                 <span class="right-5 small">{{{essRenderInstanceMenuLinkLight this}}}</span>
                                                 <i class="fa fa-info-circle">
@@ -476,6 +477,7 @@
                                                     <xsl:attribute name="easType">view</xsl:attribute>
                                                 </i>
                                             </div>
+                                            <div class="viewheadName">Information View</div>
                                         </div>
                                     {{/each}}
                                     </div>
@@ -509,7 +511,6 @@
                                 <div class="infoview-wrapper">
                                 {{#each this.infoViews}}
                                     <div class="infoview">
-                                        <div class="viewheadName">Information View</div>
                                         <div class="bottom-10">
                                             <span class="right-5 small">{{{essRenderInstanceMenuLinkLight this}}}</span>
                                             <i class="fa fa-info-circle">
@@ -517,6 +518,7 @@
                                                 <xsl:attribute name="easType">view</xsl:attribute>
                                             </i>
                                         </div>
+                                        <div class="viewheadName">Information View</div>
                                     </div>
                                 {{/each}}
                                 </div>

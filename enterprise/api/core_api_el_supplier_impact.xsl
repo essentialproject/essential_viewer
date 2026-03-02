@@ -491,7 +491,7 @@
 			'contract_customer': string(translate(translate($thisActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
 			'contract_type': string(translate(translate($thisContractType/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')')),
 			'contract_ref': string(translate(translate(current()/own_slot_value[slot_reference = ('contract_ref')]/value,'}',')'),'{',')')),
-			'owner': string(translate(translate($thisa2rActor/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
+			'owner': string(translate(translate($thisa2rActor[1]/own_slot_value[slot_reference = ('name')]/value,'}',')'),'{',')'))
 		}" />
 		<xsl:variable name="resultCombined" select="serialize($combinedMap, map{'method':'json', 'indent':true()})" />
 		<xsl:value-of select="substring-before(substring-after($resultCombined,'{'),'}')"/>

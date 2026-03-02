@@ -251,30 +251,46 @@ $('document').ready(function () {
                 data.busproctype_uses_infoviews.forEach(view => {
                     infoViewsMap.set(view.id, view);
                 });
-                
+              
                 data.busproctype_relation.forEach(relation => {
-                    if (infoViewsMap.has(relation.infoRep)) {
-                        let infoView = infoViewsMap.get(relation.infoRep);
-                        relation.infoView = infoView;
-                        
-                        if (relation.read === "Yes") {
-                            data.bus_process_type_reads_information = data.bus_process_type_reads_information || [];
-                            data.bus_process_type_reads_information.push(infoView);
-                        }
-                        if (relation.create === "Yes") {
-                            data.bus_process_type_creates_information = data.bus_process_type_creates_information || [];
-                            data.bus_process_type_creates_information.push(infoView);
-                        }
-                        if (relation.update === "Yes") {
-                            data.bus_process_type_updates_information = data.bus_process_type_updates_information || [];
-                            data.bus_process_type_updates_information.push(infoView);
-                        }
-                        if (relation.delete === "Yes") {
-                            data.bus_process_type_deletes_information = data.bus_process_type_deletes_information || [];
-                            data.bus_process_type_deletes_information.push(infoView);
-                        }
+       
+                if (infoViewsMap.has(relation.infoRep)) {
+
+                    let infoView = infoViewsMap.get(relation.infoRep);
+                    infoView.className='Information_View';
+                    infoView.infoConcepts?.forEach((ic) => {ic.className='Information_Concept';});
+                    relation.infoView = infoView; 
+                    let hasKnownAccess = false;
+
+                    if (relation.read === "Yes") {
+                        data.bus_process_type_reads_information = data.bus_process_type_reads_information || [];
+                        data.bus_process_type_reads_information.push(infoView);
+                        hasKnownAccess = true;
                     }
-                });
+                    if (relation.create === "Yes") {
+                        data.bus_process_type_creates_information = data.bus_process_type_creates_information || [];
+                        data.bus_process_type_creates_information.push(infoView);
+                        hasKnownAccess = true;
+                
+                    }
+                    if (relation.update === "Yes") {
+                        data.bus_process_type_updates_information = data.bus_process_type_updates_information || [];
+                        data.bus_process_type_updates_information.push(infoView);
+                        hasKnownAccess = true;
+                    }
+                    if (relation.delete === "Yes") {
+                        data.bus_process_type_deletes_information = data.bus_process_type_deletes_information || [];
+                        data.bus_process_type_deletes_information.push(infoView);
+                        hasKnownAccess = true;
+                    }
+
+                    // If *none* of the above flags were "Yes", treat as unknown
+                    if (!hasKnownAccess) {
+                        data.bus_process_type_unknown_information = data.bus_process_type_unknown_information || [];
+                        data.bus_process_type_unknown_information.push(infoView);
+                    }
+                }
+            });
                 
                 return data;
             });

@@ -604,6 +604,50 @@ display:none;
       font-weight: bold;
     }
     
+	/* ===== Sticky timeline header + scrollable chart ===== */
+.timeline-scroll {
+  max-height: 450px;           /* chart scrolls once taller than this */
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;          /* anchor for sticky children */
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.timeline-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.timeline-controls label {
+  margin: 0 6px 0 0;
+  font-weight: 600;
+}
+
+.timeline-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.timeline-actions .faExport {
+  margin-left: 8px;
+}
+
+/* Ensure the SVG fills width; height can grow and be scrolled */
+#timeline-container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
   
 
 		</style>
@@ -748,23 +792,27 @@ display:none;
 							</button>
 							<div class="row headerInfo">
 								<div class="col-md-12">
-									<label><xsl:value-of select="eas:i18n('Start Date')"/>:
-										<input type="date" id="start-date" class="dateChange"/>
-									</label>
-									<label><xsl:value-of select="eas:i18n('End Date')"/>:
-										<input type="date" id="end-date" class="dateChange"/>
-									</label>
-									 
-									<div id="export-icons" style="text-align: right; margin-bottom: 10px;">
-									<i class="fa fa-file-pdf-o faExport" id="export-pdf" style="cursor:pointer;" title="Export to PDF"/><xsl:text> </xsl:text>
-									<i class="fa fa-file-powerpoint-o faExport" id="export-ppt" style="cursor:pointer;" title="Export to PowerPoint"/>	<xsl:text> </xsl:text>	
-									<i class="fa fa-file-image-o faExport" id="export-svg" style="cursor:pointer;" title="Export to SVG"/> 
-
-									</div>
-								</div>
-								<div class="col-md-12">
-							  		<div id="timeline-container"></div>
-							    </div>
+  <div class="timeline-scroll" role="region" aria-label="Debt Resolution Timeline">
+    <div class="timeline-header">
+      <div class="timeline-controls">
+        <label>
+          <xsl:value-of select="eas:i18n('Start Date')"/>:
+          <input type="date" id="start-date" class="dateChange"/>
+        </label>
+        <label class="left-10">
+          <xsl:value-of select="eas:i18n('End Date')"/>:
+          <input type="date" id="end-date" class="dateChange"/>
+        </label>
+      </div>
+      <div id="export-icons" class="timeline-actions">
+        <i class="fa fa-file-pdf-o faExport" id="export-pdf" style="cursor:pointer;" title="Export to PDF"/><xsl:text> </xsl:text>
+        <i class="fa fa-file-powerpoint-o faExport" id="export-ppt" style="cursor:pointer;" title="Export to PowerPoint"/> <xsl:text> </xsl:text>
+        <i class="fa fa-file-image-o faExport" id="export-svg" style="cursor:pointer;" title="Export to SVG"/>
+      </div>
+    </div>
+    <div id="timeline-container"></div>
+  </div>
+</div>
 							</div>
 						</div>
 					</div>
@@ -2364,6 +2412,12 @@ function findInstancesByScopeId(instancesObj, targetId) {
 					if (p.end_date) allDates.push(new Date(p.end_date));
 				});
 			});
+			if (!allDates.length) {
+				const fallbackStart = new Date(new Date().getFullYear(), 0, 1);
+				const fallbackEnd = new Date(fallbackStart);
+				fallbackEnd.setFullYear(fallbackEnd.getFullYear() + 3);
+				allDates.push(fallbackStart, fallbackEnd);
+			}
 
 	
 
@@ -2377,25 +2431,20 @@ function findInstancesByScopeId(instancesObj, targetId) {
   
 function renderTimeline(customStart, customEnd, setInputFields = false) {
 	 
-  const minDate = customStart ? new Date(customStart) : new Date(Math.min(...allDates));
-  const maxDate = customEnd ? new Date(customEnd) : new Date(Math.max(...allDates));
-  const chartStartDate = new Date(minDate.getFullYear(), 0, 1);
-  let chartEndDate;
- 
-	// If minDate equals maxDate, set chartEndDate to one year after maxDate
-	if (minDate.getTime() === maxDate.getTime()) {
-	chartEndDate = new Date(maxDate.getFullYear() + 1, 0, 1);
-	} else {
-	chartEndDate = new Date(maxDate.getFullYear(), 0, 1);
-	}
+  const rawStart = customStart ? new Date(customStart) : new Date(Math.min(...allDates));
+  const rawEnd = customEnd ? new Date(customEnd) : new Date(Math.max(...allDates));
+  let chartStartDate = isNaN(rawStart.getTime()) ? new Date() : rawStart;
+  let chartEndDate = isNaN(rawEnd.getTime()) ? new Date(chartStartDate) : rawEnd;
+
+  if (chartEndDate &lt;=  chartStartDate) {
+    chartEndDate = new Date(chartStartDate.getTime() + (24 * 60 * 60 * 1000));
+  }
  
   if (!setInputFields) { 
-	chartEndDate=new Date(maxDate.getFullYear(), 0, 1);
-    // Format as YYYY-MM-DD for input fields
     const formatInputDate = date => {
-    if (!(date instanceof Date) || isNaN(date.getTime())) return "";
-    return date.toISOString().split("T")[0];
-  };
+      if (!(date instanceof Date) || isNaN(date.getTime())) return "";
+      return date.toISOString().split("T")[0];
+    };
     document.getElementById("start-date").value = formatInputDate(chartStartDate);
     document.getElementById("end-date").value = formatInputDate(chartEndDate);
   }
@@ -2441,31 +2490,55 @@ if ($('#catType')[0].selectedIndex !== 0) {
     };
   });
 
-  function generateYearsAndQuarters(start, end) {
+  function generateYearsAndQuarters(rangeStart, rangeEnd) {
     const result = [];
-    let current = new Date(start.getFullYear(), 0, 1);
-    while (current &lt; end) {
-      const year = current.getFullYear();
-      const yearStart = new Date(year, 0, 1);
-      const yearEnd = new Date(year + 1, 0, 1);
-      const pos = getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, yearStart);
-      const quarters = [0, 1, 2, 3].map(q => {
+    if (!(rangeStart instanceof Date) || !(rangeEnd instanceof Date)) {
+      return result;
+    }
+    if (rangeEnd &lt;=  rangeStart) {
+      return result;
+    }
+
+    const buildQuarters = (year) => {
+      const quarters = [];
+      for (let q = 0; q &lt; 4; q++) {
         const quarterDate = new Date(year, q * 3, 1);
-        return {
+        if (quarterDate &lt; rangeStart || quarterDate > rangeEnd) {
+          continue;
+        }
+        quarters.push({
           quarter: q + 1,
           pos: getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, quarterDate)
-        };
+        });
+      }
+      return quarters;
+    };
+
+    const pushYearMarker = (year, anchor) => {
+      result.push({
+        year,
+        pos: getPosition(chartStartPoint, chartWidth, chartStartDate, chartEndDate, anchor),
+        quarters: buildQuarters(year)
       });
-      result.push({ year, pos, quarters });
-      current = yearEnd;
+    };
+
+    pushYearMarker(rangeStart.getFullYear(), rangeStart);
+    let nextYear = rangeStart.getFullYear() + 1;
+    while (true) {
+      const yearStart = new Date(nextYear, 0, 1);
+      if (yearStart > rangeEnd) {
+        break;
+      }
+      pushYearMarker(nextYear, yearStart);
+      nextYear++;
     }
     return result;
   }
 
   if (chartStartDate.getTime() === chartEndDate.getTime()) {
-	chartEndDate = new Date(chartEndDate.getFullYear() + 1, 0, 1);
+	chartEndDate = new Date(chartEndDate.getTime() + (24 * 60 * 60 * 1000));
   } 
- 
+
   const years = generateYearsAndQuarters(chartStartDate, chartEndDate);
   const svgHeight = 60 + rowHeight * workingData.length + 60;
   const legendY = svgHeight - 30;
@@ -2563,7 +2636,7 @@ renderTimeline();
 $(".dateChange").off().on("change", () => {
   const start = document.getElementById("start-date").value;
   const end = document.getElementById("end-date").value;
-  renderTimeline(start, end);
+  renderTimeline(start, end, true);
 });
 
 
@@ -2578,42 +2651,167 @@ $(document).on('mouseout', '.programme-group', function() {
   $('.programme-group').removeClass('dimmed highlight');
 });
 
-document.getElementById('export-pdf').addEventListener('click', function () {
-  const container = document.getElementById('timeline-container');
+document.getElementById('export-pdf').addEventListener('click', async function () {
+  const svg = document.querySelector("#timeline-container svg");
+  if (!svg) {
+    alert("SVG not found.");
+    return;
+  }
+  const clonedSvg = svg.cloneNode(true);
+  const css = `
+    svg text { font-family: Arial, sans-serif; font-size: 12px; fill: #000; }
+    .timeline-text { font-weight: bold; }
+    .quarter-text { opacity: 0.9; }
+    .program-label { font-size: 11px; }
+    line { stroke: #ccc; }
+  `;
+  const styleEl = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  styleEl.textContent = css;
+  clonedSvg.insertBefore(styleEl, clonedSvg.firstChild);
 
-  html2canvas(container).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('l', 'pt', 'a4');
+  const vb = clonedSvg.getAttribute("viewBox");
+  let vbVals;
+  if (vb) {
+    vbVals = vb.split(/\s+/).map(Number);
+  } else {
+    const width = parseInt(clonedSvg.getAttribute("width") || 1200, 10);
+    const height = parseInt(clonedSvg.getAttribute("height") || 600, 10);
+    clonedSvg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    vbVals = [0, 0, width, height];
+  }
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+  const serializer = new XMLSerializer();
+  const svgString = serializer.serializeToString(clonedSvg);
+  const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(svgBlob);
 
-    const imgWidth = canvas.width * ratio;
-    const imgHeight = canvas.height * ratio;
-
-    pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
-    pdf.save("timeline.pdf");
+  const img = new Image();
+  img.decoding = "async";
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
   });
+  URL.revokeObjectURL(url);
+
+  const exportWidth = Math.max(1, Math.floor(vbVals[2]));
+  const exportHeight = Math.max(1, Math.floor(vbVals[3]));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = exportWidth;
+  canvas.height = exportHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, exportWidth, exportHeight);
+  ctx.drawImage(img, 0, 0, exportWidth, exportHeight);
+
+  const imgData = canvas.toDataURL("image/png");
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('l', 'pt', 'a4');
+
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+  const ratio = Math.min(pdfWidth / exportWidth, pdfHeight / exportHeight);
+
+  const imgWidth = exportWidth * ratio;
+  const imgHeight = exportHeight * ratio;
+  const offsetX = (pdfWidth - imgWidth) / 2;
+  const offsetY = (pdfHeight - imgHeight) / 2;
+
+  pdf.addImage(imgData, 'PNG', offsetX, offsetY, imgWidth, imgHeight);
+  pdf.save("timeline.pdf");
 });
 
-document.getElementById('export-ppt').addEventListener('click', function () {
-  const container = document.getElementById('timeline-container');
+document.getElementById('export-ppt').addEventListener('click', async function () {
+  const svg = document.querySelector("#timeline-container svg");
+  if (!svg) {
+    alert("SVG not found.");
+    return;
+  }
 
-  html2canvas(container).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
+  // Clone current SVG and inline minimal styles to ensure visual parity
+  const clonedSvg = svg.cloneNode(true);
+  const css = `
+    svg text { font-family: Arial, sans-serif; font-size: 12px; fill: #000; }
+    .timeline-text { font-weight: bold; }
+    .quarter-text { opacity: 0.9; }
+    .program-label { font-size: 11px; }
+    line { stroke: #ccc; }
+  `;
+  const styleEl = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  styleEl.textContent = css;
+  clonedSvg.insertBefore(styleEl, clonedSvg.firstChild);
 
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
+  // Ensure viewBox is present so we can export at intrinsic resolution
+  const vb = clonedSvg.getAttribute("viewBox");
+  let vbVals;
+  if (vb) {
+    vbVals = vb.split(/\s+/).map(Number);
+  } else {
+    const width = parseInt(clonedSvg.getAttribute("width") || 1200, 10);
+    const height = parseInt(clonedSvg.getAttribute("height") || 600, 10);
+    clonedSvg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    vbVals = [0, 0, width, height];
+  }
 
-    // Optional: set slide layout
-    pptx.defineLayout({ name: 'LAYOUT_WIDE', width: 13.33, height: 7.5 });
-    pptx.layout = 'LAYOUT_WIDE';
+  // Serialize SVG -> Image -> Canvas (PNG)
+  const serializer = new XMLSerializer();
+  const svgString = serializer.serializeToString(clonedSvg);
+  const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(svgBlob);
 
-    slide.addImage({ data: imgData, x: 0.2, y: 0.2, w: 12.9, h: 7.1 });
-    pptx.writeFile("timeline.pptx");
+  const img = new Image();
+  // Important: set decoding async and preserve drawing order
+  img.decoding = "async";
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
   });
+  URL.revokeObjectURL(url);
+
+  const canvas = document.createElement("canvas");
+  const exportWidth = Math.max(1, Math.floor(vbVals[2]));
+  const exportHeight = Math.max(1, Math.floor(vbVals[3]));
+  canvas.width = exportWidth;
+  canvas.height = exportHeight;
+  const ctx = canvas.getContext("2d", { willReadFrequently: false, alpha: true });
+  ctx.clearRect(0, 0, exportWidth, exportHeight);
+  ctx.drawImage(img, 0, 0, exportWidth, exportHeight);
+
+  const imgData = canvas.toDataURL("image/png");
+
+  // Build PPTX with current image
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_16x9';
+  const slide = pptx.addSlide();
+
+  const PX_PER_INCH = 96;
+  const imgWidthIn = exportWidth / PX_PER_INCH;
+  const imgHeightIn = exportHeight / PX_PER_INCH;
+
+  // Slide/page size (inches)
+const layoutInfo = (typeof pptx.getLayout === 'function' ? pptx.getLayout() : { width: 13.33, height: 7.5 });
+const slideWidth = layoutInfo.width;
+const slideHeight = layoutInfo.height;
+
+// --- Force fit to full slide width (no margins) ---
+let placedWidth = slideWidth;                                     // fill width exactly
+let placedHeight = imgHeightIn * (placedWidth / imgWidthIn);      // preserve aspect
+
+// If this would be taller than the slide, back off proportionally to fit height
+// (Only case where width won't fully span the slide; avoids cropping.)
+if (placedHeight > slideHeight) {
+  const hScale = slideHeight / imgHeightIn;
+  placedWidth = imgWidthIn * hScale;
+  placedHeight = slideHeight;
+}
+
+// Centre on the slide
+const offsetX = (slideWidth - placedWidth) / 2;
+const offsetY = (slideHeight - placedHeight) / 2;
+
+  slide.addImage({ data: imgData, x: offsetX, y: offsetY, w: placedWidth, h: placedHeight });
+  pptx.writeFile("timeline.pptx");
 });
 
 document.getElementById('export-svg').addEventListener('click', function () {
@@ -3166,11 +3364,18 @@ function renderLegend(selector, datasets) {
                     isNaN(new Date(pr.endDate)) ? new Date() : new Date(pr.endDate)
                 ])
             );
+            if (!allDates.length) {
+                const fallbackStart = new Date(new Date().getFullYear(), 0, 1);
+                const fallbackEnd = new Date(fallbackStart);
+                fallbackEnd.setFullYear(fallbackEnd.getFullYear() + 3);
+                allDates = [fallbackStart, fallbackEnd];
+            }
  
             let startDate = new Date(Math.min(...allDates));
-        
             let endDate = new Date(Math.max(...allDates));
-            endDate.setFullYear(endDate.getFullYear()+1); 
+            if (endDate &lt;=  startDate) {
+                endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
+            }
 
             let svgWidth = 600;
             let svgHeight = 110 + programmes.length * 150;
@@ -3178,19 +3383,32 @@ function renderLegend(selector, datasets) {
             let chartWidth = svgWidth - chartStartPoint - 50;
 
             let years = [];
-            let currentYear = startDate.getFullYear();
-			if(currentYear === endDate.getFullYear()) {endDate.setFullYear(endDate.getFullYear() + 1);}
- 
-            while (currentYear &lt;= endDate.getFullYear()) {
-			 
-                let yearPos = getPosition(chartStartPoint, chartWidth, startDate, endDate, new Date(currentYear, 0, 1));
-                let quarters = [1, 2, 3, 4].map(q => ({
-                    quarter: q,
-                    pos: getPosition(chartStartPoint, chartWidth, startDate, endDate, new Date(currentYear, (q - 1) * 3, 1))
-                }));
-                years.push({ year: currentYear, pos: yearPos, quarters });
-                currentYear++;
-            }
+            const pushYearMarker = (year, anchorDate) => {
+                const quarters = [];
+                for (let q = 0; q &lt; 4; q++) {
+                    const quarterDate = new Date(year, q * 3, 1);
+                    if (quarterDate &lt; startDate || quarterDate > endDate) {
+                        continue;
+                    }
+                    quarters.push({
+                        quarter: q + 1,
+                        pos: getPosition(chartStartPoint, chartWidth, startDate, endDate, quarterDate)
+                    });
+                }
+                years.push({
+                    year,
+                    pos: getPosition(chartStartPoint, chartWidth, startDate, endDate, anchorDate),
+                    quarters
+                });
+            };
+            pushYearMarker(startDate.getFullYear(), startDate);
+			for (let yr = startDate.getFullYear() + 1; yr &lt;=  endDate.getFullYear(); yr++) {
+				const yearStart = new Date(yr, 0, 1);
+				if (yearStart > endDate) {
+					break;
+				}
+				pushYearMarker(yr, yearStart);
+			}
       
             let programmeData = programmes.map((programme, index) => {
                 let yPos = 75 + index * 150;

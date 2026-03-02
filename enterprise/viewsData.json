@@ -1,0 +1,1903 @@
+{
+  "viewData": [
+    {
+      "id": "pmc1",
+      "name": "Performance Measure Categories",
+      "description": "How to configure Performance Measure Categories.  Note the need to state what classes the PMC is relevant for",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Performance_Measure_Category",
+          "name": "Performance_Measure_Category"
+        },
+        {
+          "id": 2,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        { "id": 3, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 4,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+        { "id": 5, "class": "Service_Quality", "name": "Service Quality" },
+        {
+          "id": 6,
+          "class": "Service_Quality_Value",
+          "name": "Service Quality  Value"
+        },
+        {
+          "id": 7,
+          "class": "Performance_Measure",
+          "name": "Performance Measure"
+        },
+        {
+          "id": 8,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        { "id": 9, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 10,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+        { "id": 11, "class": "Element_Style", "name": "Element Style" }
+      ],
+      "edges": [
+        { "source": 1, "target": 4, "label": "pmc_measures_ea_classes" },
+        { "source": 1, "target": 3, "label": "pmc_measures_ea_classes" },
+        { "source": 1, "target": 2, "label": "pmc_measures_ea_classes" },
+        { "source": 1, "target": 5, "label": "pmc_service_qualities" },
+        {
+          "source": 6,
+          "target": 7,
+          "label": "pm_performance_value",
+          "query": "Performance_Measure"
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "label": "usage_of_service_quality",
+          "query": "Service_Quality_Value"
+        },
+        {
+          "source": 7,
+          "target": 8,
+          "label": "performance_measures",
+          "query": "Composite_Application_Provider"
+        },
+        {
+          "source": 7,
+          "target": 9,
+          "label": "performance_measures",
+          "query": "Business_Process"
+        },
+        {
+          "source": 7,
+          "target": 10,
+          "label": "performance_measures",
+          "query": "Business_Capability"
+        },
+        { "source": 6, "target": 11, "label": "element_styling_classes" }
+      ]
+    },
+    {
+      "id": "appref",
+      "name": "Application Reference Model",
+      "description": "Modelling for the application reference model",
+       "type": "view",
+      "nodes": [
+        {
+          "id": 4,
+          "class": "Composite_Application_Provider",
+          "name": "Composite_Application_Provider"
+        },
+        {
+          "id": 3,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 2,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        { "id": 1, "class": "Application_Capability", 
+          "name": "Application_Capability" }
+       
+      ],
+      "edges": [
+         { "source": 1, "target": 2, "label": "realises_application_capabilities",
+          "query": "Application_Service" },
+        { "source": 3, "target": 4, "label": "provides_application_services", "query": "Composite_Application_Provider" },
+        { "source": 2, "target": 3, "label": "implementing_application_service", "query": "Application_Provider_Role"  }
+        
+      ]
+    },
+ {
+      "id": "aps",
+      "name": "Application Catalogue",
+      "description": "Basic modelling for the application catalogue, see the summary for additional slots",
+      "type": "view",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Composite_Application_Provider",
+          "name": "Composite_Application_Provider"
+        },
+        {
+          "id": 2,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 3,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        { "id": 5, "class": "Supplier", "name": "Supplier" },
+       
+        {
+          "id": 4,
+          "class": "Codebase_Status",
+          "name": "Codebase Status"
+        },
+        {
+          "id": 6,
+          "class": "Application_Delivery_Model",
+          "name": "Application Delivery Model"
+        },
+        {
+          "id": 7,
+          "class": "Lifecycle_Status",
+          "name": "Lifecycle_Status (enumeration)"
+        }
+       
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "provides_application_services" },
+        {
+          "source": 1,
+          "target": 4,
+          "label": "ap_codebase_status",
+          "query": "Composite_Application_Provider"
+        },
+        { "source": 1, "target": 5, "label": "ap_supplier" },
+        { "source": 1, "target": 6, "label": "ap_delivery_model", 
+          "query": "Composite_Application_Provider" },
+        {
+          "source": 1,
+          "target": 7,
+          "label": "lifecycle_status_application_provider", 
+          "query": "Composite_Application_Provider"
+        },
+        { "source": 2, "target": 3, "label": "implementing_application_service" }
+        
+      ]
+    },
+        {
+      "id": "buscapdash",
+      "name": "Business Capability Model",
+      "description": "How to capture the Business Capability Model.",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+        {
+          "id": 2,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+         {
+          "id": 3,
+          "class": "Business_Process",
+          "name": "Business Process"
+        },
+        {
+          "id": 4,
+          "class": "Physical_Process",
+          "name": "Physical Process"
+        },
+         {
+          "id": 9,
+          "class": "APP_PRO_TO_PHYS_BUS_RELATION",
+          "name": "APP_PRO_TO_PHYS_BUS_RELATION (relationship class)"
+        },
+
+        {
+          "id": 5,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        {
+          "id": 7,
+          "class": "Group_Actor",
+          "name": "Group Actor"
+        },
+        {
+          "id": 11,
+          "class": "Business_Role",
+          "name": "Business Role"
+        },
+        {
+          "id": 6,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 8,
+          "class": "Business_Process",
+          "name": "Business Process Flow"
+        },
+        {"id": 10,
+          "class": "ACTOR_TO_ROLE_RELATION",
+          "name": "ACTOR_TO_ROLE_RELATION (relationship class)"
+        }
+         
+        
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "contained_business_capabilities","query": "" },
+        { "source": 1, "target": 3, "label": "realised_by_business_processes" },
+        { "source": 3, "target": 4, "label": "implemented_by_physical_business_processes" },
+        { "source": 9, "target": 5, "label": "apppro_to_physbus_from_apppro" },
+        {
+          "source": 9,
+          "target": 6,
+          "label": "apppro_to_physbus_from_appprorole",
+          "query": ""
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "label": "role_for_application_provider",
+          "query": ""
+        },
+        {
+          "source": 4,
+          "target": 10,
+          "label": "process_performed_by_actor_role",
+          "query": ""
+        },
+        {
+          "source": 10,
+          "target": 7,
+          "label": "act_to_role_from_actor",
+          "query": ""
+        },
+        {
+          "source": 3,
+          "target": 8,
+          "label": "defining_business_process_flow",
+          "query": ""
+        },
+        {
+          "source": 4,
+          "target": 9,
+          "label": "phys_bp_supported_by_app_pro",
+          "query": ""
+        },
+        {
+          "source": 10,
+          "target": 11,
+          "label": "act_to_role_to_role",
+          "query": ""
+        }
+        
+      ]
+    },
+    {
+      "id": "aps",
+      "name": "Application Provider Summary",
+      "description": "How to get the Application Provider Summary working",
+       "type": "view",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Composite_Application_Provider",
+          "name": "Composite_Application_Provider"
+        },
+        {
+          "id": 2,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 3,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        {
+          "id": 4,
+          "class": "Application_Capability",
+          "name": "Application Capability"
+        },
+        { "id": 5, "class": "Supplier", "name": "Supplier" },
+        {
+          "id": 6,
+          "class": "Business_Criticality",
+          "name": "Business Criticality"
+        },
+        { "id": 7, "class": "Lifecycle_Model", "name": "Lifecycle Model" },
+        { "id": 8, "class": "Synonym", "name": "Synonym" },
+        {
+          "id": 9,
+          "class": "ACTOR_TO_ROLE_RELATION",
+          "name": "ACTOR_TO_ROLE_RELATION"
+        },
+
+        { "id": 10, "class": "Strategic_Plan", "name": "Strategic Plan" },
+        {
+          "id": 11,
+          "class": "Strategic_Plan_Status",
+          "name": "Strategic Plan Status"
+        },
+        {
+          "id": 12,
+          "class": "Application_Deployment",
+          "name": "Application Deployment"
+        },
+        {
+          "id": 13,
+          "class": "Supporting_Documentation",
+          "name": "Supporting Documentation"
+        },
+        { "id": 14, "class": "External_Document", "name": "External Document" },
+        { "id": 15, "class": "Actor", "name": "Actor" },
+        { "id": 16, "class": "Role", "name": "Role" },
+        {
+          "id": 17,
+          "class": "PLAN_TO_ELEMENT_RELATION",
+          "name": "PLAN_TO_ELEMENT_RELATION"
+        },
+        { "id": 18, "class": "Change_Action", "name": "Change_Action" },
+        { "id": 19, "class": "Decision", "name": "Decision" },
+        { "id": 20, "class": "Physical_Process", "name": "Physical Process" },
+        { "id": 21, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 22,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+        {
+          "id": 24,
+          "class": "Technology_Functions",
+          "name": "Technology Functions"
+        },
+        { "id": 25, "class": "Cost", "name": "Cost" },
+        { "id": 26, "class": "Cost_Component", "name": "Cost Component" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "provides_application_services" },
+        {
+          "source": 1,
+          "target": 12,
+          "label": "application_deployment_technical_arch",
+          "query": "Application_Deployment"
+        },
+        { "source": 1, "target": 5, "label": "ap_supplier" },
+        { "source": 1, "target": 6, "label": "" },
+        {
+          "source": 1,
+          "target": 7,
+          "label": "lifecycle_model_subject",
+          "query": "Lifecycle_Model"
+        },
+        { "source": 1, "target": 8, "label": "" },
+        { "source": 1, "target": 9, "label": "" },
+        { "source": 9, "target": 15, "label": "" },
+        { "source": 9, "target": 16, "label": "" },
+        { "source": 1, "target": 19, "label": "" },
+        { "source": 2, "target": 3, "label": "" },
+        { "source": 3, "target": 4, "label": "appcap" },
+        {
+          "source": 1,
+          "target": 17,
+          "label": "plan_to_element_ea_element",
+          "query": "PLAN_TO_ELEMENT_RELATION"
+        },
+        {
+          "source": 17,
+          "target": 18,
+          "label": "plan_to_element_change_action"
+        },
+        {
+          "source": 17,
+          "target": 10,
+          "label": "strategic_plan_for_element",
+          "query": "Strategic_Plan"
+        },
+        { "source": 10, "target": 11, "label": "strategic_plan_status" },
+        { "source": 1, "target": 13, "label": "external_reference_links" },
+        { "source": 13, "target": 14, "label": "external_reference_url" },
+        {
+          "source": 1,
+          "target": 20,
+          "label": "phys_bp_supported_by_app_pro",
+          "query": "Physical_Process"
+        },
+        {
+          "source": 20,
+          "target": 21,
+          "label": "implemented_by_physical_business_processes",
+          "query": "Business_Process"
+        },
+        {
+          "source": 21,
+          "target": 22,
+          "label": "",
+          "query": "Business_Capability"
+        },
+
+        { "source": 1, "target": 24, "label": "" },
+        { "source": 1, "target": 25, "label": "costs_for_element" },
+        { "source": 25, "target": 26, "label": "cost_components" }
+      ]
+    },
+    {
+      "id": "tns",
+      "name": "Technology Node Summary",
+      "description": "How to get the technology Node Summary working",
+       "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Technology_Node", "name": "Technology Node" },
+        {
+          "id": 2,
+          "class": "Technology_Provider_Role",
+          "name": "Technology Provider Role"
+        },
+        {
+          "id": 3,
+          "class": "Technology_Provider",
+          "name": "Technology Provider"
+        },
+        {
+          "id": 4,
+          "class": "Technology_Component",
+          "name": "Technology Component"
+        },
+        {
+          "id": 5,
+          "class": "Application_Software_Instance",
+          "name": "Application Software Instance"
+        },
+        {
+          "id": 6,
+          "class": "Infrastructure_Software_Instance",
+          "name": "Infrastructure Software Instance"
+        },
+        {
+          "id": 7,
+          "class": "Information_Store_Instance",
+          "name": "Information Store Instance"
+        },
+        {
+          "id": 8,
+          "class": "Information_Representation",
+          "name": "Information Representation"
+        },
+        { "id": 10, "class": "Strategic_Plan", "name": "Strategic Plan" },
+        {
+          "id": 11,
+          "class": "Strategic_Plan_Status",
+          "name": "Strategic Plan Status"
+        },
+        { "id": 12, "class": "Attribute", "name": "Attribute" },
+        {
+          "id": 13,
+          "class": "Supporting_Documentation",
+          "name": "Supporting Documentation"
+        },
+        { "id": 14, "class": "External_Document", "name": "External Document" },
+        { "id": 15, "class": "Site", "name": "Site" },
+        {
+          "id": 16,
+          "class": "Application_Deployment",
+          "name": "Application_Deployment"
+        },
+        {
+          "id": 17,
+          "class": "PLAN_TO_ELEMENT_RELATION",
+          "name": "PLAN_TO_ELEMENT_RELATION"
+        },
+        { "id": 18, "class": "Change_Action", "name": "Change_Action" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "deployment_of" },
+        { "source": 2, "target": 3, "label": "role_for_technology_provider" },
+        {
+          "source": 1,
+          "target": 5,
+          "label": "deployment_of_software_components",
+          "query": "Application_Software_Instance"
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "label": "technology_instance_deployed_on_node",
+          "query": "Infrastructure_Software_Instance"
+        },
+        { "source": 5, "target": 3, "label": "technology_instance_of" },
+        {
+          "source": 1,
+          "target": 7,
+          "label": "technology_instance_deployed_on_node",
+          "query": "Information_Store_Instance"
+        },
+        {
+          "source": 7,
+          "target": 8,
+          "label": "deployment_of_information_representation",
+          "query": "Information_Representation"
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "label": "implementing_technology_component"
+        },
+        {
+          "source": 1,
+          "target": 17,
+          "label": "plan_to_element_ea_element",
+          "query": "PLAN_TO_ELEMENT_RELATION"
+        },
+        {
+          "source": 17,
+          "target": 18,
+          "label": "plan_to_element_change_action"
+        },
+        { "source": 17, "target": 10, "label": "strategic_plan_for_element" },
+        { "source": 1, "target": 1, "label": "contained_technology_nodes" },
+        { "source": 10, "target": 11, "label": "strategic_plan_status" },
+        { "source": 1, "target": 12, "label": "technology_node_attributes" },
+        {
+          "source": 5,
+          "target": 16,
+          "label": "instance_of_application_deployment"
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "label": "instance_of_logical_tech_provider",
+          "query": "Infrastructure_Software_Instance"
+        },
+        { "source": 1, "target": 13, "label": "external_reference_links" },
+        { "source": 13, "target": 14, "label": "external_reference_url" },
+        {
+          "source": 1,
+          "target": 15,
+          "label": "technology_deployment_located_at"
+        }
+      ]
+    },
+    {
+      "id": "rpo",
+      "name": "RPO/RTO",
+      "description": "How to assign RPO and RTO value to applications using the basic method.  Note the need to map the business criticality class to RTO and RPO",
+      "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 2,
+          "class": "Business_Criticality",
+          "name": "Business Criticality"
+        },
+        { "id": 3, "class": "Recovery_Time_Objective", "name": "RTO" },
+        { "id": 4, "class": "Recovery_Point_Objective", "name": "RPO" },
+        {
+          "id": 5,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        { "id": 6, "class": "Physical_Process", "name": "Physical Process" },
+        {
+          "id": 7,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "bpt_business_criticality" },
+        {
+          "source": 1,
+          "target": 3,
+          "label": "rto_for_business_criticalities",
+          "query": "Recovery_Time_Objective"
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "label": "rpo_for_business_criticalities",
+          "query": "Recovery_Point_Objective"
+        },
+        { "source": 5, "target": 3, "label": "ea_recovery_time_objective" },
+        { "source": 5, "target": 4, "label": "ea_recovery_point_objective" },
+        {
+          "source": 1,
+          "target": 6,
+          "label": "implemented_by_physical_business_processes"
+        },
+        { "source": 6, "target": 7, "label": "phys_bp_supported_by_app_pro" },
+        { "source": 7, "target": 5, "label": "role_for_application_provider" },
+        { "source": 6, "target": 5, "label": "phys_bp_supported_by_app_pro" },
+        { "source": 4, "target": 2, "label": "rpo_for_business_criticalities" },
+        { "source": 3, "target": 2, "label": "rto_for_business_criticalities" }
+      ]
+    },
+    {
+      "id": "tps",
+      "name": "Technology Product Summary",
+      "description": "How to get the technology Product Summary working",
+      "type": "view",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Technology_Product",
+          "name": "Technology Product"
+        },
+        {
+          "id": 2,
+          "class": "Technology_Provider_Role",
+          "name": "Technology Provider Role"
+        },
+        {
+          "id": 3,
+          "class": "Technology_Component",
+          "name": "Technology Component"
+        },
+        {
+          "id": 4,
+          "class": "Technology_Capability",
+          "name": "Technology Capability"
+        },
+        { "id": 5, "class": "Supplier", "name": "Supplier" },
+        {
+          "id": 6,
+          "class": "Technology_Delivery_Model",
+          "name": "Technology Delivery Model"
+        },
+        { "id": 7, "class": "Lifecycle_Model", "name": "Lifecycle Model" },
+        {
+          "id": 8,
+          "class": "Vendor_Lifecycle_Model",
+          "name": "Vendor Lifecycle Model"
+        },
+        {
+          "id": 9,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        {
+          "id": 12,
+          "class": "Application_Deployment",
+          "name": "Application Deployment"
+        },
+        {
+          "id": 15,
+          "class": "Technology_Product_Build",
+          "name": "Technology Product Build"
+        },
+        {
+          "id": 16,
+          "class": "Technology_Build_Architecture",
+          "name": "Technology Build Architecture"
+        },
+        {
+          "id": 19,
+          "class": "Technology_Provider_Usage",
+          "name": "Technology Provider Usage"
+        },
+        { "id": 10, "class": "Strategic_Plan", "name": "Strategic Plan" },
+        {
+          "id": 11,
+          "class": "Strategic_Plan_Status",
+          "name": "Strategic Plan Status"
+        },
+        {
+          "id": 13,
+          "class": "Supporting_Documentation",
+          "name": "Supporting Documentation"
+        },
+        { "id": 14, "class": "External_Document", "name": "External Document" },
+        {
+          "id": 17,
+          "class": "PLAN_TO_ELEMENT_RELATION",
+          "name": "PLAN_TO_ELEMENT_RELATION"
+        },
+        { "id": 18, "class": "Change_Action", "name": "Change_Action" },
+        { "id": 20, "class": "Physical_Process", "name": "Physical Process" },
+        { "id": 21, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 22,
+          "class": "Information_Store_Instance",
+          "name": "Information Store Instance"
+        },
+        {
+          "id": 23,
+          "class": "Infrastructure_Store_Instance",
+          "name": "Infrastructure Store Instance"
+        },
+        {
+          "id": 24,
+          "class": "Technology_Functions",
+          "name": "Technology Functions"
+        },
+        { "id": 25, "class": "Cost", "name": "Cost" },
+        { "id": 26, "class": "Cost_Component", "name": "Cost Component" }
+      ],
+      "edges": [
+        {
+          "source": 2,
+          "target": 19,
+          "label": "provider_as_role",
+          "query": "Technology_Provider_Usage"
+        },
+        {
+          "source": 19,
+          "target": 16,
+          "label": "contained_architecture_components",
+          "query": "Technology_Build_Architecture"
+        },
+        {
+          "source": 16,
+          "target": 15,
+          "label": "describes_technology_provider"
+        },
+        {
+          "source": 15,
+          "target": 12,
+          "label": "application_deployment_technical_arch",
+          "query": "Application_Deployment"
+        },
+        {
+          "source": 12,
+          "target": 9,
+          "label": "deployments_of_application_provider",
+          "query": "Composite_Application_Provider"
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "label": "technology_provider_delivery_model"
+        },
+        { "source": 1, "target": 5, "label": "supplier_technology_product" },
+        {
+          "source": 1,
+          "target": 2,
+          "label": "implements_technology_components"
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "label": "lifecycle_model_subject",
+          "query": "Lifecycle_Model"
+        },
+        {
+          "source": 1,
+          "target": 8,
+          "label": "lifecycle_model_subject",
+          "query": "Vendor_Lifecycle_Model"
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "label": "implementing_technology_component"
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "label": "realisation_of_technology_capability"
+        },
+        {
+          "source": 1,
+          "target": 17,
+          "label": "plan_to_element_ea_element",
+          "query": "PLAN_TO_ELEMENT_RELATION"
+        },
+        {
+          "source": 17,
+          "target": 18,
+          "label": "plan_to_element_change_action"
+        },
+        {
+          "source": 17,
+          "target": 10,
+          "label": "strategic_plan_for_element",
+          "query": "Strategic_Plan"
+        },
+        { "source": 10, "target": 11, "label": "strategic_plan_status" },
+        { "source": 1, "target": 13, "label": "external_reference_links" },
+        { "source": 13, "target": 14, "label": "external_reference_url" },
+        {
+          "source": 9,
+          "target": 20,
+          "label": "phys_bp_supported_by_app_pro",
+          "query": "Physical_Process"
+        },
+        {
+          "source": 20,
+          "target": 21,
+          "label": "implemented_by_physical_business_processes",
+          "query": "Business_Process"
+        },
+        {
+          "source": 1,
+          "target": 22,
+          "label": "technology_Instance_of",
+          "query": "Application_Software_Instance"
+        },
+        { "source": 1, "target": 23, "label": "technology_provider_instances" },
+        {
+          "source": 1,
+          "target": 24,
+          "label": "technology_product_functions_offered"
+        },
+        { "source": 1, "target": 25, "label": "costs_for_element" },
+        { "source": 25, "target": 26, "label": "cost_components" }
+      ]
+    },
+    {
+      "id": "appSecurity",
+      "name": "Application Security",
+      "type": "modelling",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Application_Provider",
+          "name": "Composite Application Provider"
+        },
+        {
+          "id": 2,
+          "class": "Application_Provider_Security_Profile",
+          "name": "Application Provider Security Profile"
+        },
+        {
+          "id": 3,
+          "class": "Authentication_Method",
+          "name": "AuthenticationMethod"
+        },
+        {
+          "id": 4,
+          "class": "Availability_Rating",
+          "name": "Availability Rating"
+        },
+        {
+          "id": 5,
+          "class": "Confidentiality_Rating",
+          "name": "Confidentiality Rating"
+        },
+        { "id": 6, "class": "Integrity_Rating", "name": "Integrity Rating" },
+        {
+          "id": 7,
+          "class": "Availability_Risk_Impact",
+          "name": "Availability Risk Impact"
+        },
+        {
+          "id": 8,
+          "class": "Confidentiality_Risk_Impact",
+          "name": "Confidentiality Risk Impact"
+        },
+        {
+          "id": 9,
+          "class": "Integrity_Risk_Impact",
+          "name": "Integrity Risk Impact"
+        },
+        {
+          "id": 10,
+          "class": "Role_Based_Access_Control_Usage_Status",
+          "name": "Role Based Access Control Usage Status"
+        },
+        {
+          "id": 11,
+          "class": "Multi_Factor_Authentication_Usage_Status",
+          "name": "Multi Factor Authentication Usage Status"
+        },
+        {
+          "id": 12,
+          "class": "Single_Sign_On_Usage_Status",
+          "name": "Single Sign On Usage Status"
+        },
+        { "id": 13, "class": "Frequency", "name": "Frequency" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "ea_security_profile" },
+        {
+          "source": 2,
+          "target": 3,
+          "label": "sec_profile_authentication_methods"
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "label": "sec_profile_availability_rating"
+        },
+ 
+        {
+          "source": 2,
+          "target": 5,
+          "label": "sec_profile_confidentiality_rating"
+        },
+        { "source": 2, "target": 6, "label": "sec_profile_integrity_rating" },
+        {
+          "source": 2,
+          "target": 7,
+          "label": "sec_profile_availability_risk_impact"
+        },
+        {
+          "source": 2,
+          "target": 8,
+          "label": "sec_profile_confidentiality_risk_impact"
+        },
+        {
+          "source": 2,
+          "target": 9,
+          "label": "sec_profile_integrity_risk_impact"
+        },
+        { "source": 2, "target": 10, "label": "sec_profile_rbac_usage" },
+        { "source": 2, "target": 11, "label": "sec_profile_mfa_usage" },
+        { "source": 2, "target": 12, "label": "sec_profile_sso_usage" },
+        {
+          "source": 2,
+          "target": 13,
+          "label": "sec_profile_user_access_review_frequency"
+        }
+      ]
+    },
+    {
+      "id": "serviceMap",
+      "name": "Service Map",
+      "type": "modelling",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Application_Capability",
+          "name": "Application Capability"
+        },
+        {
+          "id": 2,
+          "class": "Application_Capability",
+          "name": "Application Capability"
+        },
+        {
+          "id": 3,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        {
+          "id": 4,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 5,
+          "class": "Application_Provider",
+          "name": "Composite Application Provider"
+        },
+        {
+          "id": 6,
+          "class": "Business_Solution_Lifecycle_Status",
+          "name": "Business Solution Lifecycle Status"
+        },
+        { "id": 7, "class": "Taxonomy", "name": "Taxonomy" },
+        { "id": 8, "class": "Taxonomy_Term", "name": "Taxonomy Term" },
+        { "id": 9, "class": "Element_Style", "name": "Element Style" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "contained_app_capabilities" },
+        {
+          "source": 2,
+          "target": 3,
+          "label": "realises_application_capabilities"
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "label": "provided_by_application_provider_roles"
+        },
+        { "source": 4, "target": 5, "label": "role_for_application_provider" },
+        { "source": 4, "target": 6, "label": "business_solution_status" },
+        { "source": 3, "target": 8, "label": "element_classified_by" },
+        { "source": 8, "target": 7, "label": "term_in_taxonomy" },
+        { "source": 8, "target": 9, "label": "element_styling_classes" },
+        { "source": 6, "target": 9, "label": "element_styling_classes" }
+      ]
+    },
+    {
+      "id": "enterpriseDebt",
+      "name": "Enterprise Debt",
+      "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Issue", "name": "Issue (Debt)" },
+        {
+          "id": 2,
+          "class": "Strategic_Requirement_Category",
+          "name": "Strategic Requirement Category"
+        },
+        {
+          "id": 3,
+          "class": "EA_Class",
+          "name": "EA_Class (The item(s) with the debt)"
+        },
+        {
+          "id": 5,
+          "class": "Strategic_Requirement_Type",
+          "name": "Strategic Requirement Type"
+        },
+        {
+          "id": 6,
+          "class": "EA_Class",
+          "name": "EA_Class (Root Cause(s) of the debt)"
+        },
+        { "id": 7, "class": "EA_Class", "name": "Strategic_Plan" },
+        { "id": 8, "class": "Requirement_Status", "name": "Requirement Status" }
+      ],
+      "edges": [
+        { "source": 1, "target": 3, "label": "sr_requirement_for_elements" },
+        { "source": 2, "target": 5, "label": "sr_category_subtypes" },
+        { "source": 1, "target": 6, "label": "sr_root_causes" },
+        { "source": 1, "target": 7, "label": "resolved_by" },
+        { "source": 1, "target": 5, "label": "strategic_requirement_type" },
+        { "source": 1, "target": 8, "label": "requirement_status" }
+      ]
+    },
+    {
+      "id": "geoRegion",
+      "name": "Geopolitical Region",
+      "type": "modelling",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Taxonomy",
+          "name": "Taxonomy (value \"Region Type\")"
+        },
+        {
+          "id": 2,
+          "class": "Taxonomy_Term",
+          "name": "Taxonomy Term (value \"Geopolitical Region\")"
+        },
+        {
+          "id": 3,
+          "class": "Geographic_Region",
+          "name": "Geographic Region (e.g. EU)"
+        },
+        {
+          "id": 4,
+          "class": "Geographic_Region",
+          "name": "Geographic Region (e.g. Germany)"
+        },
+        {
+          "id": 5,
+          "class": "Geographic_Location",
+          "name": "Geographic Location (e.g. Berlin)"
+        },
+        { "id": 6, "class": "Site", "name": "Site" },
+        { "id": 7, "class": "EA_Class", "name": "EA_Class" },
+        {
+          "id": 8,
+          "class": "Application_Provider",
+          "name": "Application_Provider"
+        },
+        { "id": 9, "class": "Physical_Process", "name": "Physical_Process" },
+        { "id": 10, "class": "Node", "name": "Node" },
+        { "id": 11, "class": "Actor", "name": "Actor" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "taxonomy_terms" },
+        { "source": 2, "target": 3, "label": "classifies_elements" },
+        { "source": 3, "target": 4, "label": "gr_contained_regions" },
+        { "source": 3, "target": 6, "label": "site_geographic_location" },
+        { "source": 4, "target": 6, "label": "site_geographic_location" },
+        { "source": 5, "target": 6, "label": "site_geographic_location" },
+        { "source": 4, "target": 5, "label": "gr_locations" },
+        { "source": 3, "target": 7, "label": "ea_scope" },
+        { "source": 4, "target": 7, "label": "ea_scope" },
+        { "source": 6, "target": 8, "label": "ap_site_access" },
+        { "source": 6, "target": 9, "label": "process_performed_at_sites" },
+        {
+          "source": 6,
+          "target": 10,
+          "label": "technology_deployment_located_at"
+        },
+        { "source": 6, "target": 11, "label": "actor_based_at_site" }
+      ]
+    },
+    {
+      "id": "glossary",
+      "name": "Business Glossary",
+       "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Business_Term", "name": "Business Term" },
+        { "id": 2, "class": "Synonym", "name": "Synonym" },
+        { "id": 3, "class": "Business_Term", "name": "Business Term" },
+        {
+          "id": 4,
+          "class": "External_Reference_Link",
+          "name": "External Reference Link"
+        },
+        { "id": 5, "class": "TEXT", "name": "Text Example" }
+      ],
+      "edges": [
+        { "source": 1, "target": 3, "label": "business_term_related_terms" },
+        { "source": 1, "target": 2, "label": "synonyms" },
+        { "source": 1, "target": 4, "label": "external_reference_links" },
+        { "source": 1, "target": 5, "label": "business_term_examples" }
+      ]
+    },
+    {
+      "id": "stratMap",
+      "name": "Strategic Goals Summary",
+      "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Business_Driver", "name": "Business_Driver" },
+        { "id": 2, "class": "Group_Actor", "name": "Group_Actor" },
+        { "id": 3, "class": "Individual_Actor", "name": "Individual_Actor" },
+        {
+          "id": 4,
+          "class": "Business_Service_Quality",
+          "name": "Business_Service_Quality"
+        },
+        {
+          "id": 5,
+          "class": "OBJ_TO_SVC_QUALITY_RELATION",
+          "name": "OBJ_TO_SVC_QUALITY_RELATION"
+        },
+        {
+          "id": 6,
+          "class": "Business_Service_Quality_Value",
+          "name": "Business_Service_Quality_Value"
+        },
+        { "id": 7, "class": "Business_Goal", "name": "Business_Goal" },
+        { "id": 8, "class": "Business_Objective", "name": "Business_Objective" }
+      ],
+      "edges": [
+        { "source": 1, "target": 7, "label": "bo_motivated_by_driver" },
+        { "source": 7, "target": 6, "label": "bo_measures" },
+        { "source": 6, "target": 5, "label": "bo_performance_measures" },
+        {
+          "source": 5,
+          "target": 4,
+          "label": "obj_to_svc_quality_service_quality"
+        },
+        { "source": 7, "target": 8, "label": "goal_supported_by_objectives" },
+        { "source": 8, "target": 2, "label": "bo_owners" },
+        { "source": 8, "target": 3, "label": "bo_owners" }
+      ]
+    }, 
+    {
+      "id": "pmc2",
+      "name": "Peformance Measure Categories to Business Process",
+      "type": "modelling",
+      "nodes": [
+        { "id": 1, "name": "Performance_Measure_Category" },
+        {
+          "id": 2,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        },
+        { "id": 3, "class": "Business_Process", "name": "Business Process" },
+        {
+          "id": 4,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        }
+      ],
+      "edges": [
+        { "source": 1, "target": 4, "label": "pmc_measures_ea_classes" },
+        { "source": 1, "target": 3, "label": "pmc_measures_ea_classes" },
+        { "source": 1, "target": 2, "label": "pmc_measures_ea_classes" }
+      ]
+    },
+    {
+      "id": "buscap",
+      "name": "Business Capability to Application Mapping",
+      "type": "Modelling",
+      "nodes": [
+        {
+          "id": 1,
+          "class": "Business_Capability",
+          "name": "Business Capability"
+        },
+        { "id": 2, "class": "Business_Process", "name": "Business Process" },
+        { "id": 3, "class": "Group_Actor", "name": "Group Actor" },
+        { "id": 4, "class": "Physical_Process", "name": "Physical Process" },
+        {
+          "id": 5,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        {
+          "id": 6,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+        {
+          "id": 7,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "" },
+        { "source": 2, "target": 4, "label": "" },
+        { "source": 4, "target": 3, "label": "" },
+        { "source": 4, "target": 7, "label": "" },
+        { "source": 4, "target": 6, "label": "" },
+        { "source": 6, "target": 5, "label": "" },
+        { "source": 6, "target": 7, "label": "" }
+      ]
+    },
+    {
+      "id": "busProcModel",
+      "name": "Business Process Model",
+      "type": "Modelling",
+      "nodes": [
+         
+        { "id": 1, "class": "Business_Process", "name": "Business Process" },
+        { "id": 2, "class": "Group_Actor", "name": "Group Actor" },
+        { "id": 3, "class": "Physical_Process", "name": "Physical Process" },
+        {
+          "id": 4,
+          "class": "Application_Service",
+          "name": "Application Service"
+        },
+        {
+          "id": 5,
+          "class": "Application_Provider_Role",
+          "name": "Application Provider Role"
+        },
+          {
+          "id": 7,
+          "class": "APP_PRO_TO_PHYS_BUS_RELATION",
+          "name": "APP_PRO_TO_PHYS_BUS_RELATION (relationship class)"
+        },
+        {
+          "id": 6,
+          "class": "Composite_Application_Provider",
+          "name": "(Composite) Application Provider"
+        }, 
+        {"id": 10,
+          "class": "ACTOR_TO_ROLE_RELATION",
+          "name": "ACTOR_TO_ROLE_RELATION (relationship class)"
+        }
+      ],
+      "edges": [ 
+        { "source": 1, "target": 3, "label": "implemented_by_physical_business_processes" },
+        { "source": 3, "target": 10, "label": "process_performed_by_actor_role" },
+        { "source": 10, "target": 2, "label": "act_to_role_from_actor" },
+        { "source": 3, "target": 7, "label": "phys_bp_supported_by_app_pro" },
+        { "source": 7, "target": 6, "label": "apppro_to_physbus_from_apppro" },
+        { "source": 7, "target": 5, "label": "apppro_to_physbus_from_appprorole" },
+        { "source": 5, "target": 4, "label": "implementing_application_service", "query": "Application_Provider_Role"},
+        { "source": 5, "target": 6, "label": "role_for_application_provider" }
+      ]
+    },
+     {
+      "id": "costModel",
+      "name": "Cost Model",
+      "description": "Allows you to capture costs for elements in the model.  Start date and end data are optional, but if you do not set them, the cost will be considered to be ongoing.",
+      "type": "Modelling",
+      "nodes": [
+         
+        { "id": 1, "class": "Composite_Application_Provider", "name": "Element, e.g Application, Process" },
+        { "id": 2, "class": "Cost", "name": "Cost" },
+        { "id": 3, "class": "Cost_Component", "name": "Cost Component (Ad Hoc, Annual, Monthly, Quarterly)" },
+        { "id": 4, "class": "Currency", "name": "Currency (Applies to all components)" },
+        { "id": 5, "class": "Cost_Component_Type", "name": "Cost Component Type, e.g License" },
+        { "id": 6, "class": "Currency", "name": "Currency (Applies to this component)", "query": "Annual_Cost_Component" }
+      ],
+      "edges": [ 
+        { "source": 1, "target": 2, "label": "costs_for_element"},
+        { "source": 2, "target": 3, "label": "cost_components" },
+        { "source": 2, "target": 4, "label": "cost_currency" },
+        { "source": 3, "target": 5, "label": "cc_cost_component_type" },
+        { "source": 3, "target": 6, "label": "cc_cost_currency" }
+      ]
+    },
+    {
+      "id": "applicationDependency",
+      "name": "Application Dependency",
+      "description": "Modelling of application depenedencies.  Remember you are modelling dependencies here, not flow.  The flow is the dependency reversed.  So the source applications/APIs (on the right of the diagram) will send data to the applications target (on the left of the diagram)",
+      "type": "Modelling",
+      "nodes": [
+         
+        { "id": 1, "class": "Composite_Application_Provider", "name": "Composite_Application_Provider (or Application_Provider)" },
+        { "id": 2, "class": "Codebase_Status", "name": "Codebase_Status" },
+        { "id": 3, "class": "Lifecycle_Status", "name": "Lifecycle_Status" },
+        { "id": 4, "class": "Application_Purpose", "name": "Application_Purpose" },
+        { "id": 5, "class": "Application_Delivery_Model", "name": "Application_Delivery_Model" },
+        { "id": 6, "class": "Application_Provider_Interface", "name": "Application_Provider_Interface" },
+        { "id": 7, "class": "Static_Application_Provider_Architecture", "name": "Static_Application_Provider_Architecture" },
+        { "id": 8, "class": "Static_Application_Provider_Usage", "name": "Static_Application_Provider_Usage" },
+         { "id": 9, "class": ":APU-TO-APU-STATIC-RELATION", "name": ":APU-TO-APU-STATIC-RELATION" },
+        { "id": 10, "class": "Static_Application_Provider_Architecture", "name": "Static_Application_Provider_Architecture" },
+        { "id": 11, "class": "Static_Application_Provider_Usage", "name": "Static_Application_Provider_Usage" },
+        { "id": 12, "class": "Application_Provider_Type", "name": "Source Application Provider, API" },
+        { "id": 13, "class": "APP_PRO_TO_INFOREP_RELATION", "name": "APP_PRO_TO_INFOREP_RELATION" },
+        { "id": 14, "class": "Information_Representation", "name": "Information_Representation" },
+        { "id": 15, "class": "Data_Acquisition_Method", "name": "Data_Acquisition_Method" },
+        { "id": 16, "class": "Information_Service_Quality_Value", "name": "Information_Service_Quality_Value" },
+        { "id": 17, "class": "APP_PRO_TO_INFOREP_EXCHANGE_RELATION", "name": "APP_PRO_TO_INFOREP_EXCHANGE_RELATION" }
+  
+      ],
+      "edges": [ 
+        { "source": 1, "target": 2, "label": "ap_codebase_status"},
+        { "source": 1, "target": 3, "label": "application_provider_purpose" },
+        { "source": 1, "target": 4, "label": "lifecycle_status_application_provider" },
+        { "source": 1, "target": 5, "label": "ap_delivery_model" },
+        { "source": 1, "target": 6, "label": "ap_interfaces" },
+        { "source": 1, "target": 7, "label": "ap_static_architecture" },
+        { "source": 7, "target": 8, "label": "static_app_provider_architecture_elements" },
+        { "source": 8, "target": 9, "label": ":FROM", "query": ":APU-TO-APU-STATIC-RELATION" },
+        { "source": 9, "target": 11, "label": ":TO" },
+        { "source": 11, "target": 10, "label": "used_in_static_app_provider_architecture" },
+        { "source": 10, "target": 12, "label": "static_architecture_of_app_provider" },
+        { "source": 9, "target": 17, "label": "apu_to_apu_relation_inforeps"},
+        { "source": 9, "target": 13, "label": "apu_to_apu_relation_inforeps"},
+        { "source": 17, "target": 13, "label": "atire_app_pro_to_inforep"},
+        { "source": 13, "target": 14, "label": "app_pro_to_inforep_to_inforep"},
+        { "source": 17, "target": 16, "label": "atire_service_quals"},
+        { "source": 17, "target": 15, "label": "atire_acquisition_method"}
+   
+
+  ]
+    },
+    {
+      "id": "techref",
+      "name": "Technology Reference Model",
+      "description": "Modelling for the technology reference model",
+       "type": "view",
+      "nodes": [
+    { "id": 1, "class": "Technology_Domain", "name": "Technology Domain" },
+    { "id": 2, "class": "Technology_Capability", "name": "Technology Capability" },
+    { "id": 3, "class": "Technology_Component", "name": "Technology Component" }
+      
+       
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "contains_technology_capabilities"},
+        { "source": 2, "target": 3, "label": "realised_by_technology_components" }
+      ]
+    },
+    {
+       "id": "prodCat",
+      "name": "Products Catalogue",
+      "description": "A list of Technology Products mapped to the technology components they provide and technology capabilities they support",
+       "type": "view",
+      "nodes": [
+      { "id": 1, "class": "Technology_Product", "name": "Technology Product" },
+      { "id": 5, "class": "Technology_Product_Role", "name": "Technology Provider Role" },
+      { "id": 2, "class": "Technology_Capability", "name": "Technology Capability" },
+      { "id": 3, "class": "Technology_Component", "name": "Technology Component" },
+      { "id": 4, "class": "Supplier", "name": "Supplier" }
+      ],
+      "edges": [
+         { "source": 1, "target": 5, "label": "implements_technology_components"},
+         { "source": 5, "target": 3, "label": "implementing_technology_component"},
+        { "source": 3, "target": 2, "label": "realisation_of_technology_capability" },
+        { "source": 1, "target": 4, "label": "supplier_technology_product" }
+      ]
+    },
+    {
+       "id": "appTechArch",
+      "name": "Application Technology Architecture",
+      "description": "Technologies supporting an application",
+       "type": "view",
+      "nodes": [
+       { "id": 1, "class": "Composite_Application_Provider", "name": "Composite Application Provider" },
+      { "id": 2, "class": "Application_Deployment", "name": "Application_Deployment" },
+      { "id": 3, "class": "Technology_Product_Build", "name": "Technology Product Build" },
+      { "id": 4, "class": "Technology_Build_Architecture", "name": "Technology Build Architecture" },
+      { "id": 5, "class": "Deployment_Role", "name": "Deployment Role" },
+      {"id": 6, "class": "Technology_Provider_Usage", "name": "Technology Provider Usage"},
+      {"id": 7, "class": "Technology_Product_Role", "name": "Technology Product Role"},
+      {"id": 8, "class": "Technology_Product", "name": "Technology Product"},
+      {"id": 9, "class": "Technology_Component", "name": "Technology Component"}
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "deployments_of_application_provider"},
+        {"source": 2, "target": 5, "label":"application_deployment_role"},
+        { "source": 2, "target": 3, "label": "application_deployment_technical_arch" }, 
+        { "source": 3, "target": 4, "label": "technology_provider_architecture" }, 
+        { "source": 4, "target": 6, "label": "contained_architecture_components" },
+        {"source": 6, "target": 7, "label":"provider_as_role"},
+        {"source": 7, "target": 8, "label":"role_for_technology_provider"},
+        {"source": 7, "target": 9, "label":"implementing_technology_component"}
+        
+      ]
+    },
+    {
+       "id": "techDeploy",
+      "name": "Technology Deployment",
+      "description": "Deployments of an application and the nodes/servers they are hosted on",
+       "type": "view",
+      "nodes": [ 
+        { "id": 1, "class": "Composite_Application_Provider", "name": "Composite Application Provider" },
+        { "id": 2, "class": "Application_Deployment", "name": "Application_Deployment" },
+        { "id": 3, "class": "Application_Software_Instance", "name": "Application Software Instance" },
+        { "id": 4, "class": "Technology_Node", "name": "Technology Node" },
+        { "id": 5, "class": "Deployment_Role", "name": "Deployment Role" }
+      ],
+      "edges": [
+         { "source": 1, "target": 2, "label": "deployments_of_application_provider"},
+         {"source": 2, "target": 5, "label":"application_deployment_role"},
+        { "source": 2, "target": 3, "label": "application_deployment_technology_instance" },
+        { "source": 3, "target": 4, "label": "technology_instance_deployed_on_node" }
+         ],
+      "edges": [
+            { "source": 1, "target": 2, "label": "deployments_of_application_provider"},
+         {"source": 2, "target": 5, "label":"application_deployment_role"},
+        { "source": 2, "target": 3, "label": "application_deployment_technology_instance" },
+        { "source": 3, "target": 4, "label": "technology_instance_deployed_on_node" }
+        ]
+    },
+    {
+      "id": "roadmaps",
+      "name": "Roadmaps",
+      "description": "Mapping for the roadmaps view",
+      "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Roadmap", "name": "Roadmap" },
+        { "id": 2, "class": "Enterprise_Strategic_Plan", "name": "Strategic Plan" },
+        { "id": 3, "class": "Project", "name": "Project" },
+        { "id": 4, "class": "Programme", "name": "Programme" },
+        { "id": 5, "class": "PLAN_TO_ELEMENT_RELATION", "name": "PLAN_TO_ELEMENT_RELATION" },
+        { "id": 6, "class": "Planning_Action", "name": "Planning Action" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "roadmap_strategic_plans"},
+        { "source": 2, "target": 5, "label": "strategic_plan_supported_by_projects" },
+        { "source": 3, "target": 4, "label": "contained_in_programme" },
+        { "source": 5, "target": 6, "label": "plan_to_element_change_action" },
+        { "source": 5, "target": 3, "label": "plan_to_element_change_activity" }
+      ]
+    },
+     {
+      "id": "stratPlans",
+      "name": "strategicPlans",
+      "description": "Allows you to map your roadmaps to strategic plans, in turn mapping those to the projects implementing them.  Additionally, you can map the changes the projects are making and you can also map projects into programmes ",
+      "type": "view",
+      "nodes": [
+
+        { "id": 1, "class": "Enterprise_Strategic_Plan", "name": "Strategic Plan" },
+          { "id": 2, "class": "Roadmap", "name": "Roadmap" },
+        { "id": 3, "class": "Project", "name": "Project" },
+        { "id": 4, "class": "Programme", "name": "Programme" },
+        { "id": 5, "class": "PLAN_TO_ELEMENT_RELATION", "name": "PLAN_TO_ELEMENT_RELATION" },
+        { "id": 6, "class": "Planning_Action", "name": "Planning Action" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "ea_subject_of_roadmap"},
+        { "source": 1, "target": 5, "label": "strategic_plan_supported_by_projects" },
+        { "source": 3, "target": 4, "label": "contained_in_programme" },
+        { "source": 5, "target": 6, "label": "plan_to_element_change_action" },
+        { "source": 5, "target": 3, "label": "plan_to_element_change_activity" }
+      ]
+    },
+    {
+      "id": "dataCatalogue",
+      "name": "Data Catalogue",
+      "description": "A breakdown of concpets in the data layer",
+      "type": "view",
+      "nodes": [
+        { "id": 1, "class": "Information_Domain", "name": "Information Domain" },
+        { "id": 2, "class": "Information_Concept", "name": "Information Concept" },
+        { "id": 3, "class": "Information_View", "name": "Information View" },
+        { "id": 4, "class": "Data_Object", "name": "Data Object" }
+      ],
+      "edges": [
+        { "source": 1, "target": 2, "label": "info_concept_info_domain"},
+        { "source": 2, "target": 3, "label": "has_information_views"},
+        { "source": 3, "target": 4, "label": "info_view_supporting_data_objects"}
+      ]
+    },
+     {
+      "id": "governanceModel",
+      "name": "Governance",
+      "description": "Governance support",
+       "type": "view",
+      "nodes": [     
+          { "id": 1, "class": "NoMap", "name": "No Map" }
+      ],
+      "edges": [
+      ]
+    },
+    {
+       "id": "Principles",
+      "name": "Principles",
+      "description": "How principles and asssessments are captured",
+       "type": "view",
+      "nodes": [ 
+          { "id": 1, "class": "Business_Principle", "name": "Business Principle" },
+          { "id": 2, "class": "Application_Architecture_Principle", "name": "Application_Architecture_Principle" },
+          { "id": 3, "class": "Information_Architecture_Principle", "name": "Information Architecture Principle" }, 
+          { "id": 4, "class": "Technology_Architecture_Principle", "name": "Technology Architecture Principle" },
+          { "id": 5, "class": "Security_Principle", "name": "Security Principle" },
+          { "id": 6, "class": "Business_Principle_Compliance_Assessment", "name": "Business Principle Compliance Assessment" },
+          { "id": 7, "class": "Application_Principle_Compliance_Assessment", "name": "Application Principle Compliance Assessment" },
+          { "id": 8, "class": "Information_Principle_Compliance_Assessment", "name": "Information Principle Compliance Assessment" },
+          { "id": 9, "class": "Technology_Principle_Compliance_Assessment", "name": "Technology Principle Compliance Assessment" },
+          { "id": 10, "class": "Security_Principle_Compliance_Assessment", "name": "Security Principle Compliance Assessment" },
+          { "id": 11, "class": "Principle_Compliance_Level", "name": "Principle Compliance Level" },
+          { "id": 12, "class": "Element", "name": "Relevant element in layer" }        
+      ],
+      "edges": [ 
+         { "source": 6, "target": 1, "label": "pca_principle_assessed"},
+         { "source": 7, "target": 2, "label": "pca_principle_assessed"},
+         { "source": 8, "target": 3, "label": "pca_principle_assessed"},
+         { "source": 9, "target": 4, "label": "pca_principle_assessed"},
+         { "source": 10, "target": 5, "label": "pca_principle_assessed"},
+         { "source": 6, "target": 11, "label": "pca_compliance_assessment_value"}, 
+         { "source": 7, "target": 11, "label": "pca_compliance_assessment_value"}, 
+         { "source": 8, "target": 11, "label": "pca_compliance_assessment_value"}, 
+         { "source": 9, "target": 11, "label": "pca_compliance_assessment_value"}, 
+         { "source": 10, "target": 11, "label": "pca_compliance_assessment_value"},
+         { "source": 6, "target": 12, "label": "pca_element_assessed"},
+         { "source": 7, "target": 12, "label": "pca_element_assessed"},
+         { "source": 8, "target": 12, "label": "pca_element_assessed"},
+         { "source": 9, "target": 12, "label": "pca_element_assessed"},
+         { "source": 10, "target": 12, "label": "pca_element_assessed"}
+         ]
+    },
+    {
+  "id": "Standards",
+  "name": "Standards",
+  "description": "How standards are captured, note there are more standards, check the meat model, but the pattern is the same",
+  "type": "view",
+  "nodes": [
+    {
+      "id": 1,
+      "class": "Business_Process_Standard_Specification",
+      "name": "Business Process Standard Specification"
+    },
+    { "id": 2, "class": "Standard_Strength", "name": "Standard Strength" },
+    { "id": 3, "class": "Business_Capability", "name": "Business Capability" },
+    { "id": 4, "class": "Business_Process", "name": "Business Process" },
+    {
+      "id": 5,
+      "class": "Physical_Process_Standard_Specification",
+      "name": "Physical Process Standard Specification"
+    },
+    { "id": 6, "class": "Physical_Process", "name": "Physical Process" },
+    {
+      "id": 7,
+      "class": "Application_Provider_Standard_Specification",
+      "name": "Application Provider Standard Specification"
+    },
+    {
+      "id": 8,
+      "class": "Application_Provider_Role",
+      "name": "Application Provider Role"
+    },
+    { "id": 9, "class": "Application_Service", "name": "Application Service" },
+    {
+      "id": 10,
+      "class": "Technology_Provider_Standard_Specification",
+      "name": "Technology Provider Standard Specification"
+    },
+    {
+      "id": 11,
+      "class": "Technology_Provider_Role",
+      "name": "Technology_Provider_Role"
+    },
+    { "id": 12, "class": "Group_Actor", "name": "Group Actor" },
+    {
+      "id": 13,
+      "class": "Geographic_Region",
+      "name": "Geographic Region or Geographic Location"
+    },
+    {
+      "id": 0,
+      "class": "A Standard Specification",
+      "name": "Any Standard Specification"
+    },
+    { "id": "21", "name": "Info Data Standard", "class": "Info_Data_Standard" },
+    {
+      "id": "22",
+      "name": "Info_Data_Standard_Relationship",
+      "label": "Info_Data_Standard_Relationship"
+    },
+    {
+      "id": "23",
+      "name": "Data_Object_Standard_Specification",
+      "label": "Data_Object_Standard_Specification"
+    },
+    {
+      "id": "24",
+      "name": "Data_Object_Attribute_Standard_Specification",
+      "label": "Data_Object_Attribute_Standard_Specification"
+    },
+    {
+      "id": "25",
+      "name": "Info_View_Standard_Specification",
+      "label": "Info_View_Standard_Specification"
+    },
+    { "id": "26", "name": "Data_Object", "label": "Data_Object" },
+    {
+      "id": "27",
+      "name": "Data_Object_Attribute",
+      "label": "Data_Object_Attribute"
+    },
+    { "id": "28", "name": "Information_View", "label": "Information_View" },
+    { "id": "29", "name": "Data Subject", "label": "Data_Subject" },
+    {
+      "id": "30",
+      "name": "Data Representation",
+      "label": "Data_Representation"
+    }
+  ],
+  "edges": [
+    { "source": 1, "target": 2, "label": "sm_standard_strength" },
+    {
+      "source": 1,
+      "target": 3,
+      "label": "bps_standardised_business_capability"
+    },
+    { "source": 1, "target": 4, "label": "bps_standard_business_process" },
+    { "source": 7, "target": 8, "label": "aps_standard_app_provider_role" },
+    { "source": 7, "target": 4, "label": "aps_standard_usage" },
+    { "source": 5, "target": 6, "label": "pps_standard_physical_process" },
+    { "source": 10, "target": 11, "label": "tps_standard_tech_provider_role" },
+    { "source": 10, "target": 9, "label": "tps_standard_usage" },
+    { "source": 0, "target": 12, "label": "sm_geographic_scope" },
+    { "source": 0, "target": 13, "label": "sm_organisational_scope" },
+
+    {
+      "source": "22",
+      "target": "21",
+      "label": "from_data_standard_relation"
+    },
+
+    {
+      "source": "23",
+      "target": "21",
+      "label": "doss_parent_data_standard"
+    },
+
+    {
+      "source": "24",
+      "target": "21",
+      "label": "doass_parent_data_standard"
+    },
+    {
+      "source": "25",
+      "target": "21",
+      "label": "ivs_parent_data_standard"
+    },
+    {
+      "source": "26",
+      "target": "23",
+      "label": "data_object_standard_specs"
+    },
+    {
+      "source": "26",
+      "target": "29",
+      "label": "defined_by_data_subject"
+    },
+
+    {
+      "source": "26",
+      "target": "27",
+      "label": "contained_data_attributes"
+    },
+    {
+      "source": "26",
+      "target": "30",
+      "label": "implemented_by_data_reps"
+    },
+
+    {
+      "source": "27",
+      "target": "24",
+      "label": "data_object_attribute_standard_specs"
+    },
+    {
+      "source": "28",
+      "target": "26",
+      "label": "info_view_supporting_data_objects"
+    },
+    {
+      "source": "28",
+      "target": "25",
+      "label": "info_view_standard_specs"
+    }
+  ]
+},
+    {
+       "id": "Data Flows",
+      "name": "Data Flows",
+      "description": "How data flows are captured",
+       "type": "view",
+      "nodes": [   {
+      "id": 1,
+      "class": "Composite_Application_Provider",
+      "name": "Composite_Application_Provider (Source)"
+    },
+    {
+      "id": 2,
+      "class": "Static_Application_Provider_Usage",
+      "name": "Static_Application_Provider_Usage (Source)"
+    },
+    {
+      "id": 3,
+      "class": "Static_Application_Provider_Usage",
+      "name": "Static_Application_Provider_Usage (Source)"
+    },
+    {
+      "id": 4,
+      "class": "APU-TO-APU-STATIC-RELATION",
+      "name": "APU-TO-APU-STATIC-RELATION"
+    },
+    {
+      "id": 5,
+      "class": "Static_Application_Provider_Usage",
+      "name": "Static_Application_Provider_Usage (target)"
+    },
+    {
+      "id": 6,
+      "class": "Static_Application_Provider_Architecture",
+      "name": "Static_Application_Provider_Usage (Target)"
+    },
+    {
+      "id": 7,
+      "class": "Composite_Application_Provider",
+      "name": "Composite_Application_Provider (Target)"
+    },
+    {
+      "id": 8,
+      "class": "APP_PRO_TO_INFOREP_EXCHANGE_RELATION",
+      "name": "Information Exchange Relation"
+    },
+    {
+      "id": 9,
+      "class": "APP_PRO_TO_INFOREP_RELATION",
+      "name": "APP PRO TO INFOREP Relation"
+    },
+    {
+      "id": 10,
+      "class": "Information_Representation",
+      "name": "Information Representation"
+    },
+    {
+      "id": 11,
+      "class": "Data_Acquisition_Method",
+      "name": "Acquisition Method"
+    },
+    {
+      "id": 12,
+      "class": "Information_Service_Quality_Value",
+      "name": "Service Quality (Frequency/Volume)"
+    },
+    {
+      "id": 13,
+      "class": "Application_Provider_Interface",
+      "name": "Application_Provider_Interface"
+    }
+  ],
+  "edges": [
+    {
+      "source": 1,
+      "target": 2,
+      "label": "ap_static_architecture",
+      "description": "Source application has static architecture"
+    },
+    {
+      "source": 2,
+      "target": 1,
+      "label": "static_architecture_of_app_provider",
+      "description": "Static architecture belongs to source application (inverse)"
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "label": "contained_in_static_application_provider_architecture",
+      "description": "Static architecture contains source usage node (inverse direction on slot)",
+      "note": "Slot is stored on the usage node pointing to architecture"
+    },
+    {
+      "source": 3,
+      "target": 2,
+      "label": "contained_in_static_application_provider_architecture",
+      "description": "Source usage node contained in static architecture"
+    },
+    {
+      "source": 3,
+      "target": 1,
+      "label": "static_usage_of_app_provider",
+      "description": "Source usage node references source application"
+    },
+    {
+      "source": 3,
+      "target": 4,
+      "label": ":FROM",
+      "description": "Integration relation originates from source usage node",
+      "note": "Neo4j relationship type without ns0__ prefix"
+    },
+    {
+      "source": 4,
+      "target": 5,
+      "label": ":TO",
+      "description": "Integration relation targets destination usage node",
+      "note": "Neo4j relationship type without ns0__ prefix"
+    },
+    {
+      "source": 4,
+      "target": 8,
+      "label": "apu_to_apu_relation_inforeps",
+      "description": "Integration relation links to information exchange relations"
+    },
+    {
+      "source": 4,
+      "target": 13,
+      "label": "contract_component_to_element",
+      "description": "Integration relation can reference interface/API used",
+      "note": "This relationship name appears in the integration_relations config"
+    },
+    {
+      "source": 8,
+      "target": 4,
+      "label": "atire_app_pro_to_inforep",
+      "description": "Exchange relation back to APU-APU relation (inverse)",
+      "note": "Enables finding integration from info exchange perspective"
+    },
+    {
+      "source": 8,
+      "target": 9,
+      "label": "atire_app_pro_to_inforep",
+      "description": "Exchange relation links to underlying app-inforep relation"
+    },
+    {
+      "source": 8,
+      "target": 11,
+      "label": "atire_acquisition_method",
+      "description": "How data is acquired (Batch, Real-time, API, Manual, etc.)"
+    },
+    {
+      "source": 8,
+      "target": 12,
+      "label": "atire_service_quals",
+      "description": "Service quality values (frequency, volume, latency)"
+    },
+    {
+      "source": 9,
+      "target": 10,
+      "label": "app_pro_to_inforep_to_inforep",
+      "description": "App-InfoRep relation points to the information representation"
+    },
+    {
+      "source": 5,
+      "target": 6,
+      "label": "contained_in_static_application_provider_architecture",
+      "description": "Target usage node contained in target static architecture"
+    },
+    {
+      "source": 6,
+      "target": 5,
+      "label": "contained_in_static_application_provider_architecture",
+      "description": "Target static architecture contains target usage node (inverse)"
+    },
+    {
+      "source": 5,
+      "target": 7,
+      "label": "static_usage_of_app_provider",
+      "description": "Target usage node references target application"
+    },
+    {
+      "source": 7,
+      "target": 6,
+      "label": "ap_static_architecture",
+      "description": "Target application has static architecture"
+    },
+    {
+      "source": 6,
+      "target": 7,
+      "label": "static_architecture_of_app_provider",
+      "description": "Static architecture belongs to target application (inverse)"
+    }]
+    }
+  ]
+} 
+ 

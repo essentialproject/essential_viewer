@@ -14,15 +14,16 @@
 
 	<!-- START GENERIC PARAMETERS --> 
 
-    <xsl:param name="viewScopeTermIds"/>
+    <xsl:param name="viewScopeTermIds"/> 
     <xsl:param name="targetReportId"/>
 	<xsl:param name="targetMenuShortName"/> 
-
+  <xsl:variable name="thisReport" select="node()/simple_instance[type='Report'][own_slot_value[slot_reference='name']/value=('Core: Technology Product Cataloigue as Table','Core: Technology Product Catalogue as Table')][1]"></xsl:variable>
 	<!-- END GENERIC CATALOGUE PARAMETERS -->
     <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
 
 	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
+	<xsl:variable name="reportConfig" select="$thisReport/own_slot_value[slot_reference='report_supporting_config']/value"/>
 
 	<!-- END GENERIC PARAMETERS -->
 
@@ -188,7 +189,7 @@
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				 	 
+
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -203,7 +204,7 @@
  
 						<div class="clearfix bottom-10"/>	
                         <div class="col-xs-12"> 
-                            <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" id="dt_tech_prod_table">
+                            <table class="table table-striped table-condensed top-10 small dataTable" role="grid" aria-describedby="ebfw-editor-selection-table_info" id="dt_Capabilities">
 								<thead>
 									<tr id="headerRow">
 										<!-- Headers will be appended here -->
@@ -348,9 +349,11 @@
 		}
 
 		var table
-		var dynamicFilterDefs=[];	 
+		var dynamicAppFilterDefs=[];	 
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+		var jsonConfig = '<xsl:value-of select="eas:renderJSText($reportConfig)"/>';
 		var catalogueTable
+		var colSettings;
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
             listTemplate = Handlebars.compile(listFragment);
@@ -395,7 +398,7 @@
 							let linkClass = 'context-menu-' + linkMenuName;
 							let linkId = instance.id + 'Link';
 							let linkURL = reportURL;
-							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
+							instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15"> ' + linkClass + '" href="' + linkHref + '" id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select1</button>'
 			
 						} else if (instanceLink != null) {
 							let linkURL = reportURL;
@@ -427,7 +430,7 @@
 		                let linkClass = 'context-menu-' + linkMenuName;
 		                let linkId = instance.id + 'Link';
 		                let linkURL = reportURL; 
-						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15 ' + linkClass + '" href="' + linkHref + '"  id="' + linkId + '&amp;xsl=' + linkURL + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'
+						instanceLink = '<button class="ebfw-confirm-instance-selection btn btn-default btn-xs right-15" type="button" onclick="location.href=\'' + linkHref + '\'" id="' + linkId + '"><i class="text-success fa fa-check-circle right-5"></i>Select</button>'; 
 			
 		                return instanceLink;
 		            }
@@ -513,12 +516,11 @@
             let workingArr = []; 
             let svcArr=[];
             let lifecycleArr=[]; 
-			var colSettings=[];
 			Promise.all([
                 promise_loadViewerAPIData(viewAPIData),
 				promise_loadViewerAPIData(viewAPIDataOrgs)
 			]).then(function (responses) { 
-				filters=responses[0].filters; 
+				filters=responses[0].filters;  
                 vendorLifecycleStatus=filters.filter((e)=>{return e.id == 'Vendor_Lifecycle_Status'})
  
                 const lifecycleStatusMap = new Map();
@@ -532,10 +534,10 @@
                         colour: value.colour
                     });
                 });
-		 
+				 
                 meta=responses[0].meta;
-                workingArr = responses[0].technology_products; 
-				workingArr = workingArr.sort((a, b) => a.name.localeCompare(b.name)); 
+                workingArr = responses[0].technology_products;  
+				workingArr = workingArr.sort((a, b) => b.name.localeCompare(a.name));
 				
                 orgsRolesList=responses[1].a2rs;
 			 
@@ -611,6 +613,25 @@
 				"title": "Vendor Lifecycle"		
 
             })
+
+			// Apply JSON configuration for column visibility
+			var config = {};
+			console.log("JSON Config:", jsonConfig); // Debug log to check the value of jsonConfig
+			try {
+				if (jsonConfig &amp;&amp; jsonConfig !== '') {
+					config = JSON.parse(jsonConfig);
+				}
+			} catch (e) {
+				console.error("Error parsing jsonConfig", e);
+			}
+console.log("JSON Config:", config); 
+			if (config.tableConfig) {
+				colSettings.forEach(function(col) {
+					if (config.tableConfig.hasOwnProperty(col.data)) {
+						col.visible = config.tableConfig[col.data];
+					}
+				});
+			}
 		
 		    const today = new Date();
             let currentLocale="<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>" 
@@ -684,7 +705,7 @@
 					$('#footerRow').append('<th>' + d.title + '</th>');
 				})
          
-				$('#dt_tech_prod_table tfoot th').each(function () {
+				$('#dt_Capabilities tfoot th').each(function () {
 		            var title = $(this).text();
 					var titleid=title.replace(/ /g, "_");
 				 
@@ -692,7 +713,7 @@
 		        });
 	 
 				// Initialize DataTable with dynamic columns
-			 table = $("#dt_tech_prod_table").DataTable({
+			 table = $("#dt_Capabilities").DataTable({
 				"paging": false,
 				"deferRender": true,
 				"scrollY": 350,

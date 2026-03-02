@@ -2353,7 +2353,9 @@ thisElements.forEach((d)=>{
 		return d.planid==p.id
 	})
 	
+	if(thisPlans){
 	thisPlan.push(thisPlans)
+	}
 	}
 })
  

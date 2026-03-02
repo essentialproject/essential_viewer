@@ -1119,17 +1119,20 @@
 	  }
 
 	  
-	    function buildSingleHierarchy(orgs, rootId) { 
-				const MAX_DEPTH = 3;
+	    function buildSingleHierarchy(orgs, rootId, includeContext = true) { 
+				const MAX_DEPTH = 10;
+				if (!orgs || !Array.isArray(orgs)) return { id: rootId, name: 'Unknown', children: [] };
 				const map = new Map();
 
-				for (const { id, parent, name } of orgs) {
+				for (const org of orgs) {
+					if (!org || !org.id) continue;
+					const { id, parent, name } = org;
 					const parents = Array.isArray(parent)
 					? parent
 					: parent != null
 					? [parent]
 					: [];
-					map.set(id, { id, name, parents, children: [] });
+					map.set(id, { id, name: name || 'Unnamed', parents, children: [] });
 				}
 
 				
@@ -1175,9 +1178,19 @@
 				}
 
                             const rootNode = map.get(rootId);
-                            if (!rootNode) return null;
+                            if (!rootNode) return { id: rootId, name: 'Root not found', children: [] };
 
-                            const subtree = dfs(rootNode, 1);
+							let startNode = rootNode;
+							if (includeContext &amp;&amp; rootNode.parents &amp;&amp; rootNode.parents.length > 0) {
+								const parentNode = map.get(rootNode.parents[0]);
+								// If we find a parent, use it as startNode to provide context
+								if (parentNode) {
+									startNode = parentNode;
+								}
+							}
+
+                            const subtree = dfs(startNode, 1);
+							return subtree || { id: rootId, name: rootNode.name, children: [] };
 
                             
 
@@ -1549,9 +1562,12 @@
 				return total;
 				}
 function drawOrgChart(orgChartData, containerId = 'paper') {
-    let kids = toShow.children;
-    orgChartData.children = kids;
-    let total = countItemsByProperty(toShow, 'children', 2);
+    if (!orgChartData || !orgChartData.id) {
+        const container = document.getElementById(containerId);
+        if (container) container.innerHTML = '<div class="alert alert-info">No hierarchy data available for this organization.</div>';
+        return null;
+    }
+    let total = countItemsByProperty(orgChartData, 'children', 2);
 
     if (total > 21) {
         // Handle large org chart with jstree (unchanged)
@@ -1645,7 +1661,8 @@ function drawOrgChart(orgChartData, containerId = 'paper') {
                     ry: 5,
                     strokeWidth: 2,
                     stroke: '#4285F4',
-                    fill: '#E8F0FE'
+                    fill: '#E8F0FE',
+                    cursor: 'pointer'
                 },
                 text: {
                     refX: '50%',
@@ -1656,7 +1673,8 @@ function drawOrgChart(orgChartData, containerId = 'paper') {
                     fontWeight: 'bold',
                     fontFamily: 'Arial, sans-serif',
                     fill: '#333',
-                    text: ''
+                    text: '',
+                    cursor: 'pointer'
                 }
             }
         }, {
@@ -1674,9 +1692,9 @@ function drawOrgChart(orgChartData, containerId = 'paper') {
             const rawName = node?.name || node?.data?.name || 'Unnamed';
             if (!node) return;
             const maxWidth = 300;
-            const desiredWidth = Math.min(maxWidth, Math.max(100, rawName.length * 12)); // Dynamic width based on name length
+            const desiredWidth = Math.min(maxWidth, Math.max(250, rawName.length * 12)); // Dynamic width with 250px floor
             const wrapped = joint.util.breakText(rawName, {
-                width: desiredWidth - 40,
+                width: desiredWidth - 20,
                 height: 80
             });
 
@@ -1790,16 +1808,17 @@ function drawOrgChart(orgChartData, containerId = 'paper') {
             // Limit zoom scale
             const minScale = 0.2;
             const maxScale = 3;
-            if (newScale &lt;minScale || newScale > maxScale) return;
+            if (newScale &lt; minScale || newScale > maxScale) return;
 
             const clientX = event.clientX;
             const clientY = event.clientY;
-            const localMousePoint = paper.clientToLocalPoint(clientX, clientY);
+            // Correct coordinate conversion for JointJS zoom
+            const localMousePoint = paper.clientToLocalPoint({ x: clientX, y: clientY });
             paper.scale(newScale, newScale, localMousePoint.x, localMousePoint.y);
         });
 
         // Center the chart and adjust for the viewport size
-        paper.scaleContentToFit({ padding: 50 });
+        paper.scaleContentToFit({ padding: 50, maxScale: 1 });
 
         return { graph, paper, elements };
     }
@@ -1811,21 +1830,44 @@ function drawOrgChart(orgChartData, containerId = 'paper') {
 var selectedOrgChart
 
 function redrawPage(focusOrg){   
-	 
+	if (!focusOrg) return;
 	const focusText = orgById[focusOrg]?.name || focusOrg; 
+	
+	const $select = $('#subjectSelection');
+	if ($select.length) {
+		if ($select.hasClass("select2-hidden-accessible")) {
+			// Select2 handles its own update, but we might need to add the option if it's missing (AJAX mode)
+			if (!$select.find("option[value='" + focusOrg + "']").length) {
+				$select.append(new Option(focusText, focusOrg, true, true));
+			}
+			$select.val(focusOrg).trigger('change.select2');
+		} else {
+			$select.val(focusOrg);
+		}
+	}
  
 	// selectedOrgChart = findOrgById(orgHierarchy, focusOrg); 
-	let getOrg =buildSingleHierarchy(orgData, focusOrg); 
+	let getOrg = buildSingleHierarchy(orgData, focusOrg); 
  
+	if (!getOrg) {
+		console.error("Could not build hierarchy for", focusOrg);
+		return;
+	}
  
-	selectedOrgChart = {org:{id:getOrg.id, name: getOrg.name, children: getOrg.children}};
+	selectedOrgChart = {org:{id:getOrg.id, name: getOrg.name || 'Unknown', children: getOrg.children || []}};
 
        toShow = orgData.find((e)=>{
 		return e.id == focusOrg;
 		}) 
 		
+		if (!toShow) {
+			console.error("Could not find organization data for", focusOrg);
+			return;
+		}
+		
 		toShow['parentNodeId']=null;
-		  
+		toShow.allBusProcs = toShow.allBusProcs || [];
+		
 		  let appProcMap=[]; orgProductTypes=[]; toShow.allBusProcs.forEach((e)=>{ 
 			let thisProcess=physProc.process_to_apps.filter((f)=>{
 				return e.id == f.processid; }); 
@@ -1946,27 +1988,7 @@ function drawView(orgToShowData, modelData){
 
     $(document).on('click', '#recenterChartBtn', function() {
         if (currentChart &amp;&amp; currentChart.paper) {
-            const paper = currentChart.paper;
-            const graph = currentChart.graph;
-
-            if (graph) {
-                const currentScale = paper.scale().sx; // Get current zoom level (assuming uniform scaling)
-                const graphBBox = graph.getBBox(); // Get bounding box of all graph elements
-
-                if (graphBBox &amp;&amp; graphBBox.width &amp;&amp; graphBBox.height) { // Ensure bbox is valid
-                    // Calculate the center of the graph's content
-                    const graphContentCenterX = graphBBox.x + graphBBox.width / 2;
-                    const graphContentCenterY = graphBBox.y + graphBBox.height / 2;
-
-                    // Calculate the new translation to center the graph content
-                    // This formula centers the scaled graph content within the paper's viewport
-                    const newTx = (paper.options.width / 2) - (graphContentCenterX * currentScale);
-                    const newTy = (paper.options.height / 2) - (graphContentCenterY * currentScale);
-
-                    paper.translate(newTx, newTy); // Apply the new translation
-                    // The scale (zoom level) remains unchanged
-                }
-            }
+            currentChart.paper.scaleContentToFit({ padding: 50, maxScale: 1 });
         }
     });
 
@@ -1999,7 +2021,7 @@ function drawView(orgToShowData, modelData){
             } else if (currentChart &amp;&amp; currentChart.paper) {
                 // If chart exists for the current org, just ensure dimensions are correct
                 currentChart.paper.setDimensions(paperDiv.clientWidth, paperDiv.clientHeight);
-                currentChart.paper.scaleContentToFit({ padding: 50 });
+                currentChart.paper.scaleContentToFit({ padding: 50, maxScale: 1 });
             }
         } else {
             // Show message if no data
@@ -2022,7 +2044,7 @@ function drawView(orgToShowData, modelData){
         if (currentChart &amp;&amp; currentChart.paper &amp;&amp; $('#paper').is(':visible')) {
             const $container = $('#paper');
             currentChart.paper.setDimensions($container.width(), $container.height());
-            currentChart.paper.scaleContentToFit({ padding: 50 });
+            currentChart.paper.scaleContentToFit({ padding: 50, maxScale: 1 });
         }
     });
   

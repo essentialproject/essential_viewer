@@ -55,39 +55,33 @@
  	<!-- param4 = the optional taxonomy term used to scope the view -->
 	<xsl:param name="param4"/>
 
-<xsl:variable name="busDriver" select="/node()/simple_instance[type='Business_Driver']"/>	
+<xsl:variable name="allSimpleInstances" select="/node()/simple_instance"/>
+<xsl:variable name="busDriver" select="$allSimpleInstances[type='Business_Driver']"/>	
 	
-<xsl:variable name="goalTaxonomy" select="/node()/simple_instance[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
-<xsl:variable name="allBusObjectives" select="/node()/simple_instance[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
+<xsl:variable name="goalTaxonomy" select="$allSimpleInstances[type='Taxonomy_Term'][own_slot_value[slot_reference='name']/value='Strategic Goal']"/> 
+<xsl:variable name="allBusObjectives" select="$allSimpleInstances[(type = 'Business_Objective') and not(own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name)]"/>
     
-<xsl:variable name="allStrategicGoals" select="/node()/simple_instance[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
+<xsl:variable name="allStrategicGoals" select="$allSimpleInstances[(type = 'Business_Goal') or ((type = 'Business_Objective') and (own_slot_value[slot_reference = 'element_classified_by']/value = $goalTaxonomy/name))]"/>
 <xsl:variable name="busGoals" select="$allStrategicGoals"/>
-     
-<xsl:key name="drvKey" match="$busDriver" use="own_slot_value[slot_reference = 'bd_motivated_objectives']/value"/>
-<xsl:key name="oldGlsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
-<xsl:key name="busGlsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
-<xsl:key name="busObjKey" match="$allBusObjectives" use="own_slot_value[slot_reference = 'objective_supports_objective']/value"/>
-<xsl:key name="busObjNewKey" match="$allBusObjectives" use="own_slot_value[slot_reference = 'objective_supports_goals']/value"/>
-<xsl:key name="newglsKey" match="$allStrategicGoals" use="own_slot_value[slot_reference = 'goal_supported_by_objectives']/value"/>
 
-<xsl:key name="p2eKey" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="type"/>
-<xsl:variable name="p2es" select="key('p2eKey','PLAN_TO_ELEMENT_RELATION')"/>
-<xsl:variable name="eleKey" select="/node()/simple_instance[name=$p2es/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
-<xsl:variable name="planningActions" select="/node()/simple_instance[type='Planning_Action']"/>
+<xsl:key name="instanceByName" match="simple_instance" use="name"/>
+<xsl:key name="drvKey" match="simple_instance[type='Business_Driver']" use="own_slot_value[slot_reference = 'bd_motivated_objectives']/value"/>
+<xsl:key name="oldGlsKey" match="simple_instance[type=('Business_Goal', 'Business_Objective')]" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
+<xsl:key name="busGlsKey" match="simple_instance[type=('Business_Goal', 'Business_Objective')]" use="own_slot_value[slot_reference = 'bo_motivated_by_driver']/value"/>
+<xsl:key name="busObjKey" match="simple_instance[type='Business_Objective']" use="own_slot_value[slot_reference = 'objective_supports_objective']/value"/>
+<xsl:key name="busObjNewKey" match="simple_instance[type='Business_Objective']" use="own_slot_value[slot_reference = 'objective_supports_goals']/value"/>
+<xsl:key name="newglsKey" match="simple_instance[type=('Business_Goal', 'Business_Objective')]" use="own_slot_value[slot_reference = 'goal_supported_by_objectives']/value"/>
+<xsl:key name="busSvcKey" match="simple_instance[type = 'OBJ_TO_SVC_QUALITY_RELATION']" use="own_slot_value[slot_reference = 'obj_to_svc_quality_objective']/value"/>
+<xsl:key name="serviceQualityByName" match="simple_instance[type = ('Business_Service_Quality','Service_Quality')]" use="name"/>
+<xsl:key name="serviceQualityValueByName" match="simple_instance[type = 'Business_Service_Quality_Value']" use="name"/>
+<xsl:key name="groupActorByName" match="simple_instance[type = 'Group_Actor']" use="name"/>
+<xsl:key name="individualActorByName" match="simple_instance[type = 'Individual_Actor']" use="name"/>
+<xsl:key name="planningActionByName" match="simple_instance[type='Planning_Action']" use="name"/>
 
 
     <!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW-->
  
-	<xsl:variable name="allDrivers" select="/node()/simple_instance[type = 'Business_Driver']"/>
-	<xsl:variable name="allGroupActors" select="/node()/simple_instance[type = 'Group_Actor'][name=$allBusObjectives/own_slot_value[slot_reference = 'bo_owners']/value]"/>
-	<xsl:variable name="allIndividualActors" select="/node()/simple_instance[type = 'Individual_Actor']"/>
-	<xsl:variable name="allBusinessServiceQualities" select="/node()/simple_instance[type = ('Business_Service_Quality','Service_Quality')]"/>
-
-    <xsl:variable name="allBusinessServiceOBJ" select="/node()/simple_instance[type = 'OBJ_TO_SVC_QUALITY_RELATION']"/>
-    <xsl:key name="busSvcKey" match="$allBusinessServiceOBJ" use="own_slot_value[slot_reference = 'obj_to_svc_quality_objective']/value"/>
- 
-    
-	<xsl:variable name="allBusinessServiceQualityValues" select="/node()/simple_instance[type = 'Business_Service_Quality_Value']"/>
+	<xsl:variable name="allDrivers" select="$allSimpleInstances[type = 'Business_Driver']"/>
     <xsl:key name="stratPlans" match="/node()/simple_instance[type='Enterprise_Strategic_Plan']" use="own_slot_value[slot_reference='strategic_plan_supports_objective']/value"/> 
     <xsl:key name="planToElementkey" match="/node()/simple_instance[type='PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference='plan_to_element_plan']/value"/>
     <xsl:key name="projectskey" match="/node()/simple_instance[type='Project']" use="own_slot_value[slot_reference='ca_planned_changes']/value"/>
@@ -95,7 +89,7 @@
 		<!-- SET THE STANDARD VARIABLES THAT ARE REQUIRED FOR THE VIEW -->
 		<xsl:choose>
 			<xsl:when test="string-length($viewScopeTermIds) > 0">
-				<xsl:variable name="orgScopeTerm" select="/node()/simple_instance[name = $viewScopeTerms/name]"/>
+				<xsl:variable name="orgScopeTerm" select="key('instanceByName', $viewScopeTerms/name)"/>
 				<xsl:variable name="orgScopeTermName" select="$orgScopeTerm/own_slot_value[slot_reference = 'name']/value"/>
 				<xsl:variable name="genericPageLabel">
 					<xsl:value-of select="eas:i18n('Strategic Goals Model')"/>
@@ -753,15 +747,12 @@
 				<xsl:call-template name="RenderJSMenuLinkFunctionsTEMP">
 					<xsl:with-param name="linkClasses" select="$linkClasses"/>
 				</xsl:call-template>
-				let drivers=[<xsl:apply-templates select="$busDriver" mode="drivers"/>] 
-				let orgs=[<xsl:apply-templates select="$allGroupActors" mode="orgs"/>] 
-				let goals=[<xsl:apply-templates select="$busGoals" mode="busgoals"/>] 
 				let strategyMap= {"strategy":{ "vision": "some about the text for the organisation","drivers":[<xsl:apply-templates select="$busDriver" mode="strategydrivers"/>],
 				"goals":[<xsl:apply-templates select="$busGoals" mode="goals"/>],
 				"objectives":[<xsl:apply-templates select="$allBusObjectives" mode="objs"/>]}};
-				console.log('strategyMap',strategyMap)
-				//console.log('strategyMap', strategyMap)
-				//console.log('orgs', orgs)
+				const strategyDriversById = Object.fromEntries(strategyMap.strategy.drivers.map((d) => [d.id, d]));
+				const strategyGoalsById = Object.fromEntries(strategyMap.strategy.goals.map((g) => [g.id, g]));
+				const strategyObjectivesById = Object.fromEntries(strategyMap.strategy.objectives.map((o) => [o.id, o]));
 				
 				$(document).ready(function () {
 					
@@ -825,10 +816,8 @@
 					// Wait for the vision detail animation to end (avoid JS race conditions)
 					visionPanel.addEventListener('animationend', () => {
 						// Add listeners for drivers
-						$('.driverClick').on('click', function () {
-							let focus = strategyMap.strategy.drivers.find((d) => {
-								return d.id == $(this).attr('easid')
-							});
+						$('.driverClick').off('click').on('click', function () {
+							const focus = strategyDriversById[$(this).attr('easid')];
 							$('#driver-detail-panel').html(driverSummaryTemplate(focus));
 							initDetailPopovers();
 							
@@ -840,16 +829,12 @@
 							
 						});
 						// Add listeners for goals
-						$('.goalClick').on('click', function () {
-							let focus = strategyMap.strategy.goals.find((d) => {
-								return d.id == $(this).attr('easid');
-							});
+						$('.goalClick').off('click').on('click', function () {
+							const focus = strategyGoalsById[$(this).attr('easid')];
 							$('#goal-detail-panel').html(goalSummaryTemplate(focus));
 							initDetailPopovers();
-							$('.objClick').on('click', function () {
-								let focus = strategyMap.strategy.objectives.find((d) => {
-									return d.id == $(this).attr('easid');
-								});
+							$('.objClick').off('click').on('click', function () {
+								const focus = strategyObjectivesById[$(this).attr('easid')];
 								//console.log('focus', focus);
 								$('#obj-panel').html(objTemplate(focus));
 							});
@@ -865,16 +850,12 @@
 					// Wait for the driver detail animation to end
 					driverDetailPanel.addEventListener('animationend', () => {					
 						// Add Listener for goal details
-						$('.goalClick').on('click', function () {
-							let focus = strategyMap.strategy.goals.find((d) => {
-								return d.id == $(this).attr('easid');
-							});
+						$('.goalClick').off('click').on('click', function () {
+							const focus = strategyGoalsById[$(this).attr('easid')];
 							$('#goal-detail-panel').html(goalSummaryTemplate(focus));
 							initDetailPopovers();
-							$('.objClick').on('click', function () {
-								let focus = strategyMap.strategy.objectives.find((d) => {
-									return d.id == $(this).attr('easid');
-								});
+							$('.objClick').off('click').on('click', function () {
+								const focus = strategyObjectivesById[$(this).attr('easid')];
 								//console.log('focus', focus);
 								$('#obj-panel').html(objTemplate(focus));
 							});
@@ -888,20 +869,18 @@
 						});
 						
 						// Add Listener for Objectives
-						$('.objClick').on('click', function () {
-							let focus = strategyMap.strategy.objectives.find((d) => {
-								return d.id == $(this).attr('easid')
-							});
+						$('.objClick').off('click').on('click', function () {
+							const focus = strategyObjectivesById[$(this).attr('easid')];
 							//console.log('focus', focus)
 							$('#obj-panel').html(objTemplate(focus));
 							openNav()
-							$('.clsPanel').on('click', function () {
+							$('.clsPanel').off('click').on('click', function () {
 								closeNav();
 							});
 						});
 						
 						// Add Listener for Back to Dashboard
-						$('.back-to-dash-driver').click(function(){
+						$('.back-to-dash-driver').off('click').on('click', function () {
 							// Hide Side Bar
 							closeNav();
 							// Hide Driver Panel
@@ -914,7 +893,7 @@
 					// Wait for the goal detail animation to end
 					goalDetailPanel.addEventListener('animationend', () => {
 						// Add Listener for Back to Dashboard
-						$('.back-to-dash-goal').click(function(){
+						$('.back-to-dash-goal').off('click').on('click', function () {
 							// Hide Side Bar
 							closeNav();
 							// Hide Goal Panel
@@ -924,14 +903,12 @@
 						});
 						
 						// Add Listener for Objectives
-						$('.objClick').on('click', function () {
-							let focus = strategyMap.strategy.objectives.find((d) => {
-								return d.id == $(this).attr('easid')
-							});
+						$('.objClick').off('click').on('click', function () {
+							const focus = strategyObjectivesById[$(this).attr('easid')];
 							//console.log('focus', focus)
 							$('#obj-panel').html(objTemplate(focus));
 							openNav()
-							$('.clsPanel').on('click', function () {
+							$('.clsPanel').off('click').on('click', function () {
 								closeNav();
 							});
 						});
@@ -955,6 +932,7 @@
 					initDetailPopovers();
 					
 					function initDetailPopovers() {
+						$('.detail-outer-obj-count').popover('destroy');
 						$('.detail-outer-obj-count').popover({
 							container: 'body',
 							animation: true,
@@ -1026,7 +1004,7 @@
     <xsl:template match="node()" mode="strategydrivers">
             <xsl:variable name="this" select="current()"/>
  <!--   <xsl:variable name="thisGoals" select="$busGoals[name=$this/own_slot_value[slot_reference='bd_motivated_objectives']/value]"/>
- -->          <xsl:variable name="thisGoals" select="key('busGlsKey',current()/name)"/>
+ -->          <xsl:variable name="thisGoals" select="key('busGlsKey', current()/name) intersect $allStrategicGoals"/>
             {"id":"<xsl:value-of select="current()/name"/>",
             "name":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>", 
             "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",
@@ -1037,7 +1015,7 @@
 		<xsl:variable name="this" select="current()"/>
 <!-- <xsl:variable name="thisGoals" select="$busGoals[name=$this/own_slot_value[slot_reference='bd_motivated_objectives']/value]"/>
 -->
-        <xsl:variable name="thisGoals" select="key('busGlsKey',current()/name)"/>
+        <xsl:variable name="thisGoals" select="key('busGlsKey', current()/name) intersect $allStrategicGoals"/>
 		{
 		"id":"<xsl:value-of select="current()/name"/>",
 		"driver":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>", 
@@ -1050,8 +1028,8 @@
    <!-- <xsl:variable name="thisObjsOld" select="$allBusObjectives[name=$this/own_slot_value[slot_reference='objective_supported_by_objective']/value]"/> 
  <xsl:variable name="thisObjsNew" select="$allBusObjectives[name=$this/own_slot_value[slot_reference='goal_supported_by_objectives']/value]"/>
 -->
-    <xsl:variable name="thisObjsOld" select="key('busObjKey',current()/name)"/>
-    <xsl:variable name="thisObjsNew" select="key('busObjNewKey',current()/name)"/>
+    <xsl:variable name="thisObjsOld" select="key('busObjKey', current()/name) intersect $allBusObjectives"/>
+    <xsl:variable name="thisObjsNew" select="key('busObjNewKey', current()/name) intersect $allBusObjectives"/>
     
     <xsl:variable name="thisObjs" select="$thisObjsOld union $thisObjsNew"/>
     {"goal":"<xsl:call-template name="RenderMultiLangInstanceName"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>", 
@@ -1063,21 +1041,20 @@
 	
 <xsl:template match="node()" mode="objs">
 	<xsl:variable name="this" select="current()"/>
-	<xsl:variable name="busObjMeasuresOld" select="$allBusinessServiceQualityValues[name = current()/own_slot_value[slot_reference = 'bo_measures']/value]"/>
+	<xsl:variable name="busObjMeasuresOld" select="key('serviceQualityValueByName', current()/own_slot_value[slot_reference = 'bo_measures']/value)"/>
   <!--  <xsl:variable name="busObjServtoObj" select="$allBusinessServiceOBJ[name = current()/own_slot_value[slot_reference = 'bo_performance_measures']/value]"/>	-->
     <xsl:variable name="busObjServtoObj" select="key('busSvcKey',current()/name)"/>
     	
-    <xsl:variable name="busObjMeasuresNew" select="$allBusinessServiceQualities[name =$busObjServtoObj/own_slot_value[slot_reference = 'obj_to_svc_quality_service_quality']/value]"/>
+    <xsl:variable name="busObjMeasuresNew" select="key('serviceQualityByName', $busObjServtoObj/own_slot_value[slot_reference = 'obj_to_svc_quality_service_quality']/value)"/>
     <xsl:variable name="busObjMeasures" select="$busObjMeasuresOld union $busObjMeasuresNew"/>
-    <xsl:variable name="busObjOrgOwners" select="$allGroupActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
-    <xsl:variable name="busObjIndividualOwners" select="$allIndividualActors[name = current()/own_slot_value[slot_reference = 'bo_owners']/value]"/>
-    <xsl:variable name="busObjTargetDate" select="/node()/simple_instance[name = current()/own_slot_value[slot_reference = 'bo_target_date']/value]"/>
+    <xsl:variable name="busObjOrgOwners" select="key('groupActorByName', current()/own_slot_value[slot_reference = 'bo_owners']/value)"/>
+    <xsl:variable name="busObjIndividualOwners" select="key('individualActorByName', current()/own_slot_value[slot_reference = 'bo_owners']/value)"/>
     <!--
     <xsl:variable name="thisGoalsOld" select="$busGoals[own_slot_value[slot_reference='objective_supported_by_objective']/value=current()/name]"/> 
     <xsl:variable name="thisGoalsNew" select="$busGoals[own_slot_value[slot_reference='goal_supported_by_objectives']/value=current()/name]"/>
     -->
-    <xsl:variable name="thisGoalsOld" select="key('busObjKey',current()/name)"/>
-    <xsl:variable name="thisGoalsNew" select="key('newglsKey',current()/name)"/>
+    <xsl:variable name="thisGoalsOld" select="key('busObjKey', current()/name) intersect $allBusObjectives"/>
+    <xsl:variable name="thisGoalsNew" select="key('newglsKey', current()/name) intersect $allStrategicGoals"/>
 
     <xsl:variable name="thisGoals" select="$thisGoalsNew union $thisGoalsOld"/>
     <xsl:variable name="thisPlans" select="key('stratPlans', current()/name)"/>
@@ -1122,14 +1099,14 @@
     "description":"<xsl:call-template name="RenderMultiLangInstanceDescription"><xsl:with-param name="theSubjectInstance" select="current()"/><xsl:with-param name="isRenderAsJSString" select="true()"/><xsl:with-param name="isForJSONAPI" select="false()"/></xsl:call-template>",	
     "className":"<xsl:value-of select="current()/type"/>",
 	
-	<xsl:variable name="ele" select="$eleKey[name=current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value]"/>
+	<xsl:variable name="ele" select="key('instanceByName', current()/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value)[1]"/>
 	"element":"<xsl:call-template name="RenderMultiLangInstanceName">
             <xsl:with-param name="theSubjectInstance" select="$ele"/>
             <xsl:with-param name="isRenderAsJSString" select="true()"/>
     		<xsl:with-param name="isForJSONAPI" select="true()"/>
         </xsl:call-template>",
 	"action":"<xsl:call-template name="RenderMultiLangInstanceName">
-            <xsl:with-param name="theSubjectInstance" select="$planningActions[name=current()/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"/>
+            <xsl:with-param name="theSubjectInstance" select="key('planningActionByName', current()/own_slot_value[slot_reference = 'plan_to_element_change_action']/value)[1]"/>
             <xsl:with-param name="isRenderAsJSString" select="true()"/>
     		<xsl:with-param name="isForJSONAPI" select="true()"/>
         </xsl:call-template>",	
@@ -1174,7 +1151,7 @@
     <xsl:variable name="this" select="current()"/>
   <!--  <xsl:variable name="busObjs" select="$allBusObjectives[name=current()/own_slot_value[slot_reference = 'goal_supported_by_objectives']/value]"/>
   -->
-    <xsl:variable name="busObjs" select="key('busObjNewKey',current()/name)"/>
+    <xsl:variable name="busObjs" select="key('busObjNewKey', current()/name) intersect $allBusObjectives"/>
     {"name":"<xsl:call-template name="RenderMultiLangInstanceName">
             <xsl:with-param name="theSubjectInstance" select="current()"/>
             <xsl:with-param name="isRenderAsJSString" select="true()"/>

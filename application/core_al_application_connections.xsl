@@ -697,6 +697,8 @@ let filterExcludes = [<xsl:for-each select="$theReport/own_slot_value[slot_refer
 var inner, svg;
 var nodes=[];
 var edges=[];
+// Track when a Data Object selection is driving edge highlighting
+var dataObjectSelectionActive = false;
 
 $(window).scroll(function() {
     if ($(this).scrollTop() > 200) {
@@ -1226,7 +1228,8 @@ $('#connectedApps').on('change', function(){
  
 		let scopedApps = essScopeResources(scopedRMApps, [capOrgScopingDef, appOrgScopingDef, visibilityDef, geoScopingDef, msDef, acDef].concat(dynamicAppFilterDefs), typeInfo);
  
-		scopedAppsList = scopedApps.resourceIds;  
+		const scopedAppsList = scopedApps.resourceIds;
+		const scopedAppIds = new Set(scopedAppsList);
 	
 		let optionsHtml = '<option value="All">All</option>'
 		let optionsHtmlApps = scopedApps.resources.map(e => `<option value="`+e.id+`">${e.name}</option>`).join('');
@@ -1240,16 +1243,16 @@ $('#connectedApps').on('change', function(){
 		appListMapScoped = new Map();
 
 		appListMap.forEach((value, key) => {
-			if (scopedAppsList.includes(key)) {
+			if (scopedAppIds.has(key)) {
 				appListMapScoped.set(key, value);
 			}
 		});
 
 	
-		let matchedResources = allNodes.filter(resource => scopedAppsList.includes(resource.id));
+		let matchedResources = allNodes.filter(resource => scopedAppIds.has(resource.id));
 
-		let matchedEdgeResources = allEdges.filter(resource => 
-			scopedAppsList.includes(resource.source) || scopedAppsList.includes(resource.target)
+		let matchedEdgeResources = allEdges.filter(resource =>
+			scopedAppIds.has(resource.source) &amp;&amp; scopedAppIds.has(resource.target)
 		);
 		nodes=matchedResources;
 		edges=matchedEdgeResources;
@@ -1357,11 +1360,12 @@ $('.appBox').show();
 }
 
 var currentZoomTransform;
-var originalWidth, originalHeight, originalViewBox;
+var originalWidth, originalHeight, originalViewBox, originalInnerTransform;
 $('#printButton').off().on('click', function() {
 	originalWidth = svg.attr("width");
     originalHeight = svg.attr("height");
     originalViewBox = svg.attr("viewBox"); // May be null if not set
+	originalInnerTransform = inner.attr("transform");
 
     // Alternatively, if dimensions are set via styles
     if (!originalWidth) {
@@ -1379,9 +1383,13 @@ $('#printButton').off().on('click', function() {
 	   let graphBounds = inner.node().getBBox();
 	   let graphWidth = graphBounds.width;
 	   let graphHeight = graphBounds.height;
+	   
+	   // Move content to top-left so the viewBox starts at (0,0)
+	   inner.attr("transform", `translate(${-graphBounds.x},${-graphBounds.y})`);
    
-	   // Set the SVG's viewBox to the graph's bounding box
-	   svg.attr("viewBox", `${graphBounds.x} ${graphBounds.y} ${graphWidth} ${graphHeight}`);
+	   // Set the SVG's viewBox to the graph's bounding box starting at 0,0
+	   svg.attr("viewBox", `0 0 ${graphWidth} ${graphHeight}`);
+	   svg.attr("preserveAspectRatio", "xMidYMid meet");
    
 	   // Set the SVG's width and height to match the desired print size (in pixels)
 	   // For A4 size paper: 210mm x 297mm at 96 DPI
@@ -1416,9 +1424,7 @@ $('#printButton').off().on('click', function() {
     }
 
     svg.attr("viewBox", originalViewBox);
-	
-	   // Remove any scaling applied to 'inner' during printing
-	   inner.attr("transform", null);
+	inner.attr("transform", originalInnerTransform);
    
 	   // Restore the original zoom transform
 	   svg.call(zoom.transform, currentZoomTransform);
@@ -1445,10 +1451,8 @@ $('#printButton').off().on('click', function() {
 			//svg.attr("width", g.graph().width + 40);
 		
 			adjustSvgWidth() 
-			var desiredHeight = g.graph().height + 40;
-
-			// Ensure the SVG height is at least 300 pixels
-			var finalHeight = Math.max(desiredHeight, 300);
+			// Use window height for SVG height
+			var finalHeight = window.innerHeight;
 			
 			// Set the height of the SVG
 			svg.attr("height", finalHeight);
@@ -1486,9 +1490,12 @@ centerGraph();
 //redraw svg function
 
 function adjustSvgWidth() {
- 
-    var containerWidth = $('#container').width(); // Or use 'window.innerWidth' for full window width
-    $('#diagram svg').attr('width', containerWidth);
+    // Prefer full viewport width, fall back to container width
+    var viewportWidth = window.innerWidth;
+    var containerWidth = $('#container').width();
+    var targetWidth = viewportWidth || containerWidth;
+
+    $('#diagram svg').attr('width', targetWidth);
 }
 
 
@@ -1565,10 +1572,22 @@ function handleMouseover(event, d) {
 function handleMouseout(d) {
 	let edgematch=($(this)[0].__data__)
 	var edgeId = edgematch.v+'-'+edgematch.w;
-	 
- 	inner.select("#" + edgeId).select("path")
-	 	.style("stroke-width", "1px")
-     	.style("stroke", "black");;
+	let pathSelection = inner.select("#" + edgeId).select("path");
+
+	if (!pathSelection.node()) {
+		return;
+	}
+
+	// Preserve Data Object highlights; otherwise revert to baseline styling
+	if (dataObjectSelectionActive) {
+		if (pathSelection.classed("data-do-highlight")) {
+			return;
+		}
+		pathSelection.style("stroke-width", "1px").style("stroke", "#d3d3d3");
+		return;
+	}
+
+ 	pathSelection.style("stroke-width", "1px").style("stroke", "black");
     // Hide hover pop-up or tooltip
 }
 
@@ -1784,16 +1803,19 @@ $('#appCapList').off('change.appCapListChange').on('change.appCapListChange', fu
 		nodes=[];
 		edges=[];
  
-	
-		const allIds = appsForGraph.map(item => [item.fromAppId, item.toAppId]).flat();
-		if(selectedapp){
-			allIds.push(selectedapp)
+		const scopedAppIdSet = scopedAppIds;
+		const scopedEdgesForGraph = (appsForGraph || []).filter(item =>
+			item &amp;&amp; scopedAppIdSet.has(item.fromAppId) &amp;&amp; scopedAppIdSet.has(item.toAppId)
+		);
 
+		const allIds = scopedEdgesForGraph.map(item => [item.fromAppId, item.toAppId]).flat();
+		if(selectedapp &amp;&amp; scopedAppIdSet.has(selectedapp)){
+			allIds.push(selectedapp);
 		}
  
 			// Create a Set from the concatenated array to get unique values, and then convert it back to an array
 			let focusAppList = Array.from(new Set(allIds));
-			focusAppList = focusAppList.filter(item => item !== undefined &amp;&amp; item !== null &amp;&amp; item !== '');
+			focusAppList = focusAppList.filter(item => item !== undefined &amp;&amp; item !== null &amp;&amp; item !== '' &amp;&amp; scopedAppIdSet.has(item));
 
 			focusAppList.forEach((a)=>{
 		
@@ -1801,6 +1823,10 @@ $('#appCapList').off('change.appCapListChange').on('change.appCapListChange', fu
 				let e=appList.find((s)=>{
 					return s.id== a
 				})
+
+				if(!e){
+					return;
+				}
 
  
 				let appContent={
@@ -1815,7 +1841,7 @@ $('#appCapList').off('change.appCapListChange').on('change.appCapListChange', fu
 				
 			})
 
-			appsForGraph.forEach((e)=>{ 
+			scopedEdgesForGraph.forEach((e)=>{ 
 				edges.push( {source: e.toAppId, target: e.fromAppId, label:e.info })
 			})
 
@@ -1897,12 +1923,16 @@ function setDODrop(){
 	$('#dataObjList').off('change.dataSelectorChange').on('change.dataSelectorChange', function(){
 
 		
-		inner.selectAll("path").style("stroke-width", "1px")
-		.style("stroke", "#d3d3d3");
+		// Reset all edges to baseline style and clear previous highlights
+		inner.selectAll(".edgePath path")
+			.style("stroke-width", "1px")
+			.style("stroke", "#d3d3d3")
+			.classed("data-do-highlight", false);
  
 		var easids = [];
 
 		const idToSearch = $(this).val()
+		dataObjectSelectionActive = idToSearch !== 'choose';
 
 		const filteredArray = filterByDataObjectId(apus, idToSearch);
 		let appsToShow=[];
@@ -1911,7 +1941,8 @@ function setDODrop(){
 		
 					inner.select("#" + newId).select("path")
 					.style("stroke-width", "4px")
-					.style("stroke", "red");
+					.style("stroke", "red")
+					.classed("data-do-highlight", true);
 
 					let a = appListMapScoped.get(c.toAppId);
 					let b = appListMapScoped.get(c.fromAppId);

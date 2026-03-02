@@ -1433,6 +1433,8 @@ $(document).on('click', '.appInfoButton',function ()
 
 var redrawView=function(){
 
+	essResetRMChanges();
+
 	let workingAppsList=[];
 	let appOrgScopingDef = new ScopingProperty('orgUserIds', 'Group_Actor');
 	let geoScopingDef = new ScopingProperty('geoIds', 'Geographic_Region');

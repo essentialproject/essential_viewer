@@ -21,7 +21,7 @@
 
 	<!-- START GENERIC LINK VARIABLES -->
 	<xsl:variable name="viewScopeTerms" select="eas:get_scoping_terms_from_string($viewScopeTermIds)"/>
-	<xsl:variable name="linkClasses" select="('Application_Provider', 'Composite_Application_Provider', 'Technology_Component', 'Technology_Product')"/>
+	<xsl:variable name="linkClasses" select="('Application_Provider', 'Composite_Application_Provider', 'Technology_Component', 'Technology_Capability', 'Technology_Product')"/>
 	<!-- END GENERIC LINK VARIABLES -->
 	
 	

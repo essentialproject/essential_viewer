@@ -586,6 +586,80 @@
 							 bottom:15px; 
 							 right:3px
 						}
+						.summaryPanelRight{
+							 position:absolute; 
+							 bottom:15px; 
+							 right:3px
+						}
+						/* Increase font size for Strategic Plans tab */
+						#stratplans {
+							font-size: 1.1em;
+						}
+						#stratplans h2 {
+							font-size: 1.5em;
+						}
+						#stratplans .content-section {
+							font-size: 1.1em;
+							line-height: 1.6;
+						}
+						
+						/* Modern Plan Card Styles */
+						.plan-card {
+							border: 1px solid #e0e0e0;
+							border-radius: 8px;
+							padding: 15px;
+							margin-bottom: 15px;
+							background-color: #fff;
+							box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+							transition: transform 0.2s, box-shadow 0.2s;
+						}
+						.plan-card:hover {
+							transform: translateY(-2px);
+							box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+						}
+						.plan-card-header {
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							margin-bottom: 10px;
+							border-bottom: 1px solid #f0f0f0;
+							padding-bottom: 8px;
+						}
+						.plan-card-header.bg-light {
+							background-color: #f9f9f9;
+							margin: -15px -15px 15px -15px;
+							padding: 10px 15px;
+							border-bottom: 1px solid #e0e0e0;
+							border-radius: 8px 8px 0 0;
+						}
+						.plan-card-title {
+							font-size: 1.1em;
+							font-weight: bold;
+							color: #333;
+						}
+						.plan-card-body {
+							font-size: 0.9em;
+							color: #555;
+						}
+						.plan-card-dates {
+							margin-top: 10px;
+							font-size: 0.85em;
+							color: #777;
+							display: flex;
+							gap: 15px;
+						}
+						.plan-card-status {
+							font-size: 0.85em;
+							padding: 2px 8px;
+							border-radius: 12px;
+							background-color: #f0f0f0;
+							color: #555;
+							font-weight: 600;
+						}
+						.text-muted { color: #777; }
+						.italic { font-style: italic; }
+						.top-10 { margin-top: 10px; }
+						.bottom-5 { margin-bottom: 5px; }
 	</style>
 				
 			</head>
@@ -834,6 +908,9 @@
 										</li>
 										<li>
 											<a href="#allImpacts" data-toggle="tab"><i class="fa fa-fw fa-exchange right-10"></i><xsl:value-of select="eas:i18n('All Impacts')"/></a>
+										</li>
+										<li>
+											<a href="#impactsTableTab" data-toggle="tab"><i class="fa fa-fw fa-table right-10"></i><xsl:value-of select="eas:i18n('Impacts Table')"/></a>
 										</li>									
 									</ul>
 									<div class="tab-content">	
@@ -844,6 +921,9 @@
 										</div>
 										<div class="tab-pane" id="allImpacts"> 
 											<div id="impactsBox"/>
+										</div>
+										<div class="tab-pane" id="impactsTableTab">
+											<div id="impactsTableContainer"/>
 										</div>
 
 								</div>
@@ -1128,44 +1208,94 @@
 	
 	<script id="planDependencies-template" type="text/x-handlebars-template">
 		{{#if this}}
-                <table class="table table-bordered table-striped">
-                	<thead>
-                		<tr>
-                			<th>Depends On</th>
-                			<th>&#160;</th>
-                			<th class="bg-aqua-100">Plan</th>
-                			<th>&#160;</th>
-                			<th>Supports</th>
-                		</tr>
-                	</thead>
-                	<tbody>
-                		
-             {{#each this}}
-                    <tr>
-                    	<td> {{#if this.dependsOn}}{{#each this.dependsOn}}{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>{{#if this.planEndDate}}<span class="label label-primary"> Ends: {{this.planEndDate}}</span><br/>{{/if}}{{/each}}{{else}}none{{/if}}</td>
-                    	<td class="text-center"><i class="fa fa-arrow-left"></i></td>
-                    	<td>{{{name}}}</td>
-                    	<td class="text-center"><i class="fa fa-arrow-right"></i></td>
-                    	<td>{{#if this.supports}}{{#each this.supports}}{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}<br/>{{#if this.planStartDate}}<span class="label label-primary">Starts: {{this.planStartDate}}</span>{{/if}}<br/>{{/each}}{{else}}none{{/if}}</td>
-                    </tr>
-             {{/each}}
-                	</tbody>
-                </table>    
-             {{else}}
-                No Dependencies
-             {{/if}}
+			<div class="dependency-cards-container">
+				{{#each this}}
+				<div class="plan-card dependency-card">
+					<div class="plan-card-header bg-light">
+						<div class="plan-card-title text-center" style="width:100%">
+							{{{name}}}
+						</div>
+					</div>
+					<div class="plan-card-body" style="display:flex; justify-content:space-between; align-items:flex-start;">
+						<div style="width:48%; padding-right:10px; border-right:1px solid #eee;">
+							<strong class="text-muted small" style="text-transform:uppercase; letter-spacing:0.5px;">Depends On</strong>
+							<ul class="list-unstyled top-10" style="padding-left:0;">
+								{{#if this.dependsOn}}
+									{{#each this.dependsOn}}
+									<li class="bottom-5" style="padding: 5px; background: #fff9f9; border-radius: 4px; border-left: 3px solid #d9534f;">
+										<i class="fa fa-angle-left right-5 text-muted"></i>
+										{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+										{{#if this.planEndDate}}
+											<div class="small text-muted" style="margin-top:2px; margin-left:15px;"><i class="fa fa-clock-o"></i> Ends: {{this.planEndDate}}</div>
+										{{/if}}
+									</li>
+									{{/each}}
+								{{else}}
+									<li class="text-muted italic">None</li>
+								{{/if}}
+							</ul>
+						</div>
+						
+						<div style="width:48%; padding-left:10px;">
+							<strong class="text-muted small" style="text-transform:uppercase; letter-spacing:0.5px;">Supports</strong>
+							<ul class="list-unstyled top-10" style="padding-left:0;">
+								{{#if this.supports}}
+									{{#each this.supports}}
+									<li class="bottom-5" style="padding: 5px; background: #f9fff9; border-radius: 4px; border-left: 3px solid #5cb85c;">
+										<i class="fa fa-angle-right right-5 text-muted"></i>
+										{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+										{{#if this.planStartDate}}
+											<div class="small text-muted" style="margin-top:2px; margin-left:15px;"><i class="fa fa-clock-o"></i> Starts: {{this.planStartDate}}</div>
+										{{/if}}
+									</li>
+									{{/each}}
+								{{else}}
+									<li class="text-muted italic">None</li>
+								{{/if}}
+							</ul>
+						</div>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+		{{else}}
+			<div class="alert alert-info">No Dependencies</div>
+		{{/if}}
 	</script>
 	<script id="list-template" type="text/x-handlebars-template">
 		{{#if this}}
-			<table class="table table-bordered table-striped ">
-		 {{#each this}}
-				<tr><td width="60%"><i class="fa fa-tasks"></i><xsl:text> </xsl:text>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</td><td> {{#if status}}<span class="label label-default">{{this.status}}</span>{{/if}}{{#if this.endDate}}<div class="pull-right">From: <span class="label label-primary">{{this.startDate}}</span> To: <span class="label label-primary">{{this.endDate}}</span></div><div class="pull-right top-5"><label style="width:80px"><xsl:attribute name="class">label label-info risk{{id}}</xsl:attribute>{{this.risk}}</label></div>{{/if}}</td></tr>
-		 {{/each}}
-			</table>    
-		 {{else}}
-			No Associated Plans
-		 {{/if}}
-	   
+			<div class="plan-cards-container">
+				{{#each this}}
+				<div class="plan-card">
+					<div class="plan-card-header">
+						<div class="plan-card-title">
+							<i class="fa fa-tasks text-primary right-5"></i>
+							{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}
+						</div>
+						{{#if status}}
+							<span class="plan-card-status">{{this.status}}</span>
+						{{/if}}
+					</div>
+					<div class="plan-card-body">
+						{{#if this.risk}}
+							<div class="bottom-5">
+								<strong>Risk: </strong>
+								<span class="label label-info risk{{id}}">{{this.risk}}</span>
+							</div>
+						{{/if}}
+						{{#if this.endDate}}
+							<div class="plan-card-dates">
+								<span><i class="fa fa-calendar-o right-5"></i> <strong>From:</strong> <span class="label label-primary">{{this.startDate}}</span></span>
+								<span><i class="fa fa-calendar-check-o right-5"></i> <strong>To:</strong> <span class="label label-primary">{{this.endDate}}</span></span>
+							</div>
+						{{/if}}
+					</div>
+				</div>
+				{{/each}}
+			</div>
+		{{else}}
+			<div class="alert alert-info">No Associated Plans</div>
+		{{/if}}
 	</script>
 	<script id="impactlist-template" type="text/x-handlebars-template">
 		{{#each this}}
@@ -1184,6 +1314,33 @@
 		<div class="orgName">{{this.name}}</div>
 	</script>
  
+	<script id="impacts-table-template" type="text/x-handlebars-template">
+		<table id="impactsDataTable" class="table table-striped table-bordered" style="width:100%">
+			<thead>
+				<tr>
+					<th>Type</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Change</th>
+					<th>Plan</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each this}}
+				<tr>
+					<td>{{type}}</td>
+					<td>{{name}}</td>
+					<td>{{description}}</td>
+					<td>{{change}}</td>
+					<td>{{plan}}</td>
+					<td>{{action}}</td>
+				</tr>
+				{{/each}}
+			</tbody>
+		</table>
+	</script>
+
 	<script id="impacts-template" type="text/x-handlebars-template">
 		{{#each this}}
 		<div class="classHeader">{{#tidyKey @key}}{{/tidyKey}}</div>
@@ -1229,32 +1386,44 @@
 	</script>
 	<script id="gantt-template" type="text/x-handlebars-template">
 		<svg><xsl:attribute name="width">1200</xsl:attribute><xsl:attribute name="height">{{this.height}}</xsl:attribute>
-			{{#each this.tasks}}
-			<rect stroke="#ddd" stroke-width="1"><xsl:attribute name="x">{{this.startPos}}</xsl:attribute><xsl:attribute name="y">{{#getYPos @index 40}}{{/getYPos}}</xsl:attribute><xsl:attribute name="width">{{#getRectWidth this}}{{/getRectWidth}}</xsl:attribute><xsl:attribute name="height">40</xsl:attribute><xsl:attribute name="fill">{{this.colour}}</xsl:attribute></rect>
-			<text font-size="13" text-anchor="left"><xsl:attribute name="x">10</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 15 40}}{{/getYPosText}}</xsl:attribute>{{this.name}}</text>
-			<text font-size="10" text-anchor="left"><xsl:attribute name="x">10</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 25 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('Start')"/>:{{this.isoStart}}</text>
-			<text font-size="10" text-anchor="left"><xsl:attribute name="x">10</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 35 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('End')"/>:{{this.isoEnd}}</text>
-	
-			{{#if this.type}}
-			<rect class="box" stroke="#ddd" fill="#000000" rx="5" stroke-width="1"><xsl:attribute name="x">195</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 28 40}}{{/getYPosText}}</xsl:attribute><xsl:attribute name="width">30</xsl:attribute><xsl:attribute name="height">8</xsl:attribute></rect>
+			<!-- Background -->
+			<rect x="0" y="0" width="1200" fill="#f9f9f9"><xsl:attribute name="height">{{this.height}}</xsl:attribute></rect>
 			
-			<text font-size="8" fill="#ffffff" text-anchor="left"><xsl:attribute name="x">200</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 35 40}}{{/getYPosText}}</xsl:attribute> <xsl:value-of select="eas:i18n('PLAN')"/></text>
+			{{#each this.tasks}}
+			<!-- Task Bar -->
+			<rect rx="4" ry="4" stroke="#fff" stroke-width="2"><xsl:attribute name="x">{{this.startPos}}</xsl:attribute><xsl:attribute name="y">{{#getYPos @index 40}}{{/getYPos}}</xsl:attribute><xsl:attribute name="width">{{#getRectWidth this}}{{/getRectWidth}}</xsl:attribute><xsl:attribute name="height">30</xsl:attribute><xsl:attribute name="fill">{{this.colour}}</xsl:attribute><xsl:attribute name="opacity">0.8</xsl:attribute></rect>
+			
+			<!-- Task Name -->
+			<text font-size="14" font-weight="bold" fill="#333" text-anchor="left"><xsl:attribute name="x">10</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 12 40}}{{/getYPosText}}</xsl:attribute>{{this.name}}</text>
+			
+			<!-- Dates -->
+			<text font-size="11" fill="#666" text-anchor="left"><xsl:attribute name="x">10</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 26 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('Start')"/>: {{this.isoStart}} | <xsl:value-of select="eas:i18n('End')"/>: {{this.isoEnd}}</text>
+	
+			<!-- Type Badge -->
+			{{#if this.type}}
+			<rect class="box" fill="#333" rx="3" ry="3"><xsl:attribute name="x">250</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 18 40}}{{/getYPosText}}</xsl:attribute><xsl:attribute name="width">35</xsl:attribute><xsl:attribute name="height">12</xsl:attribute></rect>
+			<text font-size="9" fill="#ffffff" font-weight="bold" text-anchor="middle"><xsl:attribute name="x">267.5</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 27 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('PLAN')"/></text>
 			{{else}} 
-			<rect class="box" stroke="#ddd" fill="#000000" rx="4" stroke-width="1"><xsl:attribute name="x">195</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 28 40}}{{/getYPosText}}</xsl:attribute><xsl:attribute name="width">40</xsl:attribute><xsl:attribute name="height">8</xsl:attribute></rect>
-			<text font-size="8" fill="#ffffff" text-anchor="left"><xsl:attribute name="x">200</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 35 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('PROJECT')"/></text>
+			<rect class="box" fill="#555" rx="3" ry="3"><xsl:attribute name="x">250</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 18 40}}{{/getYPosText}}</xsl:attribute><xsl:attribute name="width">45</xsl:attribute><xsl:attribute name="height">12</xsl:attribute></rect>
+			<text font-size="9" fill="#ffffff" font-weight="bold" text-anchor="middle"><xsl:attribute name="x">272.5</xsl:attribute><xsl:attribute name="y">{{#getYPosText @index 27 40}}{{/getYPosText}}</xsl:attribute><xsl:value-of select="eas:i18n('PROJECT')"/></text>
 			{{/if}}
-
+ 
 			{{/each}}
+			
+			<!-- Timeline Grid -->
 			{{#each this.months}}
-			<circle r="10" fill="#d3d3d3" stroke-fill="black"><xsl:attribute name="cx">{{this.pos}}</xsl:attribute><xsl:attribute name="cy">10</xsl:attribute></circle>
-			<text font-size="12" font-weight="bold" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">15</xsl:attribute>{{this.monthNumber}}</text>
+			<line style="stroke:#e0e0e0;stroke-width:1" stroke-dasharray="4,2" y1="40"><xsl:attribute name="x1">{{this.pos}}</xsl:attribute><xsl:attribute name="x2">{{this.pos}}</xsl:attribute> <xsl:attribute name="y2">{{../this.height}}</xsl:attribute> </line>
+			
+			<!-- Month/Year Labels -->
+			<circle r="3" fill="#999"><xsl:attribute name="cx">{{this.pos}}</xsl:attribute><xsl:attribute name="cy">38</xsl:attribute></circle>
+			<text font-size="11" font-weight="bold" fill="#555" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">20</xsl:attribute>{{this.monthNumber}}</text>
+			
 			{{#ifEquals this.monthNumber 1}}
-			<text font-size="12" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">35</xsl:attribute>{{this.year}}</text>
+			<text font-size="11" fill="#777" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">35</xsl:attribute>{{this.year}}</text>
 			{{/ifEquals}}
 			{{#ifEquals @index 0}}
-			<text font-size="12" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">35</xsl:attribute>{{this.year}}</text>
+			<text font-size="11" fill="#777" text-anchor="middle"><xsl:attribute name="x">{{this.pos}}</xsl:attribute><xsl:attribute name="y">35</xsl:attribute>{{this.year}}</text>
 			{{/ifEquals}}
-			<line style="stroke:rgb(183, 182, 182);stroke-width:1" stroke-dasharray="5,5" y1="40"><xsl:attribute name="x1">{{this.pos}}</xsl:attribute><xsl:attribute name="x2">{{this.pos}}</xsl:attribute> <xsl:attribute name="y2">{{../this.height}}</xsl:attribute> </line>
 			
 			{{/each}}
 		</svg>
@@ -2176,6 +2345,34 @@ const sortedData = order.reduce((acc, key) => {
 }, {});
  
 $('#impactsBox').html(impactsTemplate(sortedData)) 
+
+		// Flatten data for table
+		const flatImpacts = [];
+		Object.keys(sortedData).forEach(key => {
+			sortedData[key].forEach(item => {
+				flatImpacts.push({
+					type: key.replaceAll('_', ' '),
+					name: item.name.name,
+					description: item.description,
+					change: item.change,
+					plan: item.plan,
+					action: item.action.name
+				});
+			});
+		});
+
+		// Render table
+		var impactsTableFragment = $("#impacts-table-template").html();
+		var impactsTableTemplate = Handlebars.compile(impactsTableFragment);
+		$('#impactsTableContainer').html(impactsTableTemplate(flatImpacts));
+
+		// Initialize DataTable with Buttons
+		$('#impactsDataTable').DataTable({
+			dom: 'Bfrtip',
+			buttons: [
+				'copy', 'csv', 'excel', 'pdf', 'print'
+			]
+		}); 
 $('#planimpacts').html(listTemplate(pDetail))
 	}).catch(error => {
 		console.error(error);

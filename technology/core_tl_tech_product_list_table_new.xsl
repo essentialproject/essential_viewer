@@ -14,15 +14,16 @@
 
 	<!-- START GENERIC PARAMETERS --> 
 
-    <xsl:param name="viewScopeTermIds"/>
+    <xsl:param name="viewScopeTermIds"/> 
     <xsl:param name="targetReportId"/>
 	<xsl:param name="targetMenuShortName"/> 
-
+  <xsl:variable name="thisReport" select="node()/simple_instance[type='Report'][own_slot_value[slot_reference='name']/value=('Core: Technology Product Cataloigue as Table','Core: Technology Product Catalogue as Table')][1]"></xsl:variable>
 	<!-- END GENERIC CATALOGUE PARAMETERS -->
     <xsl:variable name="repYN"><xsl:choose><xsl:when test="$targetReportId"><xsl:value-of select="$targetReportId"/></xsl:when><xsl:otherwise></xsl:otherwise></xsl:choose></xsl:variable>
 
 	<!-- START GENERIC CATALOGUE SETUP VARIABES -->
 	<xsl:variable name="targetReport" select="/node()/simple_instance[name = $targetReportId]"/>
+	<xsl:variable name="reportConfig" select="$thisReport/own_slot_value[slot_reference='report_supporting_config']/value"/>
 
 	<!-- END GENERIC PARAMETERS -->
 
@@ -188,7 +189,7 @@
 				<!-- ADD THE PAGE HEADING -->
 				<xsl:call-template name="Heading"></xsl:call-template>
 				<xsl:call-template name="ViewUserScopingUI"></xsl:call-template>
-				 	 
+
 				<!--ADD THE CONTENT-->
 				<div class="container-fluid">
 					<div class="row">
@@ -348,9 +349,11 @@
 		}
 
 		var table
-		var dynamicFilterDefs=[];	 
+		var dynamicAppFilterDefs=[];	 
 		var reportURL = '<xsl:value-of select="$targetReport/own_slot_value[slot_reference='report_xsl_filename']/value"/>';
+		var jsonConfig = '<xsl:value-of select="eas:renderJSText($reportConfig)"/>';
 		var catalogueTable
+		var colSettings;
 		$('document').ready(function () {
 			listFragment = $("#list-template").html();
             listTemplate = Handlebars.compile(listFragment);
@@ -513,7 +516,6 @@
             let workingArr = []; 
             let svcArr=[];
             let lifecycleArr=[]; 
-			var colSettings=[];
 			Promise.all([
                 promise_loadViewerAPIData(viewAPIData),
 				promise_loadViewerAPIData(viewAPIDataOrgs)
@@ -611,6 +613,25 @@
 				"title": "Vendor Lifecycle"		
 
             })
+
+			// Apply JSON configuration for column visibility
+			var config = {};
+			console.log("JSON Config:", jsonConfig); // Debug log to check the value of jsonConfig
+			try {
+				if (jsonConfig &amp;&amp; jsonConfig !== '') {
+					config = JSON.parse(jsonConfig);
+				}
+			} catch (e) {
+				console.error("Error parsing jsonConfig", e);
+			}
+console.log("JSON Config:", config); 
+			if (config.tableConfig) {
+				colSettings.forEach(function(col) {
+					if (config.tableConfig.hasOwnProperty(col.data)) {
+						col.visible = config.tableConfig[col.data];
+					}
+				});
+			}
 		
 		    const today = new Date();
             let currentLocale="<xsl:value-of select="$currentLanguage/own_slot_value[slot_reference='name']/value"/>" 

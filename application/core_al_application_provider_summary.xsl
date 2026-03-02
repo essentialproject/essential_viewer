@@ -1234,18 +1234,67 @@
 					.text-warning{
 						color: #f0ad4e;
 					}
-/* Force sane sizing for the cost-by-type chart */
-.cost-analytics-card { position: relative; }
+					/* Force sane sizing for the cost-by-type chart */
+					.cost-analytics-card { position: relative; }
 
-// #costByType-chart { width: 100% !important; height: 220px !important; max-height: 220px !important; }
-.cost-analytics-empty { position: absolute; left: 0; right: 0; top: 48px; text-align: center; color: #777; font-style: italic; }
+					// #costByType-chart { width: 100% !important; height: 220px !important; max-height: 220px !important; }
+					.cost-analytics-empty { position: absolute; left: 0; right: 0; top: 48px; text-align: center; color: #777; font-style: italic; }
 
-/* Extra guards to prevent squashing / flex collapse */
-.cost-analytics-card { min-height: 260px; }
-.full-width-chart-container { min-height: 220px; }
-#appcosts .full-width-chart-container, #appcosts #costByType-chart { display: block; }
-				</style>
-				 
+					/* Extra guards to prevent squashing / flex collapse */
+					.cost-analytics-card { min-height: 260px; }
+					.full-width-chart-container { min-height: 220px; }
+					#appcosts .full-width-chart-container, #appcosts #costByType-chart { display: block; }
+
+					  /* Container */
+					  .app-tree{position:relative;padding:8px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,0.08) inset, 0 4px 16px rgba(0,0,0,0.06)}
+
+					  /* Lists */
+					  .app-tree .tree-root{list-style:none;margin:0;padding-left:0}
+					  .app-tree .children{list-style:none;margin:6px 0 0 1rem;padding-left:.75rem;position:relative}
+					  .app-tree .children::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom, rgba(99,102,241,.35), rgba(99,102,241,.05))}
+
+					  /* Node blocks (chips) */
+					  .app-tree .node-line{display:inline-flex;gap:.5rem;align-items:center;padding:6px 10px;border-radius:12px;margin:4px 4px; width:fit-content; max-width:100%; white-space:nowrap;
+					    background:rgba(255,255,255,0.35); border:1px solid rgba(255,255,255,0.45);
+					    box-shadow:0 2px 8px rgba(31,41,55,0.10), 0 1px 0 rgba(255,255,255,0.35) inset;
+					    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px)}
+					  .app-tree .node-line:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,41,55,0.16)}
+
+					  /* Text */
+					  .app-tree .node-name{font-weight:650; letter-spacing:.2px}
+					  .app-tree .node-meta{font-family:monospace;color:#6b7280;font-size:12px;opacity:.85}
+
+					  /* Root layout: each child on its own line */
+					  .app-tree .tree-root > .tree-node{display:block !important;margin:8px 0}
+					  .app-tree .tree-root > .tree-node > .node-line{display:inline-flex !important;width:auto !important}
+
+					  /* Nested children: compact inline chips */
+					  .app-tree .children > .tree-node{display:inline-block !important;vertical-align:top;margin:4px 8px 4px 0}
+
+					  /* Guard against external width rules */
+					  .app-tree .tree-node{max-width:100%}
+					  .app-tree .node-line{width:auto !important}
+					 
+					.ess-section-title{display:flex;align-items:center;gap:.6rem;margin:0 0 1rem;font-weight:700;letter-spacing:.2px}
+					.ess-section-title i{opacity:.85}
+					.ess-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+					.ess-card{border:1px solid rgba(0,0,0,.08);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.5));box-shadow:0 6px 18px rgba(15,23,42,.08);padding:12px;transition:transform .2s ease, box-shadow .2s ease}
+					.ess-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(15,23,42,.12)}
+					.ess-card .title{font-weight:700;margin-bottom:6px;line-height:1.2}
+					.ess-card .meta{font-size:12px;color:#666}
+					.ess-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.18rem .6rem;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font-size:12px;font-weight:600;margin:.15rem .25rem .15rem 0}
+					.ess-chip.muted{background:#f6f6f6;color:#666}
+					.ess-chip.primary{background:#e8ecff}
+					.ess-chip.success{background:#e6f6ed}
+					.ess-chip.warn{background:#fff4e0}
+					.ess-chip.danger{background:#ffe8e8}
+					.ess-row{display:flex;flex-wrap:wrap;gap:.4rem}
+					.ess-soft{opacity:.8}
+					.ess-accordion .panel{border-radius:12px;overflow:hidden}
+					.ess-accordion .panel-heading{background:linear-gradient(180deg,#fafafa,#f2f2f2)}
+					.ess-accordion .panel-title{display:flex;align-items:center;gap:.6rem}
+					.ess-spacer{height:8px}
+					</style>
 			</head>
 			<body> 
 				<!-- ADD THE PAGE HEADING -->
@@ -1954,11 +2003,80 @@ function hookObserver(){
 								<div class="col-xs-12"/>
 								<div class="superflex">
 									<h3 class="text-primary"><i class="fa fa-sitemap right-10"></i><xsl:value-of select="eas:i18n('Contained Applications')"/></h3>
-									{{#each this.children}}
-									<span class="label label-eas" style="border-bottom:2pt solid #0078ff59">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
-									{{/each}}
+					
+									<div class="app-tree">
+									<ul class="tree-root">
+										{{#each this.children}}
+										<li class="tree-node">
+											<div class="node-line">
+											<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+										
+											</div>
+											{{#if children.length}}
+											<ul class="children">
+												{{#each children}}
+												<li class="tree-node">
+													<div class="node-line">
+													<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+												
+													</div>
+													{{#if children.length}}
+													<ul class="children">
+														{{#each children}}
+														<li class="tree-node">
+															<div class="node-line">
+															<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+															
+															</div>
+															{{#if children.length}}
+															<ul class="children">
+																{{#each children}}
+																<li class="tree-node">
+																	<div class="node-line">
+																	<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+																	
+																	</div>
+																	{{#if children.length}}
+																	<ul class="children">
+																		{{#each children}}
+																		<li class="tree-node">
+																			<div class="node-line">
+																			<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+																			
+																			</div>
+																			{{#if children.length}}
+																			<ul class="children">
+																				{{#each children}}
+																				<li class="tree-node">
+																					<div class="node-line">
+																					<span class="node-name">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</span>
+																					
+																					</div>
+																				</li>
+																				{{/each}}
+																			</ul>
+																			{{/if}}
+																		</li>
+																		{{/each}}
+																	</ul>
+																	{{/if}}
+																</li>
+																{{/each}}
+															</ul>
+															{{/if}}
+														</li>
+														{{/each}}
+													</ul>
+													{{/if}}
+												</li>
+												{{/each}}
+											</ul>
+											{{/if}}
+										</li>
+										{{/each}}
+									</ul>
+									</div>
 								</div>
-									
 								{{/if}}
 								<div class="col-xs-12"/>
 								{{#if this.classifications}}
@@ -2295,7 +2413,7 @@ function hookObserver(){
 									  
 													<li class="list-group-item">
 													  {{#if (eq this.security.sec_profile_mfa_usage "Implemented")}}
-														<i data="fa fa-check-circle text-success  "></i>
+														<i class="fa fa-check-circle text-success"></i>
 													  {{else if (eq this.security.sec_profile_mfa_usage "Not Supported")}}
 														<i class="fa fa-times-circle text-danger"></i>
 													  {{else}}
@@ -3002,502 +3120,163 @@ function hookObserver(){
 						{{#if this.plans}}	
 						<div class="tab-pane" id="appPlans">
 							<h2 class="print-only top-30"><i class="fa fa-fw fa-check-circle-o right-10"></i> <xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></h2>
-							<div class="parent-superflex">
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-check-circle-o right-10"></i><xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></h3>
-									<p><xsl:value-of select="eas:i18n('Plans and projects that impact this application')"/></p>
-									<h4><xsl:value-of select="eas:i18n('Plans')"/></h4>
-									{{#each this.plans}}
-										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>&#160;
-										<span class="label label-default"><xsl:value-of select="eas:i18n('From')"/></span>&#160;	{{#if this.validStartDate}} {{#formatDate this.validStartDate}}{{/formatDate}} {{else}}<xsl:value-of select="eas:i18n('Not Set')"/>	{{/if}}
-										<span class="label label-default"><xsl:value-of select="eas:i18n('To')"/></span>&#160;{{#if this.validEndDate}}{{#formatDate this.validEndDate}}{{/formatDate}}{{else}}<xsl:value-of select="eas:i18n('Not Set')"/>  	{{/if}}
-										<br/>
-									{{/each}}
-									{{#each this.aprplans}} 
-										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong> &#160;
-										<span class="label label-default"><xsl:value-of select="eas:i18n('From')"/></span>&#160;	{{#if this.validStartDate}} {{#formatDate this.validStartDate}}{{/formatDate}} {{else}}<xsl:value-of select="eas:i18n('Not Set')"/>	{{/if}}
-										<span class="label label-default"><xsl:value-of select="eas:i18n('To')"/></span>&#160;{{#if this.validEndDate}}{{#formatDate this.validEndDate}}{{/formatDate}}{{else}}<xsl:value-of select="eas:i18n('Not Set')"/>  	{{/if}}
-										<br/>
-									{{/each}}
-									{{#if this.projects}} 
-								 
-									<h4 class="mt-4 mb-3">Projects</h4>
-									<div class="panel-group" id="accordionProjects">
-									  {{#each this.projects}}
-										<div class="panel panel-default">
-										  <!-- Collapsible Project Header -->
-										  <div class="panel-heading" style="position:relative">
-											<h4 class="panel-title">
-												<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>
-												<xsl:text> </xsl:text>
-												<strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
-												
-												<div class="pull-right" style="position:absolute; right:3px; bottom:3px;">
-												<a data-toggle="collapse" data-parent="#accordionProjects"><xsl:attribute name="href">#collapse{{@index}}</xsl:attribute>
-														<button class="btn btn-default btn-xs toggle-btn"><xsl:value-of select="eas:i18n('More Information')"/></button>
-												</a>
-											  </div>
-											</h4>
-											<div class="project-dates mt-3 top-5">
-												<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>
-												{{#if this.proposedStartDate}}
-												  <span class="text-muted">{{#formatDate this.proposedStartDate}}{{/formatDate}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												
-												<span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Actual Start')"/></span>
-												{{#if this.actualStartDate}}
-												  <span class="text-muted">{{#formatDate this.actualStartDate}}{{/formatDate}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												
-												<span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Target End')"/></span>
-												{{#if this.targetEndDate}}
-												  <span class="text-muted">{{#formatDate this.targetEndDate}}{{/formatDate}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-									
-												<span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Forecast End')"/></span>
-												{{#if this.forecastEndDate}}
-												  <span class="text-muted">{{#formatDate this.forecastEndDate}}{{/formatDate}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-											  <div class="mt-3 top-5">
-												<span class="label label-light-grey "><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-												{{#if this.approvalStatus}}
-												<span class="label label-default"><xsl:attribute name="style">{{#styler this.approvalId}}{{/styler}}</xsl:attribute>{{this.approvalStatus}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												<span class="label label-light-grey"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-												{{#if this.priority}}
-												 
-												  {{#ifEquals this.priority 'High'}}
-												  <span class="label label-danger"> {{this.priority}}</span>
-												  {{else}}
-													{{#ifEquals this.priority 'Medium'}}
-													<span class="label label-warning"> {{this.priority}}</span>
-													{{else}}
-													<span class="label label-success"> {{this.priority}}</span>
-													{{/ifEquals}}
-												  {{/ifEquals}}
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												<span class="label label-light-grey"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-												{{#if this.lifecycleStatus}}
-												<span class="label label-default"><xsl:attribute name="style">{{#styler this.lifecycleStatusID}}{{/styler}}</xsl:attribute>{{this.lifecycleStatus}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-										  </div>
-									
-										  <!-- Collapsible Project Body -->
-										  <div class="panel-collapse collapse"><xsl:attribute name="id">collapse{{@index}}</xsl:attribute>
-											<div class="panel-body">
-											  <!-- Parent Program -->
-											  <div class="mt-2">
-												<span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('EA Reference')"/></span>
-												{{#if this.ea_reference}}
-											  	<span class="text-muted"> {{this.ea_reference}}</span>
-												  {{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div> 
-											  <div class="mt-2">
-												<span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('Parent Program')"/></span>
-												{{#if this.programmeName}}
-												  <span class="text-muted">{{this.programmeName}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-											  
-											  
-											  <!-- Project Description -->
-											  <div class="mt-2">
-												<span class="label label-default top-5 ms-3"><xsl:value-of select="eas:i18n('Description')"/></span>
-												{{#if this.description}}
-												  <span class="text-muted">{{this.description}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-									
-											  <!-- Approval Status
-											  <div class="mt-2">
-												<span class="label label-primary"><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-												{{#if this.approvalStatus}}
-												  <span class="text-muted">{{this.approvalStatus}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												<span class="label label-warning"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-												{{#if this.businessPriority}}
-												  <span class="text-muted">{{this.businessPriority}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-												<span class="label label-danger"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-												{{#if this.lifecycleStatus}}
-												  <span class="text-muted">{{this.lifecycleStatus}}</span>
-												{{else}}
-												  <span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-												{{/if}}
-											  </div>
-									 -->
-											 
-											  
-											  <!-- Project Dates -->
-											  
-											</div>
-										  </div>
-										</div>
-									  {{/each}}
-									</div>
-									
-									
+<div class="parent-superflex">
+  <div class="superflex">
+    <h3 class="text-primary"><i class="fa fa-check-circle-o"></i><span><xsl:text> </xsl:text><xsl:value-of select="eas:i18n('Plans &amp; Projects')"/></span></h3>
+    <p class="ess-soft"><xsl:value-of select="eas:i18n('Plans and projects that impact this application')"/></p>
 
-									{{#each this.aprprojects}}
-									<div class="panel panel-default">
-										<!-- Collapsible Project Header -->
-										<div class="panel-heading" style="position:relative">
-										  <h4 class="panel-title">
-											  <span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>
-											  <xsl:text> </xsl:text>
-											  <strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
-											  
-											  <div class="pull-right" style="position:absolute; right:3px; bottom:3px;">
-											  <a data-toggle="collapse" data-parent="#accordionProjects"><xsl:attribute name="href">#collapse{{@index}}</xsl:attribute>
-													  <button class="btn btn-default btn-xs toggle-btn"><xsl:value-of select="eas:i18n('More Information')"/></button>
-											  </a>
-											</div>
-										  </h4>
-										  <div class="project-dates mt-3 top-5">
-											  <span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>
-											  {{#if this.proposedStartDate}}
-												<span class="text-muted">{{#formatDate this.proposedStartDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Actual Start')"/></span>
-											  {{#if this.actualStartDate}}
-												<span class="text-muted">{{#formatDate this.actualStartDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Target End')"/></span>
-											  {{#if this.targetEndDate}}
-												<span class="text-muted">{{#formatDate this.targetEndDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-								  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Forecast End')"/></span>
-											  {{#if this.forecastEndDate}}
-												<span class="text-muted">{{#formatDate this.forecastEndDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											<div class="mt-3 top-5">
-											  <span class="label label-light-grey "><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-											  {{#if this.approvalStatus}}
-											  <span class="label label-default"><xsl:attribute name="style">{{#styler this.approvalId}}{{/styler}}</xsl:attribute>{{this.approvalStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-light-grey"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-											  {{#if this.priority}}
-											   
-												{{#ifEquals this.priority 'High'}}
-												<span class="label label-danger"> {{this.priority}}</span>
-												{{else}}
-												  {{#ifEquals this.priority 'Medium'}}
-												  <span class="label label-warning"> {{this.priority}}</span>
-												  {{else}}
-												  <span class="label label-success"> {{this.priority}}</span>
-												  {{/ifEquals}}
-												{{/ifEquals}}
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-light-grey"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-											  {{#if this.lifecycleStatus}}
-											  <span class="label label-default"><xsl:attribute name="style">{{#styler this.lifecycleStatusID}}{{/styler}}</xsl:attribute>{{this.lifecycleStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-										</div>
-								  
-										<!-- Collapsible Project Body -->
-										<div class="panel-collapse collapse"><xsl:attribute name="id">collapse{{@index}}</xsl:attribute>
-										  <div class="panel-body">
-											<!-- Parent Program -->
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('EA Reference')"/></span>
-											  {{#if this.ea_reference}}
-												<span class="text-muted"> {{this.ea_reference}}</span>
-												{{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div> 
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('Parent Program')"/></span>
-											  {{#if this.programmeName}}
-												<span class="text-muted">{{this.programmeName}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											
-											<!-- Project Description -->
-											<div class="mt-2">
-											  <span class="label label-default top-5 ms-3"><xsl:value-of select="eas:i18n('Description')"/></span>
-											  {{#if this.description}}
-												<span class="text-muted">{{this.description}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-								  
-											<!-- Approval Status
-											<div class="mt-2">
-											  <span class="label label-primary"><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-											  {{#if this.approvalStatus}}
-												<span class="text-muted">{{this.approvalStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-warning"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-											  {{#if this.businessPriority}}
-												<span class="text-muted">{{this.businessPriority}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-danger"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-											  {{#if this.lifecycleStatus}}
-												<span class="text-muted">{{this.lifecycleStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-								   -->
-										   
-											
-											<!-- Project Dates -->
-											
-										  </div>
-										</div>
-									  </div>
-									
-									{{/each}}
-									{{else}}
-									{{#if this.aprprojects}} 
-									<h4>Projects</h4>
-									{{#each this.aprprojects}}
-									<div class="panel panel-default">
-										<!-- Collapsible Project Header -->
-										<div class="panel-heading" style="position:relative">
-										  <h4 class="panel-title">
-											  <span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>
-											  <xsl:text> </xsl:text>
-											  <strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
-											  
-											  <div class="pull-right" style="position:absolute; right:3px; bottom:3px;">
-											  <a data-toggle="collapse" data-parent="#accordionProjects"><xsl:attribute name="href">#collapse{{@index}}</xsl:attribute>
-													  <button class="btn btn-default btn-xs toggle-btn"><xsl:value-of select="eas:i18n('More Information')"/></button>
-											  </a>
-											</div>
-										  </h4>
-										  <div class="project-dates mt-3 top-5">
-											  <span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>
-											  {{#if this.proposedStartDate}}
-												<span class="text-muted">{{#formatDate this.proposedStartDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Actual Start')"/></span>
-											  {{#if this.actualStartDate}}
-												<span class="text-muted">{{#formatDate this.actualStartDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Target End')"/></span>
-											  {{#if this.targetEndDate}}
-												<span class="text-muted">{{#formatDate this.targetEndDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-								  
-											  <span class="label label-default ms-3"><xsl:value-of select="eas:i18n('Forecast End')"/></span>
-											  {{#if this.forecastEndDate}}
-												<span class="text-muted">{{#formatDate this.forecastEndDate}}{{/formatDate}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											<div class="mt-3 top-5">
-											  <span class="label label-light-grey "><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-											  {{#if this.approvalStatus}}
-											  <span class="label label-default"><xsl:attribute name="style">{{#styler this.approvalId}}{{/styler}}</xsl:attribute>{{this.approvalStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-light-grey"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-											  {{#if this.priority}}
-											   
-												{{#ifEquals this.priority 'High'}}
-												<span class="label label-danger"> {{this.priority}}</span>
-												{{else}}
-												  {{#ifEquals this.priority 'Medium'}}
-												  <span class="label label-warning"> {{this.priority}}</span>
-												  {{else}}
-												  <span class="label label-success"> {{this.priority}}</span>
-												  {{/ifEquals}}
-												{{/ifEquals}}
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-light-grey"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-											  {{#if this.lifecycleStatus}}
-											  <span class="label label-default"><xsl:attribute name="style">{{#styler this.lifecycleStatusID}}{{/styler}}</xsl:attribute>{{this.lifecycleStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-										</div>
-								  
-										<!-- Collapsible Project Body -->
-										<div class="panel-collapse collapse"><xsl:attribute name="id">collapse{{@index}}</xsl:attribute>
-										  <div class="panel-body">
-											<!-- Parent Program -->
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('EA Reference')"/></span>
-											  {{#if this.ea_reference}}
-												<span class="text-muted"> {{this.ea_reference}}</span>
-												{{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div> 
-											<div class="mt-2">
-											  <span class="label label-light-grey top-5"><xsl:value-of select="eas:i18n('Parent Program')"/></span>
-											  {{#if this.programmeName}}
-												<span class="text-muted">{{this.programmeName}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-											
-											
-											<!-- Project Description -->
-											<div class="mt-2">
-											  <span class="label label-default top-5 ms-3"><xsl:value-of select="eas:i18n('Description')"/></span>
-											  {{#if this.description}}
-												<span class="text-muted">{{this.description}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-								  
-											<!-- Approval Status
-											<div class="mt-2">
-											  <span class="label label-primary"><xsl:value-of select="eas:i18n('Approval Status')"/></span>
-											  {{#if this.approvalStatus}}
-												<span class="text-muted">{{this.approvalStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-warning"><xsl:value-of select="eas:i18n('Project Business Priority')"/></span>
-											  {{#if this.businessPriority}}
-												<span class="text-muted">{{this.businessPriority}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											  <span class="label label-danger"><xsl:value-of select="eas:i18n('Lifecycle Status')"/></span>
-											  {{#if this.lifecycleStatus}}
-												<span class="text-muted">{{this.lifecycleStatus}}</span>
-											  {{else}}
-												<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>
-											  {{/if}}
-											</div>
-								   -->
-										   
-											
-											<!-- Project Dates -->
-											
-										  </div>
-										</div>
-									  </div>
-									
-									{{/each}}
-									{{/if}}
-									{{/if}}
-									
-								</div>
-							
-								<div class="col-xs-12"/>
-								<div class="superflex">
-									<h3 class="text-primary"><i class="fa fa-cogs right-10"></i><xsl:value-of select="eas:i18n('Impacts')"/></h3>
-									<p><xsl:value-of select="eas:i18n('Projects impacting this application and actions they are taking on this application')"/> </p>
-									{{#if this.projectElements}}
-									{{#each this.projectElements}}
-										<span class="label label-success">Plan</span>&#160;{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
-										<br/>
-										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
-										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.projForeStart}}{{#formatDate this.projForeStart}}{{/formatDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.projActStart}}{{#formatDate this.projActStart}}{{/formatDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.projTargEnd}}{{#formatDate this.projTargEnd}}{{/formatDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.projForeEnd}}{{#formatDate this.projForeEnd}}{{/formatDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
-											<br/>
-											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.action}}</span>
-										
-										<hr/>
-									{{/each}}
-									{{#each this.aprprojectElements}}
-										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>&#160;{{this.plan}}&#160;
-										<br/>
-										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>&#160;{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}&#160;<br/>
-										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}} {{#formatDate this.proposedStartDate}}{{/formatDate}}   {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{#formatDate this.actualStartDate}}{{/formatDate}}{{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/></span>&#160;{{#if this.targetEndDate}} {{#formatDate this.targetEndDate}}{{/formatDate}}{{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Forecast End')"/></span> &#160;{{#if this.forecastEndDate}}{{#formatDate this.forecastEndDate}}{{/formatDate}}{{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
-											<br/>
-											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
-										
-										<hr/>
-									{{/each}}
-									{{else}}
-									{{#if this.aprprojectElements}}
-									{{#each this.aprprojectElements}}
-										<span class="label label-success"><xsl:value-of select="eas:i18n('Plan')"/></span>{{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
-										<br/>
-										<span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>{{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}<br/>
-										<span class="label label-default"><xsl:value-of select="eas:i18n('Proposed Start')"/></span>&#160;{{#if this.proposedStartDate}}{{#formatDate this.proposedStartDate}}{{/formatDate}}  {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Actual Start')"/></span> &#160;{{#if this.actualStartDate}}{{#formatDate this.actualStartDate}}{{/formatDate}}{{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}} 
-											<span class="label label-default"><xsl:value-of select="eas:i18n('Target End')"/>')"/></span> &#160;{{#if this.forecastEndDate}}{{#formatDate this.forecastEndDate}}{{/formatDate}} {{else}} <xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}  
-											<br/>
-											<span class="label label-info"><xsl:value-of select="eas:i18n('Action')"/></span>&#160;<span class="label label-default"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}}</xsl:attribute>{{this.apraction}}</span>
-											
-										<hr/>
-									{{/each}}
-									{{else}}
-									<strong><xsl:value-of select="eas:i18n('No impacts recorded')"/></strong>
-									{{/if}}
-									{{/if}}
-								</div>
-							</div>
+    {{#if this.plans}}
+    <div class="ess-section-title"><i class="fa fa-map"></i><span><xsl:value-of select="eas:i18n('Plans')"/></span></div>
+    <div class="ess-card-grid">
+      {{#each this.plans}}
+      <div class="ess-card">
+        <div class="title">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+        <div class="ess-row">
+          <span class="ess-chip primary"><i class="fa fa-play"></i>
+            {{#if this.validStartDate}}{{#formatDate this.validStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+          </span>
+          <span class="ess-chip primary"><i class="fa fa-flag-checkered"></i>
+            {{#if this.validEndDate}}{{#formatDate this.validEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+          </span>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if this.aprplans}}
+    <div class="ess-section-title" style="margin-top:14px"><i class="fa fa-map-signs"></i><span><xsl:value-of select="eas:i18n('Plans (via Roles)')"/></span></div>
+    <div class="ess-card-grid">
+      {{#each this.aprplans}}
+      <div class="ess-card">
+        <div class="title">{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</div>
+        <div class="ess-row">
+          <span class="ess-chip primary"><i class="fa fa-play"></i>
+            {{#if this.validStartDate}}{{#formatDate this.validStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+          </span>
+          <span class="ess-chip primary"><i class="fa fa-flag-checkered"></i>
+            {{#if this.validEndDate}}{{#formatDate this.validEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+          </span>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if this.projects}}
+    <div class="ess-section-title" style="margin-top:14px"><i class="fa fa-cubes"></i><span><xsl:value-of select="eas:i18n('Projects')"/></span></div>
+    <div class="panel-group ess-accordion" id="accordionProjects">
+      {{#each this.projects}}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <span class="label label-primary"><xsl:value-of select="eas:i18n('Project')"/></span>
+            <strong>{{#essRenderInstanceMenuLink this}}{{/essRenderInstanceMenuLink}}</strong>
+            <a data-toggle="collapse" data-parent="#accordionProjects">
+              <xsl:attribute name="href">#proj{{@index}}</xsl:attribute>
+              <span class="ess-chip muted"><i class="fa fa-info-circle"></i><xsl:value-of select="eas:i18n('More Information')"/></span>
+            </a>
+          </h4>
+          <div class="ess-row" style="margin-top:.4rem">
+            <span class="ess-chip"><i class="fa fa-calendar-o"></i><xsl:value-of select="eas:i18n('Proposed Start')"/>:
+              {{#if this.proposedStartDate}}{{#formatDate this.proposedStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+            <span class="ess-chip"><i class="fa fa-calendar"></i><xsl:value-of select="eas:i18n('Actual Start')"/>:
+              {{#if this.actualStartDate}}{{#formatDate this.actualStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+            <span class="ess-chip"><i class="fa fa-flag"></i><xsl:value-of select="eas:i18n('Target End')"/>:
+              {{#if this.targetEndDate}}{{#formatDate this.targetEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+            <span class="ess-chip"><i class="fa fa-hourglass-end"></i><xsl:value-of select="eas:i18n('Forecast End')"/>:
+              {{#if this.forecastEndDate}}{{#formatDate this.forecastEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+          </div>
+          <div class="ess-row">
+            <span class="ess-chip muted"><xsl:value-of select="eas:i18n('Approval Status')"/>:
+              {{#if this.approvalStatus}}<span>{{this.approvalStatus}}</span>{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+            <span class="ess-chip {{#ifEquals this.priority 'High'}}danger{{else}}{{#ifEquals this.priority 'Medium'}}warn{{else}}success{{/ifEquals}}{{/ifEquals}}">
+              <xsl:value-of select="eas:i18n('Priority')"/>: {{#if this.priority}}{{this.priority}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+            <span class="ess-chip muted"><xsl:value-of select="eas:i18n('Lifecycle Status')"/>:
+              {{#if this.lifecycleStatus}}<span>{{this.lifecycleStatus}}</span>{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}
+            </span>
+          </div>
+        </div>
+        <div class="panel-collapse collapse"><xsl:attribute name="id">proj{{@index}}</xsl:attribute>
+          <div class="panel-body">
+            <div class="ess-row">
+              <span class="ess-chip muted"><xsl:value-of select="eas:i18n('EA Reference')"/>: {{#if this.ea_reference}}{{this.ea_reference}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+              <span class="ess-chip muted"><xsl:value-of select="eas:i18n('Parent Programme')"/>: {{#if this.programmeName}}{{this.programmeName}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+            </div>
+            <div class="ess-spacer"></div>
+            <div>
+              <span class="label label-default"><xsl:value-of select="eas:i18n('Description')"/></span>
+              <span class="text-muted"> {{#if this.description}}{{this.description}}{{else}}<xsl:value-of select="eas:i18n('Not Set')"/>{{/if}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+  </div>
+
+  <div class="col-xs-12"/>
+
+  <div class="superflex">
+    <div class="ess-section-title"><i class="fa fa-cogs"></i><span><xsl:value-of select="eas:i18n('Impacts')"/></span></div>
+    <p class="ess-soft"><xsl:value-of select="eas:i18n('Projects impacting this application and actions they are taking on this application')"/></p>
+
+    {{#if this.projectElements}}
+      {{#each this.projectElements}}
+      <div class="ess-row">
+        <span class="ess-chip success"><i class="fa fa-map"></i><xsl:value-of select="eas:i18n('Plan')"/></span>
+        {{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
+      </div>
+      <div class="ess-row">
+        <span class="ess-chip primary"><i class="fa fa-cube"></i><xsl:value-of select="eas:i18n('Project')"/></span>
+        {{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}
+      </div>
+      <div class="ess-row">
+        <span class="ess-chip"><xsl:value-of select="eas:i18n('Proposed Start')"/>: {{#if this.projForeStart}}{{#formatDate this.projForeStart}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+        <span class="ess-chip"><xsl:value-of select="eas:i18n('Actual Start')"/>: {{#if this.projActStart}}{{#formatDate this.projActStart}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+        <span class="ess-chip"><xsl:value-of select="eas:i18n('Target End')"/>: {{#if this.projTargEnd}}{{#formatDate this.projTargEnd}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+        <span class="ess-chip"><xsl:value-of select="eas:i18n('Forecast End')"/>: {{#if this.projForeEnd}}{{#formatDate this.projForeEnd}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+      </div>
+      <div class="ess-row">
+        <span class="ess-chip warn"><xsl:value-of select="eas:i18n('Action')"/></span>
+        <span class="ess-chip" style="border-color:transparent"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}};border-color:transparent</xsl:attribute>{{this.action}}</span>
+      </div>
+      <hr/>
+      {{/each}}
+    {{else}}
+      {{#if this.aprprojectElements}}
+        {{#each this.aprprojectElements}}
+        <div class="ess-row">
+          <span class="ess-chip success"><xsl:value-of select="eas:i18n('Plan')"/></span> {{#essRenderInstanceMenuLink this.planInfo}}{{/essRenderInstanceMenuLink}}
+        </div>
+        <div class="ess-row">
+          <span class="ess-chip primary"><xsl:value-of select="eas:i18n('Project')"/></span> {{#essRenderInstanceMenuLink this.projectInfo}}{{/essRenderInstanceMenuLink}}
+        </div>
+        <div class="ess-row">
+          <span class="ess-chip"><xsl:value-of select="eas:i18n('Proposed Start')"/>: {{#if this.proposedStartDate}}{{#formatDate this.proposedStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+          <span class="ess-chip"><xsl:value-of select="eas:i18n('Actual Start')"/>: {{#if this.actualStartDate}}{{#formatDate this.actualStartDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+          <span class="ess-chip"><xsl:value-of select="eas:i18n('Target End')"/>: {{#if this.targetEndDate}}{{#formatDate this.targetEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+          <span class="ess-chip"><xsl:value-of select="eas:i18n('Forecast End')"/>: {{#if this.forecastEndDate}}{{#formatDate this.forecastEndDate}}{{/formatDate}}{{else}}<span class="text-muted"><xsl:value-of select="eas:i18n('Not Set')"/></span>{{/if}}</span>
+        </div>
+        <div class="ess-row">
+          <span class="ess-chip warn"><xsl:value-of select="eas:i18n('Action')"/></span>
+          <span class="ess-chip" style="border-color:transparent"><xsl:attribute name="style">color:{{this.textColour}};background-color:{{this.colour}};border-color:transparent</xsl:attribute>{{this.apraction}}</span>
+        </div>
+        <hr/>
+        {{/each}}
+      {{else}}
+        <strong><xsl:value-of select="eas:i18n('No impacts recorded')"/></strong>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>
 						</div>
 						{{/if}}
 						{{#if this.otherEnums}}
@@ -3741,11 +3520,11 @@ function hookObserver(){
 
 		<div class="cost-summary-grid">
 			<div class="cost-summary-card accent">
-				<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Regular Annual Cost')"/></div>
+				<div class="cost-summary-label" id="annualCostLabel">{{#if this.inScopeOnly}}<xsl:value-of select="eas:i18n('Actual Regular Annual Cost')"/>{{else}}<xsl:value-of select="eas:i18n('Annualised Regular Annual Cost')"/>{{/if}}</div>
 				<div class="cost-summary-value" id="regAnnual">{{this.annualCost}}</div>
 			</div>
 			<div class="cost-summary-card accent">
-				<div class="cost-summary-label"><xsl:value-of select="eas:i18n('Regular Monthly Cost')"/></div>
+				<div class="cost-summary-label" id="monthlyCostLabel">{{#if this.inScopeOnly}}<xsl:value-of select="eas:i18n('Actual Regular Monthly Cost')"/>{{else}}<xsl:value-of select="eas:i18n('Annualised Regular Monthly Cost')"/>{{/if}}</div>
 				<div class="cost-summary-value" id="regMonthly">{{this.monthlyCost}}</div>
 				<div class="cost-summary-meta">
 					<!--
@@ -3768,7 +3547,20 @@ function hookObserver(){
 
 		<div class="cost-analytics-grid">
 			<div class="cost-analytics-card wide">
-				<div class="cost-card-head"><xsl:value-of select="eas:i18n('Monthly Trend')"/></div>
+				<div class="cost-card-head">
+					<span><xsl:value-of select="eas:i18n('Monthly Trend')"/></span>
+					<div class="in-scope-toggle" title="When ON, chart shows 'Actual' costs for active dates. When OFF, shows 'Annualised' full target amounts.">
+						<span><xsl:value-of select="eas:i18n('Annual/Actual Mode')"/></span>
+						<label class="switch">
+							{{#if this.inScopeOnly}}
+								<input type="checkbox" id="inScopeToggle" checked="checked"/>
+							{{else}}
+								<input type="checkbox" id="inScopeToggle"/>
+							{{/if}}
+							<span class="slider"></span>
+						</label>
+					</div>
+				</div>
 				<canvas id="costByMonth-chart"></canvas>
 			</div>
 			<div class="cost-analytics-card">
@@ -3818,6 +3610,61 @@ function hookObserver(){
 			align-items: flex-end;
 			gap: 1.5rem;
 			margin-bottom: 1.5rem;
+		}
+		
+		/* In-Scope Toggle Styles */
+		.cost-card-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.in-scope-toggle {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 11px;
+			font-weight: 500;
+			text-transform: none;
+			color: #666;
+		}
+		.switch {
+			position: relative;
+			display: inline-block;
+			width: 32px;
+			height: 18px;
+		}
+		.switch input { 
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #ccc;
+			transition: .4s;
+			border-radius: 18px;
+		}
+		.slider:before {
+			position: absolute;
+			content: "";
+			height: 12px;
+			width: 12px;
+			left: 3px;
+			bottom: 3px;
+			background-color: white;
+			transition: .4s;
+			border-radius: 50%;
+		}
+		input:checked + .slider {
+			background-color: #3d3988;
+		}
+		input:checked + .slider:before {
+			transform: translateX(14px);
 		}
 		.cost-heading {
 			margin: 0;
@@ -4317,7 +4164,8 @@ function computeCostContribution(cost, config) {
 		baseCurrency,
 		periodStart,
 		periodEnd,
-		includeAdhoc = false
+		includeAdhoc = false,
+		inScopeOnly = true
 	} = config;
 	const amountMinor = toMinorUnits(cost.amount);
 	const proration = getProrationDetails(cost.startDate, cost.endDate, periodStart, periodEnd);
@@ -4331,7 +4179,8 @@ function computeCostContribution(cost, config) {
 	if (isRecurring &amp;&amp; overlaps &amp;&amp; proration.periodDays > 0) {
 		const annualMinor = normaliseAnnualMinor(amountMinor, cost.frequency);
 		if (annualMinor !== 0) {
-			const proratedMinor = Math.round(annualMinor * proration.factor);
+			const effectiveProration = inScopeOnly ? proration.factor : 1.0;
+			const proratedMinor = Math.round(annualMinor * effectiveProration);
 			annualMinorTarget = convertMinorCurrency(proratedMinor, cost.currency, targetCurrency, exchangeRates, baseCurrency);
 			monthlyMinorTarget = Math.round(annualMinorTarget / 12);
 		} else {
@@ -4359,12 +4208,13 @@ function computeCostContribution(cost, config) {
 		adhocMinorTarget,
 		included,
 		overlaps,
-		prorationFactor: proration.factor,
-		overlapDays: proration.overlapDays,
+		prorationFactor: inScopeOnly ? proration.factor : 1.0,
+		overlapDays: inScopeOnly ? proration.overlapDays : proration.periodDays,
 		periodDays: proration.periodDays,
-		effectiveStart: proration.effectiveStart,
-		effectiveEnd: proration.effectiveEnd,
-		meta: cost.meta
+		effectiveStart: inScopeOnly ? proration.effectiveStart : periodStart,
+		effectiveEnd: inScopeOnly ? proration.effectiveEnd : periodEnd,
+		meta: cost.meta,
+		inScopeOnly
 	};
 }
 
@@ -4374,6 +4224,7 @@ function summariseCosts(costs, exchangeRates, options = {}) {
 		periodStart,
 		periodEnd,
 		includeAdhoc = false,
+		inScopeOnly = true,
 		baseCurrency: providedBaseCurrency
 	} = options;
 	const baseCurrency = providedBaseCurrency || BASE_CURRENCY_FALLBACK;
@@ -4400,7 +4251,8 @@ function summariseCosts(costs, exchangeRates, options = {}) {
 		baseCurrency,
 		periodStart: resolvedPeriod.start,
 		periodEnd: resolvedPeriod.end,
-		includeAdhoc
+		includeAdhoc,
+		inScopeOnly
 	};
 
 	let totalAnnualMinor = 0;
@@ -5506,10 +5358,67 @@ $('#subjectSelection').select2({
   }
 });
  
-		if (focusApp &amp;&amp; focusApp.children) {
-			focusApp.children = focusApp.children.map(d => scopedApps.resources.find(f => d === f.id)).filter(Boolean);
+		// --- Begin: recursive child nesting (max depth 5) ---
+		const MAX_CHILD_DEPTH = 5;
+		const resourcesById = new Map((scopedApps &amp;&amp; scopedApps.resources ? scopedApps.resources : []).map(r => [r.id, r]));
+
+		function resolveApp(nodeOrId) {
+		  if (!nodeOrId) return null;
+		  if (typeof nodeOrId === 'string') return resourcesById.get(nodeOrId) || null;
+		  if (typeof nodeOrId === 'object' &amp;&amp; nodeOrId.id) return resourcesById.get(nodeOrId.id) || nodeOrId;
+		  return null;
 		}
-	 
+
+		// Helper to create a minimal app object
+		function toMinimalApp(node) {
+		  if (!node) return null;
+		  return {
+			id: node.id,
+			name: node.name,
+			className: node.className,
+			children: Array.isArray(node.children) ? node.children : []
+		  };
+		}
+
+		// Recursively builds a nested children tree up to MAX_CHILD_DEPTH.
+		// Uses a path-specific visited set to prevent cycles while allowing siblings to reuse shared nodes.
+		function buildChildrenTree(app, depth, pathVisited) {
+		  if (!app) return;
+		  const nextDepth = depth + 1;
+		  const ids = Array.isArray(app.children) ? app.children : [];
+
+		  // At max depth: convert remaining ids to minimal objects, but do not recurse further
+		  if (depth >= MAX_CHILD_DEPTH) {
+			app.children = ids
+			  .map(resolveApp)
+			  .filter(Boolean)
+			  .map(toMinimalApp);
+			return;
+		  }
+
+		  const out = [];
+		  for (const childRef of ids) {
+			const childObj = resolveApp(childRef);
+			if (!childObj) continue;
+			const childId = childObj.id;
+			if (!childId || pathVisited.has(childId)) {
+			  continue; // avoid cycles / bad data
+			}
+			// Build a minimal clone and recurse
+			const minimal = toMinimalApp(childObj);
+			pathVisited.add(childId);
+			buildChildrenTree(minimal, nextDepth, pathVisited);
+			pathVisited.delete(childId);
+			out.push(minimal);
+		  }
+		  app.children = out;
+		}
+		// --- End: recursive child nesting ---
+
+		if (focusApp) {
+		  buildChildrenTree(focusApp, 0, new Set([focusApp.id].filter(Boolean)));
+		}
+	 console.log('focusApp',focusApp)
 		focusApp['caps']=appToCapabilityObj[focusApp.id] || null;
 	
 		const groupedAndSorted = focusApp.caps?.reduce((acc, item) => {
@@ -5956,7 +5865,8 @@ $('#subjectSelection').select2({
 				latestMonthly: '—',
 				trend: null,
 				topCosts: [],
-				adhocCost: null
+				adhocCost: null,
+				inScopeOnly: currentInScopeOnly
 			},
 			raw: {
 				annual: 0,
@@ -6021,7 +5931,10 @@ $('#subjectSelection').select2({
 				latestMonthly: formatCurrencyValue(latestMonthlyValue, currency),
 				trend,
 				topCosts: formattedTopCosts,
-				adhocCost: adhocValue ? formatCurrencyValue(adhocValue, currency) : null
+				adhocCost: adhocValue ? formatCurrencyValue(adhocValue, currency) : null,
+				inScopeOnly: currentInScopeOnly,
+				annualLabel: currentInScopeOnly ? "<xsl:value-of select="eas:i18n('Actual Regular Annual Cost')"/>" : "<xsl:value-of select="eas:i18n('Annualised Regular Annual Cost')"/>",
+				monthlyLabel: currentInScopeOnly ? "<xsl:value-of select="eas:i18n('Actual Regular Monthly Cost')"/>" : "<xsl:value-of select="eas:i18n('Annualised Regular Monthly Cost')"/>"
 			},
 			raw: {
 				annual,
@@ -6084,6 +5997,12 @@ $('#subjectSelection').select2({
 			const currency = $(this).val();
 			updateCharts(currency);
 		});
+
+		// Add In-Scope Toggle listener
+		$(document).off('change', '#inScopeToggle').on('change', '#inScopeToggle', function() {
+			currentInScopeOnly = $(this).is(':checked');
+			updateCharts();
+		});
 	};
 
 	const computeCostSummaryForCurrency = (targetCurrencyCode, overrideRate) => {
@@ -6093,6 +6012,7 @@ $('#subjectSelection').select2({
 			periodStart: periodStartIso,
 			periodEnd: periodEndIso,
 			includeAdhoc: false,
+			inScopeOnly: currentInScopeOnly,
 			baseCurrency
 		});
 		const contributions = costInputs.map((cost) => computeCostContribution(cost, {
@@ -6101,7 +6021,8 @@ $('#subjectSelection').select2({
 			baseCurrency,
 			periodStart: periodBounds.start,
 			periodEnd: periodBounds.end,
-			includeAdhoc: false
+			includeAdhoc: false,
+			inScopeOnly: currentInScopeOnly
 		}));
 		const contributionMap = new Map();
 		contributions.forEach((item) => {
@@ -6126,9 +6047,102 @@ $('#subjectSelection').select2({
 		};
 	};
 
+	let currentInScopeOnly = true;
 	let currentTargetCurrencyCode = defaultCurrency.ccyCode || baseCurrency;
 	let costSummaryState = null;
 	let costSummaryError = null;
+
+	function updateCharts(currency) {
+		const ccyMatch = (ccy &amp;&amp; currentTargetCurrencyCode) ? ccy.find(d => d.ccyCode === currentTargetCurrencyCode) : null;
+		const currencyId = currency || $('#ccySelect').val() || (ccyMatch ? ccyMatch.id : null);
+		const ccySelected = ccy ? ccy.find(d => d.id == currencyId) : null;
+		if (!ccySelected) {
+			return;
+		}
+		currentTargetCurrencyCode = ccySelected.ccyCode || baseCurrency;
+		const selectedRate = parseExchangeRate(ccySelected.exchangeRate);
+		try {
+			costSummaryState = computeCostSummaryForCurrency(
+				currentTargetCurrencyCode,
+				(Number.isFinite(selectedRate) &amp;&amp; selectedRate &gt; 0) ? selectedRate : undefined
+			);
+			costSummaryError = null;
+		} catch (error) {
+			console.error('Cost summary error:', error);
+			costSummaryError = error;
+			$('.costTotal-container').html('<div class="alert alert-danger">' + error.message + '</div>');
+			return;
+		}
+
+		const presentation = buildCostNumbers(costSummaryState);
+		costNumbers = presentation.numbers;
+		costNumbersRaw = presentation.raw;
+
+		if ($('.costTotal-container').find('#regAnnual').length === 0) {
+			$('.costTotal-container').html(costTotalTemplate(costNumbers));
+			initialiseCurrencySelector();
+		}
+
+		$('#regAnnual').text(costNumbers.annualCost);
+		$('#regMonthly').text(costNumbers.monthlyCost);
+		$('#annualCostLabel').text(presentation.numbers.annualLabel);
+		$('#monthlyCostLabel').text(presentation.numbers.monthlyLabel);
+		$('#costCurrencyLabel').text(costNumbers.currency);
+		$('#costPeriodLabel').text(costNumbers.period);
+		$('#costLatestMonthly').text(costNumbers.latestMonthly);
+
+		const trendElement = $('#costTrend');
+		if (trendElement.length) {
+			trendElement.removeClass('up down hidden');
+			if (costNumbers.trend) {
+				trendElement.addClass(costNumbers.trend.direction);
+			} else {
+				trendElement.addClass('hidden');
+			}
+		}
+
+		const adhocCard = $('#costAdhocCard');
+		if (adhocCard.length) {
+			if (costNumbers.adhocCost) {
+				$('#costAdhoc').text(costNumbers.adhocCost);
+				adhocCard.show();
+			} else {
+				adhocCard.hide();
+			}
+		}
+
+		renderTopCostList(costNumbers.topCosts);
+
+		cbfLabels = costSummaryState.aggregates.frequency.labels;
+		cbfVals = costSummaryState.aggregates.frequency.values;
+		cbcLabels = costSummaryState.aggregates.category.labels;
+		cbcVals = costSummaryState.aggregates.category.values;
+		cbtLabels = costSummaryState.aggregates.type.labels;
+		cbtVals = costSummaryState.aggregates.type.values;
+		monthsList = costSummaryState.monthly.labels;
+		sumsList = costSummaryState.monthly.values;
+
+		if (!chartCostByFrequency || !chartCostByCategory || !chartCostByType || !chartCostByMonth) {
+			return;
+		}
+
+		chartCostByFrequency.data.labels = cbfLabels;
+		chartCostByFrequency.data.datasets[0].data = cbfVals;
+		chartCostByCategory.data.labels = cbcLabels;
+		chartCostByCategory.data.datasets[0].data = cbcVals;
+		chartCostByType.data.labels = cbtLabels;
+		chartCostByType.data.datasets[0].data = cbtVals;
+		chartCostByMonth.data.labels = monthsList;
+		chartCostByMonth.data.datasets[0].data = sumsList;
+		chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
+			return formatCurrencyValue(value, costNumbersRaw.currency);
+		};
+
+		chartCostByFrequency.update();
+		chartCostByCategory.update();
+		chartCostByType.update();
+		chartCostByMonth.update();
+	}
 	try {
 		costSummaryState = computeCostSummaryForCurrency(currentTargetCurrencyCode);
 	} catch (error) {
@@ -6839,96 +6853,6 @@ $('#subjectSelection').select2({
 	
 	
 	
-	function updateCharts(currency) {
-		const ccySelected = ccy.find(d => d.id == currency);
-		if (!ccySelected) {
-			return;
-		}
-		currentTargetCurrencyCode = ccySelected.ccyCode || baseCurrency;
-		const selectedRate = parseExchangeRate(ccySelected.exchangeRate);
-		try {
-			costSummaryState = computeCostSummaryForCurrency(
-				currentTargetCurrencyCode,
-				(Number.isFinite(selectedRate) &amp;&amp; selectedRate &gt; 0) ? selectedRate : undefined
-			);
-			costSummaryError = null;
-		} catch (error) {
-			console.error('Cost summary error:', error);
-			costSummaryError = error;
-			$('.costTotal-container').html('<div class="alert alert-danger">' + error.message + '</div>');
-			return;
-		}
-
-		const presentation = buildCostNumbers(costSummaryState);
-		costNumbers = presentation.numbers;
-		costNumbersRaw = presentation.raw;
-
-		if ($('.costTotal-container').find('#regAnnual').length === 0) {
-			$('.costTotal-container').html(costTotalTemplate(costNumbers));
-			initialiseCurrencySelector();
-		}
-
-		$('#regAnnual').text(costNumbers.annualCost);
-		$('#regMonthly').text(costNumbers.monthlyCost);
-		$('#costCurrencyLabel').text(costNumbers.currency);
-		$('#costPeriodLabel').text(costNumbers.period);
-		$('#costLatestMonthly').text(costNumbers.latestMonthly);
-
-		const trendElement = $('#costTrend');
-		if (trendElement.length) {
-			trendElement.removeClass('up down hidden');
-			if (costNumbers.trend) {
-				trendElement.addClass(costNumbers.trend.direction);
-			//	$('#costTrendIcon').attr('class', 'fa ' + costNumbers.trend.icon);
-			//$('#costTrendLabel').text(costNumbers.trend.label);
-			} else {
-				trendElement.addClass('hidden');
-			//	$('#costTrendLabel').text('');
-			}
-		}
-
-		const adhocCard = $('#costAdhocCard');
-		if (adhocCard.length) {
-			if (costNumbers.adhocCost) {
-				$('#costAdhoc').text(costNumbers.adhocCost);
-				adhocCard.show();
-			} else {
-				adhocCard.hide();
-			}
-		}
-
-		renderTopCostList(costNumbers.topCosts);
-
-		cbfLabels = costSummaryState.aggregates.frequency.labels;
-		cbfVals = costSummaryState.aggregates.frequency.values;
-		cbcLabels = costSummaryState.aggregates.category.labels;
-		cbcVals = costSummaryState.aggregates.category.values;
-		cbtLabels = costSummaryState.aggregates.type.labels;
-		cbtVals = costSummaryState.aggregates.type.values;
-		monthsList = costSummaryState.monthly.labels;
-		sumsList = costSummaryState.monthly.values;
-
-		if (!chartCostByFrequency || !chartCostByCategory || !chartCostByType || !chartCostByMonth) {
-			return;
-		}
-
-		chartCostByFrequency.data.labels = cbfLabels;
-		chartCostByFrequency.data.datasets[0].data = cbfVals;
-		chartCostByCategory.data.labels = cbcLabels;
-		chartCostByCategory.data.datasets[0].data = cbcVals;
-		chartCostByType.data.labels = cbtLabels;
-		chartCostByType.data.datasets[0].data = cbtVals;
-		chartCostByMonth.data.labels = monthsList;
-		chartCostByMonth.data.datasets[0].data = sumsList;
-		chartCostByMonth.options.scales.yAxes[0].ticks.callback = function(value) {
-			return formatCurrencyValue(value, costNumbersRaw.currency);
-		};
-
-		chartCostByFrequency.update();
-		chartCostByCategory.update();
-		chartCostByType.update();
-		chartCostByMonth.update();
-	}
 	
 	}
 	}

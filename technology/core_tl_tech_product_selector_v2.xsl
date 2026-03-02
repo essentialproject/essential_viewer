@@ -1542,14 +1542,15 @@
 						refArchListTable.clear();
 						refArchListTable.rows.add(relevantRefArchsTableData);
     					
-    					var currentRowId;
-    					for (var k = 0; refArchListTable.rows().data().length > k; k += 1) {
-    						currentRowId = refArchListTable.cell(k, 0).data();
-	    					if(selectedRefArchIds.indexOf(currentRowId) > -1) {
-			                  refArchListTable.cell(k, 0).checkboxes.select();
-			               	}
-		               	;}
-		               	refArchListTable.draw();
+						var currentRowId;
+						for (var k = 0; refArchListTable.rows().data().length > k; k += 1) {
+							currentRowId = refArchListTable.cell(k, 0).data();
+							if(selectedRefArchIds.indexOf(currentRowId) > -1) {
+											refArchListTable.cell(k, 0).checkboxes.select();
+							}
+						}
+						refArchListTable.draw();
+						refArchListTable.columns.adjust();
 					}
 					
 					//function to force the redrawing of the Reference Architecture List table
@@ -2011,6 +2012,7 @@
 						refArchListTable = $('#dt_refArchList').DataTable({
 							scrollY: "300px",
 							scrollCollapse: true,
+							autoWidth: false,
 							paging: false,
 							info: false,
 							sort: true,
@@ -2019,7 +2021,7 @@
 							select: true,
 							columns: [
 							    { "width": "5%", "orderable": false },
-							    { "width": "35%" },
+							    { "width": "40%" },
 							    <!--{ "width": "40%" },-->
 							    { "width": "55%" },
 							 ],
