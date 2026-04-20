@@ -459,7 +459,6 @@
                     var cveLog = 'user/cvefile.json';
                  $.get(cveLog)
     .done(function() { 
-     console.log('found')
    
 						$.getJSON("user/cvefile.json", function (cveJSONset) {
 							
@@ -480,7 +479,6 @@
                      }).fail(function() { 
                  $('#loader1').hide();
                     $('#prodCards').text('No cvefile.json found in user folder, please download a cve file and put in user folder');
-          console.log('not found')
             })
 					});
 					
@@ -610,6 +608,8 @@
 														productAffected.push(e)
 													};
 												};
+
+												const cvss = d?.impact?.baseMetricV3?.cvssV3 ?? {};
 												
 												if (productAffected &gt;[]) {
 													
@@ -620,14 +620,13 @@
 													prodsA[ 'product'] = productAffected[0].product;
 													prodsA[ 'version'] = productAffected[0].version;
 													prodsA[ 'cve_ID'] = d.cve.CVE_data_meta.ID;
-													prodsA[ 'severity'] = d.impact.baseMetricV3.cvssV3.baseSeverity;
-													prodsA[ 'CIAC'] = d.impact.baseMetricV3.cvssV3.confidentialityImpact;
-													prodsA[ 'CIAI'] = d.impact.baseMetricV3.cvssV3.integrityImpact;
-													prodsA[ 'CIAA'] = d.impact.baseMetricV3.cvssV3.availabilityImpact;
+													prodsA['severity'] = cvss.baseSeverity ?? '';
+													prodsA['CIAC'] = cvss.confidentialityImpact ?? '';
+													prodsA['CIAI'] = cvss.integrityImpact ?? '';
+													prodsA['CIAA'] = cvss.availabilityImpact ?? '';
 													prodsA[ 'versionEndIn'] = versionEndInc;
 													prodsA[ 'versionEndEx'] = versionEndEx;
 													prodsA[ 'description'] = d.cve.description.description_data[0].value;
-													
 													prodsA[ 'appCount'] = productAffected[0].appimpacts.length
 													prodsA[ 'busCount'] = productAffected[0].busimpacts.length
 													prodsA[ 'apps'] = productAffected[0].appimpacts;
@@ -645,10 +644,10 @@
 													prodsAll[ 'product'] = vendorProduct;
 													prodsAll[ 'version'] = productVersion;
 													prodsAll[ 'cve_ID'] = d.cve.CVE_data_meta.ID;
-													prodsAll[ 'severity'] = d.impact.baseMetricV3.cvssV3.baseSeverity;
-													prodsAll[ 'CIAC'] = d.impact.baseMetricV3.cvssV3.confidentialityImpact;
-													prodsAll[ 'CIAI'] = d.impact.baseMetricV3.cvssV3.integrityImpact;
-													prodsAll[ 'CIAA'] = d.impact.baseMetricV3.cvssV3.availabilityImpact;
+													prodsAll['severity'] = cvss.baseSeverity ?? '';
+													prodsAll['CIAC'] = cvss.confidentialityImpact ?? '';
+													prodsAll['CIAI'] = cvss.integrityImpact ?? '';
+													prodsAll['CIAA'] = cvss.availabilityImpact ?? '';
 													prodsAll[ 'versionEndIn'] = versionEndInc;
 													prodsAll[ 'versionEndEx'] = versionEndEx;
 													prodsAll[ 'allList'] = 'true';
@@ -704,8 +703,6 @@
 						$('#prodCards').append(techListTemplate(toShow));
 						
 						$('#allVendors').append(techListTemplate(alltoShow));
-		console.log(alltoShow);					
-	console.log(toShow);
 						$('#allCVEVendors > tbody').append(allListTemplate(nvdlist));
 						$('#loader1').hide();
 					};
@@ -766,11 +763,9 @@
 					};
 					
 					function showImpacts(dataid) {
-				console.log('dataid');		console.log(dataid)
 						var prods = productsJSON.filter(function (e) {
 							return e.id === dataid;
 						});
-				console.log('prods');		console.log(prods)		
 						$('#modalCards').empty();
 						$('#modalCards').append(impactListTemplate(prods[0]));
 						$('#appModal').modal('show');
