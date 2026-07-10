@@ -171,7 +171,7 @@
 					var plans = viewData.plans;
 					if(plans.length === 0){ return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
-					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Performance Measures&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan, idx){
 						html += '&lt;tr&gt;';
 						html += '&lt;td&gt;&lt;strong&gt;' + plan.name + '&lt;/strong&gt;';
@@ -185,18 +185,37 @@
 						html += '&lt;td&gt;' + (plan.endDate || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.sponsors.length &gt; 0 ? plan.sponsors.join('&lt;br&gt;') : '-') + '&lt;/td&gt;';
 						if(plan.performanceMeasures.length &gt; 0){
-							html += '&lt;td&gt;&lt;ul class="pm-list"&gt;';
-							plan.performanceMeasures.forEach(function(pm){
-								html += '&lt;li class="pm-item"&gt;' + pm.name.split(' of ')[0];
-								if(pm.values &amp;&amp; pm.values.length &gt; 0){
-									pm.values.forEach(function(v){
-										html += '&lt;span class="pm-value"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
-									});
-								}
-								html += '&lt;/li&gt;';
-							});
-							html += '&lt;/ul&gt;&lt;/td&gt;';
-						} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
+							var benefits = plan.performanceMeasures.filter(function(pm){ return pm.name.split(' of ')[0].indexOf('Benefit') === 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+							var dspMetrics = plan.performanceMeasures.filter(function(pm){ return pm.name.split(' of ')[0].indexOf('DSP') === 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+							if(benefits.length &gt; 0){
+								html += '&lt;td&gt;&lt;ul class="pm-list"&gt;';
+								benefits.forEach(function(pm){
+									var label = pm.name.split(' of ')[0].replace('Benefit - ', '').replace('Benefit -', '');
+									html += '&lt;li class="pm-item"&gt;' + label;
+									if(pm.values &amp;&amp; pm.values.length &gt; 0){
+										pm.values.forEach(function(v){
+											html += '&lt;span class="pm-value"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
+										});
+									}
+									html += '&lt;/li&gt;';
+								});
+								html += '&lt;/ul&gt;&lt;/td&gt;';
+							} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
+							if(dspMetrics.length &gt; 0){
+								html += '&lt;td&gt;&lt;ul class="pm-list"&gt;';
+								dspMetrics.forEach(function(pm){
+									var label = pm.name.split(' of ')[0].replace('DSP - ', '').replace('DSP -', '');
+									html += '&lt;li class="pm-item"&gt;' + label;
+									if(pm.values &amp;&amp; pm.values.length &gt; 0){
+										pm.values.forEach(function(v){
+											html += '&lt;span class="pm-value"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
+										});
+									}
+									html += '&lt;/li&gt;';
+								});
+								html += '&lt;/ul&gt;&lt;/td&gt;';
+							} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
+						} else { html += '&lt;td&gt;-&lt;/td&gt;&lt;td&gt;-&lt;/td&gt;'; }
 						if(plan.dependsOnPlans.length &gt; 0){
 							html += '&lt;td&gt;&lt;ul class="sp-list"&gt;';
 							plan.dependsOnPlans.forEach(function(n){ html += '&lt;li&gt;' + n + '&lt;/li&gt;'; });
