@@ -174,7 +174,7 @@
 					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan, idx){
 						html += '&lt;tr&gt;';
-						html += '&lt;td&gt;&lt;strong&gt;' + plan.name + '&lt;/strong&gt;';
+						html += '&lt;td&gt;&lt;strong&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank"&gt;' + plan.name + '&lt;/a&gt;&lt;/strong&gt;';
 						if(plan.description){
 							html += '&lt;div class="plan-desc" id="desc-' + idx + '"&gt;' + plan.description + '&lt;/div&gt;';
 							html += '&lt;span class="desc-toggle" onclick="toggleDesc(' + idx + ')"&gt;Show more&lt;/span&gt;';
