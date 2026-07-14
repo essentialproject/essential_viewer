@@ -22,6 +22,12 @@
 	<xsl:variable name="allObjectives" select="/node()/simple_instance[type = ('Information_Architecture_Objective','Technology_Architecture_Objective','Application_Architecture_Objective','Business_Objective')]"></xsl:variable>
 	<xsl:variable name="allSQValues" select="/node()/simple_instance[supertype = 'Service_Quality_Value']"></xsl:variable>
 	<xsl:variable name="allServiceQualities" select="/node()/simple_instance[supertype = 'Service_Quality']"></xsl:variable>
+	<xsl:variable name="allP2E" select="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']"></xsl:variable>
+	<xsl:variable name="allRisks" select="/node()/simple_instance[type = 'Risk']"></xsl:variable>
+	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"></xsl:variable>
+	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"></xsl:variable>
+
+	<xsl:key name="p2eByPlan" match="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference = 'plan_to_element_plan']/value"></xsl:key>
 
 	<!-- objectives keyed by the plan they support (slot is on the objective) -->
 	<xsl:key name="objsByPlan" match="/node()/simple_instance[type = ('Information_Architecture_Objective','Technology_Architecture_Objective','Application_Architecture_Objective','Business_Objective')]" use="own_slot_value[slot_reference = 'objective_supported_by_strategic_plan']/value"></xsl:key>
@@ -78,6 +84,11 @@
 					<xsl:variable name="thisActors" select="key('actorsByRole', $thisA2Rs/name)"></xsl:variable>
 					<xsl:variable name="thisPMs" select="key('pmByElement', $pid)"></xsl:variable>
 					<xsl:variable name="dependsOnPlans" select="$allESPs[name = current()/own_slot_value[slot_reference = 'depends_on_strategic_plans']/value]"></xsl:variable>
+					<xsl:variable name="thisP2Es" select="key('p2eByPlan', $pid)"></xsl:variable>
+					<xsl:variable name="impactedElementIds" select="$thisP2Es/own_slot_value[slot_reference = 'plan_to_element_ea_element']/value"></xsl:variable>
+					<xsl:variable name="impactedRisks" select="$allRisks[name = $impactedElementIds]"></xsl:variable>
+					<xsl:variable name="impactedApps" select="$allApps[name = $impactedElementIds]"></xsl:variable>
+					<xsl:variable name="impactedTechProds" select="$allTechProds[name = $impactedElementIds]"></xsl:variable>
 					{"id":"<xsl:value-of select="$pid"/>",
 					"name":"<xsl:value-of select="$pname"/>",
 					"description":"<xsl:value-of select="$pdesc"/>",
@@ -97,7 +108,10 @@
 							"score":"<xsl:value-of select="current()/own_slot_value[slot_reference = 'service_quality_value_score']/value"/>"}<xsl:if test="position() != last()">,</xsl:if>
 						</xsl:for-each>]}<xsl:if test="position() != last()">,</xsl:if>
 					</xsl:for-each>],
-					"dependsOnPlans":[<xsl:for-each select="$dependsOnPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]
+					"dependsOnPlans":[<xsl:for-each select="$dependsOnPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					"risks":[<xsl:for-each select="$impactedRisks">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					"applications":[<xsl:for-each select="$impactedApps">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					"techProducts":[<xsl:for-each select="$impactedTechProds">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]
 					}<xsl:if test="position() != last()">,</xsl:if>
 				</xsl:for-each>
 				]};
@@ -162,16 +176,13 @@
 						new vis.DataSet(groupArr),
 						options
 					);
-					console.log('Groups:', JSON.stringify(groupArr));
-					console.log('All items:', JSON.stringify(items));
-					console.log('Plan objectives check:', viewData.plans.map(function(p){ return p.name + ' -> ' + JSON.stringify(p.objectives); }));
 				}
 
 				function renderTable(){
 					var plans = viewData.plans;
 					if(plans.length === 0){ return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
-					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan, idx){
 						html += '&lt;tr&gt;';
 						html += '&lt;td&gt;&lt;strong&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank"&gt;' + plan.name + '&lt;/a&gt;&lt;/strong&gt;';
@@ -179,6 +190,7 @@
 							html += '&lt;div class="plan-desc" id="desc-' + idx + '"&gt;' + plan.description + '&lt;/div&gt;';
 							html += '&lt;span class="desc-toggle" onclick="toggleDesc(' + idx + ')"&gt;Show more&lt;/span&gt;';
 						}
+						html += '&lt;div style="margin-top:4px;"&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#500778;"&gt;View&lt;/a&gt;&lt;/div&gt;';
 						html += '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.status || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.startDate || '-') + '&lt;/td&gt;';
@@ -216,6 +228,27 @@
 								html += '&lt;/ul&gt;&lt;/td&gt;';
 							} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
 						} else { html += '&lt;td&gt;-&lt;/td&gt;&lt;td&gt;-&lt;/td&gt;'; }
+						/* Impacts column - risks, applications, tech products */
+						var hasImpacts = (plan.risks.length &gt; 0 || plan.applications.length &gt; 0 || plan.techProducts.length &gt; 0);
+						if(hasImpacts){
+							html += '&lt;td&gt;';
+							if(plan.risks.length &gt; 0){
+								html += '&lt;strong style="font-size:11px;"&gt;Risks&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
+								plan.risks.forEach(function(r){ html += '&lt;li&gt;' + r + '&lt;/li&gt;'; });
+								html += '&lt;/ul&gt;';
+							}
+							if(plan.applications.length &gt; 0){
+								html += '&lt;strong style="font-size:11px;"&gt;Applications&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
+								plan.applications.forEach(function(a){ html += '&lt;li&gt;' + a + '&lt;/li&gt;'; });
+								html += '&lt;/ul&gt;';
+							}
+							if(plan.techProducts.length &gt; 0){
+								html += '&lt;strong style="font-size:11px;"&gt;Technology Products&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
+								plan.techProducts.forEach(function(t){ html += '&lt;li&gt;' + t + '&lt;/li&gt;'; });
+								html += '&lt;/ul&gt;';
+							}
+							html += '&lt;/td&gt;';
+						} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
 						if(plan.dependsOnPlans.length &gt; 0){
 							html += '&lt;td&gt;&lt;ul class="sp-list"&gt;';
 							plan.dependsOnPlans.forEach(function(n){ html += '&lt;li&gt;' + n + '&lt;/li&gt;'; });
@@ -225,6 +258,7 @@
 					});
 					html += '&lt;/tbody&gt;&lt;/table&gt;';
 					document.getElementById('tableContent').innerHTML = html;
+					hideUnnecessaryToggles();
 				}
 
 				function toggleDesc(idx){
@@ -237,6 +271,16 @@
 						el.classList.add('expanded');
 						toggle.textContent = 'Show less';
 					}
+				}
+
+				function hideUnnecessaryToggles(){
+					var descs = document.querySelectorAll('.plan-desc');
+					descs.forEach(function(el){
+						if(el.scrollHeight &lt;= el.clientHeight){
+							var toggle = el.nextElementSibling;
+							if(toggle){ toggle.style.display = 'none'; }
+						}
+					});
 				}
 				</script>
 			</head>
