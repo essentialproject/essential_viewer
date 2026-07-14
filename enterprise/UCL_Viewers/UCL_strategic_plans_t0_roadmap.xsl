@@ -14,7 +14,9 @@
 	<xsl:variable name="linkClasses" select="('Enterprise_Strategic_Plan', 'Business_Objective', 'Individual_Actor', 'Group_Actor')"></xsl:variable>
 
 	<xsl:variable name="allESPs" select="/node()/simple_instance[type = 'Enterprise_Strategic_Plan']"></xsl:variable>
-	<xsl:variable name="t0Plans" select="$allESPs[starts-with(own_slot_value[slot_reference = 'name']/value, '[T0')]"></xsl:variable>
+	<xsl:variable name="targetRoadmap" select="/node()/simple_instance[name = 'store_39_Class230006']"></xsl:variable>
+	<xsl:variable name="roadmapPlanIds" select="$targetRoadmap/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value"></xsl:variable>
+	<xsl:variable name="t0Plans" select="$allESPs[name = $roadmapPlanIds]"></xsl:variable>
 	<xsl:variable name="excludedStatus" select="/node()/simple_instance[type = 'Planning_Status'][own_slot_value[slot_reference = 'name']/value = '0. Roadmap Idea (Outside DSP 25-32)']"></xsl:variable>
 	<!-- exclude unwanted status AND plans with no start date -->
 	<xsl:variable name="filteredPlans" select="$t0Plans[not(own_slot_value[slot_reference = 'strategic_plan_status']/value = $excludedStatus/name)][own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value != '']"></xsl:variable>
@@ -51,6 +53,9 @@
 				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"></link>
 				<style>
 					.view-wrapper{padding:20px;margin-top:70px}
+					.metric-box{border:1px solid #ddd;border-radius:6px;padding:15px 10px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+					.metric-number{font-size:36px;font-weight:bold;color:#500778}
+					.metric-label{font-size:13px;color:#555;margin-top:5px}
 					#visualization{width:100%;min-height:900px;border:1px solid #ddd;border-radius:4px;margin-bottom:60px;}
 				.roadmap-section{margin-bottom:80px;padding-bottom:40px}
 					.section-title{font-size:18px;font-weight:bold;color:#333;margin:30px 0 15px 0;padding-bottom:8px;border-bottom:2px solid #500778}
@@ -109,6 +114,8 @@
 						</xsl:for-each>]}<xsl:if test="position() != last()">,</xsl:if>
 					</xsl:for-each>],
 					"dependsOnPlans":[<xsl:for-each select="$dependsOnPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					<xsl:variable name="supportsPlans" select="$allESPs[name = current()/own_slot_value[slot_reference = 'supports_strategic_plan']/value]"></xsl:variable>
+					"supportsPlans":[<xsl:for-each select="$supportsPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
 					"risks":[<xsl:for-each select="$impactedRisks">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
 					"applications":[<xsl:for-each select="$impactedApps">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
 					"techProducts":[<xsl:for-each select="$impactedTechProds">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]
@@ -117,9 +124,28 @@
 				]};
 
 				$(document).ready(function(){
+					renderMetrics();
 					renderTimeline();
 					renderTable();
 				});
+
+				function renderMetrics(){
+					var plans = viewData.plans;
+					var totalPlans = plans.length;
+					var allRisks = [];
+					var allAppsAndTech = [];
+					plans.forEach(function(plan){
+						plan.risks.forEach(function(r){ if(allRisks.indexOf(r) === -1){ allRisks.push(r); } });
+						plan.applications.forEach(function(a){ if(allAppsAndTech.indexOf(a) === -1){ allAppsAndTech.push(a); } });
+						plan.techProducts.forEach(function(t){ if(allAppsAndTech.indexOf(t) === -1){ allAppsAndTech.push(t); } });
+					});
+					var html = '&lt;div class="row" style="margin-bottom:20px;"&gt;';
+					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + totalPlans + '&lt;/div&gt;&lt;div class="metric-label"&gt;Strategic Plans&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allRisks.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Risks Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allAppsAndTech.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Applications / Tech Products Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;/div&gt;';
+					document.getElementById('metricsContent').innerHTML = html;
+				}
 
 				function renderTimeline(){
 					var plans = viewData.plans;
@@ -182,7 +208,7 @@
 					var plans = viewData.plans;
 					if(plans.length === 0){ return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
-					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports Plans&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan, idx){
 						html += '&lt;tr&gt;';
 						html += '&lt;td&gt;&lt;strong&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank"&gt;' + plan.name + '&lt;/a&gt;&lt;/strong&gt;';
@@ -249,6 +275,13 @@
 							}
 							html += '&lt;/td&gt;';
 						} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
+						/* Supports column */
+						if(plan.supportsPlans &amp;&amp; plan.supportsPlans.length &gt; 0){
+							html += '&lt;td&gt;&lt;ul class="sp-list"&gt;';
+							plan.supportsPlans.forEach(function(n){ html += '&lt;li&gt;' + n + '&lt;/li&gt;'; });
+							html += '&lt;/ul&gt;&lt;/td&gt;';
+						} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
+						/* Depends On column */
 						if(plan.dependsOnPlans.length &gt; 0){
 							html += '&lt;td&gt;&lt;ul class="sp-list"&gt;';
 							plan.dependsOnPlans.forEach(function(n){ html += '&lt;li&gt;' + n + '&lt;/li&gt;'; });
@@ -292,6 +325,11 @@
 							<div class="page-header">
 								<h1><span class="text-primary">UCL: </span><span class="text-darkgrey">T0 Strategic Plans Roadmap</span></h1>
 							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div id="metricsContent"></div>
 						</div>
 					</div>
 					<div class="row roadmap-section">
