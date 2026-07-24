@@ -14,9 +14,12 @@
 	<xsl:variable name="linkClasses" select="('Enterprise_Strategic_Plan', 'Business_Objective', 'Individual_Actor', 'Group_Actor')"></xsl:variable>
 
 	<xsl:variable name="allESPs" select="/node()/simple_instance[type = 'Enterprise_Strategic_Plan']"></xsl:variable>
-	<xsl:variable name="targetRoadmap" select="/node()/simple_instance[name = 'store_39_Class230006']"></xsl:variable>
-	<xsl:variable name="roadmapPlanIds" select="$targetRoadmap/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value"></xsl:variable>
-	<xsl:variable name="t0Plans" select="$allESPs[name = $roadmapPlanIds]"></xsl:variable>
+	<xsl:variable name="roadmap1" select="/node()/simple_instance[name = 'store_39_Class230006']"></xsl:variable>
+	<xsl:variable name="roadmap2" select="/node()/simple_instance[name = 'store_39_Class180050']"></xsl:variable>
+	<xsl:variable name="roadmap3" select="/node()/simple_instance[name = 'store_39_Class160024']"></xsl:variable>
+	<xsl:variable name="roadmap4" select="/node()/simple_instance[name = 'store_39_Class140000']"></xsl:variable>
+	<xsl:variable name="allRoadmapPlanIds" select="$roadmap1/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value | $roadmap2/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value | $roadmap3/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value | $roadmap4/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value"></xsl:variable>
+	<xsl:variable name="t0Plans" select="$allESPs[name = $allRoadmapPlanIds]"></xsl:variable>
 	<xsl:variable name="excludedStatus" select="/node()/simple_instance[type = 'Planning_Status'][own_slot_value[slot_reference = 'name']/value = '0. Roadmap Idea (Outside DSP 25-32)']"></xsl:variable>
 	<!-- exclude unwanted status AND plans with no start date -->
 	<xsl:variable name="filteredPlans" select="$t0Plans[not(own_slot_value[slot_reference = 'strategic_plan_status']/value = $excludedStatus/name)][own_slot_value[slot_reference = 'strategic_plan_valid_from_date_iso_8601']/value != '']"></xsl:variable>
@@ -56,15 +59,17 @@
 					.metric-box{border:1px solid #ddd;border-radius:6px;padding:15px 10px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
 					.metric-number{font-size:36px;font-weight:bold;color:#500778}
 					.metric-label{font-size:13px;color:#555;margin-top:5px}
-					#visualization{width:100%;min-height:900px;border:1px solid #ddd;border-radius:4px;margin-bottom:60px;}
-				.roadmap-section{margin-bottom:80px;padding-bottom:40px}
+					.roadmap-filter{margin-bottom:20px}
+					.roadmap-filter select{font-size:14px;padding:6px 12px;border:1px solid #500778;border-radius:4px;color:#500778}
+					#visualization{width:100%;border:1px solid #ddd;border-radius:4px;margin-bottom:40px;}
+				.roadmap-section{margin-bottom:40px;padding-bottom:20px}
 					.section-title{font-size:18px;font-weight:bold;color:#333;margin:30px 0 15px 0;padding-bottom:8px;border-bottom:2px solid #500778}
 					td,th{vertical-align:top !important}
 					td:first-child{max-width:300px;width:25%}
 					td:not(:first-child){font-size:12px}
 					.pm-list,.sp-list{margin:0;padding-left:16px}
 					.pm-item{margin-bottom:4px}
-					.pm-value{display:inline-block;background:#eee;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#333}
+					.pm-value{display:inline-block;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#333}
 					.plan-desc{font-size:12px;font-weight:normal;color:#555;margin-top:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical}
 					.plan-desc.expanded{-webkit-line-clamp:unset;display:block}
 					.desc-toggle{font-size:11px;color:#500778;cursor:pointer;margin-top:3px;display:inline-block}
@@ -95,6 +100,7 @@
 					<xsl:variable name="impactedApps" select="$allApps[name = $impactedElementIds]"></xsl:variable>
 					<xsl:variable name="impactedTechProds" select="$allTechProds[name = $impactedElementIds]"></xsl:variable>
 					{"id":"<xsl:value-of select="$pid"/>",
+					"roadmaps":[<xsl:if test="$roadmap1/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid">"technical"</xsl:if><xsl:if test="$roadmap1/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid and ($roadmap2/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid or $roadmap3/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid or $roadmap4/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid)">,</xsl:if><xsl:if test="$roadmap2/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid">"supporting"</xsl:if><xsl:if test="$roadmap2/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid and ($roadmap3/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid or $roadmap4/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid)">,</xsl:if><xsl:if test="$roadmap3/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid">"research"</xsl:if><xsl:if test="$roadmap3/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid and $roadmap4/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid">,</xsl:if><xsl:if test="$roadmap4/own_slot_value[slot_reference = 'roadmap_strategic_plans']/value = $pid">"education"</xsl:if>],
 					"name":"<xsl:value-of select="$pname"/>",
 					"description":"<xsl:value-of select="$pdesc"/>",
 					"startDate":"<xsl:value-of select="$pstart"/>",
@@ -124,13 +130,24 @@
 				]};
 
 				$(document).ready(function(){
+					renderAll();
+					$('#roadmapSelect').on('change', function(){ renderAll(); });
+				});
+
+				function getFilteredPlans(){
+					var selected = document.getElementById('roadmapSelect').value;
+					if(selected === 'all'){ return viewData.plans; }
+					return viewData.plans.filter(function(plan){ return plan.roadmaps.indexOf(selected) !== -1; });
+				}
+
+				function renderAll(){
 					renderMetrics();
 					renderTimeline();
 					renderTable();
-				});
+				}
 
 				function renderMetrics(){
-					var plans = viewData.plans;
+					var plans = getFilteredPlans();
 					var totalPlans = plans.length;
 					var allRisks = [];
 					var allAppsAndTech = [];
@@ -148,9 +165,11 @@
 				}
 
 				function renderTimeline(){
-					var plans = viewData.plans;
+					var plans = getFilteredPlans();
+					var container = document.getElementById('visualization');
+					container.innerHTML = '';
 					if(plans.length === 0){
-						document.getElementById('visualization').innerHTML = '&lt;p style="padding:20px;color:#888;"&gt;No plans to display.&lt;/p&gt;';
+						container.innerHTML = '&lt;p style="padding:20px;color:#888;"&gt;No plans to display.&lt;/p&gt;';
 						return;
 					}
 
@@ -197,7 +216,7 @@
 					};
 
 					new vis.Timeline(
-						document.getElementById('visualization'),
+						container,
 						new vis.DataSet(items),
 						new vis.DataSet(groupArr),
 						options
@@ -205,7 +224,7 @@
 				}
 
 				function renderTable(){
-					var plans = viewData.plans;
+					var plans = getFilteredPlans();
 					if(plans.length === 0){ return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
 					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
@@ -325,6 +344,18 @@
 							<div class="page-header">
 								<h1><span class="text-primary">UCL: </span><span class="text-darkgrey">T0 Strategic Plans Roadmap</span></h1>
 							</div>
+						</div>
+					</div>
+					<div class="row roadmap-filter">
+						<div class="col-xs-12">
+							<label for="roadmapSelect" style="font-size:14px;margin-right:10px;">Filter by Roadmap:</label>
+							<select id="roadmapSelect">
+								<option value="all">All Roadmaps</option>
+								<option value="technical" selected="selected">Technical Capability - Initiatives</option>
+								<option value="supporting">Supporting UCL - Initiatives</option>
+								<option value="research">Research - Initiatives</option>
+								<option value="education">Education</option>
+							</select>
 						</div>
 					</div>
 					<div class="row">
