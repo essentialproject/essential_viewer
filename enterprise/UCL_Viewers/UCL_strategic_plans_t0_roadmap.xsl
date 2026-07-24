@@ -55,28 +55,33 @@
 				<script src="js/vis/vis.js"></script>
 				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"></link>
 				<style>
-					.view-wrapper{padding:20px;margin-top:70px}
-					.metric-box{border:1px solid #ddd;border-radius:6px;padding:15px 10px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
-					.metric-number{font-size:36px;font-weight:bold;color:#500778}
-					.metric-label{font-size:13px;color:#555;margin-top:5px}
+					.view-wrapper{padding:20px;margin-top:70px;font-family:'DM Sans',sans-serif}
+					.metric-box{border:1px solid #ddbdff;border-radius:6px;padding:15px 10px;background:#eedeff;box-shadow:0 2px 4px rgba(54,26,84,0.08)}
+					.metric-number{font-size:36px;font-weight:bold;color:#361a54}
+					.metric-label{font-size:13px;color:#361a54;margin-top:5px}
 					.roadmap-filter{margin-bottom:20px}
-					.roadmap-filter select{font-size:14px;padding:6px 12px;border:1px solid #500778;border-radius:4px;color:#500778}
-					#visualization{width:100%;border:1px solid #ddd;border-radius:4px;margin-bottom:40px;}
+					.roadmap-filter select{font-size:14px;padding:6px 12px;border:1px solid #361a54;border-radius:4px;color:#361a54;background:#fafafa}
+					#visualization{width:100%;border:1px solid #ddbdff;border-radius:4px;margin-bottom:40px;}
 				.roadmap-section{margin-bottom:40px;padding-bottom:20px}
-					.section-title{font-size:18px;font-weight:bold;color:#333;margin:30px 0 15px 0;padding-bottom:8px;border-bottom:2px solid #500778}
+					.section-title{font-size:18px;font-weight:bold;color:#361a54;margin:30px 0 15px 0;padding-bottom:8px;border-bottom:2px solid #993bff}
 					td,th{vertical-align:top !important}
 					td:first-child{max-width:300px;width:25%}
 					td:not(:first-child){font-size:12px}
+					th{background-color:#361a54 !important;color:#fafafa !important;font-size:12px}
 					.pm-list,.sp-list{margin:0;padding-left:16px}
 					.pm-item{margin-bottom:4px}
-					.pm-value{display:inline-block;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#333}
+					.pm-value{display:inline-block;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#361a54}
 					.plan-desc{font-size:12px;font-weight:normal;color:#555;margin-top:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical}
 					.plan-desc.expanded{-webkit-line-clamp:unset;display:block}
-					.desc-toggle{font-size:11px;color:#500778;cursor:pointer;margin-top:3px;display:inline-block}
+					.desc-toggle{font-size:11px;color:#993bff;cursor:pointer;margin-top:3px;display:inline-block}
 					.desc-toggle:hover{text-decoration:underline}
-					.vis-item{border-color:#500778 !important;background-color:#c8b2d8 !important;color:#333 !important;font-size:12px !important}
-					.vis-item.vis-selected{border-color:#500778 !important;background-color:#500778 !important;color:#fff !important}
-					.vis-label{font-size:13px;font-weight:bold;color:#500778}
+					.vis-item{border-color:#361a54 !important;background-color:#ddbdff !important;color:#361a54 !important;font-size:12px !important}
+					.vis-item.vis-selected{border-color:#361a54 !important;background-color:#993bff !important;color:#fafafa !important}
+					.vis-label{font-size:13px;font-weight:bold;color:#361a54}
+					.page-header h1 .text-primary{color:#993bff}
+					.page-header h1 .text-darkgrey{color:#361a54}
+					a{color:#993bff}
+					a:hover{color:#361a54}
 				</style>
 				<script type="text/javascript">
 				var viewData = { plans: [
@@ -235,7 +240,7 @@
 							html += '&lt;div class="plan-desc" id="desc-' + idx + '"&gt;' + plan.description + '&lt;/div&gt;';
 							html += '&lt;span class="desc-toggle" onclick="toggleDesc(' + idx + ')"&gt;Show more&lt;/span&gt;';
 						}
-						html += '&lt;div style="margin-top:4px;"&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#500778;"&gt;View&lt;/a&gt;&lt;/div&gt;';
+						html += '&lt;div style="margin-top:4px;"&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#993bff;"&gt;View&lt;/a&gt;&lt;/div&gt;';
 						html += '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.status || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.startDate || '-') + '&lt;/td&gt;';
