@@ -51,7 +51,7 @@
 						<xsl:with-param name="targetMenu" select="()"></xsl:with-param>
 					</xsl:call-template>
 				</xsl:for-each>
-				<title>UCL T0 Strategic Plans Roadmap</title>
+				<title>UCL Digital Strategic Plan Initiatives by Roadmap</title>
 				<script src="js/vis/vis.js"></script>
 				<link href="js/vis/vis.css" rel="stylesheet" type="text/css"></link>
 				<style>
@@ -342,7 +342,7 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="page-header">
-								<h1><span class="text-primary">UCL: </span><span class="text-darkgrey">T0 Strategic Plans Roadmap</span></h1>
+								<h1><span class="text-primary">UCL: </span><span class="text-darkgrey">Digital Strategic Plan Initiatives by Roadmap</span></h1>
 							</div>
 						</div>
 					</div>
