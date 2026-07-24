@@ -131,6 +131,10 @@
 				</xsl:for-each>
 				]};
 
+				/* All SR risks for coverage indicator */
+				<xsl:variable name="srRisks" select="$allRisks[starts-with(own_slot_value[slot_reference = 'name']/value, 'SR')]"></xsl:variable>
+				viewData.allSRRisks = [<xsl:for-each select="$srRisks"><xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"></xsl:sort>"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>];
+
 				$(document).ready(function(){
 					renderAll();
 					$('#roadmapSelect').on('change', function(){ renderAll(); });
@@ -159,9 +163,18 @@
 						plan.techProducts.forEach(function(t){ if(allAppsAndTech.indexOf(t) === -1){ allAppsAndTech.push(t); } });
 					});
 					var html = '&lt;div class="row" style="margin-bottom:20px;"&gt;';
-					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + totalPlans + '&lt;/div&gt;&lt;div class="metric-label"&gt;Strategic Plans&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
-					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allRisks.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Risks Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
-					html += '&lt;div class="col-xs-4 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allAppsAndTech.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Applications / Tech Products Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;div class="col-xs-3 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + totalPlans + '&lt;/div&gt;&lt;div class="metric-label"&gt;Strategic Plans&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;div class="col-xs-6"&gt;&lt;div class="metric-box" style="text-align:left;padding:12px 16px;"&gt;&lt;div class="metric-label" style="margin-bottom:8px;font-weight:bold;"&gt;Strategic Risk Coverage&lt;/div&gt;';
+					html += '&lt;div style="display:flex;flex-wrap:wrap;gap:6px;"&gt;';
+					viewData.allSRRisks.forEach(function(risk){
+						var covered = allRisks.indexOf(risk) !== -1;
+						var bgColor = covered ? '#993bff' : '#eedeff';
+						var textColor = covered ? '#fafafa' : '#999';
+						var icon = covered ? '&#x2713;' : '&#x2717;';
+						html += '&lt;span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:11px;background:' + bgColor + ';color:' + textColor + ';"&gt;' + icon + ' ' + risk + '&lt;/span&gt;';
+					});
+					html += '&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+					html += '&lt;div class="col-xs-3 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allAppsAndTech.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Applications / Tech Products Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
 					html += '&lt;/div&gt;';
 					document.getElementById('metricsContent').innerHTML = html;
 				}
@@ -232,11 +245,12 @@
 					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan){
 						html += '&lt;tr&gt;';
-						html += '&lt;td&gt;&lt;strong&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank"&gt;' + plan.name + '&lt;/a&gt;&lt;/strong&gt;';
+						html += '&lt;td&gt;&lt;strong&gt;' + plan.name + '&lt;/strong&gt;';
 						if(plan.description){
 							html += '&lt;div class="plan-desc"&gt;' + plan.description + '&lt;/div&gt;';
 						}
-						html += '&lt;div style="margin-top:4px;"&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#993bff;"&gt;View&lt;/a&gt;&lt;/div&gt;';
+						html += '&lt;div style="margin-top:4px;"&gt;&lt;ul style="list-style:disc;padding-left:16px;margin:0;"&gt;&lt;li&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#993bff;"&gt;View ' + plan.name + '&lt;/a&gt;&lt;/li&gt;';
+						html += '&lt;li&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank" style="font-size:11px;color:#993bff;"&gt;Edit ' + plan.name + '&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;';
 						html += '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.status || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.startDate || '-') + '&lt;/td&gt;';
