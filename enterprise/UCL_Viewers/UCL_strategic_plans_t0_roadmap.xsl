@@ -71,10 +71,7 @@
 					.pm-list,.sp-list{margin:0;padding-left:16px}
 					.pm-item{margin-bottom:4px}
 					.pm-value{display:inline-block;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#361a54}
-					.plan-desc{font-size:12px;font-weight:normal;color:#555;margin-top:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical}
-					.plan-desc.expanded{-webkit-line-clamp:unset;display:block}
-					.desc-toggle{font-size:11px;color:#993bff;cursor:pointer;margin-top:3px;display:inline-block}
-					.desc-toggle:hover{text-decoration:underline}
+					.plan-desc{font-size:12px;font-weight:normal;color:#555;margin-top:5px}
 					.vis-item{border-color:#361a54 !important;background-color:#ddbdff !important;color:#361a54 !important;font-size:12px !important}
 					.vis-item.vis-selected{border-color:#361a54 !important;background-color:#993bff !important;color:#fafafa !important}
 					.vis-label{font-size:13px;font-weight:bold;color:#361a54}
@@ -233,12 +230,11 @@
 					if(plans.length === 0){ return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
 					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
-					plans.forEach(function(plan, idx){
+					plans.forEach(function(plan){
 						html += '&lt;tr&gt;';
 						html += '&lt;td&gt;&lt;strong&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank"&gt;' + plan.name + '&lt;/a&gt;&lt;/strong&gt;';
 						if(plan.description){
-							html += '&lt;div class="plan-desc" id="desc-' + idx + '"&gt;' + plan.description + '&lt;/div&gt;';
-							html += '&lt;span class="desc-toggle" onclick="toggleDesc(' + idx + ')"&gt;Show more&lt;/span&gt;';
+							html += '&lt;div class="plan-desc"&gt;' + plan.description + '&lt;/div&gt;';
 						}
 						html += '&lt;div style="margin-top:4px;"&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#993bff;"&gt;View&lt;/a&gt;&lt;/div&gt;';
 						html += '&lt;/td&gt;';
@@ -315,29 +311,6 @@
 					});
 					html += '&lt;/tbody&gt;&lt;/table&gt;';
 					document.getElementById('tableContent').innerHTML = html;
-					hideUnnecessaryToggles();
-				}
-
-				function toggleDesc(idx){
-					var el = document.getElementById('desc-' + idx);
-					var toggle = el.nextElementSibling;
-					if(el.classList.contains('expanded')){
-						el.classList.remove('expanded');
-						toggle.textContent = 'Show more';
-					} else {
-						el.classList.add('expanded');
-						toggle.textContent = 'Show less';
-					}
-				}
-
-				function hideUnnecessaryToggles(){
-					var descs = document.querySelectorAll('.plan-desc');
-					descs.forEach(function(el){
-						if(el.scrollHeight &lt;= el.clientHeight){
-							var toggle = el.nextElementSibling;
-							if(toggle){ toggle.style.display = 'none'; }
-						}
-					});
 				}
 				</script>
 			</head>
