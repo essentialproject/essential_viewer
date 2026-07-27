@@ -167,11 +167,11 @@
 					html += '&lt;div class="col-xs-6"&gt;&lt;div class="metric-box" style="text-align:left;padding:12px 16px;"&gt;&lt;div class="metric-label" style="margin-bottom:8px;font-weight:bold;"&gt;Strategic Risk Coverage&lt;/div&gt;';
 					html += '&lt;div style="display:flex;flex-wrap:wrap;gap:6px;"&gt;';
 					viewData.allSRRisks.forEach(function(risk){
-						var covered = allRisks.indexOf(risk) !== -1;
-						var bgColor = covered ? '#993bff' : '#eedeff';
-						var textColor = covered ? '#fafafa' : '#999';
-						var icon = covered ? '&#x2713;' : '&#x2717;';
-						html += '&lt;span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:11px;background:' + bgColor + ';color:' + textColor + ';"&gt;' + icon + ' ' + risk + '&lt;/span&gt;';
+						var count = 0;
+						plans.forEach(function(plan){ if(plan.risks.indexOf(risk) !== -1){ count++; } });
+						var bgColor = count &gt; 0 ? '#993bff' : '#eedeff';
+						var textColor = count &gt; 0 ? '#fafafa' : '#999';
+						html += '&lt;span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:11px;background:' + bgColor + ';color:' + textColor + ';"&gt;' + risk + ' (' + count + ')&lt;/span&gt;';
 					});
 					html += '&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
 					html += '&lt;div class="col-xs-3 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + allAppsAndTech.length + '&lt;/div&gt;&lt;div class="metric-label"&gt;Applications / Tech Products Impacted&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
@@ -343,10 +343,10 @@
 							<label for="roadmapSelect" style="font-size:14px;margin-right:10px;">Filter by Roadmap:</label>
 							<select id="roadmapSelect">
 								<option value="all">All Roadmaps</option>
-								<option value="technical" selected="selected">Technical Capability - Initiatives</option>
+								<option value="technical" selected="selected">Technology Capability - Initiatives</option>
 								<option value="supporting">Supporting UCL - Initiatives</option>
 								<option value="research">Research - Initiatives</option>
-								<option value="education">Education</option>
+								<option value="education">Education - Initiatives</option>
 							</select>
 						</div>
 					</div>
