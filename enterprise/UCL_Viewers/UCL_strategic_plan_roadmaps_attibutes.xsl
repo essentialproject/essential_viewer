@@ -68,6 +68,8 @@
 					td:first-child{max-width:300px;width:25%}
 					td:not(:first-child){font-size:12px}
 					th{background-color:#361a54 !important;color:#fafafa !important;font-size:12px}
+					th[onclick]{user-select:none}
+					th[onclick]:hover{background-color:#4a2570 !important}
 					.pm-list,.sp-list{margin:0;padding-left:16px}
 					.pm-item{margin-bottom:4px}
 					.pm-value{display:inline-block;border-radius:3px;font-size:inherit;padding:1px 6px;margin-left:4px;color:#361a54}
@@ -134,6 +136,56 @@
 				/* All SR risks for coverage indicator */
 				<xsl:variable name="srRisks" select="$allRisks[starts-with(own_slot_value[slot_reference = 'name']/value, 'SR')]"></xsl:variable>
 				viewData.allSRRisks = [<xsl:for-each select="$srRisks"><xsl:sort select="own_slot_value[slot_reference = 'name']/value" order="ascending"></xsl:sort>"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>];
+
+				/* Priority is extracted from performanceMeasures starting with 'Priority' same as Benefits/DSP */
+
+				var currentSort = { column: 'startDate', direction: 'asc' };
+
+				function getPriorityVal(plan){
+					var val = '';
+					if(plan.performanceMeasures.length &gt; 0){
+						var priorityPMs = plan.performanceMeasures.filter(function(pm){ return pm.name.indexOf('Priority of') === 0; });
+						if(priorityPMs.length &gt; 0 &amp;&amp; priorityPMs[0].values &amp;&amp; priorityPMs[0].values.length &gt; 0){
+							priorityPMs[0].values.forEach(function(v){
+								if(v.quality === 'DSP Priority'){ val = v.value || ''; }
+							});
+						}
+					}
+					return val;
+				}
+
+				function sortPlans(plans){
+					var col = currentSort.column;
+					var dir = currentSort.direction === 'asc' ? 1 : -1;
+					return plans.slice().sort(function(a, b){
+						var valA, valB;
+						if(col === 'name'){ valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); }
+						else if(col === 'priority'){ valA = getPriorityVal(a).toLowerCase(); valB = getPriorityVal(b).toLowerCase(); }
+						else if(col === 'status'){ valA = (a.status || '').toLowerCase(); valB = (b.status || '').toLowerCase(); }
+						else if(col === 'startDate'){ valA = a.startDate || ''; valB = b.startDate || ''; }
+						else if(col === 'endDate'){ valA = a.endDate || ''; valB = b.endDate || ''; }
+						else if(col === 'sponsors'){ valA = a.sponsors.join(', ').toLowerCase(); valB = b.sponsors.join(', ').toLowerCase(); }
+						else { valA = ''; valB = ''; }
+						if(valA &lt; valB) return -1 * dir;
+						if(valA &gt; valB) return 1 * dir;
+						return 0;
+					});
+				}
+
+				function handleSort(col){
+					if(currentSort.column === col){
+						currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+					} else {
+						currentSort.column = col;
+						currentSort.direction = 'asc';
+					}
+					renderTable();
+				}
+
+				function sortIndicator(col){
+					if(currentSort.column !== col) return '';
+					return currentSort.direction === 'asc' ? ' &#9650;' : ' &#9660;';
+				}
 
 				$(document).ready(function(){
 					renderAll();
@@ -239,10 +291,18 @@
 				}
 
 				function renderTable(){
-					var plans = getFilteredPlans();
-					if(plans.length === 0){ return; }
+					var plans = sortPlans(getFilteredPlans());
+					if(plans.length === 0){ document.getElementById('tableContent').innerHTML = ''; return; }
 					var html = '&lt;table class="table table-bordered table-striped table-hover"&gt;';
-					html += '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Plan Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;End Date&lt;/th&gt;&lt;th&gt;Sponsors&lt;/th&gt;&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+					html += '&lt;thead&gt;&lt;tr&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'name\')"&gt;Plan Name' + sortIndicator('name') + '&lt;/th&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'priority\')"&gt;Priority' + sortIndicator('priority') + '&lt;/th&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'status\')"&gt;Status' + sortIndicator('status') + '&lt;/th&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'startDate\')"&gt;Start Date' + sortIndicator('startDate') + '&lt;/th&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'endDate\')"&gt;End Date' + sortIndicator('endDate') + '&lt;/th&gt;';
+					html += '&lt;th style="cursor:pointer;" onclick="handleSort(\'sponsors\')"&gt;Sponsors' + sortIndicator('sponsors') + '&lt;/th&gt;';
+					html += '&lt;th&gt;Benefits&lt;/th&gt;&lt;th&gt;DSP Metrics&lt;/th&gt;&lt;th&gt;Impacts&lt;/th&gt;&lt;th&gt;Supports&lt;/th&gt;&lt;th&gt;Depends On&lt;/th&gt;';
+					html += '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
 					plans.forEach(function(plan){
 						html += '&lt;tr&gt;';
 						html += '&lt;td&gt;&lt;strong&gt;' + plan.name + '&lt;/strong&gt;';
@@ -252,6 +312,9 @@
 						html += '&lt;div style="margin-top:4px;"&gt;&lt;ul style="list-style:disc;padding-left:16px;margin:0;"&gt;&lt;li&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=enterprise%2Fcore_el_strategic_plan_summary.xsl&amp;PAGEXSL=&amp;LABEL=Strategic+Plan+Summary+-' + plan.id + 'Link&amp;essscope=W10%253D" target="_blank" style="font-size:11px;color:#993bff;"&gt;View ' + plan.name + '&lt;/a&gt;&lt;/li&gt;';
 						html += '&lt;li&gt;&lt;a href="report?XML=reportXML.xml&amp;PMA=' + plan.id + '&amp;cl=en-gb&amp;XSL=ess_editor.xsl&amp;LABEL=Strategic%20Plan%20Editor&amp;EDITOR=store_110_Class30000&amp;SECTION=" target="_blank" style="font-size:11px;color:#993bff;"&gt;Edit ' + plan.name + '&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;';
 						html += '&lt;/td&gt;';
+						/* Priority column - same pattern as Benefits/DSP */
+						var priorityVal = getPriorityVal(plan) || '-';
+						html += '&lt;td&gt;' + priorityVal + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.status || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.startDate || '-') + '&lt;/td&gt;';
 						html += '&lt;td&gt;' + (plan.endDate || '-') + '&lt;/td&gt;';
