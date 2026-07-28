@@ -31,6 +31,7 @@
 	<xsl:variable name="allRisks" select="/node()/simple_instance[type = 'Risk']"></xsl:variable>
 	<xsl:variable name="allApps" select="/node()/simple_instance[type = ('Application_Provider','Composite_Application_Provider')]"></xsl:variable>
 	<xsl:variable name="allTechProds" select="/node()/simple_instance[type = 'Technology_Product']"></xsl:variable>
+	<xsl:variable name="allPlanningActions" select="/node()/simple_instance[type = 'Planning_Action']"></xsl:variable>
 
 	<xsl:key name="p2eByPlan" match="/node()/simple_instance[type = 'PLAN_TO_ELEMENT_RELATION']" use="own_slot_value[slot_reference = 'plan_to_element_plan']/value"></xsl:key>
 
@@ -126,9 +127,12 @@
 					"dependsOnPlans":[<xsl:for-each select="$dependsOnPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
 					<xsl:variable name="supportsPlans" select="$allESPs[name = current()/own_slot_value[slot_reference = 'supports_strategic_plan']/value]"></xsl:variable>
 					"supportsPlans":[<xsl:for-each select="$supportsPlans">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
-					"risks":[<xsl:for-each select="$impactedRisks">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
-					"applications":[<xsl:for-each select="$impactedApps">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
-					"techProducts":[<xsl:for-each select="$impactedTechProds">"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>"<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]
+					"risks":[<xsl:for-each select="$impactedRisks"><xsl:variable name="thisP2E" select="$thisP2Es[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = current()/name]"></xsl:variable><xsl:variable name="changeAction" select="$allPlanningActions[name = $thisP2E/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"></xsl:variable>{"name":"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","change":"<xsl:value-of select="replace(translate($changeAction/own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","rationale":"<xsl:value-of select="replace(replace(translate($thisP2E/own_slot_value[slot_reference = 'plan_to_element_rationale']/value, '&quot;&#xA;&#xD;', &quot;&apos;  &quot;), '&amp;', 'and'), '\\', '/')"
+/>"}<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					"applications":[<xsl:for-each select="$impactedApps"><xsl:variable name="thisP2E" select="$thisP2Es[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = current()/name]"></xsl:variable><xsl:variable name="changeAction" select="$allPlanningActions[name = $thisP2E/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"></xsl:variable>{"name":"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","change":"<xsl:value-of select="replace(translate($changeAction/own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","rationale":"<xsl:value-of select="replace(replace(translate($thisP2E/own_slot_value[slot_reference = 'plan_to_element_rationale']/value, '&quot;&#xA;&#xD;', &quot;&apos;  &quot;), '&amp;', 'and'), '\\', '/')"
+/>"}<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>],
+					"techProducts":[<xsl:for-each select="$impactedTechProds"><xsl:variable name="thisP2E" select="$thisP2Es[own_slot_value[slot_reference = 'plan_to_element_ea_element']/value = current()/name]"></xsl:variable><xsl:variable name="changeAction" select="$allPlanningActions[name = $thisP2E/own_slot_value[slot_reference = 'plan_to_element_change_action']/value]"></xsl:variable>{"name":"<xsl:value-of select="replace(translate(own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","change":"<xsl:value-of select="replace(translate($changeAction/own_slot_value[slot_reference = 'name']/value, '&quot;', &quot;&apos;&quot;), '&amp;', 'and')"/>","rationale":"<xsl:value-of select="replace(replace(translate($thisP2E/own_slot_value[slot_reference = 'plan_to_element_rationale']/value, '&quot;&#xA;&#xD;', &quot;&apos;  &quot;), '&amp;', 'and'), '\\', '/')"
+/>"}<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>]
 					}<xsl:if test="position() != last()">,</xsl:if>
 				</xsl:for-each>
 				]};
@@ -210,9 +214,9 @@
 					var allRisks = [];
 					var allAppsAndTech = [];
 					plans.forEach(function(plan){
-						plan.risks.forEach(function(r){ if(allRisks.indexOf(r) === -1){ allRisks.push(r); } });
-						plan.applications.forEach(function(a){ if(allAppsAndTech.indexOf(a) === -1){ allAppsAndTech.push(a); } });
-						plan.techProducts.forEach(function(t){ if(allAppsAndTech.indexOf(t) === -1){ allAppsAndTech.push(t); } });
+						plan.risks.forEach(function(r){ if(allRisks.indexOf(r.name) === -1){ allRisks.push(r.name); } });
+						plan.applications.forEach(function(a){ if(allAppsAndTech.indexOf(a.name) === -1){ allAppsAndTech.push(a.name); } });
+						plan.techProducts.forEach(function(t){ if(allAppsAndTech.indexOf(t.name) === -1){ allAppsAndTech.push(t.name); } });
 					});
 					var html = '&lt;div class="row" style="margin-bottom:20px;"&gt;';
 					html += '&lt;div class="col-xs-3 text-center"&gt;&lt;div class="metric-box"&gt;&lt;div class="metric-number"&gt;' + totalPlans + '&lt;/div&gt;&lt;div class="metric-label"&gt;Strategic Plans&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
@@ -220,7 +224,7 @@
 					html += '&lt;div style="display:flex;flex-wrap:wrap;gap:6px;"&gt;';
 					viewData.allSRRisks.forEach(function(risk){
 						var count = 0;
-						plans.forEach(function(plan){ if(plan.risks.indexOf(risk) !== -1){ count++; } });
+						plans.forEach(function(plan){ if(plan.risks.some(function(r){ return r.name === risk; })){ count++; } });
 						var bgColor = count &gt; 0 ? '#993bff' : '#eedeff';
 						var textColor = count &gt; 0 ? '#fafafa' : '#999';
 						html += '&lt;span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:11px;background:' + bgColor + ';color:' + textColor + ';"&gt;' + risk + ' (' + count + ')&lt;/span&gt;';
@@ -329,7 +333,7 @@
 									html += '&lt;li class="pm-item"&gt;' + label;
 									if(pm.values &amp;&amp; pm.values.length &gt; 0){
 										pm.values.forEach(function(v){
-											html += '&lt;span class="pm-value"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
+											html += '&lt;span class="pm-value" style="background:#eedeff;"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
 										});
 									}
 									html += '&lt;/li&gt;';
@@ -343,7 +347,7 @@
 									html += '&lt;li class="pm-item"&gt;' + label;
 									if(pm.values &amp;&amp; pm.values.length &gt; 0){
 										pm.values.forEach(function(v){
-											html += '&lt;span class="pm-value"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
+											html += '&lt;span class="pm-value" style="background:#eedeff;"&gt;' + v.value + (v.score ? ' (' + v.score + ')' : '') + '&lt;/span&gt;';
 										});
 									}
 									html += '&lt;/li&gt;';
@@ -351,23 +355,38 @@
 								html += '&lt;/ul&gt;&lt;/td&gt;';
 							} else { html += '&lt;td&gt;-&lt;/td&gt;'; }
 						} else { html += '&lt;td&gt;-&lt;/td&gt;&lt;td&gt;-&lt;/td&gt;'; }
-						/* Impacts column - risks, applications, tech products */
+						/* Impacts column - risks, applications, tech products with change action and rationale */
 						var hasImpacts = (plan.risks.length &gt; 0 || plan.applications.length &gt; 0 || plan.techProducts.length &gt; 0);
 						if(hasImpacts){
 							html += '&lt;td&gt;';
 							if(plan.risks.length &gt; 0){
 								html += '&lt;strong style="font-size:11px;"&gt;Risks&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
-								plan.risks.forEach(function(r){ html += '&lt;li&gt;' + r + '&lt;/li&gt;'; });
+								plan.risks.forEach(function(r){
+									html += '&lt;li&gt;' + r.name;
+									if(r.change){ html += ' &lt;span class="pm-value" style="background:#eedeff;"&gt;' + r.change + '&lt;/span&gt;'; }
+									if(r.rationale){ html += '&lt;div style="font-size:11px;color:#666;margin-top:2px;"&gt;' + r.rationale + '&lt;/div&gt;'; }
+									html += '&lt;/li&gt;';
+								});
 								html += '&lt;/ul&gt;';
 							}
 							if(plan.applications.length &gt; 0){
 								html += '&lt;strong style="font-size:11px;"&gt;Applications&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
-								plan.applications.forEach(function(a){ html += '&lt;li&gt;' + a + '&lt;/li&gt;'; });
+								plan.applications.forEach(function(a){
+									html += '&lt;li&gt;' + a.name;
+									if(a.change){ html += ' &lt;span class="pm-value" style="background:#eedeff;"&gt;' + a.change + '&lt;/span&gt;'; }
+									if(a.rationale){ html += '&lt;div style="font-size:11px;color:#666;margin-top:2px;"&gt;' + a.rationale + '&lt;/div&gt;'; }
+									html += '&lt;/li&gt;';
+								});
 								html += '&lt;/ul&gt;';
 							}
 							if(plan.techProducts.length &gt; 0){
 								html += '&lt;strong style="font-size:11px;"&gt;Technology Products&lt;/strong&gt;&lt;ul class="pm-list"&gt;';
-								plan.techProducts.forEach(function(t){ html += '&lt;li&gt;' + t + '&lt;/li&gt;'; });
+								plan.techProducts.forEach(function(t){
+									html += '&lt;li&gt;' + t.name;
+									if(t.change){ html += ' &lt;span class="pm-value" style="background:#eedeff;"&gt;' + t.change + '&lt;/span&gt;'; }
+									if(t.rationale){ html += '&lt;div style="font-size:11px;color:#666;margin-top:2px;"&gt;' + t.rationale + '&lt;/div&gt;'; }
+									html += '&lt;/li&gt;';
+								});
 								html += '&lt;/ul&gt;';
 							}
 							html += '&lt;/td&gt;';
@@ -399,6 +418,10 @@
 							<div class="page-header">
 								<h1><span class="text-primary">UCL: </span><span class="text-darkgrey">Digital Strategic Plan Initiatives by Roadmap</span></h1>
 							</div>
+							<div style="margin-bottom:15px;">
+								<a href="#section-roadmap" style="margin-right:15px;font-size:13px;">Jump to Roadmap</a>
+								<a href="#section-plan-details" style="font-size:13px;">Jump to Plan Details</a>
+							</div>
 						</div>
 					</div>
 					<div class="row roadmap-filter">
@@ -420,13 +443,13 @@
 					</div>
 					<div class="row roadmap-section">
 						<div class="col-xs-12">
-							<p class="section-title">Roadmap grouped by Objective</p>
+							<p class="section-title" id="section-roadmap">Roadmap grouped by Objective</p>
 							<div id="visualization"></div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12">
-							<p class="section-title">Plan Details - Performance Measures &amp; Supported Plans</p>
+							<p class="section-title" id="section-plan-details">Plan Details - Performance Measures &amp; Supported Plans</p>
 							<div id="tableContent"><p class="text-muted">Loading...</p></div>
 						</div>
 					</div>
